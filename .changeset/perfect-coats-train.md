@@ -2,7 +2,7 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Adds a new `SystemDiagram` component to mvisually map all elements in a system.
+Adds a new `SystemDiagram` component to visually map all elements in a system.
 
 To use this new component, a new system entity page would need to be added to the `packages/app/src/components/catalog/EntityPage.tsx` file.
 
@@ -36,7 +36,7 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
 );
 ```
 
-And the addition of a new switch case to the `EntityPage`:
+And the addition of a new switch case to the `EntityPage` object:
 
 ```diff
 -export const EntityPage = () => {
