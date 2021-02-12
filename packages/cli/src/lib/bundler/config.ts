@@ -72,7 +72,7 @@ async function readBuildInfo() {
 }
 
 async function loadLernaPackages(): Promise<LernaPackage[]> {
-  const LernaProject = require('@lerna/project');
+  const { LernaProject } = require('@lerna/project');
   const project = new LernaProject(cliPaths.targetDir);
   return project.getPackages();
 }

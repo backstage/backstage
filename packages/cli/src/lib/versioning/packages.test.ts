@@ -59,7 +59,7 @@ describe('mapDependencies', () => {
 
   it('should read dependencies', async () => {
     // Make sure all modules involved in package discovery are in the module cache before we mock fs
-    const LernaProject = require('@lerna/project');
+    const { LernaProject } = require('@lerna/project');
     const project = new LernaProject(paths.targetDir);
     await project.getPackages();
 

@@ -67,7 +67,7 @@ export async function fetchPackageInfo(
 export async function mapDependencies(
   targetDir: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
-  const LernaProject = require('@lerna/project');
+  const { LernaProject } = require('@lerna/project');
   const project = new LernaProject(targetDir);
   const packages = await project.getPackages();
 

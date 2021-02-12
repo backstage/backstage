@@ -219,7 +219,7 @@ async function moveToDistWorkspace(
 }
 
 async function findTargetPackages(pkgNames: string[]): Promise<LernaPackage[]> {
-  const LernaProject = require('@lerna/project');
+  const { LernaProject } = require('@lerna/project');
   const PackageGraph = require('@lerna/package-graph');
 
   const project = new LernaProject(paths.targetDir);

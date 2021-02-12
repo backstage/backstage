@@ -18,7 +18,7 @@
 const path = require('path');
 const childProcess = require('child_process');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const LernaProject = require('@lerna/project');
+const { LernaProject } = require('@lerna/project');
 
 // Prepare a release of the provided packages, e.g. @backstage/core
 async function main(args) {
