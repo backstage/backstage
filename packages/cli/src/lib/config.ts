@@ -28,8 +28,8 @@ export async function loadCliConfig(options: Options) {
   const configPaths = options.args.map(arg => paths.resolveTarget(arg));
 
   // Consider all packages in the monorepo when loading in config
-  const { LernaProject } = require('@lerna/project');
-  const project = new LernaProject(paths.targetDir);
+  const { Project } = require('@lerna/project');
+  const project = new Project(paths.targetDir);
   const packages = await project.getPackages();
 
   const localPackageNames = options.fromPackage
