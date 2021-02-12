@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-import { SystemEntity } from '@backstage/catalog-model';
+import { ComponentEntity, SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core';
 import {
+  createDomainColumn,
   createEntityRefColumn,
   createMetadataDescriptionColumn,
   createOwnerColumn,
-  createDomainColumn,
+  createSpecLifecycleColumn,
+  createSpecTypeColumn,
+  createSystemColumn,
 } from './columns';
 
 export const systemEntityColumns: TableColumn<SystemEntity>[] = [
   createEntityRefColumn({ defaultKind: 'system' }),
-  createOwnerColumn(),
   createDomainColumn(),
+  createOwnerColumn(),
+  createMetadataDescriptionColumn(),
+];
+
+export const componentEntityColumns: TableColumn<ComponentEntity>[] = [
+  createEntityRefColumn({ defaultKind: 'component' }),
+  createSystemColumn(),
+  createOwnerColumn(),
+  createSpecTypeColumn(),
+  createSpecLifecycleColumn(),
   createMetadataDescriptionColumn(),
 ];

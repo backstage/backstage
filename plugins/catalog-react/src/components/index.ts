@@ -16,4 +16,3 @@
 export * from './EntityProvider';
 export * from './EntityRefLink';
 export * from './EntityTable';
-export * from './EntityTables';

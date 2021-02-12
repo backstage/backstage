@@ -26,9 +26,13 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
-import { useEntity, useRelatedEntities } from '@backstage/plugin-catalog-react';
+import {
+  EntityTable,
+  useEntity,
+  useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
 import React, { PropsWithChildren } from 'react';
-import { ApisTable } from './ApisTable';
+import { apiEntityColumns } from './presets';
 
 const ApisCard = ({
   children,
@@ -74,7 +78,7 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
   }
 
   return (
-    <ApisTable
+    <EntityTable
       title="Provided APIs"
       variant={variant}
       emptyComponent={
@@ -85,6 +89,7 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
+      columns={apiEntityColumns}
       entities={entities as ApiEntity[]}
     />
   );

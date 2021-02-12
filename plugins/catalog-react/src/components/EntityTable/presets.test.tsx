@@ -15,6 +15,7 @@
  */
 
 import {
+  ComponentEntity,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
   SystemEntity,
@@ -22,22 +23,10 @@ import {
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { SystemsTable } from './SystemsTable';
+import { EntityTable } from './EntityTable';
+import { componentEntityColumns, systemEntityColumns } from './presets';
 
-describe('<SystemsTable />', () => {
-  it('shows empty table', async () => {
-    const { getByText } = await renderInTestApp(
-      <SystemsTable
-        title="My Systems"
-        entities={[]}
-        emptyComponent={<div>EMPTY</div>}
-      />,
-    );
-
-    expect(getByText('My Systems')).toBeInTheDocument();
-    expect(getByText('EMPTY')).toBeInTheDocument();
-  });
-
+describe('systemEntityColumns', () => {
   it('shows systems', async () => {
     const entities: SystemEntity[] = [
       {
@@ -73,18 +62,75 @@ describe('<SystemsTable />', () => {
     ];
 
     const { getByText } = await renderInTestApp(
-      <SystemsTable
+      <EntityTable
         title="My Systems"
         entities={entities}
         emptyComponent={<div>EMPTY</div>}
+        columns={systemEntityColumns}
       />,
     );
 
     await waitFor(() => {
-      expect(getByText('My Systems')).toBeInTheDocument();
       expect(getByText('my-namespace/my-system')).toBeInTheDocument();
       expect(getByText('my-namespace/my-domain')).toBeInTheDocument();
       expect(getByText('Test')).toBeInTheDocument();
+      expect(getByText('Some description')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('componentEntityColumns', () => {
+  it('shows components', async () => {
+    const entities: ComponentEntity[] = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          namespace: 'my-namespace',
+          description: 'Some description',
+        },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'owner-data',
+        },
+        relations: [
+          {
+            type: RELATION_PART_OF,
+            target: {
+              kind: 'System',
+              name: 'my-system',
+              namespace: 'my-namespace',
+            },
+          },
+          {
+            type: RELATION_OWNED_BY,
+            target: {
+              kind: 'Group',
+              name: 'Test',
+              namespace: 'default',
+            },
+          },
+        ],
+      },
+    ];
+
+    const { getByText } = await renderInTestApp(
+      <EntityTable
+        title="My Components"
+        entities={entities}
+        emptyComponent={<div>EMPTY</div>}
+        columns={componentEntityColumns}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(getByText('my-namespace/my-component')).toBeInTheDocument();
+      expect(getByText('my-namespace/my-system')).toBeInTheDocument();
+      expect(getByText('Test')).toBeInTheDocument();
+      expect(getByText('production')).toBeInTheDocument();
+      expect(getByText('service')).toBeInTheDocument();
       expect(getByText('Some description')).toBeInTheDocument();
     });
   });

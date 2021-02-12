@@ -19,7 +19,7 @@ import { Table, TableColumn } from '@backstage/core';
 import { makeStyles } from '@material-ui/core';
 import React from 'react';
 import * as columnFactories from './columns';
-import { systemEntityColumns } from './presets';
+import { componentEntityColumns, systemEntityColumns } from './presets';
 
 type Props<T extends Entity> = {
   title: string;
@@ -77,3 +77,5 @@ export function EntityTable<T extends Entity>({
 EntityTable.columns = columnFactories;
 
 EntityTable.systemEntityColumns = systemEntityColumns;
+
+EntityTable.componentEntityColumns = componentEntityColumns;

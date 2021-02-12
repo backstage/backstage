@@ -27,7 +27,7 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import {
-  ComponentsTable,
+  EntityTable,
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
@@ -77,7 +77,7 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
   }
 
   return (
-    <ComponentsTable
+    <EntityTable
       title="Providers"
       variant={variant}
       emptyComponent={
@@ -88,6 +88,7 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
+      columns={EntityTable.componentEntityColumns}
       entities={entities as ComponentEntity[]}
     />
   );

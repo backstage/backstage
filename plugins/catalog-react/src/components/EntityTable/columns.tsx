@@ -16,6 +16,7 @@
 
 import {
   Entity,
+  EntityName,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
@@ -43,11 +44,17 @@ export function createEntityRefColumn<T extends Entity>({
     title: 'Name',
     highlight: true,
     customFilterAndSearch(filter, entity) {
-      // TODO: We could implement this more efficiently, like searching over each field individually, but that migth confuse the user
+      // TODO: We could implement this more efficiently, like searching over
+      // each field that is displayed individually (kind, namespace, name).
+      // but that migth confuse the user as it will behave different than a
+      // simple text search.
+      // Another altnerative would be to cache the values. But writing them
+      // into the entity feels bad too.
       return formatContent(entity).includes(filter);
     },
     customSort(entity1, entity2) {
       // TODO: We could implement this more efficiently by comparing field by field.
+      // This has similar issues as above.
       return formatContent(entity1).localeCompare(formatContent(entity2));
     },
     render: entity => (
@@ -56,16 +63,29 @@ export function createEntityRefColumn<T extends Entity>({
   };
 }
 
-export function createOwnerColumn<T extends Entity>(): TableColumn<T> {
+export function createEntityRelationColumn<T extends Entity>({
+  title,
+  relation,
+  defaultKind,
+  filter: entityFilter,
+}: {
+  title: string;
+  relation: string;
+  defaultKind?: string;
+  filter?: { kind: string };
+}): TableColumn<T> {
+  function getRelations(entity: T): EntityName[] {
+    return getEntityRelations(entity, relation, entityFilter);
+  }
+
   function formatContent(entity: T): string {
-    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-    return ownedByRelations
-      .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+    return getRelations(entity)
+      .map(r => formatEntityRefTitle(r, { defaultKind }))
       .join(', ');
   }
 
   return {
-    title: 'Owner',
+    title,
     customFilterAndSearch(filter, entity) {
       return formatContent(entity).includes(filter);
     },
@@ -73,48 +93,44 @@ export function createOwnerColumn<T extends Entity>(): TableColumn<T> {
       return formatContent(entity1).localeCompare(formatContent(entity2));
     },
     render: entity => {
-      const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
       return (
-        <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+        <EntityRefLinks
+          entityRefs={getRelations(entity)}
+          defaultKind={defaultKind}
+        />
       );
     },
   };
 }
 
-export function createDomainColumn<T extends Entity>(): TableColumn<T> {
-  function formatContent(entity: T): string {
-    const partOfDomainRelations = getEntityRelations(entity, RELATION_PART_OF, {
-      kind: 'domain',
-    });
-    return partOfDomainRelations
-      .map(r => formatEntityRefTitle(r, { defaultKind: 'domain' }))
-      .join(', ');
-  }
+export function createOwnerColumn<T extends Entity>(): TableColumn<T> {
+  return createEntityRelationColumn({
+    title: 'Owner',
+    relation: RELATION_OWNED_BY,
+    defaultKind: 'group',
+  });
+}
 
-  return {
+export function createDomainColumn<T extends Entity>(): TableColumn<T> {
+  return createEntityRelationColumn({
     title: 'Domain',
-    customFilterAndSearch(filter, entity) {
-      return formatContent(entity).includes(filter);
+    relation: RELATION_PART_OF,
+    defaultKind: 'domain',
+    filter: {
+      kind: 'domain',
     },
-    customSort(entity1, entity2) {
-      return formatContent(entity1).localeCompare(formatContent(entity2));
+  });
+}
+
+export function createSystemColumn<T extends Entity>(): TableColumn<T> {
+  return createEntityRelationColumn({
+    title: 'System',
+    relation: RELATION_PART_OF,
+    defaultKind: 'system',
+    filter: {
+      kind: 'system',
     },
-    render: entity => {
-      const partOfDomainRelations = getEntityRelations(
-        entity,
-        RELATION_PART_OF,
-        {
-          kind: 'domain',
-        },
-      );
-      return (
-        <EntityRefLinks
-          entityRefs={partOfDomainRelations}
-          defaultKind="domain"
-        />
-      );
-    },
-  };
+  });
 }
 
 export function createMetadataDescriptionColumn<
@@ -124,5 +140,19 @@ export function createMetadataDescriptionColumn<
     title: 'Description',
     field: 'metadata.description',
     width: 'auto',
+  };
+}
+
+export function createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {
+  return {
+    title: 'Lifecycle',
+    field: 'spec.lifecycle',
+  };
+}
+
+export function createSpecTypeColumn<T extends Entity>(): TableColumn<T> {
+  return {
+    title: 'Type',
+    field: 'spec.type',
   };
 }
