@@ -119,6 +119,7 @@ Kumar
 learnings
 lerna
 Lerna
+lockfile
 Luxon
 magiclink
 mailto
@@ -249,6 +250,7 @@ transpilation
 Tuite
 ui
 unmanaged
+unregister
 untracked
 upvote
 url

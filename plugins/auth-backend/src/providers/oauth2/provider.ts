@@ -44,6 +44,7 @@ type PrivateInfo = {
 export type OAuth2AuthProviderOptions = OAuthProviderOptions & {
   authorizationUrl: string;
   tokenUrl: string;
+  scope?: string;
 };
 
 export class OAuth2AuthProvider implements OAuthHandlers {
@@ -58,6 +59,7 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         authorizationURL: options.authorizationUrl,
         tokenURL: options.tokenUrl,
         passReqToCallback: false as true,
+        scope: options.scope,
       },
       (
         accessToken: any,
@@ -168,6 +170,7 @@ export const createOAuth2Provider: AuthProviderFactory = ({
     const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
     const authorizationUrl = envConfig.getString('authorizationUrl');
     const tokenUrl = envConfig.getString('tokenUrl');
+    const scope = envConfig.getOptionalString('scope');
 
     const provider = new OAuth2AuthProvider({
       clientId,
@@ -175,6 +178,7 @@ export const createOAuth2Provider: AuthProviderFactory = ({
       callbackUrl,
       authorizationUrl,
       tokenUrl,
+      scope,
     });
 
     return OAuthAdapter.fromConfig(globalConfig, provider, {

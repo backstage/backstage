@@ -1,5 +1,16 @@
 # @backstage/plugin-jenkins
 
+## 0.3.9
+
+### Patch Changes
+
+- 53348f0af: Improve display of duration in latest build card
+- 025c0c7bf: Migrate to new composability API, exporting the plugin instance as `jenkinsPlugin`, the entity content as `EntityJenkinsContent`, the entity conditional as `isJenkinsAvailable`, and the entity card as `EntityLatestJenkinsRunCard`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.8
 
 ### Patch Changes

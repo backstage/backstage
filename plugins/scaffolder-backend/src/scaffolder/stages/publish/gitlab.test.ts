@@ -57,6 +57,7 @@ describe('GitLab Publisher', () => {
       const publisher = await GitlabPublisher.fromConfig(
         {
           host: 'gitlab.com',
+          apiBaseUrl: 'https://gitlab.com/api/v4',
           token: 'fake-token',
           baseUrl: 'https://gitlab.hosted.com',
         },
@@ -105,7 +106,9 @@ describe('GitLab Publisher', () => {
       const publisher = await GitlabPublisher.fromConfig(
         {
           host: 'gitlab.com',
+          apiBaseUrl: 'https://gitlab.com/api/v4',
           token: 'fake-token',
+          baseUrl: 'https://gitlab.com',
         },
         { repoVisibility: 'public' },
       );

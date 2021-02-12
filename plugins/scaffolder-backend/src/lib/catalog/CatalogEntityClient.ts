@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   ConflictError,
   NotFoundError,
@@ -26,10 +26,12 @@ import {
  * A catalog client tailored for reading out entity data from the catalog.
  */
 export class CatalogEntityClient {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly catalogClient: CatalogClient;
 
   constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.discovery = options.discovery;
+    this.catalogClient = new CatalogClient({
+      discoveryApi: options.discovery,
+    });
   }
 
   /**
@@ -37,25 +39,19 @@ export class CatalogEntityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple templates are found.
    */
-  async findTemplate(templateName: string): Promise<TemplateEntityV1alpha1> {
-    const conditions = [
-      'kind=template',
-      `metadata.name=${encodeURIComponent(templateName)}`,
-    ];
-
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const response = await fetch(
-      `${baseUrl}/entities?filter=${conditions.join(',')}`,
-    );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${text}`,
-      );
-    }
-
-    const templates: TemplateEntityV1alpha1[] = await response.json();
+  async findTemplate(
+    templateName: string,
+    options?: { token?: string },
+  ): Promise<TemplateEntityV1alpha1> {
+    const { items: templates } = (await this.catalogClient.getEntities(
+      {
+        filter: {
+          kind: 'template',
+          'metadata.name': templateName,
+        },
+      },
+      options,
+    )) as { items: TemplateEntityV1alpha1[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

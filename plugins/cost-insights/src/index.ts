@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  costInsightsPlugin,
+  costInsightsPlugin as plugin,
+  CostInsightsPage,
+  CostInsightsProjectGrowthInstructionsPage,
+  CostInsightsLabelDataflowInstructionsPage,
+} from './plugin';
 export * from './client';
 export * from './api';
 export { ProjectGrowthAlert, UnlabeledDataflowAlert } from './alerts';

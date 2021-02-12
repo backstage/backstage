@@ -1,5 +1,15 @@
 # @backstage/plugin-sentry
 
+## 0.3.5
+
+### Patch Changes
+
+- 53d3e2d62: Export the plugin instance as `sentryPlugin`. The plugin instance is still exported as `plugin` as well, but it will be removed in the future.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.4
 
 ### Patch Changes

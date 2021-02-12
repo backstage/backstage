@@ -1,5 +1,15 @@
 # @backstage/plugin-explore
 
+## 0.2.5
+
+### Patch Changes
+
+- 0fe8ff5be: Catch catalog errors and display to user
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.4
 
 ### Patch Changes

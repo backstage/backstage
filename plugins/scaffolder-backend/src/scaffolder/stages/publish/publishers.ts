@@ -126,6 +126,8 @@ export class Publishers implements PublisherBuilder {
             {
               token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
               host: integration.config.host,
+              apiBaseUrl: `<ignored>`,
+              baseUrl: `https://${integration.config.host}`,
             },
             { repoVisibility },
           ),

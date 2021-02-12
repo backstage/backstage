@@ -38,6 +38,7 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import { AuthProviderFactory, RedirectInfo } from '../types';
+import { TokenIssuer } from '../../identity';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -46,16 +47,19 @@ type PrivateInfo = {
 export type GoogleAuthProviderOptions = OAuthProviderOptions & {
   logger: Logger;
   identityClient: CatalogIdentityClient;
+  tokenIssuer: TokenIssuer;
 };
 
 export class GoogleAuthProvider implements OAuthHandlers {
   private readonly _strategy: GoogleStrategy;
   private readonly logger: Logger;
   private readonly identityClient: CatalogIdentityClient;
+  private readonly tokenIssuer: TokenIssuer;
 
   constructor(options: GoogleAuthProviderOptions) {
     this.logger = options.logger;
     this.identityClient = options.identityClient;
+    this.tokenIssuer = options.tokenIssuer;
     // TODO: throw error if env variables not set?
     this._strategy = new GoogleStrategy(
       {
@@ -150,11 +154,17 @@ export class GoogleAuthProvider implements OAuthHandlers {
     }
 
     try {
-      const user = await this.identityClient.findUser({
-        annotations: {
-          'google.com/email': profile.email,
-        },
+      const token = await this.tokenIssuer.issueToken({
+        claims: { sub: 'backstage.io/auth-backend' },
       });
+      const user = await this.identityClient.findUser(
+        {
+          annotations: {
+            'google.com/email': profile.email,
+          },
+        },
+        { token },
+      );
 
       return {
         ...response,
@@ -192,6 +202,7 @@ export const createGoogleProvider: AuthProviderFactory = ({
       clientSecret,
       callbackUrl,
       logger,
+      tokenIssuer,
       identityClient: new CatalogIdentityClient({ catalogApi }),
     });
 
