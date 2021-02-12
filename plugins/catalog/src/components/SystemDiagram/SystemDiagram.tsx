@@ -115,6 +115,7 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
       <DependencyGraph
         nodes={systemNodes}
         edges={systemEdges}
+        paddingX={15}
         direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
       />
     </InfoCard>
