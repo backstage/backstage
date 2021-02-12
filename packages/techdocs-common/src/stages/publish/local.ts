@@ -88,7 +88,7 @@ export class LocalPublish implements PublisherBase {
           );
           reject(err);
         }
-
+        this.logger.info(`Published site stored at ${publishDir}`);
         this.discovery
           .getBaseUrl('techdocs')
           .then(techdocsApiUrl => {

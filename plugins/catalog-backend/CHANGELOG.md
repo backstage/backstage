@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.1
+
+### Patch Changes
+
+- 77ad0003a: Revert AWS SDK version to v2
+- d2441aee3: use child logger, if provided, to log single location refresh
+- fb53eb7cb: Don't respond to a request twice if an entity has not been found.
+- f3fbfb452: add indices on columns referring locations(id)
+- 84364b35c: Added an option to scan GitHub for repositories using a new location type `github-discovery`.
+  Example:
+
+  ```yaml
+  type: 'github-discovery',
+  target:
+     'https://github.com/backstage/techdocs-*/blob/master/catalog.yaml'
+  ```
+
+  You can use wildcards (`*`) as well. This will add `location` entities for each matching repository.
+  Currently though, you must specify the exact path of the `catalog.yaml` file in the repository.
+
+- 82b2c11b6: Refactored route response handling to use more explicit types and throw errors.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
 ## 0.6.0
 
 ### Minor Changes

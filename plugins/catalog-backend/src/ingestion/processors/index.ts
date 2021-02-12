@@ -21,6 +21,7 @@ export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAcco
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
+export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
 export { LdapOrgReaderProcessor } from './LdapOrgReaderProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';

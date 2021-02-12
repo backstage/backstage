@@ -31,7 +31,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
-import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
+import {
+  ButtonGroup,
+  CatalogFilter,
+  CatalogFilterType,
+} from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { useOwnUser } from '../useOwnUser';
@@ -65,7 +69,9 @@ const CatalogPageContents = () => {
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
   const [selectedTab, setSelectedTab] = useState<string>();
-  const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const [selectedSidebarItem, setSelectedSidebarItem] = useState<
+    CatalogFilterType
+  >();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
 
   const addMockData = useCallback(async () => {
@@ -180,13 +186,15 @@ const CatalogPageContents = () => {
           <div>
             <CatalogFilter
               buttonGroups={filterGroups}
-              onChange={({ label }) => setSelectedSidebarItem(label)}
-              initiallySelected="owned"
+              onChange={({ label, id }) =>
+                setSelectedSidebarItem({ label, id })
+              }
+              initiallySelected={selectedSidebarItem?.id ?? 'owned'}
             />
             <ResultsFilter availableTags={availableTags} />
           </div>
           <CatalogTable
-            titlePreamble={selectedSidebarItem ?? ''}
+            titlePreamble={selectedSidebarItem?.label ?? ''}
             entities={matchingEntities}
             loading={loading}
             error={error}

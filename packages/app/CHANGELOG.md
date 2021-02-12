@@ -1,5 +1,91 @@
 # example-app
 
+## 0.2.15
+
+### Patch Changes
+
+- 07bafa248: Add configurable `scope` for oauth2 auth provider.
+
+  Some OAuth2 providers require certain scopes to facilitate a user sign-in using the Authorization Code flow.
+  This change adds the optional `scope` key to auth.providers.oauth2. An example is:
+
+  ```yaml
+  auth:
+    providers:
+      oauth2:
+        development:
+          clientId:
+            $env: DEV_OAUTH2_CLIENT_ID
+          clientSecret:
+            $env: DEV_OAUTH2_CLIENT_SECRET
+          authorizationUrl:
+            $env: DEV_OAUTH2_AUTH_URL
+          tokenUrl:
+            $env: DEV_OAUTH2_TOKEN_URL
+          scope: saml-login-selector openid profile email
+  ```
+
+  This tells the OAuth 2.0 AS to perform a SAML login and return OIDC information include the `profile`
+  and `email` claims as part of the ID Token.
+
+- Updated dependencies [753bb4c40]
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [b33fa4cf4]
+- Updated dependencies [d36660721]
+- Updated dependencies [6b26c9f41]
+- Updated dependencies [b3f0c3811]
+- Updated dependencies [302795d10]
+- Updated dependencies [9ec66c345]
+- Updated dependencies [53d3e2d62]
+- Updated dependencies [ca559171b]
+- Updated dependencies [53348f0af]
+- Updated dependencies [f5e564cd6]
+- Updated dependencies [68dd79d83]
+- Updated dependencies [29a138636]
+- Updated dependencies [14aef4b94]
+- Updated dependencies [41af18227]
+- Updated dependencies [1df75733e]
+- Updated dependencies [02d6803e8]
+- Updated dependencies [b288a291e]
+- Updated dependencies [025c0c7bf]
+- Updated dependencies [e5da858d7]
+- Updated dependencies [9230d07e7]
+- Updated dependencies [f5f45744e]
+- Updated dependencies [0fe8ff5be]
+- Updated dependencies [c5ab91ce3]
+- Updated dependencies [64b9efac2]
+- Updated dependencies [19d354c78]
+- Updated dependencies [7716d1d70]
+- Updated dependencies [8f3443427]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [accdfeb30]
+- Updated dependencies [804502a5c]
+  - @backstage/plugin-catalog-import@0.4.0
+  - @backstage/plugin-catalog@0.3.1
+  - @backstage/plugin-kubernetes@0.3.9
+  - @backstage/plugin-rollbar@0.3.0
+  - @backstage/plugin-scaffolder@0.5.0
+  - @backstage/plugin-cost-insights@0.8.1
+  - @backstage/plugin-circleci@0.2.8
+  - @backstage/plugin-search@0.3.0
+  - @backstage/plugin-cloudbuild@0.2.9
+  - @backstage/plugin-register-component@0.2.9
+  - @backstage/plugin-sentry@0.3.5
+  - @backstage/plugin-jenkins@0.3.9
+  - @backstage/plugin-api-docs@0.4.5
+  - @backstage/plugin-lighthouse@0.2.10
+  - @backstage/plugin-techdocs@0.5.6
+  - @backstage/plugin-pagerduty@0.2.8
+  - @backstage/plugin-org@0.3.6
+  - @backstage/plugin-github-actions@0.3.2
+  - @backstage/plugin-explore@0.2.5
+  - @backstage/plugin-newrelic@0.2.5
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/plugin-kafka@0.2.2
+  - @backstage/core@0.6.1
+  - @backstage/plugin-gitops-profiles@0.2.5
+  - @backstage/plugin-tech-radar@0.3.5
+
 ## 0.2.14
 
 ### Patch Changes

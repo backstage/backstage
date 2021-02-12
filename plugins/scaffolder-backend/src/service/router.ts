@@ -133,7 +133,10 @@ export async function createRouter(
         },
       };
 
-      const template = await entityClient.findTemplate(templateName);
+      // Forward authorization from client
+      const template = await entityClient.findTemplate(templateName, {
+        token: getBearerToken(req.headers.authorization),
+      });
 
       const validationResult: ValidatorResult = validate(
         values,
@@ -294,4 +297,8 @@ export async function createRouter(
   app.use('/', router);
 
   return app;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }

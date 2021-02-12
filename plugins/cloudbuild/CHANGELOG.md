@@ -1,5 +1,15 @@
 # @backstage/plugin-cloudbuild
 
+## 0.2.9
+
+### Patch Changes
+
+- 302795d10: Migrate to new composability API, exporting the plugin instance as `cloudbuildPlugin`, the entity content as `EntityCloudbuildContent`, the entity conditional as `isCloudbuildAvailable`, and entity cards as `EntityLatestCloudbuildRunCard` and `EntityLatestCloudbuildsForBranchCard`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.8
 
 ### Patch Changes

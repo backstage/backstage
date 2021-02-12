@@ -1115,6 +1115,10 @@ code {
   font-size: 115%;
 }
 
+.post pre {
+  color: #e4e4e4;
+}
+
 .Block__GIF {
   width: 190px;
   height: auto;

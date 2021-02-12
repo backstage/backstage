@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { RouteRef } from '@backstage/core';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { ImportComponentPage } from './ImportComponentPage';
+import { StepperProviderOpts } from './ImportStepper/defaults';
 
-export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
+export const Router = (opts: StepperProviderOpts) => (
   <Routes>
-    <Route
-      element={<ImportComponentPage catalogRouteRef={catalogRouteRef} />}
-    />
+    <Route element={<ImportComponentPage {...opts} />} />
   </Routes>
 );

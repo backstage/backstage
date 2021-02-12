@@ -1,5 +1,15 @@
 # @backstage/plugin-fossa
 
+## 0.2.1
+
+### Patch Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.0
 
 ### Minor Changes

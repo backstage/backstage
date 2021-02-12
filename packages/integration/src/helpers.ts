@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
+import parseGitUrl from 'git-url-parse';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 
-/** Checks whether the given url is a valid host */
-export function isValidHost(url: string): boolean {
+/** Checks whether the given argument is a valid URL hostname */
+export function isValidHost(host: string): boolean {
   const check = new URL('http://example.com');
-  check.host = url;
-  return check.host === url;
+  check.host = host;
+  return check.host === host;
+}
+
+/** Checks whether the given argument is a valid URL */
+export function isValidUrl(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function basicIntegrations<T extends ScmIntegration>(
@@ -39,4 +51,44 @@ export function basicIntegrations<T extends ScmIntegration>(
       return integrations.find(i => getHost(i) === host);
     },
   };
+}
+
+/**
+ * Default implementation of ScmIntegration.resolveUrl, that only works with
+ * URL pathname based providers.
+ */
+export function defaultScmResolveUrl(options: {
+  url: string;
+  base: string;
+}): string {
+  const { url, base } = options;
+
+  // If it is a fully qualified URL - then return it verbatim
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return url;
+  } catch {
+    // ignore intentionally
+  }
+
+  let updated: URL;
+
+  if (url.startsWith('/')) {
+    // If it is an absolute path, move relative to the repo root
+    const { filepath } = parseGitUrl(base);
+    updated = new URL(base);
+    const repoRootPath = updated.pathname
+      .substring(0, updated.pathname.length - filepath.length)
+      .replace(/\/+$/, '');
+    updated.pathname = `${repoRootPath}${url}`;
+  } else {
+    // For relative URLs, just let the default URL constructor handle the
+    // resolving. Note that this essentially will treat the last segment of the
+    // base as a file - NOT a folder - unless the url ends in a slash.
+    updated = new URL(url, base);
+  }
+
+  updated.search = new URL(base).search;
+  return updated.toString();
 }

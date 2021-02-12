@@ -23,7 +23,7 @@ import {
   SignInPage,
 } from '@backstage/core';
 import { Router as CatalogRouter } from '@backstage/plugin-catalog';
-import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
@@ -69,10 +69,7 @@ const catalogRouteRef = createRouteRef({
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
-    <Route
-      path="/catalog-import"
-      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route
       path={`${catalogRouteRef.path}`}
       element={<CatalogRouter EntityPage={EntityPage} />}

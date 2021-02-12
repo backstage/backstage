@@ -1,5 +1,15 @@
 # @backstage/plugin-cost-insights
 
+## 0.8.1
+
+### Patch Changes
+
+- b33fa4cf4: fixes a bug in default dismiss form where other text input persists between reason selections
+- d36660721: Fix snooze quarter option
+- 02d6803e8: Migrated to new composability API, exporting the plugin instance as `costInsightsPlugin`, the root `'/cost-insights'` page as `CostInsightsPage`, the `'/cost-insights/investigating-growth'` page as `CostInsightsProjectGrowthInstructionsPage`, and the `'/cost-insights/labeling-jobs'` page as `CostInsightsLabelDataflowInstructionsPage`.
+- Updated dependencies [b51ee6ece]
+  - @backstage/core@0.6.1
+
 ## 0.8.0
 
 ### Minor Changes

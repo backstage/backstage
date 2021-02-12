@@ -14,37 +14,131 @@
  * limitations under the License.
  */
 
-import { Octokit } from '@octokit/rest';
-import { DiscoveryApi, OAuthApi, ConfigApi } from '@backstage/core';
-import { CatalogImportApi } from './CatalogImportApi';
-import { PartialEntity } from '../util/types';
+import { CatalogApi } from '@backstage/catalog-client';
+import { EntityName } from '@backstage/catalog-model';
+import {
+  ConfigApi,
+  DiscoveryApi,
+  IdentityApi,
+  OAuthApi,
+} from '@backstage/core';
 import { GitHubIntegrationConfig } from '@backstage/integration';
+import { Octokit } from '@octokit/rest';
+import { PartialEntity } from '../types';
+import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
+import { getGithubIntegrationConfig } from './GitHub';
 
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
   private readonly githubAuthApi: OAuthApi;
   private readonly configApi: ConfigApi;
+  private readonly catalogApi: CatalogApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     githubAuthApi: OAuthApi;
+    identityApi: IdentityApi;
     configApi: ConfigApi;
+    catalogApi: CatalogApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.githubAuthApi = options.githubAuthApi;
+    this.identityApi = options.identityApi;
     this.configApi = options.configApi;
+    this.catalogApi = options.catalogApi;
   }
 
-  async generateEntityDefinitions({
+  async analyzeUrl(url: string): Promise<AnalyzeResult> {
+    if (url.match(/\.ya?ml$/)) {
+      const location = await this.catalogApi.addLocation({
+        type: 'url',
+        target: url,
+        dryRun: true,
+      });
+
+      return {
+        type: 'locations',
+        locations: [
+          {
+            target: location.location.target,
+            entities: location.entities.map(e => ({
+              kind: e.kind,
+              namespace: e.metadata.namespace ?? 'default',
+              name: e.metadata.name,
+            })),
+          },
+        ],
+      };
+    }
+
+    const ghConfig = getGithubIntegrationConfig(this.configApi, url);
+
+    if (ghConfig) {
+      // TODO: this could be part of the analyze-location endpoint
+      const locations = await this.checkGitHubForExistingCatalogInfo({
+        ...ghConfig,
+        url,
+      });
+
+      if (locations.length > 0) {
+        return {
+          type: 'locations',
+          locations,
+        };
+      }
+
+      return {
+        type: 'repository',
+        integrationType: 'github',
+        url: url,
+        generatedEntities: await this.generateEntityDefinitions({
+          repo: url,
+        }),
+      };
+    }
+
+    throw new Error('Invalid url');
+  }
+
+  async submitPullRequest({
+    repositoryUrl,
+    fileContent,
+    title,
+    body,
+  }: {
+    repositoryUrl: string;
+    fileContent: string;
+    title: string;
+    body: string;
+  }): Promise<{ link: string; location: string }> {
+    const ghConfig = getGithubIntegrationConfig(this.configApi, repositoryUrl);
+
+    if (ghConfig) {
+      return await this.submitGitHubPrToRepo({
+        ...ghConfig,
+        fileContent,
+        title,
+        body,
+      });
+    }
+
+    throw new Error('unimplemented!');
+  }
+
+  // TODO: this could be part of the catalog api
+  private async generateEntityDefinitions({
     repo,
   }: {
     repo: string;
   }): Promise<PartialEntity[]> {
+    const idToken = await this.identityApi.getIdToken();
     const response = await fetch(
       `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
       {
         headers: {
           'Content-Type': 'application/json',
+          ...(idToken && { Authorization: `Bearer ${idToken}` }),
         },
         method: 'POST',
         body: JSON.stringify({
@@ -64,41 +158,23 @@ export class CatalogImportClient implements CatalogImportApi {
     return payload.generateEntities.map((x: any) => x.entity);
   }
 
-  async createRepositoryLocation({
-    location,
-  }: {
-    location: string;
-  }): Promise<void> {
-    const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/locations`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          type: 'url',
-          target: location,
-          presence: 'optional',
-        }),
-      },
-    );
-    if (!response.ok) {
-      throw new Error(
-        `Received http response ${response.status}: ${response.statusText}`,
-      );
-    }
-  }
-
-  async checkForExistingCatalogInfo({
+  // TODO: this response should better be part of the analyze-locations response and scm-independent / implemented per scm
+  private async checkGitHubForExistingCatalogInfo({
+    url,
     owner,
     repo,
     githubIntegrationConfig,
   }: {
+    url: string;
     owner: string;
     repo: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
-  }): Promise<{ exists: boolean; url?: string }> {
+  }): Promise<
+    Array<{
+      target: string;
+      entities: EntityName[];
+    }>
+  > {
     const token = await this.githubAuthApi.getAccessToken(['repo']);
     const octo = new Octokit({
       auth: token,
@@ -122,28 +198,50 @@ export class CatalogImportClient implements CatalogImportApi {
       });
       const defaultBranch = repoInformation.data.default_branch;
 
-      // Github search sorts returned values with 'best match' using 'multiple factors to boost the most relevant item',
-      // aka magic.
-      // Sorting to use the shortest item, closest to the repository root.
-      const catalogInfoItem = searchResult.data.items
-        .map(it => it.path)
-        .sort((a, b) => a.length - b.length)[0];
-      return {
-        url: `blob/${defaultBranch}/${catalogInfoItem}`,
-        exists,
-      };
+      return await Promise.all(
+        searchResult.data.items
+          .map(
+            i => `${url.replace(/[\/]*$/, '')}/blob/${defaultBranch}/${i.path}`,
+          )
+          .map(
+            async i =>
+              ({
+                target: i,
+                entities: (
+                  await this.catalogApi.addLocation({
+                    type: 'url',
+                    target: i,
+                    dryRun: true,
+                  })
+                ).entities.map(e => ({
+                  kind: e.kind,
+                  namespace: e.metadata.namespace ?? 'default',
+                  name: e.metadata.name,
+                })),
+              } as {
+                target: string;
+                entities: EntityName[];
+              }),
+          ),
+      );
     }
-    return { exists };
+
+    return [];
   }
 
-  async submitPrToRepo({
+  // TODO: extract this function and implement for non-github
+  private async submitGitHubPrToRepo({
     owner,
     repo,
+    title,
+    body,
     fileContent,
     githubIntegrationConfig,
   }: {
     owner: string;
     repo: string;
+    title: string;
+    body: string;
     fileContent: string;
     githubIntegrationConfig: GitHubIntegrationConfig;
   }): Promise<{ link: string; location: string }> {
@@ -212,23 +310,13 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       });
 
-    const appTitle =
-      this.configApi.getOptionalString('app.title') ?? 'Backstage';
-    const appBaseUrl = this.configApi.getString('app.baseUrl');
-
-    const prBody = `This pull request adds a **Backstage entity metadata file** \
-to this repository so that the component can be added to the \
-[${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
-the component will become available.\n\nFor more information, read an \
-[overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`;
-
     const pullRequestResponse = await octo.pulls
       .create({
         owner,
         repo,
-        title: `Add ${fileName} config file`,
+        title,
         head: branchName,
-        body: prBody,
+        body,
         base: repoData.data.default_branch,
       })
       .catch(e => {

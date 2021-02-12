@@ -1,5 +1,16 @@
 # @backstage/backend-common
 
+## 0.5.3
+
+### Patch Changes
+
+- ffffea8e6: Minor updates to reflect the changes in `@backstage/integration` that made the fields `apiBaseUrl` and `apiUrl` mandatory.
+- 82b2c11b6: Set explicit content-type in error handler responses.
+- 965e200c6: Slight refactoring in support of a future search implementation in `UrlReader`. Mostly moving code around.
+- 5a5163519: Implement `UrlReader.search` which implements glob matching.
+- Updated dependencies [ffffea8e6]
+  - @backstage/integration@0.4.0
+
 ## 0.5.2
 
 ### Patch Changes

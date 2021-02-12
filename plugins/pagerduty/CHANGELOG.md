@@ -1,5 +1,16 @@
 # @backstage/plugin-pagerduty
 
+## 0.2.8
+
+### Patch Changes
+
+- 29a138636: Use the Luxon Date Library to follow the recommendations of ADR010.
+- b288a291e: Migrated to new composability API, exporting the plugin instance as `pagerDutyPlugin`, entity card as `EntityPagerDutyCard`, and entity conditional as `isPagerDutyAvailable`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.7
 
 ### Patch Changes

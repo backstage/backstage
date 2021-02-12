@@ -77,7 +77,7 @@ jobs:
         run: yarn prettier:check
 
       - name: validate config
-        run: yarn backstage-cli config:check
+        run: yarn backstage-cli config:check --lax
 
       - name: lint
         run: yarn lerna -- run lint --since origin/master

@@ -1,7 +1,7 @@
 # AlertApi
 
 The AlertApi type is defined at
-[packages/core-api/src/apis/definitions/AlertApi.ts:29](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AlertApi.ts#L29).
+[packages/core-api/src/apis/definitions/AlertApi.ts:29](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/AlertApi.ts#L29).
 
 The following Utility API implements this type: [alertApiRef](./README.md#alert)
 
@@ -38,7 +38,7 @@ export type AlertMessage = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/AlertApi.ts:19](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AlertApi.ts#L19).
+[packages/core-api/src/apis/definitions/AlertApi.ts:19](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/AlertApi.ts#L19).
 
 Referenced by: [post](#post), [alert\$](#alert).
 
@@ -67,7 +67,7 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L53).
 
 Referenced by: [alert\$](#alert).
 
@@ -86,7 +86,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -109,6 +109,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

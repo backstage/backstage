@@ -19,21 +19,28 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
+  createComponentExtension,
   createRoutableExtension,
+  identityApiRef,
 } from '@backstage/core';
 import {
   catalogApiRef,
   catalogRouteRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { CatalogClientWrapper } from './CatalogClientWrapper';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
       api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new CatalogClientWrapper({
+          client: new CatalogClient({ discoveryApi }),
+          identityApi,
+        }),
     }),
   ],
   routes: {
@@ -57,5 +64,22 @@ export const CatalogEntityPage = catalogPlugin.provide(
         m => m.CatalogEntityPage,
       ),
     mountPoint: entityRouteRef,
+  }),
+);
+
+export const EntityAboutCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
+    },
+  }),
+);
+
+export const EntityLinksCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/EntityLinksCard').then(m => m.EntityLinksCard),
+    },
   }),
 );

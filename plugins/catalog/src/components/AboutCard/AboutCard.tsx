@@ -19,6 +19,8 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
+import { HeaderIconLinkRow } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -27,14 +29,13 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
-import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
 import { createEditLink, determineUrlType } from '../createEditLink';
-import { HeaderIconLinkRow } from '@backstage/core';
 import { AboutContent } from './AboutContent';
 
 const useStyles = makeStyles({
@@ -76,12 +77,14 @@ function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
 }
 
 type AboutCardProps = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   variant?: string;
 };
 
-export function AboutCard({ entity, variant }: AboutCardProps) {
+export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
+  const { entity } = useEntity();
   const codeLink = getCodeLinkInfo(entity);
   // TODO: Also support RELATION_CONSUMES_API here
   const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);

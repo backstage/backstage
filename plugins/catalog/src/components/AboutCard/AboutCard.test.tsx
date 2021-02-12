@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { render } from '@testing-library/react';
+import React from 'react';
 import { AboutCard } from './AboutCard';
 
 describe('<AboutCard /> GitHub', () => {
@@ -36,7 +37,11 @@ describe('<AboutCard /> GitHub', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
+    const { getByText } = render(
+      <EntityProvider entity={entity}>
+        <AboutCard />
+      </EntityProvider>,
+    );
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
@@ -67,7 +72,11 @@ describe('<AboutCard /> GitLab', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
+    const { getByText } = render(
+      <EntityProvider entity={entity}>
+        <AboutCard />
+      </EntityProvider>,
+    );
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
@@ -98,7 +107,11 @@ describe('<AboutCard /> BitBucket', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
+    const { getByText } = render(
+      <EntityProvider entity={entity}>
+        <AboutCard />
+      </EntityProvider>,
+    );
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',

@@ -27,7 +27,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { StatusError, StatusWarning } from '@backstage/core';
-import { formatDistanceToNowStrict } from 'date-fns';
+import { DateTime, Duration } from 'luxon';
 import { Incident } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 
@@ -53,8 +53,12 @@ type Props = {
 
 export const IncidentListItem = ({ incident }: Props) => {
   const classes = useStyles();
+  const duration =
+    new Date().getTime() - new Date(incident.created_at).getTime();
+  const createdAt = DateTime.local()
+    .minus(Duration.fromMillis(duration))
+    .toRelative({ locale: 'en' });
   const user = incident.assignments[0]?.assignee;
-  const createdAt = formatDistanceToNowStrict(new Date(incident.created_at));
 
   return (
     <ListItem dense key={incident.id}>
@@ -77,7 +81,7 @@ export const IncidentListItem = ({ incident }: Props) => {
         }}
         secondary={
           <Typography noWrap variant="body2" color="textSecondary">
-            Created {createdAt} ago and assigned to{' '}
+            Created {createdAt} and assigned to{' '}
             <Link
               href={user?.html_url ?? '#'}
               target="_blank"
