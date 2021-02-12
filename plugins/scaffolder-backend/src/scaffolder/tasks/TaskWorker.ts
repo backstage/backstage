@@ -45,7 +45,7 @@ export class TaskWorker {
 
   async runOneTask(task: Task) {
     try {
-      const { actionRegistry, logger } = this.options;
+      const { actionRegistry } = this.options;
 
       const workspacePath = path.join(
         this.options.workingDirectory,

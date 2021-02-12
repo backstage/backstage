@@ -25,7 +25,14 @@ import Typography from '@material-ui/core/Typography';
 import { useParams } from 'react-router';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
-import { CircularProgress, StepButton, StepIconProps } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  StepButton,
+  StepIconProps,
+} from '@material-ui/core';
 import { Status } from '../../types';
 import { DateTime, Interval } from 'luxon';
 import { useInterval } from 'react-use';
@@ -33,6 +40,8 @@ import clsx from 'clsx';
 import Check from '@material-ui/icons/Check';
 import Cancel from '@material-ui/icons/Cancel';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { parseEntityName } from '@backstage/catalog-model';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -197,7 +206,7 @@ export const TaskStatusStepper = memo(
 const TaskLogger = memo(({ log }: { log: string }) => {
   return (
     <div style={{ height: '80vh' }}>
-      <LazyLog text={log} extraLines={1} follow />
+      <LazyLog text={log} extraLines={1} follow selectableLines enableSearch />
     </div>
   );
 });
@@ -212,7 +221,6 @@ export const TaskPage = () => {
   const { taskId } = useParams();
   const taskStream = useTaskEventStream(taskId);
   const completed = taskStream.completed;
-
   const steps = useMemo(
     () =>
       taskStream.task?.spec.steps.map(step => ({
@@ -221,17 +229,17 @@ export const TaskPage = () => {
       })) ?? [],
     [taskStream],
   );
+
   useEffect(() => {
-    const activeStep = steps.find(step =>
+    const mostRecentFailedOrActiveStep = steps.find(step =>
       ['failed', 'processing'].includes(step.status),
     );
-
-    if (completed) {
+    if (completed && !mostRecentFailedOrActiveStep) {
       setLastActiveStepId(steps[steps.length - 1]?.id);
       return;
     }
 
-    setLastActiveStepId(activeStep?.id);
+    setLastActiveStepId(mostRecentFailedOrActiveStep?.id);
   }, [steps, completed]);
 
   const currentStepId = userSelectedStepId ?? lastActiveStepId;
@@ -253,6 +261,7 @@ export const TaskPage = () => {
     taskStream.loading === false &&
     !taskStream.task;
 
+  const entityRef = taskStream.output?.entityRef;
   return (
     <Page themeId="home">
       <Header
@@ -268,18 +277,31 @@ export const TaskPage = () => {
         {taskNotFound ? (
           <div>Task not found</div>
         ) : (
-          <Grid container>
-            <Grid item xs={3}>
-              <TaskStatusStepper
-                steps={steps}
-                currentStepId={currentStepId}
-                onUserStepChange={setUserSelectedStepId}
-              />
+          <div>
+            <Grid container>
+              <Grid item xs={3}>
+                <Paper>
+                  <TaskStatusStepper
+                    steps={steps}
+                    currentStepId={currentStepId}
+                    onUserStepChange={setUserSelectedStepId}
+                  />
+                  {entityRef && (
+                    <Box px={3} pb={3}>
+                      <Button variant="outlined">
+                        <EntityRefLink entityRef={parseEntityName(entityRef)}>
+                          Open in catalog
+                        </EntityRefLink>
+                      </Button>
+                    </Box>
+                  )}
+                </Paper>
+              </Grid>
+              <Grid item xs={9}>
+                <TaskLogger log={logAsString} />
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              <TaskLogger log={logAsString} />
-            </Grid>
-          </Grid>
+          </div>
         )}
       </Content>
     </Page>

@@ -26,6 +26,8 @@ type Step = {
   startedAt?: string;
 };
 
+type TaskOutput = { entityRef?: string } & { [key in string]: string };
+
 export type TaskStream = {
   loading: boolean;
   error?: Error;
@@ -33,17 +35,23 @@ export type TaskStream = {
   completed: boolean;
   task?: ScaffolderTask;
   steps: { [stepId in string]: Step };
+  output?: TaskOutput;
 };
 
 type ReducerLogEntry = {
   createdAt: string;
-  body: { stepId?: string; status?: Status; message: string };
+  body: {
+    stepId?: string;
+    status?: Status;
+    message: string;
+    output?: TaskOutput;
+  };
 };
 
 type ReducerAction =
   | { type: 'INIT'; data: ScaffolderTask }
   | { type: 'LOGS'; data: ReducerLogEntry[] }
-  | { type: 'COMPLETED' }
+  | { type: 'COMPLETED'; data: ReducerLogEntry }
   | { type: 'ERROR'; data: Error };
 
 function reducer(draft: TaskStream, action: ReducerAction) {
@@ -101,6 +109,7 @@ function reducer(draft: TaskStream, action: ReducerAction) {
 
     case 'COMPLETED': {
       draft.completed = true;
+      draft.output = action.data.body.output;
       return;
     }
 
@@ -164,6 +173,10 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
             switch (event.type) {
               case 'log':
                 return collectedLogEvents.push(event);
+              case 'completion':
+                emitLogs();
+                dispatch({ type: 'COMPLETED', data: event });
+                return undefined;
               default:
                 throw new Error(
                   `Unhandled event type ${event.type} in observer`,
@@ -173,10 +186,6 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
           error: error => {
             emitLogs();
             dispatch({ type: 'ERROR', data: error });
-          },
-          complete: () => {
-            emitLogs();
-            dispatch({ type: 'COMPLETED' });
           },
         });
       },

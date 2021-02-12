@@ -90,6 +90,7 @@ export function templateEntityToSpec(
     output: {
       remoteUrl: '{{ steps.publish.output.remoteUrl }}',
       catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}',
+      entityRef: '{{ steps.register.output.entityRef }}',
     },
   };
 }
