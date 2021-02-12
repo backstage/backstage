@@ -10,6 +10,9 @@ repository.
 
 ## Cloning the Repository
 
+Ok. So you're gonna want some code right? Go ahead and fork the repository into
+your own GitHub account and clone that code to your local machine!
+
 After you have cloned the Backstage repository, you should run the following
 commands once to set things up for development:
 
@@ -25,8 +28,10 @@ Open a terminal window and start the web app by using the following command from
 the project root. Make sure you have run the above mentioned commands first.
 
 ```bash
-$ yarn start
+$ yarn dev
 ```
+
+This is going to start two things, the frontend (:3000) and the backend (:7000).
 
 This should open a local instance of Backstage in your browser, otherwise open
 one of the URLs printed in the terminal.
@@ -39,11 +44,26 @@ Once successfully started, you should see the following message in your terminal
 window:
 
 ```
-You can now view example-app in the browser.
-
-  Local:            http://localhost:8080
-  On Your Network:  http://192.168.1.224:8080
+$ concurrently "yarn start" "yarn start-backend"
+$ yarn workspace example-app start
+$ yarn workspace example-backend start
+$ backstage-cli app:serve
+$ backstage-cli backend:dev
+[0] Loaded config from app-config.yaml
+[1] Build succeeded
+[0] ℹ ｢wds｣: Project is running at http://localhost:3000/
+[0] ℹ ｢wds｣: webpack output is served from /
+[0] ℹ ｢wds｣: Content not from webpack is served from $BACKSTAGE_DIR/packages/app/public
+[0] ℹ ｢wds｣: 404s will fallback to /index.html
+[0] ℹ ｢wdm｣: wait until bundle finished: /
+[1] 2021-02-12T20:58:17.614Z backstage info Loaded config from app-config.yaml
 ```
+
+You'll see how you get both logs for the frontend `webpack-dev-server` which
+serves the react app ([0]) and the backend ([1]);
+
+Visit http://localhost:3000 and you should see the bleeding edge of Backstage
+ready for contributions!
 
 ## Editor
 
