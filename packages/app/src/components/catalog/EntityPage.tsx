@@ -442,8 +442,8 @@ const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
     <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
-    <Grid item xs={12} md={8}>
-      <SystemDiagram entity={entity} />
+    <Grid item md={4} sm={6}>
+      <EntityLinksCard entity={entity} />
     </Grid>
     <Grid item md={6}>
       <EntityHasComponentsCard variant="gridItem" />
@@ -491,6 +491,11 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/diagram/*"
+      title="Diagram"
+      element={<SystemDiagram entity={entity} />}
     />
   </EntityPageLayout>
 );
