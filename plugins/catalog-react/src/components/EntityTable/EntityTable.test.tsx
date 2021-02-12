@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  RELATION_PART_OF,
-  SystemEntity,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
