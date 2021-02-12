@@ -248,6 +248,11 @@ export const TaskPage = () => {
     return log.join('\n');
   }, [taskStream.stepLogs, currentStepId]);
 
+  const taskNotFound =
+    taskStream.completed === true &&
+    taskStream.loading === false &&
+    !taskStream.task;
+
   return (
     <Page themeId="home">
       <Header
@@ -260,18 +265,22 @@ export const TaskPage = () => {
         subtitle={`Activity for task: ${taskId}`}
       />
       <Content>
-        <Grid container>
-          <Grid item xs={3}>
-            <TaskStatusStepper
-              steps={steps}
-              currentStepId={currentStepId}
-              onUserStepChange={setUserSelectedStepId}
-            />
+        {taskNotFound ? (
+          <div>Task not found</div>
+        ) : (
+          <Grid container>
+            <Grid item xs={3}>
+              <TaskStatusStepper
+                steps={steps}
+                currentStepId={currentStepId}
+                onUserStepChange={setUserSelectedStepId}
+              />
+            </Grid>
+            <Grid item xs={9}>
+              <TaskLogger log={logAsString} />
+            </Grid>
           </Grid>
-          <Grid item xs={9}>
-            <TaskLogger log={logAsString} />
-          </Grid>
-        </Grid>
+        )}
       </Content>
     </Page>
   );
