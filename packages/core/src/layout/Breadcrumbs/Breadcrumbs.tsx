@@ -34,12 +34,12 @@ const ClickableText = withStyles({
   },
 })(Typography);
 
-const StyledBox = withStyles(theme => ({
+const StyledBox = withStyles({
   root: {
     textDecoration: 'underline',
-    color: theme.palette.text.primary,
+    color: 'inherit',
   },
-}))(Box);
+})(Box);
 
 export const Breadcrumbs = ({ children, ...props }: Props) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -71,9 +71,7 @@ export const Breadcrumbs = ({ children, ...props }: Props) => {
         {hasHiddenBreadcrumbs && (
           <ClickableText onClick={handleClick}>...</ClickableText>
         )}
-        <Box style={{ fontStyle: 'italic' }} color="text.primary">
-          {currentPage}
-        </Box>
+        <Box style={{ fontStyle: 'italic' }}>{currentPage}</Box>
       </MaterialBreadcrumbs>
       <Popover
         open={open}
@@ -81,7 +79,7 @@ export const Breadcrumbs = ({ children, ...props }: Props) => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'center',
+          horizontal: 'left',
         }}
         transformOrigin={{
           vertical: 'top',

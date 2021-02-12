@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Popover, Typography, Box, List, ListItem } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Box, List, ListItem, Popover, Typography } from '@material-ui/core';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { Fragment } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { Breadcrumbs } from '.';
+import { Header, Page } from '..';
 import { Link } from '../../components/Link';
 
 export default {
@@ -26,7 +27,19 @@ export default {
   component: Breadcrumbs,
 };
 
-// export const InHeader = () => <Breadcrumbs pages={pages} />;
+export const InHeader = () => (
+  <MemoryRouter>
+    <h2>Standard breadcrumbs</h2>
+    <p>
+      Underlined pages are links. This should show a hierarchical relationship.
+    </p>
+
+    <Page themeId="other">
+      <Header title="Current Page" type="General Page" typeLink="/" />
+    </Page>
+  </MemoryRouter>
+);
+
 export const OutsideOfHeader = () => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLAnchorElement | null>(
     null,
@@ -47,21 +60,18 @@ export const OutsideOfHeader = () => {
         the header. In that case, they should be positioned above the title of
         the page.
       </p>
+
       <h2>Standard breadcrumbs</h2>
       <p>
         Underlined pages are links. This should show a hierarchical
         relationship.
       </p>
-      <Breadcrumbs>
+
+      <Breadcrumbs color="primaryText" />
+
+      <Breadcrumbs color="primaryText">
         <Link to="/">General Page</Link>
         <Link to="/">Second Page</Link>
-        <Typography>Current page</Typography>
-      </Breadcrumbs>
-      <Breadcrumbs>
-        <Link to="/">General Page</Link>
-        <Typography>Current page</Typography>
-      </Breadcrumbs>
-      <Breadcrumbs>
         <Typography>Current page</Typography>
       </Breadcrumbs>
 
@@ -71,7 +81,7 @@ export const OutsideOfHeader = () => {
         ellipses, expand the breadcrumbs out.
       </p>
 
-      <Breadcrumbs>
+      <Breadcrumbs color="primaryText">
         <Link to="/">General Page</Link>
         <Link to="/">Second Page</Link>
         <Link to="/">Third Page</Link>
@@ -86,7 +96,7 @@ export const OutsideOfHeader = () => {
       </p>
 
       <Fragment>
-        <Breadcrumbs>
+        <Breadcrumbs color="primaryText">
           <Link to="/">General Page</Link>
           <Link to="/" onClick={handleClick}>
             <Box display="flex" alignItems="center">
@@ -102,11 +112,11 @@ export const OutsideOfHeader = () => {
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'center',
+            horizontal: 'left',
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'center',
+            horizontal: 'left',
           }}
         >
           <List>
