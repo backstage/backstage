@@ -3668,7 +3668,7 @@
     tar "^4.4.10"
     temp-write "^3.4.0"
 
-"@lerna/package-graph@3.18.5", "@lerna/package-graph@^3.18.5":
+"@lerna/package-graph@3.18.5":
   version "3.18.5"
   resolved "https://registry.npmjs.org/@lerna/package-graph/-/package-graph-3.18.5.tgz#c740e2ea3578d059e551633e950690831b941f6b"
   integrity sha512-8QDrR9T+dBegjeLr+n9WZTVxUYUhIUjUgZ0gvNxUBN8S1WB9r6H5Yk56/MVaB64tA3oGAN9IIxX6w0WvTfFudA==
@@ -3678,6 +3678,17 @@
     npm-package-arg "^6.1.0"
     npmlog "^4.1.2"
     semver "^6.2.0"
+
+"@lerna/package-graph@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@lerna/package-graph/-/package-graph-4.0.0.tgz#16a00253a8ac810f72041481cb46bcee8d8123dd"
+  integrity sha512-QED2ZCTkfXMKFoTGoccwUzjHtZMSf3UKX14A4/kYyBms9xfFsesCZ6SLI5YeySEgcul8iuIWfQFZqRw+Qrjraw==
+  dependencies:
+    "@lerna/prerelease-id-from-version" "4.0.0"
+    "@lerna/validation-error" "4.0.0"
+    npm-package-arg "^8.1.0"
+    npmlog "^4.1.2"
+    semver "^7.3.4"
 
 "@lerna/package@3.16.0":
   version "3.16.0"
@@ -3703,6 +3714,13 @@
   integrity sha512-qZyeUyrE59uOK8rKdGn7jQz+9uOpAaF/3hbslJVFL1NqF9ELDTqjCPXivuejMX/lN4OgD6BugTO4cR7UTq/sZA==
   dependencies:
     semver "^6.2.0"
+
+"@lerna/prerelease-id-from-version@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@lerna/prerelease-id-from-version/-/prerelease-id-from-version-4.0.0.tgz#c7e0676fcee1950d85630e108eddecdd5b48c916"
+  integrity sha512-GQqguzETdsYRxOSmdFZ6zDBXDErIETWOqomLERRY54f4p+tk4aJjoVdd9xKwehC9TBfIFvlRbL1V9uQGHh1opg==
+  dependencies:
+    semver "^7.3.4"
 
 "@lerna/profiler@3.20.0":
   version "3.20.0"
@@ -22687,7 +22705,7 @@ semver@7.0.0:
   resolved "https://registry.npmjs.org/semver/-/semver-7.0.0.tgz#5f3ca35761e47e05b206c6daff2cf814f0316b8e"
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
-semver@7.x, semver@^7.0.0, semver@^7.2.1, semver@^7.3.2:
+semver@7.x, semver@^7.0.0, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4:
   version "7.3.4"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.4.tgz#27aaa7d2e4ca76452f98d3add093a72c943edc97"
   integrity sha512-tCfb2WLjqFAtXn4KEdxIhalnRtoKFN7nAwj0B3ZXCbQloV2tq5eDbcTmT68JJD3nRJq24/XgxtQKFIpQdtvmVw==
