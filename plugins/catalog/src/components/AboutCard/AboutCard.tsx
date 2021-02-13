@@ -35,7 +35,7 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink, determineUrlType } from '../createEditLink';
+import { createEditLink, determineUrlType } from '../actions';
 import { AboutContent } from './AboutContent';
 
 const useStyles = makeStyles({

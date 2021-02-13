@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LocationSpec } from '@backstage/catalog-model';
+import { LocationSpec, Entity } from '@backstage/catalog-model';
 import parseGitUrl from 'git-url-parse';
 
 /**
@@ -74,4 +74,26 @@ export const determineUrlType = (url: string): string => {
     return 'gitlab';
   }
   return 'url';
+};
+
+export const findEditUrl = (
+  { metadata }: Entity,
+  location?: LocationSpec,
+): string | undefined => {
+  const annotations = metadata.annotations || {};
+
+  const editUrl = annotations['backstage.io/browser-edit-url'];
+
+  if (editUrl) return editUrl;
+
+  return location && createEditLink(location);
+};
+
+export const findViewUrl = (
+  { metadata }: Entity,
+  location?: LocationSpec,
+): string | undefined => {
+  const annotations = metadata.annotations || {};
+
+  return annotations['backstage.io/browser-view-url'] || location?.target;
 };

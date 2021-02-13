@@ -34,13 +34,12 @@ import {
   getEntityRelations,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink } from '../createEditLink';
+import { findViewUrl, findEditUrl } from '../actions';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -154,23 +153,25 @@ export const CatalogTable = ({
   const actions: TableProps<EntityRow>['actions'] = [
     ({ entity }) => {
       const location = findLocationForEntityMeta(entity.metadata);
+      const url = findViewUrl(entity, location);
       return {
         icon: () => <OpenInNew fontSize="small" />,
         tooltip: 'View',
         onClick: () => {
-          if (!location) return;
-          window.open(location.target, '_blank');
+          if (!url) return;
+          window.open(url, '_blank');
         },
       };
     },
     ({ entity }) => {
       const location = findLocationForEntityMeta(entity.metadata);
+      const url = findEditUrl(entity, location);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
         onClick: () => {
-          if (!location) return;
-          window.open(createEditLink(location), '_blank');
+          if (!url) return;
+          window.open(url, '_blank');
         },
       };
     },
