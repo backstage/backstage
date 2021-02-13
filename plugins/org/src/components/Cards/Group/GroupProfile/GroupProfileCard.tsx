@@ -117,7 +117,7 @@ export const GroupProfileCard = ({
               <ListItem>
                 <ListItemIcon>
                   <Tooltip title="Email">
-                    <EmailIcon fontSize="inherit" />
+                    <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText>{profile.email}</ListItemText>
