@@ -127,11 +127,11 @@ export class GoogleAuthProvider implements OAuthHandlers {
       req.scope,
     );
 
-    const profile = await executeFetchUserProfileStrategy(
+    const rawProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params.id_token,
     );
+    const profile = makeProfileInfo(rawProfile, params.id_token);
 
     return this.populateIdentity({
       providerInfo: {

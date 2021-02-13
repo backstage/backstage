@@ -190,19 +190,17 @@ type ProviderStrategy = {
 export const executeFetchUserProfileStrategy = async (
   providerStrategy: passport.Strategy,
   accessToken: string,
-  idToken?: string,
-): Promise<ProfileInfo> => {
+): Promise<passport.Profile> => {
   return new Promise((resolve, reject) => {
     const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
     anyStrategy.userProfile(
       accessToken,
-      (error: Error, passportProfile: passport.Profile) => {
+      (error: Error, rawProfile: passport.Profile) => {
         if (error) {
           reject(error);
+        } else {
+          resolve(rawProfile);
         }
-
-        const profile = makeProfileInfo(passportProfile, idToken);
-        resolve(profile);
       },
     );
   });

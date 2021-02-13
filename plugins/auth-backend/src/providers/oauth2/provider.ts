@@ -124,11 +124,11 @@ export class OAuth2AuthProvider implements OAuthHandlers {
       refreshToken: updatedRefreshToken,
     } = refreshTokenResponse;
 
-    const profile = await executeFetchUserProfileStrategy(
+    const rawProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params.id_token,
     );
+    const profile = makeProfileInfo(rawProfile, params.id_token);
 
     return this.populateIdentity({
       providerInfo: {
