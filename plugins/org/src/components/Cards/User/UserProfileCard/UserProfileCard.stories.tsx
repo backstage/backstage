@@ -1,0 +1,89 @@
+/*
+ * Copyright 2021 Spotify AB
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import { MemoryRouter } from 'react-router';
+import { UserEntity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { UserProfileCard } from '.';
+
+export default {
+  title: 'Plugins/Org/User Profile Card',
+  component: UserProfileCard,
+};
+
+const dummyGroup = {
+  type: 'memberOf',
+  target: {
+    namespace: 'default',
+    kind: 'group',
+    name: 'team-a',
+  },
+};
+
+const defaultEntity: UserEntity = {
+  kind: 'user',
+  metadata: {
+    name: 'guest',
+  },
+  spec: {
+    profile: {
+      displayName: 'Guest User',
+      email: 'guest@example.com',
+      picture:
+        'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
+    },
+  },
+  relations: [dummyGroup],
+};
+
+export const Default = () => (
+  <MemoryRouter>
+    <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={3}>
+          <UserProfileCard />
+        </Grid>
+      </Grid>
+    </EntityContext.Provider>
+  </MemoryRouter>
+);
+
+const noImageEntity: UserEntity = {
+  kind: 'user',
+  metadata: {
+    name: 'guest',
+  },
+  spec: {
+    profile: {
+      displayName: 'Guest User',
+      email: 'guest@example.com',
+    },
+  },
+  relations: [dummyGroup],
+};
+
+export const NoImage = () => (
+  <MemoryRouter>
+    <EntityContext.Provider value={{ entity: noImageEntity, loading: false }}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={3}>
+          <UserProfileCard />
+        </Grid>
+      </Grid>
+    </EntityContext.Provider>
+  </MemoryRouter>
+);
