@@ -85,15 +85,30 @@ const bob = makeUser({
   email: 'bob@example.com',
 });
 
-const catalogApi: Partial<CatalogApi> = {
-  getEntities: () => Promise.resolve({ items: [alice, bob] }),
-};
+const catalogApi = items => ({
+  getEntities: () => Promise.resolve({ items }),
+});
 
-const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
+const apiRegistry = items =>
+  ApiRegistry.from([[catalogApiRef, catalogApi(items)]]);
 
 export const Default = () => (
   <MemoryRouter>
-    <ApiProvider apis={apiRegistry}>
+    <ApiProvider apis={apiRegistry([alice, bob])}>
+      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <MembersListCard />
+          </Grid>
+        </Grid>
+      </EntityContext.Provider>
+    </ApiProvider>
+  </MemoryRouter>
+);
+
+export const Empty = () => (
+  <MemoryRouter>
+    <ApiProvider apis={apiRegistry([])}>
       <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
