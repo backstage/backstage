@@ -16,7 +16,7 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import { GroupEntity } from '@backstage/catalog-model';
 import {
   EntityContext,
   CatalogApi,
@@ -32,6 +32,7 @@ export default {
 };
 
 const defaultEntity: GroupEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'Group',
   metadata: {
     name: 'team-a',
@@ -44,10 +45,13 @@ const defaultEntity: GroupEntity = {
       picture:
         'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
     },
+    type: 'group',
+    children: [],
   },
 };
 
 const makeComponent = ({ type, name }: { type: string; name: string }) => ({
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'Component',
   metadata: {
     name,
@@ -83,7 +87,7 @@ export const Default = () => (
       <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <OwnershipCard />
+            <OwnershipCard variant="gridItem" />
           </Grid>
         </Grid>
       </EntityContext.Provider>

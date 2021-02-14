@@ -35,6 +35,7 @@ const dummyGroup = {
 };
 
 const defaultEntity: UserEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'User',
   metadata: {
     name: 'guest',
@@ -46,6 +47,7 @@ const defaultEntity: UserEntity = {
       picture:
         'https://avatars.dicebear.com/api/avataaars/guest@example.com.svg?background=%23fff',
     },
+    memberOf: ['team-a'],
   },
   relations: [dummyGroup],
 };
@@ -55,7 +57,7 @@ export const Default = () => (
     <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <UserProfileCard />
+          <UserProfileCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityContext.Provider>
@@ -63,7 +65,8 @@ export const Default = () => (
 );
 
 const noImageEntity: UserEntity = {
-  kind: 'user',
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'User',
   metadata: {
     name: 'guest',
   },
@@ -72,6 +75,7 @@ const noImageEntity: UserEntity = {
       displayName: 'Guest User',
       email: 'guest@example.com',
     },
+    memberOf: ['team-a'],
   },
   relations: [dummyGroup],
 };
@@ -81,7 +85,7 @@ export const NoImage = () => (
     <EntityContext.Provider value={{ entity: noImageEntity, loading: false }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <UserProfileCard />
+          <UserProfileCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityContext.Provider>

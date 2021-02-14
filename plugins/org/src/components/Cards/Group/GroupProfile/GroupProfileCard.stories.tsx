@@ -35,6 +35,7 @@ const dummyDepartment = {
 };
 
 const defaultEntity: GroupEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'Group',
   metadata: {
     name: 'team-a',
@@ -47,6 +48,8 @@ const defaultEntity: GroupEntity = {
       picture:
         'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
     },
+    type: 'group',
+    children: [],
   },
   relations: [dummyDepartment],
 };
@@ -56,7 +59,7 @@ export const Default = () => (
     <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <GroupProfileCard />
+          <GroupProfileCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityContext.Provider>

@@ -16,12 +16,8 @@
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import {
-  EntityContext,
-  CatalogApi,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
+import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { EntityContext, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { ApiProvider, ApiRegistry } from '@backstage/core-api';
 
 import { MembersListCard } from '.';
@@ -31,7 +27,18 @@ export default {
   component: MembersListCard,
 };
 
-const makeUser = ({ name, uid, displayName, email }) => ({
+const makeUser = ({
+  name,
+  uid,
+  displayName,
+  email,
+}: {
+  name: string;
+  uid: string;
+  displayName: string;
+  email: string;
+}) => ({
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'User',
   metadata: {
     name,
@@ -57,6 +64,7 @@ const makeUser = ({ name, uid, displayName, email }) => ({
 });
 
 const defaultEntity: GroupEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
   kind: 'Group',
   metadata: {
     name: 'team-a',
@@ -69,6 +77,8 @@ const defaultEntity: GroupEntity = {
       picture:
         'https://avatars.dicebear.com/api/identicon/team-a@example.com.svg?background=%23fff&margin=25',
     },
+    type: 'group',
+    children: [],
   },
 };
 
@@ -85,11 +95,11 @@ const bob = makeUser({
   email: 'bob@example.com',
 });
 
-const catalogApi = items => ({
+const catalogApi = (items: Entity[]) => ({
   getEntities: () => Promise.resolve({ items }),
 });
 
-const apiRegistry = items =>
+const apiRegistry = (items: Entity[]) =>
   ApiRegistry.from([[catalogApiRef, catalogApi(items)]]);
 
 export const Default = () => (
