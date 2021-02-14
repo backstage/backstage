@@ -120,4 +120,31 @@ describe('UrlReaderProcessor', () => {
 
     expect(reader.search).toBeCalledTimes(1);
   });
+
+  it('emits locations for every search result', async () => {
+    const logger = getVoidLogger();
+
+    const files = [
+      { url: 'https://github.com/a/b/blob/x/path1/b.yaml', content: jest.fn() },
+      { url: 'https://github.com/a/b/blob/x/path2/b.yaml', content: jest.fn() },
+    ];
+    const reader: jest.Mocked<UrlReader> = {
+      read: jest.fn(),
+      readTree: jest.fn(),
+      search: jest.fn().mockResolvedValue({ files, etag: '' }),
+    };
+
+    const processor = new UrlReaderProcessor({ reader, logger });
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      { type: 'url', target: 'https://github.com/a/b/blob/x/**/b.yaml' },
+      false,
+      emit,
+      defaultEntityDataParser,
+    );
+
+    expect(emit).toBeCalledTimes(2);
+  });
 });

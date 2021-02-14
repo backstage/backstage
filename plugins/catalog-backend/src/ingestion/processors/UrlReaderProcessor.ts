@@ -17,7 +17,6 @@
 import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import parseGitUrl from 'git-url-parse';
-import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import * as result from './results';
 import {
@@ -61,12 +60,25 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const output = await this.doRead(location.target);
-      for (const item of output) {
-        for await (const parseResult of parser({
-          data: item.data,
-          location: { type: location.type, target: item.url },
-        })) {
+      // Does it contain globs? I.e. does it contain asterisks or question marks
+      // (no curly braces for now)
+      const { filepath } = parseGitUrl(location.target);
+      if (filepath?.match(/[*?]/)) {
+        const response = await this.options.reader.search(location.target);
+        response.files
+          .map(file =>
+            result.location(
+              {
+                type: 'url',
+                target: file.url,
+              },
+              false,
+            ),
+          )
+          .forEach(emit);
+      } else {
+        const data = await this.options.reader.read(location.target);
+        for await (const parseResult of parser({ data, location })) {
           emit(parseResult);
         }
       }
@@ -83,26 +95,5 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     return true;
-  }
-
-  private async doRead(
-    location: string,
-  ): Promise<{ data: Buffer; url: string }[]> {
-    // Does it contain globs? I.e. does it contain asterisks or question marks
-    // (no curly braces for now)
-    const { filepath } = parseGitUrl(location);
-    if (filepath?.match(/[*?]/)) {
-      const limiter = limiterFactory(5);
-      const response = await this.options.reader.search(location);
-      const output = response.files.map(async file => ({
-        url: file.url,
-        data: await limiter(file.content),
-      }));
-      return Promise.all(output);
-    }
-
-    // Otherwise do a plain read
-    const data = await this.options.reader.read(location);
-    return [{ url: location, data }];
   }
 }
