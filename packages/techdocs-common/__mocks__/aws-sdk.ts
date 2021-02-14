@@ -71,11 +71,7 @@ export class S3 {
     return {
       promise: () =>
         new Promise((resolve, reject) => {
-          if (!fs.existsSync(Key)) {
-            reject('');
-          } else {
-            resolve('');
-          }
+          resolve('');
         }),
     };
   }
