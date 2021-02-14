@@ -34,7 +34,7 @@ const dummyDepartment = {
   },
 };
 
-const defaultEntity: UserEntity = {
+const defaultEntity: GroupEntity = {
   kind: 'Group',
   metadata: {
     name: 'team-a',
@@ -55,7 +55,7 @@ export const Default = () => (
   <MemoryRouter>
     <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={4}>
           <GroupProfileCard />
         </Grid>
       </Grid>

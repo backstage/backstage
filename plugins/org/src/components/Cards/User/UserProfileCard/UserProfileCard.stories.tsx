@@ -35,7 +35,7 @@ const dummyGroup = {
 };
 
 const defaultEntity: UserEntity = {
-  kind: 'user',
+  kind: 'User',
   metadata: {
     name: 'guest',
   },
@@ -54,7 +54,7 @@ export const Default = () => (
   <MemoryRouter>
     <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={4}>
           <UserProfileCard />
         </Grid>
       </Grid>
@@ -80,7 +80,7 @@ export const NoImage = () => (
   <MemoryRouter>
     <EntityContext.Provider value={{ entity: noImageEntity, loading: false }}>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={4}>
           <UserProfileCard />
         </Grid>
       </Grid>
