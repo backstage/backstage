@@ -37,15 +37,20 @@ import {
   executeRedirectStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { RedirectInfo, AuthProviderFactory, ProfileInfo } from '../types';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 type PrivateInfo = {
-  refreshToken: string;
+  refreshToken?: string;
 };
 
 type OidcImpl = {
   strategy: OidcStrategy<UserinfoResponse, Client>;
   client: Client;
+};
+
+type AuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
 };
 
 export type Options = OAuthProviderOptions & {
@@ -72,15 +77,30 @@ export class OidcAuthProvider implements OAuthHandlers {
 
   async handler(
     req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
-      PrivateInfo
-    >(req, strategy);
+    const {
+      result: { userinfo, tokenset },
+      privateInfo,
+    } = await executeFrameHandlerStrategy<AuthResult, PrivateInfo>(
+      req,
+      strategy,
+    );
 
     return {
-      response: await this.populateIdentity(response),
+      response: await this.populateIdentity({
+        profile: {
+          displayName: userinfo.name,
+          email: userinfo.email,
+          picture: userinfo.picture,
+        },
+        providerInfo: {
+          idToken: tokenset.id_token,
+          accessToken: tokenset.access_token || '',
+          scope: tokenset.scope || '',
+          expiresInSeconds: tokenset.expires_in,
+        },
+      }),
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -123,27 +143,13 @@ export class OidcAuthProvider implements OAuthHandlers {
       (
         tokenset: TokenSet,
         userinfo: UserinfoResponse,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        done: PassportDoneCallback<AuthResult, PrivateInfo>,
       ) => {
-        const profile: ProfileInfo = {
-          displayName: userinfo.name,
-          email: userinfo.email,
-          picture: userinfo.picture,
-        };
-
         done(
           undefined,
+          { tokenset, userinfo },
           {
-            providerInfo: {
-              idToken: tokenset.id_token || '',
-              accessToken: tokenset.access_token || '',
-              scope: tokenset.scope || '',
-              expiresInSeconds: tokenset.expires_in,
-            },
-            profile,
-          },
-          {
-            refreshToken: tokenset.refresh_token || '',
+            refreshToken: tokenset.refresh_token,
           },
         );
       },

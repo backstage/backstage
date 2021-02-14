@@ -26,6 +26,7 @@ import {
   OAuthStartRequest,
   encodeState,
   OAuthRefreshRequest,
+  OAuthResult,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -65,21 +66,16 @@ export class OAuth2AuthProvider implements OAuthHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        rawProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        fullProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
-        const profile = makeProfileInfo(rawProfile, params.id_token);
-
         done(
           undefined,
           {
-            providerInfo: {
-              idToken: params.id_token,
-              accessToken,
-              scope: params.scope,
-              expiresInSeconds: params.expires_in,
-            },
-            profile,
+            fullProfile,
+            accessToken,
+            refreshToken,
+            params,
           },
           {
             refreshToken,
@@ -101,13 +97,23 @@ export class OAuth2AuthProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
+    const { result, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
+    const profile = makeProfileInfo(result.fullProfile, result.params.id_token);
+
     return {
-      response: await this.populateIdentity(response),
+      response: await this.populateIdentity({
+        profile,
+        providerInfo: {
+          idToken: result.params.id_token,
+          accessToken: result.accessToken,
+          scope: result.params.scope,
+          expiresInSeconds: result.params.expires_in,
+        },
+      }),
       refreshToken: privateInfo.refreshToken,
     };
   }

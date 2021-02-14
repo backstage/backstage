@@ -25,6 +25,7 @@ import {
   OAuthStartRequest,
   encodeState,
   OAuthRefreshRequest,
+  OAuthResult,
 } from '../../lib/oauth';
 import passport from 'passport';
 import {
@@ -61,21 +62,16 @@ export class OneLoginProvider implements OAuthHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        rawProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        fullProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
-        const profile = makeProfileInfo(rawProfile, params.id_token);
-
         done(
           undefined,
           {
-            providerInfo: {
-              idToken: params.id_token,
-              accessToken,
-              scope: params.scope,
-              expiresInSeconds: params.expires_in,
-            },
-            profile,
+            accessToken,
+            refreshToken,
+            params,
+            fullProfile,
           },
           {
             refreshToken,
@@ -96,13 +92,23 @@ export class OneLoginProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
+    const { result, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
+    const profile = makeProfileInfo(result.fullProfile, result.params.id_token);
+
     return {
-      response: await this.populateIdentity(response),
+      response: await this.populateIdentity({
+        profile,
+        providerInfo: {
+          idToken: result.params.id_token,
+          accessToken: result.accessToken,
+          scope: result.params.scope,
+          expiresInSeconds: result.params.expires_in,
+        },
+      }),
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -114,11 +120,11 @@ export class OneLoginProvider implements OAuthHandlers {
       req.scope,
     );
 
-    const rawProfile = await executeFetchUserProfileStrategy(
+    const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
     );
-    const profile = makeProfileInfo(rawProfile, params.id_token);
+    const profile = makeProfileInfo(fullProfile, params.id_token);
 
     return this.populateIdentity({
       providerInfo: {
