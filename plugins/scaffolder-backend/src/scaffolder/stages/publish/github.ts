@@ -72,8 +72,8 @@ export class GithubPublisher implements PublisherBase {
       dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
-        username: this.config.token,
-        password: 'x-oauth-basic',
+        username: 'x-access-token',
+        password: this.config.token,
       },
       logger,
     });
