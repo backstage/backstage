@@ -122,8 +122,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const uploadPromises: Array<Promise<BlobUploadCommonResponse>> = [];
-
       // Bound the number of concurrent batches. We want a bit of concurrency for
       // performance reasons, but not so much that we starve the connection pool
       // or start thrashing.
@@ -139,13 +137,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
           `${entityRootDir}/${relativeFilePath}`,
         ); // Azure Blob Storage Container file relative path
 
-        return limiter(async () => {
-          await uploadPromises.push(
-            this.storageClient
-              .getContainerClient(this.containerName)
-              .getBlockBlobClient(destination)
-              .uploadFile(filePath),
-          );
+        return limiter(() => {
+          return this.storageClient
+            .getContainerClient(this.containerName)
+            .getBlockBlobClient(destination)
+            .uploadFile(filePath);
         });
       });
 
