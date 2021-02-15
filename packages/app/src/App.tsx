@@ -17,6 +17,7 @@
 import {
   AlertDisplay,
   createApp,
+  LocalStorageFeatureFlags,
   FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
@@ -50,6 +51,7 @@ import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
+import { SearchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -87,6 +89,7 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+const featureFlags = new LocalStorageFeatureFlags();
 
 const routes = (
   <FlatRoutes>
@@ -100,6 +103,9 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
+    {featureFlags.isActive('use-search-platform') && (
+      <Route path="/search" element={<SearchPage />} />
+    )}
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route

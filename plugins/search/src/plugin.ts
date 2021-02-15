@@ -27,8 +27,9 @@ export const rootRouteRef = createRouteRef({
 
 export const searchPlugin = createPlugin({
   id: 'search',
-  register({ router }) {
+  register({ router, featureFlags }) {
     router.addRoute(rootRouteRef, SearchPageComponent);
+    featureFlags.register('use-search-platform');
   },
   routes: {
     root: rootRouteRef,
