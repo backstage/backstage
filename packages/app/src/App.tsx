@@ -24,7 +24,8 @@ import {
 } from '@backstage/core';
 import {
   catalogPlugin,
-  Router as CatalogRouter,
+  CatalogIndexPage,
+  CatalogEntityPage,
 } from '@backstage/plugin-catalog';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { ExplorePage } from '@backstage/plugin-explore';
@@ -88,11 +89,14 @@ const catalogRouteRef = createRouteRef({
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
-      path={`${catalogRouteRef.path}`}
-      element={<CatalogRouter EntityPage={EntityPage} />}
-    />
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      <EntityPage />
+    </Route>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<DocsRouter />} />
     <Route path="/create" element={<TemplateIndexPage />} />
     <Route path="/create/templates/:templateName" element={<TemplatePage />} />
