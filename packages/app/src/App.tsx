@@ -22,12 +22,21 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core';
-import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import {
+  catalogPlugin,
+  Router as CatalogRouter,
+} from '@backstage/plugin-catalog';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
+import {
+  TemplateIndexPage,
+  TemplatePage,
+  TaskPage,
+  scaffolderPlugin,
+} from '@backstage/plugin-scaffolder';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
@@ -55,6 +64,11 @@ const app = createApp({
       );
     },
   },
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.templateIndex,
+    });
+  },
 });
 
 const AppProvider = app.getProvider();
@@ -75,6 +89,9 @@ const routes = (
       element={<CatalogRouter EntityPage={EntityPage} />}
     />
     <Route path="/docs" element={<DocsRouter />} />
+    <Route path="/create" element={<TemplateIndexPage />} />
+    <Route path="/create/templates/:templateName" element={<TemplatePage />} />
+    <Route path="/create/tasks/:taskId" element={<TaskPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"

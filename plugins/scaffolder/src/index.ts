@@ -23,4 +23,3 @@ export {
 } from './plugin';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';
-export { rootRoute, templateRoute, taskRoute } from './routes';

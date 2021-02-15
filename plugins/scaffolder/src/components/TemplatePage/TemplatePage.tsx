@@ -29,11 +29,11 @@ import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { rootRoute, taskRoute } from '../../routes';
+import { taskRouteRef, templateIndexRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
@@ -78,7 +78,8 @@ export const TemplatePage = () => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
   const navigate = useNavigate();
-  const tasks = useRouteRef(taskRoute);
+  const tasksLink = useRouteRef(taskRouteRef);
+  const templateIndexLink = useRouteRef(templateIndexRouteRef);
   const { template, loading } = useTemplate(templateName, catalogApi);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
@@ -91,7 +92,7 @@ export const TemplatePage = () => {
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      navigate(tasks({ taskId: id }));
+      navigate(tasksLink({ taskId: id }));
     } catch (e) {
       errorApi.post(e);
     }
@@ -99,7 +100,8 @@ export const TemplatePage = () => {
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootRoute.path} />;
+    navigate(templateIndexLink());
+    return <>{null}</>;
   }
 
   if (template && !template?.spec?.schema) {
@@ -108,7 +110,8 @@ export const TemplatePage = () => {
         'Template schema is corrupted, please check the template.yaml file.',
       ),
     );
-    return <Navigate to={rootRoute.path} />;
+    navigate(templateIndexLink());
+    return <>{null}</>;
   }
 
   return (

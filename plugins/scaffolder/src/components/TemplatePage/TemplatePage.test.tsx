@@ -22,7 +22,6 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter, Route } from 'react-router';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
-import { rootRoute } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 
 const templateMock = {
@@ -134,7 +133,7 @@ describe('TemplatePage', () => {
             <Route path="/create/test">
               <TemplatePage />
             </Route>
-            <Route path={rootRoute.path} element={<>This is root</>} />
+            <Route path="/create" element={<>This is root</>} />
           </MemoryRouter>
         </ThemeProvider>
       </ApiProvider>,
