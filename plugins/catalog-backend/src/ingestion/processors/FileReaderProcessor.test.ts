@@ -78,5 +78,7 @@ describe('FileReaderProcessor', () => {
     );
 
     expect(emit).toBeCalledTimes(2);
+    expect(emit.mock.calls[0][0].entity).toEqual({ kind: 'Component' });
+    expect(emit.mock.calls[1][0].entity).toEqual({ kind: 'API' });
   });
 });
