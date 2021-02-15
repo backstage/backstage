@@ -15,7 +15,10 @@
  */
 
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { DiscoveryApi } from '@backstage/core';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-backend';
+import qs from 'qs';
 
 export type Result = {
   name: string;
@@ -30,9 +33,11 @@ export type SearchResults = Array<Result>;
 
 class SearchApi {
   private catalogApi: CatalogApi;
+  private discoveryApi: DiscoveryApi;
 
-  constructor(catalogApi: CatalogApi) {
+  constructor(catalogApi: CatalogApi, discoveryApi: DiscoveryApi) {
     this.catalogApi = catalogApi;
+    this.discoveryApi = discoveryApi;
   }
 
   private async entities() {
@@ -55,6 +60,18 @@ class SearchApi {
 
   public getSearchResult(): Promise<SearchResults> {
     return this.entities();
+  }
+
+  // @todo Productionalize as we implement search milestones.
+  public async _alphaPerformSearch(
+    query: SearchQuery,
+  ): Promise<SearchResultSet> {
+    const queryString = qs.stringify(query);
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'search/query',
+    )}?${queryString}`;
+    const response = await fetch(url);
+    return response.json();
   }
 }
 

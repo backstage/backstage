@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  discoveryApiRef,
   EmptyState,
   Link,
   Progress,
@@ -117,6 +118,7 @@ const TableHeader = ({
 
 export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   const catalogApi = useApi(catalogApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<FiltersState>({
@@ -126,7 +128,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
-  const searchApi = new SearchApi(catalogApi);
+  const searchApi = new SearchApi(catalogApi, discoveryApi);
 
   const { loading, error, value: results } = useAsync(() => {
     return searchApi.getSearchResult();
