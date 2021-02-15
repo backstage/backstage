@@ -32,6 +32,7 @@ import {
   TaskStoreEmitOptions,
   TaskStoreGetEventsOptions,
 } from './types';
+import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -259,7 +260,10 @@ export class DatabaseTaskStore implements TaskStore {
           taskId,
           body,
           type: event.event_type,
-          createdAt: event.created_at,
+          createdAt:
+            typeof event.created_at === 'string'
+              ? DateTime.fromSQL(event.created_at, { zone: 'UTC' }).toISO()
+              : event.created_at,
         };
       } catch (error) {
         throw new Error(

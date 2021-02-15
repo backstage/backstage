@@ -56,6 +56,7 @@
     "isomorphic-git": "^1.8.0",
     "jsonschema": "^1.2.6",
     "knex": "^0.21.6",
+    "luxon": "^1.26.0",
     "morgan": "^1.10.0",
     "uuid": "^8.2.0",
     "winston": "^3.2.1",
