@@ -70,12 +70,7 @@ export class GithubPublisher implements PublisherBase {
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
-
-    let auth = {
-      username: this.config.token,
-      password: 'x-oauth-basic',
-    };
-
+      
     if (this.config.credentialsProvider) {
       this.config.token =
         (
@@ -87,10 +82,6 @@ export class GithubPublisher implements PublisherBase {
         auth: this.config.token,
         baseUrl: this.config.apiBaseUrl,
       });
-      auth = {
-        username: 'x-access-token',
-        password: this.config.token,
-      };
     }
 
     const description = values.description as string;
@@ -105,7 +96,10 @@ export class GithubPublisher implements PublisherBase {
     await initRepoAndPush({
       dir: path.join(workspacePath, 'result'),
       remoteUrl,
-      auth,
+      auth: {
+        username: 'x-access-token',
+        password: this.config.token,
+      },
       logger,
     });
 

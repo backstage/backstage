@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { spawn } from 'child_process';
-import { Writable, PassThrough } from 'stream';
-import Docker from 'dockerode';
-import yaml from 'js-yaml';
-import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
-import { SupportedGeneratorKey } from './types';
+import { spawn } from 'child_process';
+import Docker from 'dockerode';
+import fs from 'fs-extra';
+import yaml from 'js-yaml';
+import { PassThrough, Writable } from 'stream';
+import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { RemoteProtocol } from '../prepare/types';
+import { SupportedGeneratorKey } from './types';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -274,4 +274,35 @@ export const patchMkdocsYmlPreBuild = async (
     );
     return;
   }
+};
+
+/**
+ * Update the techdocs_metadata.json to add a new build timestamp metadata. Create the .json file if it doesn't exist.
+ *
+ * @param {string} techdocsMetadataPath File path to techdocs_metadata.json
+ */
+export const addBuildTimestampMetadata = async (
+  techdocsMetadataPath: string,
+  logger: Logger,
+): Promise<void> => {
+  // check if file exists, create if it does not.
+  try {
+    await fs.access(techdocsMetadataPath, fs.constants.F_OK);
+  } catch (err) {
+    // Bootstrap file with empty JSON
+    await fs.writeJson(techdocsMetadataPath, JSON.parse('{}'));
+  }
+  // check if valid Json
+  let json;
+  try {
+    json = await fs.readJson(techdocsMetadataPath);
+  } catch (err) {
+    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  json.build_timestamp = Date.now();
+  await fs.writeJson(techdocsMetadataPath, json);
+  return;
 };

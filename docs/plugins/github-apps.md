@@ -77,6 +77,6 @@ method of distributing secrets.
 integrations:
   github:
     - host: github.com
-    apps:
+      apps:
         - $include: example-backstage-app-credentials.yaml
 ```

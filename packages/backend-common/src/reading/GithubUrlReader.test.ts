@@ -273,7 +273,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -354,7 +354,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/main/docs',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),
