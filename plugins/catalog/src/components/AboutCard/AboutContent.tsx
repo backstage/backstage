@@ -66,7 +66,7 @@ export const AboutContent = ({ entity }: Props) => {
         </Typography>
       </AboutField>
       <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        <EntityRefLinks entityRefs={ownedByRelations} />
+        <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
       </AboutField>
       {isSystem && (
         <AboutField
