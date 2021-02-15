@@ -199,11 +199,11 @@ export const createMicrosoftProvider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const tenantID = envConfig.getString('tenantId');
+      const tenantId = envConfig.getString('tenantId');
 
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-      const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
-      const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+      const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
+      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
       const provider = new MicrosoftAuthProvider({
         clientId,
