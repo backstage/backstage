@@ -159,7 +159,7 @@ export type AppOptions = {
    * }
    * ```
    */
-  bindRoutes?(context: { /** le derp */ bind: AppRouteBinder }): void;
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
 export type BackstageApp = {
