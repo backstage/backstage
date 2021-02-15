@@ -16,8 +16,10 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
-import { GitHubIntegrationConfig } from '@backstage/integration';
-import { createAppAuth } from '@octokit/auth-app';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
@@ -31,21 +33,13 @@ export class GithubPublisher implements PublisherBase {
   ) {
     config.accessType = 'oAuth';
 
+    const credentialsProvider = GithubCredentialsProvider.create(config);
+
     if (!config.token) {
       if (!config.apps) {
-        return undefined
+        return undefined;
       }
-      const auth = createAppAuth({
-        appId: config.apps[0].appId,
-        privateKey: config.apps[0].privateKey,
-        installationId: process.env.GITHUB_INSTALLATION_ID,
-        clientId: config.apps[0].clientId,
-        clientSecret: config.apps[0].clientSecret,
-      });
-      const appAuthentication = await auth({ type: 'installation' });
-
-      config.token = appAuthentication.token;
-      config.accessType = 'githubApp'
+      config.accessType = 'githubApp';
     }
 
     const githubClient = new Octokit({
@@ -54,10 +48,12 @@ export class GithubPublisher implements PublisherBase {
     });
 
     return new GithubPublisher({
-      token: config.token,
+      token: config.token || '',
       accessType: config.accessType,
+      credentialsProvider,
       client: githubClient,
       repoVisibility,
+      apiBaseUrl: config.apiBaseUrl,
     });
   }
 
@@ -65,8 +61,10 @@ export class GithubPublisher implements PublisherBase {
     private readonly config: {
       token: string;
       accessType: string;
+      credentialsProvider: GithubCredentialsProvider;
       client: Octokit;
       repoVisibility: RepoVisibilityOptions;
+      apiBaseUrl: string | undefined;
     },
   ) {}
 
@@ -77,6 +75,28 @@ export class GithubPublisher implements PublisherBase {
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
 
+    let auth = {
+      username: this.config.token,
+      password: 'x-oauth-basic',
+    };
+
+    if (this.config.accessType === 'githubApp') {
+      this.config.token =
+        (
+          await this.config.credentialsProvider.getCredentials({
+            url: values.storePath,
+          })
+        ).token || '';
+      this.config.client = new Octokit({
+        auth: this.config.token,
+        baseUrl: this.config.apiBaseUrl,
+      });
+      auth = {
+        username: 'x-access-token',
+        password: this.config.token,
+      };
+    }
+
     const description = values.description as string;
     const access = values.access as string;
     const remoteUrl = await this.createRemote({
@@ -86,27 +106,12 @@ export class GithubPublisher implements PublisherBase {
       owner,
     });
 
-    if (this.config.accessType === 'githubApp') {
-     await initRepoAndPush({
+    await initRepoAndPush({
       dir: path.join(workspacePath, 'result'),
       remoteUrl,
-      auth: {
-        username: 'x-access-token',
-        password: this.config.token,
-      },
+      auth,
       logger,
     });
-    } else if (this.config.accessType === 'oAuth'){
-      await initRepoAndPush({
-        dir: path.join(workspacePath, 'result'),
-        remoteUrl,
-        auth: {
-          username: this.config.token,
-          password: 'x-oauth-basic',
-        },
-        logger,
-      });
-    }
 
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,
