@@ -28,15 +28,15 @@ import { AuthProviderFactory } from './types';
 import { createAwsAlbProvider } from './aws-alb';
 
 export const factories: { [providerId: string]: AuthProviderFactory } = {
-  google: createGoogleProvider,
-  github: createGithubProvider,
-  gitlab: createGitlabProvider,
-  saml: createSamlProvider,
-  okta: createOktaProvider,
-  auth0: createAuth0Provider,
-  microsoft: createMicrosoftProvider,
-  oauth2: createOAuth2Provider,
-  oidc: createOidcProvider,
-  onelogin: createOneLoginProvider,
-  awsalb: createAwsAlbProvider,
+  google: createGoogleProvider(),
+  github: createGithubProvider(),
+  gitlab: createGitlabProvider(),
+  saml: createSamlProvider(),
+  okta: createOktaProvider(),
+  auth0: createAuth0Provider(),
+  microsoft: createMicrosoftProvider(),
+  oauth2: createOAuth2Provider(),
+  oidc: createOidcProvider(),
+  onelogin: createOneLoginProvider(),
+  awsalb: createAwsAlbProvider(),
 };

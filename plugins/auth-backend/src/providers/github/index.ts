@@ -15,3 +15,4 @@
  */
 
 export { createGithubProvider } from './provider';
+export type { GithubProviderOptions } from './provider';
