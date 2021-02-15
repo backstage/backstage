@@ -39,6 +39,10 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { Templaters, Preparers, Publishers } from '../scaffolder';
 import Docker from 'dockerode';
+import { CatalogClient } from '@backstage/catalog-client';
+
+jest.mock('@backstage/catalog-client');
+const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
 
 jest.mock('dockerode');
 
@@ -111,6 +115,7 @@ describe('createRouter - working directory', () => {
         dockerClient: new Docker(),
         entityClient: mockedEntityClient,
         database: createDatabase(),
+        catalogClient: new MockedCatalogClient(),
       }),
     ).rejects.toThrow('access error');
   });
@@ -125,6 +130,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
       database: createDatabase(),
+      catalogClient: new MockedCatalogClient(),
     });
 
     const app = express().use(router);
@@ -154,6 +160,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       entityClient: mockedEntityClient,
       database: createDatabase(),
+      catalogClient: new MockedCatalogClient(),
     });
 
     const app = express().use(router);
@@ -224,6 +231,7 @@ describe('createRouter', () => {
       dockerClient: new Docker(),
       entityClient: generateEntityClient(template),
       database: createDatabase(),
+      catalogClient: new MockedCatalogClient(),
     });
     app = express().use(router);
   });
