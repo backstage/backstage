@@ -90,7 +90,7 @@ export interface RegisterDecoratorParameters {
   decorator: IndexableDocumentDecorator;
 
   /**
-   * An optional array of document types that the given decorator should apply to. If none are provided,
+   * (Optional) An array of document types that the given decorator should apply to. If none are provided,
    * the decorator will be applied to all types.
    */
   types?: string[];
