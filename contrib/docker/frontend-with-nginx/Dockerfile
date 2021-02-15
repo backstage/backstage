@@ -9,6 +9,7 @@ FROM nginx:mainline
 # simply copies in the build output into the image.
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
+RUN curl -L https://github.com/mikefarah/yq/releases/download/v4.5.1/yq_linux_amd64 --output /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 COPY packages/app/dist /usr/share/nginx/html
 COPY docker/default.conf.template /etc/nginx/conf.d/default.conf.template

@@ -11,6 +11,7 @@ RUN yarn workspace example-app build
 FROM nginx:mainline
 
 RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
+RUN curl -L https://github.com/mikefarah/yq/releases/download/v4.5.1/yq_linux_amd64 --output /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 # Copy from build stage
 COPY --from=build /app/packages/app/dist /usr/share/nginx/html

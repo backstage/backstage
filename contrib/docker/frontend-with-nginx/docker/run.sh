@@ -10,14 +10,27 @@ envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/d
 
 # Inject runtime config into the client
 function inject_config() {
+  # Read runtime config from yaml file (it could be the backend one)
+  local config1
+  if [ -f "${APP_CONFIG_FILE}" ]; then
+    config1=$(yq eval -j ${APP_CONFIG_FILE})
+  fi
+
   # Read runtime config from env in the same way as the @backstage/config-loader package
-  local config
-  config="$(jq -n 'env |
+  local config2
+  config2="$(jq -n 'env |
     with_entries(select(.key | startswith("APP_CONFIG_")) | .key |= sub("APP_CONFIG_"; "")) |
     to_entries |
     reduce .[] as $item (
       {}; setpath($item.key | split("_"); $item.value | try fromjson catch $item.value)
     )')"
+  local config
+  if [ -f "${APP_CONFIG_FILE}" ]; then
+    # Try to merge configurations
+    config=$(echo "$config1 $config2" | jq -s add)
+  else
+    config=$config2
+  fi
 
   >&2 echo "Runtime app config: $config"
 
