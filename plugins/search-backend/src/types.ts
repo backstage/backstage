@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { IndexableDocument } from '@backstage/plugin-search-indexer-backend';
+
 export interface SearchQuery {
   term: string;
   filters?: Record<string, any>;
@@ -22,5 +24,5 @@ export interface SearchQuery {
 }
 
 export interface SearchResultSet {
-  results: any[]; // @todo Use IndexableDocument from search-indexer-backend?
+  results: IndexableDocument[];
 }
