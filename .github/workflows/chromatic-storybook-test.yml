@@ -44,9 +44,8 @@ jobs:
       # End of yarn setup
 
       - run: yarn build-storybook
-
       - uses: chromaui/action@v1
         with:
-          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
+          projectToken: 9tzak77m9nj
           storybookBuildDir: 'packages/storybook/dist'
