@@ -35,6 +35,7 @@ import {
   createApiFactory,
   configApiRef,
   discoveryApiRef,
+  identityApiRef,
   createRoutableExtension,
 } from '@backstage/core';
 import {
@@ -64,20 +65,30 @@ export const techdocsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ configApi, discoveryApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new TechDocsStorageApi({
           configApi,
           discoveryApi,
+          identityApi,
         }),
     }),
     createApiFactory({
       api: techdocsApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ configApi, discoveryApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new TechDocsApi({
           configApi,
           discoveryApi,
+          identityApi,
         }),
     }),
   ],
