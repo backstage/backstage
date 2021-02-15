@@ -90,8 +90,8 @@ describe('GitHubPreparer', () => {
 
     expect(Git.fromAuth).toHaveBeenCalledWith({
       logger,
-      username: 'fake-token',
-      password: 'x-oauth-basic',
+      username: 'x-access-token',
+      password: 'fake-token',
     });
   });
 });
