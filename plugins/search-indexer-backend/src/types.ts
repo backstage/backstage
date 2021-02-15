@@ -36,7 +36,7 @@ export interface IndexableDocument {
   location: string;
 
   /**
-   * The owner of the document (e.g. spec.owner on a catalog entity).
+   * (Optional) The owner of the document (e.g. spec.owner on a catalog entity).
    */
   owner?: string;
 
