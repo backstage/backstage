@@ -65,13 +65,22 @@ export function createRouteRef<
 }
 
 export class ExternalRouteRef {
-  private constructor() {}
-
-  toString() {
-    return `externalRouteRef{}`;
+  private constructor(id: string) {
+    this.toString = () => `externalRouteRef{${id}}`;
   }
 }
 
-export function createExternalRouteRef(): ExternalRouteRef {
-  return new ((ExternalRouteRef as unknown) as { new (): ExternalRouteRef })();
+export type ExternalRouteRefOptions = {
+  /**
+   * An identifier for this route, used to identify it in error messages
+   */
+  id: string;
+};
+
+export function createExternalRouteRef(
+  options: ExternalRouteRefOptions,
+): ExternalRouteRef {
+  return new ((ExternalRouteRef as unknown) as {
+    new (id: string): ExternalRouteRef;
+  })(options.id);
 }
