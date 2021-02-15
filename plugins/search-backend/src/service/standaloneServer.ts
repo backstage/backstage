@@ -36,7 +36,7 @@ export async function startStandaloneServer(
 
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
-    .addRouter('/api/search', router);
+    .addRouter('/search', router);
 
   return await service.start().catch(err => {
     logger.error(err);
