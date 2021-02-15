@@ -360,7 +360,6 @@ describe('helpers', () => {
     it('should throw error when the JSON is invalid', async () => {
       const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
 
-      // Check if the file exists
       await expect(
         addBuildTimestampMetadata(filePath, mockLogger),
       ).rejects.toThrowError();
