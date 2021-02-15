@@ -19,8 +19,10 @@ import {
   CatalogBuilder,
   createRouter,
   runPeriodically,
+  SearchCollatorFactory,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
+import { registerCollator } from '@backstage/plugin-search-indexer-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
@@ -38,6 +40,12 @@ export default async function createPlugin(
     module,
     runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
   );
+
+  registerCollator({
+    type: 'software-catalog',
+    defaultRefreshIntervalSeconds: 600,
+    collator: SearchCollatorFactory(entitiesCatalog),
+  });
 
   return await createRouter({
     entitiesCatalog,

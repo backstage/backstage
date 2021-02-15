@@ -41,6 +41,7 @@
     "@backstage/plugin-rollbar-backend": "^0.1.8",
     "@backstage/plugin-scaffolder-backend": "^0.9.2",
     "@backstage/plugin-search-backend": "^0.1.1",
+    "@backstage/plugin-search-indexer-backend": "^0.1.1",
     "@backstage/plugin-techdocs-backend": "^0.6.5",
     "@backstage/plugin-todo-backend": "^0.1.1",
     "@gitbeaker/node": "^28.0.2",
