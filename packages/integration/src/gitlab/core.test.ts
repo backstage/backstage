@@ -53,6 +53,21 @@ describe('gitlab core', () => {
       {
         config: configWithNoToken,
         url:
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        result:
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      },
+      {
+        config: configWithNoToken,
+        // Works with non URI encoded link
+        url:
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yaml',
+        result:
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yaml/raw?ref=branch',
+      },
+      {
+        config: configWithNoToken,
+        url:
           'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path%20with%20spaces/to/file.yaml',
         result:
           'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%20with%20spaces%2Fto%2Ffile.yaml/raw?ref=branch',
