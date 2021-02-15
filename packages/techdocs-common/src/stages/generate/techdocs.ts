@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { Logger } from 'winston';
-import { PassThrough } from 'stream';
 import { Config } from '@backstage/config';
-
-import { GeneratorBase, GeneratorRunOptions } from './types';
+import path from 'path';
+import { PassThrough } from 'stream';
+import { Logger } from 'winston';
 import {
-  runDockerContainer,
-  runCommand,
+  addBuildTimestampMetadata,
   patchMkdocsYmlPreBuild,
+  runCommand,
+  runDockerContainer,
 } from './helpers';
+import { GeneratorBase, GeneratorRunOptions } from './types';
 
 type TechdocsGeneratorOptions = {
   // This option enables users to configure if they want to use TechDocs container
@@ -118,5 +118,13 @@ export class TechdocsGenerator implements GeneratorBase {
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
     }
+
+    // Post Generate steps
+
+    // Add build timestamp to techdocs_metadata.json
+    addBuildTimestampMetadata(
+      path.join(outputDir, 'techdocs_metadata.json'),
+      this.logger,
+    );
   }
 }
