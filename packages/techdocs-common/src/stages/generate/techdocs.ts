@@ -23,6 +23,7 @@ import {
   patchMkdocsYmlPreBuild,
   runCommand,
   runDockerContainer,
+  storeEtagMetadata,
 } from './helpers';
 import { GeneratorBase, GeneratorRunOptions } from './types';
 
@@ -62,6 +63,7 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     dockerClient,
     parsedLocationAnnotation,
+    etag,
   }: GeneratorRunOptions): Promise<void> {
     const [log, logStream] = createStream();
 
@@ -119,12 +121,24 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
-    // Post Generate steps
+    /**
+     * Post Generate steps
+     */
 
     // Add build timestamp to techdocs_metadata.json
-    addBuildTimestampMetadata(
+    // Creates techdocs_metadata.json if file does not exist.
+    await addBuildTimestampMetadata(
       path.join(outputDir, 'techdocs_metadata.json'),
       this.logger,
     );
+
+    // Add etag of the prepared tree to techdocs_metadata.json
+    // Assumes that the file already exists.
+    if (etag) {
+      await storeEtagMetadata(
+        path.join(outputDir, 'techdocs_metadata.json'),
+        etag,
+      );
+    }
   }
 }
