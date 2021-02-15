@@ -20,16 +20,22 @@ import {
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
+import path from 'path';
 
 describe('FileReaderProcessor', () => {
-  const fixturesRoot =
-    'src/ingestion/processors/__fixtures__/fileReaderProcessor';
+  const fixturesRoot = path.join(
+    'src',
+    'ingestion',
+    'processors',
+    '__fixtures__',
+    'fileReaderProcessor',
+  );
 
   it('should load from file', async () => {
     const processor = new FileReaderProcessor();
     const spec = {
       type: 'file',
-      target: `${fixturesRoot}/component.yaml`,
+      target: `${path.join(fixturesRoot, 'component.yaml')}`,
     };
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
@@ -45,7 +51,7 @@ describe('FileReaderProcessor', () => {
     const processor = new FileReaderProcessor();
     const spec = {
       type: 'file',
-      target: `${fixturesRoot}/missing.yaml`,
+      target: `${path.join(fixturesRoot, 'missing.yaml')}`,
     };
 
     const generated = (await new Promise<CatalogProcessorResult>(emit =>
@@ -56,7 +62,7 @@ describe('FileReaderProcessor', () => {
     expect(generated.location).toBe(spec);
     expect(generated.error.name).toBe('NotFoundError');
     expect(generated.error.message).toBe(
-      `file ${fixturesRoot}/missing.yaml does not exist`,
+      `file ${path.join(fixturesRoot, 'missing.yaml')} does not exist`,
     );
   });
 
@@ -66,7 +72,7 @@ describe('FileReaderProcessor', () => {
     const emit = jest.fn();
 
     await processor.readLocation(
-      { type: 'file', target: `${fixturesRoot}/**/*.yaml` },
+      { type: 'file', target: `${path.join(fixturesRoot, '**', '*.yaml')}` },
       false,
       emit,
     );
