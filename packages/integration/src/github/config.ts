@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { isValidHost } from '../helpers';
+import { GithubCredentialsProvider } from '@backstage/integration';
 
 const GITHUB_HOST = 'github.com';
 const GITHUB_API_BASE_URL = 'https://api.github.com';
@@ -60,11 +61,11 @@ export type GitHubIntegrationConfig = {
   token?: string;
 
   /**
-   * The accessType (oAuth|githubApp) to use for requests to this provider.
+   * The credentialsProvider to use for requests to this provider.
    *
-   * If no user is specified, oAuth access is used.
+   * If no credentialsProvider is created, undefined is used.
    */
-  accessType?: string;
+  credentialsProvider?: GithubCredentialsProvider | undefined;
 
   /**
    * The GitHub Apps configuration to use for requests to this provider.

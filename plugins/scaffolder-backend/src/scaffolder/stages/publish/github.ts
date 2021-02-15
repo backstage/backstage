@@ -31,15 +31,13 @@ export class GithubPublisher implements PublisherBase {
     config: GitHubIntegrationConfig,
     { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
   ) {
-    config.accessType = 'oAuth';
-
-    const credentialsProvider = GithubCredentialsProvider.create(config);
+    let credentialsProvider: GithubCredentialsProvider | undefined = undefined;
 
     if (!config.token) {
       if (!config.apps) {
         return undefined;
       }
-      config.accessType = 'githubApp';
+      credentialsProvider = GithubCredentialsProvider.create(config);
     }
 
     const githubClient = new Octokit({
@@ -49,7 +47,6 @@ export class GithubPublisher implements PublisherBase {
 
     return new GithubPublisher({
       token: config.token || '',
-      accessType: config.accessType,
       credentialsProvider,
       client: githubClient,
       repoVisibility,
@@ -60,8 +57,7 @@ export class GithubPublisher implements PublisherBase {
   constructor(
     private readonly config: {
       token: string;
-      accessType: string;
-      credentialsProvider: GithubCredentialsProvider;
+      credentialsProvider: GithubCredentialsProvider | undefined;
       client: Octokit;
       repoVisibility: RepoVisibilityOptions;
       apiBaseUrl: string | undefined;
@@ -80,7 +76,7 @@ export class GithubPublisher implements PublisherBase {
       password: 'x-oauth-basic',
     };
 
-    if (this.config.accessType === 'githubApp') {
+    if (this.config.credentialsProvider) {
       this.config.token =
         (
           await this.config.credentialsProvider.getCredentials({
