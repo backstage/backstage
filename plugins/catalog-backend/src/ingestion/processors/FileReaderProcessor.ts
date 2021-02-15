@@ -19,6 +19,10 @@ import fs from 'fs-extra';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { parseEntityYaml } from './util/parse';
+import { promisify } from 'util';
+import g from 'glob';
+
+const glob = promisify(g);
 
 export class FileReaderProcessor implements CatalogProcessor {
   async readLocation(
@@ -31,12 +35,15 @@ export class FileReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const exists = await fs.pathExists(location.target);
-      if (exists) {
-        const data = await fs.readFile(location.target);
+      const fileMatches = await glob(location.target);
 
-        for (const parseResult of parseEntityYaml(data, location)) {
-          emit(parseResult);
+      if (fileMatches.length > 0) {
+        for (const fileMatch of fileMatches) {
+          const data = await fs.readFile(fileMatch);
+
+          for (const parseResult of parseEntityYaml(data, location)) {
+            emit(parseResult);
+          }
         }
       } else if (!optional) {
         const message = `${location.type} ${location.target} does not exist`;
