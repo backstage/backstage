@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
+import { SearchQuery, SearchResultSet } from '../types';
 
 type RouterOptions = {
   logger: Logger;
@@ -27,21 +29,33 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  router.get('/query', async (req, res) => {
-    // Transform req.params into search engine specific query.
-    const { term } = req.query;
+  router.get(
+    '/query',
+    async (
+      req: express.Request<any, unknown, unknown, SearchQuery>,
+      res: express.Response<SearchResultSet>,
+    ) => {
+      // @todo Actually transform req.params into search engine specific query.
+      const { term, filters = {}, pageIndex = 0, pageSize = 30 } = req.query;
+      logger.info(
+        `Search requested received: ${term}, ${JSON.stringify(
+          filters,
+        )}, ${pageIndex}, ${pageSize}`,
+      );
 
-    try {
-      // Query search engine.
-      // Transform results into frontend-readable result
-      res.send({
-        term,
-      });
-    } catch (err) {
-      logger.error(`There was a problem performing the search query.`);
-      res.status(500).send(`There was a problem performing the search query.`);
-    }
-  });
+      try {
+        // @todo Actually query search engine.
+        // @todo And actually transform results into frontend-readable result
+        res.send({
+          results: [],
+        });
+      } catch (err) {
+        logger.error(`There was a problem performing the search query.`);
+        throw new Error(`There was a problem performing the search query.`);
+      }
+    },
+  );
 
+  router.use(errorHandler());
   return router;
 }
