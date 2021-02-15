@@ -39,7 +39,7 @@ type Options = {
 const parseDate = (date: string | Date) => {
   const parsedDate =
     typeof date === 'string'
-      ? DateTime.fromSQL(date, { locale: 'UTC' })
+      ? DateTime.fromSQL(date, { zone: 'UTC' })
       : DateTime.fromJSDate(date);
 
   if (!parsedDate.isValid) {
