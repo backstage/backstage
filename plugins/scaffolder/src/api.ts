@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonObject } from '@backstage/config';
 import {
   createApiRef,
   DiscoveryApi,
