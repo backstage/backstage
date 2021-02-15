@@ -19,6 +19,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { PublisherBase } from './types';
 import type { Entity } from '@backstage/catalog-model';
+import type { Logger } from 'winston';
 
 const createMockEntity = (annotations = {}) => {
   return {
@@ -43,33 +44,40 @@ const getEntityRootDir = (entity: Entity) => {
   return entityRootDir;
 };
 
-const logger = getVoidLogger();
-jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+function createLogger() {
+  const logger = getVoidLogger();
+  jest.spyOn(logger, 'info').mockReturnValue(logger);
+  jest.spyOn(logger, 'error').mockReturnValue(logger);
+  return logger;
+}
 
 let publisher: PublisherBase;
 
-beforeEach(async () => {
-  const mockConfig = new ConfigReader({
-    techdocs: {
-      requestUrl: 'http://localhost:7000',
-      publisher: {
-        type: 'azureBlobStorage',
-        azureBlobStorage: {
-          credentials: {
-            accountName: 'accountName',
-            accountKey: 'accountKey',
+describe('publishing with valid credentials', () => {
+  let logger: Logger;
+
+  beforeEach(async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureBlobStorage',
+          azureBlobStorage: {
+            credentials: {
+              accountName: 'accountName',
+              accountKey: 'accountKey',
+            },
+            containerName: 'containerName',
           },
-          containerName: 'containerName',
         },
       },
-    },
+    });
+
+    logger = createLogger();
+
+    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
   });
 
-  publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
-});
-
-describe('AzureBlobStoragePublish', () => {
   describe('publish', () => {
     it('should publish a directory', async () => {
       const entity = createMockEntity();
@@ -142,6 +150,55 @@ describe('AzureBlobStoragePublish', () => {
       const entity = createMockEntity();
 
       expect(await publisher.hasDocsBeenGenerated(entity)).toBe(false);
+    });
+  });
+});
+
+describe('attempting to publish with invalid credentials', () => {
+  let logger: Logger;
+
+  describe('accountKey is not specified', () => {
+    beforeEach(async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'azureBlobStorage',
+            azureBlobStorage: {
+              credentials: {
+                accountName: 'accountName',
+              },
+              containerName: 'containerName',
+            },
+          },
+        },
+      });
+
+      logger = createLogger();
+
+      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+    });
+
+    describe('without Azure environment variables', () => {
+      it('should log an error', async () => {
+        const entity = createMockEntity();
+        const entityRootDir = getEntityRootDir(entity);
+
+        mockFs({
+          [entityRootDir]: {
+            'index.html': '',
+          },
+        });
+
+        await publisher.publish({
+          entity,
+          directory: entityRootDir,
+        });
+
+        expect(logger.error).toHaveBeenCalled();
+
+        mockFs.restore();
+      });
     });
   });
 });
