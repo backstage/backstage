@@ -111,7 +111,7 @@ class RouteResolver {
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
-export function useRouteRef<Params extends { [param in string]: string }>(
+export function useRouteRef<Params extends { [param in string]: string } = {}>(
   routeRef: RouteRef<Params> | ExternalRouteRef,
 ): RouteFunc<Params> {
   const sourceLocation = useLocation();
