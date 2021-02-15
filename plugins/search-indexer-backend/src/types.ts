@@ -41,7 +41,7 @@ export interface IndexableDocument {
   owner?: string;
 
   /**
-   * The lifecycle of the document (e.g. spec.lifecycle on a catalog entity).
+   * (Optional) The lifecycle of the document (e.g. spec.lifecycle on a catalog entity).
    */
   lifecycle?: string;
 }
