@@ -17,8 +17,8 @@
 import {
   getGitHubFileFetchUrl,
   GithubCredentialsProvider,
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
+  GitHubIntegration,
+  ScmIntegrations,
 } from '@backstage/integration';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch from 'cross-fetch';
@@ -48,36 +48,36 @@ export type GhBlobResponse = RestEndpointMethodTypes['git']['getBlob']['response
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    const configs = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? [],
-    );
-    return configs.map(provider => {
-      const credentialsProvider = GithubCredentialsProvider.create(provider);
-      const reader = new GithubUrlReader(provider, {
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.github.list().map(integration => {
+      const credentialsProvider = GithubCredentialsProvider.create(
+        integration.config,
+      );
+      const reader = new GithubUrlReader(integration, {
         treeResponseFactory,
         credentialsProvider,
       });
-      const predicate = (url: URL) => url.host === provider.host;
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
   constructor(
-    private readonly config: GitHubIntegrationConfig,
+    private readonly integration: GitHubIntegration,
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
   ) {
-    if (!config.apiBaseUrl && !config.rawBaseUrl) {
+    if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
       throw new Error(
-        `GitHub integration for '${config.host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
+        `GitHub integration '${integration.title}' must configure an explicit apiBaseUrl or rawBaseUrl`,
       );
     }
   }
 
   async read(url: string): Promise<Buffer> {
-    const ghUrl = getGitHubFileFetchUrl(url, this.config);
+    const ghUrl = getGitHubFileFetchUrl(url, this.integration.config);
     const { headers } = await this.deps.credentialsProvider.getCredentials({
       url,
     });
@@ -155,7 +155,7 @@ export class GithubUrlReader implements UrlReader {
   }
 
   toString() {
-    const { host, token } = this.config;
+    const { host, token } = this.integration.config;
     return `github{host=${host},authed=${Boolean(token)}}`;
   }
 
@@ -258,7 +258,7 @@ export class GithubUrlReader implements UrlReader {
     });
 
     const repo: GhRepoResponse = await this.fetchJson(
-      `${this.config.apiBaseUrl}/repos/${full_name}`,
+      `${this.integration.config.apiBaseUrl}/repos/${full_name}`,
       { headers },
     );
 

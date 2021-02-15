@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import Docker from 'dockerode';
 import express from 'express';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
@@ -171,7 +171,7 @@ export async function createRouter(
                 const preparer = new FilePreparer();
 
                 const path = resolvePath(
-                  templateEntityLocation,
+                  dirname(templateEntityLocation),
                   template.spec.path || '.',
                 );
 

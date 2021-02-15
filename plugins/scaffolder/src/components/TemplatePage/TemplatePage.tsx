@@ -117,10 +117,10 @@ export const TemplatePage = () => {
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a new component"
+        pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"

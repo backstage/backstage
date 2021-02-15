@@ -48,10 +48,15 @@ import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import AlarmIcon from '@material-ui/icons/Alarm';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  icons: {
+    // Custom icon example
+    alert: AlarmIcon,
+  },
   components: {
     SignInPage: props => {
       return (

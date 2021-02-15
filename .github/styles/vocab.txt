@@ -119,6 +119,7 @@ Kumar
 learnings
 lerna
 Lerna
+lockfile
 Luxon
 magiclink
 mailto

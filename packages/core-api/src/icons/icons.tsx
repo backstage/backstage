@@ -15,15 +15,19 @@
  */
 
 import { SvgIconProps } from '@material-ui/core';
+import MuiDashboardIcon from '@material-ui/icons/Dashboard';
+import MuiHelpIcon from '@material-ui/icons/Help';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import React from 'react';
 import { useApp } from '../app/AppContext';
-import { IconComponent, SystemIconKey, SystemIcons } from './types';
+import { IconComponent, SystemIconKey, IconComponentMap } from './types';
 
-export const defaultSystemIcons: SystemIcons = {
+export const defaultSystemIcons: IconComponentMap = {
   user: PersonIcon,
   group: PeopleIcon,
+  dashboard: MuiDashboardIcon,
+  help: MuiHelpIcon,
 };
 
 const overridableSystemIcon = (key: SystemIconKey): IconComponent => {
@@ -35,5 +39,7 @@ const overridableSystemIcon = (key: SystemIconKey): IconComponent => {
   return Component;
 };
 
-export const UserIcon = overridableSystemIcon('user');
+export const DashboardIcon = overridableSystemIcon('dashboard');
 export const GroupIcon = overridableSystemIcon('group');
+export const HelpIcon = overridableSystemIcon('help');
+export const UserIcon = overridableSystemIcon('user');

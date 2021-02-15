@@ -15,7 +15,7 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin, AnyExternalRoutes } from '../plugin/types';
 import { RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
@@ -94,7 +94,7 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<SystemIcons>;
+  icons?: IconComponentMap;
 
   /**
    * A list of all plugins to include in the app.
@@ -169,9 +169,9 @@ export type BackstageApp = {
   getPlugins(): BackstagePlugin<any, any>[];
 
   /**
-   * Get a common icon for this app.
+   * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: SystemIconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
