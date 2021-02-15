@@ -107,7 +107,7 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   return <Typography variant="caption">{time}</Typography>;
 };
 
-const useQontoStepIconStyles = makeStyles({
+const useStepIconStyles = makeStyles({
   root: {
     color: '#eaeaf0',
     display: 'flex',
@@ -126,7 +126,7 @@ const useQontoStepIconStyles = makeStyles({
 });
 
 function TaskStepIconComponent(props: StepIconProps) {
-  const classes = useQontoStepIconStyles();
+  const classes = useStepIconStyles();
   const { active, completed, error } = props;
 
   const getMiddle = () => {
