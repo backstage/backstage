@@ -205,7 +205,8 @@ described below.
 
 In addition to these, you may add any number of other fields directly under
 `metadata`, but be aware that general plugins and tools may not be able to
-understand their semantics.
+understand their semantics. See [Extending the model](extending-the-model.md)
+for more information.
 
 ### `name` [required]
 
@@ -214,8 +215,8 @@ entity, and for machines and other components to reference the entity (e.g. in
 URLs or from other entity specification files).
 
 Names must be unique per kind, within a given namespace (if specified), at any
-point in time. Names may be reused at a later time, after an entity is deleted
-from the registry.
+point in time. This uniqueness constraint is case insensitive. Names may be
+reused at a later time, after an entity is deleted from the registry.
 
 Names are required to follow a certain format. Entities that do not follow those
 rules will not be accepted for registration in the catalog. The ruleset is
@@ -226,19 +227,7 @@ follows.
 - Must consist of sequences of `[a-z0-9A-Z]` possibly separated by one of
   `[-_.]`
 
-Example: `visits-tracking-service`, `CircleciBuildsDump_avro_gcs`
-
-In addition to this, names are passed through a normalization function and then
-compared to the same normalized form of other entity names and made sure to not
-collide. This rule of uniqueness exists to avoid situations where e.g. both
-`my-component` and `MyComponent` are registered side by side, which leads to
-confusion and risk. The normalization function is also configurable, but the
-default behavior is as follows.
-
-- Strip out all characters outside of the set `[a-zA-Z0-9]`
-- Convert to lowercase
-
-Example: `CircleciBuildsDs_avro_gcs` -> `circlecibuildsdsavrogcs`
+Example: `visits-tracking-service`, `CircleciBuildsDumpV2_avro_gcs`
 
 ### `namespace` [optional]
 
@@ -248,7 +237,8 @@ the same format restrictions as `name` above.
 This field is optional, and currently has no special semantics apart from
 bounding the name uniqueness constraint if specified. It is reserved for future
 use and may get broader semantic implication later. For now, it is recommended
-to not specify a namespace unless you have specific need to do so.
+to not specify a namespace unless you have specific need to do so. This means
+the entity belongs to the `"default"` namespace.
 
 Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
 i.e. not Backstage specific but the same as in Kubernetes.
@@ -278,7 +268,6 @@ most 253 characters in total. The name part must be sequences of `[a-zA-Z0-9]`
 separated by any of `[-_.]`, at most 63 characters in total.
 
 The `backstage.io/` prefix is reserved for use by Backstage core components.
-Some keys such as `system` also have predefined semantics.
 
 Values are strings that follow the same restrictions as `name` above.
 
