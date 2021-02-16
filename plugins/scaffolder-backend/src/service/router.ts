@@ -58,7 +58,6 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   dockerClient: Docker;
-  entityClient: CatalogEntityClient;
   database: PluginDatabaseManager;
   catalogClient: CatalogClient;
 }
@@ -76,7 +75,6 @@ export async function createRouter(
     logger: parentLogger,
     config,
     dockerClient,
-    entityClient,
     database,
     catalogClient,
   } = options;
@@ -84,6 +82,7 @@ export async function createRouter(
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
+  const entityClient = new CatalogEntityClient(catalogClient);
 
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),

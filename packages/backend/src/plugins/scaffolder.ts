@@ -21,7 +21,6 @@ import {
   Publishers,
   CreateReactAppTemplater,
   Templaters,
-  CatalogEntityClient,
 } from '@backstage/plugin-scaffolder-backend';
 import { SingleHostDiscovery } from '@backstage/backend-common';
 import type { PluginEnvironment } from '../types';
@@ -46,7 +45,6 @@ export default async function createPlugin({
   const dockerClient = new Docker();
 
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const entityClient = new CatalogEntityClient({ discovery });
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
   return await createRouter({
@@ -56,7 +54,6 @@ export default async function createPlugin({
     logger,
     config,
     dockerClient,
-    entityClient,
     database,
     catalogClient,
   });

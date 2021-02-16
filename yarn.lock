@@ -1872,7 +1872,6 @@
     "@backstage/catalog-model" "^0.7.1"
     "@backstage/core" "^0.6.1"
     "@backstage/plugin-catalog-react" "^0.0.3"
-    "@backstage/plugin-scaffolder" "^0.5.0"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -1895,7 +1894,6 @@
     "@backstage/catalog-model" "^0.7.1"
     "@backstage/core" "^0.6.1"
     "@backstage/plugin-catalog-react" "^0.0.3"
-    "@backstage/plugin-scaffolder" "^0.5.0"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -17524,6 +17522,11 @@ luxon@1.25.0, luxon@^1.25.0:
   version "1.25.0"
   resolved "https://registry.npmjs.org/luxon/-/luxon-1.25.0.tgz#d86219e90bc0102c0eb299d65b2f5e95efe1fe72"
   integrity sha512-hEgLurSH8kQRjY6i4YLey+mcKVAWXbDNlZRmM6AgWDJ1cY3atl8Ztf5wEY7VBReFbmGnwQPz7KYJblL8B2k0jQ==
+
+luxon@^1.26.0:
+  version "1.26.0"
+  resolved "https://registry.npmjs.org/luxon/-/luxon-1.26.0.tgz#d3692361fda51473948252061d0f8561df02b578"
+  integrity sha512-+V5QIQ5f6CDXQpWNICELwjwuHdqeJM1UenlZWx5ujcRMc9venvluCjFb4t5NYLhb6IhkbMVOxzVuOqkgMxee2A==
 
 macos-release@^2.2.0:
   version "2.3.0"

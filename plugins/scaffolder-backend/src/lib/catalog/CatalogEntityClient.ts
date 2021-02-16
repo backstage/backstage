@@ -16,23 +16,13 @@
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { CatalogClient } from '@backstage/catalog-client';
-import {
-  ConflictError,
-  NotFoundError,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
  */
 export class CatalogEntityClient {
-  private readonly catalogClient: CatalogClient;
-
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.catalogClient = new CatalogClient({
-      discoveryApi: options.discovery,
-    });
-  }
+  constructor(private readonly catalogClient: CatalogClient) {}
 
   /**
    * Looks up a single template using a template name.
