@@ -35,7 +35,7 @@ export const OverflowTooltip = (props: Props) => {
 
   return (
     <Tooltip
-      title={props.title ?? (props.text as string)}
+      title={props.title ?? props.text!}
       placement={props.placement}
       disableHoverListener={!hover}
     >
