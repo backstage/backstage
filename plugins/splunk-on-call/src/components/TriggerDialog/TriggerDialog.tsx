@@ -297,8 +297,8 @@ export const TriggerDialog = ({
             inputProps={{ 'data-testid': 'trigger-select-behavior' }}
           >
             <MenuItem value="1">
-              Stop paging after a single Acknowledge from an escalation policy
-              or user
+              Stop paging after a single escalation policy or user has
+              acknowledged
             </MenuItem>
             <MenuItem value="0">
               Continue paging until each escalation policy or user above has

@@ -44,13 +44,11 @@ export type TriggerAlarmRequest = {
 export interface SplunkOnCallApi {
   /**
    * Fetches a list of incidents
-   *
    */
   getIncidents(): Promise<Incident[]>;
 
   /**
    * Fetches the list of users in an escalation policy.
-   *
    */
   getOnCallUsers(): Promise<OnCall[]>;
 

@@ -29,7 +29,7 @@ Add it to the app in `plugins.ts`:
 export { plugin as SplunkOnCall } from '@backstage/plugin-splunk-on-call';
 ```
 
-Add it to the `EntityPage.ts`:
+Add it to the `EntityPage.tsx`:
 
 ```ts
 import {
