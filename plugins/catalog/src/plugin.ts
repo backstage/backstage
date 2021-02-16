@@ -95,7 +95,7 @@ export const EntityHasComponentsCard = catalogPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
-        import('./components/ComponentsCard').then(m => m.HasComponentsCard),
+        import('./components/HasComponentsCard').then(m => m.HasComponentsCard),
     },
   }),
 );

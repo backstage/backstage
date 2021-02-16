@@ -27,18 +27,7 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React, { PropsWithChildren } from 'react';
-
-const SubcomponentsCard = ({
-  children,
-  variant = 'gridItem',
-}: PropsWithChildren<{ variant?: 'gridItem' }>) => {
-  return (
-    <InfoCard variant={variant} title="Subcomponents">
-      {children}
-    </InfoCard>
-  );
-};
+import React from 'react';
 
 type Props = {
   variant?: 'gridItem';
@@ -53,21 +42,21 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   if (loading) {
     return (
-      <SubcomponentsCard variant={variant}>
+      <InfoCard variant={variant} title="Subcomponents">
         <Progress />
-      </SubcomponentsCard>
+      </InfoCard>
     );
   }
 
   if (error || !entities) {
     return (
-      <SubcomponentsCard variant={variant}>
+      <InfoCard variant={variant} title="Subcomponents">
         <WarningPanel
           severity="error"
           title="Could not load subcomponents"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </SubcomponentsCard>
+      </InfoCard>
     );
   }
 

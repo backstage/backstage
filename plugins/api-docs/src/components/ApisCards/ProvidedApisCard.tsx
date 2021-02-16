@@ -31,19 +31,8 @@ import {
   useEntity,
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { apiEntityColumns } from './presets';
-
-const ApisCard = ({
-  children,
-  variant = 'gridItem',
-}: PropsWithChildren<{ variant?: 'gridItem' }>) => {
-  return (
-    <InfoCard variant={variant} title="Provided APIs">
-      {children}
-    </InfoCard>
-  );
-};
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
@@ -59,21 +48,21 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
 
   if (loading) {
     return (
-      <ApisCard variant={variant}>
+      <InfoCard variant={variant} title="Provided APIs">
         <Progress />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
   if (error || !entities) {
     return (
-      <ApisCard variant={variant}>
+      <InfoCard variant={variant} title="Provided APIs">
         <WarningPanel
           severity="error"
           title="Could not load APIs"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
