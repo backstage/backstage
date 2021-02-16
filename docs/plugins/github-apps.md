@@ -27,15 +27,17 @@ to grant the app more permissions if needed.
 
 ### Using the CLI (public GitHub only)
 
-You can use the `backstage-cli` to create a GitHub App using a manifest file that
-we provide. This gives us a way to automate some of the work required to create
-a GitHub app.
+You can use the `backstage-cli` to create a GitHub App using a manifest file
+that we provide. This gives us a way to automate some of the work required to
+create a GitHub app.
 
-You can read more about the [`backstage-cli create-github-app` method](../cli/commands.md#create-github-app).
+You can read more about the
+[`backstage-cli create-github-app` method](../cli/commands.md#create-github-app).
 
 Once you've gone through the CLI command, it should produce a YAML file in the
 root of the project which you can then use as an `include` in your
-`app-config.yaml`. You can go ahead and [skip ahead](#including-in-integrations-config) if you've already got an app.
+`app-config.yaml`. You can go ahead and
+[skip ahead](#including-in-integrations-config) if you've already got an app.
 
 ### GitHub Enterprise
 
