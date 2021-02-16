@@ -29,7 +29,7 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
 }
 
 // TODO: This could be moved to plugin-catalog-react if we wouldn't have a
-// special createSpecApiTypeColumn. But this is requited to use ApiTypeTitle to
+// special createSpecApiTypeColumn. But this is required to use ApiTypeTitle to
 // resolve the display name of an entity. Is the display name really worth it?
 
 export const apiEntityColumns: TableColumn<ApiEntity>[] = [

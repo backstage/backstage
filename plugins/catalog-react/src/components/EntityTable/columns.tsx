@@ -48,7 +48,7 @@ export function createEntityRefColumn<T extends Entity>({
       // each field that is displayed individually (kind, namespace, name).
       // but that migth confuse the user as it will behave different than a
       // simple text search.
-      // Another altnerative would be to cache the values. But writing them
+      // Another alternative would be to cache the values. But writing them
       // into the entity feels bad too.
       return formatContent(entity).includes(filter);
     },
