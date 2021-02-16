@@ -167,7 +167,8 @@ catalog:
       #   - target: ldaps://ds.example.net
       #     bind:
       #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret: { $secret: { env: LDAP_SECRET } }
+      #       secret:
+      #         $env: LDAP_SECRET
       #     users:
       #       dn: ou=people,ou=example,dc=example,dc=net
       #       options:

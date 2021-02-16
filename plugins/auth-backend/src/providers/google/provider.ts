@@ -28,6 +28,7 @@ import {
   OAuthRefreshRequest,
   OAuthResponse,
   OAuthStartRequest,
+  OAuthResult,
 } from '../../lib/oauth';
 import {
   executeFetchUserProfileStrategy,
@@ -44,7 +45,7 @@ type PrivateInfo = {
   refreshToken: string;
 };
 
-export type GoogleAuthProviderOptions = OAuthProviderOptions & {
+type Options = OAuthProviderOptions & {
   logger: Logger;
   identityClient: CatalogIdentityClient;
   tokenIssuer: TokenIssuer;
@@ -56,7 +57,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   private readonly identityClient: CatalogIdentityClient;
   private readonly tokenIssuer: TokenIssuer;
 
-  constructor(options: GoogleAuthProviderOptions) {
+  constructor(options: Options) {
     this.logger = options.logger;
     this.identityClient = options.identityClient;
     this.tokenIssuer = options.tokenIssuer;
@@ -74,20 +75,16 @@ export class GoogleAuthProvider implements OAuthHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        rawProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        fullProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
-        const profile = makeProfileInfo(rawProfile, params.id_token);
         done(
           undefined,
           {
-            providerInfo: {
-              idToken: params.id_token,
-              accessToken,
-              scope: params.scope,
-              expiresInSeconds: params.expires_in,
-            },
-            profile,
+            fullProfile,
+            params,
+            accessToken,
+            refreshToken,
           },
           {
             refreshToken,
@@ -109,13 +106,23 @@ export class GoogleAuthProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
+    const { result, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
+    const profile = makeProfileInfo(result.fullProfile, result.params.id_token);
+
     return {
-      response: await this.populateIdentity(response),
+      response: await this.populateIdentity({
+        providerInfo: {
+          idToken: result.params.id_token,
+          accessToken: result.accessToken,
+          scope: result.params.scope,
+          expiresInSeconds: result.params.expires_in,
+        },
+        profile,
+      }),
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -127,11 +134,11 @@ export class GoogleAuthProvider implements OAuthHandlers {
       req.scope,
     );
 
-    const profile = await executeFetchUserProfileStrategy(
+    const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params.id_token,
     );
+    const profile = makeProfileInfo(fullProfile, params.id_token);
 
     return this.populateIdentity({
       providerInfo: {
@@ -184,31 +191,37 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createGoogleProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  logger,
-  tokenIssuer,
-  catalogApi,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type GoogleProviderOptions = {};
 
-    const provider = new GoogleAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      logger,
-      tokenIssuer,
-      identityClient: new CatalogIdentityClient({ catalogApi }),
-    });
+export const createGoogleProvider = (
+  _options?: GoogleProviderOptions,
+): AuthProviderFactory => {
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    logger,
+    tokenIssuer,
+    catalogApi,
+  }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new GoogleAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        logger,
+        tokenIssuer,
+        identityClient: new CatalogIdentityClient({ catalogApi }),
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};
