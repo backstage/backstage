@@ -23,8 +23,7 @@ import privateExports, {
   BootErrorPageProps,
   RouteRef,
   ExternalRouteRef,
-  createPlugin,
-  createRoutableExtension,
+  attachComponentData,
 } from '@backstage/core-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
@@ -110,16 +109,10 @@ export function wrapInTestApp(
     Wrapper = () => Component as React.ReactElement;
   }
 
-  const routePlugin = createPlugin({ id: 'mock-route-plugin' });
   const routeElements = Object.entries(options.mountedRoutes ?? {}).map(
     ([path, routeRef]) => {
-      const PageComponent = () => <div>Mounted at {path}</div>;
-      const Page = routePlugin.provide(
-        createRoutableExtension({
-          component: async () => PageComponent,
-          mountPoint: routeRef,
-        }),
-      );
+      const Page = () => <div>Mounted at {path}</div>;
+      attachComponentData(Page, 'core.mountPoint', routeRef);
       return <Route key={path} path={path} element={<Page />} />;
     },
   );
