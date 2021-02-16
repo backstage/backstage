@@ -1,13 +1,15 @@
 # search-backend
 
-Welcome to the search backend plugin!
+This plugin is part of a suite of plugins that comprise the Backstage search
+platform, which is still very much under development. This plugin specifically
+is responsible for:
 
-_This plugin was created through the Backstage CLI_
+- Exposing a JSON API for querying a search engine
+- Types related to interacting with that API
 
-## Getting started
+Documentation on how to develop and improve the search platform is currently
+centralized in the `search` plugin README.md.
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/search](http://localhost:3000/search).
-
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+For a better overview of how the search platform is put together, check the
+[Backstage Search Architecture](https://backstage.io/docs/features/search/architecture)
+documentation.
