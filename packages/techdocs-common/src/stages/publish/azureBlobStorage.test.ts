@@ -154,51 +154,71 @@ describe('publishing with valid credentials', () => {
   });
 });
 
-describe('attempting to publish with invalid credentials', () => {
-  let logger: Logger;
-
-  describe('accountKey is not specified', () => {
-    beforeEach(async () => {
-      const mockConfig = new ConfigReader({
-        techdocs: {
-          requestUrl: 'http://localhost:7000',
-          publisher: {
-            type: 'azureBlobStorage',
-            azureBlobStorage: {
-              credentials: {
-                accountName: 'accountName',
-              },
-              containerName: 'containerName',
+describe('error reporting', () => {
+  it('reports an error when unable to read container properties', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureBlobStorage',
+          azureBlobStorage: {
+            credentials: {
+              accountName: 'accountName',
             },
+            containerName: 'bad_container',
           },
         },
-      });
-
-      logger = createLogger();
-
-      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+      },
     });
 
-    describe('without Azure environment variables', () => {
-      it('should log an error', async () => {
-        const entity = createMockEntity();
-        const entityRootDir = getEntityRootDir(entity);
+    const logger = createLogger();
 
-        mockFs({
-          [entityRootDir]: {
-            'index.html': '',
+    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+
+    expect(logger.error).toHaveBeenCalledWith(
+      `Could not read Azure Blob Storage container properties`,
+    );
+  });
+
+  it('reports an error when bad account credentials', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'azureBlobStorage',
+          azureBlobStorage: {
+            credentials: {
+              accountName: 'failupload',
+              accountKey: 'accountKey',
+            },
+            containerName: 'containerName',
           },
-        });
-
-        await publisher.publish({
-          entity,
-          directory: entityRootDir,
-        });
-
-        expect(logger.error).toHaveBeenCalled();
-
-        mockFs.restore();
-      });
+        },
+      },
     });
+
+    const logger = createLogger();
+
+    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
+
+    mockFs({
+      [entityRootDir]: {
+        'index.html': '',
+      },
+    });
+
+    await publisher.publish({
+      entity,
+      directory: entityRootDir,
+    });
+
+    expect(logger.error).toHaveBeenCalledWith(
+      `Unable to upload 1 file(s) to Azure Blob Storage.`,
+    );
+
+    mockFs.restore();
   });
 });

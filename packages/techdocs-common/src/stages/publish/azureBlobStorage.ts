@@ -82,10 +82,16 @@ export class AzureBlobStoragePublish implements PublisherBase {
     await storageClient
       .getContainerClient(containerName)
       .getProperties()
-      .then(() => {
-        logger.info(
-          `Successfully connected to the Azure Blob Storage container ${containerName}.`,
-        );
+      .then(result => {
+        if (result?._response?.status >= 400) {
+          logger.error(
+            'Could not read Azure Blob Storage container properties',
+          );
+        } else {
+          logger.info(
+            `Successfully connected to the Azure Blob Storage container ${containerName}.`,
+          );
+        }
       })
       .catch(reason => {
         logger.error(
@@ -145,16 +151,23 @@ export class AzureBlobStoragePublish implements PublisherBase {
         });
       });
 
-      await Promise.all(promises).then(() => {
+      let responses: BlobUploadCommonResponse[] = [];
+
+      responses = await Promise.all(promises);
+
+      const failed = responses.filter(r => r?._response?.status >= 400);
+      if (failed.length === 0) {
         this.logger.info(
           `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
         );
-      });
-      return;
+      } else {
+        const errorMessage = `Unable to upload ${failed.length} file(s) to Azure Blob Storage.`;
+        this.logger.error(errorMessage);
+      }
     } catch (e) {
       const errorMessage = `Unable to upload file(s) to Azure Blob Storage. Error ${e.message}`;
       this.logger.error(errorMessage);
-      throw new Error(errorMessage);
+      return;
     }
   }
 
@@ -237,19 +250,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * A helper function which checks if index.html of an Entity's docs site is available. This
    * can be used to verify if there are any pre-generated docs available to serve.
    */
-  async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
-    return new Promise(resolve => {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      this.storageClient
-        .getContainerClient(this.containerName)
-        .getBlockBlobClient(`${entityRootDir}/index.html`)
-        .exists()
-        .then((response: boolean) => {
-          resolve(response);
-        })
-        .catch(() => {
-          resolve(false);
-        });
-    });
+  hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+    return this.storageClient
+      .getContainerClient(this.containerName)
+      .getBlockBlobClient(`${entityRootDir}/index.html`)
+      .exists();
   }
 }
