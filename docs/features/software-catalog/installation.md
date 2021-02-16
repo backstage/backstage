@@ -55,7 +55,7 @@ import {
 ```
 
 The catalog plugin also has one external route that needs to be bound for it to
-functions, the `createComponent` route which should link to the page where the
+function: the `createComponent` route which should link to the page where the
 user can create components. In a typical setup the create component route will
 be linked to the Scaffolder plugins template index page:
 
