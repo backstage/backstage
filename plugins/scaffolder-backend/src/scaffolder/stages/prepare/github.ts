@@ -18,14 +18,20 @@ import path from 'path';
 import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 import parseGitUrl from 'git-url-parse';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
   static fromConfig(config: GitHubIntegrationConfig) {
-    return new GithubPreparer({ token: config.token });
+    const credentialsProvider = GithubCredentialsProvider.create(config);
+    return new GithubPreparer({ credentialsProvider });
   }
 
-  constructor(private readonly config: { token?: string }) {}
+  constructor(
+    private readonly config: { credentialsProvider: GithubCredentialsProvider },
+  ) {}
 
   async prepare({ url, workspacePath, logger }: PreparerOptions) {
     const parsedGitUrl = parseGitUrl(url);
@@ -36,13 +42,15 @@ export class GithubPreparer implements PreparerBase {
       parsedGitUrl.filepath ?? '',
     );
 
-    const git = this.config.token
-      ? Git.fromAuth({
-          username: 'x-access-token',
-          password: this.config.token,
-          logger,
-        })
-      : Git.fromAuth({ logger });
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url,
+    });
+
+    const git = Git.fromAuth({
+      username: 'x-access-token',
+      password: token,
+      logger,
+    });
 
     await git.clone({
       url: parsedGitUrl.toString('https'),

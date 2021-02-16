@@ -64,6 +64,7 @@ export class GithubPublisher implements PublisherBase {
     });
 
     if (!token) {
+      logger.error(`Unable to adquire credentials for ${owner}/${name}`);
       return { remoteUrl: '', catalogInfoUrl: undefined };
     }
 
