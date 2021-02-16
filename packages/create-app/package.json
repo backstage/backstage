@@ -53,6 +53,7 @@
     "@backstage/plugin-app-backend": "^0.3.7",
     "@backstage/plugin-auth-backend": "^0.3.0",
     "@backstage/plugin-catalog": "^0.3.1",
+    "@backstage/catalog-client": "^0.3.6",
     "@backstage/plugin-catalog-backend": "^0.6.1",
     "@backstage/plugin-catalog-import": "^0.4.0",
     "@backstage/plugin-circleci": "^0.2.8",
