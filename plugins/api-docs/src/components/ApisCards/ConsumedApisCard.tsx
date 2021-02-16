@@ -37,7 +37,7 @@ import { apiEntityColumns } from './presets';
 const ApisCard = ({
   children,
   variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
+}: PropsWithChildren<{ variant?: 'gridItem' }>) => {
   return (
     <InfoCard variant={variant} title="Consumed APIs">
       {children}
@@ -48,7 +48,7 @@ const ApisCard = ({
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const ConsumedApisCard = ({ variant = 'gridItem' }: Props) => {

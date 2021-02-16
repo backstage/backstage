@@ -33,7 +33,7 @@ import { apiEntityColumns } from './presets';
 const ApisCard = ({
   children,
   variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
+}: PropsWithChildren<{ variant?: 'gridItem' }>) => {
   return (
     <InfoCard variant={variant} title="APIs">
       {children}
@@ -42,7 +42,7 @@ const ApisCard = ({
 };
 
 type Props = {
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const HasApisCard = ({ variant = 'gridItem' }: Props) => {

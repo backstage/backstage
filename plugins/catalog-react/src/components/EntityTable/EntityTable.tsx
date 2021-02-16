@@ -23,7 +23,7 @@ import { componentEntityColumns, systemEntityColumns } from './presets';
 
 type Props<T extends Entity> = {
   title: string;
-  variant?: string;
+  variant?: 'gridItem';
   entities: T[];
   emptyContent?: ReactNode;
   columns: TableColumn<T>[];

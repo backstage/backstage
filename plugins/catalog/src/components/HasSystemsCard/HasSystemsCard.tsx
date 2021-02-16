@@ -41,7 +41,7 @@ const SystemsCard = ({
 };
 
 type Props = {
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {

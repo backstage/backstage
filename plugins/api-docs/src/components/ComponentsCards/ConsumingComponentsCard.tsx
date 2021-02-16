@@ -47,7 +47,7 @@ const ComponentsCard = ({
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {

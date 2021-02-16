@@ -41,7 +41,7 @@ const SubcomponentsCard = ({
 };
 
 type Props = {
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {

@@ -41,7 +41,7 @@ const ComponentsCard = ({
 };
 
 type Props = {
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
