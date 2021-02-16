@@ -50,7 +50,7 @@
     "concurrently": "^5.2.0",
     "fs-extra": "^9.0.0",
     "husky": "^4.2.3",
-    "lerna": "^3.20.2",
+    "lerna": "^4.0.0",
     "lint-staged": "^10.1.0",
     "prettier": "^2.0.5",
     "recursive-readdir": "^2.2.2",
