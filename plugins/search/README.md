@@ -2,7 +2,7 @@
 
 **This plugin is still under development.**
 
-You can follow the progress and contribute at the Backstage [Search Project Board](https://github.com/backstage/backstage/projects/6) or reach out to us in the #search Discord channel.
+You can follow the progress and contribute at the Backstage [Search Project Board](https://github.com/backstage/backstage/projects/6) or reach out to us in the [`#search` Discord channel](https://discord.com/channels/687207715902193673/770283289327566848).
 
 ## Getting started
 
