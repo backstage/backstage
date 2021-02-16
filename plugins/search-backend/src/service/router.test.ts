@@ -34,12 +34,12 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /health', () => {
-    it('returns ok', async () => {
-      const response = await request(app).get('/health');
+  describe('GET /query', () => {
+    it('returns empty results array', async () => {
+      const response = await request(app).get('/query');
 
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
+      expect(response.body).toMatchObject({ results: [] });
     });
   });
 });
