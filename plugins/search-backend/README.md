@@ -1,4 +1,4 @@
-# search
+# search-backend
 
 Welcome to the search backend plugin!
 
