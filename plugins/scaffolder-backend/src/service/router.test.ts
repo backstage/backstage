@@ -39,16 +39,14 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { Templaters, Preparers, Publishers } from '../scaffolder';
 import Docker from 'dockerode';
-import { CatalogClient } from '@backstage/catalog-client';
-
-jest.mock('@backstage/catalog-client');
-const MockedCatalogClient = CatalogClient as jest.Mock<CatalogClient>;
+import { CatalogApi } from '@backstage/catalog-client';
 
 jest.mock('dockerode');
 
-const generateEntityClient: any = (template: any) => ({
-  findTemplate: () => Promise.resolve(template),
-});
+const createCatalogClient = (templates: any[] = []) =>
+  ({
+    getEntities: async () => ({ items: templates }),
+  } as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {
   return SingleConnectionDatabaseManager.fromConfig(
@@ -99,7 +97,6 @@ describe('createRouter - working directory', () => {
     },
   };
 
-  const mockedEntityClient = generateEntityClient(template);
   it('should throw an error when working directory does not exist or is not writable', async () => {
     mockAccess.mockImplementation(() => {
       throw new Error('access error');
@@ -113,9 +110,8 @@ describe('createRouter - working directory', () => {
         publishers: new Publishers(),
         config: new ConfigReader(workDirConfig('/path')),
         dockerClient: new Docker(),
-        entityClient: mockedEntityClient,
         database: createDatabase(),
-        catalogClient: new MockedCatalogClient(),
+        catalogClient: createCatalogClient([template]),
       }),
     ).rejects.toThrow('access error');
   });
@@ -128,9 +124,8 @@ describe('createRouter - working directory', () => {
       publishers: new Publishers(),
       config: new ConfigReader(workDirConfig('/path')),
       dockerClient: new Docker(),
-      entityClient: mockedEntityClient,
       database: createDatabase(),
-      catalogClient: new MockedCatalogClient(),
+      catalogClient: createCatalogClient([template]),
     });
 
     const app = express().use(router);
@@ -158,9 +153,8 @@ describe('createRouter - working directory', () => {
       publishers: new Publishers(),
       config: new ConfigReader({}),
       dockerClient: new Docker(),
-      entityClient: mockedEntityClient,
       database: createDatabase(),
-      catalogClient: new MockedCatalogClient(),
+      catalogClient: createCatalogClient([template]),
     });
 
     const app = express().use(router);
@@ -229,9 +223,8 @@ describe('createRouter', () => {
       publishers: new Publishers(),
       config: new ConfigReader({}),
       dockerClient: new Docker(),
-      entityClient: generateEntityClient(template),
       database: createDatabase(),
-      catalogClient: new MockedCatalogClient(),
+      catalogClient: createCatalogClient([template]),
     });
     app = express().use(router);
   });

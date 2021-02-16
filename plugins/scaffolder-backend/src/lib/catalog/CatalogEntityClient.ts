@@ -15,14 +15,14 @@
  */
 
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
  */
 export class CatalogEntityClient {
-  constructor(private readonly catalogClient: CatalogClient) {}
+  constructor(private readonly catalogClient: CatalogApi) {}
 
   /**
    * Looks up a single template using a template name.

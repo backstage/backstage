@@ -48,7 +48,7 @@ import {
   NotFoundError,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -59,7 +59,7 @@ export interface RouterOptions {
   config: Config;
   dockerClient: Docker;
   database: PluginDatabaseManager;
-  catalogClient: CatalogClient;
+  catalogClient: CatalogApi;
 }
 
 export async function createRouter(
