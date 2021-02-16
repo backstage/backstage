@@ -22,6 +22,7 @@ import privateExports, {
   defaultSystemIcons,
   BootErrorPageProps,
   RouteRef,
+  ExternalRouteRef,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-api';
@@ -62,7 +63,7 @@ type TestAppOptions = {
    * // ...
    * const link = useRouteRef(myRouteRef)
    */
-  mountedRoutes?: { [path: string]: RouteRef };
+  mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
 };
 
 /**

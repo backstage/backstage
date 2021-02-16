@@ -33,6 +33,7 @@ import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
+import { createComponentRouteRef } from '../../routes';
 import { CatalogPage } from './CatalogPage';
 
 describe('CatalogPage', () => {
@@ -116,6 +117,11 @@ describe('CatalogPage', () => {
         >
           <EntityFilterGroupsProvider>{children}</EntityFilterGroupsProvider>,
         </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': createComponentRouteRef,
+          },
+        },
       ),
     );
 
