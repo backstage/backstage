@@ -17,7 +17,6 @@ import platformPath from 'path';
 import express from 'express';
 import {
   BlobServiceClient,
-  BlobUploadCommonResponse,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
