@@ -80,13 +80,13 @@ export class AzureBlobStoragePublish implements PublisherBase {
     );
 
     try {
-      const metadata = await storageClient
+      const response = await storageClient
         .getContainerClient(containerName)
         .getProperties();
 
-      if (metadata._response.status >= 400) {
+      if (response._response.status >= 400) {
         throw new Error(
-          `Failed to retrieve metadata from ${metadata._response.request.url} with status code ${metadata._response.status}.`,
+          `Failed to retrieve metadata from ${response._response.request.url} with status code ${response._response.status}.`,
         );
       }
     } catch (e) {
@@ -137,31 +137,46 @@ export class AzureBlobStoragePublish implements PublisherBase {
           `${entityRootDir}/${relativeFilePath}`,
         ); // Azure Blob Storage Container file relative path
 
-        return limiter(() => {
-          return this.storageClient
+        return limiter(async () => {
+          const response = await this.storageClient
             .getContainerClient(this.containerName)
             .getBlockBlobClient(destination)
             .uploadFile(filePath);
+
+          if (response._response.status >= 400) {
+            return {
+              ...response,
+              error: new Error(
+                `Upload failed for ${filePath} with status code ${response._response.status}`,
+              ),
+            };
+          }
+          return {
+            ...response,
+            error: undefined,
+          };
         });
       });
 
-      let responses: BlobUploadCommonResponse[] = [];
+      const responses = await Promise.all(promises);
 
-      responses = await Promise.all(promises);
-
-      const failed = responses.filter(r => r?._response?.status >= 400);
+      const failed = responses.filter(r => r.error);
       if (failed.length === 0) {
         this.logger.info(
-          `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+          `Successfully uploaded the ${responses.length} generated file(s) for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
         );
       } else {
-        const errorMessage = `Unable to upload ${failed.length} file(s) to Azure Blob Storage.`;
-        this.logger.error(errorMessage);
+        throw new Error(
+          failed
+            .map(r => r.error?.message)
+            .filter(Boolean)
+            .join(' '),
+        );
       }
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. ${e.message}`;
       this.logger.error(errorMessage);
-      return;
+      throw new Error(errorMessage);
     }
   }
 
