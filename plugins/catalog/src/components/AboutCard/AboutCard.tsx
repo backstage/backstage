@@ -35,7 +35,7 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink, determineUrlType } from '../actions';
+import { findEditUrl, determineUrlType } from '../actions';
 import { AboutContent } from './AboutContent';
 
 const useStyles = makeStyles({
@@ -61,19 +61,22 @@ type CodeLinkInfo = {
 };
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
+  let sourceUrl =
+    entity.metadata?.annotations?.['backstage.io/browser-source-url'];
   const location = findLocationForEntityMeta(entity?.metadata);
+  const editUrl = findEditUrl(entity, location);
+
   if (location) {
+    sourceUrl = sourceUrl || location.target;
     const type =
-      location.type === 'url'
-        ? determineUrlType(location.target)
-        : location.type;
+      location.type === 'url' ? determineUrlType(sourceUrl) : location.type;
     return {
+      edithref: editUrl,
       icon: iconMap[type],
-      edithref: createEditLink(location),
-      href: location.target,
+      href: sourceUrl,
     };
   }
-  return {};
+  return { edithref: editUrl, href: sourceUrl };
 }
 
 type AboutCardProps = {
