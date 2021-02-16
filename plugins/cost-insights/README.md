@@ -11,6 +11,8 @@ At Spotify, we find that cloud costs are optimized organically when:
 
 Cost Insights shows trends over time, at the granularity of Backstage catalog entities - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
 
+Learn more with the Backstage blog post [New Cost Insights plugin: The engineer's solution to taming cloud costs](https://backstage.io/blog/2020/10/22/cost-insights-plugin).
+
 ## Install
 
 ```bash
