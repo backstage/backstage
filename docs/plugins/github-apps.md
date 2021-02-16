@@ -46,7 +46,7 @@ You have to create the GitHub Application manually using these
 as GitHub Enterprise does not support creation of apps from manifests.
 
 Once the application is created you have to generate a private key for the
-application and place it in in a YAML file.
+application and place it in a YAML file.
 
 The YAML file must include the following information. Please note that the
 indentation for the `privateKey` is required.
