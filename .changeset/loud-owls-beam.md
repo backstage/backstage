@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend': minor
+'@backstage/plugin-scaffolder-backend': patch
 ---
 
 Added githubApp authentication to the scaffolder-backend plugin

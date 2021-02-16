@@ -31,10 +31,8 @@ export class GithubPublisher implements PublisherBase {
     config: GitHubIntegrationConfig,
     { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
   ) {
-    if (!config.token) {
-      if (!config.apps) {
-        return undefined;
-      }
+    if (!config.token && !config.apps) {
+      return undefined;
     }
 
     const credentialsProvider = GithubCredentialsProvider.create(config);
@@ -61,12 +59,13 @@ export class GithubPublisher implements PublisherBase {
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
 
-    const token =
-      (
-        await this.config.credentialsProvider.getCredentials({
-          url: values.storePath,
-        })
-      ).token || '';
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url: values.storePath,
+    });
+
+    if (!token) {
+      return { remoteUrl: '', catalogInfoUrl: undefined };
+    }
 
     const client = new Octokit({
       auth: token,
