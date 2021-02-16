@@ -69,18 +69,30 @@ export class Registry {
   }
 
   // @todo But like with coordination, timing, error handling, and what have you.
-  execute() {
-    Object.keys(this.collators).forEach(async type => {
-      const decorators: IndexableDocumentDecorator[] = (
-        this.decorators['*'] || []
-      ).concat(this.decorators[type] || []);
-      let documents = await this.collators[type].collate();
+  async execute(): Promise<void> {
+    return new Promise(resolve => {
+      Object.keys(this.collators).forEach(async type => {
+        const decorators: IndexableDocumentDecorator[] = (
+          this.decorators['*'] || []
+        ).concat(this.decorators[type] || []);
+        let documents = await this.collators[type].collate();
 
-      for (let i = 0; i < decorators.length; i++) {
-        documents = await decorators[i](documents);
-      }
+        for (let i = 0; i < decorators.length; i++) {
+          documents = await decorators[i](documents);
+        }
 
-      // @todo: push documents to a configured search engine.
+        // @todo: push documents to a configured search engine.
+        resolve(undefined);
+      });
     });
+  }
+
+  /**
+   * Utility method for tests. Do not use otherwise.
+   * @private
+   */
+  _reset() {
+    this.collators = {};
+    this.decorators = {};
   }
 }
