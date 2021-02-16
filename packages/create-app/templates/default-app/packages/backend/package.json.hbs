@@ -8,8 +8,8 @@
     "node": "12 || 14"
   },
   "scripts": {
-    "build": "backstage-cli backend:build",
-    "build-image": "backstage-cli backend:build-image --build --tag backstage",
+    "build": "backstage-cli backend:bundle",
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage",
     "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
