@@ -29,6 +29,7 @@ import {
   isValidRepoUrlForMkdocs,
   patchMkdocsYmlPreBuild,
   runDockerContainer,
+  storeEtagMetadata,
 } from './helpers';
 
 const mockEntity = {
@@ -362,7 +363,7 @@ describe('helpers', () => {
 
       await expect(
         addBuildTimestampMetadata(filePath, mockLogger),
-      ).rejects.toThrowError();
+      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
     });
 
     it('should add build timestamp to the metadata json', async () => {
@@ -372,6 +373,39 @@ describe('helpers', () => {
 
       const json = await fs.readJson(filePath);
       expect(json.build_timestamp).toBeLessThanOrEqual(Date.now());
+    });
+  });
+
+  describe('storeEtagMetadata', () => {
+    beforeEach(() => {
+      mockFs.restore();
+      mockFs({
+        [rootDir]: {
+          'invalid_techdocs_metadata.json': 'dsds',
+          'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
+
+      await expect(
+        storeEtagMetadata(filePath, 'etag123abc'),
+      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+    });
+
+    it('should add etag to the metadata json', async () => {
+      const filePath = path.join(rootDir, 'techdocs_metadata.json');
+
+      await storeEtagMetadata(filePath, 'etag123abc');
+
+      const json = await fs.readJson(filePath);
+      expect(json.etag).toBe('etag123abc');
     });
   });
 });

@@ -306,3 +306,20 @@ export const addBuildTimestampMetadata = async (
   await fs.writeJson(techdocsMetadataPath, json);
   return;
 };
+
+/**
+ * Update the techdocs_metadata.json to add etag of the prepared tree (e.g. commit SHA or actual Etag of the resource).
+ * This is helpful to check if a TechDocs site in storage has gone outdated, without maintaining an in-memory build info
+ * per Backstage instance.
+ *
+ * @param {string} techdocsMetadataPath File path to techdocs_metadata.json
+ * @param {string} etag
+ */
+export const storeEtagMetadata = async (
+  techdocsMetadataPath: string,
+  etag: string,
+): Promise<void> => {
+  const json = await fs.readJson(techdocsMetadataPath);
+  json.etag = etag;
+  await fs.writeJson(techdocsMetadataPath, json);
+};
