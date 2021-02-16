@@ -11508,6 +11508,15 @@ dom-serializer@0, dom-serializer@^0.2.1:
     domelementtype "^2.0.1"
     entities "^2.0.0"
 
+dom-serializer@^1.0.1:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/dom-serializer/-/dom-serializer-1.2.0.tgz#3433d9136aeb3c627981daa385fc7f32d27c48f1"
+  integrity sha512-n6kZFH/KlCrqs/1GHMOd5i2fd/beQHuehKdWvNNffbGHTr/almdhuVvTVFb3V7fglz+nC50fFusu3lY33h12pA==
+  dependencies:
+    domelementtype "^2.0.1"
+    domhandler "^4.0.0"
+    entities "^2.0.0"
+
 dom-walk@^0.1.0:
   version "0.1.1"
   resolved "https://registry.npmjs.org/dom-walk/-/dom-walk-0.1.1.tgz#672226dc74c8f799ad35307df936aba11acd6018"
@@ -11527,6 +11536,11 @@ domelementtype@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/domelementtype/-/domelementtype-2.0.1.tgz#1f8bdfe91f5a78063274e803b4bdcedf6e94f94d"
   integrity sha512-5HOHUDsYZWV8FGWN0Njbr/Rn7f/eWSQi1v7+HsUVwXgn8nWWlL64zKDkS0n8ZmQ3mlWOMuXOnR+7Nx/5tMO5AQ==
+
+domelementtype@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/domelementtype/-/domelementtype-2.1.0.tgz#a851c080a6d1c3d94344aed151d99f669edf585e"
+  integrity sha512-LsTgx/L5VpD+Q8lmsXSHW2WpA+eBlZ9HPf3erD1IoPF00/3JKHZ3BknUVA2QGDNu69ZNmyFmCWBSO45XjYKC5w==
 
 domexception@^1.0.1:
   version "1.0.1"
@@ -11555,6 +11569,13 @@ domhandler@^3.0, domhandler@^3.0.0:
   integrity sha512-eKLdI5v9m67kbXQbJSNn1zjh0SDzvzWVWtX+qEI3eMjZw8daH9k8rlj1FZY9memPwjiskQFbe7vHVVJIAqoEhw==
   dependencies:
     domelementtype "^2.0.1"
+
+domhandler@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/domhandler/-/domhandler-4.0.0.tgz#01ea7821de996d85f69029e81fa873c21833098e"
+  integrity sha512-KPTbnGQ1JeEMQyO1iYXoagsI6so/C96HZiFyByU3T6iAzpXn8EGEvct6unm1ZGoed8ByO2oirxgwxBmqKF9haA==
+  dependencies:
+    domelementtype "^2.1.0"
 
 dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.3:
   version "2.2.3"
@@ -11585,6 +11606,15 @@ domutils@^2.0.0:
     dom-serializer "^0.2.1"
     domelementtype "^2.0.1"
     domhandler "^3.0.0"
+
+domutils@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.npmjs.org/domutils/-/domutils-2.4.4.tgz#282739c4b150d022d34699797369aad8d19bbbd3"
+  integrity sha512-jBC0vOsECI4OMdD0GC9mGn7NXPLb+Qt6KW1YDQzeQYRUFKmNG8lh7mO5HiELfr+lLQE7loDVI4QcAxV80HS+RA==
+  dependencies:
+    dom-serializer "^1.0.1"
+    domelementtype "^2.0.1"
+    domhandler "^4.0.0"
 
 dot-case@^3.0.3:
   version "3.0.3"
@@ -12070,6 +12100,11 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
+
+escape-string-regexp@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
+  integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
 escodegen@^1.14.1, escodegen@^1.9.1:
   version "1.14.3"
@@ -14504,7 +14539,7 @@ htmlparser2@^3.3.0:
     inherits "^2.0.1"
     readable-stream "^3.1.1"
 
-htmlparser2@^4.0, htmlparser2@^4.1.0:
+htmlparser2@^4.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/htmlparser2/-/htmlparser2-4.1.0.tgz#9a4ef161f2e4625ebf7dfbe6c0a2f52d18a59e78"
   integrity sha512-4zDq1a1zhE4gQso/c5LP1OtrhYTncXNSpvJYtWJBtXAETPlMfi3IFNjGuQbYLuVY4ZR0QMqRVvo4Pdy9KLyP8Q==
@@ -14512,6 +14547,16 @@ htmlparser2@^4.0, htmlparser2@^4.1.0:
     domelementtype "^2.0.1"
     domhandler "^3.0.0"
     domutils "^2.0.0"
+    entities "^2.0.0"
+
+htmlparser2@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/htmlparser2/-/htmlparser2-6.0.0.tgz#c2da005030390908ca4c91e5629e418e0665ac01"
+  integrity sha512-numTQtDZMoh78zJpaNdJ9MXb2cv5G3jwUoe3dMQODubZvLoGvTE/Ofp6sHvH8OGKcN/8A47pGLi/k58xHP/Tfw==
+  dependencies:
+    domelementtype "^2.0.1"
+    domhandler "^4.0.0"
+    domutils "^2.4.4"
     entities "^2.0.0"
 
 http-cache-semantics@^4.0.0, http-cache-semantics@^4.1.0:
@@ -16748,6 +16793,11 @@ kleur@^3.0.3:
   resolved "https://registry.npmjs.org/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
+klona@^2.0.3:
+  version "2.0.4"
+  resolved "https://registry.npmjs.org/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
+  integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
+
 knex@^0.21.6:
   version "0.21.8"
   resolved "https://registry.npmjs.org/knex/-/knex-0.21.8.tgz#e5c07af61ee6aa006d3468e10e3a69351deb0c26"
@@ -18406,6 +18456,11 @@ nanoid@^2.1.0:
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-2.1.11.tgz#ec24b8a758d591561531b4176a01e3ab4f0f0280"
   integrity sha512-s/snB+WGm6uwi0WjsZdaVcuf3KJXlfGl2LcxgwkEwJF0D/BWzVWAZW/XY4bFaiR7s0Jk3FPvlnepg1H1b1UwlA==
 
+nanoid@^3.1.20:
+  version "3.1.20"
+  resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.1.20.tgz#badc263c6b1dcf14b71efaa85f6ab4c1d6cfc788"
+  integrity sha512-a1cQNyczgKbLX9jwbS/+d7W8fX/RfgYR7lVWwWOGIPNgK2m0MWvrGF6/m4kk6U3QcFMnZf3RIhL0v2Jgh/0Uxw==
+
 nanomatch@^1.2.9:
   version "1.2.13"
   resolved "https://registry.npmjs.org/nanomatch/-/nanomatch-1.2.13.tgz#b87a8aa4fc0de8fe6be88895b38983ff265bd119"
@@ -19655,6 +19710,11 @@ parse-path@^4.0.0:
     is-ssh "^1.3.0"
     protocols "^1.4.0"
 
+parse-srcset@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/parse-srcset/-/parse-srcset-1.0.2.tgz#f2bd221f6cc970a938d88556abc589caaaa2bde1"
+  integrity sha1-8r0iH2zJcKk42IVWq8WJyqqiveE=
+
 parse-url@^5.0.0:
   version "5.0.1"
   resolved "https://registry.npmjs.org/parse-url/-/parse-url-5.0.1.tgz#99c4084fc11be14141efa41b3d117a96fcb9527f"
@@ -20577,6 +20637,15 @@ postcss@^6.0.1:
     chalk "^2.4.1"
     source-map "^0.6.1"
     supports-color "^5.4.0"
+
+postcss@^8.0.2:
+  version "8.2.6"
+  resolved "https://registry.npmjs.org/postcss/-/postcss-8.2.6.tgz#5d69a974543b45f87e464bc4c3e392a97d6be9fe"
+  integrity sha512-xpB8qYxgPuly166AGlpRjUdEYtmOWx2iCwGmrv4vqZL9YPVviDVPZPRXxnXr6xPZOdxQ9lp3ZBFCRgWJ7LE3Sg==
+  dependencies:
+    colorette "^1.2.1"
+    nanoid "^3.1.20"
+    source-map "^0.6.1"
 
 postgres-array@~1.0.0:
   version "1.0.3"
@@ -22635,17 +22704,18 @@ sane@^4.0.3:
     minimist "^1.1.1"
     walker "~1.0.5"
 
-sanitize-html@^1.27.0:
-  version "1.27.0"
-  resolved "https://registry.npmjs.org/sanitize-html/-/sanitize-html-1.27.0.tgz#42104a2d59f1a48b616b5165ad5349824861e580"
-  integrity sha512-U1btucGeYVpg0GoK43jPpe/bDCV4cBOGuxzv5NBd0bOjyZdMKY0n98S/vNlO1wVwre0VCj8H3hbzE7gD2+RjKA==
+sanitize-html@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.3.2.tgz#a1954aea877a096c408aca7b0c260bef6e4fc402"
+  integrity sha512-p7neuskvC8pSurUjdVmbWPXmc9A4+QpOXIL+4gwFC+av5h+lYCXFT8uEneqsFQg/wEA1IH+cKQA60AaQI6p3cg==
   dependencies:
-    chalk "^2.4.1"
-    htmlparser2 "^4.1.0"
-    lodash "^4.17.15"
-    postcss "^7.0.27"
-    srcset "^2.0.1"
-    xtend "^4.0.1"
+    deepmerge "^4.2.2"
+    escape-string-regexp "^4.0.0"
+    htmlparser2 "^6.0.0"
+    is-plain-object "^5.0.0"
+    klona "^2.0.3"
+    parse-srcset "^1.0.2"
+    postcss "^8.0.2"
 
 sax@1.2.1:
   version "1.2.1"
@@ -23358,11 +23428,6 @@ sqlite3@^5.0.0:
     node-pre-gyp "^0.11.0"
   optionalDependencies:
     node-gyp "3.x"
-
-srcset@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/srcset/-/srcset-2.0.1.tgz#8f842d357487eb797f413d9c309de7a5149df5ac"
-  integrity sha512-00kZI87TdRKwt+P8jj8UZxbfp7mK2ufxcIMWvhAOZNJTRROimpHeruWrGvCZneiuVDLqdyHefVp748ECTnyUBQ==
 
 ssh2-streams@~0.4.10:
   version "0.4.10"

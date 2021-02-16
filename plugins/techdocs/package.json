@@ -47,7 +47,7 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
-    "sanitize-html": "^1.27.0"
+    "sanitize-html": "^2.3.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.0",
