@@ -36,7 +36,7 @@ import React, { PropsWithChildren } from 'react';
 const ComponentsCard = ({
   children,
   variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
+}: PropsWithChildren<{ variant?: 'gridItem' }>) => {
   return (
     <InfoCard variant={variant} title="Consumers">
       {children}
