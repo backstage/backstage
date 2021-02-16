@@ -46,11 +46,13 @@ export class GithubPreparer implements PreparerBase {
       url,
     });
 
-    const git = Git.fromAuth({
-      username: 'x-access-token',
-      password: token,
-      logger,
-    });
+    const git = token
+      ? Git.fromAuth({
+          username: 'x-access-token',
+          password: token,
+          logger,
+        })
+      : Git.fromAuth({ logger });
 
     await git.clone({
       url: parsedGitUrl.toString('https'),
