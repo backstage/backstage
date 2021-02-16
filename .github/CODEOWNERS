@@ -12,6 +12,7 @@
 /plugins/cloudbuild                         @trivago/ebarrios
 /plugins/search                             @backstage/techdocs-core
 /plugins/search-*                           @backstage/techdocs-core
+/packages/app/src/components/search/*       @backstage/techdocs-core
 /plugins/techdocs                           @backstage/techdocs-core
 /plugins/techdocs-backend                   @backstage/techdocs-core
 /packages/techdocs-common                   @backstage/techdocs-core
