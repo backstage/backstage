@@ -11,8 +11,6 @@ The page is imported from the Scaffolder plugin and added to the `<FlatRoutes>` 
 <Route path="/create" element={<ScaffolderPage />} />
 ```
 
-You can choose your own paths if you wish, as long as the `templateName` and `taskId` parameters are present.
-
 The Catalog plugin has also been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the catalog plugin to use the new extension components, as well as bind the external route.
 
 To use the new extension components, replace existing usage of the `CatalogRouter` with the following:
