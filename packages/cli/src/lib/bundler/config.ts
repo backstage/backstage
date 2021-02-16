@@ -174,7 +174,7 @@ export async function createConfig(
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
     resolve: {
-      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
+      extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx', '.json'],
       mainFields: ['browser', 'module', 'main'],
       plugins: [
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
