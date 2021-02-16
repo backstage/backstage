@@ -173,10 +173,19 @@ describe('error reporting', () => {
 
     const logger = createLogger();
 
-    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+    let error;
+    try {
+      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toBeInstanceOf(Error);
 
     expect(logger.error).toHaveBeenCalledWith(
-      `Could not read Azure Blob Storage container properties`,
+      expect.stringContaining(
+        `Could not retrieve metadata about the Azure Blob Storage container bad_container.`,
+      ),
     );
   });
 

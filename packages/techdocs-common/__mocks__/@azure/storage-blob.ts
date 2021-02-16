@@ -29,7 +29,9 @@ export class BlockBlobClient {
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
     return Promise.resolve({
       _response: {
-        request: {} as any,
+        request: {
+          url: `https://example.blob.core.windows.net`,
+        } as any,
         status: 200,
         headers: {} as any,
       },
@@ -45,7 +47,9 @@ class BlockBlobClientFailUpload extends BlockBlobClient {
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
     return Promise.resolve({
       _response: {
-        request: {} as any,
+        request: {
+          url: `https://example.blob.core.windows.net`,
+        } as any,
         status: 500,
         headers: {} as any,
       },
@@ -63,7 +67,9 @@ export class ContainerClient {
   getProperties(): Promise<ContainerGetPropertiesResponse> {
     return Promise.resolve({
       _response: {
-        request: {} as any,
+        request: {
+          url: `https://example.blob.core.windows.net`,
+        } as any,
         status: 200,
         headers: {} as any,
         parsedHeaders: {},
@@ -80,7 +86,9 @@ class ContainerClientFailGetProperties extends ContainerClient {
   getProperties(): Promise<ContainerGetPropertiesResponse> {
     return Promise.resolve({
       _response: {
-        request: {} as any,
+        request: {
+          url: `https://example.blob.core.windows.net`,
+        } as any,
         status: 404,
         headers: {} as any,
         parsedHeaders: {},

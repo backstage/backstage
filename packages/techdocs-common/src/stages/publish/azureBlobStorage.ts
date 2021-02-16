@@ -79,31 +79,25 @@ export class AzureBlobStoragePublish implements PublisherBase {
       credential,
     );
 
-    await storageClient
-      .getContainerClient(containerName)
-      .getProperties()
-      .then(result => {
-        if (result?._response?.status >= 400) {
-          logger.error(
-            'Could not read Azure Blob Storage container properties',
-          );
-        } else {
-          logger.info(
-            `Successfully connected to the Azure Blob Storage container ${containerName}.`,
-          );
-        }
-      })
-      .catch(reason => {
-        logger.error(
-          `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
-            'Make sure that the Azure project and container exist and the access key is setup correctly ' +
-            'techdocs.publisher.azureBlobStorage.credentials defined in app config has correct permissions. ' +
-            'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-        );
+    try {
+      const metadata = await storageClient
+        .getContainerClient(containerName)
+        .getProperties();
+
+      if (metadata._response.status >= 400) {
         throw new Error(
-          `from Azure Blob Storage client library: ${reason.message}`,
+          `Failed to retrieve metadata from ${metadata._response.request.url} with status code ${metadata._response.status}.`,
         );
-      });
+      }
+    } catch (e) {
+      logger.error(
+        `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
+          'Make sure that the Azure project and container exist and the access key is setup correctly ' +
+          'techdocs.publisher.azureBlobStorage.credentials defined in app config has correct permissions. ' +
+          'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      throw new Error(`from Azure Blob Storage client library: ${e.message}`);
+    }
 
     return new AzureBlobStoragePublish(storageClient, containerName, logger);
   }
