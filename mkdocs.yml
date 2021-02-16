@@ -16,7 +16,7 @@ nav:
   - Getting started:
       - Getting Started: 'getting-started/index.md'
       - Running Backstage locally: 'getting-started/running-backstage-locally.md'
-      - Local development: 'getting-started/development-environment.md'
+      - Contributors: 'getting-started/contributors.md'
       - Demo deployment: https://backstage-demo.roadie.io
       - Production deployments:
           - Create an App: 'getting-started/create-an-app.md'

@@ -18,6 +18,13 @@ grab the one for the origin like so:
 git clone git@github.com/backstage/backstage --depth 1
 ```
 
+If you cloned a fork, you can add the upstream dependency like so:
+
+```bash
+git remote add upstream git@github.com:backstage/backstage
+git pull upstream master
+```
+
 After you have cloned the Backstage repository, you should run the following
 commands once to set things up for development:
 
