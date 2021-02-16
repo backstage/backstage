@@ -49,6 +49,7 @@ import MTable, {
 } from 'material-table';
 import React, {
   forwardRef,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -203,7 +204,7 @@ export interface TableProps<T extends object = {}>
   subtitle?: string;
   filters?: TableFilter[];
   initialState?: TableState;
-  emptyComponent?: JSX.Element;
+  emptyContent?: ReactNode;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -214,7 +215,7 @@ export function Table<T extends object = {}>({
   subtitle,
   filters,
   initialState,
-  emptyComponent,
+  emptyContent,
   onStateChange,
   ...props
 }: TableProps<T>) {
@@ -428,11 +429,11 @@ export function Table<T extends object = {}>({
 
   const Body = useCallback(
     bodyProps => {
-      if (emptyComponent && data.length === 0) {
+      if (emptyContent && data.length === 0) {
         return (
           <tbody>
             <tr>
-              <td colSpan={columns.length}>{emptyComponent}</td>
+              <td colSpan={columns.length}>{emptyContent}</td>
             </tr>
           </tbody>
         );
@@ -440,7 +441,7 @@ export function Table<T extends object = {}>({
 
       return <MTableBody {...bodyProps} />;
     },
-    [data, emptyComponent, columns],
+    [data, emptyContent, columns],
   );
 
   return (

@@ -80,7 +80,7 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
     <EntityTable
       title="Consumers"
       variant={variant}
-      emptyComponent={
+      emptyContent={
         <div>
           No component consumes this API.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">

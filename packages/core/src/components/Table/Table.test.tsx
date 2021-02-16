@@ -58,7 +58,7 @@ describe('<Table />', () => {
     const rendered = await renderInTestApp(
       <Table
         subtitle="subtitle"
-        emptyComponent={<div>EMPTY</div>}
+        emptyContent={<div>EMPTY</div>}
         columns={minProps.columns}
         data={[]}
       />,

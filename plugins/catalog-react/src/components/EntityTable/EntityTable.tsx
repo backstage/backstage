@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core';
 import { makeStyles } from '@material-ui/core';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import * as columnFactories from './columns';
 import { componentEntityColumns, systemEntityColumns } from './presets';
 
@@ -25,7 +25,7 @@ type Props<T extends Entity> = {
   title: string;
   variant?: string;
   entities: T[];
-  emptyComponent?: JSX.Element;
+  emptyContent?: ReactNode;
   columns: TableColumn<T>[];
 };
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 export function EntityTable<T extends Entity>({
   entities,
   title,
-  emptyComponent,
+  emptyContent,
   variant = 'gridItem',
   columns,
 }: Props<T>) {
@@ -59,8 +59,8 @@ export function EntityTable<T extends Entity>({
       columns={columns}
       title={title}
       style={tableStyle}
-      emptyComponent={
-        emptyComponent && <div className={classes.empty}>{emptyComponent}</div>
+      emptyContent={
+        emptyContent && <div className={classes.empty}>{emptyContent}</div>
       }
       options={{
         // TODO: Toolbar padding if off compared to other cards, should be: padding: 16px 24px;

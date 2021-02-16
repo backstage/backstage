@@ -26,7 +26,7 @@ describe('<EntityTable />', () => {
       <EntityTable
         title="Entities"
         entities={[]}
-        emptyComponent={<div>EMPTY</div>}
+        emptyContent={<div>EMPTY</div>}
         columns={[]}
       />,
     );
@@ -51,7 +51,7 @@ describe('<EntityTable />', () => {
       <EntityTable
         title="Entities"
         entities={entities}
-        emptyComponent={<div>EMPTY</div>}
+        emptyContent={<div>EMPTY</div>}
         columns={[
           {
             title: 'Name',

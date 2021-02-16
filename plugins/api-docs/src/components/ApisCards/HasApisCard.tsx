@@ -76,7 +76,7 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
     <EntityTable
       title="APIs"
       variant={variant}
-      emptyComponent={
+      emptyContent={
         <div>
           No API is part of this system.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api">

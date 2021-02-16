@@ -75,7 +75,7 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
     <EntityTable
       title="Components"
       variant={variant}
-      emptyComponent={
+      emptyContent={
         <div>
           No component is part of this system.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component">

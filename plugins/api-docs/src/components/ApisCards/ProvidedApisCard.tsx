@@ -81,7 +81,7 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
     <EntityTable
       title="Provided APIs"
       variant={variant}
-      emptyComponent={
+      emptyContent={
         <div>
           No Component provides this API.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">

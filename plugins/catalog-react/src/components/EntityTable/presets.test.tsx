@@ -65,7 +65,7 @@ describe('systemEntityColumns', () => {
       <EntityTable
         title="My Systems"
         entities={entities}
-        emptyComponent={<div>EMPTY</div>}
+        emptyContent={<div>EMPTY</div>}
         columns={systemEntityColumns}
       />,
     );
@@ -120,7 +120,7 @@ describe('componentEntityColumns', () => {
       <EntityTable
         title="My Components"
         entities={entities}
-        emptyComponent={<div>EMPTY</div>}
+        emptyContent={<div>EMPTY</div>}
         columns={componentEntityColumns}
       />,
     );

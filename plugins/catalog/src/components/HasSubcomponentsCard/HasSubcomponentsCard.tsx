@@ -75,7 +75,7 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
     <EntityTable
       title="Subcomponents"
       variant={variant}
-      emptyComponent={
+      emptyContent={
         <div>
           No subcomponent is part of this component.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">

@@ -119,7 +119,7 @@ export const EmptyTable = () => {
         options={{ paging: false }}
         data={[]}
         columns={columns}
-        emptyComponent={
+        emptyContent={
           <div className={classes.empty}>
             No data was added yet,&nbsp;
             <Link to="http://backstage.io/">learn how to add data</Link>.
