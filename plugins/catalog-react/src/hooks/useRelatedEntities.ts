@@ -32,9 +32,8 @@ export function useRelatedEntities(
       entity.relations &&
       entity.relations.filter(
         r =>
-          (!type || r.type === type) &&
-          (!kind ||
-            r.target.kind.toLocaleLowerCase() === kind.toLocaleLowerCase()),
+          (!type || r.type.toLowerCase() === type.toLowerCase()) &&
+          (!kind || r.target.kind.toLowerCase() === kind.toLowerCase()),
       );
 
     if (!relations) {
