@@ -53,13 +53,7 @@ export const SearchPage = () => {
 
   return (
     <Page themeId="home">
-      <Header
-        title={
-          <>
-            Search <Lifecycle alpha shorthand />
-          </>
-        }
-      />
+      <Header title="Search" subtitle={<Lifecycle alpha />} />
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
