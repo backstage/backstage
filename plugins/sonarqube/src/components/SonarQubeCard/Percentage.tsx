@@ -16,7 +16,7 @@
 
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/styles';
+import { useTheme } from '@material-ui/core';
 import { Circle } from 'rc-progress';
 import React from 'react';
 
