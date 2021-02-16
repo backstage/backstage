@@ -19,7 +19,7 @@ import { createDevApp } from '@backstage/dev-utils';
 import { discoveryApiRef, identityApiRef } from '@backstage/core';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TemplateIndexPage, TemplatePage, TaskPage } from '../src/plugin';
+import { ScaffolderPage } from '../src/plugin';
 import { ScaffolderClient, scaffolderApiRef } from '../src';
 
 createDevApp()
@@ -37,14 +37,6 @@ createDevApp()
   .addPage({
     path: '/create',
     title: 'Create',
-    element: <TemplateIndexPage />,
-  })
-  .addPage({
-    path: '/create/:templateName',
-    element: <TemplatePage />,
-  })
-  .addPage({
-    path: '/scaffolder/tasks/:taskId',
-    element: <TaskPage />,
+    element: <ScaffolderPage />,
   })
   .render();
