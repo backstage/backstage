@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Content, Header, Page, useQueryParamState } from '@backstage/core';
+import {
+  Content,
+  Header,
+  Lifecycle,
+  Page,
+  useQueryParamState,
+} from '@backstage/core';
 import { SearchBar, SearchResult } from '@backstage/plugin-search';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
@@ -47,7 +53,13 @@ export const SearchPage = () => {
 
   return (
     <Page themeId="home">
-      <Header title="Search (Alpha)" />
+      <Header
+        title={
+          <>
+            Search <Lifecycle alpha shorthand />
+          </>
+        }
+      />
       <Content>
         <Grid container direction="row">
           <Grid item xs={12}>
