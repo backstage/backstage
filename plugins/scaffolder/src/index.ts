@@ -17,9 +17,7 @@
 export {
   scaffolderPlugin,
   scaffolderPlugin as plugin,
-  TemplateIndexPage,
-  TemplatePage,
-  TaskPage,
+  ScaffolderPage,
 } from './plugin';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';

@@ -29,11 +29,11 @@ import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { generatePath, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { taskRouteRef, templateIndexRouteRef } from '../../routes';
+import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
@@ -78,8 +78,7 @@ export const TemplatePage = () => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
   const navigate = useNavigate();
-  const tasksLink = useRouteRef(taskRouteRef);
-  const templateIndexLink = useRouteRef(templateIndexRouteRef);
+  const rootLink = useRouteRef(rootRouteRef);
   const { template, loading } = useTemplate(templateName, catalogApi);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
@@ -92,7 +91,8 @@ export const TemplatePage = () => {
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      navigate(tasksLink({ taskId: id }));
+
+      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
     } catch (e) {
       errorApi.post(e);
     }
@@ -100,7 +100,7 @@ export const TemplatePage = () => {
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
-    navigate(templateIndexLink());
+    navigate(rootLink());
     return <>{null}</>;
   }
 
@@ -110,7 +110,7 @@ export const TemplatePage = () => {
         'Template schema is corrupted, please check the template.yaml file.',
       ),
     );
-    navigate(templateIndexLink());
+    navigate(rootLink());
     return <>{null}</>;
   }
 

@@ -21,11 +21,7 @@ import {
   identityApiRef,
   createRoutableExtension,
 } from '@backstage/core';
-import {
-  templateIndexRouteRef,
-  templateRouteRef,
-  taskRouteRef,
-} from './routes';
+import { rootRouteRef } from './routes';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 
 export const scaffolderPlugin = createPlugin({
@@ -39,31 +35,13 @@ export const scaffolderPlugin = createPlugin({
     }),
   ],
   routes: {
-    templateIndex: templateIndexRouteRef,
-    template: templateRouteRef,
-    task: taskRouteRef,
+    root: rootRouteRef,
   },
 });
 
-export const TemplateIndexPage = scaffolderPlugin.provide(
+export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/ScaffolderPage').then(m => m.ScaffolderPage),
-    mountPoint: templateIndexRouteRef,
-  }),
-);
-
-export const TemplatePage = scaffolderPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/TemplatePage').then(m => m.TemplatePage),
-    mountPoint: templateRouteRef,
-  }),
-);
-
-export const TaskPage = scaffolderPlugin.provide(
-  createRoutableExtension({
-    component: () => import('./components/TaskPage').then(m => m.TaskPage),
-    mountPoint: taskRouteRef,
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
   }),
 );

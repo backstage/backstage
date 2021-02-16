@@ -32,12 +32,7 @@ import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
-import {
-  TemplateIndexPage,
-  TemplatePage,
-  TaskPage,
-  scaffolderPlugin,
-} from '@backstage/plugin-scaffolder';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
@@ -72,7 +67,7 @@ const app = createApp({
   },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.templateIndex,
+      createComponent: scaffolderPlugin.routes.root,
     });
   },
 });
@@ -98,9 +93,7 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<DocsRouter />} />
-    <Route path="/create" element={<TemplateIndexPage />} />
-    <Route path="/create/templates/:templateName" element={<TemplatePage />} />
-    <Route path="/create/tasks/:taskId" element={<TaskPage />} />
+    <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"

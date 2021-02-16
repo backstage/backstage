@@ -25,7 +25,8 @@ import {
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
-import { templateRouteRef } from '../../routes';
+import { generatePath } from 'react-router';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -58,11 +59,14 @@ export const TemplateCard = ({
   name,
 }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
+  const rootLink = useRouteRef(rootRouteRef);
 
   const themeId = pageTheme[type] ? type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const templateLink = useRouteRef(templateRouteRef);
+  const href = generatePath(`${rootLink()}/templates/:templateName`, {
+    templateName: name,
+  });
 
   return (
     <Card>
@@ -79,7 +83,7 @@ export const TemplateCard = ({
         </Typography>
       </CardContent>
       <CardActions>
-        <Button color="primary" to={templateLink({ templateName: name })}>
+        <Button color="primary" to={href}>
           Choose
         </Button>
       </CardActions>

@@ -67,7 +67,7 @@ const app = createApp({
   // ...
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.templateIndex,
+      createComponent: scaffolderPlugin.routes.root,
     });
   },
 });

@@ -36,16 +36,14 @@ Add the following entry to the head of your `packages/app/src/plugins.ts`:
 export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 ```
 
-Next we need to install the three pages that the scaffolder plugin provides. You
-can choose any name for these routes, but we recommend the following:
+Next we need to install the root page that the Scaffolder plugin provides. You
+can choose any path for the route, but we recommend the following:
 
 ```tsx
-import { TemplateIndexPage, TemplatePage, TaskPage } from '@backstage/plugin-scaffolder';
+import { ScaffolderPage } from '@backstage/plugin-scaffolder';
 
 // Add to the top-level routes, directly within <FlatRoutes>
-<Route path="/create" element={<TemplateIndexPage />} />
-<Route path="/create/templates/:templateName" element={<TemplatePage />} />
-<Route path="/create/tasks/:taskId" element={<TaskPage />} />
+<Route path="/create" element={<ScaffolderPage />} />;
 ```
 
 You may also want to add a link to the template index page to your sidebar:
