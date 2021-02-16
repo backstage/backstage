@@ -15,7 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { useAsyncRetry } from 'react-use';
+import { useAsync } from 'react-use';
 import { catalogApiRef } from '../api';
 
 export function useRelatedEntities(
@@ -27,9 +27,7 @@ export function useRelatedEntities(
   error: Error | undefined;
 } {
   const catalogApi = useApi(catalogApiRef);
-  const { loading, value: entities, error } = useAsyncRetry<
-    Entity[]
-  >(async () => {
+  const { loading, value: entities, error } = useAsync(async () => {
     const relations =
       entity.relations &&
       entity.relations.filter(
