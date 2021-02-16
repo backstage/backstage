@@ -20,10 +20,13 @@ export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
 export {
+  CatalogEntityPage,
+  CatalogIndexPage,
   catalogPlugin,
   catalogPlugin as plugin,
-  CatalogIndexPage,
-  CatalogEntityPage,
   EntityAboutCard,
+  EntityHasComponentsCard,
+  EntityHasSubcomponentsCard,
+  EntityHasSystemsCard,
   EntityLinksCard,
 } from './plugin';

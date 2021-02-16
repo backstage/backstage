@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_API_PROVIDED_BY,
-  RELATION_OWNED_BY,
-  RELATION_PART_OF,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_API_PROVIDED_BY } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
@@ -77,8 +72,8 @@ describe('<ProvidingComponentsCard />', () => {
       </Wrapper>,
     );
 
-    expect(getByText(/Providers/i)).toBeInTheDocument();
-    expect(getByText(/No APIs provided by this entity/i)).toBeInTheDocument();
+    expect(getByText('Providers')).toBeInTheDocument();
+    expect(getByText(/No component provides this API/i)).toBeInTheDocument();
   });
 
   it('shows providing components', async () => {
@@ -113,28 +108,7 @@ describe('<ProvidingComponentsCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'service',
-        lifecycle: 'production',
-      },
-      relations: [
-        {
-          type: RELATION_PART_OF,
-          target: {
-            kind: 'System',
-            name: 'MySystem',
-            namespace: 'default',
-          },
-        },
-        {
-          type: RELATION_OWNED_BY,
-          target: {
-            kind: 'Group',
-            name: 'Test',
-            namespace: 'default',
-          },
-        },
-      ],
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
@@ -146,11 +120,8 @@ describe('<ProvidingComponentsCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText(/Providers/i)).toBeInTheDocument();
+      expect(getByText('Providers')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/MySystem/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

@@ -17,10 +17,10 @@
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   createApiFactory,
-  createPlugin,
-  discoveryApiRef,
   createComponentExtension,
+  createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
 import {
@@ -60,9 +60,7 @@ export const CatalogIndexPage = catalogPlugin.provide(
 export const CatalogEntityPage = catalogPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./components/CatalogEntityPage/CatalogEntityPage').then(
-        m => m.CatalogEntityPage,
-      ),
+      import('./components/CatalogEntityPage').then(m => m.CatalogEntityPage),
     mountPoint: entityRouteRef,
   }),
 );
@@ -80,6 +78,35 @@ export const EntityLinksCard = catalogPlugin.provide(
     component: {
       lazy: () =>
         import('./components/EntityLinksCard').then(m => m.EntityLinksCard),
+    },
+  }),
+);
+
+export const EntityHasSystemsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasSystemsCard').then(m => m.HasSystemsCard),
+    },
+  }),
+);
+
+export const EntityHasComponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasComponentsCard').then(m => m.HasComponentsCard),
+    },
+  }),
+);
+
+export const EntityHasSubcomponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasSubcomponentsCard').then(
+          m => m.HasSubcomponentsCard,
+        ),
     },
   }),
 );

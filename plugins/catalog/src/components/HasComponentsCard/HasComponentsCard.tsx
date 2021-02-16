@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_CONSUMED_BY,
-} from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -34,20 +30,19 @@ import {
 import React from 'react';
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: 'gridItem';
 };
 
-export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_CONSUMED_BY,
+    type: RELATION_HAS_PART,
+    kind: 'Component',
   });
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title="Components">
         <Progress />
       </InfoCard>
     );
@@ -55,7 +50,7 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title="Components">
         <WarningPanel
           severity="error"
           title="Could not load components"
@@ -67,13 +62,13 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   return (
     <EntityTable
-      title="Consumers"
+      title="Components"
       variant={variant}
       emptyContent={
         <div>
-          No component consumes this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-            Learn how to consume APIs.
+          No component is part of this system.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component">
+            Learn how to add components.
           </Link>
         </div>
       }

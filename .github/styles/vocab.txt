@@ -222,6 +222,8 @@ squidfunk
 src
 stdout
 stefanalund
+subcomponent
+subcomponents
 subkey
 subtree
 superfences

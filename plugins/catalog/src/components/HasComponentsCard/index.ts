@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
-import { MissingProvidesApisEmptyState } from './MissingProvidesApisEmptyState';
-
-describe('<MissingProvidesApisEmptyState />', () => {
-  it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
-      <MissingProvidesApisEmptyState />,
-    );
-    expect(getByText(/providesApis:/i)).toBeInTheDocument();
-  });
-});
+export { HasComponentsCard } from './HasComponentsCard';

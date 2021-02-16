@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
+import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
@@ -24,13 +24,9 @@ import {
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { ApiDocsConfig, apiDocsConfigRef } from '../../config';
-import { ProvidedApisCard } from './ProvidedApisCard';
+import { HasSubcomponentsCard } from './HasSubcomponentsCard';
 
-describe('<ProvidedApisCard />', () => {
-  const apiDocsConfig: jest.Mocked<ApiDocsConfig> = {
-    getApiDefinitionWidget: jest.fn(),
-  } as any;
+describe('<HasSubcomponentsCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
     getEntityByName: jest.fn(),
@@ -42,10 +38,7 @@ describe('<ProvidedApisCard />', () => {
   let Wrapper: React.ComponentType;
 
   beforeEach(() => {
-    const apis = ApiRegistry.with(catalogApiRef, catalogApi).with(
-      apiDocsConfigRef,
-      apiDocsConfig,
-    );
+    const apis = ApiRegistry.with(catalogApiRef, catalogApi);
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
       <ApiProvider apis={apis}>{children}</ApiProvider>
@@ -59,7 +52,7 @@ describe('<ProvidedApisCard />', () => {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
-        name: 'my-name',
+        name: 'my-components',
         namespace: 'my-namespace',
       },
       relations: [],
@@ -68,37 +61,39 @@ describe('<ProvidedApisCard />', () => {
     const { getByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
-          <ProvidedApisCard />
+          <HasSubcomponentsCard />
         </EntityProvider>
       </Wrapper>,
     );
 
-    expect(getByText(/Provided APIs/i)).toBeInTheDocument();
-    expect(getByText(/No component provides this API/i)).toBeInTheDocument();
+    expect(getByText('Subcomponents')).toBeInTheDocument();
+    expect(
+      getByText(/No subcomponent is part of this component/i),
+    ).toBeInTheDocument();
   });
 
-  it('shows consumed APIs', async () => {
+  it('shows related subcomponents', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
-        name: 'my-name',
+        name: 'my-component',
         namespace: 'my-namespace',
       },
       relations: [
         {
           target: {
-            kind: 'API',
+            kind: 'Component',
             namespace: 'my-namespace',
             name: 'target-name',
           },
-          type: RELATION_PROVIDES_API,
+          type: RELATION_HAS_PART,
         },
       ],
     };
     catalogApi.getEntityByName.mockResolvedValue({
       apiVersion: 'v1',
-      kind: 'API',
+      kind: 'Component',
       metadata: {
         name: 'target-name',
         namespace: 'my-namespace',
@@ -109,13 +104,13 @@ describe('<ProvidedApisCard />', () => {
     const { getByText } = await renderInTestApp(
       <Wrapper>
         <EntityProvider entity={entity}>
-          <ProvidedApisCard />
+          <HasSubcomponentsCard />
         </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
-      expect(getByText(/Provided APIs/i)).toBeInTheDocument();
+      expect(getByText('Subcomponents')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
     });
   });

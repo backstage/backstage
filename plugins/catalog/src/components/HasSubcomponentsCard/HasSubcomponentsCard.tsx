@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ComponentEntity,
-  Entity,
-  RELATION_API_CONSUMED_BY,
-} from '@backstage/catalog-model';
+import { ComponentEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   InfoCard,
@@ -34,20 +30,19 @@ import {
 import React from 'react';
 
 type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
   variant?: 'gridItem';
 };
 
-export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_API_CONSUMED_BY,
+    type: RELATION_HAS_PART,
+    kind: 'Component',
   });
 
   if (loading) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title="Subcomponents">
         <Progress />
       </InfoCard>
     );
@@ -55,10 +50,10 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   if (error || !entities) {
     return (
-      <InfoCard variant={variant} title="Consumers">
+      <InfoCard variant={variant} title="Subcomponents">
         <WarningPanel
           severity="error"
-          title="Could not load components"
+          title="Could not load subcomponents"
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
@@ -67,13 +62,13 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
 
   return (
     <EntityTable
-      title="Consumers"
+      title="Subcomponents"
       variant={variant}
       emptyContent={
         <div>
-          No component consumes this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-            Learn how to consume APIs.
+          No subcomponent is part of this component.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">
+            Learn how to add subcomponents.
           </Link>
         </div>
       }
