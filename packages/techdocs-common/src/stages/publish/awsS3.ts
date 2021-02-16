@@ -52,10 +52,13 @@ export class AwsS3Publish implements PublisherBase {
       );
     }
 
-    // Credentials is an optional config. If missing, default AWS environment variables
-    // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+    // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
+    // 1. AWS environment variables
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
+    // 2. AWS shared credentials file at ~/.aws/credentials
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
+    // 3. IAM Roles for EC2
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
     const credentials = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
@@ -67,9 +70,7 @@ export class AwsS3Publish implements PublisherBase {
     }
 
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
-    // or AWS shared credentials file at ~/.aws/credentials will be used. Any way, AWS SDK v3 client needs
-    // to have the AWS Region information for it to work.
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+    // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
     const storageClient = new aws.S3({
