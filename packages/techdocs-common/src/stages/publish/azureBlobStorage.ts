@@ -17,7 +17,6 @@ import platformPath from 'path';
 import express from 'express';
 import {
   BlobServiceClient,
-  BlobUploadCommonResponse,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
 import { DefaultAzureCredential } from '@azure/identity';
@@ -79,25 +78,25 @@ export class AzureBlobStoragePublish implements PublisherBase {
       credential,
     );
 
-    await storageClient
-      .getContainerClient(containerName)
-      .getProperties()
-      .then(() => {
-        logger.info(
-          `Successfully connected to the Azure Blob Storage container ${containerName}.`,
-        );
-      })
-      .catch(reason => {
-        logger.error(
-          `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
-            'Make sure that the Azure project and container exist and the access key is setup correctly ' +
-            'techdocs.publisher.azureBlobStorage.credentials defined in app config has correct permissions. ' +
-            'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-        );
+    try {
+      const response = await storageClient
+        .getContainerClient(containerName)
+        .getProperties();
+
+      if (response._response.status >= 400) {
         throw new Error(
-          `from Azure Blob Storage client library: ${reason.message}`,
+          `Failed to retrieve metadata from ${response._response.request.url} with status code ${response._response.status}.`,
         );
-      });
+      }
+    } catch (e) {
+      logger.error(
+        `Could not retrieve metadata about the Azure Blob Storage container ${containerName}. ` +
+          'Make sure that the Azure project and container exist and the access key is setup correctly ' +
+          'techdocs.publisher.azureBlobStorage.credentials defined in app config has correct permissions. ' +
+          'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      throw new Error(`from Azure Blob Storage client library: ${e.message}`);
+    }
 
     return new AzureBlobStoragePublish(storageClient, containerName, logger);
   }
@@ -122,8 +121,6 @@ export class AzureBlobStoragePublish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const uploadPromises: Array<Promise<BlobUploadCommonResponse>> = [];
-
       // Bound the number of concurrent batches. We want a bit of concurrency for
       // performance reasons, but not so much that we starve the connection pool
       // or start thrashing.
@@ -140,23 +137,43 @@ export class AzureBlobStoragePublish implements PublisherBase {
         ); // Azure Blob Storage Container file relative path
 
         return limiter(async () => {
-          await uploadPromises.push(
-            this.storageClient
-              .getContainerClient(this.containerName)
-              .getBlockBlobClient(destination)
-              .uploadFile(filePath),
-          );
+          const response = await this.storageClient
+            .getContainerClient(this.containerName)
+            .getBlockBlobClient(destination)
+            .uploadFile(filePath);
+
+          if (response._response.status >= 400) {
+            return {
+              ...response,
+              error: new Error(
+                `Upload failed for ${filePath} with status code ${response._response.status}`,
+              ),
+            };
+          }
+          return {
+            ...response,
+            error: undefined,
+          };
         });
       });
 
-      await Promise.all(promises).then(() => {
+      const responses = await Promise.all(promises);
+
+      const failed = responses.filter(r => r.error);
+      if (failed.length === 0) {
         this.logger.info(
-          `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+          `Successfully uploaded the ${responses.length} generated file(s) for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
         );
-      });
-      return;
+      } else {
+        throw new Error(
+          failed
+            .map(r => r.error?.message)
+            .filter(Boolean)
+            .join(' '),
+        );
+      }
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. ${e.message}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -241,19 +258,11 @@ export class AzureBlobStoragePublish implements PublisherBase {
    * A helper function which checks if index.html of an Entity's docs site is available. This
    * can be used to verify if there are any pre-generated docs available to serve.
    */
-  async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
-    return new Promise(resolve => {
-      const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      this.storageClient
-        .getContainerClient(this.containerName)
-        .getBlockBlobClient(`${entityRootDir}/index.html`)
-        .exists()
-        .then((response: boolean) => {
-          resolve(response);
-        })
-        .catch(() => {
-          resolve(false);
-        });
-    });
+  hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
+    const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+    return this.storageClient
+      .getContainerClient(this.containerName)
+      .getBlockBlobClient(`${entityRootDir}/index.html`)
+      .exists();
   }
 }
