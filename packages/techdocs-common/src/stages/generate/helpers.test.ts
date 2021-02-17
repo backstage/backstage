@@ -30,6 +30,7 @@ import {
   patchMkdocsYmlPreBuild,
   runDockerContainer,
   storeEtagMetadata,
+  UserOptions,
 } from './helpers';
 
 const mockEntity = {
@@ -114,7 +115,7 @@ describe('helpers', () => {
         imageName,
         args,
         expect.any(Stream),
-        {
+        expect.objectContaining({
           Volumes: {
             '/content': {},
             '/result': {},
@@ -123,7 +124,7 @@ describe('helpers', () => {
           HostConfig: {
             Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
           },
-        },
+        }),
       );
     });
 
@@ -137,6 +138,30 @@ describe('helpers', () => {
       });
 
       expect(mockDocker.ping).toHaveBeenCalled();
+    });
+
+    it('should pass through the user and group id from the host machine and set the home dir', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        docsDir,
+        outputDir,
+        dockerClient: mockDocker,
+      });
+
+      const userOptions: UserOptions = {};
+      if (process.getuid && process.getgid) {
+        userOptions.User = `${process.getuid()}:${process.getgid()}`;
+      }
+
+      expect(mockDocker.run).toHaveBeenCalledWith(
+        imageName,
+        args,
+        expect.any(Stream),
+        expect.objectContaining({
+          ...userOptions,
+        }),
+      );
     });
 
     describe('where docker is unavailable', () => {

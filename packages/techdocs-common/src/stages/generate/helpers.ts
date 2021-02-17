@@ -51,6 +51,12 @@ export type RunCommandOptions = {
   logStream?: Writable;
 };
 
+export type UserOptions = {
+  User?: string;
+};
+
+// To be replaced by a runDockerContainer from backend-common
+// shared between Scaffolder and TechDocs and any other plugin.
 export async function runDockerContainer({
   imageName,
   args,
@@ -78,6 +84,17 @@ export async function runDockerContainer({
     });
   });
 
+  const userOptions: UserOptions = {};
+  // @ts-ignore
+  if (process.getuid && process.getgid) {
+    // Files that are created inside the Docker container will be owned by
+    // root on the host system on non Mac systems, because of reasons. Mainly the fact that
+    // volume sharing is done using NFS on Mac and actual mounts in Linux world.
+    // So we set the user in the container as the same user and group id as the host.
+    // On Windows we don't have process.getuid nor process.getgid
+    userOptions.User = `${process.getuid()}:${process.getgid()}`;
+  }
+
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
@@ -91,6 +108,7 @@ export async function runDockerContainer({
       HostConfig: {
         Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
       },
+      ...userOptions,
       ...createOptions,
     },
   );
