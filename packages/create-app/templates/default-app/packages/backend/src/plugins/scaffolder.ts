@@ -29,7 +29,7 @@ export default async function createPlugin({
   const dockerClient = new Docker();
 
   const discovery = SingleHostDiscovery.fromConfig(config);
-  const catalogClient = new CatalogClient({ discoveryApi: discovery })
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
   return await createRouter({
     preparers,
