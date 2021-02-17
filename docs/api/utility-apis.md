@@ -184,7 +184,7 @@ this:
 const app = createApp({
   apis: [
     /* ApiFactories */
-    createApiFactory(errorApiRef, new IgnoringErrorApi())
+    createApiFactory(errorApiRef, new IgnoringErrorApi()),
 
     // OR
     // if you have dependencies inside your additional API you can use the object form
