@@ -187,7 +187,7 @@ const app = createApp({
     createApiFactory(errorApiRef, new IgnoringErrorApi()),
 
     // OR
-    // if you have dependencies inside your additional API you can use the object form
+    // If your API has dependencies, you use the object form
     createApiFactory({
       api: errorApiRef,
       deps: { configApi: configApiRef },
