@@ -17,13 +17,7 @@ import React, { useState, useCallback } from 'react';
 import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Button,
-  Card,
-  CardHeader,
-  Divider,
-  CardContent,
-} from '@material-ui/core';
+import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
 import { useAsync } from 'react-use';
