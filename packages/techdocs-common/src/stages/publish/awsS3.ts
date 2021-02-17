@@ -15,7 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import aws from 'aws-sdk';
+import aws, { Credentials } from 'aws-sdk';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import express from 'express';
 import fs from 'fs-extra';
@@ -69,7 +69,7 @@ export class AwsS3Publish implements PublisherBase {
         credentials = new aws.ChainableTemporaryCredentials({
           masterCredentials: aws.config.credentials as Credentials,
           params: {
-            RoleSessionName: 'backstage-aws-organization-processor',
+            RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
             RoleArn: roleArn,
           },
         });
