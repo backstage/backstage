@@ -43,6 +43,7 @@ import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { parseEntityName } from '@backstage/catalog-model';
 import classNames from 'classnames';
+import { BackstageTheme } from '@backstage/theme';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -106,23 +107,22 @@ const StepTimeTicker = ({ step }: { step: TaskStep }) => {
   return <Typography variant="caption">{time}</Typography>;
 };
 
-const useStepIconStyles = makeStyles({
-  root: {
-    color: '#eaeaf0',
-    display: 'flex',
-    height: 22,
-    alignItems: 'center',
-  },
-  active: {
-    color: 'gray',
-  },
-  completed: {
-    color: 'green',
-  },
-  error: {
-    color: 'red',
-  },
-});
+const useStepIconStyles = makeStyles((theme: BackstageTheme) =>
+  createStyles({
+    root: {
+      color: theme.palette.text.disabled,
+      display: 'flex',
+      height: 22,
+      alignItems: 'center',
+    },
+    completed: {
+      color: theme.palette.status.ok,
+    },
+    error: {
+      color: theme.palette.status.error,
+    },
+  }),
+);
 
 function TaskStepIconComponent(props: StepIconProps) {
   const classes = useStepIconStyles();
@@ -144,7 +144,6 @@ function TaskStepIconComponent(props: StepIconProps) {
   return (
     <div
       className={classNames(classes.root, {
-        [classes.active]: active,
         [classes.completed]: completed,
         [classes.error]: error,
       })}
