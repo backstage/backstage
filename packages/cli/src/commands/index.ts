@@ -178,6 +178,15 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./config/validate').then(m => m.default)));
 
   program
+    .command('config:schema')
+    .option(
+      '--package <name>',
+      'Only output config schema that applies to the given package',
+    )
+    .description('Print configuration schema')
+    .action(lazy(() => import('./config/schema').then(m => m.default)));
+
+  program
     .command('versions:bump')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
