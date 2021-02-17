@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Page, Header, Lifecycle, Content } from '@backstage/core';
+import { Page, Header, Lifecycle, Content, ErrorPage } from '@backstage/core';
 import React, { useState, useEffect, memo, useMemo } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
@@ -43,7 +43,6 @@ import Cancel from '@material-ui/icons/Cancel';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { parseEntityName } from '@backstage/catalog-model';
-import { TaskNotFound } from '../TaskNotFound/TaskNotFound';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -278,7 +277,11 @@ export const TaskPage = () => {
       />
       <Content>
         {taskNotFound ? (
-          <TaskNotFound />
+          <ErrorPage
+            status="404"
+            statusMessage="Task not found"
+            additionalInfo="No task found with this ID"
+          />
         ) : (
           <div>
             <Grid container>
