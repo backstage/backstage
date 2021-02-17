@@ -259,7 +259,7 @@ export async function createRouter(
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);
       if (!task) {
-        throw new NotFoundError(`task with id ${taskId} does not exist`);
+        throw new NotFoundError(`Task with id ${taskId} does not exist`);
       }
       res.status(200).json(task);
     })
