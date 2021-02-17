@@ -130,6 +130,7 @@ export class DocsBuilder {
       outputDir,
       dockerClient: this.dockerClient,
       parsedLocationAnnotation,
+      etag,
     });
 
     this.logger.debug(`Generated files temporarily stored at ${outputDir}`);

@@ -153,7 +153,7 @@ export class Lockfile {
         const acceptedVersion = versions.find(v => semver.satisfies(v, range));
         if (!acceptedVersion) {
           throw new Error(
-            `No existing version was accepted for range ${range}, searching through ${versions}`,
+            `No existing version was accepted for range ${range}, searching through ${versions}, for package ${name}`,
           );
         }
 

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  RELATION_PART_OF,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
@@ -79,7 +74,7 @@ describe('<ProvidedApisCard />', () => {
     );
 
     expect(getByText(/Provided APIs/i)).toBeInTheDocument();
-    expect(getByText(/No APIs provided by this entity/i)).toBeInTheDocument();
+    expect(getByText(/No component provides this API/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {
@@ -108,34 +103,7 @@ describe('<ProvidedApisCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'openapi',
-        lifecycle: 'production',
-        definition: '...',
-      },
-      relations: [
-        {
-          type: RELATION_PART_OF,
-          target: {
-            kind: 'System',
-            name: 'MySystem',
-            namespace: 'default',
-          },
-        },
-        {
-          type: RELATION_OWNED_BY,
-          target: {
-            kind: 'Group',
-            name: 'Test',
-            namespace: 'default',
-          },
-        },
-      ],
-    });
-    apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
-      type: 'openapi',
-      title: 'OpenAPI',
-      component: () => <div />,
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
@@ -149,10 +117,6 @@ describe('<ProvidedApisCard />', () => {
     await waitFor(() => {
       expect(getByText(/Provided APIs/i)).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/OpenAPI/)).toBeInTheDocument();
-      expect(getByText(/MySystem/)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

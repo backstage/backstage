@@ -13,6 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { MissingConsumesApisEmptyState } from './MissingConsumesApisEmptyState';
-export { MissingProvidesApisEmptyState } from './MissingProvidesApisEmptyState';
+import '@testing-library/jest-dom';

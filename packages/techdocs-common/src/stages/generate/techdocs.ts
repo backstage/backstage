@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import { Logger } from 'winston';
-import { PassThrough } from 'stream';
 import { Config } from '@backstage/config';
-
-import { GeneratorBase, GeneratorRunOptions } from './types';
+import path from 'path';
+import { PassThrough } from 'stream';
+import { Logger } from 'winston';
 import {
-  runDockerContainer,
-  runCommand,
+  addBuildTimestampMetadata,
   patchMkdocsYmlPreBuild,
+  runCommand,
+  runDockerContainer,
+  storeEtagMetadata,
 } from './helpers';
+import { GeneratorBase, GeneratorRunOptions } from './types';
 
 type TechdocsGeneratorOptions = {
   // This option enables users to configure if they want to use TechDocs container
@@ -62,6 +63,7 @@ export class TechdocsGenerator implements GeneratorBase {
     outputDir,
     dockerClient,
     parsedLocationAnnotation,
+    etag,
   }: GeneratorRunOptions): Promise<void> {
     const [log, logStream] = createStream();
 
@@ -116,6 +118,26 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
+      );
+    }
+
+    /**
+     * Post Generate steps
+     */
+
+    // Add build timestamp to techdocs_metadata.json
+    // Creates techdocs_metadata.json if file does not exist.
+    await addBuildTimestampMetadata(
+      path.join(outputDir, 'techdocs_metadata.json'),
+      this.logger,
+    );
+
+    // Add etag of the prepared tree to techdocs_metadata.json
+    // Assumes that the file already exists.
+    if (etag) {
+      await storeEtagMetadata(
+        path.join(outputDir, 'techdocs_metadata.json'),
+        etag,
       );
     }
   }

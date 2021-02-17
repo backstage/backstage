@@ -24,8 +24,8 @@ const chalk = require('chalk');
 async function main() {
   // This is from lerna, and cba polluting root package.json
   // eslint-disable-next-line import/no-extraneous-dependencies
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(resolvePath('.'));
+  const { Project } = require('@lerna/project');
+  const project = new Project(resolvePath('.'));
   const packages = await project.getPackages();
 
   let hadErrors = false;

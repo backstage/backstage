@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
-import { MissingConsumesApisEmptyState } from './MissingConsumesApisEmptyState';
-
-describe('<MissingConsumesApisEmptyState />', () => {
-  it('renders without exploding', async () => {
-    const { getByText } = await renderInTestApp(
-      <MissingConsumesApisEmptyState />,
-    );
-    expect(getByText(/consumesApis:/i)).toBeInTheDocument();
-  });
-});
+export {
+  SplunkOnCallClient,
+  splunkOnCallApiRef,
+  UnauthorizedError,
+} from './client';
+export type { SplunkOnCallApi } from './types';

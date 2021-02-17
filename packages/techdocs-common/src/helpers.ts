@@ -133,11 +133,11 @@ export const checkoutGitRepository = async (
     switch (type) {
       case 'github':
         git = Git.fromAuth({
-          username: token,
-          password: 'x-oauth-basic',
+          username: 'x-access-token',
+          password: token,
           logger,
         });
-        parsedGitLocation.token = `${token}:x-oauth-basic`;
+        parsedGitLocation.token = `x-access-token:${token}`;
         break;
       case 'gitlab':
         git = Git.fromAuth({

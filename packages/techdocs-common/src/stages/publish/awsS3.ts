@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
-import express from 'express';
-import aws, { Credentials } from 'aws-sdk';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
-import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import aws from 'aws-sdk';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
+import express from 'express';
 import fs from 'fs-extra';
-import { Readable } from 'stream';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
 import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+import path from 'path';
+import { Readable } from 'stream';
+import { Logger } from 'winston';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {

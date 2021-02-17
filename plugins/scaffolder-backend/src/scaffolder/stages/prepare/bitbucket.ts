@@ -43,7 +43,7 @@ export class BitbucketPreparer implements PreparerBase {
     const targetPath = path.join(workspacePath, 'template');
     const fullPathToTemplate = path.resolve(
       checkoutPath,
-      parsedGitUrl.filepath,
+      parsedGitUrl.filepath ?? '',
     );
 
     const git = Git.fromAuth({ logger, ...this.getAuth() });

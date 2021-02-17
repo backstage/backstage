@@ -15,12 +15,17 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GithubCredentialsProvider } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  GitHubIntegration,
+  readGitHubIntegrationConfig,
+} from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import os from 'os';
 import path from 'path';
 import { NotFoundError, NotModifiedError } from '../errors';
 import {
@@ -41,25 +46,44 @@ const mockCredentialsProvider = ({
 } as unknown) as GithubCredentialsProvider;
 
 const githubProcessor = new GithubUrlReader(
-  {
-    host: 'github.com',
-    apiBaseUrl: 'https://api.github.com',
-  },
+  new GitHubIntegration(
+    readGitHubIntegrationConfig(
+      new ConfigReader({
+        host: 'github.com',
+        apiBaseUrl: 'https://api.github.com',
+      }),
+    ),
+  ),
   { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
 );
 
 const gheProcessor = new GithubUrlReader(
-  {
-    host: 'ghe.github.com',
-    apiBaseUrl: 'https://ghe.github.com/api/v3',
-  },
+  new GitHubIntegration(
+    readGitHubIntegrationConfig(
+      new ConfigReader({
+        host: 'ghe.github.com',
+        apiBaseUrl: 'https://ghe.github.com/api/v3',
+      }),
+    ),
+  ),
   { treeResponseFactory, credentialsProvider: mockCredentialsProvider },
 );
 
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+
 describe('GithubUrlReader', () => {
   const worker = setupServer();
-
   msw.setupDefaultHandlers(worker);
+
+  beforeEach(() => {
+    mockFs({
+      [tmpDir]: mockFs.directory(),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -94,7 +118,7 @@ describe('GithubUrlReader', () => {
 
       worker.use(
         rest.get(
-          'https://api.github.com/repos/backstage/mock/tree/contents/?ref=main',
+          'https://ghe.github.com/api/v3/repos/backstage/mock/tree/contents/?ref=main',
           (req, res, ctx) => {
             expect(req.headers.get('authorization')).toBe(
               mockHeaders.Authorization,
@@ -111,7 +135,7 @@ describe('GithubUrlReader', () => {
         ),
       );
 
-      await githubProcessor.read(
+      await gheProcessor.read(
         'https://github.com/backstage/mock/tree/blob/main',
       );
     });
@@ -122,16 +146,6 @@ describe('GithubUrlReader', () => {
    */
 
   describe('readTree', () => {
-    beforeEach(() => {
-      mockFs({
-        '/tmp': mockFs.directory(),
-      });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     const repoBuffer = fs.readFileSync(
       path.resolve(
         'src',
@@ -259,7 +273,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -340,7 +354,7 @@ describe('GithubUrlReader', () => {
         'https://github.com/backstage/mock/tree/main/docs',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),
@@ -397,9 +411,13 @@ describe('GithubUrlReader', () => {
       expect(() => {
         /* eslint-disable no-new */
         new GithubUrlReader(
-          {
-            host: 'ghe.mycompany.net',
-          },
+          new GitHubIntegration(
+            readGitHubIntegrationConfig(
+              new ConfigReader({
+                host: 'ghe.mycompany.net',
+              }),
+            ),
+          ),
           {
             treeResponseFactory,
             credentialsProvider: mockCredentialsProvider,
@@ -414,14 +432,6 @@ describe('GithubUrlReader', () => {
    */
 
   describe('search', () => {
-    beforeEach(() => {
-      mockFs({ '/tmp': mockFs.directory() });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     const repoBuffer = fs.readFileSync(
       path.resolve(
         'src',

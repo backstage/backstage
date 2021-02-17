@@ -33,7 +33,7 @@ export class GitlabPreparer implements PreparerBase {
     const targetPath = path.join(workspacePath, 'template');
     const fullPathToTemplate = path.resolve(
       checkoutPath,
-      parsedGitUrl.filepath,
+      parsedGitUrl.filepath ?? '',
     );
     parsedGitUrl.git_suffix = true;
 

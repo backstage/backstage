@@ -15,36 +15,45 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { useAsyncRetry } from 'react-use';
+import { useAsync } from 'react-use';
+import { catalogApiRef } from '../api';
 
-// TODO: Maybe this hook is interesting for others too?
 export function useRelatedEntities(
   entity: Entity,
-  type: string,
+  { type, kind }: { type?: string; kind?: string },
 ): {
-  entities: (Entity | undefined)[] | undefined;
+  entities: Entity[] | undefined;
   loading: boolean;
   error: Error | undefined;
 } {
   const catalogApi = useApi(catalogApiRef);
-  const { loading, value, error } = useAsyncRetry<
-    (Entity | undefined)[]
-  >(async () => {
+  const { loading, value: entities, error } = useAsync(async () => {
     const relations =
-      entity.relations && entity.relations.filter(r => r.type === type);
+      entity.relations &&
+      entity.relations.filter(
+        r =>
+          (!type || r.type.toLowerCase() === type.toLowerCase()) &&
+          (!kind || r.target.kind.toLowerCase() === kind.toLowerCase()),
+      );
 
     if (!relations) {
       return [];
     }
 
-    return await Promise.all(
+    // TODO: This code could be more efficient if there was an endpoint in the
+    // backend that either returns the relations of entity (filtered by type)
+    // or if there is a way to perform a batch request by entity name. However,
+    // such an implementation would probably be better placed in the graphql API.
+    const results = await Promise.all(
       relations?.map(r => catalogApi.getEntityByName(r.target)),
     );
+    // Skip entities that where not found, for example if a relation references
+    // an entity that doesn't exist.
+    return results.filter(e => e) as Entity[];
   }, [entity, type]);
 
   return {
-    entities: value,
+    entities,
     loading,
     error,
   };

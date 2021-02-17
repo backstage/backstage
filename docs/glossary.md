@@ -9,6 +9,11 @@ The Backstage Glossary lists all the terms, abbreviations, and phrases used in
 Backstage, together with their explanations. We encourage you to use the
 terminology below for clarity and consistency when discussing Backstage.
 
+### Authentication Glossary
+
+This [page](./auth/glossary.md) directs to the terms and phrases related to
+authentication and identity section of Backstage.
+
 ### Backstage User Profiles
 
 There are three main user profiles for Backstage: the integrator, the

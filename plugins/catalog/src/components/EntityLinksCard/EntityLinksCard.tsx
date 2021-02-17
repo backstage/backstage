@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { IconComponent, InfoCard, useApp } from '@backstage/core';
+import { IconComponent, IconKey, InfoCard, useApp } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
@@ -33,9 +33,8 @@ export const EntityLinksCard = ({ cols = undefined }: Props) => {
   const { entity } = useEntity();
   const app = useApp();
 
-  // TODO: Refactor App.icons & App.getSystemIcon to support custom icons
-  const iconResolver = (key: string | undefined): IconComponent => {
-    return app.getSystemIcon(key as any) ?? LanguageIcon;
+  const iconResolver = (key: IconKey | undefined): IconComponent => {
+    return app.getSystemIcon(key ?? '') ?? LanguageIcon;
   };
 
   const links = entity?.metadata?.links;

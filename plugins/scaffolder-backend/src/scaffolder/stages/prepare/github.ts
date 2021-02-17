@@ -33,13 +33,13 @@ export class GithubPreparer implements PreparerBase {
     const targetPath = path.join(workspacePath, 'template');
     const fullPathToTemplate = path.resolve(
       checkoutPath,
-      parsedGitUrl.filepath,
+      parsedGitUrl.filepath ?? '',
     );
 
     const git = this.config.token
       ? Git.fromAuth({
-          username: this.config.token,
-          password: 'x-oauth-basic',
+          username: 'x-access-token',
+          password: this.config.token,
           logger,
         })
       : Git.fromAuth({ logger });

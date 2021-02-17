@@ -48,7 +48,7 @@ import {
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { RouteRef } from '../routing';
 import {
@@ -95,7 +95,7 @@ export function generateBoundRoutes(
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
-  icons: SystemIcons;
+  icons: IconComponentMap;
   plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
   themes: AppTheme[];
@@ -144,7 +144,7 @@ export class PrivateAppImpl implements BackstageApp {
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
-  private readonly icons: SystemIcons;
+  private readonly icons: IconComponentMap;
   private readonly plugins: BackstagePlugin<any, any>[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
@@ -169,7 +169,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.plugins;
   }
 
-  getSystemIcon(key: SystemIconKey): IconComponent {
+  getSystemIcon(key: IconKey): IconComponent {
     return this.icons[key];
   }
 

@@ -248,7 +248,7 @@ might be linking to, allowing the app to decide the final target. If the
 declare an `ExternalRouteRef` similar to this:
 
 ```ts
-const headerLinkRouteRef = createExternalRouteRef();
+const headerLinkRouteRef = createExternalRouteRef({ id: 'header-link' });
 ```
 
 ### Binding External Routes in the App
