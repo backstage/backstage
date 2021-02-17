@@ -24,6 +24,7 @@ nav:
               - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
               - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
           - Deployment scenarios:
+              - Docker: 'getting-started/deployment-docker.md'
               - Kubernetes: 'getting-started/deployment-k8s.md'
               - Kubernetes and Helm: 'getting-started/deployment-helm.md'
               - Other: 'getting-started/deployment-other.md'
