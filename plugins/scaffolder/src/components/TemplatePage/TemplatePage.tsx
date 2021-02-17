@@ -29,7 +29,7 @@ import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { generatePath, useNavigate } from 'react-router';
+import { generatePath, useNavigate, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
@@ -45,7 +45,7 @@ const useTemplate = (
       filter: { kind: 'Template', 'metadata.name': templateName },
     });
     return response.items as TemplateEntityV1alpha1[];
-  });
+  }, [catalogApi, templateName]);
   return { template: value?.[0], loading, error };
 };
 
@@ -100,8 +100,7 @@ export const TemplatePage = () => {
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
-    navigate(rootLink());
-    return <>{null}</>;
+    return <Navigate to={rootLink()} />;
   }
 
   if (template && !template?.spec?.schema) {
@@ -110,8 +109,7 @@ export const TemplatePage = () => {
         'Template schema is corrupted, please check the template.yaml file.',
       ),
     );
-    navigate(rootLink());
-    return <>{null}</>;
+    return <Navigate to={rootLink()} />;
   }
 
   return (
