@@ -64,8 +64,9 @@ export class GithubPublisher implements PublisherBase {
     });
 
     if (!token) {
-      logger.error(`No token could be acquired for URL: ${values.storePath}`);
-      return { remoteUrl: '', catalogInfoUrl: undefined };
+      throw new Error(
+        `No token could be acquired for URL: ${values.storePath}`,
+      );
     }
 
     const client = new Octokit({
