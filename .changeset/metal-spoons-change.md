@@ -4,7 +4,7 @@
 
 Updated docker build to use `backstage-cli backend:bundle` instead of `backstage-cli backend:build-image`.
 
-To apply this change to an existing applications, change the following in `packages/backend/package.json`:
+To apply this change to an existing application, change the following in `packages/backend/package.json`:
 
 ```diff
 -  "build": "backstage-cli backend:build",
@@ -15,7 +15,7 @@ To apply this change to an existing applications, change the following in `packa
 
 Note that the backend build is switched to `backend:bundle`, and the `build-image` script simply calls `docker build`. This means the `build-image` script no longer builds all packages, so you have to run `yarn build` in the root first.
 
-On order to work with the new build method, the `Dockerfile` at `packages/backend/Dockerfile` have been updated with the following contents:
+In order to work with the new build method, the `Dockerfile` at `packages/backend/Dockerfile` has been updated with the following contents:
 
 ```dockerfile
 # This dockerfile builds an image for the backend package.
