@@ -39,7 +39,7 @@ import {
   EntityLinksCard,
   EntityPageLayout,
 } from '@backstage/plugin-catalog';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { EntityProvider, useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -184,7 +184,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     </Grid>
     {isPagerDutyAvailable(entity) && (
       <Grid item md={6}>
-        <PagerDutyCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
       </Grid>
     )}
     <Grid item md={4} sm={6}>
