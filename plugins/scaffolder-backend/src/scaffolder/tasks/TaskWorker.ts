@@ -53,7 +53,7 @@ export class TaskWorker {
       );
       await fs.ensureDir(workspacePath);
       await task.emitLog(
-        `Starting up work with ${task.spec.steps.length} steps`,
+        `Starting up task with ${task.spec.steps.length} steps`,
       );
 
       const templateCtx: {
