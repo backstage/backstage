@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { DateTime, Duration } from 'luxon';
-import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
-import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import {
+  InfoCard,
+  InfoCardVariants,
+  StructuredMetadataTable,
+} from '@backstage/core';
+import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { useBuilds } from '../useBuilds';
+import { DateTime, Duration } from 'luxon';
+import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
+import { useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
@@ -76,7 +80,7 @@ export const LatestRunCard = ({
   variant,
 }: {
   branch: string;
-  variant?: string;
+  variant?: InfoCardVariants;
 }) => {
   const { owner, repo } = useProjectSlugFromEntity();
   const [{ builds, loading }] = useBuilds(owner, repo, branch);

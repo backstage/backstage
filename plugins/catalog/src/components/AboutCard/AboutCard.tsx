@@ -79,7 +79,7 @@ function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
 type AboutCardProps = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export function AboutCard({ variant }: AboutCardProps) {
