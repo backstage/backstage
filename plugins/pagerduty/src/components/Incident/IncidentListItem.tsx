@@ -79,6 +79,7 @@ export const IncidentListItem = ({ incident }: Props) => {
         primary={
           <>
             <Chip
+              data-testid={`chip-${incident.status}`}
               label={incident.status}
               size="small"
               variant="outlined"
