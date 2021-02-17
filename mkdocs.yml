@@ -64,6 +64,11 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
+  - Integrations:
+      - GitHub:
+          - Org Data: 'integrations/github/org.md'
+      - LDAP:
+          - Org Data: 'integrations/ldap/org.md'
   - Plugins:
       - Overview: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'

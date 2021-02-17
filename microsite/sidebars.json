@@ -101,6 +101,18 @@
         ]
       }
     ],
+    "Integrations": [
+      {
+        "type": "subcategory",
+        "label": "GitHub",
+        "ids": ["integrations/github/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "LDAP",
+        "ids": ["integrations/ldap/org"]
+      }
+    ],
     "Plugins": [
       "plugins/index",
       "plugins/existing-plugins",
