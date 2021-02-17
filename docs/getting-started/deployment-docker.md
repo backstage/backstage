@@ -56,6 +56,8 @@ following `Dockerfile`, which is also included when creating a new app with
 # yarn install
 # yarn tsc
 # yarn build
+#
+# Once the commands have been run, you can build the image using `yarn build-image`
 
 FROM node:14-buster-slim
 

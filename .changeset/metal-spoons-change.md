@@ -26,6 +26,8 @@ In order to work with the new build method, the `Dockerfile` at `packages/backen
 # yarn install
 # yarn tsc
 # yarn build
+#
+# Once the commands have been run, you can build the image using `yarn build-image`
 
 FROM node:14-buster-slim
 

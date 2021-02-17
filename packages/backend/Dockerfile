@@ -6,6 +6,8 @@
 # yarn install
 # yarn tsc
 # yarn build
+#
+# Once the commands have been run, you can build the image using `yarn build-image`
 
 FROM node:14-buster-slim
 
@@ -18,8 +20,7 @@ ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
-# This will copy the contents of the dist-workspace when running the build-image command.
-# Do not use this Dockerfile outside of that command, as it will copy in the source code instead.
+# Then copy the rest of the backend bundle, along with any other files we might want.
 ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
 
-CMD ["node", "packages/backend"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml"]
