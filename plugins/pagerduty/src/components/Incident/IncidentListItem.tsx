@@ -17,7 +17,6 @@
 import React from 'react';
 import {
   ListItem,
-  ListItemIcon,
   ListItemSecondaryAction,
   Tooltip,
   ListItemText,
@@ -25,13 +24,16 @@ import {
   IconButton,
   Link,
   Typography,
+  Chip,
 } from '@material-ui/core';
-import { StatusError, StatusWarning } from '@backstage/core';
+import Done from '@material-ui/icons/Done';
+import Warning from '@material-ui/icons/Warning';
 import { DateTime, Duration } from 'luxon';
 import { Incident } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
+import { BackstageTheme } from '@backstage/theme';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<BackstageTheme>(theme => ({
   denseListIcon: {
     marginRight: 0,
     display: 'flex',
@@ -42,10 +44,21 @@ const useStyles = makeStyles({
   listItemPrimary: {
     fontWeight: 'bold',
   },
-  listItemIcon: {
-    minWidth: '1em',
+  warning: {
+    borderColor: theme.palette.status.warning,
+    color: theme.palette.status.warning,
+    '& *': {
+      color: theme.palette.status.warning,
+    },
   },
-});
+  error: {
+    borderColor: theme.palette.status.error,
+    color: theme.palette.status.error,
+    '& *': {
+      color: theme.palette.status.error,
+    },
+  },
+}));
 
 type Props = {
   incident: Incident;
@@ -62,19 +75,24 @@ export const IncidentListItem = ({ incident }: Props) => {
 
   return (
     <ListItem dense key={incident.id}>
-      <ListItemIcon className={classes.listItemIcon}>
-        <Tooltip title={incident.status} placement="top">
-          <div className={classes.denseListIcon}>
-            {incident.status === 'triggered' ? (
-              <StatusError />
-            ) : (
-              <StatusWarning />
-            )}
-          </div>
-        </Tooltip>
-      </ListItemIcon>
       <ListItemText
-        primary={incident.title}
+        primary={
+          <>
+            <Chip
+              data-testid={`chip-${incident.status}`}
+              label={incident.status}
+              size="small"
+              variant="outlined"
+              icon={incident.status === 'acknowledged' ? <Done /> : <Warning />}
+              className={
+                incident.status === 'triggered'
+                  ? classes.error
+                  : classes.warning
+              }
+            />
+            {incident.title}
+          </>
+        }
         primaryTypographyProps={{
           variant: 'body1',
           className: classes.listItemPrimary,
