@@ -152,7 +152,7 @@ If the environment variables
 
 are set and can be used to access the bucket you created in step 2, they will be
 used by the AWS SDK V2 Node.js client for authentication.
-[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html)
+[Refer to the official documentation for loading credentials in Node.js from environment variables](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html).
 
 If the environment variables are missing, the AWS SDK tries to read the
 `~/.aws/credentials` file for credentials.
@@ -161,8 +161,8 @@ If the environment variables are missing, the AWS SDK tries to read the
 If you are using Amazon EC2 instance to deploy Backstage, you do not need to
 obtain the access keys separately. They can be made available in the environment
 automatically by defining appropriate IAM role with access to the bucket. Read
-more
-[here](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
+more in
+[official AWS documentation for using IAM roles.](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
 
 The AWS Region of the bucket is optional since TechDocs uses AWS SDK V2 and not
 V3.
