@@ -37,12 +37,12 @@ import {
 import { Status } from '../../types';
 import { DateTime, Interval } from 'luxon';
 import { useInterval } from 'react-use';
-import clsx from 'clsx';
 import Check from '@material-ui/icons/Check';
 import Cancel from '@material-ui/icons/Cancel';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { parseEntityName } from '@backstage/catalog-model';
+import classNames from 'classnames';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -143,7 +143,7 @@ function TaskStepIconComponent(props: StepIconProps) {
 
   return (
     <div
-      className={clsx(classes.root, {
+      className={classNames(classes.root, {
         [classes.active]: active,
         [classes.completed]: completed,
         [classes.error]: error,
