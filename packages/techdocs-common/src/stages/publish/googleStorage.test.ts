@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockFs from 'mock-fs';
-import * as winston from 'winston';
+import { getVoidLogger } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import mockFs from 'mock-fs';
+import os from 'os';
+import path from 'path';
 import { GoogleGCSPublish } from './googleStorage';
 import { PublisherBase } from './types';
 
-const createMockEntity = (annotations = {}) => {
+const createMockEntity = (annotations = {}): Entity => {
   return {
     apiVersion: 'version',
     kind: 'TestKind',
     metadata: {
       name: 'test-component-name',
+      namespace: 'test-namespace',
       annotations: {
         ...annotations,
       },
@@ -32,12 +36,24 @@ const createMockEntity = (annotations = {}) => {
   };
 };
 
-const logger = winston.createLogger();
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
+const getEntityRootDir = (entity: Entity) => {
+  const {
+    kind,
+    metadata: { namespace, name },
+  } = entity;
+
+  return path.join(rootDir, namespace as string, kind, name);
+};
+
+const logger = getVoidLogger();
 jest.spyOn(logger, 'info').mockReturnValue(logger);
 
 let publisher: PublisherBase;
 
 beforeEach(async () => {
+  mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -55,9 +71,16 @@ beforeEach(async () => {
 });
 
 describe('GoogleGCSPublish', () => {
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   it('should publish a directory', async () => {
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
+
     mockFs({
-      '/path/to/generatedDirectory': {
+      [entityRootDir]: {
         'index.html': '',
         '404.html': '',
         assets: {
@@ -66,11 +89,10 @@ describe('GoogleGCSPublish', () => {
       },
     });
 
-    const entity = createMockEntity();
     expect(
       await publisher.publish({
         entity,
-        directory: '/path/to/generatedDirectory',
+        directory: entityRootDir,
       }),
     ).toBeUndefined();
     mockFs.restore();

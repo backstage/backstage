@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
-import express from 'express';
-import {
-  Storage,
-  UploadResponse,
-  FileExistsResponse,
-} from '@google-cloud/storage';
-import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import {
+  FileExistsResponse,
+  Storage,
+  UploadResponse,
+} from '@google-cloud/storage';
+import express from 'express';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
+import path from 'path';
+import { Logger } from 'winston';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 
 export class GoogleGCSPublish implements PublisherBase {
   static async fromConfig(
@@ -105,19 +105,27 @@ export class GoogleGCSPublish implements PublisherBase {
 
       const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<UploadResponse>> = [];
-      allFilesToUpload.forEach(filePath => {
+      allFilesToUpload.forEach(sourceFilePath => {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = filePath.replace(`${directory}/`, '');
+        const relativeFilePath = path.relative(directory, sourceFilePath);
+
+        // Convert destination file path to a POSIX path for uploading.
+        // GCS expects / as path separator and relativeFilePath will contain \\ on Windows.
+        // https://cloud.google.com/storage/docs/gsutil/addlhelp/HowSubdirectoriesWork
+        const relativeFilePathPosix = relativeFilePath
+          .split(path.sep)
+          .join(path.posix.sep);
+
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePath}`; // GCS Bucket file relative path
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
-          this.storageClient
-            .bucket(this.bucketName)
-            .upload(filePath, { destination }),
+          this.storageClient.bucket(this.bucketName).upload(sourceFilePath, {
+            destination,
+          }),
         );
         uploadPromises.push(uploadFile);
       });
@@ -130,7 +138,7 @@ export class GoogleGCSPublish implements PublisherBase {
           resolve(undefined);
         })
         .catch((err: Error) => {
-          const errorMessage = `Unable to upload file(s) to Google Cloud Storage. Error ${err.message}`;
+          const errorMessage = `Unable to upload file(s) to Google Cloud Storage. Error ${err}`;
           this.logger.error(errorMessage);
           reject(errorMessage);
         });

@@ -13,8 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs-extra';
+import path from 'path';
+
 type storageOptions = {
   keyFilename?: string;
+};
+
+/**
+ * @param sourceFile contains either / or \ as file separator depending upon OS.
+ */
+const checkFileExists = async (sourceFile: string): Promise<boolean> => {
+  // sourceFile will always have / as file separator irrespective of OS since S3 expects /.
+  // Normalize sourceFile to OS specific path before checking if file exists.
+  const filePath = sourceFile.split(path.posix.sep).join(path.sep);
+
+  try {
+    await fs.access(filePath, fs.constants.F_OK);
+    return true;
+  } catch (err) {
+    console.log("File doesn't exist");
+    console.log(filePath);
+    return false;
+  }
 };
 
 class Bucket {
@@ -31,8 +52,12 @@ class Bucket {
   }
 
   upload(source: string, { destination }) {
-    return new Promise(resolve => {
-      resolve({ source, destination });
+    return new Promise(async (resolve, reject) => {
+      if (await checkFileExists(source)) {
+        resolve({ source, destination });
+      } else {
+        reject(`Source file ${source} does not exist.`);
+      }
     });
   }
 }
