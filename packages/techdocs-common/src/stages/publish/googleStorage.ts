@@ -97,8 +97,8 @@ export class GoogleGCSPublish implements PublisherBase {
    * Upload all the files from the generated `directory` to the GCS bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
-  publish({ entity, directory }: PublishRequest): Promise<void> {
-    return new Promise(async (resolve, reject) => {
+  async publish({ entity, directory }: PublishRequest): Promise<void> {
+    try {
       // Note: GCS manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
@@ -130,19 +130,16 @@ export class GoogleGCSPublish implements PublisherBase {
         uploadPromises.push(uploadFile);
       });
 
-      Promise.all(uploadPromises)
-        .then(() => {
-          this.logger.info(
-            `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
-          );
-          resolve(undefined);
-        })
-        .catch((err: Error) => {
-          const errorMessage = `Unable to upload file(s) to Google Cloud Storage. Error ${err}`;
-          this.logger.error(errorMessage);
-          reject(errorMessage);
-        });
-    });
+      await Promise.all(uploadPromises);
+
+      this.logger.info(
+        `Successfully uploaded all the generated files for Entity ${entity.metadata.name}. Total number of files: ${allFilesToUpload.length}`,
+      );
+    } catch (e) {
+      const errorMessage = `Unable to upload file(s) to Google Cloud Storage. ${e}`;
+      this.logger.error(errorMessage);
+      throw new Error(errorMessage);
+    }
   }
 
   fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata> {

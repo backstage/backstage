@@ -71,11 +71,7 @@ beforeEach(async () => {
 });
 
 describe('GoogleGCSPublish', () => {
-  afterEach(() => {
-    mockFs.restore();
-  });
-
-  it('should publish a directory', async () => {
+  beforeEach(() => {
     const entity = createMockEntity();
     const entityRootDir = getEntityRootDir(entity);
 
@@ -88,6 +84,15 @@ describe('GoogleGCSPublish', () => {
         },
       },
     });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  it('should publish a directory', async () => {
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
 
     expect(
       await publisher.publish({
@@ -95,6 +100,45 @@ describe('GoogleGCSPublish', () => {
         directory: entityRootDir,
       }),
     ).toBeUndefined();
+    mockFs.restore();
+  });
+
+  it('should fail to publish a directory', async () => {
+    const wrongPathToGeneratedDirectory = path.join(
+      rootDir,
+      'wrong',
+      'path',
+      'to',
+      'generatedDirectory',
+    );
+
+    const entity = createMockEntity();
+
+    await expect(
+      publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      }),
+    ).rejects.toThrowError();
+
+    await publisher
+      .publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      })
+      .catch(error => {
+        expect(error.message).toEqual(
+          // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+          // Issue reported https://github.com/tschaub/mock-fs/issues/118
+          expect.stringContaining(
+            `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+          ),
+        );
+        expect(error.message).toEqual(
+          expect.stringContaining(wrongPathToGeneratedDirectory),
+        );
+      });
+
     mockFs.restore();
   });
 });

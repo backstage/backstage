@@ -172,7 +172,7 @@ export class AwsS3Publish implements PublisherBase {
       );
       return;
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to AWS S3. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to AWS S3. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }

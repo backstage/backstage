@@ -82,11 +82,7 @@ beforeEach(() => {
 
 describe('AwsS3Publish', () => {
   describe('publish', () => {
-    afterEach(() => {
-      mockFs.restore();
-    });
-
-    it('should publish a directory', async () => {
+    beforeEach(() => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
@@ -99,6 +95,15 @@ describe('AwsS3Publish', () => {
           },
         },
       });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should publish a directory', async () => {
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
 
       expect(
         await publisher.publish({
@@ -116,18 +121,14 @@ describe('AwsS3Publish', () => {
         'to',
         'generatedDirectory',
       );
-      const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
 
-      mockFs({
-        [entityRootDir]: {
-          'index.html': '',
-          '404.html': '',
-          assets: {
-            'main.css': '',
-          },
-        },
-      });
+      const entity = createMockEntity();
+      await expect(
+        publisher.publish({
+          entity,
+          directory: wrongPathToGeneratedDirectory,
+        }),
+      ).rejects.toThrowError();
 
       await publisher
         .publish({
@@ -139,7 +140,7 @@ describe('AwsS3Publish', () => {
             // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
             // Issue reported https://github.com/tschaub/mock-fs/issues/118
             expect.stringContaining(
-              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory`,
+              `Unable to upload file(s) to AWS S3. Error: Failed to read template directory: ENOENT, no such file or directory`,
             ),
           );
           expect(error.message).toEqual(
