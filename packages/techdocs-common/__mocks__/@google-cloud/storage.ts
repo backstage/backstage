@@ -32,8 +32,6 @@ const checkFileExists = async (sourceFile: string): Promise<boolean> => {
     await fs.access(filePath, fs.constants.F_OK);
     return true;
   } catch (err) {
-    console.log("File doesn't exist");
-    console.log(filePath);
     return false;
   }
 };

@@ -22,6 +22,8 @@ import * as winston from 'winston';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase, TechDocsMetadata } from './types';
 
+// NOTE: /packages/techdocs-common/__mocks__ is being used to mock aws-sdk client library
+
 const createMockEntity = (annotations = {}): Entity => {
   return {
     apiVersion: 'version',

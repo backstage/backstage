@@ -17,8 +17,12 @@ import { getVoidLogger } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
+import os from 'os';
+import path from 'path';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { PublisherBase } from './types';
+
+// NOTE: /packages/techdocs-common/__mocks__ is being used to mock Azure client library
 
 const createMockEntity = (annotations = {}) => {
   return {
@@ -34,13 +38,14 @@ const createMockEntity = (annotations = {}) => {
   };
 };
 
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 const getEntityRootDir = (entity: Entity) => {
   const {
     kind,
     metadata: { namespace, name },
   } = entity;
-  const entityRootDir = `${namespace}/${kind}/${name}`;
-  return entityRootDir;
+
+  return path.join(rootDir, namespace as string, kind, name);
 };
 
 function createLogger() {
@@ -106,7 +111,14 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      const wrongPathToGeneratedDirectory = 'wrong/path/to/generatedDirectory';
+      const wrongPathToGeneratedDirectory = path.join(
+        rootDir,
+        'wrong',
+        'path',
+        'to',
+        'generatedDirectory',
+      );
+
       const entity = createMockEntity();
 
       await publisher
@@ -115,8 +127,8 @@ describe('publishing with valid credentials', () => {
           directory: wrongPathToGeneratedDirectory,
         })
         .catch(error =>
-          expect(error.message).toContain(
-            'Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory',
+          expect(error.message).toBe(
+            `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
           ),
         );
       mockFs.restore();
@@ -227,7 +239,10 @@ describe('error reporting', () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       expect.stringContaining(
-        `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for test-namespace/TestKind/test-component-name/index.html with status code 500`,
+        `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
+          entityRootDir,
+          'index.html',
+        )} with status code 500`,
       ),
     );
 

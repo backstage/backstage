@@ -22,6 +22,8 @@ import path from 'path';
 import { GoogleGCSPublish } from './googleStorage';
 import { PublisherBase } from './types';
 
+// NOTE: /packages/techdocs-common/__mocks__ is being used to mock Google Cloud Storage client library
+
 const createMockEntity = (annotations = {}): Entity => {
   return {
     apiVersion: 'version',
