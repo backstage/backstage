@@ -15,13 +15,12 @@
  */
 import React from 'react';
 import { useAsync } from 'react-use';
-import { Typography } from '@material-ui/core';
-import { CodeSnippet, InfoCard, useApi } from '@backstage/core';
-import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Progress, useApi, WarningPanel } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { badgesClientApiRef } from '../BadgesClientApi';
+import { BadgesDrawer } from './BadgesDrawer';
 
-export const EntityBadgesCard = () => {
+export const EntityBadgesField = () => {
   const badgesClientApi = useApi(badgesClientApiRef);
   const { entity } = useEntity();
   const { value, loading, error } = useAsync(async () => {
@@ -31,14 +30,23 @@ export const EntityBadgesCard = () => {
     };
   }, [badgesClientApi, entity]);
 
+  const badges = [];
+
+  if (value) {
+    badges.push({
+      title: 'Powered by Backstage',
+      badgeUrl: value.badge,
+      markdownCode: value.markdown,
+    });
+  }
+
   return (
-    <InfoCard title="Badges">
-      <Typography paragraph>
-        Paste the following snippet in your <code>README.md</code> or other
-        markdown file, to get a powered by backstage badge:
-      </Typography>
-      {value && <img src={value.badge} alt="Powered by Backstage badge" />}
-      {value && <CodeSnippet text={value.markdown} showCopyCodeButton />}
-    </InfoCard>
+    <div>
+      {loading && <Progress />}
+      {error && (
+        <WarningPanel title="Failed to get badge" message={`Error: ${error}`} />
+      )}
+      {badges.length > 0 && <BadgesDrawer badges={badges} />}
+    </div>
   );
 };

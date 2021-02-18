@@ -20,6 +20,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.7.1",
     "@backstage/core": "^0.6.1",
     "@backstage/plugin-catalog-react": "^0.0.3",
     "@backstage/theme": "^0.2.3",
@@ -28,6 +29,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-router": "6.0.0-beta.0",
     "react-use": "^15.3.3"
   },
   "devDependencies": {

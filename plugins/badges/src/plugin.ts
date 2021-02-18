@@ -13,11 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createComponentExtension } from '@backstage/core';
+import {
+  createApiFactory,
+  createComponentExtension,
+  createPlugin,
+  configApiRef,
+  discoveryApiRef,
+} from '@backstage/core';
+import { badgesClientApiRef, BadgesClientApi } from './BadgesClientApi';
 
 export const badgesPlugin = createPlugin({
   id: 'badges',
+  apis: [
+    createApiFactory({
+      api: badgesClientApiRef,
+      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ configApi, discoveryApi }) =>
+        new BadgesClientApi({ configApi, discoveryApi }),
+    }),
+  ],
 });
+
+export const EntityBadgesField = badgesPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/EntityBadgesField').then(m => m.EntityBadgesField),
+    },
+  }),
+);
 
 export const EntityBadgesCard = badgesPlugin.provide(
   createComponentExtension({

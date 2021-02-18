@@ -33,6 +33,7 @@
     "@backstage/config": "^0.1.4",
     "@backstage/plugin-app-backend": "^0.3.10",
     "@backstage/plugin-auth-backend": "^0.3.5",
+    "@backstage/plugin-badges-backend": "^0.1.1",
     "@backstage/plugin-catalog-backend": "^0.6.6",
     "@backstage/plugin-graphql-backend": "^0.1.6",
     "@backstage/plugin-kubernetes-backend": "^0.3.1",

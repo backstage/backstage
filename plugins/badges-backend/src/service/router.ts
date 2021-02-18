@@ -37,8 +37,6 @@ export async function createRouter(
 
   const badgesApi = options.badgesApi || new BadgesApi(logger);
 
-  // router.use(express.json());
-
   router.get('/entity/:namespace/:kind/:name', async (req, res) => {
     const { namespace, kind, name } = req.params;
     const badge = badgesApi.getPoweredByBadge();

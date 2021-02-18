@@ -46,6 +46,7 @@ import techdocs from './plugins/techdocs';
 import todo from './plugins/todo';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
+import badges from './plugins/badges';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -83,6 +84,7 @@ async function main() {
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
+  const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -95,6 +97,7 @@ async function main() {
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)
