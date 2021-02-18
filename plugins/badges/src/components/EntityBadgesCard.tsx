@@ -22,19 +22,20 @@ export const EntityBadgesCard = () => {
   const { entity } = useEntity();
 
   // TODO: extract kind, namespace, entity name from entity data...
-  const { kind, namespace, entityname } = {
+  const { kind, namespace, name } = {
     kind: 'Component',
     namespace: 'default',
-    entityname: 'demo',
+    name: 'demo',
   };
 
   // TODO: get url for backstage and the badges api
   const backstage_ui = 'http://localhost:3000';
   const backstage_api = 'http://localhost:7000';
-  const badge = `${backstage_api}/badges/${kind}/${namespace}/${entityname}`;
 
-  const target = backstage_ui;
+  const badge = `${backstage_api}/badges/entity/${namespace}/${kind}/${name}`.toLowerCase();
+  const target = `${backstage_ui}/catalog/${namespace}/${kind}/${name}`.toLowerCase();
   const markdown_code = `[![Powered by Backstage](${badge})](${target})`;
+
   return (
     <InfoCard title="Badges">
       <Typography paragraph>

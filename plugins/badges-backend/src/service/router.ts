@@ -39,8 +39,8 @@ export async function createRouter(
 
   // router.use(express.json());
 
-  router.get('/:kind/:namespace/:entityname', async (req, res) => {
-    const { kind, namespace, entityname } = req.params;
+  router.get('/entity/:namespace/:kind/:name', async (req, res) => {
+    const { namespace, kind, name } = req.params;
     const badge = badgesApi.getPoweredByBadge();
 
     res.setHeader('Content-Type', 'image/svg+xml');
