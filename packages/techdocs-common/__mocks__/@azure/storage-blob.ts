@@ -17,6 +17,7 @@ import type {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
+import { EventEmitter } from 'events';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -61,6 +62,24 @@ export class BlockBlobClient {
 
   exists() {
     return checkFileExists(this.blobName);
+  }
+
+  download() {
+    const emitter = new EventEmitter();
+    process.nextTick(() => {
+      if (fs.existsSync(this.blobName)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(this.blobName)));
+      } else {
+        emitter.emit(
+          'error',
+          new Error(`The file ${this.blobName} doest not exist!`),
+        );
+      }
+      emitter.emit('end');
+    });
+    return Promise.resolve({
+      readableStreamBody: emitter,
+    });
   }
 }
 

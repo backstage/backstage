@@ -20,8 +20,9 @@ import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
-import { PublisherBase } from './types';
-
+import { PublisherBase, TechDocsMetadata } from './types';
+import type { Entity, EntityName } from '@backstage/catalog-model';
+import type { Logger } from 'winston';
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Azure client library
 
 const createMockEntity = (annotations = {}) => {
@@ -37,6 +38,12 @@ const createMockEntity = (annotations = {}) => {
     },
   };
 };
+
+const createMockEntityName = (): EntityName => ({
+  kind: 'TestKind',
+  name: 'test-component-name',
+  namespace: 'test-namespace',
+});
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 const getEntityRootDir = (entity: Entity) => {
@@ -254,5 +261,61 @@ describe('error reporting', () => {
     );
 
     mockFs.restore();
+  });
+
+  describe('fetchTechDocsMetadata', () => {
+    it('should return tech docs metadata', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json':
+            '{"site_name": "backstage", "site_description": "site_content"}',
+        },
+      });
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
+      mockFs.restore();
+    });
+
+    it('should return tech docs metadata when json encoded with single quotes', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content'}`,
+        },
+      });
+
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
+      mockFs.restore();
+    });
+
+    it('should return an error if the techdocs_metadata.json file is not present', async () => {
+      const entityNameMock = createMockEntityName();
+
+      await publisher
+        .fetchTechDocsMetadata(entityNameMock)
+        .catch(error =>
+          expect(error.message).toEqual(
+            expect.stringContaining('TechDocs metadata fetch'),
+          ),
+        );
+    });
   });
 });

@@ -201,12 +201,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
             return;
           }
           body
+            .on('data', chunk => {
+              fileStreamChunks.push(chunk);
+            })
             .on('error', e => {
               this.logger.error(e.message);
               reject(e.message);
-            })
-            .on('data', chunk => {
-              fileStreamChunks.push(chunk);
             })
             .on('end', () => {
               resolve(Buffer.concat(fileStreamChunks));
@@ -220,16 +220,28 @@ export class AzureBlobStoragePublish implements PublisherBase {
   ): Promise<TechDocsMetadata> {
     const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
     try {
-      return await new Promise<TechDocsMetadata>(resolve => {
-        const download = this.download(
-          this.containerName,
-          `${entityRootDir}/techdocs_metadata.json`,
-        );
-        resolve(JSON5.parse(download.toString()));
+      return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
+        try {
+          const techdocsMetadataJson = await this.download(
+            this.containerName,
+            `${entityRootDir}/techdocs_metadata.json`,
+          );
+          if (!techdocsMetadataJson) {
+            throw new Error(
+              `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
+            );
+          }
+          const techdocsMetadata = JSON5.parse(
+            techdocsMetadataJson.toString('utf-8'),
+          );
+          resolve(techdocsMetadata);
+        } catch (err) {
+          this.logger.error(err.message);
+          reject(new Error(err.message));
+        }
       });
     } catch (e) {
-      this.logger.error(e.message);
-      throw e;
+      throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
     }
   }
 
