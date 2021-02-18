@@ -7777,9 +7777,9 @@ archiver-utils@^2.1.0:
     readable-stream "^2.0.0"
 
 archiver@^5.0.2:
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/archiver/-/archiver-5.1.0.tgz#05b0f6f7836f3e6356a0532763d2bb91017a7e37"
-  integrity sha512-iKuQUP1nuKzBC2PFlGet5twENzCfyODmvkxwDV0cEFXavwcLrIW5ssTuHi9dyTPvpWr6Faweo2eQaQiLIwyXTA==
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/archiver/-/archiver-5.2.0.tgz#25aa1b3d9febf7aec5b0f296e77e69960c26db94"
+  integrity sha512-QEAKlgQuAtUxKeZB9w5/ggKXh21bZS+dzzuQ0RPBC20qtDCbTyzqmisoeJP46MP39fg4B4IcyvR+yeyEBdblsQ==
   dependencies:
     archiver-utils "^2.1.0"
     async "^3.2.0"
