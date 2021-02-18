@@ -126,11 +126,17 @@ describe('publishing with valid credentials', () => {
           entity,
           directory: wrongPathToGeneratedDirectory,
         })
-        .catch(error =>
-          expect(error.message).toBe(
-            `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
-          ),
-        );
+        .catch(error => {
+          // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+          // Issue reported https://github.com/tschaub/mock-fs/issues/118
+          expect.stringContaining(
+            `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+          );
+
+          expect(error.message).toEqual(
+            expect.stringContaining(wrongPathToGeneratedDirectory),
+          );
+        });
       mockFs.restore();
     });
   });
