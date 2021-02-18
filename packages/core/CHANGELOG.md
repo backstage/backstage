@@ -1,5 +1,23 @@
 # @backstage/core
 
+## 0.6.2
+
+### Patch Changes
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 07e226872: Export Select component
+- f62e7abe5: Make sure that SidebarItems are also active when on sub route.
+- 96f378d10: Add support for custom empty state of `Table` components.
+
+  You can now optionally pass `emptyContent` to `Table` that is displayed
+  if the table has now rows.
+
+- 688b73110: Add Breadcrumbs component
+- Updated dependencies [f10950bd2]
+- Updated dependencies [fd3f2a8c0]
+  - @backstage/core-api@0.2.10
+
 ## 0.6.1
 
 ### Patch Changes

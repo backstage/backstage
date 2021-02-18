@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -29,11 +29,11 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.5.3",
+    "@backstage/backend-common": "^0.5.4",
     "@backstage/catalog-client": "^0.3.6",
     "@backstage/catalog-model": "^0.7.1",
     "@backstage/config": "^0.1.2",
-    "@backstage/integration": "^0.4.0",
+    "@backstage/integration": "^0.5.0",
     "@gitbeaker/core": "^28.0.2",
     "@gitbeaker/node": "^28.0.2",
     "@octokit/rest": "^18.0.12",
@@ -61,7 +61,7 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.0",
+    "@backstage/cli": "^0.6.1",
     "@backstage/test-utils": "^0.1.7",
     "@types/fs-extra": "^9.0.1",
     "@types/mock-fs": "^4.13.0",
