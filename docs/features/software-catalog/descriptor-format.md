@@ -565,6 +565,9 @@ spec:
         title: Description
         type: string
         description: Description of the component
+  uiSchema:
+    description:
+      ui:widget: textarea
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -630,6 +633,15 @@ specify relative to the `template.yaml` definition.
 
 This is also particularly useful when you have multiple template definitions in
 the same repository but only a single `template.yaml` registered in backstage.
+
+### `spec.uiSchema` [optional]
+
+Object that describes how the form should be rendered.  
+While `spec.schema` describes **what** is rendered, `spec.uiSchema` describes
+**how**.
+
+It follows the
+[react-jsonschema-form - uiSchema reference](https://react-jsonschema-form.readthedocs.io/en/latest/api-reference/uiSchema/).
 
 ## Kind: API
 

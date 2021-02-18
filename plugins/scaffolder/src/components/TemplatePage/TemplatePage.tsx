@@ -176,10 +176,12 @@ export const TemplatePage = () => {
                 {
                   label: 'Fill in template parameters',
                   schema: template.spec.schema,
+                  uiSchema: template.spec.uiSchema,
                 },
                 {
                   label: 'Choose owner and repo',
                   schema: OWNER_REPO_SCHEMA,
+                  uiSchema: template.spec.uiSchema,
                   validate: (formData, errors) => {
                     const { storePath } = formData;
                     try {

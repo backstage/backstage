@@ -66,7 +66,7 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, schema, ...formProps }) => (
+        {steps.map(({ label, schema, uiSchema, ...formProps }) => (
           <StepUI key={label}>
             <StepLabel>{label}</StepLabel>
             <StepContent key={label}>
@@ -76,6 +76,7 @@ export const MultistepJsonForm = ({
                 formData={formData}
                 onChange={onChange}
                 schema={schema as FormProps<any>['schema']}
+                uiSchema={uiSchema as FormProps<any>['uiSchema']}
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
                 }}
