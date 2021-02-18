@@ -15,22 +15,22 @@
  */
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
-import { Link } from '@backstage/core';
-import React from 'react';
+import { Link, LinkProps } from '@backstage/core';
+import React, { forwardRef } from 'react';
 import { generatePath } from 'react-router';
 import { entityRoute } from '../../routes';
 import { formatEntityRefTitle } from './format';
 
-type EntityRefLinkProps = {
+export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
   children?: React.ReactNode;
-};
+} & Omit<LinkProps, 'to'>;
 
-export const EntityRefLink = React.forwardRef<any, EntityRefLinkProps>(
+export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
   (props, ref) => {
     const { entityRef, defaultKind, children, ...linkProps } = props;
 
@@ -59,9 +59,9 @@ export const EntityRefLink = React.forwardRef<any, EntityRefLinkProps>(
     // TODO: Use useRouteRef here to generate the path
     return (
       <Link
+        {...linkProps}
         ref={ref}
         to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
-        {...linkProps}
       >
         {children}
         {!children && formatEntityRefTitle(entityRef, { defaultKind })}
