@@ -193,8 +193,8 @@ We can categorize plugins into three different types; **Frontend**, **Backend**
 and **GraphQL**. We differentiate these types of plugins when we name them, with
 a dash-suffix. `-backend` means it’s a backend plugin and so on.
 
-One reason for splitting a plugin is because of its dependencies. Another
-reason is for clear separation of concerns.
+One reason for splitting a plugin is because of its dependencies. Another reason
+is for clear separation of concerns.
 
 Take a look at our [Plugin Marketplace](https://backstage.io/plugins) or browse
 through the
