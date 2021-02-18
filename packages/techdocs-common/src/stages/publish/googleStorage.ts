@@ -118,6 +118,7 @@ export class GoogleGCSPublish implements PublisherBase {
           .split(path.sep)
           .join(path.posix.sep);
 
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // GCS Bucket file relative path
 

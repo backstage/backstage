@@ -149,6 +149,7 @@ export class AwsS3Publish implements PublisherBase {
           .split(path.sep)
           .join(path.posix.sep);
 
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
 
