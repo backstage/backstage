@@ -24,7 +24,6 @@ Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
 app:build                Build an app for a production release
-app:diff                 Diff an existing app with the creation template
 app:serve                Serve an app for local development
 
 backend:build            Build a backend plugin
@@ -110,25 +109,6 @@ Options:
   --stats          Write bundle stats to output directory
   --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
-```
-
-## app:diff
-
-Scope: `app`
-
-Diff an existing app with the template used in `@backstage/create-app`. This
-will verify that your app package has not diverged from the template, and can be
-useful to run after updating the version of `@backstage/cli` in your app.
-
-This command is experimental and may be removed in the future.
-
-```text
-Usage: backstage-cli app:diff
-
-Options:
-  --check     Fail if changes are required
-  --yes       Apply all changes
-  -h, --help  display help for command
 ```
 
 ## app:serve
