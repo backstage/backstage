@@ -13,7 +13,7 @@
     "Getting Started": [
       "getting-started/index",
       "getting-started/running-backstage-locally",
-      "getting-started/development-environment",
+      "getting-started/contributing",
       "getting-started/create-an-app",
       {
         "type": "subcategory",
