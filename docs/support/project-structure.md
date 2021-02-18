@@ -25,7 +25,7 @@ the code.
   Standard GitHub folder. It contains - amongst other things - our workflow
   definitions and templates. Worth noting is the
   [styles](https://github.com/backstage/backstage/tree/master/.github/styles)
-  subfolder which is used for a markdown spellchecker.
+  sub-folder which is used for a markdown spellchecker.
 
 - [`.yarn/`](https://github.com/backstage/backstage/tree/master/.yarn) -
   Backstage ships with it's own `yarn` implementation. This allows us to have
