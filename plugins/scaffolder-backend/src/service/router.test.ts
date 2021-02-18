@@ -185,6 +185,9 @@ describe('createRouter', () => {
       name: 'create-react-app-template',
       tags: ['experimental', 'react', 'cra'],
       title: 'Create React App Template',
+      annotations: {
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
+      },
     },
     spec: {
       owner: 'web@example.com',
@@ -245,6 +248,38 @@ describe('createRouter', () => {
         });
 
       expect(response.status).toEqual(400);
+    });
+  });
+
+  describe('POST /v2/tasks', () => {
+    it('rejects template values which do not match the template schema definition', async () => {
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateName: '',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+          },
+        });
+
+      expect(response.status).toEqual(400);
+    });
+
+    it('return the template id', async () => {
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateName: 'create-react-app-template',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+            component_id: '123',
+            name: 'test',
+            use_typescript: false,
+          },
+        });
+
+      expect(response.body.id).toBeDefined();
+      expect(response.status).toEqual(201);
     });
   });
 });
