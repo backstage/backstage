@@ -16,7 +16,8 @@
 import type { Entity, EntityName } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
-import path from 'path';
+import * as os from 'os';
+import * as path from 'path';
 import * as winston from 'winston';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase, TechDocsMetadata } from './types';
@@ -41,13 +42,15 @@ const createMockEntityName = (): EntityName => ({
   namespace: 'test-namespace',
 });
 
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
 const getEntityRootDir = (entity: Entity) => {
   const {
     kind,
     metadata: { namespace, name },
   } = entity;
-  const entityRootDir = path.join(namespace as string, kind, name);
-  return entityRootDir;
+
+  return path.join(rootDir, namespace as string, kind, name);
 };
 
 const logger = winston.createLogger();
@@ -57,6 +60,7 @@ jest.spyOn(logger, 'error').mockReturnValue(logger);
 let publisher: PublisherBase;
 
 beforeEach(() => {
+  mockFs.restore();
   const mockConfig = new ConfigReader({
     techdocs: {
       requestUrl: 'http://localhost:7000',
@@ -78,6 +82,10 @@ beforeEach(() => {
 
 describe('AwsS3Publish', () => {
   describe('publish', () => {
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     it('should publish a directory', async () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
@@ -98,11 +106,11 @@ describe('AwsS3Publish', () => {
           directory: entityRootDir,
         }),
       ).toBeUndefined();
-      mockFs.restore();
     });
 
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = path.join(
+        rootDir,
         'wrong',
         'path',
         'to',
@@ -126,13 +134,18 @@ describe('AwsS3Publish', () => {
           entity,
           directory: wrongPathToGeneratedDirectory,
         })
-        .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory '${wrongPathToGeneratedDirectory}'`,
+        .catch(error => {
+          expect(error.message).toEqual(
+            // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+            // Issue reported https://github.com/tschaub/mock-fs/issues/118
+            expect.stringContaining(
+              `Unable to upload file(s) to AWS S3. Error Failed to read template directory: ENOENT, no such file or directory`,
             ),
-          ),
-        );
+          );
+          expect(error.message).toEqual(
+            expect.stringContaining(wrongPathToGeneratedDirectory),
+          );
+        });
       mockFs.restore();
     });
   });
