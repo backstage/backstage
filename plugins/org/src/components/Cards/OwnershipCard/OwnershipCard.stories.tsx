@@ -18,10 +18,10 @@ import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { GroupEntity } from '@backstage/catalog-model';
 import {
-  lightTheme,
   createTheme,
   genPageTheme,
   shapes,
+  BackstageTheme,
 } from '@backstage/theme';
 import {
   EntityContext,
@@ -89,36 +89,33 @@ const apiRegistry = ApiRegistry.from([[catalogApiRef, catalogApi]]);
 
 export const Default = () => (
   <MemoryRouter>
-    <ThemeProvider theme={lightTheme}>
-      <ApiProvider apis={apiRegistry}>
-        <EntityContext.Provider
-          value={{ entity: defaultEntity, loading: false }}
-        >
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <OwnershipCard />
-            </Grid>
+    <ApiProvider apis={apiRegistry}>
+      <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <OwnershipCard />
           </Grid>
-        </EntityContext.Provider>
-      </ApiProvider>
-    </ThemeProvider>
+        </Grid>
+      </EntityContext.Provider>
+    </ApiProvider>
   </MemoryRouter>
 );
 
-const monochromeTheme = createTheme({
-  ...lightTheme,
-  defaultPageTheme: 'home',
-  pageTheme: {
-    home: genPageTheme(['#444'], shapes.wave2),
-    documentation: genPageTheme(['#474747'], shapes.wave2),
-    tool: genPageTheme(['#222'], shapes.wave2),
-    service: genPageTheme(['#aaa'], shapes.wave2),
-    website: genPageTheme(['#0e0e0e'], shapes.wave2),
-    library: genPageTheme(['#9d9d9d'], shapes.wave2),
-    other: genPageTheme(['#aaa'], shapes.wave2),
-    app: genPageTheme(['#666'], shapes.wave2),
-  },
-});
+const monochromeTheme = (outer: BackstageTheme) =>
+  createTheme({
+    ...outer,
+    defaultPageTheme: 'home',
+    pageTheme: {
+      home: genPageTheme(['#444'], shapes.wave2),
+      documentation: genPageTheme(['#474747'], shapes.wave2),
+      tool: genPageTheme(['#222'], shapes.wave2),
+      service: genPageTheme(['#aaa'], shapes.wave2),
+      website: genPageTheme(['#0e0e0e'], shapes.wave2),
+      library: genPageTheme(['#9d9d9d'], shapes.wave2),
+      other: genPageTheme(['#aaa'], shapes.wave2),
+      app: genPageTheme(['#666'], shapes.wave2),
+    },
+  });
 
 export const Themed = () => (
   <MemoryRouter>
