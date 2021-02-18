@@ -22,7 +22,8 @@ import path from 'path';
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 /**
- * @param Key contains either / or \ as file separator depending upon OS.
+ * @param Key Relative path to entity root dir. Contains either / or \ as file separator
+ * depending upon the OS.
  */
 const checkFileExists = async (Key: string): Promise<boolean> => {
   // Key will always have / as file separator irrespective of OS since S3 expects /.

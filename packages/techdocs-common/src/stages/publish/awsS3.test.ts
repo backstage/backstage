@@ -16,8 +16,8 @@
 import type { Entity, EntityName } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 import * as winston from 'winston';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase, TechDocsMetadata } from './types';

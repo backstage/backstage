@@ -23,10 +23,11 @@ import path from 'path';
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 /**
- * @param sourceFile contains either / or \ as file separator depending upon OS.
+ * @param sourceFile Relative path to entity root dir. Contains either / or \ as file separator
+ * depending upon the OS.
  */
 const checkFileExists = async (sourceFile: string): Promise<boolean> => {
-  // sourceFile will always have / as file separator irrespective of OS since S3 expects /.
+  // sourceFile will always have / as file separator irrespective of OS since Azure expects /.
   // Normalize sourceFile to OS specific path before checking if file exists.
   const relativeFilePath = sourceFile.split(path.posix.sep).join(path.sep);
   const filePath = path.join(rootDir, sourceFile);
