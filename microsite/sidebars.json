@@ -27,6 +27,7 @@
         "type": "subcategory",
         "label": "Deployment",
         "ids": [
+          "getting-started/deployment-docker",
           "getting-started/deployment-k8s",
           "getting-started/deployment-helm",
           "getting-started/deployment-other"
