@@ -33,7 +33,6 @@ import { useAsync } from 'react-use';
 
 type SystemDiagramProps = {
   entity: Entity;
-  variant?: string;
 };
 
 export function SystemDiagram({ entity }: SystemDiagramProps) {
