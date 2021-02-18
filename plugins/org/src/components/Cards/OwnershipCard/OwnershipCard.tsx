@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { InfoCard, Progress, useApi } from '@backstage/core';
+import { InfoCard, InfoCardVariants, Progress, useApi } from '@backstage/core';
 import {
   catalogApiRef,
   isOwnerOf,
@@ -121,7 +121,7 @@ export const OwnershipCard = ({
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant: string;
+  variant?: InfoCardVariants;
 }) => {
   const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
