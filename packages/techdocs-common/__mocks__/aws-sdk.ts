@@ -41,7 +41,7 @@ export class S3 {
           } else {
             emitter.emit(
               'error',
-              new Error(`The file ${Key} doest not exist !`),
+              new Error(`The file ${Key} does not exist !`),
             );
           }
           emitter.emit('end');
@@ -56,7 +56,7 @@ export class S3 {
       if (fs.existsSync(Key)) {
         resolve('');
       } else {
-        reject({ message: 'The object doest not exist !' });
+        reject({ message: 'The object does not exist !' });
       }
     });
   }
@@ -71,7 +71,11 @@ export class S3 {
     return {
       promise: () =>
         new Promise((resolve, reject) => {
-          resolve('');
+          if (!fs.existsSync(Key)) {
+            reject('');
+          } else {
+            resolve('');
+          }
         }),
     };
   }
