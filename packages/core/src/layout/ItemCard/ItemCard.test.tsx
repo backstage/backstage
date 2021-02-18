@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import React from 'react';
 import { ItemCard } from './ItemCard';
 
 const minProps = {
   description: 'This is the description of an Item Card',
   label: 'Button',
   title: 'Item Card',
-  type: 'Pretitle',
 };
 
 describe('<InfoCard />', () => {
   it('renders default without exploding', async () => {
-    const { description, label, title, type } = minProps;
+    const { description, label, title } = minProps;
     const { getByText } = await renderInTestApp(<ItemCard {...minProps} />);
     expect(getByText(description)).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(label)).toBeInTheDocument();
-    expect(getByText(type)).toBeInTheDocument();
+  });
+
+  it('renders with subtitle without exploding', async () => {
+    const { description, label, title } = minProps;
+    const subtitle = 'Pretitle';
+    const { getByText } = await renderInTestApp(
+      <ItemCard {...minProps} subtitle={subtitle} />,
+    );
+    expect(getByText(description)).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getByText(label)).toBeInTheDocument();
+    expect(getByText(subtitle)).toBeInTheDocument();
   });
 
   it('renders with tags without exploding', async () => {
