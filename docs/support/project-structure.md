@@ -154,9 +154,9 @@ are separated out into their own folder, see further down.
   to read out definitions and generate documentation for it.
 
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -
-  Another CLI that can be run to try out what would happen if you built all the
-  packages, published them, created a new app, and then run them. CI uses this
-  for e2e-tests.
+  Another CLI that can be run to try out what would happen if you build all the
+  packages, publish them, create a new app, and then run them. CI uses this for
+  e2e-tests.
 
 - [`integration/`](https://github.com/backstage/backstage/tree/master/packages/integration) -
   Common functionalities of integrations like GitHub, GitLab, etc.
