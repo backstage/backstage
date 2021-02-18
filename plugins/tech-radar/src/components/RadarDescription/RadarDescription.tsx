@@ -49,9 +49,8 @@ const RadarDescription = (props: Props): JSX.Element => {
             onClick={handleClick}
             color="primary"
             startIcon={<LinkIcon />}
-            variant="contained"
           >
-            Visit URL
+            LEARN MORE
           </Button>
         </DialogActions>
       )}
