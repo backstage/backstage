@@ -11,6 +11,7 @@ Caveat: as of writing this, Backstage does not refresh the identity token so eve
 ```typescript
 // packages/backend/src/index.ts from a create-app deployment
 
+import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 
@@ -30,7 +31,9 @@ async function main() {
     next: NextFunction,
   ) => {
     try {
-      const token = IdentityClient.getBearerToken(req.headers.authorization);
+      const token =
+        IdentityClient.getBearerToken(req.headers.authorization) ||
+        req.cookies['access-token'];
       req.user = await identity.authenticate(token);
       next();
     } catch (error) {
@@ -39,6 +42,7 @@ async function main() {
   };
 
   const apiRouter = Router();
+  apiRouter.use(cookieParser());
   // The auth route must be publically available as it is used during login
   apiRouter.use('/auth', await auth(authEnv));
   // Only authenticated requests are allowed to the routes below
