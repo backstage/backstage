@@ -65,13 +65,13 @@ export class S3 {
         process.nextTick(() => {
           if (fs.existsSync(filePath)) {
             emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+            emitter.emit('end');
           } else {
             emitter.emit(
               'error',
               new Error(`The file ${filePath} does not exist !`),
             );
           }
-          emitter.emit('end');
         });
         return emitter;
       },

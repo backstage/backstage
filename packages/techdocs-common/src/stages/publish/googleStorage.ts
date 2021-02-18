@@ -160,9 +160,9 @@ export class GoogleGCSPublish implements PublisherBase {
           fileStreamChunks.push(chunk);
         })
         .on('end', () => {
-          const techdocsMetadataJson = Buffer.concat(
-            fileStreamChunks,
-          ).toString();
+          const techdocsMetadataJson = Buffer.concat(fileStreamChunks).toString(
+            'utf-8',
+          );
           resolve(JSON5.parse(techdocsMetadataJson));
         });
     });

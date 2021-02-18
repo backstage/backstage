@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
 import { GoogleGCSPublish } from './googleStorage';
-import { PublisherBase } from './types';
+import { PublisherBase, TechDocsMetadata } from './types';
 
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Google Cloud Storage client library
 
@@ -37,6 +37,12 @@ const createMockEntity = (annotations = {}): Entity => {
     },
   };
 };
+
+const createMockEntityName = (): EntityName => ({
+  kind: 'TestKind',
+  name: 'test-component-name',
+  namespace: 'test-namespace',
+});
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
@@ -73,74 +79,164 @@ beforeEach(async () => {
 });
 
 describe('GoogleGCSPublish', () => {
-  beforeEach(() => {
-    const entity = createMockEntity();
-    const entityRootDir = getEntityRootDir(entity);
+  describe('publish', () => {
+    beforeEach(() => {
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
 
-    mockFs({
-      [entityRootDir]: {
-        'index.html': '',
-        '404.html': '',
-        assets: {
-          'main.css': '',
+      mockFs({
+        [entityRootDir]: {
+          'index.html': '',
+          '404.html': '',
+          assets: {
+            'main.css': '',
+          },
         },
-      },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should publish a directory', async () => {
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      expect(
+        await publisher.publish({
+          entity,
+          directory: entityRootDir,
+        }),
+      ).toBeUndefined();
+      mockFs.restore();
+    });
+
+    it('should fail to publish a directory', async () => {
+      const wrongPathToGeneratedDirectory = path.join(
+        rootDir,
+        'wrong',
+        'path',
+        'to',
+        'generatedDirectory',
+      );
+
+      const entity = createMockEntity();
+
+      await expect(
+        publisher.publish({
+          entity,
+          directory: wrongPathToGeneratedDirectory,
+        }),
+      ).rejects.toThrowError();
+
+      await publisher
+        .publish({
+          entity,
+          directory: wrongPathToGeneratedDirectory,
+        })
+        .catch(error => {
+          expect(error.message).toEqual(
+            // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+            // Issue reported https://github.com/tschaub/mock-fs/issues/118
+            expect.stringContaining(
+              `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+            ),
+          );
+          expect(error.message).toEqual(
+            expect.stringContaining(wrongPathToGeneratedDirectory),
+          );
+        });
+
+      mockFs.restore();
     });
   });
 
-  afterEach(() => {
-    mockFs.restore();
-  });
+  describe('hasDocsBeenGenerated', () => {
+    it('should return true if docs has been generated', async () => {
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
 
-  it('should publish a directory', async () => {
-    const entity = createMockEntity();
-    const entityRootDir = getEntityRootDir(entity);
-
-    expect(
-      await publisher.publish({
-        entity,
-        directory: entityRootDir,
-      }),
-    ).toBeUndefined();
-    mockFs.restore();
-  });
-
-  it('should fail to publish a directory', async () => {
-    const wrongPathToGeneratedDirectory = path.join(
-      rootDir,
-      'wrong',
-      'path',
-      'to',
-      'generatedDirectory',
-    );
-
-    const entity = createMockEntity();
-
-    await expect(
-      publisher.publish({
-        entity,
-        directory: wrongPathToGeneratedDirectory,
-      }),
-    ).rejects.toThrowError();
-
-    await publisher
-      .publish({
-        entity,
-        directory: wrongPathToGeneratedDirectory,
-      })
-      .catch(error => {
-        expect(error.message).toEqual(
-          // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-          // Issue reported https://github.com/tschaub/mock-fs/issues/118
-          expect.stringContaining(
-            `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-          ),
-        );
-        expect(error.message).toEqual(
-          expect.stringContaining(wrongPathToGeneratedDirectory),
-        );
+      mockFs({
+        [entityRootDir]: {
+          'index.html': 'file-content',
+        },
       });
 
-    mockFs.restore();
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(true);
+      mockFs.restore();
+    });
+
+    it('should return false if docs has not been generated', async () => {
+      const entity = createMockEntity();
+
+      expect(await publisher.hasDocsBeenGenerated(entity)).toBe(false);
+    });
+  });
+
+  describe('fetchTechDocsMetadata', () => {
+    beforeEach(() => {
+      mockFs.restore();
+    });
+
+    it('should return tech docs metadata', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json':
+            '{"site_name": "backstage", "site_description": "site_content"}',
+        },
+      });
+
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
+    });
+
+    it('should return tech docs metadata when json encoded with single quotes', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'techdocs_metadata.json':
+            "{'site_name': 'backstage', 'site_description': 'site_content'}",
+        },
+      });
+
+      const expectedMetadata: TechDocsMetadata = {
+        site_name: 'backstage',
+        site_description: 'site_content',
+      };
+      expect(
+        await publisher.fetchTechDocsMetadata(entityNameMock),
+      ).toStrictEqual(expectedMetadata);
+      mockFs.restore();
+    });
+
+    it('should return an error if the techdocs_metadata.json file is not present', async () => {
+      const entityNameMock = createMockEntityName();
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      await publisher
+        .fetchTechDocsMetadata(entityNameMock)
+        .catch(errorMessage =>
+          expect(errorMessage).toEqual(
+            `The file ${path.join(
+              entityRootDir,
+              'techdocs_metadata.json',
+            )} does not exist !`,
+          ),
+        );
+    });
   });
 });
