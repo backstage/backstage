@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_PROVIDES_API,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   DependencyGraph,
@@ -81,14 +85,14 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
         if (catalogItem.relations) {
           for (const relation of catalogItem.relations) {
             switch (relation.type) {
-              case 'providesApi':
+              case RELATION_PROVIDES_API:
                 systemEdges.push({
                   to: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
                   from: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
                   label: 'provides API',
                 });
                 break;
-              case 'partOf':
+              case RELATION_PART_OF:
                 systemEdges.push({
                   from: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
                   to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
