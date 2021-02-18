@@ -39,22 +39,22 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
 And the addition of a new switch case to the `EntityPage` object:
 
 ```diff
--export const EntityPage = () => {
--  const { entity } = useEntity();
--
--  switch (entity?.kind?.toLowerCase()) {
--    case 'component':
--      return <ComponentEntityPage entity={entity} />;
--    case 'api':
--      return <ApiEntityPage entity={entity} />;
--    case 'group':
--      return <GroupEntityPage entity={entity} />;
--    case 'user':
--      return <UserEntityPage entity={entity} />;
+ export const EntityPage = () => {
+   const { entity } = useEntity();
+
+   switch (entity?.kind?.toLowerCase()) {
+     case 'component':
+       return <ComponentEntityPage entity={entity} />;
+     case 'api':
+       return <ApiEntityPage entity={entity} />;
+     case 'group':
+       return <GroupEntityPage entity={entity} />;
+     case 'user':
+       return <UserEntityPage entity={entity} />;
 +    case 'system':
 +      return <SystemEntityPage entity={entity} />;
--    default:
--      return <DefaultEntityPage entity={entity} />;
--  }
--};
+     default:
+       return <DefaultEntityPage entity={entity} />;
+   }
+ };
 ```
