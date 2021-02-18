@@ -13,7 +13,7 @@
     "Getting Started": [
       "getting-started/index",
       "getting-started/running-backstage-locally",
-      "getting-started/development-environment",
+      "getting-started/contributing",
       "getting-started/create-an-app",
       {
         "type": "subcategory",
@@ -27,6 +27,7 @@
         "type": "subcategory",
         "label": "Deployment",
         "ids": [
+          "getting-started/deployment-docker",
           "getting-started/deployment-k8s",
           "getting-started/deployment-helm",
           "getting-started/deployment-other"
@@ -99,6 +100,18 @@
           "features/techdocs/troubleshooting",
           "features/techdocs/faqs"
         ]
+      }
+    ],
+    "Integrations": [
+      {
+        "type": "subcategory",
+        "label": "GitHub",
+        "ids": ["integrations/github/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "LDAP",
+        "ids": ["integrations/ldap/org"]
       }
     ],
     "Plugins": [

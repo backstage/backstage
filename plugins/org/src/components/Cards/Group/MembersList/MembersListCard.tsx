@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: '4px',
       overflow: 'visible',
       position: 'relative',
-      margin: theme.spacing(3, 0, 1),
+      margin: theme.spacing(4, 1, 1),
       flex: '1',
       minWidth: '0px',
     },
@@ -69,7 +69,7 @@ const MemberComponent = ({
   const displayName = profile?.displayName ?? metaName;
 
   return (
-    <Grid item container xs={12} sm={6} md={3} xl={2}>
+    <Grid item container xs={12} sm={6} md={4} xl={2}>
       <Box className={classes.card}>
         <Box
           display="flex"

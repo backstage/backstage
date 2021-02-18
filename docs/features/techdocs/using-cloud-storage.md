@@ -142,6 +142,8 @@ variables**
 You should follow the
 [AWS security best practices guide for authentication](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html).
 
+TechDocs needs access to read files and metadata of the S3 bucket.
+
 If the environment variables
 
 - `AWS_ACCESS_KEY_ID`
@@ -149,15 +151,21 @@ If the environment variables
 - `AWS_REGION`
 
 are set and can be used to access the bucket you created in step 2, they will be
-used by the AWS SDK v3 Node.js client for authentication.
-[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html)
+used by the AWS SDK V2 Node.js client for authentication.
+[Refer to the official documentation for loading credentials in Node.js from environment variables](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html).
 
 If the environment variables are missing, the AWS SDK tries to read the
 `~/.aws/credentials` file for credentials.
-[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html)
+[Refer to the official documentation.](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
 
-Note that the region of the bucket has to be set for the AWS SDK to work.
-[See this](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html).
+If you are using Amazon EC2 instance to deploy Backstage, you do not need to
+obtain the access keys separately. They can be made available in the environment
+automatically by defining appropriate IAM role with access to the bucket. Read
+more in
+[official AWS documentation for using IAM roles.](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
+
+The AWS Region of the bucket is optional since TechDocs uses AWS SDK V2 and not
+V3.
 
 **3b. Authentication using app-config.yaml**
 
@@ -181,13 +189,7 @@ techdocs:
 ```
 
 Refer to the
-[official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-your-credentials.html).
-
-Note: If you are using Amazon EC2 instance to deploy Backstage, you do not need
-to obtain the access keys separately. They can be made available in the
-environment automatically by defining appropriate IAM role with access to the
-bucket. Read more
-[here](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
+[official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html).
 
 **4. That's it!**
 

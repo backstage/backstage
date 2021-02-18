@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { configApiRef, InfoCard, useApi } from '@backstage/core';
+import {
+  configApiRef,
+  InfoCard,
+  InfoCardVariants,
+  useApi,
+} from '@backstage/core';
 import { Step, StepContent, Stepper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useMemo } from 'react';
@@ -39,7 +44,7 @@ type Props = {
     flow: ImportFlows,
     defaults: StepperProvider,
   ) => StepperProvider;
-  variant?: string;
+  variant?: InfoCardVariants;
   opts?: StepperProviderOpts;
 };
 

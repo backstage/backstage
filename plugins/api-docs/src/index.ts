@@ -24,4 +24,5 @@ export {
   EntityConsumingComponentsCard,
   EntityProvidedApisCard,
   EntityProvidingComponentsCard,
+  EntityHasApisCard,
 } from './plugin';

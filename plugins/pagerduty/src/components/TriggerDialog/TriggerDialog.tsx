@@ -35,7 +35,7 @@ type Props = {
   integrationKey: string;
   showDialog: boolean;
   handleDialog: () => void;
-  onIncidentCreated: () => void;
+  onIncidentCreated?: () => void;
 };
 
 export const TriggerDialog = ({
@@ -69,11 +69,17 @@ export const TriggerDialog = ({
 
   useEffect(() => {
     if (value) {
-      alertApi.post({
-        message: `Alarm successfully triggered by ${userName}`,
-      });
-      onIncidentCreated();
-      handleDialog();
+      (async () => {
+        alertApi.post({
+          message: `Alarm successfully triggered by ${userName}`,
+        });
+
+        handleDialog();
+
+        // The pager duty API isn't always returning the newly created alarm immediately
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        onIncidentCreated?.();
+      })();
     }
   }, [value, alertApi, handleDialog, userName, onIncidentCreated]);
 

@@ -18,7 +18,7 @@ import {
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Avatar, InfoCard } from '@backstage/core';
+import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core';
 import { entityRouteParams, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -73,7 +73,7 @@ export const UserProfileCard = ({
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: UserEntity;
-  variant: string;
+  variant?: InfoCardVariants;
 }) => {
   const user = useEntity().entity as UserEntity;
   const {
@@ -95,11 +95,11 @@ export const UserProfileCard = ({
   return (
     <InfoCard title={<CardTitle title={displayName} />} variant={variant}>
       <Grid container spacing={3} alignItems="flex-start">
-        <Grid item md={2} lg={1}>
+        <Grid item xs={12} sm={2} xl={1}>
           <Avatar displayName={displayName} picture={profile?.picture} />
         </Grid>
 
-        <Grid item md={10} lg={11}>
+        <Grid item md={10} xl={11}>
           <List>
             {profile?.email && (
               <ListItem>

@@ -15,3 +15,4 @@
  */
 export { EntityContext, useEntity, useEntityFromUrl } from './useEntity';
 export { useEntityCompoundName } from './useEntityCompoundName';
+export { useRelatedEntities } from './useRelatedEntities';

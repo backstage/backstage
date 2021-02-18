@@ -19,6 +19,7 @@ import {
   EmptyState,
   errorApiRef,
   InfoCard,
+  InfoCardVariants,
   Table,
   useApi,
 } from '@backstage/core';
@@ -39,7 +40,7 @@ export type Props = {
   branch?: string;
   dense?: boolean;
   limit?: number;
-  variant?: string;
+  variant?: InfoCardVariants;
 };
 
 export const RecentWorkflowRunsCard = ({

@@ -16,8 +16,10 @@
 
 import {
   ApiEntity,
+  DomainEntity,
   Entity,
   GroupEntity,
+  SystemEntity,
   UserEntity,
 } from '@backstage/catalog-model';
 import { EmptyState } from '@backstage/core';
@@ -25,15 +27,19 @@ import {
   ApiDefinitionCard,
   ConsumedApisCard,
   ConsumingComponentsCard,
+  EntityHasApisCard,
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
   AboutCard,
+  EntityHasComponentsCard,
+  EntityHasSubcomponentsCard,
+  EntityHasSystemsCard,
   EntityLinksCard,
   EntityPageLayout,
 } from '@backstage/plugin-catalog';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { EntityProvider, useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -178,7 +184,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     </Grid>
     {isPagerDutyAvailable(entity) && (
       <Grid item md={6}>
-        <PagerDutyCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
       </Grid>
     )}
     <Grid item md={4} sm={6}>
@@ -206,6 +214,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
         <PullRequestsStatsCard entity={entity} />
       </Grid>
     )}
+    <Grid item md={6}>
+      <EntityHasSubcomponentsCard variant="gridItem" />
+    </Grid>
   </Grid>
 );
 
@@ -425,6 +436,51 @@ const GroupEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
+const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasComponentsCard variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasApisCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const SystemEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<SystemOverviewContent entity={entity as SystemEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const DomainOverviewContent = ({ entity }: { entity: DomainEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasSystemsCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const DomainEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<DomainOverviewContent entity={entity as DomainEntity} />}
+    />
+  </EntityPageLayout>
+);
+
 export const EntityPage = () => {
   const { entity } = useEntity();
 
@@ -437,6 +493,10 @@ export const EntityPage = () => {
       return <GroupEntityPage entity={entity} />;
     case 'user':
       return <UserEntityPage entity={entity} />;
+    case 'system':
+      return <SystemEntityPage entity={entity} />;
+    case 'domain':
+      return <DomainEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

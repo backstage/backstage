@@ -17,66 +17,36 @@ import React, { useState, useCallback } from 'react';
 import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Button,
-  makeStyles,
-  Card,
-  CardHeader,
-  Divider,
-  CardContent,
-} from '@material-ui/core';
+import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
-import { TriggerDialog } from './TriggerDialog';
 import { MissingTokenError } from './Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
-
-const useStyles = makeStyles({
-  triggerAlarm: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    fontSize: '0.7rem',
-    textTransform: 'uppercase',
-    fontWeight: 600,
-    letterSpacing: 1.2,
-    lineHeight: 1.5,
-    '&:hover, &:focus, &.focus': {
-      backgroundColor: 'transparent',
-      textDecoration: 'none',
-    },
-  },
-});
-
-export const PAGERDUTY_INTEGRATION_KEY = 'pagerduty.com/integration-key';
+import { PAGERDUTY_INTEGRATION_KEY } from './constants';
+import { TriggerButton, useShowDialog } from './TriggerButton';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const PagerDutyCard = (_props: Props) => {
-  const classes = useStyles();
+export const PagerDutyCard = () => {
   const { entity } = useEntity();
   const api = useApi(pagerDutyApiRef);
-  const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const integrationKey = entity.metadata.annotations![
     PAGERDUTY_INTEGRATION_KEY
   ];
+  const setShowDialog = useShowDialog()[1];
+
+  const showDialog = useCallback(() => {
+    setShowDialog(true);
+  }, [setShowDialog]);
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
-  }, []);
-
-  const handleDialog = useCallback(() => {
-    setShowDialog(x => !x);
   }, []);
 
   const { value: service, loading, error } = useAsync(async () => {
@@ -114,17 +84,8 @@ export const PagerDutyCard = (_props: Props) => {
 
   const triggerLink = {
     label: 'Create Incident',
-    action: (
-      <Button
-        data-testid="trigger-button"
-        color="secondary"
-        onClick={handleDialog}
-        className={classes.triggerAlarm}
-      >
-        Create Incident
-      </Button>
-    ),
-    icon: <AlarmAddIcon onClick={handleDialog} />,
+    action: <TriggerButton design="link" onIncidentCreated={handleRefresh} />,
+    icon: <AlarmAddIcon onClick={showDialog} />,
   };
 
   return (
@@ -140,13 +101,6 @@ export const PagerDutyCard = (_props: Props) => {
           refreshIncidents={refreshIncidents}
         />
         <EscalationPolicy policyId={service!.policyId} />
-        <TriggerDialog
-          showDialog={showDialog}
-          handleDialog={handleDialog}
-          name={entity.metadata.name}
-          integrationKey={integrationKey}
-          onIncidentCreated={handleRefresh}
-        />
       </CardContent>
     </Card>
   );
