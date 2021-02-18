@@ -258,17 +258,21 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     res: express.Response,
     accessToken: string,
   ) => {
-    const payload = JWT.decode(accessToken) as object & {
-      exp: number;
-    };
-    res.cookie(`access-token`, accessToken, {
-      expires: new Date(payload?.exp ? payload?.exp * 1000 : 0),
-      secure: this.options.secure,
-      sameSite: 'lax',
-      domain: this.options.cookieDomain,
-      path: '/api',
-      httpOnly: true,
-    });
+    try {
+      const payload = JWT.decode(accessToken) as object & {
+        exp: number;
+      };
+      res.cookie(`access-token`, accessToken, {
+        expires: new Date(payload?.exp ? payload?.exp * 1000 : 0),
+        secure: this.options.secure,
+        sameSite: 'lax',
+        domain: this.options.cookieDomain,
+        path: '/api',
+        httpOnly: true,
+      });
+    } catch (_err) {
+      // Ignore
+    }
   };
 
   private setRefreshTokenCookie = (
