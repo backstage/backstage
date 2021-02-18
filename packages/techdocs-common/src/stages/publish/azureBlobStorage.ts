@@ -201,12 +201,12 @@ export class AzureBlobStoragePublish implements PublisherBase {
             return;
           }
           body
-            .on('data', chunk => {
-              fileStreamChunks.push(chunk);
-            })
             .on('error', e => {
               this.logger.error(e.message);
               reject(e.message);
+            })
+            .on('data', chunk => {
+              fileStreamChunks.push(chunk);
             })
             .on('end', () => {
               resolve(Buffer.concat(fileStreamChunks));
