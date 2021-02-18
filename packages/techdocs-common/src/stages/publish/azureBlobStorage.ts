@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import platformPath from 'path';
-import express from 'express';
+import { DefaultAzureCredential } from '@azure/identity';
 import {
   BlobServiceClient,
   StorageSharedKeyCredential,
 } from '@azure/storage-blob';
-import { DefaultAzureCredential } from '@azure/identity';
-import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
-import limiterFactory from 'p-limit';
+import express from 'express';
 import JSON5 from 'json5';
+import limiterFactory from 'p-limit';
+import { default as path, default as platformPath } from 'path';
+import { Logger } from 'winston';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 
 // The number of batches that may be ongoing at the same time.
 const BATCH_CONCURRENCY = 3;
@@ -126,27 +126,35 @@ export class AzureBlobStoragePublish implements PublisherBase {
       // or start thrashing.
       const limiter = limiterFactory(BATCH_CONCURRENCY);
 
-      const promises = allFilesToUpload.map(filePath => {
+      const promises = allFilesToUpload.map(sourceFilePath => {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = filePath.replace(`${directory}/`, '');
-        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = platformPath.normalize(
-          `${entityRootDir}/${relativeFilePath}`,
-        ); // Azure Blob Storage Container file relative path
+        const relativeFilePath = path.normalize(
+          path.relative(directory, sourceFilePath),
+        );
 
+        // Convert destination file path to a POSIX path for uploading.
+        // Azure Blob Storage expects / as path separator and relativeFilePath will contain \\ on Windows.
+        // https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata#blob-names
+        const relativeFilePathPosix = relativeFilePath
+          .split(path.sep)
+          .join(path.posix.sep);
+
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
+        const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Azure Blob Storage Container file relative path
         return limiter(async () => {
           const response = await this.storageClient
             .getContainerClient(this.containerName)
             .getBlockBlobClient(destination)
-            .uploadFile(filePath);
+            .uploadFile(sourceFilePath);
 
           if (response._response.status >= 400) {
             return {
               ...response,
               error: new Error(
-                `Upload failed for ${filePath} with status code ${response._response.status}`,
+                `Upload failed for ${sourceFilePath} with status code ${response._response.status}`,
               ),
             };
           }
@@ -173,18 +181,18 @@ export class AzureBlobStoragePublish implements PublisherBase {
         );
       }
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to Azure Blob Storage. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
   }
 
-  private download(containerName: string, path: string): Promise<Buffer> {
+  private download(containerName: string, blobPath: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const fileStreamChunks: Array<any> = [];
       this.storageClient
         .getContainerClient(containerName)
-        .getBlockBlobClient(path)
+        .getBlockBlobClient(blobPath)
         .download()
         .then(res => {
           const body = res.readableStreamBody;

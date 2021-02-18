@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import mockFs from 'mock-fs';
-import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
+import type { Entity } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import mockFs from 'mock-fs';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { PublisherBase } from './types';
-import type { Entity } from '@backstage/catalog-model';
-import type { Logger } from 'winston';
 
 const createMockEntity = (annotations = {}) => {
   return {
@@ -52,34 +51,33 @@ function createLogger() {
 }
 
 let publisher: PublisherBase;
-
-describe('publishing with valid credentials', () => {
-  let logger: Logger;
-
-  beforeEach(async () => {
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        requestUrl: 'http://localhost:7000',
-        publisher: {
-          type: 'azureBlobStorage',
-          azureBlobStorage: {
-            credentials: {
-              accountName: 'accountName',
-              accountKey: 'accountKey',
-            },
-            containerName: 'containerName',
+beforeEach(async () => {
+  mockFs.restore();
+  const mockConfig = new ConfigReader({
+    techdocs: {
+      requestUrl: 'http://localhost:7000',
+      publisher: {
+        type: 'azureBlobStorage',
+        azureBlobStorage: {
+          credentials: {
+            accountName: 'accountName',
+            accountKey: 'accountKey',
           },
+          containerName: 'containerName',
         },
       },
-    });
-
-    logger = createLogger();
-
-    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+    },
   });
 
+  publisher = await AzureBlobStoragePublish.fromConfig(
+    mockConfig,
+    createLogger(),
+  );
+});
+
+describe('publishing with valid credentials', () => {
   describe('publish', () => {
-    it('should publish a directory', async () => {
+    beforeEach(() => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
@@ -92,6 +90,11 @@ describe('publishing with valid credentials', () => {
           },
         },
       });
+    });
+
+    it('should publish a directory', async () => {
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
 
       expect(
         await publisher.publish({
@@ -105,17 +108,6 @@ describe('publishing with valid credentials', () => {
     it('should fail to publish a directory', async () => {
       const wrongPathToGeneratedDirectory = 'wrong/path/to/generatedDirectory';
       const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
-
-      mockFs({
-        [entityRootDir]: {
-          'index.html': '',
-          '404.html': '',
-          assets: {
-            'main.css': '',
-          },
-        },
-      });
 
       await publisher
         .publish({
@@ -124,7 +116,7 @@ describe('publishing with valid credentials', () => {
         })
         .catch(error =>
           expect(error.message).toContain(
-            'Unable to upload file(s) to Azure Blob Storage. Failed to read template directory: ENOENT, no such file or directory',
+            'Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory',
           ),
         );
       mockFs.restore();
@@ -235,7 +227,7 @@ describe('error reporting', () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       expect.stringContaining(
-        `Unable to upload file(s) to Azure Blob Storage. Upload failed for test-namespace/TestKind/test-component-name/index.html with status code 500`,
+        `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for test-namespace/TestKind/test-component-name/index.html with status code 500`,
       ),
     );
 
