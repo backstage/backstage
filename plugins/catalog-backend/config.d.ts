@@ -338,13 +338,13 @@ export interface Config {
        * AwsOrganizationCloudAccountProcessor configuration
        */
       awsOrganization?: {
-        providers: Array<{
+        provider: {
           /**
            * The role to be assumed by this processor
            *
            */
           roleArn?: string;
-        }>;
+        };
       };
 
       /**

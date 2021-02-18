@@ -28,17 +28,11 @@ export type AwsOrganizationProviderConfig = {
 
 export function readAwsOrganizationConfig(
   config: Config,
-): AwsOrganizationProviderConfig[] {
-  const providers: AwsOrganizationProviderConfig[] = [];
-  const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
+): AwsOrganizationProviderConfig {
+  const providerConfig = config.getOptionalConfig('provider');
 
-  for (const providerConfig of providerConfigs) {
-    const roleArn = providerConfig.getOptionalString('roleArn');
-
-    providers.push({
-      roleArn,
-    });
-  }
-
-  return providers;
+  const roleArn = providerConfig?.getOptionalString('roleArn');
+  return {
+    roleArn,
+  };
 }

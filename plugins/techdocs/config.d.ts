@@ -88,8 +88,7 @@ export interface Config {
               secretAccessKey: string;
               /**
                * ARN of role to be assumed
-               * attr: 'roleArn' - accepts a string value
-               * @visibility secret
+               * @visibility backend
                */
               roleArn?: string;
             };

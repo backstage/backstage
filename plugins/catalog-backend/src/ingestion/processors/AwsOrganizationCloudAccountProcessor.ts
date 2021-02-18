@@ -19,7 +19,7 @@ import { Account, ListAccountsResponse } from 'aws-sdk/clients/organizations';
 
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { Config } from '../../../../../packages/config/src';
+import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import {
   AwsOrganizationProviderConfig,
@@ -41,33 +41,32 @@ const ORGANIZATION_ANNOTATION: string = 'amazonaws.com/organization-id';
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   logger: Logger;
   organizations: Organizations;
-  providers: AwsOrganizationProviderConfig[];
+  provider: AwsOrganizationProviderConfig;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
     return new AwsOrganizationCloudAccountProcessor({
       ...options,
-      providers: c ? readAwsOrganizationConfig(c) : [],
+      provider: c ? readAwsOrganizationConfig(c) : {},
     });
   }
 
   constructor(options: {
-    providers: AwsOrganizationProviderConfig[];
+    provider: AwsOrganizationProviderConfig;
     logger: Logger;
   }) {
-    this.providers = options.providers;
+    this.provider = options.provider;
     this.logger = options.logger;
     let credentials = undefined;
     if (
-      this.providers.length > 0 &&
-      this.providers[0].roleArn !== undefined &&
+      this.provider.roleArn !== undefined &&
       AWS.config.credentials instanceof Credentials
     ) {
       credentials = new AWS.ChainableTemporaryCredentials({
         masterCredentials: AWS.config.credentials as Credentials,
         params: {
           RoleSessionName: 'backstage-aws-organization-processor',
-          RoleArn: this.providers[0].roleArn,
+          RoleArn: this.provider.roleArn,
         },
       });
     }
