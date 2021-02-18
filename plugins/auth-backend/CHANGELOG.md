@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.1
+
+### Patch Changes
+
+- 92f01d75c: Refactored auth provider factories to accept options along with other internal refactoring of the auth providers.
+- d9687c524: Fixed parsing of OIDC key timestamps when using SQLite.
+- 3600ac3b0: Migrated the package from using moment to Luxon. #4278
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+
 ## 0.3.0
 
 ### Minor Changes

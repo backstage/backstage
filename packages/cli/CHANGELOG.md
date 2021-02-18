@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.6.1
+
+### Patch Changes
+
+- 257a753ff: Updated transform of `.esm.js` files to be able to handle dynamic imports.
+- 9337f509d: Tweak error message in lockfile parsing to include more information.
+- 532bc0ec0: Upgrading to lerna@4.0.0.
+
 ## 0.6.0
 
 ### Minor Changes

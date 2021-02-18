@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.6.1
+
+### Patch Changes
+
+- b0a41c707: Add etag of the prepared file tree to techdocs_metadata.json in the storage
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+- Updated dependencies [26e143e60]
+- Updated dependencies [c6655413d]
+- Updated dependencies [44414239f]
+- Updated dependencies [b0a41c707]
+  - @backstage/backend-common@0.5.4
+  - @backstage/techdocs-common@0.4.1
+
 ## 0.6.0
 
 ### Minor Changes

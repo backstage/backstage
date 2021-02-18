@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs
 
+## 0.5.7
+
+### Patch Changes
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [fb28da212]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [26e143e60]
+- Updated dependencies [c6655413d]
+- Updated dependencies [44414239f]
+- Updated dependencies [b0a41c707]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/techdocs-common@0.4.1
+  - @backstage/plugin-catalog-react@0.0.4
+
 ## 0.5.6
 
 ### Patch Changes

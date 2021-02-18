@@ -1,5 +1,54 @@
 # @backstage/plugin-catalog
 
+## 0.3.2
+
+### Patch Changes
+
+- 32a950409: Hide the kind of the owner if it's the default kind for the `ownedBy`
+  relationship (group).
+- f10950bd2: Minor refactoring of BackstageApp.getSystemIcons to support custom registered
+  icons. Custom Icons can be added using:
+
+  ```tsx
+  import AlarmIcon from '@material-ui/icons/Alarm';
+  import MyPersonIcon from './MyPerson';
+
+  const app = createApp({
+    icons: {
+      user: MyPersonIcon // override system icon
+      alert: AlarmIcon, // Custom icon
+    },
+  });
+  ```
+
+- 914c89b13: Remove the "Move repository" menu entry from the catalog page, as it's just a placeholder.
+- 0af242b6d: Introduce new cards to `@backstage/plugin-catalog` that can be added to entity pages:
+
+  - `EntityHasSystemsCard` to display systems of a domain.
+  - `EntityHasComponentsCard` to display components of a system.
+  - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
+  - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
+
+  `@backstage/plugin-catalog-react` now provides an `EntityTable` to build own cards for entities.
+  The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
+  `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 53b69236d: Migrate about card to new composability API, exporting the entity cards as `EntityAboutCard`.
+- Updated dependencies [6c4a76c59]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/plugin-scaffolder@0.5.1
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
 ## 0.3.1
 
 ### Patch Changes
