@@ -69,18 +69,17 @@ export class BlockBlobClient {
   }
 
   download() {
-    const filePath = path.join(rootDir, this.blobName);
     const emitter = new EventEmitter();
     process.nextTick(() => {
-      if (fs.existsSync(filePath)) {
-        emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
-        emitter.emit('end');
+      if (fs.existsSync(this.blobName)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(this.blobName)));
       } else {
         emitter.emit(
           'error',
-          new Error(`The file ${filePath} does not exist !`),
+          new Error(`The file ${this.blobName} doest not exist!`),
         );
       }
+      emitter.emit('end');
     });
     return Promise.resolve({
       readableStreamBody: emitter,
