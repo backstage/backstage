@@ -88,10 +88,10 @@ export class TechDocsApi implements TechDocs {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
-    const idToken = await this.identityApi.getIdToken();
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(`${requestUrl}`, {
-      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const res = await request.json();
 
@@ -111,10 +111,10 @@ export class TechDocsApi implements TechDocs {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
-    const idToken = await this.identityApi.getIdToken();
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(`${requestUrl}`, {
-      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const res = await request.json();
 
@@ -166,12 +166,12 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
-    const idToken = await this.identityApi.getIdToken();
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
-        headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       },
     );
 

@@ -49,12 +49,12 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/${name}/${path}`;
-    const idToken = await this.identityApi.getIdToken();
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
-        headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       },
     );
 
