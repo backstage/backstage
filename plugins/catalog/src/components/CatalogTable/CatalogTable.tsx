@@ -32,13 +32,14 @@ import {
   EntityRefLinks,
   formatEntityRefTitle,
   getEntityRelations,
+  useStarredEntities,
 } from '@backstage/plugin-catalog-react';
+
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import React from 'react';
 import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { createEditLink } from '../createEditLink';
 import {
   favouriteEntityIcon,

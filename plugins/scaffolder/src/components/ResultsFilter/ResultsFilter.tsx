@@ -25,7 +25,7 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { filterGroupsContext } from '../../filter/context';
 
 const useStyles = makeStyles<Theme>(theme => ({
@@ -59,20 +59,12 @@ type Props = {
 export const ResultsFilter = ({ availableCategories }: Props) => {
   const classes = useStyles();
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const context = useContext(filterGroupsContext);
   if (!context) {
     throw new Error(`Must be used inside an EntityFilterGroupsProvider`);
   }
-  const setSelectedCatgoriesFilter = context?.setSelectedCategories;
 
-  const updateSelectedCategories = useCallback(
-    (categories: string[]) => {
-      setSelectedCategories(categories);
-      setSelectedCatgoriesFilter(categories);
-    },
-    [setSelectedCategories, setSelectedCatgoriesFilter],
-  );
+  const { selectedCategories, setSelectedCategories } = context;
 
   return (
     <>
@@ -80,7 +72,7 @@ export const ResultsFilter = ({ availableCategories }: Props) => {
         <Typography variant="subtitle2" className={classes.filterBoxTitle}>
           Refine Results
         </Typography>{' '}
-        <Button onClick={() => updateSelectedCategories([])}>Clear</Button>
+        <Button onClick={() => setSelectedCategories([])}>Clear</Button>
       </div>
       <Divider />
       <Typography variant="subtitle2" className={classes.title}>
@@ -95,7 +87,7 @@ export const ResultsFilter = ({ availableCategories }: Props) => {
               dense
               button
               onClick={() =>
-                updateSelectedCategories(
+                setSelectedCategories(
                   selectedCategories.includes(category)
                     ? selectedCategories.filter(
                         selectedCategory => selectedCategory !== category,

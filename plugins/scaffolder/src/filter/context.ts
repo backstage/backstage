@@ -28,6 +28,7 @@ export type FilterGroupsContext = {
   setGroupSelectedFilters: (filterGroupId: string, filterIds: string[]) => void;
   setSelectedCategories: (categories: string[]) => void;
   reload: () => Promise<void>;
+  selectedCategories: string[];
   loading: boolean;
   error?: Error;
   filterGroupStates: { [filterGroupId: string]: FilterGroupStates };
