@@ -231,8 +231,7 @@ export class AwsS3Publish implements PublisherBase {
           )) {
             res.setHeader(headerKey, headerValue);
           }
-
-          res.send(fileContent);
+          res.json();
         })
         .catch(err => {
           this.logger.warn(err.message);

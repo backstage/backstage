@@ -63,7 +63,7 @@ export async function createRouter({
         entityName,
       );
 
-      res.send(techdocsMetadata);
+      res.json(techdocsMetadata);
     } catch (err) {
       logger.error(
         `Unable to get metadata for ${entityName.namespace}/${entityName.name} with error ${err}`,
@@ -89,7 +89,7 @@ export async function createRouter({
       ).json()) as Entity;
 
       const locationMetadata = getLocationForEntity(entity);
-      res.send({ ...entity, locationMetadata });
+      res.json({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
@@ -112,8 +112,7 @@ export async function createRouter({
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
     if (!catalogRes.ok) {
       const catalogResText = await catalogRes.text();
-      res.status(catalogRes.status);
-      res.send(catalogResText);
+      res.status(catalogRes.status).json(catalogResText);
       return;
     }
 
