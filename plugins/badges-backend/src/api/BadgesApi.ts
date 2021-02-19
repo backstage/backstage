@@ -17,16 +17,54 @@
 import { Logger } from 'winston';
 import { makeBadge, ValidationError } from 'badge-maker';
 import {} from './types';
+import { interpolate } from '../utils';
+
+export interface BadgeConfig {
+  kind?: 'entity';
+  label: string;
+  color: string;
+  message: string;
+}
 
 export class BadgesApi {
-  constructor(private readonly logger: Logger) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly config: { [id: string]: BadgeConfig },
+  ) {}
 
-  public getPoweredByBadge() {
+  public getBadge(badgeKind: string, badgeId: string, context: any) {
+    const badge = this.config[badgeId] || this.config.default;
+
+    if (!badge) {
+      return makeBadge({
+        label: 'Unknown badge ID',
+        message: badgeId,
+        color: 'red',
+      });
+    }
+
+    if (badge.kind && badge.kind !== badgeKind) {
+      return makeBadge({
+        label: 'Invalid badge kind',
+        message: `${badgeId} is for ${badge.kind} not ${badgeKind}`,
+        color: 'red',
+      });
+    }
+
     const svg = makeBadge({
-      label: 'Powered By',
-      message: 'Backstage',
-      color: '#36BAA2',
+      label: this.render(badge.label, context),
+      message: this.render(badge.message, context),
+      color: badge.color || '#36BAA2',
     });
+
     return svg;
+  }
+
+  private render(template, context) {
+    try {
+      return interpolate(template.replace('$$', '$'), context);
+    } catch (err) {
+      return `${err} [${template}]`;
+    }
   }
 }

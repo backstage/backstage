@@ -15,9 +15,13 @@
  */
 
 import express from 'express';
+import fetch from 'cross-fetch';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { errorHandler } from '@backstage/backend-common';
+import {
+  errorHandler,
+  PluginEndpointDiscovery,
+} from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { BadgesApi } from '../api';
 
@@ -25,6 +29,7 @@ export interface RouterOptions {
   badgesApi?: BadgesApi;
   logger: Logger;
   config: Config;
+  discovery: PluginEndpointDiscovery;
 }
 
 export async function createRouter(
@@ -33,13 +38,22 @@ export async function createRouter(
   const router = Router();
 
   const logger = options.logger.child({ plugin: 'badges' });
-  // const config = options.config.getConfig('badges');
+  const badgesConfig = options.config.getOptional('badges') ?? {};
+  const title = options.config.getString('app.title') || 'Backstage';
+  const badgesApi = options.badgesApi || new BadgesApi(logger, badgesConfig);
 
-  const badgesApi = options.badgesApi || new BadgesApi(logger);
+  router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
+    const entity = await getEntity(logger, options.discovery, req.params);
+    if (!entity) {
+      res.status(400).send(`Unknown entity`);
+      return;
+    }
 
-  router.get('/entity/:namespace/:kind/:name', async (req, res) => {
-    const { namespace, kind, name } = req.params;
-    const badge = badgesApi.getPoweredByBadge();
+    const { badgeId } = req.params;
+    const badge = badgesApi.getBadge('entity', badgeId, {
+      app: { title },
+      entity,
+    });
 
     res.setHeader('Content-Type', 'image/svg+xml');
     res.status(200).send(badge);
@@ -48,4 +62,21 @@ export async function createRouter(
   router.use(errorHandler());
 
   return router;
+}
+
+async function getEntity(logger, discovery, params) {
+  const catalogUrl = await discovery.getBaseUrl('catalog');
+  const { kind, namespace, name } = params;
+
+  try {
+    const entity = (await (
+      await fetch(`${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`)
+    ).json()) as Entity;
+
+    return entity;
+  } catch (err) {
+    const msg = `Unable to get entity ${kind}/${namespace}/${name}, error ${err}`;
+    logger.info(msg);
+    return null;
+  }
 }

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-badges-backend';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin({
-  logger,
-  config,
-  discovery,
-}: PluginEnvironment) {
-  return await createRouter({ logger, config, discovery });
+/**
+ * adapted from https://stackoverflow.com/a/41015840/444060
+ */
+export function interpolate(template, params) {
+  const names = Object.keys(params);
+  const vals = Object.values(params);
+  // eslint-disable-next-line no-new-func
+  return new Function(...names, `return \`${template}\`;`)(...vals);
 }

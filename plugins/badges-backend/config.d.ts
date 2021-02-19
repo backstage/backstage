@@ -15,7 +15,48 @@
  */
 
 export interface Config {
-  /** Configuration options for the badges-backend plugin */
-  /* badges?: {
-  };*/
+  /**
+   * Define all badges.
+   *
+   * The `label` and `message` fields may use templating to support
+   * dynamic content, based on context. Use same syntax as for
+   * javascript template literals, but with double `$$`.
+   *
+   */
+  badges?: {
+    [badgeId: string]: {
+      /**
+       * (Optional) Badge kind.
+       *
+       * Restrict badge usage to a certain kind only.
+       * Useful when using templating for label and/or message if they
+       * use context data only available for a certain kind of badge.
+       *
+       * Available badge kinds:
+       *
+       *   * `entity` The entity data is available as `entity` in the template.
+       *
+       * Default context for all badges:
+       *
+       *   * `app.title` As configured or defaults to "Backstage".
+       *
+       */
+      kind?: 'entity';
+
+      /**
+       * The badge label.
+       */
+      label: string;
+
+      /**
+       * The badge color. Default: `#36BAA2`.
+       */
+      color?: string;
+
+      /**
+       * The badge message.
+       */
+      message: string;
+    };
+  };
 }

@@ -401,3 +401,8 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+badges:
+  pingback:
+    kind: 'entity'
+    label: 'View $${entity.metadata.name} in'
+    message: '$${app.title}'

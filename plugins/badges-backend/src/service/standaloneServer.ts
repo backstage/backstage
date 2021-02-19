@@ -19,6 +19,7 @@ import { Logger } from 'winston';
 import {
   createServiceBuilder,
   loadBackendConfig,
+  SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { createRouter } from './router';
 
@@ -33,10 +34,11 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'badges-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = SingleHostDiscovery.fromConfig(config);
 
   logger.debug('Creating application...');
 
-  const router = await createRouter({ logger, config });
+  const router = await createRouter({ logger, config, discovery });
 
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
