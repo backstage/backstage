@@ -32,12 +32,12 @@ import React, { useState } from 'react';
 const Form = withTheme(MuiTheme);
 type Step = {
   schema: JSONSchema;
-  label: string;
+  title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
 
 type Props = {
   /**
-   * Steps for the form, each contains label and form schema
+   * Steps for the form, each contains title and form schema
    */
   steps: Step[];
   formData: Record<string, any>;
@@ -66,31 +66,35 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, schema, ...formProps }) => (
-          <StepUI key={label}>
-            <StepLabel>{label}</StepLabel>
-            <StepContent key={label}>
-              <Form
-                key={label}
-                noHtml5Validate
-                formData={formData}
-                onChange={onChange}
-                schema={schema as FormProps<any>['schema']}
-                onSubmit={e => {
-                  if (e.errors.length === 0) handleNext();
-                }}
-                {...formProps}
-              >
-                <Button disabled={activeStep === 0} onClick={handleBack}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" type="submit">
-                  Next step
-                </Button>
-              </Form>
-            </StepContent>
-          </StepUI>
-        ))}
+        {steps.map(
+          ({ title, schema: { title: _, ...schema }, ...formProps }) => (
+            <StepUI key={title}>
+              <StepLabel>
+                <Typography variant="h6">{title}</Typography>
+              </StepLabel>
+              <StepContent key={title}>
+                <Form
+                  key={title}
+                  noHtml5Validate
+                  formData={formData}
+                  onChange={onChange}
+                  schema={schema as FormProps<any>['schema']}
+                  onSubmit={e => {
+                    if (e.errors.length === 0) handleNext();
+                  }}
+                  {...formProps}
+                >
+                  <Button disabled={activeStep === 0} onClick={handleBack}>
+                    Back
+                  </Button>
+                  <Button variant="contained" color="primary" type="submit">
+                    Next step
+                  </Button>
+                </Form>
+              </StepContent>
+            </StepUI>
+          ),
+        )}
       </Stepper>
       {activeStep === steps.length && (
         <Content>

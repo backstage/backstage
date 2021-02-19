@@ -232,6 +232,77 @@ export async function createRouter(
 
   // NOTE: The v2 API is unstable
   router
+    .get(
+      '/v2/templates/:namespace/:kind/:name/parameter-schema',
+      async (req, res) => {
+        const { namespace, kind, name } = req.params;
+
+        if (namespace !== 'default') {
+          throw new InputError(
+            `Invalid namespace, only 'default' namespace is supported`,
+          );
+        }
+        if (kind.toLowerCase() !== 'template') {
+          throw new InputError(
+            `Invalid kind, only 'template' kind is supported`,
+          );
+        }
+
+        const template = await entityClient.findTemplate(name);
+        if (template.apiVersion === 'backstage.io/v1beta1') {
+          const betaTemplate = template as any; // TODO: proper type
+          const parameters = betaTemplate.spec.schema;
+          const steps = Array.isArray(parameters) ? parameters : [parameters];
+          res.json({
+            title: template.metadata.title ?? template.metadata.name,
+            steps: steps.map(schema => ({
+              title: schema.title ?? 'Fill in template parameters',
+              schema,
+            })),
+          });
+        } else if (template.apiVersion === 'backstage.io/v1alpha1') {
+          res.json({
+            title: template.metadata.title ?? template.metadata.name,
+            steps: [
+              {
+                title: 'Fill in template parameters',
+                schema: template.spec.schema,
+              },
+              {
+                title: 'Choose owner and repo',
+                schema: {
+                  type: 'object',
+                  required: ['storePath', 'owner'],
+                  properties: {
+                    owner: {
+                      type: 'string',
+                      title: 'Owner',
+                      description: 'Who is going to own this component',
+                    },
+                    storePath: {
+                      type: 'string',
+                      title: 'Store path',
+                      description:
+                        'A full URL to the repository that should be created. e.g https://github.com/backstage/new-repo',
+                    },
+                    access: {
+                      type: 'string',
+                      title: 'Access',
+                      description:
+                        'Who should have access, in org/team or user format',
+                    },
+                  },
+                },
+              },
+            ],
+          });
+        } else {
+          throw new InputError(
+            `Unsupported apiVersion field in schema entity, ${template.apiVersion}`,
+          );
+        }
+      },
+    )
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = {
@@ -266,7 +337,7 @@ export async function createRouter(
         };
       } else {
         throw new InputError(
-          `Unknown apiVersion field in schema entity, ${template.apiVersion}`,
+          `Unsupported apiVersion field in schema entity, ${template.apiVersion}`,
         );
       }
 
