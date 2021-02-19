@@ -23,6 +23,8 @@ import { KubernetesContent } from './components/KubernetesContent';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
@@ -35,16 +37,22 @@ export const Router = (_props: Props) => {
   const kubernetesAnnotationValue =
     entity.metadata.annotations?.[KUBERNETES_ANNOTATION];
 
-  if (!kubernetesAnnotationValue) {
-    return <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />;
+  const kubernetesLabelSelectorQueryAnnotationValue =
+    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION];
+
+  if (
+    kubernetesAnnotationValue ||
+    kubernetesLabelSelectorQueryAnnotationValue
+  ) {
+    return (
+      <Routes>
+        <Route
+          path={`/${rootCatalogKubernetesRouteRef.path}`}
+          element={<KubernetesContent entity={entity} />}
+        />
+      </Routes>
+    );
   }
 
-  return (
-    <Routes>
-      <Route
-        path={`/${rootCatalogKubernetesRouteRef.path}`}
-        element={<KubernetesContent entity={entity} />}
-      />
-    </Routes>
-  );
+  return <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />;
 };
