@@ -20,7 +20,7 @@ import * as winston from 'winston';
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
     const processor = new AwsOrganizationCloudAccountProcessor({
-      providers: [],
+      provider: {},
       logger: winston.createLogger(),
     });
     const location = { type: 'aws-cloud-accounts', target: '' };
