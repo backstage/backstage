@@ -41,6 +41,7 @@ Kaewkasi
 Knex
 Kumar
 Lerna
+Lundberg
 Luxon
 Malus
 Minikube
@@ -51,6 +52,7 @@ Niklas
 OAuth
 Okta
 Oldsberg
+Olle
 Onboarding
 Patrik
 Phoen
