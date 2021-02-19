@@ -35,6 +35,44 @@ import {
 export function compileConfigSchemas(
   schemas: ConfigSchemaPackageEntry[],
 ): ValidationFunc {
+  const { schema: merged, parser: ajv, visibilityByPath } = mergeConfigSchemas(
+    schemas,
+  );
+
+  const validate = ajv.compile(merged);
+
+  return configs => {
+    const config = ConfigReader.fromConfigs(configs).get();
+
+    visibilityByPath.clear();
+
+    const valid = validate(config);
+    if (!valid) {
+      const errors = validate.errors ?? [];
+      return {
+        errors: errors.map(({ dataPath, message, params }) => {
+          const paramStr = Object.entries(params)
+            .map(([name, value]) => `${name}=${value}`)
+            .join(' ');
+          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+        }),
+        visibilityByPath: new Map(),
+      };
+    }
+
+    return {
+      visibilityByPath: new Map(visibilityByPath),
+    };
+  };
+}
+
+/**
+ * Given a list of configuration schemas from packages, merge them
+ * into a single json schema.
+ */
+export function mergeConfigSchemas(
+  schemas: ConfigSchemaPackageEntry[],
+): { schema: JSONSchema; parser: Ajv } {
   // The ajv instance below is stateful and doesn't really allow for additional
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.
@@ -108,29 +146,9 @@ export function compileConfigSchemas(
     },
   );
 
-  const validate = ajv.compile(merged);
-
-  return configs => {
-    const config = ConfigReader.fromConfigs(configs).get();
-
-    visibilityByPath.clear();
-
-    const valid = validate(config);
-    if (!valid) {
-      const errors = validate.errors ?? [];
-      return {
-        errors: errors.map(({ dataPath, message, params }) => {
-          const paramStr = Object.entries(params)
-            .map(([name, value]) => `${name}=${value}`)
-            .join(' ');
-          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
-        }),
-        visibilityByPath: new Map(),
-      };
-    }
-
-    return {
-      visibilityByPath: new Map(visibilityByPath),
-    };
+  return {
+    schema: merged,
+    parser: ajv,
+    visibilityByPath,
   };
 }

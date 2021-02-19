@@ -17,6 +17,7 @@
 import { Command } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../../lib/config';
+import { mergeConfigSchemas } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
   const { schema } = await loadCliConfig({
@@ -25,7 +26,7 @@ export default async (cmd: Command) => {
     mockEnv: true,
   });
 
-  const data = schema.serialize();
+  const { schema: data } = mergeConfigSchemas(schema.serialize().schemas);
 
   if (cmd.format === 'json') {
     process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
