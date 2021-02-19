@@ -15,6 +15,7 @@
  */
 
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { SOURCE_LOCATION_ANNOTATION } from '@backstage/catalog-model';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { AboutCard } from './AboutCard';
@@ -135,8 +136,8 @@ describe('<AboutCard /> custom links', () => {
           'backstage.io/managed-by-location':
             'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
           'backstage.io/browser-edit-url': 'https://another.place',
-          'backstage.io/browser-source-url':
-            'https://another.place/backstage.git',
+          [SOURCE_LOCATION_ANNOTATION]:
+            'url:https://another.place/backstage.git',
         },
       },
       spec: {

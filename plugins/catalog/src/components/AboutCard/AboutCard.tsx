@@ -16,7 +16,9 @@
 
 import {
   Entity,
+  LocationSpec,
   ENTITY_DEFAULT_NAMESPACE,
+  SOURCE_LOCATION_ANNOTATION,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import { HeaderIconLinkRow } from '@backstage/core';
@@ -34,7 +36,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
-import { findLocationForEntityMeta } from '../../data/utils';
+import { findLocationForEntityMeta, parseLocation } from '../../data/utils';
 import { findEditUrl, determineUrlType } from '../actions';
 import { AboutContent } from './AboutContent';
 
@@ -60,23 +62,35 @@ type CodeLinkInfo = {
   href?: string;
 };
 
+function getSourceLocationForEntity(
+  entity: Entity,
+  location?: LocationSpec,
+): LocationSpec | undefined {
+  const annotation = entity.metadata?.annotations?.[SOURCE_LOCATION_ANNOTATION];
+  const parsed = annotation && parseLocation(annotation);
+
+  return parsed || location;
+}
+
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  let sourceUrl =
-    entity.metadata?.annotations?.['backstage.io/browser-source-url'];
   const location = findLocationForEntityMeta(entity?.metadata);
   const editUrl = findEditUrl(entity, location);
+  let sourceLocation = getSourceLocationForEntity(entity, location);
 
   if (location) {
-    sourceUrl = sourceUrl || location.target;
+    sourceLocation = sourceLocation || location;
     const type =
-      location.type === 'url' ? determineUrlType(sourceUrl) : location.type;
+      sourceLocation.type === 'url'
+        ? determineUrlType(sourceLocation.target)
+        : sourceLocation.type;
     return {
       edithref: editUrl,
       icon: iconMap[type],
-      href: sourceUrl,
+      href: sourceLocation.target,
     };
   }
-  return { edithref: editUrl, href: sourceUrl };
+
+  return { edithref: editUrl, href: sourceLocation?.target };
 }
 
 type AboutCardProps = {
