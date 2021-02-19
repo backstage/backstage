@@ -50,6 +50,11 @@ import {
   PluginDatabaseManager,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
+import {
+  TemplateEntityV1alpha1,
+  TemplateEntityV1beta2,
+  Entity,
+} from '@backstage/catalog-model';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -61,6 +66,21 @@ export interface RouterOptions {
   dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+}
+
+function isAlpha1Template(
+  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
+): entity is TemplateEntityV1alpha1 {
+  return (
+    entity.apiVersion === 'backstage.io/v1alpha1' ||
+    entity.apiVersion === 'backstage.io/v1beta1'
+  );
+}
+
+function isBeta2Template(
+  entity: TemplateEntityV1alpha1 | TemplateEntityV1beta2,
+): entity is TemplateEntityV1beta2 {
+  return entity.apiVersion === 'backstage.io/v1beta2';
 }
 
 export async function createRouter(
@@ -144,6 +164,11 @@ export async function createRouter(
       const template = await entityClient.findTemplate(templateName, {
         token: getBearerToken(req.headers.authorization),
       });
+      if (!isAlpha1Template(template)) {
+        throw new InputError(
+          `This endpoint does not support templates with version ${template.apiVersion}`,
+        );
+      }
 
       const validationResult: ValidatorResult = validate(
         values,
@@ -249,18 +274,16 @@ export async function createRouter(
         }
 
         const template = await entityClient.findTemplate(name);
-        if (template.apiVersion === 'backstage.io/v1beta1') {
-          const betaTemplate = template as any; // TODO: proper type
-          const parameters = betaTemplate.spec.schema;
-          const steps = Array.isArray(parameters) ? parameters : [parameters];
+        if (isBeta2Template(template)) {
+          const parameters = [template.spec.parameters ?? []].flat();
           res.json({
             title: template.metadata.title ?? template.metadata.name,
-            steps: steps.map(schema => ({
+            steps: parameters.map(schema => ({
               title: schema.title ?? 'Fill in template parameters',
               schema,
             })),
           });
-        } else if (template.apiVersion === 'backstage.io/v1alpha1') {
+        } else if (isAlpha1Template(template)) {
           res.json({
             title: template.metadata.title ?? template.metadata.name,
             steps: [
@@ -298,7 +321,9 @@ export async function createRouter(
           });
         } else {
           throw new InputError(
-            `Unsupported apiVersion field in schema entity, ${template.apiVersion}`,
+            `Unsupported apiVersion field in schema entity, ${
+              (template as Entity).apiVersion
+            }`,
           );
         }
       },
@@ -313,31 +338,36 @@ export async function createRouter(
       };
       const template = await entityClient.findTemplate(templateName);
 
-      const validationResult: ValidatorResult = validate(
-        values,
-        template.spec.schema,
-      );
-
-      if (!validationResult.valid) {
-        res.status(400).json({ errors: validationResult.errors });
-        return;
-      }
-
       let taskSpec;
-      if (template.apiVersion === 'backstage.io/v1alpha1') {
+      if (isAlpha1Template(template)) {
+        const result = validate(values, template.spec.schema);
+
+        if (!result.valid) {
+          res.status(400).json({ errors: result.errors });
+          return;
+        }
+
         taskSpec = templateEntityToSpec(template, values);
-      } else if (template.apiVersion === 'backstage.io/v1beta1') {
-        // TODO: add v1beta1 type
-        // const betaTemplate = template as TemplateEntityV1beta1
-        const betaTemplate = template as any;
+      } else if (isBeta2Template(template)) {
+        for (const parameters of [template.spec.parameters ?? []].flat()) {
+          const result = validate(values, parameters);
+
+          if (!result.valid) {
+            res.status(400).json({ errors: result.errors });
+            return;
+          }
+        }
+
         taskSpec = {
           values,
-          steps: betaTemplate.spec.steps,
-          output: betaTemplate.spec.output,
+          steps: template.spec.steps,
+          output: template.spec.output ?? {},
         };
       } else {
         throw new InputError(
-          `Unsupported apiVersion field in schema entity, ${template.apiVersion}`,
+          `Unsupported apiVersion field in schema entity, ${
+            (template as Entity).apiVersion
+          }`,
         );
       }
 

@@ -48,7 +48,7 @@ export type TaskSpec = {
     id: string;
     name: string;
     action: string;
-    parameters?: { [name: string]: JsonValue };
+    parameters?: JsonObject;
   }>;
   output: { [name: string]: string };
 };
