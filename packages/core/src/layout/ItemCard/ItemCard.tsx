@@ -15,7 +15,7 @@
  */
 import { Button, Card, Chip, makeStyles, Typography } from '@material-ui/core';
 import clsx from 'clsx';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Link } from '../../components';
 
 const useStyles = makeStyles(theme => ({
@@ -45,7 +45,9 @@ type ItemCardProps = {
   description?: string;
   tags?: string[];
   title: string;
+  /** @deprecated Use subtitle instead */
   type?: string;
+  subtitle?: ReactNode;
   label: string;
   onClick?: () => void;
   href?: string;
@@ -56,6 +58,7 @@ export const ItemCard = ({
   tags,
   title,
   type,
+  subtitle,
   label,
   onClick,
   href,
@@ -65,7 +68,9 @@ export const ItemCard = ({
   return (
     <Card>
       <div className={classes.header}>
-        {type ?? <Typography variant="subtitle2">{type}</Typography>}
+        {(subtitle || type) && (
+          <Typography variant="subtitle2">{subtitle ?? type}</Typography>
+        )}
         <Typography variant="h6">{title}</Typography>
       </div>
       <div className={classes.content}>

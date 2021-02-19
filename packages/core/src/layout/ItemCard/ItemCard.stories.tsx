@@ -30,7 +30,7 @@ export const Default = () => (
         title="Item Card"
         description="This is the description of an Item Card"
         label="Button"
-        type="Pretitle"
+        subtitle="Pretitle"
         onClick={() => {}}
       />
     </Grid>
@@ -39,7 +39,7 @@ export const Default = () => (
         title="Item Card"
         description="This is the description of an Item Card"
         label="Button"
-        type="Pretitle"
+        subtitle="Pretitle"
         onClick={() => {}}
       />
     </Grid>

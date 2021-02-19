@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
+import { LinkProps } from '@backstage/core';
 import React from 'react';
 import { EntityRefLink } from './EntityRefLink';
 
-type EntityRefLinksProps = {
+export type EntityRefLinksProps = {
   entityRefs: (Entity | EntityName)[];
   defaultKind?: string;
-};
+} & Omit<LinkProps, 'to'>;
 
 export const EntityRefLinks = ({
   entityRefs,
   defaultKind,
-}: EntityRefLinksProps) => {
-  return (
-    <>
-      {entityRefs.map((r, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && ', '}
-          <EntityRefLink entityRef={r} defaultKind={defaultKind} />
-        </React.Fragment>
-      ))}
-    </>
-  );
-};
+  ...linkProps
+}: EntityRefLinksProps) => (
+  <>
+    {entityRefs.map((r, i) => (
+      <React.Fragment key={i}>
+        {i > 0 && ', '}
+        <EntityRefLink {...linkProps} entityRef={r} defaultKind={defaultKind} />
+      </React.Fragment>
+    ))}
+  </>
+);
