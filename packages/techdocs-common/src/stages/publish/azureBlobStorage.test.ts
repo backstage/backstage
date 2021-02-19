@@ -111,6 +111,7 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should fail to publish a directory', async () => {
+      expect.assertions(1);
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',

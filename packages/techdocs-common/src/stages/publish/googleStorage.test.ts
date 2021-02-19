@@ -117,6 +117,8 @@ describe('GoogleGCSPublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
+      expect.assertions(3);
+
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
