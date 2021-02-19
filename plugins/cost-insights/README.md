@@ -56,6 +56,38 @@ export const apis = [
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 ```
 
+5. Add Cost Insights to your app Sidebar.
+
+To expose the plugin to your users, you can integrate the `cost-insights` route anyway that suits your application, but most commonly it is added to the Sidebar.
+
+```diff
+// packages/app/src/sidebar.tsx
++ import MoneyIcon from '@material-ui/icons/MonetizationOn';
+
+ ...
+
+ export const AppSidebar = () => (
+   <Sidebar>
+     <SidebarLogo />
+     <SidebarSearch />
+     <SidebarDivider />
+     {/* Global nav, not org-specific */}
+     <SidebarItem icon={HomeIcon} to="./" text="Home" />
+     <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+     <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
+     <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+     <SidebarDivider />
+     <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
++    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     {/* End global nav */}
+     <SidebarDivider />
+     <SidebarSpace />
+     <SidebarDivider />
+     <SidebarSettings />
+   </Sidebar>
+ );
+```
+
 ## Configuration
 
 Cost Insights has only two required configuration fields: a map of cloud `products` for showing cost breakdowns and `engineerCost` - the average yearly cost of an engineer including benefits. Products must be defined as keys on the `products` field.
