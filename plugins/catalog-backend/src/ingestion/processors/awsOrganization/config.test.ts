@@ -20,18 +20,14 @@ import { readAwsOrganizationConfig } from './config';
 describe('readAwsOrganizationConfig', () => {
   it('applies all of the defaults', () => {
     const config = {
-      providers: [
-        {
-          roleArn: 'aws::arn::foo',
-        },
-      ],
-    };
-    const actual = readAwsOrganizationConfig(new ConfigReader(config));
-    const expected = [
-      {
+      provider: {
         roleArn: 'aws::arn::foo',
       },
-    ];
+    };
+    const actual = readAwsOrganizationConfig(new ConfigReader(config));
+    const expected = {
+      roleArn: 'aws::arn::foo',
+    };
     expect(actual).toEqual(expected);
   });
 });
