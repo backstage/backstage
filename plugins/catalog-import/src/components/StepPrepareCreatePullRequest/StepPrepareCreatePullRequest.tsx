@@ -66,7 +66,7 @@ type Props = {
   ) => React.ReactNode;
 };
 
-function generateEntities(
+export function generateEntities(
   entities: PartialEntity[],
   componentName: string,
   owner: string,
@@ -78,7 +78,6 @@ function generateEntities(
     metadata: {
       ...e.metadata,
       name: componentName,
-      namespace: e.metadata?.namespace ?? 'default',
     },
     spec: {
       ...e.spec,
