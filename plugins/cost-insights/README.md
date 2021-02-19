@@ -60,7 +60,7 @@ export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
 
 To expose the plugin to your users, you can integrate the `cost-insights` route anyway that suits your application, but most commonly it is added to the Sidebar.
 
-```ts
+```diff
 // packages/app/src/sidebar.tsx
 + import MoneyIcon from '@material-ui/icons/MonetizationOn';
 
