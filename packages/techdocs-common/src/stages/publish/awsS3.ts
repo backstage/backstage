@@ -140,9 +140,18 @@ export class AwsS3Publish implements PublisherBase {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = filePath.replace(`${directory}/`, '');
+        const relativeFilePath = path.relative(directory, filePath);
+
+        // Convert destination file path to a POSIX path for uploading.
+        // S3 expects / as path separator and relativeFilePath will contain \\ on Windows.
+        // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+        const relativeFilePathPosix = relativeFilePath
+          .split(path.sep)
+          .join(path.posix.sep);
+
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePath}`; // S3 Bucket file relative path
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
 
         const fileContent = await fs.readFile(filePath, 'utf8');
 
@@ -164,7 +173,7 @@ export class AwsS3Publish implements PublisherBase {
       );
       return;
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to AWS S3. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to AWS S3. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }

@@ -13,11 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs';
 import type {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
+
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+/**
+ * @param sourceFile Relative path to entity root dir. Contains either / or \ as file separator
+ * depending upon the OS.
+ */
+const checkFileExists = async (sourceFile: string): Promise<boolean> => {
+  // sourceFile will always have / as file separator irrespective of OS since Azure expects /.
+  // Normalize sourceFile to OS specific path before checking if file exists.
+  const relativeFilePath = sourceFile.split(path.posix.sep).join(path.sep);
+  const filePath = path.join(rootDir, sourceFile);
+
+  try {
+    await fs.access(filePath, fs.constants.F_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
 
 export class BlockBlobClient {
   private readonly blobName;
@@ -39,7 +60,7 @@ export class BlockBlobClient {
   }
 
   exists() {
-    return Promise.resolve(fs.existsSync(this.blobName));
+    return checkFileExists(this.blobName);
   }
 }
 
