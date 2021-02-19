@@ -141,7 +141,7 @@ COPY package.json yarn.lock ./
 COPY packages packages
 COPY plugins plugins
 
-RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
+RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {} \+
 
 # Stage 2 - Install dependencies and build packages
 FROM node:14-buster-slim AS build
