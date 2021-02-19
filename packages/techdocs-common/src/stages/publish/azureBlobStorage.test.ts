@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
+import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import os from 'os';
@@ -45,7 +45,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace as string, kind, name);
+  return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
 function createLogger() {

@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
+} from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import os from 'os';
@@ -52,7 +56,7 @@ const getEntityRootDir = (entity: Entity) => {
     metadata: { namespace, name },
   } = entity;
 
-  return path.join(rootDir, namespace as string, kind, name);
+  return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
 const logger = winston.createLogger();
