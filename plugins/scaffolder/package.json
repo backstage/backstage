@@ -45,7 +45,6 @@
     "git-url-parse": "^11.4.4",
     "humanize-duration": "^3.25.1",
     "luxon": "^1.25.0",
-    "moment": "^2.26.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
