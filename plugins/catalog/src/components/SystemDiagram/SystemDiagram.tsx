@@ -35,6 +35,10 @@ type SystemDiagramProps = {
   entity: Entity;
 };
 
+const getEntityNodeId = (entity: Entity) => {
+  return `${entity.kind}:${entity.metadata.name}`.toLowerCase();
+};
+
 export function SystemDiagram({ entity }: SystemDiagramProps) {
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: catalogResponse } = useAsync(() => {
@@ -47,8 +51,8 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
 
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = `system:${entity.metadata.name}`.toLowerCase();
-  const systemNodes = [];
-  const systemEdges = [];
+  const systemNodes = new Array<{ id: string }>();
+  const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   if (catalogResponse && catalogResponse.items) {
     for (const catalogItem of catalogResponse.items) {
@@ -75,7 +79,7 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
       // process any entity assigned to the system
       if (catalogItem.spec?.system === currentSystemName) {
         systemNodes.push({
-          id: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
+          id: getEntityNodeId(catalogItem),
         });
 
         // check relations of the entity to see if it relates to other entities
@@ -86,14 +90,14 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
             switch (relation.type) {
               case RELATION_PROVIDES_API:
                 systemEdges.push({
-                  to: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
                   from: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
+                  to: getEntityNodeId(catalogItem),
                   label: 'provides API',
                 });
                 break;
               case RELATION_PART_OF:
                 systemEdges.push({
-                  from: `${catalogItem.kind}:${catalogItem.metadata.name}`.toLowerCase(),
+                  from: getEntityNodeId(catalogItem),
                   to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
                   label: 'part of',
                 });
