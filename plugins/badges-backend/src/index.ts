@@ -16,3 +16,4 @@
 
 export * from './api';
 export * from './service/router';
+export * from './utils';

@@ -19,6 +19,15 @@ import { createApiRef, ConfigApi, DiscoveryApi } from '@backstage/core';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 
+// TODO: place interpolate code someplace re-usable...
+// import { interpolate } from '@backstage/plugin-badges-backend';
+function interpolate(template, params) {
+  const names = Object.keys(params);
+  const vals = Object.values(params);
+  // eslint-disable-next-line no-new-func
+  return new Function(...names, `return \`${template}\`;`)(...vals);
+}
+
 export class BadgesClientApi {
   private readonly configApi: ConfigApi;
   private readonly discoveryApi: DiscoveryApi;
@@ -28,16 +37,64 @@ export class BadgesClientApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getEntityPoweredByMarkdownCode(entity: Entity): string {
-    const badge = await this.getEntityPoweredByBadgeURL(entity);
-    const target = this.getEntityLink(entity);
-    return `[![Powered by Backstage](${badge})](${target})`;
+  async getDefaultContext(entity: Entity) {
+    return {
+      app: {
+        title: this.configApi.getString('app.title'),
+      },
+      entity,
+      entity_url: entity && (await this.getEntityLink(entity)),
+    };
   }
 
-  async getEntityPoweredByBadgeURL(entity: Entity): string {
+  async getDefinedBadges(badgeKind: string, context: object) {
+    const badges = [];
+    const badgesConfig = this.configApi.getOptional('badges') ?? {};
+
+    for (const [badgeId, badge] of Object.entries(badgesConfig)) {
+      if (!badgeKind || !badge.kind || badgeKind === badge.kind) {
+        badges.push(await this.renderBadgeInfo(badgeId, badge, context));
+      }
+    }
+
+    return badges;
+  }
+
+  private async renderBadgeInfo(id, badge, context) {
+    const info = {
+      id,
+      url: context.entity && (await this.getEntityBadgeURL(id, context.entity)),
+      title: badge.title && this.render(badge.title, context),
+      description: this.render(badge.description || id, context),
+      target: badge.target && this.render(badge.target, context),
+    };
+    info.markdown = this.getBadgeMarkdownCode(info);
+    return info;
+  }
+
+  private async getEntityBadgeURL(badgeId: string, entity: Entity): string {
     const routeParams = this.getEntityRouteParams(entity);
     const path = generatePath(entityRoute.path, routeParams);
-    return `${await this.discoveryApi.getBaseUrl('badges')}/entity/${path}`;
+    return `${await this.discoveryApi.getBaseUrl(
+      'badges',
+    )}/entity/${path}/${badgeId}`;
+  }
+
+  private getBadgeMarkdownCode(badge: object): string {
+    const title = badge.title && ` "${badge.title}"`;
+    const img = `![${badge.description}](${badge.url}${title})`;
+    if (!badge.target) {
+      return img;
+    }
+    return `[${img}](${badge.target})`;
+  }
+
+  private render(template, context) {
+    try {
+      return interpolate(template.replace('$$', '$'), context);
+    } catch (err) {
+      return `${err} [${template}]`;
+    }
   }
 
   private getEntityLink(entity: Entity): string {

@@ -40,11 +40,13 @@ export interface Config {
        *
        *   * `app.title` As configured or defaults to "Backstage".
        *
+       * @visibility: frontend
        */
       kind?: 'entity';
 
       /**
        * The badge label.
+       *
        */
       label: string;
 

@@ -51,3 +51,14 @@ export const EntityBadgesCard = badgesPlugin.provide(
     },
   }),
 );
+
+export const EntityBadgesDialog = badgesPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/EntityBadgesDialog').then(
+          m => m.EntityBadgesDialog,
+        ),
+    },
+  }),
+);

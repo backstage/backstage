@@ -401,8 +401,26 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
+
+# sample badges
 badges:
   pingback:
     kind: 'entity'
+    description: 'Link back to $${app.title}'
+    target: '$${window.location.href}'
     label: 'View $${entity.metadata.name} in'
     message: '$${app.title}'
+
+  lifecycle:
+    kind: 'entity'
+    description: 'Entity lifecycle badge'
+    target: '$${window.location.href}'
+    label: 'Lifecycle'
+    message: '$${entity.spec.lifecycle}'
+
+  owner:
+    kind: 'entity'
+    description: 'Entity owner badge'
+    target: '$${window.location.href}'
+    label: 'Owner'
+    message: '$${entity.spec.owner}'

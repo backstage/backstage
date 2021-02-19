@@ -32,7 +32,7 @@ export class BadgesApi {
     private readonly config: { [id: string]: BadgeConfig },
   ) {}
 
-  public getBadge(badgeKind: string, badgeId: string, context: any) {
+  public getBadge(badgeKind: string, badgeId: string, context: object) {
     const badge = this.config[badgeId] || this.config.default;
 
     if (!badge) {
