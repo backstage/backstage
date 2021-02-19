@@ -72,7 +72,6 @@ describe('systemEntityColumns', () => {
 
     await waitFor(() => {
       expect(getByText('my-namespace/my-system')).toBeInTheDocument();
-      expect(getByText('my-namespace/my-domain')).toBeInTheDocument();
       expect(getByText('Test')).toBeInTheDocument();
       expect(getByText('Some description')).toBeInTheDocument();
     });
