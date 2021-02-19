@@ -156,7 +156,6 @@ export const ScaffolderPageContents = () => {
             <ResultsFilter availableCategories={availableCategories} />
           </div>
           <div>
-
             {loading && <Progress />}
 
             {error && (
@@ -165,14 +164,18 @@ export const ScaffolderPageContents = () => {
               </WarningPanel>
             )}
 
-            {!error && !loading && matchingEntities && !matchingEntities.length && (
-              <Typography variant="body2">
-                No templates found that match your filter. Learn more about{' '}
-                <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
-                  adding templates
-                </Link>.
-              </Typography>
-            )}
+            {!error &&
+              !loading &&
+              matchingEntities &&
+              !matchingEntities.length && (
+                <Typography variant="body2">
+                  No templates found that match your filter. Learn more about{' '}
+                  <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
+                    adding templates
+                  </Link>
+                  .
+                </Typography>
+              )}
 
             <Grid container>
               {matchingEntities &&
