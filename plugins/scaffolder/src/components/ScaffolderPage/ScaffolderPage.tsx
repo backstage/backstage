@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import React, { useEffect, useMemo, useState } from 'react';
+import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
+  configApiRef,
   Content,
   ContentHeader,
-  errorApiRef,
   Header,
   Lifecycle,
   Page,
@@ -27,12 +28,25 @@ import {
   useApi,
   WarningPanel,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Button, Grid, Link, Typography } from '@material-ui/core';
-import React, { useEffect } from 'react';
+import { Button, Grid, Link, makeStyles, Typography } from '@material-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
-import useStaleWhileRevalidate from 'swr';
+import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
+import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
+import { ScaffolderFilter } from '../ScaffolderFilter';
+import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
+import StarIcon from '@material-ui/icons/Star';
+import { useStarredEntities } from '../../hooks/useStarredEntities';
+import SearchToolbar from '../SearchToolbar/SearchToolbar';
+
+const useStyles = makeStyles(theme => ({
+  contentWrapper: {
+    display: 'grid',
+    gridTemplateAreas: "'filters' 'grid'",
+    gridTemplateColumns: '250px 1fr',
+    gridColumnGap: theme.spacing(2),
+  },
+}));
 
 const getTemplateCardProps = (
   template: TemplateEntityV1alpha1,
@@ -47,24 +61,62 @@ const getTemplateCardProps = (
   };
 };
 
-export const ScaffolderPage = () => {
-  const catalogApi = useApi(catalogApiRef);
-  const errorApi = useApi(errorApiRef);
-
-  const { data: templates, isValidating, error } = useStaleWhileRevalidate(
-    'templates/all',
-    async () => {
-      const response = await catalogApi.getEntities({
-        filter: { kind: 'Template' },
-      });
-      return response.items as TemplateEntityV1alpha1[];
-    },
+export const ScaffolderPageContents = () => {
+  const styles = useStyles();
+  const {
+    loading,
+    error,
+    filteredEntities,
+    availableCategories,
+  } = useFilteredEntities();
+  const configApi = useApi(configApiRef);
+  const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+  const { isStarredEntity } = useStarredEntities();
+  const filterGroups = useMemo<ButtonGroup[]>(
+    () => [
+      {
+        name: orgName,
+        items: [
+          {
+            id: 'all',
+            label: 'All',
+            filterFn: () => true,
+          },
+        ],
+      },
+      {
+        name: 'Personal',
+        items: [
+          {
+            id: 'starred',
+            label: 'Starred',
+            icon: StarIcon,
+            filterFn: isStarredEntity,
+          },
+        ],
+      },
+    ],
+    [isStarredEntity, orgName],
+  );
+  const [search, setSearch] = useState('');
+  const [matchingEntities, setMatchingEntities] = useState(
+    [] as TemplateEntityV1alpha1[],
   );
 
+  const matchesQuery = (metadata: EntityMeta, query: string) =>
+    `${metadata.title}`.toUpperCase().indexOf(query) !== -1 ||
+    metadata.tags?.join('').toUpperCase().indexOf(query) !== -1;
+
   useEffect(() => {
-    if (!error) return;
-    errorApi.post(error);
-  }, [error, errorApi]);
+    if (search.length === 0) {
+      return setMatchingEntities(filteredEntities);
+    }
+    return setMatchingEntities(
+      filteredEntities.filter(template =>
+        matchesQuery(template.metadata, search.toUpperCase()),
+      ),
+    );
+  }, [search, filteredEntities]);
 
   return (
     <Page themeId="home">
@@ -93,33 +145,58 @@ export const ScaffolderPage = () => {
             documentation, ...).
           </SupportButton>
         </ContentHeader>
-        {!templates && isValidating && <Progress />}
-        {templates && !templates.length && (
-          <Typography variant="body2">
-            Shoot! Looks like you don't have any templates. Check out the
-            documentation{' '}
-            <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
-              here!
-            </Link>
-          </Typography>
-        )}
-        {error && (
-          <WarningPanel>
-            Oops! Something went wrong loading the templates: {error.message}
-          </WarningPanel>
-        )}
-        <Grid container>
-          {templates &&
-            templates?.length > 0 &&
-            templates.map(template => {
-              return (
-                <Grid key={template.metadata.uid} item xs={12} sm={6} md={3}>
-                  <TemplateCard {...getTemplateCardProps(template)} />
-                </Grid>
-              );
-            })}
-        </Grid>
+
+        <div className={styles.contentWrapper}>
+          <div>
+            <SearchToolbar search={search} setSearch={setSearch} />
+            <ScaffolderFilter
+              buttonGroups={filterGroups}
+              initiallySelected="all"
+            />
+            <ResultsFilter availableCategories={availableCategories} />
+          </div>
+          <div>
+            {!matchingEntities && loading && <Progress />}
+            {matchingEntities && !matchingEntities.length && (
+              <Typography variant="body2">
+                Shoot! Looks like you don't have any templates. Check out the
+                documentation{' '}
+                <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
+                  here!
+                </Link>
+              </Typography>
+            )}
+            {error && (
+              <WarningPanel title="Oops! Something went wrong loading the templates">
+                {error.message}
+              </WarningPanel>
+            )}
+            <Grid container>
+              {matchingEntities &&
+                matchingEntities?.length > 0 &&
+                matchingEntities.map(template => {
+                  return (
+                    <Grid
+                      key={template.metadata.uid}
+                      item
+                      xs={12}
+                      sm={6}
+                      md={3}
+                    >
+                      <TemplateCard {...getTemplateCardProps(template)} />
+                    </Grid>
+                  );
+                })}
+            </Grid>
+          </div>
+        </div>
       </Content>
     </Page>
   );
 };
+
+export const ScaffolderPage = () => (
+  <EntityFilterGroupsProvider>
+    <ScaffolderPageContents />
+  </EntityFilterGroupsProvider>
+);
