@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.5.0
+
+### Minor Changes
+
+- 491f3a0ec: Make `ScmIntegration.resolveUrl` mandatory.
+
 ## 0.4.0
 
 ### Minor Changes

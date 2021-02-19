@@ -1,5 +1,19 @@
 # @backstage/backend-common
 
+## 0.5.4
+
+### Patch Changes
+
+- 16fb1d03a: pass registered logger to requestLoggingHandler
+- 491f3a0ec: Implement `UrlReader.search` for the other providers (Azure, Bitbucket, GitLab) as well.
+
+  The `UrlReader` subclasses now are implemented in terms of the respective `Integration` class.
+
+- 434b4e81a: Support globs in `FileReaderProcessor`.
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- Updated dependencies [491f3a0ec]
+  - @backstage/integration@0.5.0
+
 ## 0.5.3
 
 ### Patch Changes

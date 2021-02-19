@@ -1827,10 +1827,10 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.6.1"
+  version "0.6.2"
   dependencies:
     "@backstage/config" "^0.1.2"
-    "@backstage/core-api" "^0.2.8"
+    "@backstage/core-api" "^0.2.10"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -1840,6 +1840,7 @@
     "@types/prop-types" "^15.7.3"
     "@types/react" "^16.9"
     "@types/react-sparklines" "^1.7.0"
+    "@types/react-text-truncate" "^0.14.0"
     classnames "^2.2.6"
     clsx "^1.1.0"
     d3-selection "^2.0.0"
@@ -1861,32 +1862,19 @@
     react-router-dom "6.0.0-beta.0"
     react-sparklines "^1.7.0"
     react-syntax-highlighter "^13.5.1"
+    react-text-truncate "^0.16.0"
     react-use "^15.3.3"
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/plugin-catalog-react@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.0.2.tgz#e50da2dac9fab3a0d5973f8d1083ee2c368e5e52"
-  integrity sha512-O6aujFPRaEFTk4XlwOoswbnoHIOqMtj6ycUj6R1mNKOM4plUgGDKKhO3be69FHMJEMbiSvVe6AW+1kXaK+1LqA==
-  dependencies:
-    "@backstage/catalog-client" "^0.3.5"
-    "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.0"
-    "@material-ui/core" "^4.11.0"
-    "@types/react" "^16.9"
-    react "^16.13.1"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-
 "@backstage/plugin-catalog@^0.2.0":
-  version "0.3.1"
+  version "0.3.2"
   dependencies:
     "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.1"
-    "@backstage/plugin-catalog-react" "^0.0.3"
+    "@backstage/core" "^0.6.2"
+    "@backstage/plugin-catalog-react" "^0.0.4"
+    "@backstage/plugin-scaffolder" "^0.5.1"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -1903,12 +1891,13 @@
     swr "^0.3.0"
 
 "@backstage/plugin-catalog@^0.2.1":
-  version "0.3.1"
+  version "0.3.2"
   dependencies:
     "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.1"
-    "@backstage/plugin-catalog-react" "^0.0.3"
+    "@backstage/core" "^0.6.2"
+    "@backstage/plugin-catalog-react" "^0.0.4"
+    "@backstage/plugin-scaffolder" "^0.5.1"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -6605,6 +6594,13 @@
   version "16.9.2"
   resolved "https://registry.npmjs.org/@types/react-test-renderer/-/react-test-renderer-16.9.2.tgz#e1c408831e8183e5ad748fdece02214a7c2ab6c5"
   integrity sha512-4eJr1JFLIAlWhzDkBCkhrOIWOvOxcCAfQh+jiKg7l/nNZcCIL2MHl2dZhogIFKyHzedVWHaVP1Yydq/Ruu4agw==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-text-truncate@^0.14.0":
+  version "0.14.0"
+  resolved "https://registry.npmjs.org/@types/react-text-truncate/-/react-text-truncate-0.14.0.tgz#588bbabbc7f2a13815e805f3a48942db73fe65fe"
+  integrity sha512-XZNmx8mMPFjRLFjFqIF5uLPXEZ4THKxoEv1yU63JzInV3ES42PD+DaQOK6+Rd+cRolzrNoY4YIY9rrW8kh4ikw==
   dependencies:
     "@types/react" "*"
 
@@ -20944,7 +20940,7 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -21677,6 +21673,13 @@ react-test-renderer@^16.13.1:
     prop-types "^15.6.2"
     react-is "^16.8.6"
     scheduler "^0.19.1"
+
+react-text-truncate@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.npmjs.org/react-text-truncate/-/react-text-truncate-0.16.0.tgz#03bbb942437dfba5cc0faf614f1339f888926f80"
+  integrity sha512-hMFXhUHgIBCCDaOfOsZAFeO4DGfG/paLyaS/F+X11CXseuScpxmMBUW6Luwjk9/FlGrVJWNGy1FSfK6b4yyiIg==
+  dependencies:
+    prop-types "^15.5.7"
 
 react-textarea-autosize@^8.1.1:
   version "8.2.0"

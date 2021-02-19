@@ -1,5 +1,32 @@
 # @backstage/plugin-api-docs
 
+## 0.4.6
+
+### Patch Changes
+
+- 0af242b6d: Introduce new cards to `@backstage/plugin-catalog` that can be added to entity pages:
+
+  - `EntityHasSystemsCard` to display systems of a domain.
+  - `EntityHasComponentsCard` to display components of a system.
+  - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
+  - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
+
+  `@backstage/plugin-catalog-react` now provides an `EntityTable` to build own cards for entities.
+  The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
+  `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
 ## 0.4.5
 
 ### Patch Changes
