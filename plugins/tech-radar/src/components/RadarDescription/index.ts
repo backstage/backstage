@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { RadarDescription, Props } from './RadarDescription';
+export { RadarDescription } from './RadarDescription';
+export type { Props } from './RadarDescription';
