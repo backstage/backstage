@@ -31,6 +31,7 @@ export const entityRoute = createRouteRef({
   icon: NoIcon,
   path: ':namespace/:kind/:name/*',
   title: 'Entity',
+  params: ['namespace', 'kind', 'name'],
 });
 export const entityRouteRef = entityRoute;
 
