@@ -77,7 +77,6 @@ describe('AwsALBAuthProvider', () => {
     getEntityByName: jest.fn(),
   };
 
-  const mockResponseSend = jest.fn();
   const mockRequest = ({
     header: jest.fn(() => {
       return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZvbyIsImlzcyI6ImZvbyJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.T2BNS4G-6RoiFnXc8Q8TiwdWzTpNitY8jcsGM3N3-Yo';
@@ -90,7 +89,8 @@ describe('AwsALBAuthProvider', () => {
   } as unknown) as express.Request;
   const mockResponse = ({
     header: () => jest.fn(),
-    send: mockResponseSend,
+    json: jest.fn().mockReturnThis(),
+    status: jest.fn(),
   } as unknown) as express.Response;
 
   describe('should transform to type OAuthResponse', () => {
@@ -107,7 +107,7 @@ describe('AwsALBAuthProvider', () => {
 
       await provider.refresh(mockRequest, mockResponse);
 
-      expect(mockResponseSend.mock.calls[0][0]).toEqual({
+      expect(mockResponse.json).toHaveBeenCalledWith({
         backstageIdentity: {
           id: 'foo',
           idToken: '',
@@ -129,7 +129,7 @@ describe('AwsALBAuthProvider', () => {
 
       await provider.refresh(mockRequestWithoutJwt, mockResponse);
 
-      expect(mockResponseSend.mock.calls[0][0]).toEqual(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
     });
 
     it('JWT is invalid', async () => {
@@ -145,7 +145,7 @@ describe('AwsALBAuthProvider', () => {
 
       await provider.refresh(mockRequest, mockResponse);
 
-      expect(mockResponseSend.mock.calls[0][0]).toEqual(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
     });
 
     it('issuer is invalid', async () => {
@@ -158,8 +158,7 @@ describe('AwsALBAuthProvider', () => {
       jwtMock.verify.mockReturnValueOnce({});
 
       await provider.refresh(mockRequest, mockResponse);
-
-      expect(mockResponseSend.mock.calls[0][0]).toEqual(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
     });
 
     it('identity resolution callback rejects', async () => {
@@ -173,7 +172,7 @@ describe('AwsALBAuthProvider', () => {
 
       await provider.refresh(mockRequest, mockResponse);
 
-      expect(mockResponseSend.mock.calls[0][0]).toEqual(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
     });
   });
 });

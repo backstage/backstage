@@ -73,7 +73,7 @@ export async function createRouter(
         return;
       }
 
-      res.send({
+      res.json({
         id: job.id,
         metadata: {
           ...job.context,

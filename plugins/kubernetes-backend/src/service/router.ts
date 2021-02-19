@@ -80,7 +80,7 @@ export const makeRouter = (
         logger,
         requestBody,
       );
-      res.send(response);
+      res.json(response);
     } catch (e) {
       logger.error(
         `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,

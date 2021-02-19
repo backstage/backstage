@@ -129,7 +129,7 @@ export class GithubCreateAppServer {
     body = body.replace('ACTION_URL', this.actionUrl);
 
     res.setHeader('content-type', 'text/html');
-    res.send(body);
+    res.json(body);
   };
 
   private async listen(app: Express) {
