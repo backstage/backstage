@@ -17,7 +17,7 @@ import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import type { Quadrant, Ring, Entry } from '../../utils/types';
 import { WithLink } from '../../utils/components';
-import RadarDescription from '../RadarDescription';
+import { RadarDescription } from '../RadarDescription';
 
 type Segments = {
   [k: number]: { [k: number]: Entry[] };
@@ -131,7 +131,7 @@ const RadarLegend = (props: Props): JSX.Element => {
       setOpen(!open);
     };
 
-    if (description && url) {
+    if (description) {
       return (
         <>
           <span
@@ -143,13 +143,15 @@ const RadarLegend = (props: Props): JSX.Element => {
           >
             <span className={classes.entry}>{title}</span>
           </span>
-          <RadarDescription
-            open={open}
-            onClose={handleClose}
-            title={title ? title : ''}
-            url={url}
-            description={description}
-          />
+          {open && (
+            <RadarDescription
+              open={open}
+              onClose={handleClose}
+              title={title ? title : 'no title'}
+              url={url}
+              description={description}
+            />
+          )}
         </>
       );
     }

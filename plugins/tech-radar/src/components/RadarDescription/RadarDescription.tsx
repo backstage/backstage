@@ -29,7 +29,6 @@ export type Props = {
 };
 
 const RadarDescription = (props: Props): JSX.Element => {
-  // const classes = useStyles(props);
   const { open, onClose, title, description, url } = props;
 
   const handleClick = () => {
@@ -41,7 +40,9 @@ const RadarDescription = (props: Props): JSX.Element => {
 
   return (
     <Dialog data-testid="radar-description" open={open} onClose={onClose}>
-      <DialogTitle id="radar-description-dialog-title">{title}</DialogTitle>
+      <DialogTitle data-testid="radar-description-dialog-title">
+        {title}
+      </DialogTitle>
       <DialogContent dividers>{description}</DialogContent>
       {url && (
         <DialogActions>
@@ -49,6 +50,7 @@ const RadarDescription = (props: Props): JSX.Element => {
             onClick={handleClick}
             color="primary"
             startIcon={<LinkIcon />}
+            href={url}
           >
             LEARN MORE
           </Button>
@@ -58,4 +60,4 @@ const RadarDescription = (props: Props): JSX.Element => {
   );
 };
 
-export default RadarDescription;
+export { RadarDescription };

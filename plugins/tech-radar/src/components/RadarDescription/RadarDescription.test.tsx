@@ -19,7 +19,7 @@ import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 
-import RadarDescription, { Props } from './RadarDescription';
+import { Props, RadarDescription } from './RadarDescription';
 
 const minProps: Props = {
   open: true,

@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
-import RadarDescription from '../RadarDescription';
+import { RadarDescription } from '../RadarDescription';
 
 export type Props = {
   x: number;
@@ -101,26 +101,26 @@ const RadarEntry = (props: Props): JSX.Element => {
       data-testid="radar-entry"
     >
       {' '}
+      {open && (
+        <RadarDescription
+          open={open}
+          onClose={handleClose}
+          title={title ? title : 'no title'}
+          description={description ? description : 'no description'}
+          url={url}
+        />
+      )}
       {description ? (
-        <>
-          <a
-            className={classes.link}
-            onClick={handleClickOpen}
-            href={url ? url : '#'}
-            role="button"
-            tabIndex={0}
-            onKeyPress={toggle}
-          >
-            {blip}
-          </a>
-          <RadarDescription
-            open={open}
-            onClose={handleClose}
-            title={title ? title : 'no title'}
-            description={description}
-            url={url}
-          />
-        </>
+        <a
+          className={classes.link}
+          onClick={handleClickOpen}
+          href={url ? url : '#'}
+          role="button"
+          tabIndex={0}
+          onKeyPress={toggle}
+        >
+          {blip}
+        </a>
       ) : (
         <WithLink url={url} className={classes.link}>
           {blip}
