@@ -20,7 +20,7 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { TableColumn } from '@backstage/core';
+import { OverflowTooltip, TableColumn } from '@backstage/core';
 import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
@@ -139,6 +139,12 @@ export function createMetadataDescriptionColumn<
   return {
     title: 'Description',
     field: 'metadata.description',
+    render: entity => (
+      <OverflowTooltip
+        text={entity.metadata.description}
+        placement="bottom-start"
+      />
+    ),
     width: 'auto',
   };
 }
