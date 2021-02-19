@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/config';
 import { IndexableDocument } from '@backstage/plugin-search-indexer-backend';
 
 export interface SearchQuery {
   term: string;
-  filters?: Record<string, any>;
+  filters?: JsonObject;
   pageIndex?: number;
   pageSize?: number;
 }
 
+export interface SearchResult {
+  document: IndexableDocument;
+}
+
 export interface SearchResultSet {
-  results: IndexableDocument[];
+  results: SearchResult[];
 }
