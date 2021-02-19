@@ -22,23 +22,18 @@ import {
   Lifecycle,
   Page,
   useApi,
+  useRouteRef,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  entityRoute,
-  entityRouteParams,
-} from '@backstage/plugin-catalog-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { LinearProgress } from '@material-ui/core';
 import { IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { generatePath, Navigate } from 'react-router';
+import { generatePath, useNavigate, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { rootRoute } from '../../routes';
-import { useJobPolling } from '../hooks/useJobPolling';
-import { JobStatusModal } from '../JobStatusModal';
+import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 
 const useTemplate = (
@@ -50,7 +45,7 @@ const useTemplate = (
       filter: { kind: 'Template', 'metadata.name': templateName },
     });
     return response.items as TemplateEntityV1alpha1[];
-  });
+  }, [catalogApi, templateName]);
   return { template: value?.[0], loading, error };
 };
 
@@ -76,57 +71,28 @@ const OWNER_REPO_SCHEMA = {
     },
   },
 };
+
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
   const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
-  const [catalogLink, setCatalogLink] = useState<string | undefined>();
+  const navigate = useNavigate();
+  const rootLink = useRouteRef(rootRouteRef);
   const { template, loading } = useTemplate(templateName, catalogApi);
   const [formState, setFormState] = useState({});
-  const [modalOpen, setModalOpen] = useState(false);
   const handleFormReset = () => setFormState({});
+
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
     [setFormState, formState],
   );
 
-  const [jobId, setJobId] = useState<string | null>(null);
-  const job = useJobPolling(jobId, async jobItem => {
-    if (!jobItem.metadata.catalogInfoUrl) {
-      errorApi.post(
-        new Error(`No catalogInfoUrl returned from the scaffolder`),
-      );
-      return;
-    }
-
-    try {
-      const {
-        entities: [createdEntity],
-      } = await catalogApi.addLocation({
-        target: jobItem.metadata.catalogInfoUrl,
-      });
-
-      const resolvedPath = generatePath(
-        `/catalog/${entityRoute.path}`,
-        entityRouteParams(createdEntity),
-      );
-
-      setCatalogLink(resolvedPath);
-    } catch (ex) {
-      errorApi.post(
-        new Error(
-          `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
-        ),
-      );
-    }
-  });
-
   const handleCreate = async () => {
     try {
       const id = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(id);
-      setModalOpen(true);
+
+      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
     } catch (e) {
       errorApi.post(e);
     }
@@ -134,7 +100,7 @@ export const TemplatePage = () => {
 
   if (!loading && !template) {
     errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootRoute.path} />;
+    return <Navigate to={rootLink()} />;
   }
 
   if (template && !template?.spec?.schema) {
@@ -143,7 +109,7 @@ export const TemplatePage = () => {
         'Template schema is corrupted, please check the template.yaml file.',
       ),
     );
-    return <Navigate to={rootRoute.path} />;
+    return <Navigate to={rootLink()} />;
   }
 
   return (
@@ -159,12 +125,6 @@ export const TemplatePage = () => {
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        <JobStatusModal
-          job={job}
-          toCatalogLink={catalogLink}
-          open={modalOpen}
-          onModalClose={() => setModalOpen(false)}
-        />
         {template && (
           <InfoCard title={template.metadata.title} noPadding>
             <MultistepJsonForm

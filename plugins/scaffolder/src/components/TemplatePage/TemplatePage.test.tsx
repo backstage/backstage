@@ -22,7 +22,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { MemoryRouter, Route } from 'react-router';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
-import { rootRoute } from '../../routes';
+import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 
 const templateMock = {
@@ -97,11 +97,15 @@ describe('TemplatePage', () => {
       <ApiProvider apis={apis}>
         <TemplatePage />
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
     );
 
     expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
     expect(rendered.queryByText('React SSR Template')).toBeInTheDocument();
-    // await act(async () => await mutate('templates/test'));
   });
 
   it('renders spinner while loading', async () => {
@@ -114,13 +118,18 @@ describe('TemplatePage', () => {
       <ApiProvider apis={apis}>
         <TemplatePage />
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/create': rootRouteRef,
+        },
+      },
     );
 
     expect(rendered.queryByText('Create a New Component')).toBeInTheDocument();
     expect(rendered.queryByTestId('loading-progress')).toBeInTheDocument();
-    // Need to cleanup the promise or will timeout
-    act(() => {
-      resolve!({ items: [] });
+
+    await act(async () => {
+      resolve!({ items: [templateMock] });
     });
   });
 
@@ -134,7 +143,7 @@ describe('TemplatePage', () => {
             <Route path="/create/test">
               <TemplatePage />
             </Route>
-            <Route path={rootRoute.path} element={<>This is root</>} />
+            <Route path="/create" element={<>This is root</>} />
           </MemoryRouter>
         </ThemeProvider>
       </ApiProvider>,

@@ -21,9 +21,9 @@ import {
   errorApiRef,
   SupportButton,
   useApi,
+  useRouteRef,
 } from '@backstage/core';
 import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
-import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
@@ -31,6 +31,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { useStarredEntities } from '../../hooks/useStarredEntities';
+import { createComponentRouteRef } from '../../routes';
 import {
   ButtonGroup,
   CatalogFilter,
@@ -73,7 +74,7 @@ const CatalogPageContents = () => {
     CatalogFilterType
   >();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-
+  const createComponentLink = useRouteRef(createComponentRouteRef);
   const addMockData = useCallback(async () => {
     try {
       const promises: Promise<unknown>[] = [];
@@ -166,7 +167,7 @@ const CatalogPageContents = () => {
             component={RouterLink}
             variant="contained"
             color="primary"
-            to={scaffolderRootRoute.path}
+            to={createComponentLink()}
           >
             Create Component
           </Button>

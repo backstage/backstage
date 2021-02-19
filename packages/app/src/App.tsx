@@ -22,12 +22,17 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core';
-import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+import {
+  catalogPlugin,
+  CatalogIndexPage,
+  CatalogEntityPage,
+} from '@backstage/plugin-catalog';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
@@ -60,6 +65,11 @@ const app = createApp({
       );
     },
   },
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+  },
 });
 
 const AppProvider = app.getProvider();
@@ -74,12 +84,16 @@ const catalogRouteRef = createRouteRef({
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
-    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
-      path={`${catalogRouteRef.path}`}
-      element={<CatalogRouter EntityPage={EntityPage} />}
-    />
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      <EntityPage />
+    </Route>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<DocsRouter />} />
+    <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"

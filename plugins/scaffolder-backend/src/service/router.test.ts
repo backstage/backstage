@@ -39,12 +39,14 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { Templaters, Preparers, Publishers } from '../scaffolder';
 import Docker from 'dockerode';
+import { CatalogApi } from '@backstage/catalog-client';
 
 jest.mock('dockerode');
 
-const generateEntityClient: any = (template: any) => ({
-  findTemplate: () => Promise.resolve(template),
-});
+const createCatalogClient = (templates: any[] = []) =>
+  ({
+    getEntities: async () => ({ items: templates }),
+  } as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {
   return SingleConnectionDatabaseManager.fromConfig(
@@ -95,7 +97,6 @@ describe('createRouter - working directory', () => {
     },
   };
 
-  const mockedEntityClient = generateEntityClient(template);
   it('should throw an error when working directory does not exist or is not writable', async () => {
     mockAccess.mockImplementation(() => {
       throw new Error('access error');
@@ -109,8 +110,8 @@ describe('createRouter - working directory', () => {
         publishers: new Publishers(),
         config: new ConfigReader(workDirConfig('/path')),
         dockerClient: new Docker(),
-        entityClient: mockedEntityClient,
         database: createDatabase(),
+        catalogClient: createCatalogClient([template]),
       }),
     ).rejects.toThrow('access error');
   });
@@ -123,8 +124,8 @@ describe('createRouter - working directory', () => {
       publishers: new Publishers(),
       config: new ConfigReader(workDirConfig('/path')),
       dockerClient: new Docker(),
-      entityClient: mockedEntityClient,
       database: createDatabase(),
+      catalogClient: createCatalogClient([template]),
     });
 
     const app = express().use(router);
@@ -152,8 +153,8 @@ describe('createRouter - working directory', () => {
       publishers: new Publishers(),
       config: new ConfigReader({}),
       dockerClient: new Docker(),
-      entityClient: mockedEntityClient,
       database: createDatabase(),
+      catalogClient: createCatalogClient([template]),
     });
 
     const app = express().use(router);
@@ -184,6 +185,9 @@ describe('createRouter', () => {
       name: 'create-react-app-template',
       tags: ['experimental', 'react', 'cra'],
       title: 'Create React App Template',
+      annotations: {
+        'backstage.io/managed-by-location': 'url:https://dev.azure.com',
+      },
     },
     spec: {
       owner: 'web@example.com',
@@ -222,8 +226,8 @@ describe('createRouter', () => {
       publishers: new Publishers(),
       config: new ConfigReader({}),
       dockerClient: new Docker(),
-      entityClient: generateEntityClient(template),
       database: createDatabase(),
+      catalogClient: createCatalogClient([template]),
     });
     app = express().use(router);
   });
@@ -244,6 +248,38 @@ describe('createRouter', () => {
         });
 
       expect(response.status).toEqual(400);
+    });
+  });
+
+  describe('POST /v2/tasks', () => {
+    it('rejects template values which do not match the template schema definition', async () => {
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateName: '',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+          },
+        });
+
+      expect(response.status).toEqual(400);
+    });
+
+    it('return the template id', async () => {
+      const response = await request(app)
+        .post('/v2/tasks')
+        .send({
+          templateName: 'create-react-app-template',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+            component_id: '123',
+            name: 'test',
+            use_typescript: false,
+          },
+        });
+
+      expect(response.body.id).toBeDefined();
+      expect(response.status).toEqual(201);
     });
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-export type {
-  RouteRef,
-  AbsoluteRouteRef,
-  ConcreteRoute,
-  MutableRouteRef,
-} from './types';
-export { FlatRoutes } from './FlatRoutes';
-export {
-  createRouteRef,
-  createExternalRouteRef,
-  ExternalRouteRef,
-} from './RouteRef';
-export type { RouteRefConfig } from './RouteRef';
-export { useRouteRef } from './hooks';
+import { createExternalRouteRef } from '@backstage/core';
+
+export const createComponentRouteRef = createExternalRouteRef({
+  id: 'create-component',
+});
