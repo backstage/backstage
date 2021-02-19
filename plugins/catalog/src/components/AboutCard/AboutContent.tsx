@@ -25,7 +25,6 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { EntityBadgesField } from '@backstage/plugin-badges';
 import { AboutField } from './AboutField';
 
 const useStyles = makeStyles({
@@ -127,9 +126,6 @@ export const AboutContent = ({ entity }: Props) => {
         {(entity?.metadata?.tags || []).map(t => (
           <Chip key={t} size="small" label={t} />
         ))}
-      </AboutField>
-      <AboutField label="Badges" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        <EntityBadgesField />
       </AboutField>
     </Grid>
   );

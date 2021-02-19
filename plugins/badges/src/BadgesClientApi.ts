@@ -81,7 +81,7 @@ export class BadgesClientApi {
   }
 
   private getBadgeMarkdownCode(badge: object): string {
-    const title = badge.title && ` "${badge.title}"`;
+    const title = badge.title ? ` "${badge.title}"` : '';
     const img = `![${badge.description}](${badge.url}${title})`;
     if (!badge.target) {
       return img;

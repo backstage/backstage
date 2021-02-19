@@ -407,20 +407,29 @@ badges:
   pingback:
     kind: 'entity'
     description: 'Link back to $${app.title}'
-    target: '$${window.location.href}'
+    target: '$${entity_url}'
     label: 'View $${entity.metadata.name} in'
     message: '$${app.title}'
 
   lifecycle:
     kind: 'entity'
     description: 'Entity lifecycle badge'
-    target: '$${window.location.href}'
+    target: '$${entity_url}'
     label: 'Lifecycle'
     message: '$${entity.spec.lifecycle}'
 
   owner:
     kind: 'entity'
+    title: 'Resource Owner'
     description: 'Entity owner badge'
-    target: '$${window.location.href}'
+    target: '$${entity_url}'
     label: 'Owner'
     message: '$${entity.spec.owner}'
+    color: 'blue'
+
+  docs:
+    kind: 'entity'
+    target: '$${entity_url}/docs'
+    label: 'Documentation'
+    message: '$${entity.metadata.name}'
+    color: 'navyblue'
