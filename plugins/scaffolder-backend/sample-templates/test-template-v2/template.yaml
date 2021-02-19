@@ -1,0 +1,130 @@
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: test-template
+  title: Test Template
+  description: Testing out the new template schema
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    title: Fill in some BS params
+    required:
+      - name
+    properties:
+      name:
+        title: Name
+        type: string
+        description: Unique name of the component
+        ui:widget: textarea
+        ui:autofocus: true
+        ui:options:
+          rows: 5
+      storePath: # provides {owner, repository, providerUrl}
+        # $ref: '#/definitions/StorePath'
+        title: Store Path
+        type: string
+        description: Copy https://github.com/aeothgiaetgh/aetkijhahte and hammer in some more letters
+
+  steps:
+    - id: prepare
+      name: Prepare
+      action: legacy:prepare
+      parameters:
+        protocol: file
+        url: file:///Users/patriko/dev/backstage/plugins/scaffolder-backend/sample-templates/test-template-v2
+    - id: template
+      name: Template
+      action: legacy:template
+      parameters:
+        templater: cookiecutter
+        values:
+          name: '{{ parameters.name }}'
+    - id: publish
+      name: Publish
+      action: legacy:publish
+      parameters:
+        values:
+          name: '{{ parameters.name }}'
+          storePath: '{{ parameters.storePath }}'
+          owner: kungen # not use
+    - id: register
+      name: Register
+      action: catalog:register
+      parameters:
+        catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
+
+  output:
+    catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
+    entityRef: '{{ steps.register.entityRef }}'
+
+
+# TODO:
+#   1. [x] entity beta2 type & schema
+#   2. [x] endpoint for template params + frontend refactor
+#   3. [ ] implement new actions that work well with new steps format, e.g. prepare+template = fetch
+#   4. [ ] external API for registering custom actions
+#   5. [x] implement uiSchema split
+#   6. [ ] document beta2 entity schema
+#   6. [ ] user documentation for beta2
+
+---
+
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: test-template-v2
+  title: Test Template v2
+  description: Testing out the new template schema
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    title: Fill in some BS params
+    required:
+      - name
+    properties:
+      name:
+        title: Name
+        type: string
+        description: Unique name of the component
+        ui:widget: textarea
+        ui:autofocus: true
+        ui:options:
+          rows: 5
+      storePath: # provides {owner, repository, providerUrl}
+        # $ref: '#/definitions/StorePath'
+        title: Store Path
+        type: string
+        description: Copy https://github.com/aeothgiaetgh/aetkijhahte and hammer in some more letters
+
+  steps:
+    - id: fetch
+      name: Fetch
+      action: fetch
+      parameters:
+        protocol: file
+        url: file:///Users/patriko/dev/backstage/plugins/scaffolder-backend/sample-templates/test-template-v2
+        templater:
+          type: cookiecutter
+          values:
+            name: '{{ parameters.name }}'
+    - id: publish
+      name: Publish
+      action: legacy:publish
+      parameters:
+        values:
+          name: '{{ parameters.name }}'
+          storePath: '{{ parameters.storePath }}'
+          owner: kungen # not use
+    - id: register
+      name: Register
+      action: catalog:register
+      parameters:
+        catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
+
+  output:
+    catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
+    entityRef: '{{ steps.register.entityRef }}'
