@@ -45,6 +45,7 @@ import {
   SystemEntity,
   systemEntityV1alpha1Validator,
   templateEntityV1alpha1Validator,
+  templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
@@ -59,6 +60,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     groupEntityV1alpha1Validator,
     locationEntityV1alpha1Validator,
     templateEntityV1alpha1Validator,
+    templateEntityV1beta2Validator,
     userEntityV1alpha1Validator,
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,

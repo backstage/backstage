@@ -57,6 +57,8 @@ export type {
   TemplateEntityV1alpha1 as TemplateEntity,
   TemplateEntityV1alpha1,
 } from './TemplateEntityV1alpha1';
+export { templateEntityV1beta2Validator } from './TemplateEntityV1beta2';
+export type { TemplateEntityV1beta2 } from './TemplateEntityV1beta2';
 export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,
