@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { TemplateEntity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
@@ -32,7 +32,7 @@ export class CatalogEntityClient {
   async findTemplate(
     templateName: string,
     options?: { token?: string },
-  ): Promise<TemplateEntityV1alpha1> {
+  ): Promise<TemplateEntity> {
     const { items: templates } = (await this.catalogClient.getEntities(
       {
         filter: {
@@ -41,7 +41,7 @@ export class CatalogEntityClient {
         },
       },
       options,
-    )) as { items: TemplateEntityV1alpha1[] };
+    )) as { items: TemplateEntity[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

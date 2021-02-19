@@ -86,6 +86,7 @@ export function templateEntityToSpec(
   });
 
   return {
+    values: {},
     steps,
     output: {
       remoteUrl: '{{ steps.publish.output.remoteUrl }}',

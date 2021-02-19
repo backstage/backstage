@@ -45,6 +45,7 @@ import {
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getWorkingDirectory } from './helpers';
 import {
+  InputError,
   NotFoundError,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
@@ -250,7 +251,25 @@ export async function createRouter(
         res.status(400).json({ errors: validationResult.errors });
         return;
       }
-      const taskSpec = templateEntityToSpec(template, values);
+
+      let taskSpec;
+      if (template.apiVersion === 'backstage.io/v1alpha1') {
+        taskSpec = templateEntityToSpec(template, values);
+      } else if (template.apiVersion === 'backstage.io/v1beta1') {
+        // TODO: add v1beta1 type
+        // const betaTemplate = template as TemplateEntityV1beta1
+        const betaTemplate = template as any;
+        taskSpec = {
+          values,
+          steps: betaTemplate.spec.steps,
+          output: betaTemplate.spec.output,
+        };
+      } else {
+        throw new InputError(
+          `Unknown apiVersion field in schema entity, ${template.apiVersion}`,
+        );
+      }
+
       const result = await taskBroker.dispatch(taskSpec);
 
       res.status(201).json({ id: result.taskId });

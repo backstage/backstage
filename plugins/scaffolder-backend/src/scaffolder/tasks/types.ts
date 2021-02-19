@@ -43,6 +43,7 @@ export type DbTaskEventRow = {
 };
 
 export type TaskSpec = {
+  values: JsonObject;
   steps: Array<{
     id: string;
     name: string;

@@ -17,7 +17,7 @@
 import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import * as winston from 'winston';
-import { JsonValue } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/config';
 import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
@@ -57,10 +57,11 @@ export class TaskWorker {
       );
 
       const templateCtx: {
+        parameters: JsonObject;
         steps: {
           [stepName: string]: { output: { [outputName: string]: JsonValue } };
         };
-      } = { steps: {} };
+      } = { parameters: task.spec.values, steps: {} };
 
       for (const step of task.spec.steps) {
         const metadata = { stepId: step.id };
