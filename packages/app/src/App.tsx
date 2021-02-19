@@ -17,7 +17,6 @@
 import {
   AlertDisplay,
   createApp,
-  LocalStorageFeatureFlags,
   FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
@@ -89,7 +88,6 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const featureFlags = new LocalStorageFeatureFlags();
 
 const routes = (
   <FlatRoutes>
@@ -103,9 +101,7 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
-    {featureFlags.isActive('use-search-platform') && (
-      <Route path="/search" element={<SearchPage />} />
-    )}
+    <Route path="/search-next" element={<SearchPage />} />
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
