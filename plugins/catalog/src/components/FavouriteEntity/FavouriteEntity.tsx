@@ -15,10 +15,10 @@
  */
 
 import React, { ComponentProps } from 'react';
+import { useStarredEntities } from '@backstage/plugin-catalog-react';
 import { IconButton, Tooltip, withStyles } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
 import Star from '@material-ui/icons/Star';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { Entity } from '@backstage/catalog-model';
 
 type Props = ComponentProps<typeof IconButton> & { entity: Entity };

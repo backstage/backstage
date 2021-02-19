@@ -145,6 +145,7 @@ function useProvideEntityFilters(): FilterGroupsContext {
     setGroupSelectedFilters,
     setSelectedCategories,
     reload,
+    selectedCategories: selectedCategories.current,
     loading: !error && !entities,
     error,
     filterGroupStates,

@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   configApiRef,
@@ -28,15 +29,14 @@ import {
   useApi,
   WarningPanel,
 } from '@backstage/core';
+import { useStarredEntities } from '@backstage/plugin-catalog-react';
 import { Button, Grid, Link, makeStyles, Typography } from '@material-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
+import StarIcon from '@material-ui/icons/Star';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { ScaffolderFilter } from '../ScaffolderFilter';
 import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
-import StarIcon from '@material-ui/icons/Star';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
 
 const useStyles = makeStyles(theme => ({
@@ -104,7 +104,7 @@ export const ScaffolderPageContents = () => {
   );
 
   const matchesQuery = (metadata: EntityMeta, query: string) =>
-    `${metadata.title}`.toUpperCase().indexOf(query) !== -1 ||
+    `${metadata.title}`.toUpperCase().includes(query) ||
     metadata.tags?.join('').toUpperCase().indexOf(query) !== -1;
 
   useEffect(() => {

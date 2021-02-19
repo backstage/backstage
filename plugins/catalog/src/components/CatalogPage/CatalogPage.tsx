@@ -23,14 +23,18 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core';
-import { catalogApiRef, isOwnerOf } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  isOwnerOf,
+  useStarredEntities,
+} from '@backstage/plugin-catalog-react';
+
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
 import { createComponentRouteRef } from '../../routes';
 import {
   ButtonGroup,
