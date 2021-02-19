@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -38,7 +37,7 @@ export async function createRouter({
       // @todo Actually transform req.params into search engine specific query.
       const { term, filters = {}, pageIndex = 0, pageSize = 30 } = req.query;
       logger.info(
-        `Search requested received: ${term}, ${JSON.stringify(
+        `Search request received: ${term}, ${JSON.stringify(
           filters,
         )}, ${pageIndex}, ${pageSize}`,
       );
@@ -50,12 +49,10 @@ export async function createRouter({
           results: [],
         });
       } catch (err) {
-        logger.error(`There was a problem performing the search query.`);
         throw new Error(`There was a problem performing the search query.`);
       }
     },
   );
 
-  router.use(errorHandler());
   return router;
 }
