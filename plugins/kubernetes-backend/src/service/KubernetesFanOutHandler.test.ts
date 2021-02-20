@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { handleGetKubernetesObjectsForService } from './getKubernetesObjectsForServiceHandler';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ObjectFetchParams } from '..';
-
-const TEST_SERVICE_ID = 'my-service';
+import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 const fetchObjectsForService = jest.fn();
 
@@ -81,34 +79,34 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsForService(
-      TEST_SERVICE_ID,
+    const sut = new KubernetesFanOutHandler(
+      getVoidLogger(),
       {
-        fetchObjectsForService: fetchObjectsForService,
+        fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
-      getVoidLogger(),
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1beta1',
-          kind: 'Component',
-          metadata: {
-            name: 'test-component',
-            annotations: {
-              'backstage.io/kubernetes-labels-selector':
-                'backstage.io/test-label=test-component',
-            },
-          },
-          spec: {
-            type: 'service',
-            lifecycle: 'production',
-            owner: 'joe',
+    );
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: 'test-component',
+          annotations: {
+            'backstage.io/kubernetes-labels-selector':
+              'backstage.io/test-label=test-component',
           },
         },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'joe',
+        },
       },
-    );
+    });
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(1);
@@ -124,7 +122,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-pods-my-service-test-cluster',
+                    name: 'my-pods-test-component-test-cluster',
                   },
                 },
               ],
@@ -134,7 +132,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-configmaps-my-service-test-cluster',
+                    name: 'my-configmaps-test-component-test-cluster',
                   },
                 },
               ],
@@ -144,7 +142,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-services-my-service-test-cluster',
+                    name: 'my-services-test-component-test-cluster',
                   },
                 },
               ],
@@ -172,37 +170,37 @@ describe('handleGetKubernetesObjectsForService', () => {
 
     mockFetch(fetchObjectsForService);
 
-    const result = await handleGetKubernetesObjectsForService(
-      TEST_SERVICE_ID,
+    const sut = new KubernetesFanOutHandler(
+      getVoidLogger(),
       {
-        fetchObjectsForService: fetchObjectsForService,
+        fetchObjectsForService,
       },
       {
         getClustersByServiceId,
       },
-      getVoidLogger(),
-      {
-        auth: {
-          google: 'google_token_123',
+    );
+
+    const result = await sut.getKubernetesObjectsByEntity({
+      auth: {
+        google: 'google_token_123',
+      },
+      entity: {
+        apiVersion: 'backstage.io/v1beta1',
+        kind: 'Component',
+        metadata: {
+          name: 'test-component',
+          annotations: {
+            'backstage.io/kubernetes-labels-selector':
+              'backstage.io/test-label=test-component',
+          },
         },
-        entity: {
-          apiVersion: 'backstage.io/v1beta1',
-          kind: 'Component',
-          metadata: {
-            name: 'test-component',
-            annotations: {
-              'backstage.io/kubernetes-labels-selector':
-                'backstage.io/test-label=test-component',
-            },
-          },
-          spec: {
-            type: 'service',
-            lifecycle: 'production',
-            owner: 'joe',
-          },
+        spec: {
+          type: 'service',
+          lifecycle: 'production',
+          owner: 'joe',
         },
       },
-    );
+    });
 
     expect(getClustersByServiceId.mock.calls.length).toBe(1);
     expect(fetchObjectsForService.mock.calls.length).toBe(2);
@@ -218,7 +216,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-pods-my-service-test-cluster',
+                    name: 'my-pods-test-component-test-cluster',
                   },
                 },
               ],
@@ -228,7 +226,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-configmaps-my-service-test-cluster',
+                    name: 'my-configmaps-test-component-test-cluster',
                   },
                 },
               ],
@@ -238,7 +236,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-services-my-service-test-cluster',
+                    name: 'my-services-test-component-test-cluster',
                   },
                 },
               ],
@@ -256,7 +254,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-pods-my-service-other-cluster',
+                    name: 'my-pods-test-component-other-cluster',
                   },
                 },
               ],
@@ -266,7 +264,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-configmaps-my-service-other-cluster',
+                    name: 'my-configmaps-test-component-other-cluster',
                   },
                 },
               ],
@@ -276,7 +274,7 @@ describe('handleGetKubernetesObjectsForService', () => {
               resources: [
                 {
                   metadata: {
-                    name: 'my-services-my-service-other-cluster',
+                    name: 'my-services-test-component-other-cluster',
                   },
                 },
               ],
