@@ -97,6 +97,7 @@ const columns: TableColumn<EntityRow>[] = [
         placement="bottom-start"
       />
     ),
+    width: 'auto',
   },
   {
     title: 'Tags',

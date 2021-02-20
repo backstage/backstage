@@ -33,6 +33,14 @@ type Props = {
   variant?: 'gridItem';
 };
 
+const columns = [
+  EntityTable.columns.createEntityRefColumn({ defaultKind: 'component' }),
+  EntityTable.columns.createOwnerColumn(),
+  EntityTable.columns.createSpecTypeColumn(),
+  EntityTable.columns.createSpecLifecycleColumn(),
+  EntityTable.columns.createMetadataDescriptionColumn(),
+];
+
 export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
@@ -72,7 +80,7 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
-      columns={EntityTable.componentEntityColumns}
+      columns={columns}
       entities={entities as ComponentEntity[]}
     />
   );

@@ -20,6 +20,7 @@ import {
   InfoCard,
   Link,
   Progress,
+  TableColumn,
   WarningPanel,
 } from '@backstage/core';
 import {
@@ -28,11 +29,19 @@ import {
   useRelatedEntities,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { apiEntityColumns } from './presets';
+import { createSpecApiTypeColumn } from './presets';
 
 type Props = {
   variant?: 'gridItem';
 };
+
+const columns: TableColumn<ApiEntity>[] = [
+  EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
+  EntityTable.columns.createOwnerColumn(),
+  EntityTable.columns.createSpecLifecycleColumn(),
+  createSpecApiTypeColumn(),
+  EntityTable.columns.createMetadataDescriptionColumn(),
+];
 
 export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
@@ -73,7 +82,7 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
-      columns={apiEntityColumns}
+      columns={columns}
       entities={entities as ApiEntity[]}
     />
   );

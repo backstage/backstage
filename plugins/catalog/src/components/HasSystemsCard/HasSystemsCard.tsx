@@ -33,6 +33,12 @@ type Props = {
   variant?: 'gridItem';
 };
 
+const columns = [
+  EntityTable.columns.createEntityRefColumn({ defaultKind: 'system' }),
+  EntityTable.columns.createOwnerColumn(),
+  EntityTable.columns.createMetadataDescriptionColumn(),
+];
+
 export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
@@ -71,7 +77,7 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
           </Link>
         </div>
       }
-      columns={EntityTable.systemEntityColumns}
+      columns={columns}
       entities={entities as SystemEntity[]}
     />
   );
