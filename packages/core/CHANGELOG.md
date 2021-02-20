@@ -1,5 +1,59 @@
 # @backstage/core
 
+## 0.6.2
+
+### Patch Changes
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 07e226872: Export Select component
+- f62e7abe5: Make sure that SidebarItems are also active when on sub route.
+- 96f378d10: Add support for custom empty state of `Table` components.
+
+  You can now optionally pass `emptyContent` to `Table` that is displayed
+  if the table has now rows.
+
+- 688b73110: Add Breadcrumbs component
+- Updated dependencies [f10950bd2]
+- Updated dependencies [fd3f2a8c0]
+  - @backstage/core-api@0.2.10
+
+## 0.6.1
+
+### Patch Changes
+
+- b51ee6ece: Fixed type inference of `createRouteRef`.
+
+## 0.6.0
+
+### Minor Changes
+
+- 21e624ba9: Closes #3556
+  The scroll bar of collapsed sidebar is now hidden without full screen.
+
+  ![image](https://user-images.githubusercontent.com/46953622/105390193-0bfd0080-5c19-11eb-8e86-2161bbe6e8d9.png)
+
+### Patch Changes
+
+- 12ece98cd: Add className to the SidebarItem
+- d82246867: Update `WarningPanel` component to use accordion-style expansion
+- 5fa3bdb55: Add `href` in addition to `onClick` to `ItemCard`. Ensure that the height of a
+  `ItemCard` with and without tags is equal.
+- da9f53c60: Add a `prop` union for `SignInPage` that allows it to be used for just a single provider, with inline errors, and optionally with automatic sign-in.
+- 32c95605f: Fix check that determines whether popup was closed or the messaging was misconfigured.
+- 54c7d02f7: Introduce `TabbedLayout` for creating tabs that are routed.
+
+  ```typescript
+  <TabbedLayout>
+    <TabbedLayout.Route path="/example" title="Example tab">
+      <div>This is rendered under /example/anything-here route</div>
+    </TabbedLayout.Route>
+  </TabbedLayout>
+  ```
+
+- Updated dependencies [c810082ae]
+  - @backstage/theme@0.2.3
+
 ## 0.5.0
 
 ### Minor Changes

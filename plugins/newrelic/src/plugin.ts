@@ -19,6 +19,7 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import { NewRelicClient, newRelicApiRef } from './api';
 import NewRelicComponent from './components/NewRelicComponent';
@@ -28,7 +29,7 @@ export const rootRouteRef = createRouteRef({
   title: 'newrelic',
 });
 
-export const plugin = createPlugin({
+export const newRelicPlugin = createPlugin({
   id: 'newrelic',
   apis: [
     createApiFactory({
@@ -40,4 +41,15 @@ export const plugin = createPlugin({
   register({ router }) {
     router.addRoute(rootRouteRef, NewRelicComponent);
   },
+  routes: {
+    root: rootRouteRef,
+  },
 });
+
+export const NewRelicPage = newRelicPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/NewRelicComponent').then(m => m.default),
+    mountPoint: rootRouteRef,
+  }),
+);

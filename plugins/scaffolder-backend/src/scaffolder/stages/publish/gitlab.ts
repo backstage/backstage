@@ -22,18 +22,31 @@ import parseGitUrl from 'git-url-parse';
 import path from 'path';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 
+export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
+
 export class GitlabPublisher implements PublisherBase {
-  static async fromConfig(config: GitLabIntegrationConfig) {
+  static async fromConfig(
+    config: GitLabIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
     if (!config.token) {
       return undefined;
     }
 
     const client = new Gitlab({ host: config.baseUrl, token: config.token });
-    return new GitlabPublisher({ token: config.token, client });
+    return new GitlabPublisher({
+      token: config.token,
+      client,
+      repoVisibility,
+    });
   }
 
   constructor(
-    private readonly config: { token: string; client: GitlabClient },
+    private readonly config: {
+      token: string;
+      client: GitlabClient;
+      repoVisibility: RepoVisibilityOptions;
+    },
   ) {}
 
   async publish({
@@ -85,6 +98,7 @@ export class GitlabPublisher implements PublisherBase {
     const project = (await this.config.client.Projects.create({
       namespace_id: targetNamespace,
       name: name,
+      visibility: this.config.repoVisibility,
     })) as { http_url_to_repo: string };
 
     return project?.http_url_to_repo;

@@ -1,5 +1,52 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.3.9
+
+### Patch Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- 64b9efac2: Migrate to new composability API, exporting the plugin instance as `kubernetesPlugin` and entity content as `EntityKubernetesContent`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
 ## 0.3.7
 
 ### Patch Changes

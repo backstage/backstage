@@ -32,11 +32,19 @@ export async function getBitbucketDefaultBranch(
 
   const isHosted = resource === 'bitbucket.org';
   // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp184
-  const branchUrl = isHosted
+  let branchUrl = isHosted
     ? `${config.apiBaseUrl}/repositories/${project}/${repoName}`
     : `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/default-branch`;
 
-  const response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+  let response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+
+  if (response.status === 404 && !isHosted) {
+    // First try the new format, and then if it gets specifically a 404 it should try the old format
+    // (to support old  Atlassian Bitbucket v5.11.1 format )
+    branchUrl = `${config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches/default`;
+    response = await fetch(branchUrl, getBitbucketRequestOptions(config));
+  }
+
   if (!response.ok) {
     const message = `Failed to retrieve default branch from ${branchUrl}, ${response.status} ${response.statusText}`;
     throw new Error(message);

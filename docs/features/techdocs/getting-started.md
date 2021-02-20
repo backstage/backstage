@@ -150,38 +150,24 @@ app. Now let us tweak some configurations to suit your needs.
 **See [TechDocs Configuration Options](configuration.md) for complete
 configuration reference.**
 
-### Setting TechDocs URLs
-
-```yaml
-techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
-```
-
-`requestUrl` is used by TechDocs frontend plugin to discover `techdocs-backend`
-endpoints, and the `storageUrl` is another endpoint in `techdocs-backend` which
-acts as a middleware between TechDocs and the storage (where the static
-generated docs site are stored). These default values should mostly work for
-you. These options will soon be optional to set.
-
 ### Should TechDocs Backend generate docs?
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
   builder: 'local'
 ```
 
-Set `techdocs.builder` to `'local'` if you want your TechDocs Backend to be
-responsible for generating documentation sites. If set to `'external'`,
-Backstage will assume that the sites are being generated on each entity's CI/CD
-pipeline, and are being stored in a storage somewhere.
+Note that we recommend generating docs on CI/CD instead. Read more in the
+"Basic" and "Recommended" sections of the
+[TechDocs Architecture](architecture.md). But if you want to get started quickly
+set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
+generating documentation sites. If set to `'external'`, Backstage will assume
+that the sites are being generated on each entity's CI/CD pipeline, and are
+being stored in a storage somewhere.
 
 When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
 read-only experience where it serves static files from a storage containing all
-the generated documentation. Read more in the "Basic" and "Recommended" sections
-of the [TechDocs Architecture](architecture.md).
+the generated documentation.
 
 ### Choosing storage (publisher)
 
@@ -196,8 +182,6 @@ out Backstage for the first time. At a later time, review
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
   builder: 'local'
   publisher:
     type: 'local'
@@ -219,6 +203,9 @@ no config is provided.
 
 ```yaml
 techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
   generators:
     techdocs: local
 ```

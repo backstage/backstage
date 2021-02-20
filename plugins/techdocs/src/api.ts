@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsMetadata } from './types';
 
@@ -30,7 +31,11 @@ export const techdocsApiRef = createApiRef<TechDocsApi>({
 
 export interface TechDocsStorage {
   getEntityDocs(entityId: EntityName, path: string): Promise<string>;
-  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string;
+  getBaseUrl(
+    oldBaseUrl: string,
+    entityId: EntityName,
+    path: string,
+  ): Promise<string>;
 }
 
 export interface TechDocs {
@@ -44,10 +49,25 @@ export interface TechDocs {
  * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
  */
 export class TechDocsApi implements TechDocs {
-  public apiOrigin: string;
+  public configApi: Config;
+  public discoveryApi: DiscoveryApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
-    this.apiOrigin = apiOrigin;
+  constructor({
+    configApi,
+    discoveryApi,
+  }: {
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
+  }) {
+    this.configApi = configApi;
+    this.discoveryApi = discoveryApi;
+  }
+
+  async getApiOrigin() {
+    return (
+      this.configApi.getOptionalString('techdocs.requestUrl') ??
+      (await this.discoveryApi.getBaseUrl('techdocs'))
+    );
   }
 
   /**
@@ -62,7 +82,8 @@ export class TechDocsApi implements TechDocs {
   async getTechDocsMetadata(entityId: EntityName) {
     const { kind, namespace, name } = entityId;
 
-    const requestUrl = `${this.apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
+    const apiOrigin = await this.getApiOrigin();
+    const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
 
     const request = await fetch(`${requestUrl}`);
     const res = await request.json();
@@ -81,7 +102,8 @@ export class TechDocsApi implements TechDocs {
   async getEntityMetadata(entityId: EntityName) {
     const { kind, namespace, name } = entityId;
 
-    const requestUrl = `${this.apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
+    const apiOrigin = await this.getApiOrigin();
+    const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
 
     const request = await fetch(`${requestUrl}`);
     const res = await request.json();
@@ -96,10 +118,25 @@ export class TechDocsApi implements TechDocs {
  * @property {string} apiOrigin Set to techdocs.requestUrl as the URL for techdocs-backend API
  */
 export class TechDocsStorageApi implements TechDocsStorage {
-  public apiOrigin: string;
+  public configApi: Config;
+  public discoveryApi: DiscoveryApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
-    this.apiOrigin = apiOrigin;
+  constructor({
+    configApi,
+    discoveryApi,
+  }: {
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
+  }) {
+    this.configApi = configApi;
+    this.discoveryApi = discoveryApi;
+  }
+
+  async getApiOrigin() {
+    return (
+      this.configApi.getOptionalString('techdocs.requestUrl') ??
+      (await this.discoveryApi.getBaseUrl('techdocs'))
+    );
   }
 
   /**
@@ -113,31 +150,47 @@ export class TechDocsStorageApi implements TechDocsStorage {
   async getEntityDocs(entityId: EntityName, path: string) {
     const { kind, namespace, name } = entityId;
 
-    const url = `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
     );
 
-    if (request.status === 404) {
-      let errorMessage = 'Page not found. ';
-      // path is empty for the home page of an entity's docs site
-      if (!path) {
-        errorMessage +=
-          'This could be because there is no index.md file in the root of the docs directory of this repository.';
-      }
-      throw new Error(errorMessage);
+    let errorMessage = '';
+    switch (request.status) {
+      case 404:
+        errorMessage = 'Page not found. ';
+        // path is empty for the home page of an entity's docs site
+        if (!path) {
+          errorMessage +=
+            'This could be because there is no index.md file in the root of the docs directory of this repository.';
+        }
+        throw new Error(errorMessage);
+      case 500:
+        errorMessage =
+          'Could not generate documentation or an error in the TechDocs backend. ';
+        throw new Error(errorMessage);
+      default:
+        // Do nothing
+        break;
     }
 
     return request.text();
   }
 
-  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
+  async getBaseUrl(
+    oldBaseUrl: string,
+    entityId: EntityName,
+    path: string,
+  ): Promise<string> {
     const { kind, namespace, name } = entityId;
+
+    const apiOrigin = await this.getApiOrigin();
 
     return new URL(
       oldBaseUrl,
-      `${this.apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
+      `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
     ).toString();
   }
 }

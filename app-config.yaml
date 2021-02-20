@@ -73,9 +73,10 @@ organization:
   name: My Company
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
+# Note: After experimenting with basic setup, use CI/CD to generate docs
+# and an external cloud storage when deploying TechDocs for production use-case.
+# https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
-  requestUrl: http://localhost:7000/api/techdocs
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
   builder: 'local' # Alternatives - 'external'
   generators:
     techdocs: 'docker' # Alternatives - 'local'
@@ -166,7 +167,8 @@ catalog:
       #   - target: ldaps://ds.example.net
       #     bind:
       #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret: { $secret: { env: LDAP_SECRET } }
+      #       secret:
+      #         $env: LDAP_SECRET
       #     users:
       #       dn: ou=people,ou=example,dc=example,dc=net
       #       options:
@@ -243,6 +245,7 @@ scaffolder:
       baseUrl: https://gitlab.com
       token:
         $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
@@ -255,6 +258,7 @@ scaffolder:
         $env: BITBUCKET_USERNAME
       token:
         $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
 
 auth:
   environment: development
@@ -305,6 +309,10 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+        ###
+        # provide a list of scopes as needed for your OAuth2 Server:
+        #
+        # scope: saml-login-selector openid profile email
     oidc:
       development:
         metadataUrl:

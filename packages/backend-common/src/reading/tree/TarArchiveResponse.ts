@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-import tar, { Parse, ParseStream, ReadEntry } from 'tar';
-import path from 'path';
-import fs from 'fs-extra';
-import { Readable, pipeline as pipelineCb } from 'stream';
-import { promisify } from 'util';
 import concatStream from 'concat-stream';
+import fs from 'fs-extra';
+import platformPath from 'path';
+import { pipeline as pipelineCb, Readable } from 'stream';
+import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import { promisify } from 'util';
 import {
   ReadTreeResponse,
-  ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
 } from '../types';
+import { stripFirstDirectoryFromPath } from './util';
 
 // Tar types for `Parse` is not a proper constructor, but it should be
 const TarParseStream = (Parse as unknown) as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
-// Matches a directory name + one `/` at the start of any string,
-// containing any character except `/` one or more times, and ending with a `/`
-// e.g. Will match `dirA/` in `dirA/dirB/file.ext`
-const directoryNameRegex = /^[^\/]+\//;
 
 /**
  * Wraps a tar archive stream into a tree response reader.
@@ -84,7 +81,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
       // File path relative to the root extracted directory. Will remove the
       // top level dir name from the path since its name is hard to predetermine.
-      const relativePath = entry.path.replace(directoryNameRegex, '');
+      const relativePath = stripFirstDirectoryFromPath(entry.path);
 
       if (this.subPath) {
         if (!relativePath.startsWith(this.subPath)) {
@@ -147,7 +144,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     // Equivalent of tar --strip-components=N
     // When no subPath is given, remove just 1 top level directory
@@ -161,7 +158,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
         filter: path => {
           // File path relative to the root extracted directory. Will remove the
           // top level dir name from the path since its name is hard to predetermine.
-          const relativePath = path.replace(directoryNameRegex, '');
+          const relativePath = stripFirstDirectoryFromPath(path);
           if (this.subPath && !relativePath.startsWith(this.subPath)) {
             return false;
           }

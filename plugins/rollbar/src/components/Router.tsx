@@ -14,29 +14,36 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Routes, Route } from 'react-router';
 import { Entity } from '@backstage/catalog-model';
 import { MissingAnnotationEmptyState } from '@backstage/core';
-import { catalogRouteRef } from '../routes';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { Route, Routes } from 'react-router';
 import { ROLLBAR_ANNOTATION } from '../constants';
+import { rootRouteRef } from '../plugin';
 import { EntityPageRollbar } from './EntityPageRollbar/EntityPageRollbar';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ROLLBAR_ANNOTATION]);
 
 type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
 };
 
-export const Router = ({ entity }: Props) =>
-  !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={ROLLBAR_ANNOTATION} />
-  ) : (
+export const Router = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isPluginApplicableToEntity(entity)) {
+    <MissingAnnotationEmptyState annotation={ROLLBAR_ANNOTATION} />;
+  }
+
+  return (
     <Routes>
       <Route
-        path={`/${catalogRouteRef.path}`}
+        path={`/${rootRouteRef.path}`}
         element={<EntityPageRollbar entity={entity} />}
       />
     </Routes>
   );
+};

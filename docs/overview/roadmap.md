@@ -99,13 +99,15 @@ Are you missing a plugin for your favorite tool? Please
 [suggest a new one](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
 Chances are that someone will jump in and help build it.
 
-### Community Initiatives 🧑‍🤝‍🧑 (Coming soon)
+### Community Initiatives 🧑‍🤝‍🧑
 
-- **Backstage Monthly Meetup** - A space for the community to come together to
-  share and learn about the latest happenings in Backstage.
+- [**Backstage Community Sessions**](https://github.com/backstage/community#meetups) -
+  A monthly meetup for the community to come together to share and learn about
+  the latest happenings in Backstage.
 
-- **Backstage Hackathons** - Open to everyone in our Backstage community, a
-  celebration of you, the project and building awesome things together
+- **Backstage Hackathons** - (Coming soon) Open to everyone in our Backstage
+  community, a celebration of you, the project and building awesome things
+  together
 
 ### Completed milestones ✅
 

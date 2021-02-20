@@ -36,9 +36,9 @@ export const imageChips = (pod: V1Pod): ReactNode => {
 
 export const containersReady = (pod: V1Pod): string => {
   const containerStatuses = pod.status?.containerStatuses ?? [];
-  const containersReady = containerStatuses.filter(cs => cs.ready).length;
+  const containersReadyItem = containerStatuses.filter(cs => cs.ready).length;
 
-  return `${containersReady}/${containerStatuses.length}`;
+  return `${containersReadyItem}/${containerStatuses.length}`;
 };
 
 export const totalRestarts = (pod: V1Pod): number => {
@@ -47,8 +47,8 @@ export const totalRestarts = (pod: V1Pod): number => {
 };
 
 export const containerStatuses = (pod: V1Pod): ReactNode => {
-  const containerStatuses = pod.status?.containerStatuses ?? [];
-  const errors = containerStatuses.reduce((accum, next) => {
+  const containerStatusesItem = pod.status?.containerStatuses ?? [];
+  const errors = containerStatusesItem.reduce((accum, next) => {
     if (next.state === undefined) {
       return accum;
     }

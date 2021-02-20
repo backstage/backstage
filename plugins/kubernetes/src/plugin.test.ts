@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { kubernetesPlugin } from './plugin';
 
 describe('kubernetes', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(kubernetesPlugin).toBeDefined();
   });
 });

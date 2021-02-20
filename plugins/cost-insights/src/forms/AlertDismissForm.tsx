@@ -66,6 +66,9 @@ export const AlertDismissForm = forwardRef<
   };
 
   const onReasonChange = (_: ChangeEvent<HTMLInputElement>, value: string) => {
+    if (other) {
+      setOther(null);
+    }
     setReason(value as AlertDismissReason);
   };
 

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export { ScaffolderApi, scaffolderApiRef } from './api';
-export { rootRoute, templateRoute } from './routes';
+export {
+  scaffolderPlugin,
+  scaffolderPlugin as plugin,
+  ScaffolderPage,
+} from './plugin';
+export type { ScaffolderApi } from './api';
+export { ScaffolderClient, scaffolderApiRef } from './api';

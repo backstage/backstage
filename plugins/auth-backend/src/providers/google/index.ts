@@ -15,3 +15,4 @@
  */
 
 export { createGoogleProvider } from './provider';
+export type { GoogleProviderOptions } from './provider';

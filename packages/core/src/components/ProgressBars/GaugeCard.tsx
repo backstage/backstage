@@ -16,14 +16,14 @@
 
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import { InfoCard } from '../../layout/InfoCard';
+import { InfoCard, InfoCardVariants } from '../../layout/InfoCard';
 import { BottomLinkProps } from '../../layout/BottomLink';
 import { Gauge } from './Gauge';
 
 type Props = {
   title: string;
   subheader?: string;
-  variant?: string;
+  variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
   deepLink?: BottomLinkProps;

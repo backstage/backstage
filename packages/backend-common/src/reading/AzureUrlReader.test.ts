@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import * as os from 'os';
+import { ConfigReader } from '@backstage/config';
+import {
+  AzureIntegration,
+  readAzureIntegrationConfig,
+} from '@backstage/integration';
+import { msw } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import path from 'path';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ConfigReader } from '@backstage/config';
+import * as os from 'os';
+import path from 'path';
+import { NotModifiedError } from '../errors';
 import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
-import { msw } from '@backstage/test-utils';
 import { ReadTreeResponseFactory } from './tree';
-import { NotModifiedError } from '../errors';
 
 const logger = getVoidLogger();
 
@@ -36,6 +40,16 @@ const treeResponseFactory = ReadTreeResponseFactory.create({
 const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
 
 describe('AzureUrlReader', () => {
+  beforeEach(() => {
+    mockFs({
+      [tmpDir]: mockFs.directory(),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   const worker = setupServer();
   msw.setupDefaultHandlers(worker);
 
@@ -143,22 +157,18 @@ describe('AzureUrlReader', () => {
   });
 
   describe('readTree', () => {
-    beforeEach(() => {
-      mockFs({
-        [tmpDir]: mockFs.directory(),
-      });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
-    });
-
     const repoBuffer = fs.readFileSync(
       path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
     );
 
     const processor = new AzureUrlReader(
-      { host: 'dev.azure.com' },
+      new AzureIntegration(
+        readAzureIntegrationConfig(
+          new ConfigReader({
+            host: 'dev.azure.com',
+          }),
+        ),
+      ),
       { treeResponseFactory },
     );
 
@@ -255,6 +265,81 @@ describe('AzureUrlReader', () => {
 
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
+    });
+  });
+
+  describe('search', () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve('src', 'reading', '__fixtures__', 'mock-main.zip'),
+    );
+
+    const processor = new AzureUrlReader(
+      new AzureIntegration(
+        readAzureIntegrationConfig(
+          new ConfigReader({
+            host: 'dev.azure.com',
+          }),
+        ),
+      ),
+      { treeResponseFactory },
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/items',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.body(repoBuffer),
+            ),
+        ),
+        rest.get(
+          // https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get%20commits?view=azure-devops-rest-6.0#on-a-branch
+          'https://dev.azure.com/org-name/project-name/_apis/git/repositories/repo-name/commits',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                count: 2,
+                value: [
+                  {
+                    commitId: '123abc2',
+                    comment: 'second commit',
+                  },
+                  {
+                    commitId: '123abc1',
+                    comment: 'first commit',
+                  },
+                ],
+              }),
+            ),
+        ),
+      );
+    });
+
+    it('works for the naive case', async () => {
+      const result = await processor.search(
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=%2F**%2Findex.*&version=GBmaster',
+      );
+      expect(result.etag).toBe('123abc2');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://dev.azure.com/org-name/project-name/_git/repo-name?path=%2Fdocs%2Findex.md&version=GBmaster',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    });
+
+    it('throws NotModifiedError when same etag', async () => {
+      await expect(
+        processor.search(
+          'https://dev.azure.com/org-name/project-name/_git/repo-name?path=**/index.*&version=GBmaster',
+          { etag: '123abc2' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
     });
   });
 });

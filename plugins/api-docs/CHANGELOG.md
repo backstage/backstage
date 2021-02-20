@@ -1,5 +1,73 @@
 # @backstage/plugin-api-docs
 
+## 0.4.6
+
+### Patch Changes
+
+- 0af242b6d: Introduce new cards to `@backstage/plugin-catalog` that can be added to entity pages:
+
+  - `EntityHasSystemsCard` to display systems of a domain.
+  - `EntityHasComponentsCard` to display components of a system.
+  - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
+  - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
+
+  `@backstage/plugin-catalog-react` now provides an `EntityTable` to build own cards for entities.
+  The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
+  `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.4.5
+
+### Patch Changes
+
+- f5e564cd6: Improve display of error messages
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.4.4
+
+### Patch Changes
+
+- 7fc89bae2: Display owner and system as entity page links in the tables of the `api-docs`
+  plugin.
+
+  Move `isOwnerOf` and `getEntityRelations` from `@backstage/plugin-catalog` to
+  `@backstage/plugin-catalog-react` and export it from there to use it by other
+  plugins.
+
+- bc5082a00: Migrate to new composability API, exporting the plugin as `apiDocsPlugin`, index page as `ApiExplorerPage`, and entity page cards as `EntityApiDefinitionCard`, `EntityConsumedApisCard`, `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
 ## 0.4.3
 
 ### Patch Changes

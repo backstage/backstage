@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
-import os from 'os';
-import { resolve as resolvePath } from 'path';
-import Stream, { PassThrough } from 'stream';
+import { getVoidLogger } from '@backstage/backend-common';
 import Docker from 'dockerode';
+import fs from 'fs-extra';
 import mockFs from 'mock-fs';
-import * as winston from 'winston';
-import {
-  runDockerContainer,
-  getGeneratorKey,
-  isValidRepoUrlForMkdocs,
-  getRepoUrlFromLocationAnnotation,
-  patchMkdocsYmlPreBuild,
-} from './helpers';
-import { RemoteProtocol } from '../prepare/types';
+import os from 'os';
+import path, { resolve as resolvePath } from 'path';
+import Stream, { PassThrough } from 'stream';
 import { ParsedLocationAnnotation } from '../../helpers';
+import { RemoteProtocol } from '../prepare/types';
+import {
+  addBuildTimestampMetadata,
+  getGeneratorKey,
+  getRepoUrlFromLocationAnnotation,
+  isValidRepoUrlForMkdocs,
+  patchMkdocsYmlPreBuild,
+  runDockerContainer,
+  storeEtagMetadata,
+  UserOptions,
+} from './helpers';
 
 const mockEntity = {
   apiVersion: 'version',
@@ -46,7 +49,8 @@ const mkdocsYml = fs.readFileSync(
 const mkdocsYmlWithRepoUrl = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_repo_url.yml'),
 );
-const mockLogger = winston.createLogger();
+const mockLogger = getVoidLogger();
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 describe('helpers', () => {
   describe('getGeneratorKey', () => {
@@ -111,7 +115,7 @@ describe('helpers', () => {
         imageName,
         args,
         expect.any(Stream),
-        {
+        expect.objectContaining({
           Volumes: {
             '/content': {},
             '/result': {},
@@ -120,7 +124,7 @@ describe('helpers', () => {
           HostConfig: {
             Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
           },
-        },
+        }),
       );
     });
 
@@ -134,6 +138,30 @@ describe('helpers', () => {
       });
 
       expect(mockDocker.ping).toHaveBeenCalled();
+    });
+
+    it('should pass through the user and group id from the host machine and set the home dir', async () => {
+      await runDockerContainer({
+        imageName,
+        args,
+        docsDir,
+        outputDir,
+        dockerClient: mockDocker,
+      });
+
+      const userOptions: UserOptions = {};
+      if (process.getuid && process.getgid) {
+        userOptions.User = `${process.getuid()}:${process.getgid()}`;
+      }
+
+      expect(mockDocker.run).toHaveBeenCalledWith(
+        imageName,
+        args,
+        expect.any(Stream),
+        expect.objectContaining({
+          ...userOptions,
+        }),
+      );
     });
 
     describe('where docker is unavailable', () => {
@@ -327,6 +355,82 @@ describe('helpers', () => {
       expect(updatedMkdocsYml.toString()).not.toContain(
         'repo_url: https://github.com/neworg/newrepo',
       );
+    });
+  });
+
+  describe('addBuildTimestampMetadata', () => {
+    beforeEach(() => {
+      mockFs.restore();
+      mockFs({
+        [rootDir]: {
+          'invalid_techdocs_metadata.json': 'dsds',
+          'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should create the file if it does not exist', async () => {
+      const filePath = path.join(rootDir, 'wrong_techdocs_metadata.json');
+      await addBuildTimestampMetadata(filePath, mockLogger);
+
+      // Check if the file exists
+      await expect(
+        fs.access(filePath, fs.constants.F_OK),
+      ).resolves.not.toThrowError();
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
+
+      await expect(
+        addBuildTimestampMetadata(filePath, mockLogger),
+      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+    });
+
+    it('should add build timestamp to the metadata json', async () => {
+      const filePath = path.join(rootDir, 'techdocs_metadata.json');
+
+      await addBuildTimestampMetadata(filePath, mockLogger);
+
+      const json = await fs.readJson(filePath);
+      expect(json.build_timestamp).toBeLessThanOrEqual(Date.now());
+    });
+  });
+
+  describe('storeEtagMetadata', () => {
+    beforeEach(() => {
+      mockFs.restore();
+      mockFs({
+        [rootDir]: {
+          'invalid_techdocs_metadata.json': 'dsds',
+          'techdocs_metadata.json': '{"site_name": "Tech Docs"}',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should throw error when the JSON is invalid', async () => {
+      const filePath = path.join(rootDir, 'invalid_techdocs_metadata.json');
+
+      await expect(
+        storeEtagMetadata(filePath, 'etag123abc'),
+      ).rejects.toThrowError('Unexpected token d in JSON at position 0');
+    });
+
+    it('should add etag to the metadata json', async () => {
+      const filePath = path.join(rootDir, 'techdocs_metadata.json');
+
+      await storeEtagMetadata(filePath, 'etag123abc');
+
+      const json = await fs.readJson(filePath);
+      expect(json.etag).toBe('etag123abc');
     });
   });
 });

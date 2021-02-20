@@ -1,5 +1,60 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.6.1
+
+### Patch Changes
+
+- b0a41c707: Add etag of the prepared file tree to techdocs_metadata.json in the storage
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+- Updated dependencies [26e143e60]
+- Updated dependencies [c6655413d]
+- Updated dependencies [44414239f]
+- Updated dependencies [b0a41c707]
+  - @backstage/backend-common@0.5.4
+  - @backstage/techdocs-common@0.4.1
+
+## 0.6.0
+
+### Minor Changes
+
+- 08142b256: URL Preparer will now use proper etag based caching introduced in https://github.com/backstage/backstage/pull/4120. Previously, builds used to be cached for 30 minutes.
+
+### Patch Changes
+
+- 08142b256: TechDocs will throw warning in backend logs when legacy git preparer or dir preparer is used to preparer docs. Migrate to URL Preparer by updating `backstage.io/techdocs-ref` annotation to be prefixed with `url:`.
+  Detailed docs are here https://backstage.io/docs/features/techdocs/how-to-guides#how-to-use-url-reader-in-techdocs-prepare-step
+  See benefits and reason for doing so https://github.com/backstage/backstage/issues/4409
+- Updated dependencies [77ad0003a]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [5a5163519]
+- Updated dependencies [08142b256]
+- Updated dependencies [08142b256]
+  - @backstage/techdocs-common@0.4.0
+  - @backstage/backend-common@0.5.3
+
+## 0.5.5
+
+### Patch Changes
+
+- c777df180: 1. Added option to use Azure Blob Storage as a choice to store the static generated files for TechDocs.
+- e44925723: `techdocs.requestUrl` and `techdocs.storageUrl` are now optional configs and the discovery API will be used to get the URL where techdocs plugin is hosted.
+- Updated dependencies [c777df180]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [e44925723]
+- Updated dependencies [025e122c3]
+- Updated dependencies [7881f2117]
+- Updated dependencies [f0320190d]
+- Updated dependencies [11cb5ef94]
+  - @backstage/techdocs-common@0.3.7
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
 ## 0.5.4
 
 ### Patch Changes

@@ -26,27 +26,34 @@ const reader = UrlReaders.default({
       github: [
         {
           host: 'github.com',
-          token: `${86}af${617}d9c3c8bf958b37a${630691452765}bb0b0a`,
+          token:
+            process.env.INTEGRATION_TEST_GITHUB_TOKEN ||
+            `${86}af${617}d9c3c8bf958b37a${630691452765}bb0b0a`,
         },
       ],
       gitlab: [
         {
           host: 'gitlab.com',
-          token: 'tveGtSHDBJM9ZRHZNRfm',
+          token:
+            process.env.INTEGRATION_TEST_GITLAB_TOKEN || 'tveGtSHDBJM9ZRHZNRfm',
         },
       ],
       bitbucket: [
         {
           host: 'bitbucket.org',
           username: 'backstage-verification',
-          appPassword: 'H79MAAhtbZwCafkVTrrQ',
+          appPassword:
+            process.env.INTEGRATION_TEST_BITBUCKET_TOKEN ||
+            'H79MAAhtbZwCafkVTrrQ',
         },
       ],
       azure: [
         {
           host: 'dev.azure.com',
           // lasts until 2022-01-28
-          token: `myvyavvfojh6wvw4ose4bfywqttqx${5}z${5}zs${5}bdxauqaek3yinkazq`,
+          token:
+            process.env.INTEGRATION_TEST_AZURE_TOKEN ||
+            `myvyavvfojh6wvw4ose4bfywqttqx${5}z${5}zs${5}bdxauqaek3yinkazq`,
         },
       ],
     },
@@ -64,11 +71,17 @@ function withRetries(count: number, fn: () => Promise<void>) {
         error = err;
       }
     }
-    throw error;
+    if (!error.message.match(/rate limit|Too Many Requests/)) {
+      throw error;
+    } else {
+      console.warn('Request was rate limited', error);
+    }
   };
 }
 
 describe('UrlReaders', () => {
+  jest.setTimeout(30_000);
+
   it(
     'should read data from azure',
     withRetries(3, async () => {

@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { merge } from 'lodash';
 import * as winston from 'winston';
+import { LoggerOptions } from 'winston';
 import { coloredFormat } from './formats';
 
-let rootLogger: winston.Logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format:
-    process.env.NODE_ENV === 'production'
-      ? winston.format.json()
-      : coloredFormat,
-  defaultMeta: { service: 'backstage' },
-  transports: [
-    new winston.transports.Console({
-      silent:
-        process.env.JEST_WORKER_ID !== undefined && !process.env.LOG_LEVEL,
-    }),
-  ],
-});
+let rootLogger: winston.Logger;
 
 export function getRootLogger(): winston.Logger {
   return rootLogger;
@@ -38,3 +28,34 @@ export function getRootLogger(): winston.Logger {
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;
 }
+
+export function createRootLogger(
+  options: winston.LoggerOptions = {},
+  env = process.env,
+): winston.Logger {
+  const logger = winston.createLogger(
+    merge<LoggerOptions, LoggerOptions>(
+      {
+        level: env.LOG_LEVEL || 'info',
+        format: winston.format.combine(
+          env.NODE_ENV === 'production' ? winston.format.json() : coloredFormat,
+        ),
+        defaultMeta: {
+          service: 'backstage',
+        },
+        transports: [
+          new winston.transports.Console({
+            silent: env.JEST_WORKER_ID !== undefined && !env.LOG_LEVEL,
+          }),
+        ],
+      },
+      options,
+    ),
+  );
+
+  setRootLogger(logger);
+
+  return logger;
+}
+
+rootLogger = createRootLogger();

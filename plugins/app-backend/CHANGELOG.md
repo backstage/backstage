@@ -1,5 +1,27 @@
 # @backstage/plugin-app-backend
 
+## 0.3.7
+
+### Patch Changes
+
+- 727f0deec: Added a new `disableConfigInjection` option, which can be used to disable the configuration injection in environments where it can't be used.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+
+## 0.3.6
+
+### Patch Changes
+
+- e9aab60c7: Failures to load the frontend configuration schema now throws an error that includes more context and instructions for how to fix the issue.
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [062df71db]
+- Updated dependencies [e9aab60c7]
+  - @backstage/backend-common@0.5.2
+  - @backstage/config-loader@0.5.1
+
 ## 0.3.5
 
 ### Patch Changes

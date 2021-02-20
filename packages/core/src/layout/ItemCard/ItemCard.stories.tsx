@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { ItemCard } from '.';
 import { Grid } from '@material-ui/core';
+import React from 'react';
+import { MemoryRouter } from 'react-router';
+import { ItemCard } from '.';
 
 export default {
   title: 'Layout/Item Card',
@@ -29,7 +30,7 @@ export const Default = () => (
         title="Item Card"
         description="This is the description of an Item Card"
         label="Button"
-        type="Pretitle"
+        subtitle="Pretitle"
         onClick={() => {}}
       />
     </Grid>
@@ -38,7 +39,7 @@ export const Default = () => (
         title="Item Card"
         description="This is the description of an Item Card"
         label="Button"
-        type="Pretitle"
+        subtitle="Pretitle"
         onClick={() => {}}
       />
     </Grid>
@@ -63,5 +64,35 @@ export const Tags = () => (
         label="Button"
       />
     </Grid>
+    <Grid item xs={12} md={3}>
+      <ItemCard
+        title="Item Card"
+        description="This is the description of an Item Card without Tags"
+        label="Button"
+      />
+    </Grid>
   </Grid>
+);
+
+export const Link = () => (
+  <MemoryRouter>
+    <Grid container spacing={4}>
+      <Grid item xs={12} md={3}>
+        <ItemCard
+          title="Backstage"
+          description="This is the description of an Item Card with link"
+          label="Read More"
+          href="https://backstage.io"
+        />
+      </Grid>
+      <Grid item xs={12} md={3}>
+        <ItemCard
+          title="Backstage @ GitHub"
+          description="This is the description of an Item Card with link"
+          label="Read More"
+          href="https://github.com/backstage/backstage"
+        />
+      </Grid>
+    </Grid>
+  </MemoryRouter>
 );

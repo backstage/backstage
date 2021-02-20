@@ -23,12 +23,11 @@ import fs from 'fs-extra';
 import { Logger } from 'winston';
 
 /*
-provider    username        password
-GitHub      token           'x-oauth-basic'
-GitHub App  token           'x-access-token'
-BitBucket   'x-token-auth'  token
-GitLab      'oauth2'        token
-From : https://isomorphic-git.org/docs/en/onAuth
+provider    username         password
+GitHub      'x-access-token' token
+BitBucket   'x-token-auth'   token
+GitLab      'oauth2'         token
+From : https://isomorphic-git.org/docs/en/onAuth with fix for GitHub
 
 Azure       'notempty'      token
 */

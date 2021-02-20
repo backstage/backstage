@@ -1,5 +1,58 @@
 # @backstage/integration
 
+## 0.5.0
+
+### Minor Changes
+
+- 491f3a0ec: Make `ScmIntegration.resolveUrl` mandatory.
+
+## 0.4.0
+
+### Minor Changes
+
+- ffffea8e6: Update the `GitLabIntegrationConfig` to require the fields `apiBaseUrl` and `baseUrl`. The `readGitLabIntegrationConfig` function is now more strict and has better error reporting. This change mirrors actual reality in code more properly - the fields are actually necessary for many parts of code to actually function, so they should no longer be optional.
+
+  Some checks that used to happen deep inside code that consumed config, now happen upfront at startup. This means that you may encounter new errors at backend startup, if you had actual mistakes in config but didn't happen to exercise the code paths that actually would break. But for most users, no change will be necessary.
+
+  An example minimal GitLab config block that just adds a token to public GitLab would look similar to this:
+
+  ```yaml
+  integrations:
+    gitlab:
+      - host: gitlab.com
+        token:
+          $env: GITLAB_TOKEN
+  ```
+
+  A full fledged config that points to a locally hosted GitLab could look like this:
+
+  ```yaml
+  integrations:
+    gitlab:
+      - host: gitlab.my-company.com
+        apiBaseUrl: https://gitlab.my-company.com/api/v4
+        baseUrl: https://gitlab.my-company.com
+        token:
+          $env: OUR_GITLAB_TOKEN
+  ```
+
+  In this case, the only optional field is `baseUrl` which is formed from the `host` if needed.
+
+## 0.3.2
+
+### Patch Changes
+
+- c4abcdb60: Fix GitLab handling of paths with spaces
+- 064c513e1: Properly forward errors that occur when looking up GitLab project IDs.
+- 3149bfe63: Add a `resolveUrl` method to integrations, that works like the two-argument URL
+  constructor. The reason for using this is that Azure have their paths in a
+  query parameter, rather than the pathname of the URL.
+
+  The implementation is optional (when not present, the URL constructor is used),
+  so this does not imply a breaking change.
+
+- 2e62aea6f: #4322 Bitbucket own hosted v5.11.1 branchUrl fix and enabled error tracing… #4347
+
 ## 0.3.1
 
 ### Patch Changes

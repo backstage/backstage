@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { DateTime, Duration } from 'luxon';
-import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
-import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import {
+  InfoCard,
+  InfoCardVariants,
+  StructuredMetadataTable,
+} from '@backstage/core';
+import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { useBuilds } from '../useBuilds';
+import { DateTime, Duration } from 'luxon';
+import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
+import { useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
@@ -40,13 +44,13 @@ const WidgetContent = ({
   const classes = useStyles();
   if (loading || !latestRun) return <LinearProgress />;
   const displayDate = DateTime.fromMillis(latestRun.timestamp).toRelative();
-  // TODO This works, but hard codes as minutes. Would prefer something smarter/relative.
-  const durationInMinutes = Math.round(
-    Duration.fromMillis(latestRun.duration).as('minutes'),
-  );
-  const displayDuration = `${durationInMinutes} minute${
-    durationInMinutes > 1 ? 's' : ''
-  }`;
+  const displayDuration =
+    (latestRun.building ? 'Running for ' : '') +
+    DateTime.local()
+      .minus(Duration.fromMillis(latestRun.duration))
+      .toRelative({ locale: 'en' })
+      ?.replace(' ago', '');
+
   return (
     <StructuredMetadataTable
       metadata={{
@@ -76,7 +80,7 @@ export const LatestRunCard = ({
   variant,
 }: {
   branch: string;
-  variant?: string;
+  variant?: InfoCardVariants;
 }) => {
   const { owner, repo } = useProjectSlugFromEntity();
   const [{ builds, loading }] = useBuilds(owner, repo, branch);

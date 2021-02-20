@@ -15,3 +15,4 @@
  */
 
 export { InfoCard } from './InfoCard';
+export type { InfoCardVariants } from './InfoCard';

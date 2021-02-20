@@ -1,5 +1,94 @@
 # @backstage/plugin-catalog-import
 
+## 0.4.1
+
+### Patch Changes
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/integration@0.5.0
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.4.0
+
+### Minor Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- 68dd79d83: The plugin has been refactored and is now based on a configurable state machine of 'analyze', 'prepare', 'review' & 'finish'.
+  Depending on the outcome of the 'analyze' stage, different flows are selected ('single-location', 'multiple-locations', 'no-location').
+  Each flow can define it's own components that guide the user.
+
+  During the refactoring, the `catalogRouteRef` property of the `CatalogImportPage` has been removed, so the `App.tsx` of the backstage apps need to be updated:
+
+  ```diff
+  // packages/app/src/App.tsx
+
+       <Route
+         path="/catalog-import"
+  -      element={<CatalogImportPage catalogRouteRef={catalogRouteRef} />}
+  +      element={<CatalogImportPage />}
+       />
+  ```
+
+### Patch Changes
+
+- 753bb4c40: Flatten the options of the `CatalogImportPage` from the `options` property to the `pullRequest` property.
+
+  ```diff
+  - <CatalogImportPage options={{ pullRequest: { disable: true } }} />
+  + <CatalogImportPage pullRequest={{ disable: true }} />
+  ```
+
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [72b96e880]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/catalog-client@0.3.6
+  - @backstage/integration@0.4.0
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.3.7
+
+### Patch Changes
+
+- ceef4dd89: Export _api_ (Client, API, ref) from the catalog import plugin.
+- b712841d6: Migrated to new composability API, exporting the plugin instance as `catalogImportPlugin`, and the page as `CatalogImportPage`.
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [064c513e1]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/integration@0.3.2
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
 ## 0.3.6
 
 ### Patch Changes

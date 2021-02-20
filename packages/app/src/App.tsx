@@ -15,34 +15,44 @@
  */
 
 import {
-  createApp,
   AlertDisplay,
-  OAuthRequestDialog,
-  SignInPage,
+  createApp,
   createRouteRef,
   FlatRoutes,
+  OAuthRequestDialog,
+  SignInPage,
 } from '@backstage/core';
-import React from 'react';
-import Root from './components/Root';
-import * as plugins from './plugins';
-import { apis } from './apis';
-import { hot } from 'react-hot-loader/root';
-import { providers } from './identityProviders';
-import { Router as CatalogRouter } from '@backstage/plugin-catalog';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import {
+  catalogPlugin,
+  CatalogIndexPage,
+  CatalogEntityPage,
+} from '@backstage/plugin-catalog';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { ExplorePage } from '@backstage/plugin-explore';
 import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
 import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
 import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
-import { Route, Navigate } from 'react-router';
-
+import React from 'react';
+import { hot } from 'react-hot-loader/root';
+import { Navigate, Route } from 'react-router';
+import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
+import Root from './components/Root';
+import { providers } from './identityProviders';
+import * as plugins from './plugins';
+import AlarmIcon from '@material-ui/icons/Alarm';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  icons: {
+    // Custom icon example
+    alert: AlarmIcon,
+  },
   components: {
     SignInPage: props => {
       return (
@@ -54,6 +64,11 @@ const app = createApp({
         />
       );
     },
+  },
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
   },
 });
 
@@ -69,15 +84,17 @@ const catalogRouteRef = createRouteRef({
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
+    <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
-      path="/catalog-import"
-      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
-    <Route
-      path={`${catalogRouteRef.path}`}
-      element={<CatalogRouter EntityPage={EntityPage} />}
-    />
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      <EntityPage />
+    </Route>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<DocsRouter />} />
+    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
       element={<TechRadarRouter width={1500} height={800} />}

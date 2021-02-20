@@ -274,7 +274,7 @@ export {
 };
 ```
 
-**`./\_\_mocks\_\_/MyApi.js`**
+**`./__mocks__/MyApi.js`**
 
 ```js
 export {

@@ -19,10 +19,12 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { EntityRefLinks } from '@backstage/plugin-catalog-react';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import { getEntityRelations } from '../getEntityRelations';
 import { AboutField } from './AboutField';
 
 const useStyles = makeStyles({
@@ -64,7 +66,7 @@ export const AboutContent = ({ entity }: Props) => {
         </Typography>
       </AboutField>
       <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
-        <EntityRefLinks entityRefs={ownedByRelations} />
+        <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
       </AboutField>
       {isSystem && (
         <AboutField

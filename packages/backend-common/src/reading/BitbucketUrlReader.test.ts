@@ -15,11 +15,16 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import {
+  BitbucketIntegration,
+  readBitbucketIntegrationConfig,
+} from '@backstage/integration';
 import { msw } from '@backstage/test-utils';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import os from 'os';
 import path from 'path';
 import { NotModifiedError } from '../errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
@@ -30,19 +35,45 @@ const treeResponseFactory = ReadTreeResponseFactory.create({
 });
 
 const bitbucketProcessor = new BitbucketUrlReader(
-  { host: 'bitbucket.org', apiBaseUrl: 'https://api.bitbucket.org/2.0' },
+  new BitbucketIntegration(
+    readBitbucketIntegrationConfig(
+      new ConfigReader({
+        host: 'bitbucket.org',
+        apiBaseUrl: 'https://api.bitbucket.org/2.0',
+      }),
+    ),
+  ),
   { treeResponseFactory },
 );
 
 const hostedBitbucketProcessor = new BitbucketUrlReader(
-  {
-    host: 'bitbucket.mycompany.net',
-    apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
-  },
+  new BitbucketIntegration(
+    readBitbucketIntegrationConfig(
+      new ConfigReader({
+        host: 'bitbucket.mycompany.net',
+        apiBaseUrl: 'https://api.bitbucket.mycompany.net/rest/api/1.0',
+      }),
+    ),
+  ),
   { treeResponseFactory },
 );
 
+const tmpDir = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+
 describe('BitbucketUrlReader', () => {
+  beforeEach(() => {
+    mockFs({
+      [tmpDir]: mockFs.directory(),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  const worker = setupServer();
+  msw.setupDefaultHandlers(worker);
+
   describe('implementation', () => {
     it('rejects unknown targets', async () => {
       await expect(
@@ -54,19 +85,6 @@ describe('BitbucketUrlReader', () => {
   });
 
   describe('readTree', () => {
-    beforeEach(() => {
-      mockFs({
-        '/tmp': mockFs.directory(),
-      });
-    });
-
-    afterEach(() => {
-      mockFs.restore();
-    });
-
-    const worker = setupServer();
-    msw.setupDefaultHandlers(worker);
-
     const repoBuffer = fs.readFileSync(
       path.resolve(
         'src',
@@ -247,12 +265,153 @@ describe('BitbucketUrlReader', () => {
       expect(() => {
         /* eslint-disable no-new */
         new BitbucketUrlReader(
-          {
-            host: 'bitbucket.mycompany.net',
-          },
+          new BitbucketIntegration(
+            readBitbucketIntegrationConfig(
+              new ConfigReader({
+                host: 'bitbucket.mycompany.net',
+              }),
+            ),
+          ),
           { treeResponseFactory },
         );
       }).toThrowError('must configure an explicit apiBaseUrl');
+    });
+  });
+
+  describe('search hosted', () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'bitbucket-repo-with-commit-hash.zip',
+      ),
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                mainbranch: {
+                  type: 'branch',
+                  name: 'master',
+                },
+              }),
+            ),
+        ),
+        rest.get(
+          'https://bitbucket.org/backstage/mock/get/master.zip',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock-12ab34cd56ef.zip',
+              ),
+              ctx.body(repoBuffer),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/backstage/mock/commits/master',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ hash: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
+      );
+    });
+
+    it('works for the naive case', async () => {
+      const result = await bitbucketProcessor.search(
+        'https://bitbucket.org/backstage/mock/src/master/**/index.*',
+      );
+      expect(result.etag).toBe('12ab34cd56ef');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.org/backstage/mock/src/master/docs/index.md',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    });
+
+    it('throws NotModifiedError when same etag', async () => {
+      await expect(
+        bitbucketProcessor.search(
+          'https://bitbucket.org/backstage/mock/src/master/**/index.*',
+          { etag: '12ab34cd56ef' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('search private', () => {
+    const privateBitbucketRepoBuffer = fs.readFileSync(
+      path.resolve(
+        'src',
+        'reading',
+        '__fixtures__',
+        'bitbucket-server-repo.zip',
+      ),
+    );
+
+    beforeEach(() => {
+      worker.use(
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&prefix=mock&path=docs',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/zip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.zip',
+              ),
+              ctx.body(privateBitbucketRepoBuffer),
+            ),
+        ),
+        rest.get(
+          'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/commits',
+          (_, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.json({
+                values: [{ id: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st' }],
+              }),
+            ),
+        ),
+      );
+    });
+
+    it('works for the naive case', async () => {
+      const result = await hostedBitbucketProcessor.search(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/**/index.*?at=master',
+      );
+      expect(result.etag).toBe('12ab34cd56ef');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/docs/index.md?at=master',
+      );
+      await expect(result.files[0].content()).resolves.toEqual(
+        Buffer.from('# Test\n'),
+      );
+    });
+
+    it('throws NotModifiedError when same etag', async () => {
+      await expect(
+        hostedBitbucketProcessor.search(
+          'https://bitbucket.mycompany.net/projects/backstage/repos/mock/browse/**/index.*?at=master',
+          { etag: '12ab34cd56ef' },
+        ),
+      ).rejects.toThrow(NotModifiedError);
     });
   });
 });

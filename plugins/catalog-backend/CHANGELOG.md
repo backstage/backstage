@@ -1,5 +1,70 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 77ad0003a: Revert AWS SDK version to v2
+- d2441aee3: use child logger, if provided, to log single location refresh
+- fb53eb7cb: Don't respond to a request twice if an entity has not been found.
+- f3fbfb452: add indices on columns referring locations(id)
+- 84364b35c: Added an option to scan GitHub for repositories using a new location type `github-discovery`.
+  Example:
+
+  ```yaml
+  type: 'github-discovery',
+  target:
+     'https://github.com/backstage/techdocs-*/blob/master/catalog.yaml'
+  ```
+
+  You can use wildcards (`*`) as well. This will add `location` entities for each matching repository.
+  Currently though, you must specify the exact path of the `catalog.yaml` file in the repository.
+
+- 82b2c11b6: Refactored route response handling to use more explicit types and throw errors.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 3149bfe63: Make use of the `resolveUrl` facility of the `integration` package.
+
+  Also rename the `LocationRefProcessor` to `LocationEntityProcessor`, to match the file name. This constitutes an interface change since the class is exported, but it is unlikely to be consumed outside of the package since it sits comfortably with the other default processors inside the catalog builder.
+
+### Patch Changes
+
+- 24e47ef1e: Throw `NotAllowedError` when registering locations with entities of disallowed kinds
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
 ## 0.5.5
 
 ### Patch Changes

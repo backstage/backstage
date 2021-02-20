@@ -18,10 +18,12 @@ import { Entity } from '@backstage/catalog-model';
 import {
   EmptyState,
   InfoCard,
+  InfoCardVariants,
   MissingAnnotationEmptyState,
   Progress,
   useApi,
 } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
@@ -69,10 +71,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface DuplicationRating {
+type DuplicationRating = {
   greaterThan: number;
   rating: '1.0' | '2.0' | '3.0' | '4.0' | '5.0';
-}
+};
 
 const defaultDuplicationRatings: DuplicationRating[] = [
   { greaterThan: 0, rating: '1.0' },
@@ -83,14 +85,14 @@ const defaultDuplicationRatings: DuplicationRating[] = [
 ];
 
 export const SonarQubeCard = ({
-  entity,
   variant = 'gridItem',
   duplicationRatings = defaultDuplicationRatings,
 }: {
-  entity: Entity;
-  variant?: string;
+  entity?: Entity;
+  variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {
+  const { entity } = useEntity();
   const sonarQubeApi = useApi(sonarQubeApiRef);
 
   const projectTitle = useProjectKey(entity);

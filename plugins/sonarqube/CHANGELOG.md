@@ -1,5 +1,55 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.12
+
+### Patch Changes
+
+- 3a82293da: Fix bug retrieving current theme
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.1.10
+
+### Patch Changes
+
+- 8dfdec613: Migrate to new composability API, exporting the plugin as `sonarQubePlugin` and card as `EntitySonarQubeCard`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
 ## 0.1.9
 
 ### Patch Changes

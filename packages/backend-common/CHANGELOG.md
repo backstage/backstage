@@ -1,5 +1,64 @@
 # @backstage/backend-common
 
+## 0.5.4
+
+### Patch Changes
+
+- 16fb1d03a: pass registered logger to requestLoggingHandler
+- 491f3a0ec: Implement `UrlReader.search` for the other providers (Azure, Bitbucket, GitLab) as well.
+
+  The `UrlReader` subclasses now are implemented in terms of the respective `Integration` class.
+
+- 434b4e81a: Support globs in `FileReaderProcessor`.
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- Updated dependencies [491f3a0ec]
+  - @backstage/integration@0.5.0
+
+## 0.5.3
+
+### Patch Changes
+
+- ffffea8e6: Minor updates to reflect the changes in `@backstage/integration` that made the fields `apiBaseUrl` and `apiUrl` mandatory.
+- 82b2c11b6: Set explicit content-type in error handler responses.
+- 965e200c6: Slight refactoring in support of a future search implementation in `UrlReader`. Mostly moving code around.
+- 5a5163519: Implement `UrlReader.search` which implements glob matching.
+- Updated dependencies [ffffea8e6]
+  - @backstage/integration@0.4.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 2430ee7c2: Updated the `rootLogger` in `@backstage/backend-common` to support custom logging options. This is useful when you want to make some changes without re-implementing the entire logger and calling `setRootLogger` or `logger.configure`. For example you can add additional `defaultMeta` tags to each log entry. The following changes are included:
+
+  - Added `createRootLogger` which accepts winston `LoggerOptions`. These options allow overriding the default keys.
+
+  Example Usage:
+
+  ```ts
+  // Create the logger
+  const logger = createRootLogger({
+    defaultMeta: { appName: 'backstage', appEnv: 'prod' },
+  });
+
+  // Add a custom logger transport
+  logger.add(new MyCustomTransport());
+
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(), // already set to new logger instance
+  });
+  ```
+
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [062df71db]
+- Updated dependencies [064c513e1]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+  - @backstage/integration@0.3.2
+  - @backstage/config-loader@0.5.1
+
 ## 0.5.1
 
 ### Patch Changes

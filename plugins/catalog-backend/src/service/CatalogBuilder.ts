@@ -26,6 +26,7 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import lodash from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -42,12 +43,13 @@ import {
   CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
+  GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
   LdapOrgReaderProcessor,
+  LocationEntityProcessor,
   LocationReaders,
-  LocationRefProcessor,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
@@ -280,6 +282,7 @@ export class CatalogBuilder {
 
   private buildProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
+    const integrations = ScmIntegrations.fromConfig(config);
 
     this.checkDeprecatedReaderProcessors();
 
@@ -301,12 +304,13 @@ export class CatalogBuilder {
     if (!this.processorsReplace) {
       processors.push(
         new FileReaderProcessor(),
+        GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         new CodeOwnersProcessor({ reader, logger }),
-        new LocationRefProcessor(),
+        new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor(),
       );
     }

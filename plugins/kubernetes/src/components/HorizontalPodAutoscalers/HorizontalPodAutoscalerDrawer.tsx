@@ -32,16 +32,16 @@ export const HorizontalPodAutoscalerDrawer = ({
       kind="HorizontalPodAutoscaler"
       object={hpa}
       expanded={expanded}
-      renderObject={(hpa: V1HorizontalPodAutoscaler) => {
+      renderObject={(hpaObject: V1HorizontalPodAutoscaler) => {
         return {
           targetCPUUtilizationPercentage:
-            hpa.spec?.targetCPUUtilizationPercentage,
+            hpaObject.spec?.targetCPUUtilizationPercentage,
           currentCPUUtilizationPercentage:
-            hpa.status?.currentCPUUtilizationPercentage,
-          minReplicas: hpa.spec?.minReplicas,
-          maxReplicas: hpa.spec?.maxReplicas,
-          currentReplicas: hpa.status?.currentReplicas,
-          desiredReplicas: hpa.status?.desiredReplicas,
+            hpaObject.status?.currentCPUUtilizationPercentage,
+          minReplicas: hpaObject.spec?.minReplicas,
+          maxReplicas: hpaObject.spec?.maxReplicas,
+          currentReplicas: hpaObject.status?.currentReplicas,
+          desiredReplicas: hpaObject.status?.desiredReplicas,
         };
       }}
     >

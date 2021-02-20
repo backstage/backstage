@@ -28,7 +28,7 @@ import { generateBoundRoutes, PrivateAppImpl } from './App';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
-    const external = { myRoute: createExternalRouteRef() };
+    const external = { myRoute: createExternalRouteRef({ id: '1' }) };
     const ref = createRouteRef({ path: '', title: '' });
     const result = generateBoundRoutes(({ bind }) => {
       bind(external, { myRoute: ref });
@@ -38,7 +38,7 @@ describe('generateBoundRoutes', () => {
   });
 
   it('throws on unknown keys', () => {
-    const external = { myRoute: createExternalRouteRef() };
+    const external = { myRoute: createExternalRouteRef({ id: '2' }) };
     const ref = createRouteRef({ path: '', title: '' });
     expect(() =>
       generateBoundRoutes(({ bind }) => {
@@ -51,7 +51,7 @@ describe('generateBoundRoutes', () => {
 describe('Integration Test', () => {
   const plugin1RouteRef = createRouteRef({ path: '/blah1', title: '' });
   const plugin2RouteRef = createRouteRef({ path: '/blah2', title: '' });
-  const externalRouteRef = createExternalRouteRef();
+  const externalRouteRef = createExternalRouteRef({ id: '3' });
 
   const plugin1 = createPlugin({
     id: 'blob',
@@ -77,7 +77,7 @@ describe('Integration Test', () => {
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const routeRefFunction = useRouteRef(externalRouteRef);
-          return <div>Our Route Is: {routeRefFunction({})}</div>;
+          return <div>Our Route Is: {routeRefFunction()}</div>;
         }),
       mountPoint: plugin1RouteRef,
     }),
