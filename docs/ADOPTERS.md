@@ -1,1 +1,0 @@
-../ADOPTERS.md
