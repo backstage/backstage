@@ -19,24 +19,13 @@
  * docusaurus adds proper validation of the sidebar items.
  */
 
-require('@babel/polyfill');
-require('@babel/register')({
-  babelrc: false,
-  only: [`${__dirname}/..`, `${process.cwd()}/core`],
-  plugins: [
-    require('docusaurus/lib/server/translate-plugin.js'),
-    require('@babel/plugin-proposal-class-properties').default,
-    require('@babel/plugin-proposal-object-rest-spread').default,
-  ],
-  presets: [
-    require('@babel/preset-react').default,
-    require('@babel/preset-env').default,
-  ],
-});
-
-const readMetadata = require('docusaurus/lib/server/readMetadata.js');
-readMetadata.generateMetadataDocs();
-const metadata = require('docusaurus/lib/core/metadata.js');
+let metadata;
+try {
+  metadata = require('docusaurus/lib/core/metadata.js');
+} catch (error) {
+  console.log('❌ Run `yarn build` before running `yarn verify:sidebars`');
+  process.exit(1);
+}
 
 const errors = [];
 const ids = Object.keys(metadata);
@@ -53,7 +42,7 @@ for (let id of ids) {
 }
 
 if (errors.length) {
-  for (let error of errors) {
+  for (const error of errors) {
     console.log(`❌ ${error}`);
   }
   process.exit(1);
