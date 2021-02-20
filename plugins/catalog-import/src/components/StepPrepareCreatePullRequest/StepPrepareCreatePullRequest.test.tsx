@@ -286,7 +286,7 @@ spec:
       renderFormFieldsFn.mock.calls[
         renderFormFieldsFn.mock.calls.length - 1
       ][0],
-    ).toMatchObject({ groups: ['Group:my-group'], groupsLoading: false });
+    ).toMatchObject({ groups: ['my-group'], groupsLoading: false });
   });
 
   describe('generateEntities', () => {

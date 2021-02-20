@@ -2,4 +2,5 @@
 '@backstage/plugin-catalog-import': patch
 ---
 
-Omits the entity namespace from a generated entity when it has not be explicitly defined in the analyze-location result.
+This updates the `catalog-import` plugin to omit the default metadata namespace
+field and also use the short form entity reference format for selected group owners.

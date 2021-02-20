@@ -230,7 +230,7 @@ export function defaultGenerateStepper(
                       errorHelperText="required value"
                       textFieldProps={{
                         label: 'Entity Owner',
-                        placeholder: 'Group:default/my-group',
+                        placeholder: 'my-group',
                       }}
                       rules={{ required: true }}
                       required

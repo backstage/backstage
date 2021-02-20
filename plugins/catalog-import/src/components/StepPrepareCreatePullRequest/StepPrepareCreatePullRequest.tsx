@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Entity, serializeEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  formatEntityRefTitle,
+} from '@backstage/plugin-catalog-react';
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
@@ -106,8 +109,9 @@ export const StepPrepareCreatePullRequest = ({
       filter: { kind: 'group' },
     });
 
-    // TODO: defaultKind (=group), defaultNamespace (=same as entity)
-    return groupEntities.items.map(e => serializeEntityRef(e) as string).sort();
+    return groupEntities.items
+      .map(e => formatEntityRefTitle(e, { defaultKind: 'group' }))
+      .sort();
   });
 
   const handleResult = useCallback(
