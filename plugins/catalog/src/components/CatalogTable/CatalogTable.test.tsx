@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  VIEW_URL_ANNOTATION,
+  EDIT_URL_ANNOTATION,
+} from '@backstage/catalog-model';
 import { act, fireEvent } from '@testing-library/react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import * as React from 'react';
@@ -86,7 +90,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { 'backstage.io/edit-url': 'https://other.place' },
+        annotations: { [EDIT_URL_ANNOTATION]: 'https://other.place' },
       },
     };
 
@@ -115,7 +119,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { 'backstage.io/view-url': 'https://other.place' },
+        annotations: { [VIEW_URL_ANNOTATION]: 'https://other.place' },
       },
     };
 

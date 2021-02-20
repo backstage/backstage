@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Entity } from '@backstage/catalog-model';
+import {
+  LocationSpec,
+  Entity,
+  EDIT_URL_ANNOTATION,
+  VIEW_URL_ANNOTATION,
+} from '@backstage/catalog-model';
 import parseGitUrl from 'git-url-parse';
 
 /**
@@ -82,7 +87,7 @@ export const findEditUrl = (
 ): string | undefined => {
   const annotations = metadata.annotations || {};
 
-  const editUrl = annotations['backstage.io/edit-url'];
+  const editUrl = annotations[EDIT_URL_ANNOTATION];
 
   if (editUrl) return editUrl;
 
@@ -95,5 +100,5 @@ export const findViewUrl = (
 ): string | undefined => {
   const annotations = metadata.annotations || {};
 
-  return annotations['backstage.io/view-url'] || location?.target;
+  return annotations[VIEW_URL_ANNOTATION] || location?.target;
 };
