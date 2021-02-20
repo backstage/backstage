@@ -32,13 +32,17 @@ export function findLocationForEntityMeta(
     return undefined;
   }
 
-  const separatorIndex = annotation.indexOf(':');
+  return parseLocation(annotation);
+}
+
+export function parseLocation(reference: string): LocationSpec | undefined {
+  const separatorIndex = reference.indexOf(':');
   if (separatorIndex === -1) {
     return undefined;
   }
 
   return {
-    type: annotation.substring(0, separatorIndex),
-    target: annotation.substring(separatorIndex + 1),
+    type: reference.substring(0, separatorIndex),
+    target: reference.substring(separatorIndex + 1),
   };
 }

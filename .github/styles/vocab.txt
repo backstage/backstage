@@ -166,6 +166,7 @@ interop
 jq
 js
 json
+jsonnet
 jsx
 kubectl
 kubernetes
