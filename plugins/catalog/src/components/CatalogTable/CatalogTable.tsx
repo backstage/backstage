@@ -38,7 +38,6 @@ import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import React from 'react';
-import { findLocationForEntityMeta } from '../../data/utils';
 import { findViewUrl, findEditUrl } from '../actions';
 import {
   favouriteEntityIcon,
@@ -152,8 +151,7 @@ export const CatalogTable = ({
 
   const actions: TableProps<EntityRow>['actions'] = [
     ({ entity }) => {
-      const location = findLocationForEntityMeta(entity.metadata);
-      const url = findViewUrl(entity, location);
+      const url = findViewUrl(entity);
       return {
         icon: () => <OpenInNew fontSize="small" />,
         tooltip: 'View',
@@ -164,8 +162,7 @@ export const CatalogTable = ({
       };
     },
     ({ entity }) => {
-      const location = findLocationForEntityMeta(entity.metadata);
-      const url = findEditUrl(entity, location);
+      const url = findEditUrl(entity);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',

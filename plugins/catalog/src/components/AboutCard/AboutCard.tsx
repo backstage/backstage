@@ -74,7 +74,7 @@ function getSourceLocationForEntity(
 
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
   const location = findLocationForEntityMeta(entity?.metadata);
-  const editUrl = findEditUrl(entity, location);
+  const editUrl = findEditUrl(entity);
   let sourceLocation = getSourceLocationForEntity(entity, location);
 
   if (location) {

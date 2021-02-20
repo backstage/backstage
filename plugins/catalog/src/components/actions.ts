@@ -20,6 +20,7 @@ import {
   EDIT_URL_ANNOTATION,
   VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
+import { findLocationForEntityMeta } from '../data/utils';
 import parseGitUrl from 'git-url-parse';
 
 /**
@@ -81,24 +82,21 @@ export const determineUrlType = (url: string): string => {
   return 'url';
 };
 
-export const findEditUrl = (
-  { metadata }: Entity,
-  location?: LocationSpec,
-): string | undefined => {
+export const findEditUrl = ({ metadata }: Entity): string | undefined => {
   const annotations = metadata.annotations || {};
 
   const editUrl = annotations[EDIT_URL_ANNOTATION];
 
   if (editUrl) return editUrl;
 
+  const location = findLocationForEntityMeta(metadata);
+
   return location && createEditLink(location);
 };
 
-export const findViewUrl = (
-  { metadata }: Entity,
-  location?: LocationSpec,
-): string | undefined => {
+export const findViewUrl = ({ metadata }: Entity): string | undefined => {
   const annotations = metadata.annotations || {};
+  const location = findLocationForEntityMeta(metadata);
 
   return annotations[VIEW_URL_ANNOTATION] || location?.target;
 };
