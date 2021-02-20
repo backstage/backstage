@@ -21,7 +21,10 @@ import { act, render, RenderResult } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
-import { StepPrepareCreatePullRequest } from './StepPrepareCreatePullRequest';
+import {
+  generateEntities,
+  StepPrepareCreatePullRequest,
+} from './StepPrepareCreatePullRequest';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -60,6 +63,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
         kind: 'Component',
         metadata: {
           name: 'my-component',
+          namespace: 'default',
         },
         spec: {
           owner: 'my-owner',
@@ -282,6 +286,46 @@ spec:
       renderFormFieldsFn.mock.calls[
         renderFormFieldsFn.mock.calls.length - 1
       ][0],
-    ).toMatchObject({ groups: ['Group:my-group'], groupsLoading: false });
+    ).toMatchObject({ groups: ['my-group'], groupsLoading: false });
+  });
+
+  describe('generateEntities', () => {
+    it.each([[undefined], [null]])(
+      'should not include blank namespace for %s',
+      namespace => {
+        expect(
+          generateEntities(
+            [{ metadata: { namespace: namespace as any } }],
+            'my-component',
+            'group-1',
+          ),
+        ).toEqual([
+          expect.objectContaining({
+            metadata: expect.not.objectContaining({
+              namespace: 'default',
+            }),
+          }),
+        ]);
+      },
+    );
+
+    it.each([['default'], ['my-namespace']])(
+      'should include explicit namespace %s',
+      namespace => {
+        expect(
+          generateEntities(
+            [{ metadata: { namespace } }],
+            'my-component',
+            'group-1',
+          ),
+        ).toEqual([
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              namespace,
+            }),
+          }),
+        ]);
+      },
+    );
   });
 });
