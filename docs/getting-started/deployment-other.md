@@ -41,4 +41,4 @@ One of the simplest from a management and ops perspective is to leverage ECS Far
 
 However, to use them properly, there are a large number of supporting resources (like VPCs, Security Groups, Load Balancers, Certificate, etc) required. We used [AWS Cloud Development Kit (CDk)](https://aws.amazon.com/cdk/) to simplify and automate the creation of the entire infrastructure stack along with automating the build and deploy of the container. 
 
-This repo: [backstage on aws](https://github.com/rbogle/backstage-on-aws), is a ready to use CDK application for deploying your custom Backstage app onto AWS ECS Fargate and Aurora. 
+Check out this repo: [backstage on aws](https://github.com/rbogle/backstage-on-aws), for a ready to use CDK application for deploying your custom Backstage app onto AWS ECS Fargate and Aurora. 
