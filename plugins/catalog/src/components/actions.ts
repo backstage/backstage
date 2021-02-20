@@ -82,7 +82,7 @@ export const findEditUrl = (
 ): string | undefined => {
   const annotations = metadata.annotations || {};
 
-  const editUrl = annotations['backstage.io/browser-edit-url'];
+  const editUrl = annotations['backstage.io/edit-url'];
 
   if (editUrl) return editUrl;
 
@@ -95,5 +95,5 @@ export const findViewUrl = (
 ): string | undefined => {
   const annotations = metadata.annotations || {};
 
-  return annotations['backstage.io/browser-view-url'] || location?.target;
+  return annotations['backstage.io/view-url'] || location?.target;
 };

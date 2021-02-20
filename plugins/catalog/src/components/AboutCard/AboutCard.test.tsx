@@ -135,7 +135,7 @@ describe('<AboutCard /> custom links', () => {
         annotations: {
           'backstage.io/managed-by-location':
             'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
-          'backstage.io/browser-edit-url': 'https://another.place',
+          'backstage.io/edit-url': 'https://another.place',
           [SOURCE_LOCATION_ANNOTATION]:
             'url:https://another.place/backstage.git',
         },

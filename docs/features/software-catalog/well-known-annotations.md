@@ -70,14 +70,14 @@ The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
 
-### backstage.io/browser-view-url, backstage.io/browser-edit-url
+### backstage.io/view-url, backstage.io/edit-url
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/browser-view-url: https://some.website/catalog-info.yaml
-    backstage.io/browser-edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
+    backstage.io/view-url: https://some.website/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
 ```
 
 These annotations allow customising links from the catalog pages. The view URL

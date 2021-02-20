@@ -86,7 +86,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { 'backstage.io/browser-edit-url': 'https://other.place' },
+        annotations: { 'backstage.io/edit-url': 'https://other.place' },
       },
     };
 
@@ -115,7 +115,7 @@ describe('CatalogTable component', () => {
       kind: 'Component',
       metadata: {
         name: 'component1',
-        annotations: { 'backstage.io/browser-view-url': 'https://other.place' },
+        annotations: { 'backstage.io/view-url': 'https://other.place' },
       },
     };
 
