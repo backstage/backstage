@@ -15,6 +15,7 @@
  */
 
 export { AutocompleteTextField } from './AutocompleteTextField';
+export { CheckboxField } from './CheckboxField';
 export { PreparePullRequestForm } from './PreparePullRequestForm';
 export { PreviewCatalogInfoComponent } from './PreviewCatalogInfoComponent';
 export { PreviewPullRequestComponent } from './PreviewPullRequestComponent';
