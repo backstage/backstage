@@ -32,7 +32,7 @@ type Props<TFieldValues extends Record<string, any>> = Pick<
   render: (
     props: Pick<
       UseFormMethods<TFieldValues>,
-      'errors' | 'register' | 'control' | 'formState' | 'watch'
+      'errors' | 'register' | 'control'
     > & {
       values: UnpackNestedValue<TFieldValues>;
     },
@@ -55,13 +55,13 @@ export const PreparePullRequestForm = <
   onSubmit,
   render,
 }: Props<TFieldValues>) => {
-  const { handleSubmit, control, register, errors, formState, watch } = useForm<
+  const { handleSubmit, watch, control, register, errors } = useForm<
     TFieldValues
   >({ mode: 'onTouched', defaultValues });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {render({ values: watch(), errors, register, control, formState, watch })}
+      {render({ values: watch(), errors, register, control })}
     </form>
   );
 };

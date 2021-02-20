@@ -23,7 +23,7 @@ import {
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UnpackNestedValue, UseFormMethods } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -63,10 +63,8 @@ type Props = {
   defaultBody: string;
 
   renderFormFields: (
-    props: Pick<
-      UseFormMethods<FormData>,
-      'errors' | 'register' | 'control' | 'formState' | 'watch'
-    > & {
+    props: Pick<UseFormMethods<FormData>, 'errors' | 'register' | 'control'> & {
+      values: UnpackNestedValue<FormData>;
       groups: string[];
       groupsLoading: boolean;
     },
@@ -195,14 +193,13 @@ export const StepPrepareCreatePullRequest = ({
             analyzeResult.generatedEntities[0]?.metadata?.name || '',
           useCodeowners: false,
         }}
-        render={({ values, errors, control, register, formState, watch }) => (
+        render={({ values, errors, control, register }) => (
           <>
             {renderFormFields({
+              values,
               errors,
               register,
               control,
-              formState,
-              watch,
               groups: groups ?? [],
               groupsLoading,
             })}

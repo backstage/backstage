@@ -15,14 +15,21 @@
  */
 
 import { ConfigApi } from '@backstage/core';
-import { Box, StepLabel, TextField, Typography } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  FormHelperText,
+  StepLabel,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 import { BackButton } from '../Buttons';
 import { StepFinishImportLocation } from '../StepFinishImportLocation';
 import { StepInitAnalyzeUrl } from '../StepInitAnalyzeUrl';
 import {
   AutocompleteTextField,
-  CheckboxField,
   StepPrepareCreatePullRequest,
 } from '../StepPrepareCreatePullRequest';
 import { StepPrepareSelectLocations } from '../StepPrepareSelectLocations';
@@ -168,99 +175,102 @@ export function defaultGenerateStepper(
                 defaultTitle={title}
                 defaultBody={body}
                 renderFormFields={({
+                  values,
                   control,
                   errors,
-                  watch,
                   groupsLoading,
                   groups,
                   register,
-                }) => {
-                  const watchUseCodeowners = watch('useCodeowners', false);
+                }) => (
+                  <>
+                    <Box marginTop={2}>
+                      <Typography variant="h6">Pull Request Details</Typography>
+                    </Box>
 
-                  return (
-                    <>
-                      <Box marginTop={2}>
-                        <Typography variant="h6">
-                          Pull Request Details
-                        </Typography>
-                      </Box>
+                    <TextField
+                      name="title"
+                      label="Pull Request Title"
+                      placeholder="Add Backstage catalog entity descriptor files"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.title)}
+                      required
+                    />
 
-                      <TextField
-                        name="title"
-                        label="Pull Request Title"
-                        placeholder="Add Backstage catalog entity descriptor files"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.title)}
-                        required
-                      />
+                    <TextField
+                      name="body"
+                      label="Pull Request Body"
+                      placeholder="A describing text with Markdown support"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.body)}
+                      multiline
+                      required
+                    />
 
-                      <TextField
-                        name="body"
-                        label="Pull Request Body"
-                        placeholder="A describing text with Markdown support"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.body)}
-                        multiline
-                        required
-                      />
+                    <Box marginTop={2}>
+                      <Typography variant="h6">Entity Configuration</Typography>
+                    </Box>
 
-                      <Box marginTop={2}>
-                        <Typography variant="h6">
-                          Entity Configuration
-                        </Typography>
-                      </Box>
+                    <TextField
+                      name="componentName"
+                      label="Name of the created component"
+                      placeholder="my-component"
+                      margin="normal"
+                      variant="outlined"
+                      fullWidth
+                      inputRef={register({ required: true })}
+                      error={Boolean(errors.componentName)}
+                      required
+                    />
 
-                      <TextField
-                        name="componentName"
-                        label="Name of the created component"
-                        placeholder="my-component"
-                        margin="normal"
-                        variant="outlined"
-                        fullWidth
-                        inputRef={register({ required: true })}
-                        error={Boolean(errors.componentName)}
-                        required
-                      />
-
-                      {!watchUseCodeowners && (
-                        <AutocompleteTextField
-                          name="owner"
-                          control={control}
-                          errors={errors}
-                          options={groups || []}
-                          loading={groupsLoading}
-                          loadingText="Loading groups…"
-                          helperText="Select an owner from the list or enter a reference to a Group or a User"
-                          errorHelperText="required value"
-                          textFieldProps={{
-                            label: 'Entity Owner',
-                            placeholder: 'my-group',
-                          }}
-                          rules={{ required: true }}
-                          required
-                        />
-                      )}
-
-                      <CheckboxField
-                        name="useCodeowners"
-                        inputRef={register}
-                        label="Use CODEOWNERS File"
-                        helperText="WARNING: This may fail is no CODEOWNERS file is found at the target location."
-                        onChange={(_, value) => {
-                          if (value) {
-                            control.setValue('owner', '');
-                          }
+                    {!values.useCodeowners && (
+                      <AutocompleteTextField
+                        name="owner"
+                        control={control}
+                        errors={errors}
+                        options={groups || []}
+                        loading={groupsLoading}
+                        loadingText="Loading groups…"
+                        helperText="Select an owner from the list or enter a reference to a Group or a User"
+                        errorHelperText="required value"
+                        textFieldProps={{
+                          label: 'Entity Owner',
+                          placeholder: 'my-group',
                         }}
+                        rules={{ required: true }}
+                        required
                       />
-                    </>
-                  );
-                }}
+                    )}
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name="useCodeowners"
+                          inputRef={register}
+                          onChange={(_, value) => {
+                            if (value) {
+                              control.setValue('owner', '');
+                            }
+                          }}
+                        />
+                      }
+                      label={
+                        <>
+                          Use <em>CODEOWNERS</em> file as Entity Owner
+                        </>
+                      }
+                    />
+                    <FormHelperText>
+                      WARNING: This may fail is no CODEOWNERS file is found at
+                      the target location.
+                    </FormHelperText>
+                  </>
+                )}
               />
             ),
           };
