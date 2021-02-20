@@ -82,9 +82,7 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
 
     try {
-      const token =
-        getBearerToken(req.headers.authorization) ||
-        req.cookies['access-token'];
+      const token = getBearerToken(req.headers.authorization);
       const entity = (await (
         await fetch(
           `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
@@ -115,8 +113,7 @@ export async function createRouter({
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
-    const token =
-      getBearerToken(req.headers.authorization) || req.cookies['access-token'];
+    const token = getBearerToken(req.headers.authorization);
     const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -214,5 +211,5 @@ export async function createRouter({
 }
 
 function getBearerToken(header?: string): string | undefined {
-  return header?.match(/(?:Bearer|Basic)\s+(\S+)/i)?.[1];
+  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }

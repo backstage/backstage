@@ -16,7 +16,6 @@
 
 import express from 'express';
 import crypto from 'crypto';
-import { JWT } from 'jose';
 import { URL } from 'url';
 import {
   AuthProviderRouteHandlers,
@@ -128,9 +127,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       }
 
       await this.populateIdentity(response.backstageIdentity);
-      if (response.backstageIdentity?.idToken) {
-        this.setAccessTokenCookie(res, response.backstageIdentity?.idToken);
-      }
 
       // post message back to popup if successful
       return postMessageResponse(res, this.options.appOrigin, {
@@ -155,7 +151,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       return;
     }
 
-    this.removeAccessTokenCookie(res);
     if (!this.options.disableRefresh) {
       // remove refresh token cookie before logout
       this.removeRefreshTokenCookie(res);
@@ -195,9 +190,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       );
 
       await this.populateIdentity(response.backstageIdentity);
-      if (response.backstageIdentity?.idToken) {
-        this.setAccessTokenCookie(res, response.backstageIdentity?.idToken);
-      }
 
       if (
         response.providerInfo.refreshToken &&
@@ -254,27 +246,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
     return req.cookies[`${providerId}-scope`];
   };
 
-  private setAccessTokenCookie = (
-    res: express.Response,
-    accessToken: string,
-  ) => {
-    try {
-      const payload = JWT.decode(accessToken) as object & {
-        exp: number;
-      };
-      res.cookie(`access-token`, accessToken, {
-        expires: new Date(payload?.exp ? payload?.exp * 1000 : 0),
-        secure: this.options.secure,
-        sameSite: 'lax',
-        domain: this.options.cookieDomain,
-        path: '/api',
-        httpOnly: true,
-      });
-    } catch (_err) {
-      // Ignore
-    }
-  };
-
   private setRefreshTokenCookie = (
     res: express.Response,
     refreshToken: string,
@@ -285,17 +256,6 @@ export class OAuthAdapter implements AuthProviderRouteHandlers {
       sameSite: 'lax',
       domain: this.options.cookieDomain,
       path: this.options.cookiePath,
-      httpOnly: true,
-    });
-  };
-
-  private removeAccessTokenCookie = (res: express.Response) => {
-    res.cookie(`access-token`, '', {
-      maxAge: 0,
-      secure: this.options.secure,
-      sameSite: 'lax',
-      domain: this.options.cookieDomain,
-      path: '/api',
       httpOnly: true,
     });
   };

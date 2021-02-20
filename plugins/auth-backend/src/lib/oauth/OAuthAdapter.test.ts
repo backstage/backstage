@@ -160,7 +160,7 @@ describe('OAuthAdapter', () => {
     expect(mockResponse.cookie).toHaveBeenCalledTimes(0);
   });
 
-  it('removes access and refresh cookies when logging out', async () => {
+  it('removes refresh cookie when logging out', async () => {
     const oauthProvider = new OAuthAdapter(providerInstance, {
       ...oAuthProviderOptions,
       disableRefresh: false,
@@ -176,12 +176,7 @@ describe('OAuthAdapter', () => {
     } as unknown) as express.Response;
 
     await oauthProvider.logout(mockRequest, mockResponse);
-    expect(mockResponse.cookie).toHaveBeenCalledTimes(2);
-    expect(mockResponse.cookie).toHaveBeenCalledWith(
-      expect.stringContaining('access-token'),
-      '',
-      expect.objectContaining({ path: '/api' }),
-    );
+    expect(mockResponse.cookie).toHaveBeenCalledTimes(1);
     expect(mockResponse.cookie).toHaveBeenCalledWith(
       expect.stringContaining('test-provider-refresh-token'),
       '',
