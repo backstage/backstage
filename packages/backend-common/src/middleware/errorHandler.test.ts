@@ -31,7 +31,7 @@ describe('errorHandler', () => {
     const response = await request(app).get('/breaks');
 
     expect(response.status).toBe(500);
-    expect(response.text).toBe('some message');
+    expect(response.body).toBe('some message');
   });
 
   it('doesnt try to send the response again if its already been sent', async () => {
@@ -52,7 +52,7 @@ describe('errorHandler', () => {
     const response = await request(app).get('/works_with_async_fail');
 
     expect(response.status).toBe(200);
-    expect(response.text).toBe('hello');
+    expect(response.body).toBe('hello');
 
     expect(mockSend).not.toHaveBeenCalled();
   });
