@@ -34,7 +34,7 @@ jobs:
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: yarn install
         run: yarn install --frozen-lockfile
-        working-directory: microsite    
+        working-directory: microsite
 
       - name: prettier
         run: yarn prettier:check
