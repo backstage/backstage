@@ -64,6 +64,7 @@ import { AppThemeProvider } from './AppThemeProvider';
 import {
   AppComponents,
   AppConfigLoader,
+  AppContext,
   AppOptions,
   AppRouteBinder,
   BackstageApp,
@@ -137,6 +138,38 @@ function useConfigLoader(
   const configReader = ConfigReader.fromConfigs(config.value ?? []);
 
   return { api: configReader };
+}
+
+class AppContextImpl implements AppContext {
+  constructor(private readonly app: PrivateAppImpl) {}
+
+  getPlugins(): BackstagePlugin<any, any>[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getPlugins() is deprecated and will be removed');
+    return this.app.getPlugins();
+  }
+
+  getSystemIcon(key: string): IconComponent {
+    return this.app.getSystemIcon(key);
+  }
+
+  getProvider(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getProvider() is deprecated and will be removed');
+    return this.app.getProvider();
+  }
+
+  getRouter(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRouter() is deprecated and will be removed');
+    return this.app.getRouter();
+  }
+
+  getRoutes(): JSX.Element[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRoutes() is deprecated and will be removed');
+    return this.app.getRoutes();
+  }
 }
 
 export class PrivateAppImpl implements BackstageApp {
@@ -236,6 +269,8 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getProvider(): ComponentType<{}> {
+    const appContext = new AppContextImpl(this);
+
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
@@ -273,7 +308,7 @@ export class PrivateAppImpl implements BackstageApp {
 
       return (
         <ApiProvider apis={this.getApiHolder()}>
-          <AppContextProvider app={this}>
+          <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider
                 routePaths={routePaths}

@@ -190,3 +190,30 @@ export type BackstageApp = {
    */
   getRoutes(): JSX.Element[];
 };
+
+export type AppContext = {
+  /**
+   * @deprecated Will be removed
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
+   * Get a common or custom icon for this app.
+   */
+  getSystemIcon(key: IconKey): IconComponent;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getProvider(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRoutes(): JSX.Element[];
+};
