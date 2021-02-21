@@ -37,7 +37,7 @@ for (let id of ids) {
   }
 
   if (previous && !ids.includes(previous)) {
-    errors.push(`Previous ${previous} does not exists in ${id}.`);
+    errors.push(`Previous ${previous} does not exist in ${id}.`);
   }
 }
 
