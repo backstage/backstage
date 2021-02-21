@@ -16,7 +16,10 @@
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
 import { initRepoAndPush } from './helpers';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
 import path from 'path';
@@ -28,27 +31,24 @@ export class GithubPublisher implements PublisherBase {
     config: GitHubIntegrationConfig,
     { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
   ) {
-    if (!config.token) {
+    if (!config.token && !config.apps) {
       return undefined;
     }
 
-    const githubClient = new Octokit({
-      auth: config.token,
-      baseUrl: config.apiBaseUrl,
-    });
+    const credentialsProvider = GithubCredentialsProvider.create(config);
 
     return new GithubPublisher({
-      token: config.token,
-      client: githubClient,
+      credentialsProvider,
       repoVisibility,
+      apiBaseUrl: config.apiBaseUrl,
     });
   }
 
   constructor(
     private readonly config: {
-      token: string;
-      client: Octokit;
+      credentialsProvider: GithubCredentialsProvider;
       repoVisibility: RepoVisibilityOptions;
+      apiBaseUrl: string | undefined;
     },
   ) {}
 
@@ -59,9 +59,25 @@ export class GithubPublisher implements PublisherBase {
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
 
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url: values.storePath,
+    });
+
+    if (!token) {
+      throw new Error(
+        `No token could be acquired for URL: ${values.storePath}`,
+      );
+    }
+
+    const client = new Octokit({
+      auth: token,
+      baseUrl: this.config.apiBaseUrl,
+    });
+
     const description = values.description as string;
     const access = values.access as string;
     const remoteUrl = await this.createRemote({
+      client,
       description,
       access,
       name,
@@ -72,8 +88,8 @@ export class GithubPublisher implements PublisherBase {
       dir: path.join(workspacePath, 'result'),
       remoteUrl,
       auth: {
-        username: this.config.token,
-        password: 'x-oauth-basic',
+        username: 'x-access-token',
+        password: token,
       },
       logger,
     });
@@ -86,27 +102,28 @@ export class GithubPublisher implements PublisherBase {
   }
 
   private async createRemote(opts: {
+    client: Octokit;
     access: string;
     name: string;
     owner: string;
     description: string;
   }) {
-    const { access, description, owner, name } = opts;
+    const { client, access, description, owner, name } = opts;
 
-    const user = await this.config.client.users.getByUsername({
+    const user = await client.users.getByUsername({
       username: owner,
     });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.config.client.repos.createInOrg({
+        ? client.repos.createInOrg({
             name,
             org: owner,
             private: this.config.repoVisibility !== 'public',
             visibility: this.config.repoVisibility,
             description,
           })
-        : this.config.client.repos.createForAuthenticatedUser({
+        : client.repos.createForAuthenticatedUser({
             name,
             private: this.config.repoVisibility === 'private',
             description,
@@ -116,7 +133,7 @@ export class GithubPublisher implements PublisherBase {
 
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.config.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -125,7 +142,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.config.client.repos.addCollaborator({
+      await client.repos.addCollaborator({
         owner,
         repo: name,
         username: access,

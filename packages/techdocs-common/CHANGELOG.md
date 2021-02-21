@@ -1,5 +1,42 @@
 # @backstage/techdocs-common
 
+## 0.4.1
+
+### Patch Changes
+
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- 26e143e60: After TechDocs generate step, insert build timestamp to techdocs_metadata.json
+- c6655413d: Improved error reporting in AzureBlobStorage to surface errors when fetching metadata and uploading files fails.
+- 44414239f: Pass user and group ID when invoking docker container. When TechDocs invokes Docker, docker could be run as a `root` user which results in generation of files by applications run by non-root user (e.g. TechDocs) will not have access to modify. This PR passes in current user and group ID to docker so that the file permissions of the generated files and folders are correct.
+- b0a41c707: Add etag of the prepared file tree to techdocs_metadata.json in the storage
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 08142b256: URL Preparer will now use proper etag based caching introduced in https://github.com/backstage/backstage/pull/4120. Previously, builds used to be cached for 30 minutes.
+
+### Patch Changes
+
+- 77ad0003a: Revert AWS SDK version to v2
+- 08142b256: TechDocs will throw warning in backend logs when legacy git preparer or dir preparer is used to preparer docs. Migrate to URL Preparer by updating `backstage.io/techdocs-ref` annotation to be prefixed with `url:`.
+  Detailed docs are here https://backstage.io/docs/features/techdocs/how-to-guides#how-to-use-url-reader-in-techdocs-prepare-step
+  See benefits and reason for doing so https://github.com/backstage/backstage/issues/4409
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
 ## 0.3.7
 
 ### Patch Changes

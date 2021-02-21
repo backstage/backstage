@@ -27,7 +27,7 @@ import {
 
 describe('PlaceholderProcessor', () => {
   const read: jest.MockedFunction<ResolverRead> = jest.fn();
-  const reader: UrlReader = { read, readTree: jest.fn() };
+  const reader: UrlReader = { read, readTree: jest.fn(), search: jest.fn() };
 
   beforeEach(() => {
     jest.resetAllMocks();

@@ -1,12 +1,216 @@
 # @backstage/create-app
 
+## 0.3.10
+
+### Patch Changes
+
+- d50e9b81e: Updated docker build to use `backstage-cli backend:bundle` instead of `backstage-cli backend:build-image`.
+
+  To apply this change to an existing application, change the following in `packages/backend/package.json`:
+
+  ```diff
+  -  "build": "backstage-cli backend:build",
+  -  "build-image": "backstage-cli backend:build-image --build --tag backstage",
+  +  "build": "backstage-cli backend:bundle",
+  +  "build-image": "docker build ../.. -f Dockerfile --tag backstage",
+  ```
+
+  Note that the backend build is switched to `backend:bundle`, and the `build-image` script simply calls `docker build`. This means the `build-image` script no longer builds all packages, so you have to run `yarn build` in the root first.
+
+  In order to work with the new build method, the `Dockerfile` at `packages/backend/Dockerfile` has been updated with the following contents:
+
+  ```dockerfile
+  # This dockerfile builds an image for the backend package.
+  # It should be executed with the root of the repo as docker context.
+  #
+  # Before building this image, be sure to have run the following commands in the repo root:
+  #
+  # yarn install
+  # yarn tsc
+  # yarn build
+  #
+  # Once the commands have been run, you can build the image using `yarn build-image`
+
+  FROM node:14-buster-slim
+
+  WORKDIR /app
+
+  # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
+  # The skeleton contains the package.json of each package in the monorepo,
+  # and along with yarn.lock and the root package.json, that's enough to run yarn install.
+  ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+
+  # Then copy the rest of the backend bundle, along with any other files we might want.
+  ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
+
+  CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  ```
+
+  Note that the base image has been switched from `node:14-buster` to `node:14-buster-slim`, significantly reducing the image size. This is enabled by the removal of the `nodegit` dependency, so if you are still using this in your project you will have to stick with the `node:14-buster` base image.
+
+  A `.dockerignore` file has been added to the root of the repo as well, in order to keep the docker context upload small. It lives in the root of the repo with the following contents:
+
+  ```gitignore
+  .git
+  node_modules
+  packages
+  !packages/backend/dist
+  plugins
+  ```
+
+- 532bc0ec0: Upgrading to lerna@4.0.0.
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [92f01d75c]
+- Updated dependencies [6c4a76c59]
+- Updated dependencies [32a950409]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [f10950bd2]
+- Updated dependencies [914c89b13]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [257a753ff]
+- Updated dependencies [d872f662d]
+- Updated dependencies [edbc27bfd]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+- Updated dependencies [9337f509d]
+- Updated dependencies [0ada34a0f]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [d9687c524]
+- Updated dependencies [53b69236d]
+- Updated dependencies [29c8bcc53]
+- Updated dependencies [3600ac3b0]
+- Updated dependencies [07e226872]
+- Updated dependencies [b0a41c707]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [a341a8716]
+- Updated dependencies [96f378d10]
+- Updated dependencies [532bc0ec0]
+- Updated dependencies [688b73110]
+  - @backstage/backend-common@0.5.4
+  - @backstage/plugin-auth-backend@0.3.1
+  - @backstage/plugin-scaffolder@0.5.1
+  - @backstage/plugin-catalog@0.3.2
+  - @backstage/core@0.6.2
+  - @backstage/cli@0.6.1
+  - @backstage/plugin-user-settings@0.2.6
+  - @backstage/plugin-scaffolder-backend@0.7.1
+  - @backstage/plugin-api-docs@0.4.6
+  - @backstage/plugin-catalog-import@0.4.1
+  - @backstage/plugin-github-actions@0.3.3
+  - @backstage/plugin-lighthouse@0.2.11
+  - @backstage/plugin-techdocs-backend@0.6.1
+  - @backstage/plugin-catalog-backend@0.6.2
+  - @backstage/plugin-circleci@0.2.9
+  - @backstage/plugin-explore@0.2.6
+  - @backstage/plugin-search@0.3.1
+  - @backstage/plugin-techdocs@0.5.7
+
+## 0.3.9
+
+### Patch Changes
+
+- 615103a63: Pass on plugin database management instance that is now required by the scaffolder plugin.
+
+  To apply this change to an existing application, add the following to `src/plugins/scaffolder.ts`:
+
+  ```diff
+  export default async function createPlugin({
+    logger,
+    config,
+  +  database,
+  }: PluginEnvironment) {
+
+  // ...omitted...
+
+    return await createRouter({
+      preparers,
+      templaters,
+      publishers,
+      logger,
+      config,
+      dockerClient,
+      entityClient,
+  +    database,
+    });
+  }
+  ```
+
+- 30e200d12: `@backstage/plugin-catalog-import` has been refactored, so the `App.tsx` of the backstage apps need to be updated:
+
+  ```diff
+  // packages/app/src/App.tsx
+
+       <Route
+         path="/catalog-import"
+  -      element={<CatalogImportPage catalogRouteRef={catalogRouteRef} />}
+  +      element={<CatalogImportPage />}
+       />
+  ```
+
+- f4b576d0e: TechDocs: Add comments about migrating away from basic setup in app-config.yaml
+- Updated dependencies [753bb4c40]
+- Updated dependencies [1deb31141]
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [77ad0003a]
+- Updated dependencies [6b26c9f41]
+- Updated dependencies [b3f0c3811]
+- Updated dependencies [d2441aee3]
+- Updated dependencies [727f0deec]
+- Updated dependencies [fb53eb7cb]
+- Updated dependencies [07bafa248]
+- Updated dependencies [ca559171b]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [f5e564cd6]
+- Updated dependencies [f3fbfb452]
+- Updated dependencies [615103a63]
+- Updated dependencies [68dd79d83]
+- Updated dependencies [84364b35c]
+- Updated dependencies [41af18227]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [1df75733e]
+- Updated dependencies [965e200c6]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [e5da858d7]
+- Updated dependencies [9230d07e7]
+- Updated dependencies [f5f45744e]
+- Updated dependencies [0fe8ff5be]
+- Updated dependencies [5a5163519]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [8f3443427]
+- Updated dependencies [08142b256]
+- Updated dependencies [08142b256]
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [804502a5c]
+  - @backstage/plugin-catalog-import@0.4.0
+  - @backstage/plugin-auth-backend@0.3.0
+  - @backstage/plugin-catalog@0.3.1
+  - @backstage/plugin-scaffolder@0.5.0
+  - @backstage/plugin-scaffolder-backend@0.7.0
+  - @backstage/plugin-catalog-backend@0.6.1
+  - @backstage/plugin-circleci@0.2.8
+  - @backstage/plugin-search@0.3.0
+  - @backstage/plugin-app-backend@0.3.7
+  - @backstage/backend-common@0.5.3
+  - @backstage/plugin-api-docs@0.4.5
+  - @backstage/plugin-lighthouse@0.2.10
+  - @backstage/plugin-techdocs@0.5.6
+  - @backstage/test-utils@0.1.7
+  - @backstage/plugin-github-actions@0.3.2
+  - @backstage/plugin-explore@0.2.5
+  - @backstage/plugin-techdocs-backend@0.6.0
+  - @backstage/core@0.6.1
+  - @backstage/plugin-tech-radar@0.3.5
+
 ## 0.3.8
 
 ### Patch Changes
 
-- 019fe39a0: `@backstage/plugin-catalog` stopped exporting hooks and helpers for other
-  plugins. They are migrated to `@backstage/plugin-catalog-react`.
-  Change both your dependencies and imports to the new package.
+- 019fe39a0: **BREAKING CHANGE**: The `useEntity` hook has been moved from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+  To apply this change to an existing app, add `@backstage/plugin-catalog-react` to your dependencies in `packages/app/package.json`, and update
+  the import inside `packages/app/src/components/catalog/EntityPage.tsx` as well as any other places you were using `useEntity` or any other functions that were moved to `@backstage/plugin-catalog-react`.
 - 436ca3f62: Remove techdocs.requestUrl and techdocs.storageUrl from app-config.yaml
 - Updated dependencies [ceef4dd89]
 - Updated dependencies [720149854]

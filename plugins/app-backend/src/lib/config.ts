@@ -95,8 +95,9 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
       appConfigs.push(...frontendConfigs);
     } catch (error) {
       throw new Error(
-        'Invalid schema embedded in the app bundle, to fix this issue you need ' +
-          `to correct the schema and then rebuild the app bundle. ${error}`,
+        'Invalid app bundle schema. If this error is unexpected you need to run `yarn build` in the app. ' +
+          `If that doesn't help you should make sure your config schema is correct and rebuild the app bundle again. ` +
+          `Caused by the following schema error, ${error}`,
       );
     }
   }

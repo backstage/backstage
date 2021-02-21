@@ -53,4 +53,16 @@ describe('<Table />', () => {
     );
     expect(rendered.getByText('subtitle')).toBeInTheDocument();
   });
+
+  it('renders custom empty component if empty', async () => {
+    const rendered = await renderInTestApp(
+      <Table
+        subtitle="subtitle"
+        emptyContent={<div>EMPTY</div>}
+        columns={minProps.columns}
+        data={[]}
+      />,
+    );
+    expect(rendered.getByText('EMPTY')).toBeInTheDocument();
+  });
 });

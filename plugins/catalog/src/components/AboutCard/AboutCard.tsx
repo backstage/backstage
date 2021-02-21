@@ -16,9 +16,13 @@
 
 import {
   Entity,
+  LocationSpec,
   ENTITY_DEFAULT_NAMESPACE,
+  SOURCE_LOCATION_ANNOTATION,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
+import { HeaderIconLinkRow } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -27,14 +31,13 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
-import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
-import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink, determineUrlType } from '../createEditLink';
-import { HeaderIconLinkRow } from '@backstage/core';
+import { findLocationForEntityMeta, parseLocation } from '../../data/utils';
+import { findEditUrl, determineUrlType } from '../actions';
 import { AboutContent } from './AboutContent';
 
 const useStyles = makeStyles({
@@ -59,29 +62,46 @@ type CodeLinkInfo = {
   href?: string;
 };
 
+function getSourceLocationForEntity(
+  entity: Entity,
+  location?: LocationSpec,
+): LocationSpec | undefined {
+  const annotation = entity.metadata?.annotations?.[SOURCE_LOCATION_ANNOTATION];
+  const parsed = annotation && parseLocation(annotation);
+
+  return parsed || location;
+}
+
 function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
   const location = findLocationForEntityMeta(entity?.metadata);
+  const editUrl = findEditUrl(entity);
+  let sourceLocation = getSourceLocationForEntity(entity, location);
+
   if (location) {
+    sourceLocation = sourceLocation || location;
     const type =
-      location.type === 'url'
-        ? determineUrlType(location.target)
-        : location.type;
+      sourceLocation.type === 'url'
+        ? determineUrlType(sourceLocation.target)
+        : sourceLocation.type;
     return {
+      edithref: editUrl,
       icon: iconMap[type],
-      edithref: createEditLink(location),
-      href: location.target,
+      href: sourceLocation.target,
     };
   }
-  return {};
+
+  return { edithref: editUrl, href: sourceLocation?.target };
 }
 
 type AboutCardProps = {
-  entity: Entity;
-  variant?: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+  variant?: 'gridItem';
 };
 
-export function AboutCard({ entity, variant }: AboutCardProps) {
+export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
+  const { entity } = useEntity();
   const codeLink = getCodeLinkInfo(entity);
   // TODO: Also support RELATION_CONSUMES_API here
   const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);

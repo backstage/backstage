@@ -1,5 +1,32 @@
 # @backstage/plugin-lighthouse
 
+## 0.2.11
+
+### Patch Changes
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.2.10
+
+### Patch Changes
+
+- f5e564cd6: Improve display of error messages
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.9
 
 ### Patch Changes

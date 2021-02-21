@@ -22,6 +22,7 @@ import {
   ConfigApi,
   ConfigReader,
 } from '@backstage/core';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
@@ -84,7 +85,9 @@ describe('<RecentWorkflowRunsCard />', () => {
               configApi,
             )}
           >
-            <RecentWorkflowRunsCard {...props} />
+            <EntityProvider entity={props.entity!}>
+              <RecentWorkflowRunsCard {...props} />
+            </EntityProvider>
           </ApiProvider>
         </MemoryRouter>
       </ThemeProvider>,

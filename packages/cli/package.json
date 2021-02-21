@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -28,12 +28,14 @@
     "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.2",
     "@backstage/config-loader": "^0.5.1",
     "@hot-loader/react-dom": "^16.13.0",
-    "@lerna/package-graph": "^3.18.5",
-    "@lerna/project": "^3.18.0",
+    "@lerna/package-graph": "^4.0.0",
+    "@lerna/project": "^4.0.0",
     "@octokit/request": "^5.4.12",
     "@rollup/plugin-commonjs": "^17.1.0",
     "@rollup/plugin-json": "^4.0.2",
@@ -43,7 +45,7 @@
     "@spotify/eslint-config-react": "^9.0.0",
     "@spotify/eslint-config-typescript": "^9.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
-    "@svgr/plugin-jsx": "5.4.x",
+    "@svgr/plugin-jsx": "5.5.x",
     "@svgr/plugin-svgo": "5.4.x",
     "@svgr/rollup": "5.5.x",
     "@svgr/webpack": "5.4.x",
@@ -53,6 +55,7 @@
     "@typescript-eslint/eslint-plugin": "^v4.14.0",
     "@typescript-eslint/parser": "^v4.14.0",
     "@yarnpkg/lockfile": "^1.1.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "bfj": "^7.0.2",
     "chalk": "^4.0.0",
     "chokidar": "^3.3.1",
@@ -78,7 +81,6 @@
     "inquirer": "^7.0.4",
     "jest": "^26.0.1",
     "jest-css-modules": "^2.1.0",
-    "jest-esm-transformer": "^1.0.0",
     "lodash": "^4.17.19",
     "mini-css-extract-plugin": "^0.9.0",
     "ora": "^4.0.3",
@@ -93,7 +95,7 @@
     "rollup-plugin-esbuild": "2.6.x",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-postcss": "^3.1.1",
-    "rollup-plugin-typescript2": "^0.27.3",
+    "rollup-plugin-typescript2": "^0.29.0",
     "rollup-pluginutils": "^2.8.2",
     "semver": "^7.3.2",
     "start-server-webpack-plugin": "^2.2.5",
@@ -113,10 +115,10 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.5.2",
+    "@backstage/backend-common": "^0.5.4",
     "@backstage/config": "^0.1.2",
-    "@backstage/core": "^0.6.0",
-    "@backstage/dev-utils": "^0.1.9",
+    "@backstage/core": "^0.6.2",
+    "@backstage/dev-utils": "^0.1.11",
     "@backstage/test-utils": "^0.1.6",
     "@backstage/theme": "^0.2.3",
     "@types/diff": "^4.0.2",

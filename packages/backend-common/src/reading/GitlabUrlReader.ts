@@ -17,54 +17,51 @@
 import {
   getGitLabFileFetchUrl,
   getGitLabRequestOptions,
-  GitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
+  GitLabIntegration,
+  ScmIntegrations,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
+import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
+import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
+import { stripFirstDirectoryFromPath } from './tree/util';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
   UrlReader,
 } from './types';
-import parseGitUrl from 'git-url-parse';
-import { Readable } from 'stream';
 
 export class GitlabUrlReader implements UrlReader {
-  private readonly treeResponseFactory: ReadTreeResponseFactory;
-
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    const configs = readGitLabIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.gitlab') ?? [],
-    );
-    return configs.map(provider => {
-      const reader = new GitlabUrlReader(provider, { treeResponseFactory });
-      const predicate = (url: URL) => url.host === provider.host;
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.gitlab.list().map(integration => {
+      const reader = new GitlabUrlReader(integration, {
+        treeResponseFactory,
+      });
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
   constructor(
-    private readonly config: GitLabIntegrationConfig,
-    deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {
-    this.treeResponseFactory = deps.treeResponseFactory;
-
-    if (!config.apiBaseUrl) {
-      throw new Error(
-        `GitLab integration for '${config.host}' must configure an explicit apiBaseUrl`,
-      );
-    }
-  }
+    private readonly integration: GitLabIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {}
 
   async read(url: string): Promise<Buffer> {
-    const builtUrl = await getGitLabFileFetchUrl(url, this.config);
+    const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl, getGitLabRequestOptions(this.config));
+      response = await fetch(
+        builtUrl,
+        getGitLabRequestOptions(this.integration.config),
+      );
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -91,9 +88,11 @@ export class GitlabUrlReader implements UrlReader {
     // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
     const projectGitlabResponse = await fetch(
       new URL(
-        `${this.config.apiBaseUrl}/projects/${encodeURIComponent(full_name)}`,
+        `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
+          full_name,
+        )}`,
       ).toString(),
-      getGitLabRequestOptions(this.config),
+      getGitLabRequestOptions(this.integration.config),
     );
     if (!projectGitlabResponse.ok) {
       const msg = `Failed to read tree from ${url}, ${projectGitlabResponse.status} ${projectGitlabResponse.statusText}`;
@@ -111,11 +110,11 @@ export class GitlabUrlReader implements UrlReader {
     // the provided sha.
     const branchGitlabResponse = await fetch(
       new URL(
-        `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
+        `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           full_name,
         )}/repository/branches/${branch}`,
       ).toString(),
-      getGitLabRequestOptions(this.config),
+      getGitLabRequestOptions(this.integration.config),
     );
     if (!branchGitlabResponse.ok) {
       const message = `Failed to read tree (branch) from ${url}, ${branchGitlabResponse.status} ${branchGitlabResponse.statusText}`;
@@ -133,10 +132,10 @@ export class GitlabUrlReader implements UrlReader {
 
     // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
     const archiveGitLabResponse = await fetch(
-      `${this.config.apiBaseUrl}/projects/${encodeURIComponent(
+      `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
         full_name,
       )}/repository/archive.zip?sha=${branch}`,
-      getGitLabRequestOptions(this.config),
+      getGitLabRequestOptions(this.integration.config),
     );
     if (!archiveGitLabResponse.ok) {
       const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
@@ -146,7 +145,7 @@ export class GitlabUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    return await this.treeResponseFactory.fromZipArchive({
+    return await this.deps.treeResponseFactory.fromZipArchive({
       stream: (archiveGitLabResponse.body as unknown) as Readable,
       subpath: filepath,
       etag: commitSha,
@@ -154,8 +153,33 @@ export class GitlabUrlReader implements UrlReader {
     });
   }
 
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const { filepath } = parseGitUrl(url);
+    const matcher = new Minimatch(filepath);
+
+    // TODO(freben): For now, read the entire repo and filter through that. In
+    // a future improvement, we could be smart and try to deduce that non-glob
+    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
+    // to get just that part of the repo.
+    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+
+    const tree = await this.readTree(treeUrl, {
+      etag: options?.etag,
+      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+    });
+    const files = await tree.files();
+
+    return {
+      etag: tree.etag,
+      files: files.map(file => ({
+        url: this.integration.resolveUrl({ url: `/${file.path}`, base: url }),
+        content: file.content,
+      })),
+    };
+  }
+
   toString() {
-    const { host, token } = this.config;
+    const { host, token } = this.integration.config;
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 }

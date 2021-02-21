@@ -43,6 +43,7 @@ import {
   CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
+  GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
@@ -303,6 +304,7 @@ export class CatalogBuilder {
     if (!this.processorsReplace) {
       processors.push(
         new FileReaderProcessor(),
+        GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),

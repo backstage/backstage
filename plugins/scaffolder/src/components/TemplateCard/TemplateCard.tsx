@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button } from '@backstage/core';
+import { Button, useRouteRef } from '@backstage/core';
 import { BackstageTheme, pageTheme } from '@backstage/theme';
 import {
   Card,
+  CardActions,
+  CardContent,
   Chip,
   makeStyles,
   Typography,
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
-import { generatePath } from 'react-router-dom';
-import { templateRoute } from '../../routes';
+import { generatePath } from 'react-router';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -34,17 +36,10 @@ const useStyles = makeStyles(theme => ({
       props.backgroundImage,
     backgroundPosition: 0,
   },
-  content: {
-    padding: theme.spacing(2),
-  },
   description: {
     height: 175,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
   },
 }));
 
@@ -64,11 +59,14 @@ export const TemplateCard = ({
   name,
 }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
+  const rootLink = useRouteRef(rootRouteRef);
 
   const themeId = pageTheme[type] ? type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const href = generatePath(templateRoute.path, { templateName: name });
+  const href = generatePath(`${rootLink()}/templates/:templateName`, {
+    templateName: name,
+  });
 
   return (
     <Card>
@@ -76,19 +74,19 @@ export const TemplateCard = ({
         <Typography variant="subtitle2">{type}</Typography>
         <Typography variant="h6">{title}</Typography>
       </div>
-      <div className={classes.content}>
+      <CardContent>
         {tags?.map(tag => (
           <Chip label={tag} key={tag} />
         ))}
         <Typography variant="body2" paragraph className={classes.description}>
           {description}
         </Typography>
-        <div className={classes.footer}>
-          <Button color="primary" to={href}>
-            Choose
-          </Button>
-        </div>
-      </div>
+      </CardContent>
+      <CardActions>
+        <Button color="primary" to={href}>
+          Choose
+        </Button>
+      </CardActions>
     </Card>
   );
 };

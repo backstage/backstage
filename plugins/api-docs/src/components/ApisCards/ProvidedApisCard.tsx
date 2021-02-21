@@ -19,70 +19,67 @@ import {
   Entity,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { EmptyState, InfoCard, Progress } from '@backstage/core';
-import React, { PropsWithChildren } from 'react';
-import { ApisTable } from './ApisTable';
-import { MissingProvidesApisEmptyState } from '../EmptyState';
-import { useRelatedEntities } from '../useRelatedEntities';
-
-const ApisCard = ({
-  children,
-  variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
-  return (
-    <InfoCard variant={variant} title="Provided APIs">
-      {children}
-    </InfoCard>
-  );
-};
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
+import {
+  EntityTable,
+  useEntity,
+  useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { apiEntityColumns } from './presets';
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: string;
+  variant?: 'gridItem';
 };
 
 export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(
-    entity,
-    RELATION_PROVIDES_API,
-  );
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_PROVIDES_API,
+  });
 
   if (loading) {
     return (
-      <ApisCard variant={variant}>
+      <InfoCard variant={variant} title="Provided APIs">
         <Progress />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
-  if (error) {
+  if (error || !entities) {
     return (
-      <ApisCard variant={variant}>
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There was an error while loading the provided APIs."
+      <InfoCard variant={variant} title="Provided APIs">
+        <WarningPanel
+          severity="error"
+          title="Could not load APIs"
+          message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ApisCard>
-    );
-  }
-
-  if (!entities || entities.length === 0) {
-    return (
-      <ApisCard variant={variant}>
-        <MissingProvidesApisEmptyState />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
   return (
-    <ApisTable
+    <EntityTable
       title="Provided APIs"
       variant={variant}
-      entities={entities as (ApiEntity | undefined)[]}
+      emptyContent={
+        <div>
+          No component provides this API.{' '}
+          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
+            Learn how to provide APIs.
+          </Link>
+        </div>
+      }
+      columns={apiEntityColumns}
+      entities={entities as ApiEntity[]}
     />
   );
 };

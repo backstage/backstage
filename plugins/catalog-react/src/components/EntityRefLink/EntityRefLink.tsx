@@ -18,54 +18,54 @@ import {
   EntityName,
   ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
-import { Link } from '@material-ui/core';
-import React from 'react';
+import { Link, LinkProps } from '@backstage/core';
+import React, { forwardRef } from 'react';
 import { generatePath } from 'react-router';
-import { Link as RouterLink } from 'react-router-dom';
 import { entityRoute } from '../../routes';
 import { formatEntityRefTitle } from './format';
 
-type EntityRefLinkProps = {
+export type EntityRefLinkProps = {
   entityRef: Entity | EntityName;
   defaultKind?: string;
   children?: React.ReactNode;
-};
+} & Omit<LinkProps, 'to'>;
 
-export const EntityRefLink = ({
-  entityRef,
-  defaultKind,
-  children,
-}: EntityRefLinkProps) => {
-  let kind;
-  let namespace;
-  let name;
+export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
+  (props, ref) => {
+    const { entityRef, defaultKind, children, ...linkProps } = props;
 
-  if ('metadata' in entityRef) {
-    kind = entityRef.kind;
-    namespace = entityRef.metadata.namespace;
-    name = entityRef.metadata.name;
-  } else {
-    kind = entityRef.kind;
-    namespace = entityRef.namespace;
-    name = entityRef.name;
-  }
+    let kind;
+    let namespace;
+    let name;
 
-  kind = kind.toLowerCase();
+    if ('metadata' in entityRef) {
+      kind = entityRef.kind;
+      namespace = entityRef.metadata.namespace;
+      name = entityRef.metadata.name;
+    } else {
+      kind = entityRef.kind;
+      namespace = entityRef.namespace;
+      name = entityRef.name;
+    }
 
-  const routeParams = {
-    kind,
-    namespace: namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
-    name,
-  };
+    kind = kind.toLowerCase();
 
-  // TODO: Use useRouteRef here to generate the path
-  return (
-    <Link
-      component={RouterLink}
-      to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
-    >
-      {children}
-      {!children && formatEntityRefTitle(entityRef, { defaultKind })}
-    </Link>
-  );
-};
+    const routeParams = {
+      kind,
+      namespace: namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
+      name,
+    };
+
+    // TODO: Use useRouteRef here to generate the path
+    return (
+      <Link
+        {...linkProps}
+        ref={ref}
+        to={generatePath(`/catalog/${entityRoute.path}`, routeParams)}
+      >
+        {children}
+        {!children && formatEntityRefTitle(entityRef, { defaultKind })}
+      </Link>
+    );
+  },
+);

@@ -16,11 +16,11 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { discoveryApiRef } from '@backstage/core';
+import { discoveryApiRef, identityApiRef } from '@backstage/core';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TemplateIndexPage, TemplatePage } from '../src/plugin';
-import { ScaffolderApi, scaffolderApiRef } from '../src';
+import { ScaffolderPage } from '../src/plugin';
+import { ScaffolderClient, scaffolderApiRef } from '../src';
 
 createDevApp()
   .registerApi({
@@ -30,16 +30,13 @@ createDevApp()
   })
   .registerApi({
     api: scaffolderApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new ScaffolderApi({ discoveryApi }),
+    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+    factory: ({ discoveryApi, identityApi }) =>
+      new ScaffolderClient({ discoveryApi, identityApi }),
   })
   .addPage({
     path: '/create',
     title: 'Create',
-    element: <TemplateIndexPage />,
-  })
-  .addPage({
-    path: '/create/:templateName',
-    element: <TemplatePage />,
+    element: <ScaffolderPage />,
   })
   .render();

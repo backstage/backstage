@@ -39,8 +39,9 @@ import {
   createRouteRef,
   createExternalRouteRef,
   ExternalRouteRef,
+  RouteRefConfig,
 } from './RouteRef';
-import { RouteRef, RouteRefConfig } from './types';
+import { RouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
@@ -58,9 +59,9 @@ const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
 const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
 const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
 const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
-const eRefA = createExternalRouteRef();
-const eRefB = createExternalRouteRef();
-const eRefC = createExternalRouteRef();
+const eRefA = createExternalRouteRef({ id: '1' });
+const eRefB = createExternalRouteRef({ id: '2' });
+const eRefC = createExternalRouteRef({ id: '3' });
 
 const MockRouteSource = <T extends { [name in string]: string }>(props: {
   path?: string;

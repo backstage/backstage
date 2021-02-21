@@ -77,7 +77,7 @@ jobs:
         run: yarn prettier:check
 
       - name: validate config
-        run: yarn backstage-cli config:check
+        run: yarn backstage-cli config:check --lax
 
       - name: lint
         run: yarn lerna -- run lint --since origin/master
@@ -87,7 +87,7 @@ jobs:
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run build --since origin/master
+        run: yarn lerna -- run build --since origin/master --include-dependencies
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}

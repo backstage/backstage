@@ -16,15 +16,10 @@
 
 import React, { ReactNode, CSSProperties, PropsWithChildren } from 'react';
 import { Helmet } from 'react-helmet';
-import {
-  Link,
-  Typography,
-  Tooltip,
-  makeStyles,
-  Breadcrumbs,
-} from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
+import { Breadcrumbs } from '..';
+import { Link } from '../../components';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
@@ -136,15 +131,9 @@ const TypeFragment = ({
   }
 
   return (
-    <Breadcrumbs
-      aria-label="breadcrumb"
-      separator={<ChevronRightIcon fontSize="small" />}
-      className={classes.breadcrumb}
-    >
-      <Link href={typeLink} color="inherit">
-        <Typography className={classes.breadcrumbType}> {type}</Typography>
-      </Link>
-      <Typography className={classes.breadcrumbTitle}>{pageTitle}</Typography>
+    <Breadcrumbs className={classes.breadcrumb}>
+      <Link to={typeLink}>{type}</Link>
+      <Typography>{pageTitle}</Typography>
     </Breadcrumbs>
   );
 };

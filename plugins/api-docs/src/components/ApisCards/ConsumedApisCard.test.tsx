@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_CONSUMES_API,
-  RELATION_OWNED_BY,
-  RELATION_PART_OF,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
@@ -79,7 +74,7 @@ describe('<ConsumedApisCard />', () => {
     );
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
-    expect(getByText(/No APIs consumed by this entity/i)).toBeInTheDocument();
+    expect(getByText(/No Component consumes this API/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {
@@ -108,34 +103,7 @@ describe('<ConsumedApisCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'openapi',
-        lifecycle: 'production',
-        definition: '...',
-      },
-      relations: [
-        {
-          type: RELATION_PART_OF,
-          target: {
-            kind: 'System',
-            name: 'MySystem',
-            namespace: 'default',
-          },
-        },
-        {
-          type: RELATION_OWNED_BY,
-          target: {
-            kind: 'Group',
-            name: 'Test',
-            namespace: 'default',
-          },
-        },
-      ],
-    });
-    apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
-      type: 'openapi',
-      title: 'OpenAPI',
-      component: () => <div />,
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
@@ -147,12 +115,8 @@ describe('<ConsumedApisCard />', () => {
     );
 
     await waitFor(() => {
-      expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
+      expect(getByText('Consumed APIs')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/OpenAPI/)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/MySystem/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

@@ -1,5 +1,46 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.7.1
+
+### Patch Changes
+
+- edbc27bfd: Added githubApp authentication to the scaffolder-backend plugin
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- 0ada34a0f: Minor typo in migration
+- 29c8bcc53: Fixed the `prepare` step for when using local templates that were added to the catalog using the `file:` target configuration.
+  No more `EPERM: operation not permitted` error messages.
+- a341a8716: Fix parsing of the path to default to empty string not undefined if git-url-parse throws something we don't expect. Fixes the error `The "path" argument must be of type string.` when preparing.
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
+## 0.7.0
+
+### Minor Changes
+
+- 615103a63: Introduced `v2` Scaffolder REST API, which uses an implementation that is database backed, making the scaffolder instances stateless. The `createRouter` function now requires a `PluginDatabaseManager` instance to be passed in, commonly available as `database` in the plugin environment in the backend.
+
+  This API should be considered unstable until used by the scaffolder frontend.
+
+### Patch Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- ffffea8e6: Minor updates to reflect the changes in `@backstage/integration` that made the fields `apiBaseUrl` and `apiUrl` mandatory.
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [72b96e880]
+- Updated dependencies [5a5163519]
+  - @backstage/catalog-client@0.3.6
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
 ## 0.6.0
 
 ### Minor Changes

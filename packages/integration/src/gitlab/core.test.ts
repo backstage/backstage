@@ -37,15 +37,34 @@ describe('gitlab core', () => {
   const configWithToken: GitLabIntegrationConfig = {
     host: 'g.com',
     token: '0123456789',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   };
 
   const configWithNoToken: GitLabIntegrationConfig = {
     host: 'g.com',
+    apiBaseUrl: '<ignored>',
+    baseUrl: '<ignored>',
   };
 
   describe('getGitLabFileFetchUrl', () => {
     it.each([
       // Project URLs
+      {
+        config: configWithNoToken,
+        url:
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file.yaml',
+        result:
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      },
+      {
+        config: configWithNoToken,
+        // Works with non URI encoded link
+        url:
+          'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/my/path/to/file with spaces.yaml',
+        result:
+          'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile%20with%20spaces.yaml/raw?ref=branch',
+      },
       {
         config: configWithNoToken,
         url:

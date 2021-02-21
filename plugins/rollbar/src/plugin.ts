@@ -20,6 +20,7 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core';
 import { rollbarApiRef } from './api/RollbarApi';
 import { RollbarClient } from './api/RollbarClient';
@@ -34,8 +35,9 @@ export const rollbarPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: rollbarApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new RollbarClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new RollbarClient({ discoveryApi, identityApi }),
     }),
   ],
   routes: {

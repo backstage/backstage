@@ -15,8 +15,8 @@
  */
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { DirectoryPreparer } from './dir';
 import { checkoutGitRepository } from '../../helpers';
+import { DirectoryPreparer } from './dir';
 
 function normalizePath(path: string) {
   return path
@@ -28,6 +28,7 @@ function normalizePath(path: string) {
 jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
   checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch/'),
+  getLastCommitTimestamp: jest.fn(() => 12345678),
 }));
 
 const logger = getVoidLogger();
@@ -49,6 +50,7 @@ const mockConfig = new ConfigReader({});
 const mockUrlReader: jest.Mocked<UrlReader> = {
   read: jest.fn(),
   readTree: jest.fn(),
+  search: jest.fn(),
 };
 
 describe('directory preparer', () => {
@@ -65,9 +67,8 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:./our-documentation',
     });
 
-    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
-      '/directory/our-documentation',
-    );
+    const { preparedDir } = await directoryPreparer.prepare(mockEntity);
+    expect(normalizePath(preparedDir)).toEqual('/directory/our-documentation');
   });
 
   it('should merge managed-by-location and techdocs-ref when techdocs-ref is absolute', async () => {
@@ -83,9 +84,8 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:/our-documentation/techdocs',
     });
 
-    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
-      '/our-documentation/techdocs',
-    );
+    const { preparedDir } = await directoryPreparer.prepare(mockEntity);
+    expect(normalizePath(preparedDir)).toEqual('/our-documentation/techdocs');
   });
 
   it('should merge managed-by-location and techdocs-ref when managed-by-location is a git repository', async () => {
@@ -101,7 +101,8 @@ describe('directory preparer', () => {
       'backstage.io/techdocs-ref': 'dir:./docs',
     });
 
-    expect(normalizePath(await directoryPreparer.prepare(mockEntity))).toEqual(
+    const { preparedDir } = await directoryPreparer.prepare(mockEntity);
+    expect(normalizePath(preparedDir)).toEqual(
       '/tmp/backstage-repo/org/name/branch/docs',
     );
     expect(checkoutGitRepository).toHaveBeenCalledTimes(1);

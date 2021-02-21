@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-import { UrlReaderProcessor } from './UrlReaderProcessor';
-import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  UrlReader,
+  UrlReaders,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { msw } from '@backstage/test-utils';
 import {
   CatalogProcessorEntityResult,
   CatalogProcessorErrorResult,
   CatalogProcessorResult,
 } from './types';
+import { UrlReaderProcessor } from './UrlReaderProcessor';
 import { defaultEntityDataParser } from './util/parse';
 
 describe('UrlReaderProcessor', () => {
   const mockApiOrigin = 'http://localhost';
-  const server = setupServer();
 
+  const server = setupServer();
   msw.setupDefaultHandlers(server);
+
   it('should load from url', async () => {
     const logger = getVoidLogger();
     const reader = UrlReaders.default({
@@ -57,7 +62,7 @@ describe('UrlReaderProcessor', () => {
     )) as CatalogProcessorEntityResult;
 
     expect(generated.type).toBe('entity');
-    expect(generated.location).toBe(spec);
+    expect(generated.location).toEqual(spec);
     expect(generated.entity).toEqual({ mock: 'entity' });
   });
 
@@ -91,5 +96,28 @@ describe('UrlReaderProcessor', () => {
     expect(generated.error.message).toBe(
       `Unable to read url, NotFoundError: could not read ${mockApiOrigin}/component-notfound.yaml, 404 Not Found`,
     );
+  });
+
+  it('uses search when there are globs', async () => {
+    const logger = getVoidLogger();
+
+    const reader: jest.Mocked<UrlReader> = {
+      read: jest.fn(),
+      readTree: jest.fn(),
+      search: jest.fn().mockImplementation(async () => []),
+    };
+
+    const processor = new UrlReaderProcessor({ reader, logger });
+
+    const emit = jest.fn();
+
+    await processor.readLocation(
+      { type: 'url', target: 'https://github.com/a/b/blob/x/**/b.yaml' },
+      false,
+      emit,
+      defaultEntityDataParser,
+    );
+
+    expect(reader.search).toBeCalledTimes(1);
   });
 });

@@ -15,22 +15,26 @@
  */
 
 import {
-  BitbucketIntegrationConfig,
+  BitbucketIntegration,
   getBitbucketDefaultBranch,
   getBitbucketDownloadUrl,
   getBitbucketFileFetchUrl,
   getBitbucketRequestOptions,
-  readBitbucketIntegrationConfigs,
+  ScmIntegrations,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
+import { stripFirstDirectoryFromPath } from './tree/util';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
   UrlReader,
 } from './types';
 
@@ -39,45 +43,43 @@ import {
  * the one exposed by Bitbucket Cloud itself.
  */
 export class BitbucketUrlReader implements UrlReader {
-  private readonly config: BitbucketIntegrationConfig;
-  private readonly treeResponseFactory: ReadTreeResponseFactory;
-
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    const configs = readBitbucketIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.bitbucket') ?? [],
-    );
-    return configs.map(provider => {
-      const reader = new BitbucketUrlReader(provider, { treeResponseFactory });
-      const predicate = (url: URL) => url.host === provider.host;
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.bitbucket.list().map(integration => {
+      const reader = new BitbucketUrlReader(integration, {
+        treeResponseFactory,
+      });
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
   constructor(
-    config: BitbucketIntegrationConfig,
-    deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly integration: BitbucketIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
-    const { host, apiBaseUrl, token, username, appPassword } = config;
+    const {
+      host,
+      apiBaseUrl,
+      token,
+      username,
+      appPassword,
+    } = integration.config;
 
     if (!apiBaseUrl) {
       throw new Error(
         `Bitbucket integration for '${host}' must configure an explicit apiBaseUrl`,
       );
-    }
-
-    if (!token && username && !appPassword) {
+    } else if (!token && username && !appPassword) {
       throw new Error(
         `Bitbucket integration for '${host}' has configured a username but is missing a required appPassword.`,
       );
     }
-
-    this.config = config;
-    this.treeResponseFactory = deps.treeResponseFactory;
   }
 
   async read(url: string): Promise<Buffer> {
-    const bitbucketUrl = getBitbucketFileFetchUrl(url, this.config);
-    const options = getBitbucketRequestOptions(this.config);
+    const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
+    const options = getBitbucketRequestOptions(this.integration.config);
 
     let response: Response;
     try {
@@ -108,10 +110,13 @@ export class BitbucketUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
-    const downloadUrl = await getBitbucketDownloadUrl(url, this.config);
+    const downloadUrl = await getBitbucketDownloadUrl(
+      url,
+      this.integration.config,
+    );
     const archiveBitbucketResponse = await fetch(
       downloadUrl,
-      getBitbucketRequestOptions(this.config),
+      getBitbucketRequestOptions(this.integration.config),
     );
     if (!archiveBitbucketResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveBitbucketResponse.status} ${archiveBitbucketResponse.statusText}`;
@@ -121,7 +126,7 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    return await this.treeResponseFactory.fromZipArchive({
+    return await this.deps.treeResponseFactory.fromZipArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
       subpath: filepath,
       etag: lastCommitShortHash,
@@ -129,8 +134,36 @@ export class BitbucketUrlReader implements UrlReader {
     });
   }
 
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const { filepath } = parseGitUrl(url);
+    const matcher = new Minimatch(filepath);
+
+    // TODO(freben): For now, read the entire repo and filter through that. In
+    // a future improvement, we could be smart and try to deduce that non-glob
+    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
+    // to get just that part of the repo.
+    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+
+    const tree = await this.readTree(treeUrl, {
+      etag: options?.etag,
+      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+    });
+    const files = await tree.files();
+
+    return {
+      etag: tree.etag,
+      files: files.map(file => ({
+        url: this.integration.resolveUrl({
+          url: `/${file.path}`,
+          base: url,
+        }),
+        content: file.content,
+      })),
+    };
+  }
+
   toString() {
-    const { host, token, username, appPassword } = this.config;
+    const { host, token, username, appPassword } = this.integration.config;
     let authed = Boolean(token);
     if (!authed) {
       authed = Boolean(username && appPassword);
@@ -143,18 +176,18 @@ export class BitbucketUrlReader implements UrlReader {
 
     let branch = ref;
     if (!branch) {
-      branch = await getBitbucketDefaultBranch(url, this.config);
+      branch = await getBitbucketDefaultBranch(url, this.integration.config);
     }
 
     const isHosted = resource === 'bitbucket.org';
     // Bitbucket Server https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp222
     const commitsApiUrl = isHosted
-      ? `${this.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`
-      : `${this.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
+      ? `${this.integration.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`
+      : `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/commits`;
 
     const commitsResponse = await fetch(
       commitsApiUrl,
-      getBitbucketRequestOptions(this.config),
+      getBitbucketRequestOptions(this.integration.config),
     );
     if (!commitsResponse.ok) {
       const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   GitHubIntegrationConfig,
@@ -44,5 +44,9 @@ export class GitHubIntegration implements ScmIntegration {
 
   get config(): GitHubIntegrationConfig {
     return this.integrationConfig;
+  }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    return defaultScmResolveUrl(options);
   }
 }

@@ -119,7 +119,7 @@ Plugins supply their APIs through the `apis` option of `createPlugin`, for
 example:
 
 ```ts
-export const plugin = createPlugin({
+export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
@@ -181,7 +181,25 @@ The `IgnoringErrorApi` would then be imported in the app, and wired up like
 this:
 
 ```ts
-builder.add(errorApiRef, new IgnoringErrorApi());
+const app = createApp({
+  apis: [
+    /* ApiFactories */
+    createApiFactory(errorApiRef, new IgnoringErrorApi()),
+
+    // OR
+    // If your API has dependencies, you use the object form
+    createApiFactory({
+      api: errorApiRef,
+      deps: { configApi: configApiRef },
+      factory({ configApi }) {
+        return new IgnoringErrorApi({
+          reportingUrl: configApi.getString('error.reportingUrl'),
+        });
+      },
+    }),
+  ],
+  // ... other options
+});
 ```
 
 Note that the above line will cause an error if `IgnoreErrorApi` does not fully

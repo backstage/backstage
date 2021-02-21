@@ -1,5 +1,33 @@
 # @backstage/plugin-jenkins
 
+## 0.3.10
+
+### Patch Changes
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.3.9
+
+### Patch Changes
+
+- 53348f0af: Improve display of duration in latest build card
+- 025c0c7bf: Migrate to new composability API, exporting the plugin instance as `jenkinsPlugin`, the entity content as `EntityJenkinsContent`, the entity conditional as `isJenkinsAvailable`, and the entity card as `EntityLatestJenkinsRunCard`.
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.8
 
 ### Patch Changes

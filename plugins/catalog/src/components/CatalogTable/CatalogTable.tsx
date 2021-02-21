@@ -19,21 +19,26 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { Table, TableColumn, TableProps } from '@backstage/core';
+import {
+  CodeSnippet,
+  Table,
+  TableColumn,
+  TableProps,
+  WarningPanel,
+  OverflowTooltip,
+} from '@backstage/core';
 import {
   EntityRefLink,
   EntityRefLinks,
   formatEntityRefTitle,
   getEntityRelations,
+  useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { Alert } from '@material-ui/lab';
 import React from 'react';
-import { findLocationForEntityMeta } from '../../data/utils';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
-import { createEditLink } from '../createEditLink';
+import { findViewUrl, findEditUrl } from '../actions';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -86,6 +91,13 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        text={entity.metadata.description}
+        placement="bottom-start"
+      />
+    ),
+    width: 'auto',
   },
   {
     title: 'Tags',
@@ -128,33 +140,36 @@ export const CatalogTable = ({
   if (error) {
     return (
       <div>
-        <Alert severity="error">
-          Error encountered while fetching catalog entities. {error.toString()}
-        </Alert>
+        <WarningPanel
+          severity="error"
+          title="Could not fetch catalog entities."
+        >
+          <CodeSnippet language="text" text={error.toString()} />
+        </WarningPanel>
       </div>
     );
   }
 
   const actions: TableProps<EntityRow>['actions'] = [
     ({ entity }) => {
-      const location = findLocationForEntityMeta(entity.metadata);
+      const url = findViewUrl(entity);
       return {
         icon: () => <OpenInNew fontSize="small" />,
         tooltip: 'View',
         onClick: () => {
-          if (!location) return;
-          window.open(location.target, '_blank');
+          if (!url) return;
+          window.open(url, '_blank');
         },
       };
     },
     ({ entity }) => {
-      const location = findLocationForEntityMeta(entity.metadata);
+      const url = findEditUrl(entity);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
         onClick: () => {
-          if (!location) return;
-          window.open(createEditLink(location), '_blank');
+          if (!url) return;
+          window.open(url, '_blank');
         },
       };
     },

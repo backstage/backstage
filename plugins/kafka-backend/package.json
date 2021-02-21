@@ -50,6 +50,6 @@
   },
   "files": [
     "dist",
-    "schema.d.ts"
+    "config.d.ts"
   ]
 }

@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-import { UrlPatternDiscovery } from '@backstage/core';
+import { UrlPatternDiscovery, IdentityApi } from '@backstage/core';
 import { msw } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { FindingSummary, FossaApi, FossaClient } from './index';
 
 const server = setupServer();
+
+const identityApi: IdentityApi = {
+  getUserId() {
+    return 'jane-fonda';
+  },
+  getProfile() {
+    return { email: 'jane-fonda@spotify.com' };
+  },
+  async getIdToken() {
+    return Promise.resolve('fake-id-token');
+  },
+  async signOut() {
+    return Promise.resolve();
+  },
+};
 
 describe('FossaClient', () => {
   msw.setupDefaultHandlers(server);
@@ -30,7 +45,11 @@ describe('FossaClient', () => {
   let client: FossaApi;
 
   beforeEach(() => {
-    client = new FossaClient({ discoveryApi, organizationId: '8736' });
+    client = new FossaClient({
+      discoveryApi,
+      identityApi,
+      organizationId: '8736',
+    });
   });
 
   it('should report finding summary', async () => {
@@ -137,7 +156,7 @@ describe('FossaClient', () => {
   });
 
   it('should skip organizationId', async () => {
-    client = new FossaClient({ discoveryApi });
+    client = new FossaClient({ discoveryApi, identityApi });
 
     server.use(
       rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {

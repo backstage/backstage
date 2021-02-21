@@ -149,7 +149,7 @@ export const AlertSnoozeOptions: AlertSnoozeOption[] = [
     label: '1 Month',
   },
   {
-    duration: Duration.P3M,
+    duration: Duration.P90D,
     label: '1 Quarter',
   },
 ];

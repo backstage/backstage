@@ -66,7 +66,7 @@ Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md)
 
 So...feel ready to jump in? Let's do this. 👏🏻💯
 
-Start by reading our [Getting Started](https://backstage.io/docs/getting-started/) page. If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
+Start by reading our [Getting Started for Contributors](https://backstage.io/docs/getting-started/contributors) page to get yourself setup with a fresh copy of Backstage ready for your contributions. If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
 
 ## Coding Guidelines
 

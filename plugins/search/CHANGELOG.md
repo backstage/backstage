@@ -1,5 +1,34 @@
 # @backstage/plugin-search
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.3.0
+
+### Minor Changes
+
+- b3f0c3811: Migrated to new composability API, exporting the plugin instance as `searchPlugin`, and page as `SearchPage`. Due to the old router component also being called `SearchPage`, this is a breaking change. The old page component is now exported as `Router`, which can be used to maintain the old behavior.
+
+### Patch Changes
+
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.2.7
 
 ### Patch Changes

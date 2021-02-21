@@ -19,6 +19,7 @@ import {
   createApiFactory,
   createPlugin,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core';
 import { fossaApiRef, FossaClient } from './api';
 
@@ -27,10 +28,15 @@ export const fossaPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: fossaApiRef,
-      deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ configApi, discoveryApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new FossaClient({
           discoveryApi,
+          identityApi,
           organizationId: configApi.getOptionalString('fossa.organizationId'),
         }),
     }),

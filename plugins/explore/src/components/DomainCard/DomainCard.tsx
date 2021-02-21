@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DomainEntity } from '@backstage/catalog-model';
+import { DomainEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { ItemCard } from '@backstage/core';
 import {
+  EntityRefLinks,
   entityRoute,
   entityRouteParams,
+  getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { generatePath } from 'react-router-dom';
@@ -26,16 +28,27 @@ type DomainCardProps = {
   entity: DomainEntity;
 };
 
-export const DomainCard = ({ entity }: DomainCardProps) => (
-  <ItemCard
-    title={entity.metadata.name}
-    description={entity.metadata.description}
-    tags={entity.metadata.tags}
-    label="Explore"
-    // TODO: Use useRouteRef here to generate the path
-    href={generatePath(
-      `/catalog/${entityRoute.path}`,
-      entityRouteParams(entity),
-    )}
-  />
-);
+export const DomainCard = ({ entity }: DomainCardProps) => {
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  return (
+    <ItemCard
+      title={entity.metadata.name}
+      description={entity.metadata.description}
+      tags={entity.metadata.tags}
+      subtitle={
+        <EntityRefLinks
+          entityRefs={ownedByRelations}
+          defaultKind="group"
+          color="inherit"
+        />
+      }
+      label="Explore"
+      // TODO: Use useRouteRef here to generate the path
+      href={generatePath(
+        `/catalog/${entityRoute.path}`,
+        entityRouteParams(entity),
+      )}
+    />
+  );
+};

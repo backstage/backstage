@@ -1,5 +1,64 @@
 # @backstage/plugin-catalog-import
 
+## 0.4.1
+
+### Patch Changes
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/integration@0.5.0
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.4.0
+
+### Minor Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- 68dd79d83: The plugin has been refactored and is now based on a configurable state machine of 'analyze', 'prepare', 'review' & 'finish'.
+  Depending on the outcome of the 'analyze' stage, different flows are selected ('single-location', 'multiple-locations', 'no-location').
+  Each flow can define it's own components that guide the user.
+
+  During the refactoring, the `catalogRouteRef` property of the `CatalogImportPage` has been removed, so the `App.tsx` of the backstage apps need to be updated:
+
+  ```diff
+  // packages/app/src/App.tsx
+
+       <Route
+         path="/catalog-import"
+  -      element={<CatalogImportPage catalogRouteRef={catalogRouteRef} />}
+  +      element={<CatalogImportPage />}
+       />
+  ```
+
+### Patch Changes
+
+- 753bb4c40: Flatten the options of the `CatalogImportPage` from the `options` property to the `pullRequest` property.
+
+  ```diff
+  - <CatalogImportPage options={{ pullRequest: { disable: true } }} />
+  + <CatalogImportPage pullRequest={{ disable: true }} />
+  ```
+
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [72b96e880]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/catalog-client@0.3.6
+  - @backstage/integration@0.4.0
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
 ## 0.3.7
 
 ### Patch Changes
