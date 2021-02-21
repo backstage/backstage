@@ -153,6 +153,10 @@ class AppContextImpl implements AppContext {
     return this.app.getSystemIcon(key);
   }
 
+  getComponents(): AppComponents {
+    return this.app.getComponents();
+  }
+
   getProvider(): React.ComponentType<{}> {
     // eslint-disable-next-line no-console
     console.warn('appContext.getProvider() is deprecated and will be removed');
@@ -204,6 +208,10 @@ export class PrivateAppImpl implements BackstageApp {
 
   getSystemIcon(key: IconKey): IconComponent {
     return this.icons[key];
+  }
+
+  getComponents(): AppComponents {
+    return this.components;
   }
 
   getRoutes(): JSX.Element[] {

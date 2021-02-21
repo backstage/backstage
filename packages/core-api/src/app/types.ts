@@ -203,6 +203,11 @@ export type AppContext = {
   getSystemIcon(key: IconKey): IconComponent;
 
   /**
+   * Get the components registered for various purposes in the app.
+   */
+  getComponents(): AppComponents;
+
+  /**
    * @deprecated Will be removed
    */
   getProvider(): ComponentType<{}>;
