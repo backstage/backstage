@@ -88,22 +88,22 @@ export class ConfigReader implements Config {
     return [...new Set([...localKeys, ...fallbackKeys])];
   }
 
-  get(key?: string): JsonValue {
+  get<T = JsonValue>(key?: string): T {
     const value = this.getOptional(key);
     if (value === undefined) {
       throw new Error(errors.missing(this.fullKey(key ?? '')));
     }
-    return value;
+    return value as T;
   }
 
-  getOptional(key?: string): JsonValue | undefined {
+  getOptional<T = JsonValue>(key?: string): T | undefined {
     const value = this.readValue(key);
-    const fallbackValue = this.fallback?.getOptional(key);
+    const fallbackValue = this.fallback?.getOptional<T>(key);
 
     if (value === undefined) {
       return fallbackValue;
     } else if (fallbackValue === undefined) {
-      return value;
+      return value as T;
     }
 
     // Avoid merging arrays and primitive values, since that's how merging works for other
@@ -113,7 +113,7 @@ export class ConfigReader implements Config {
       { value: cloneDeep(fallbackValue) },
       { value },
       (into, from) => (!isObject(from) || !isObject(into) ? from : undefined),
-    ).value;
+    ).value as T;
   }
 
   getConfig(key: string): ConfigReader {
