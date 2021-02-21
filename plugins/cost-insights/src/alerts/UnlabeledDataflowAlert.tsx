@@ -28,13 +28,20 @@ export class UnlabeledDataflowAlert implements Alert {
   data: UnlabeledDataflowData;
   status?: AlertStatus;
 
-  url = '/cost-insights/labeling-jobs';
-  title = 'Add labels to workflows';
-  subtitle =
-    'Labels show in billing data, enabling cost insights for each workflow.';
-
   constructor(data: UnlabeledDataflowData) {
     this.data = data;
+  }
+
+  get url() {
+    return '/cost-insights/labeling-jobs';
+  }
+
+  get title() {
+    return 'Add labels to workflows';
+  }
+
+  get subtitle() {
+    return 'Labels show in billing data, enabling cost insights for each workflow.';
   }
 
   get element() {

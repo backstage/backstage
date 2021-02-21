@@ -27,16 +27,20 @@ import { Alert, ProjectGrowthData } from '../types';
 export class ProjectGrowthAlert implements Alert {
   data: ProjectGrowthData;
 
-  url = '/cost-insights/investigating-growth';
-  subtitle =
-    'Cost growth outpacing business growth is unsustainable long-term.';
-
   constructor(data: ProjectGrowthData) {
     this.data = data;
   }
 
+  get url() {
+    return '/cost-insights/investigating-growth';
+  }
+
   get title() {
     return `Investigate cost growth in project ${this.data.project}`;
+  }
+
+  get subtitle() {
+    return 'Cost growth outpacing business growth is unsustainable long-term.';
   }
 
   get element() {
