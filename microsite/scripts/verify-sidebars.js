@@ -33,7 +33,7 @@ for (let id of ids) {
   const { next, previous } = metadata[id];
 
   if (next && !ids.includes(next)) {
-    errors.push(`Next ${next} does not exists in ${id}.`);
+    errors.push(`Next ${next} does not exist in ${id}.`);
   }
 
   if (previous && !ids.includes(previous)) {
