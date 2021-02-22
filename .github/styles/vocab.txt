@@ -204,6 +204,7 @@ octokit
 oidc
 onboarding
 pagerduty
+pageview
 parallelization
 plantuml
 postgres
