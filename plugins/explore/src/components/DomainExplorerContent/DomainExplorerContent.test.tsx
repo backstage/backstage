@@ -17,9 +17,10 @@
 import { DomainEntity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { render, waitFor } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { catalogEntityRouteRef } from '../../routes';
 import { DomainExplorerContent } from './DomainExplorerContent';
 
 describe('<DomainExplorerContent />', () => {
@@ -33,11 +34,9 @@ describe('<DomainExplorerContent />', () => {
   };
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-    <MemoryRouter>
-      <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
-        {children}
-      </ApiProvider>
-    </MemoryRouter>
+    <ApiProvider apis={ApiRegistry.with(catalogApiRef, catalogApi)}>
+      {children}
+    </ApiProvider>
   );
 
   beforeEach(() => {
@@ -69,9 +68,16 @@ describe('<DomainExplorerContent />', () => {
     ];
     catalogApi.getEntities.mockResolvedValue({ items: entities });
 
-    const { getByText } = render(<DomainExplorerContent />, {
-      wrapper: Wrapper,
-    });
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <DomainExplorerContent />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
+    );
 
     await waitFor(() => {
       expect(getByText('artists')).toBeInTheDocument();
@@ -82,9 +88,16 @@ describe('<DomainExplorerContent />', () => {
   it('renders empty state', async () => {
     catalogApi.getEntities.mockResolvedValue({ items: [] });
 
-    const { getByText } = render(<DomainExplorerContent />, {
-      wrapper: Wrapper,
-    });
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <DomainExplorerContent />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
+    );
 
     await waitFor(() =>
       expect(getByText('No domains to display')).toBeInTheDocument(),
@@ -95,9 +108,16 @@ describe('<DomainExplorerContent />', () => {
     const catalogError = new Error('Network timeout');
     catalogApi.getEntities.mockRejectedValueOnce(catalogError);
 
-    const { getByText } = render(<DomainExplorerContent />, {
-      wrapper: Wrapper,
-    });
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <DomainExplorerContent />
+      </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
+    );
 
     await waitFor(() =>
       expect(getByText(/Could not load domains/)).toBeInTheDocument(),

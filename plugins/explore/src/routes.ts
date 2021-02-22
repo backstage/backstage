@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { createExternalRouteRef, createRouteRef } from '@backstage/core';
 
 const NoIcon = () => null;
 
 export const exploreRouteRef = createRouteRef({
   icon: NoIcon,
   title: 'Explore',
+});
+
+export const catalogEntityRouteRef = createExternalRouteRef({
+  id: 'catalog-entity',
+  params: ['namespace', 'kind', 'name'],
 });
