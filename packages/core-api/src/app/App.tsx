@@ -217,8 +217,6 @@ export class PrivateAppImpl implements BackstageApp {
   getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
 
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
-
     const { NotFoundErrorPage } = this.components;
 
     for (const plugin of this.plugins.values()) {
@@ -252,13 +250,6 @@ export class PrivateAppImpl implements BackstageApp {
             routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
-          case 'feature-flag': {
-            featureFlagsApi.registerFlag({
-              name: output.name,
-              pluginId: plugin.getId(),
-            });
-            break;
-          }
           default:
             break;
         }
@@ -278,6 +269,25 @@ export class PrivateAppImpl implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const appContext = new AppContextImpl(this);
+    const apiHolder = this.getApiHolder();
+
+    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+    for (const plugin of this.plugins.values()) {
+      for (const output of plugin.output()) {
+        switch (output.type) {
+          case 'feature-flag': {
+            featureFlagsApi.registerFlag({
+              name: output.name,
+              pluginId: plugin.getId(),
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
@@ -315,7 +325,7 @@ export class PrivateAppImpl implements BackstageApp {
       this.configApi = loadedConfig.api;
 
       return (
-        <ApiProvider apis={this.getApiHolder()}>
+        <ApiProvider apis={apiHolder}>
           <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider
