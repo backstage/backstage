@@ -191,6 +191,27 @@ techdocs:
 Refer to the
 [official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html).
 
+**3c. Authentication using an assumed role** Users with multiple AWS accounts
+may want to use a role for S3 storage that is in a different AWS account. Using
+the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
+to assume a role before accessing S3.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region:
+        $env: AWS_REGION
+      credentials:
+        roleArn: arn:aws:iam::123456789012:role/my-backstage-role
+```
+
+Note: Assuming a role requires that primary credentials are already configured
+at `AWS.config.credentials`. Read more about
+[assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
+
 **4. That's it!**
 
 Your Backstage app is now ready to use AWS S3 for TechDocs, to store and read
