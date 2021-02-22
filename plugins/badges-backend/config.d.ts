@@ -20,7 +20,8 @@ export interface Config {
    *
    * The `label` and `message` fields may use templating to support
    * dynamic content, based on context. Use same syntax as for
-   * javascript template literals, but with double `$$`.
+   * javascript template literals, but with `_` instead of `$`,
+   * e.g. `_{context.variable.name}`.
    *
    */
   badges?: {
@@ -35,12 +36,13 @@ export interface Config {
        * Available badge kinds:
        *
        *   * `entity` The entity data is available as `entity` in the template.
+       *   * `entity_url` The (frontend) URL to view the entity in Backstage.
        *
        * Default context for all badges:
        *
        *   * `app.title` As configured or defaults to "Backstage".
        *
-       * @visibility: frontend
+       * @visibility frontend
        */
       kind?: 'entity';
 
@@ -51,14 +53,25 @@ export interface Config {
       label: string;
 
       /**
-       * The badge color. Default: `#36BAA2`.
+       * The badge message.
+       */
+      message: string;
+
+      /**
+       * The message color. Default: `#36BAA2`.
        */
       color?: string;
 
       /**
-       * The badge message.
+       * The label color. Default: `gray`.
        */
-      message: string;
+      labelColor?: string;
+
+      /**
+       * Visual design of the badge. One of: 'plastic', 'flat', 'flat-square',
+       * 'for-the-badge' or 'social'.
+       */
+      style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
     };
   };
 }

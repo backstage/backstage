@@ -23,10 +23,10 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { BadgesApi } from '../api';
+import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 
 export interface RouterOptions {
-  badgesApi?: BadgesApi;
+  badgeBuilder: BadgeBuilder;
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -36,27 +36,53 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-
   const logger = options.logger.child({ plugin: 'badges' });
-  const badgesConfig = options.config.getOptional('badges') ?? {};
   const title = options.config.getString('app.title') || 'Backstage';
-  const badgesApi = options.badgesApi || new BadgesApi(logger, badgesConfig);
+  const catalogUrl = `${options.config.getString('app.baseUrl')}/catalog`;
+  const badgesConfig = options.config.getOptional('badges') ?? {};
+  const badgeBuilder =
+    options.badgeBuilder || new DefaultBadgeBuilder(logger, badgesConfig);
 
   router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
-    const entity = await getEntity(logger, options.discovery, req.params);
+    const { badgeId } = req.params;
+    let badge = await badgeBuilder.getBadgeConfig(badgeId);
+    if (badge.kind && badge.kind !== 'entity') {
+      badge = {
+        label: 'Badge kind error',
+        message: `${badgeId} is for ${badge.kind} not entity`,
+        color: 'red',
+      };
+    }
+
+    const entityUri = getEntityUri(req.params);
+    const entity = await getEntity(logger, options.discovery, entityUri);
     if (!entity) {
       res.status(400).send(`Unknown entity`);
       return;
     }
 
-    const { badgeId } = req.params;
-    const badge = badgesApi.getBadge('entity', badgeId, {
-      app: { title },
-      entity,
+    let format =
+      req.accepts(['image/svg+xml', 'application/json']) || 'image/svg+xml';
+    if (req.query.format === 'json') {
+      format = 'application/json';
+    }
+
+    if (req.query.style) {
+      badge.style = req.query.style;
+    }
+
+    const data = await badgeBuilder.createBadge({
+      config: badge,
+      context: {
+        app: { title },
+        entity,
+        entity_url: `${catalogUrl}/${entityUri}`,
+      },
+      format: format === 'application/json' ? 'json' : 'svg',
     });
 
-    res.setHeader('Content-Type', 'image/svg+xml');
-    res.status(200).send(badge);
+    res.setHeader('Content-Type', format);
+    res.status(200).send(data);
   });
 
   router.use(errorHandler());
@@ -64,18 +90,22 @@ export async function createRouter(
   return router;
 }
 
-async function getEntity(logger, discovery, params) {
-  const catalogUrl = await discovery.getBaseUrl('catalog');
+function getEntityUri(params) {
   const { kind, namespace, name } = params;
+  return `${kind}/${namespace}/${name}`;
+}
+
+async function getEntity(logger, discovery, entityUri) {
+  const catalogUrl = await discovery.getBaseUrl('catalog');
 
   try {
     const entity = (await (
-      await fetch(`${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`)
+      await fetch(`${catalogUrl}/entities/by-name/${entityUri}`)
     ).json()) as Entity;
 
     return entity;
   } catch (err) {
-    const msg = `Unable to get entity ${kind}/${namespace}/${name}, error ${err}`;
+    const msg = `Unable to get entity ${entityUri}, error ${err}`;
     logger.info(msg);
     return null;
   }

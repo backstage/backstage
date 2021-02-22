@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { BadgesApi } from './BadgesApi';
+export { DefaultBadgeBuilder } from './DefaultBadgeBuilder';
+export * from './types';

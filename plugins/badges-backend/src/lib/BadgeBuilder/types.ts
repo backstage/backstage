@@ -13,3 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+export interface BadgeConfig {
+  kind?: 'entity';
+  label: string;
+  message: string;
+  color?: string;
+  labelColor?: string;
+  style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
+  links?: [string, string];
+}
+
+export type BadgeOptions = {
+  context: object;
+  config: BadgeConfig;
+  format: 'svg' | 'json';
+};
+
+export type BadgeBuilder = {
+  createBadge(options: BadgeOptions): Promise<string>;
+  getBadgeConfig(badgeId: string): Promise<BadgeConfig>;
+};
