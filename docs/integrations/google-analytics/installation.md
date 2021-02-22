@@ -1,6 +1,7 @@
 ---
 id: installation
 title: Google Analytics Installation
+sidebar_label: Installation
 # prettier-ignore
 description: Adding Google Analytics to Your App
 ---
