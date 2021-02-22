@@ -60,6 +60,16 @@ export async function createRouter(
         res.status(200).json(entities.map(fieldMapper));
       })
       .post('/entities', async (req, res) => {
+        /*
+         * NOTE: THIS METHOD IS DEPRECATED AND NOT RECOMMENDED TO USE
+         *
+         * Posting entities to this method has unclear semantics and will not
+         * properly subject them to limitations, processing, or resolution of
+         * relations.
+         *
+         * It stays around in the service for the time being, but may be
+         * removed or change semantics at any time without prior notice.
+         */
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
