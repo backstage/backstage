@@ -23,6 +23,7 @@ import os from 'os';
 import path from 'path';
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
 /**
  * @param sourceFile Relative path to entity root dir. Contains either / or \ as file separator
  * depending upon the OS.
@@ -49,14 +50,20 @@ export class BlockBlobClient {
   }
 
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-    return Promise.resolve({
-      _response: {
-        request: {
-          url: `https://example.blob.core.windows.net`,
-        } as any,
-        status: 200,
-        headers: {} as any,
-      },
+    return new Promise((resolve, reject) => {
+      if (!fs.existsSync(source)) {
+        reject(`The file ${source} does not exist`);
+      } else {
+        resolve({
+          _response: {
+            request: {
+              url: `https://example.blob.core.windows.net`,
+            } as any,
+            status: 200,
+            headers: {} as any,
+          },
+        });
+      }
     });
   }
 
@@ -65,17 +72,18 @@ export class BlockBlobClient {
   }
 
   download() {
+    const filePath = path.join(rootDir, this.blobName);
     const emitter = new EventEmitter();
     process.nextTick(() => {
-      if (fs.existsSync(this.blobName)) {
-        emitter.emit('data', Buffer.from(fs.readFileSync(this.blobName)));
+      if (fs.existsSync(filePath)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+        emitter.emit('end');
       } else {
         emitter.emit(
           'error',
-          new Error(`The file ${this.blobName} doest not exist!`),
+          new Error(`The file ${filePath} does not exist !`),
         );
       }
-      emitter.emit('end');
     });
     return Promise.resolve({
       readableStreamBody: emitter,
