@@ -15,11 +15,12 @@ import {
   CatalogIndexPage,
   CatalogEntityPage,
 } from '@backstage/plugin-catalog';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
-import { SearchPage as SearchRouter } from '@backstage/plugin-search';
-import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+import { TechRadarPage } from '@backstage/plugin-tech-radar';
+import { SearchPage } from '@backstage/plugin-search';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import { ApiExplorerPage } from '@backstage/plugin-api-docs';
 
 import { EntityPage } from './components/catalog/EntityPage';
 import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
@@ -36,7 +37,6 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const deprecatedAppRoutes = app.getRoutes();
 
 const App = () => (
   <AppProvider>
@@ -54,19 +54,16 @@ const App = () => (
           >
             <EntityPage />
           </Route>
-          <Route path="/docs" element={<DocsRouter />} />
+          <Route path="/docs" element={<TechdocsPage />} />
           <Route path="/create" element={<ScaffolderPage />} />
+          <Route path="/api-docs" element={<ApiExplorerPage />} />
           <Route
             path="/tech-radar"
-            element={<TechRadarRouter width={1500} height={800} />}
+            element={<TechRadarPage width={1500} height={800} />}
           />
           <Route path="/catalog-import" element={<CatalogImportPage />} />
-          <Route
-            path="/search"
-            element={<SearchRouter/>}
-          />
-          <Route path="/settings" element={<SettingsRouter />} />
-          {deprecatedAppRoutes}
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/settings" element={<UserSettingsPage />} />
         </FlatRoutes>
       </SidebarPage>
     </AppRouter>
