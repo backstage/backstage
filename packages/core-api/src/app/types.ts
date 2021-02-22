@@ -187,6 +187,8 @@ export type BackstageApp = {
 
   /**
    * Routes component that contains all routes for plugin pages in the app.
+   *
+   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
    */
   getRoutes(): JSX.Element[];
 };
