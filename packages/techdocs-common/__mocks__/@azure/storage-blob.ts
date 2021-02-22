@@ -50,20 +50,17 @@ export class BlockBlobClient {
   }
 
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-    return new Promise((resolve, reject) => {
-      if (!fs.existsSync(source)) {
-        reject(`The file ${source} does not exist`);
-      } else {
-        resolve({
-          _response: {
-            request: {
-              url: `https://example.blob.core.windows.net`,
-            } as any,
-            status: 200,
-            headers: {} as any,
-          },
-        });
-      }
+    if (!fs.existsSync(source)) {
+      return Promise.reject(new Error(`The file ${source} does not exist`));
+    }
+    return Promise.resolve({
+      _response: {
+        request: {
+          url: `https://example.blob.core.windows.net`,
+        } as any,
+        status: 200,
+        headers: {} as any,
+      },
     });
   }
 
