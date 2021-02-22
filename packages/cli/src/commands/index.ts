@@ -77,13 +77,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
 
   program
-    .command('app:diff')
-    .option('--check', 'Fail if changes are required')
-    .option('--yes', 'Apply all changes')
-    .description('Diff an existing app with the creation template')
-    .action(lazy(() => import('./app/diff').then(m => m.default)));
-
-  program
     .command('create-plugin')
     .option(
       '--backend',
