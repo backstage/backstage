@@ -57,7 +57,7 @@ import {
   routePathCollector,
 } from '../routing/collectors';
 import { RoutingProvider, validateRoutes } from '../routing/hooks';
-import { ExternalRouteRef } from '../routing/RouteRef';
+import { ExternalRouteRef } from '../routing/types';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
 import { AppThemeProvider } from './AppThemeProvider';

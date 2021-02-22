@@ -25,23 +25,22 @@ import {
 } from '../extensions/traversal';
 import { createPlugin } from '../plugin';
 import {
-  routePathCollector,
-  routeParentCollector,
   routeObjectCollector,
+  routeParentCollector,
+  routePathCollector,
 } from './collectors';
 import {
-  useRouteRef,
-  RoutingProvider,
-  validateRoutes,
   RouteFunc,
+  RoutingProvider,
+  useRouteRef,
+  validateRoutes,
 } from './hooks';
 import {
-  createRouteRef,
   createExternalRouteRef,
-  ExternalRouteRef,
+  createRouteRef,
   RouteRefConfig,
 } from './RouteRef';
-import { RouteRef } from './types';
+import { ExternalRouteRef, RouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',

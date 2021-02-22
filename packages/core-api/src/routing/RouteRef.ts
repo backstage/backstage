@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteRef } from './types';
 import { IconComponent } from '../icons';
+import { ExternalRouteRef, RouteRef } from './types';
 
 export type RouteRefConfig<Params extends { [param in string]: string }> = {
   params?: Array<keyof Params>;
@@ -64,23 +64,34 @@ export function createRouteRef<
   return new AbsoluteRouteRef<Params>(config);
 }
 
-export class ExternalRouteRef {
-  private constructor(id: string) {
-    this.toString = () => `externalRouteRef{${id}}`;
-  }
-}
-
-export type ExternalRouteRefOptions = {
+export type ExternalRouteRefConfig<
+  Params extends { [param in string]: string }
+> = {
   /**
    * An identifier for this route, used to identify it in error messages
    */
   id: string;
+  params?: Array<keyof Params>;
 };
 
-export function createExternalRouteRef(
-  options: ExternalRouteRefOptions,
-): ExternalRouteRef {
-  return new ((ExternalRouteRef as unknown) as {
-    new (id: string): ExternalRouteRef;
-  })(options.id);
+export class BindableExternalRouteRef<
+  Params extends { [param in string]: string }
+> {
+  constructor(private readonly config: ExternalRouteRefConfig<Params>) {}
+
+  toString() {
+    return `externalRouteRef{${this.config.id}}`;
+  }
+}
+
+export function createExternalRouteRef<
+  // Params is the type that we care about and the one to be embedded in the route ref.
+  // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
+  Params extends { [param in ParamKey]: string },
+  // ParamKey is here to make sure the Params type properly has its keys narrowed down
+  // to only the elements of params. Defaulting to never makes sure we end up with
+  // Param = {} if the params array is empty.
+  ParamKey extends string = never
+>(config: ExternalRouteRefConfig<Params>): ExternalRouteRef<Params> {
+  return new BindableExternalRouteRef(config);
 }

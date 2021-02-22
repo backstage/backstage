@@ -27,6 +27,11 @@ export type RouteRef<Params extends { [param in string]: string } = {}> = {
 
 export type AnyRouteRef = RouteRef<any>;
 
+// @ts-ignore, we're just embedding the Params type for usage in other places
+export type ExternalRouteRef<
+  Params extends { [param in string]: string } = {}
+> = {};
+
 /**
  * This type should not be used
  * @deprecated
