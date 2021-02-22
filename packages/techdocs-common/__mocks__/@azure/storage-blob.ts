@@ -50,17 +50,20 @@ export class BlockBlobClient {
   }
 
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
-    if (!fs.existsSync(source)) {
-      return Promise.reject(new Error(`The file ${source} does not exist`));
-    }
-    return Promise.resolve({
-      _response: {
-        request: {
-          url: `https://example.blob.core.windows.net`,
-        } as any,
-        status: 200,
-        headers: {} as any,
-      },
+    return new Promise((resolve, reject) => {
+      if (!fs.existsSync(source)) {
+        reject(`The file ${source} does not exist`);
+      } else {
+        resolve({
+          _response: {
+            request: {
+              url: `https://example.blob.core.windows.net`,
+            } as any,
+            status: 200,
+            headers: {} as any,
+          },
+        });
+      }
     });
   }
 
@@ -69,17 +72,18 @@ export class BlockBlobClient {
   }
 
   download() {
+    const filePath = path.join(rootDir, this.blobName);
     const emitter = new EventEmitter();
     process.nextTick(() => {
-      if (fs.existsSync(this.blobName)) {
-        emitter.emit('data', Buffer.from(fs.readFileSync(this.blobName)));
+      if (fs.existsSync(filePath)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+        emitter.emit('end');
       } else {
         emitter.emit(
           'error',
-          new Error(`The file ${this.blobName} doest not exist!`),
+          new Error(`The file ${filePath} does not exist !`),
         );
       }
-      emitter.emit('end');
     });
     return Promise.resolve({
       readableStreamBody: emitter,
