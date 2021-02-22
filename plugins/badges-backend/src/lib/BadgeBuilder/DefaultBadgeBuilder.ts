@@ -15,41 +15,46 @@
  */
 
 import { Logger } from 'winston';
-import { makeBadge, ValidationError } from 'badge-maker';
-import { BadgeBuilder, BadgeConfig, BadgeOptions } from './types';
+import { makeBadge } from 'badge-maker';
+import { JsonObject } from '@backstage/config';
+import {
+  BadgeBuilder,
+  BadgeConfig,
+  BadgeOptions,
+  BadgeStyle,
+  BadgeStyles,
+} from './types';
 import { interpolate } from '../../utils';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(
     private readonly logger: Logger,
-    private readonly config: { [id: string]: BadgeConfig },
+    private readonly config: JsonObject,
   ) {}
 
-  public async getBadgeConfig(badgeId: string): BadgeConfig {
-    return (
-      this.config[badgeId] ||
-      this.config.default || {
+  public async getBadgeConfig(badgeId: string): Promise<BadgeConfig> {
+    return ((this.config[badgeId] as unknown) ||
+      (this.config.default as unknown) || {
         label: 'Unknown badge ID',
         message: badgeId,
         color: 'red',
-      }
-    );
+      }) as BadgeConfig;
   }
 
-  public async createBadge(options: BadgeOptions): string {
+  public async createBadge(options: BadgeOptions): Promise<string> {
     const { context, config: badge } = options;
     const params = {
       label: this.render(badge.label, context),
       message: this.render(badge.message, context),
       color: badge.color || '#36BAA2',
-    };
+    } as BadgeConfig;
 
     if (badge.labelColor) {
       params.labelColor = badge.labelColor;
     }
 
-    if (badge.style) {
-      params.style = badge.style;
+    if (BadgeStyles.includes(badge.style as BadgeStyle)) {
+      params.style = badge.style as BadgeStyle;
     }
 
     switch (options.format) {
@@ -90,6 +95,9 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
     try {
       return interpolate(template.replace(/_{/g, '${'), context);
     } catch (err) {
+      this.logger.info(
+        `badge template error: ${err}. In template: "${template}"`,
+      );
       return `${err} [${template}]`;
     }
   }

@@ -17,7 +17,7 @@
 /**
  * adapted from https://stackoverflow.com/a/41015840/444060
  */
-export function interpolate(template, params) {
+export function interpolate(template: string, params: object): string {
   const names = Object.keys(params);
   const vals = Object.values(params);
   // eslint-disable-next-line no-new-func

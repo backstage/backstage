@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
+export const BadgeStyles = [
+  'plastic',
+  'flat',
+  'flat-square',
+  'for-the-badge',
+  'social',
+] as const;
+export type BadgeStyle = typeof BadgeStyles[number];
+
 export interface BadgeConfig {
   kind?: 'entity';
   label: string;
   message: string;
   color?: string;
   labelColor?: string;
-  style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
+  style?: BadgeStyle;
   title?: string;
   description?: string;
   link?: string;

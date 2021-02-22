@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 });
 
 type Props = {
-  onShowBadgesDialog: () => void;
+  onShowBadgesDialog?: () => void;
   onUnregisterEntity: () => void;
 };
 

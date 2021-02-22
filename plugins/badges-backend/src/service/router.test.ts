@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import express from 'express';
-import request from 'supertest';
-import { BadgesApi } from '../api';
+import * as winston from 'winston';
+import {
+  loadBackendConfig,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 import { createRouter } from './router';
-import {} from '../api/types';
 
-describe('createRouter', () => {});
+describe('createRouter', () => {
+  it('works', async () => {
+    const logger = winston.createLogger();
+    const config = await loadBackendConfig({ logger, argv: [] });
+    const discovery = SingleHostDiscovery.fromConfig(config);
+    const router = await createRouter({
+      config,
+      logger,
+      discovery,
+    });
+    expect(router).toBeDefined();
+  });
+});

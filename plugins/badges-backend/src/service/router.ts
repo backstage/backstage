@@ -22,11 +22,17 @@ import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
-import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
+import { Entity } from '@backstage/catalog-model';
+import { Config, JsonObject } from '@backstage/config';
+import {
+  BadgeBuilder,
+  BadgeStyle,
+  BadgeStyles,
+  DefaultBadgeBuilder,
+} from '../lib/BadgeBuilder';
 
 export interface RouterOptions {
-  badgeBuilder: BadgeBuilder;
+  badgeBuilder?: BadgeBuilder;
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -39,9 +45,12 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'badges' });
   const title = options.config.getString('app.title') || 'Backstage';
   const catalogUrl = `${options.config.getString('app.baseUrl')}/catalog`;
-  const badgesConfig = options.config.getOptional('badges') ?? {};
+  const badgesConfig = (options.config.getOptional('badges') ??
+    {}) as JsonObject;
   const badgeBuilder =
     options.badgeBuilder || new DefaultBadgeBuilder(logger, badgesConfig);
+
+  logger.debug(`loading badges`);
 
   router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
     const { badgeId } = req.params;
@@ -55,7 +64,7 @@ export async function createRouter(
     }
 
     const entityUri = getEntityUri(req.params);
-    const entity = await getEntity(logger, options.discovery, entityUri);
+    const entity = await getEntity(options.discovery, entityUri);
     if (!entity) {
       res.status(400).send(`Unknown entity`);
       return;
@@ -67,8 +76,8 @@ export async function createRouter(
       format = 'application/json';
     }
 
-    if (req.query.style) {
-      badge.style = req.query.style;
+    if (BadgeStyles.includes(req.query.style as BadgeStyle)) {
+      badge.style = req.query.style as BadgeStyle;
     }
 
     const data = await badgeBuilder.createBadge({
@@ -90,23 +99,20 @@ export async function createRouter(
   return router;
 }
 
-function getEntityUri(params) {
+function getEntityUri(params: JsonObject): string {
   const { kind, namespace, name } = params;
   return `${kind}/${namespace}/${name}`;
 }
 
-async function getEntity(logger, discovery, entityUri) {
+async function getEntity(
+  discovery: PluginEndpointDiscovery,
+  entityUri: string,
+): Promise<Entity> {
   const catalogUrl = await discovery.getBaseUrl('catalog');
 
-  try {
-    const entity = (await (
-      await fetch(`${catalogUrl}/entities/by-name/${entityUri}`)
-    ).json()) as Entity;
+  const entity = (await (
+    await fetch(`${catalogUrl}/entities/by-name/${entityUri}`)
+  ).json()) as Entity;
 
-    return entity;
-  } catch (err) {
-    const msg = `Unable to get entity ${entityUri}, error ${err}`;
-    logger.info(msg);
-    return null;
-  }
+  return entity;
 }

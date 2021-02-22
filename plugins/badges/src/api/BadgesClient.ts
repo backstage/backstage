@@ -18,7 +18,7 @@ import { generatePath } from 'react-router';
 import { ConfigApi, DiscoveryApi } from '@backstage/core';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRoute } from '@backstage/plugin-catalog-react';
-import { BadgesApi, BadgeConfig, BadgeSpec } from './types';
+import { Badge, BadgesApi, BadgeConfig, BadgeSpec } from './types';
 
 export class BadgesClient implements BadgesApi {
   private readonly configApi: ConfigApi;
@@ -29,7 +29,7 @@ export class BadgesClient implements BadgesApi {
     this.discoveryApi = options.discoveryApi;
   }
 
-  public async getDefinedEntityBadges(entity: Entity): Badge[] {
+  public async getDefinedEntityBadges(entity: Entity): Promise<Badge[]> {
     const badges = [];
     const badgesConfig = this.configApi.getOptional('badges') ?? {};
     const entityBadgeUri = await this.getEntityBadgeUri(entity);
@@ -46,7 +46,10 @@ export class BadgesClient implements BadgesApi {
     return badges;
   }
 
-  private async getBadgeInfo(entityBadgeUri: string, badgeId: string): Badge {
+  private async getBadgeInfo(
+    entityBadgeUri: string,
+    badgeId: string,
+  ): Promise<Badge> {
     const badgeUrl = `${entityBadgeUri}/${badgeId}`;
     const spec = (await (
       await fetch(`${badgeUrl}?format=json`)
@@ -60,7 +63,7 @@ export class BadgesClient implements BadgesApi {
     };
   }
 
-  private async getEntityBadgeUri(entity: Entity): string {
+  private async getEntityBadgeUri(entity: Entity): Promise<string> {
     const routeParams = this.getEntityRouteParams(entity);
     const path = generatePath(entityRoute.path, routeParams);
     return `${await this.discoveryApi.getBaseUrl('badges')}/entity/${path}`;

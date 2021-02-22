@@ -22,14 +22,21 @@ export const badgesApiRef = createApiRef<BadgesApi>({
   description: 'Used to make requests to the badges backend',
 });
 
+export type BadgeStyle =
+  | 'plastic'
+  | 'flat'
+  | 'flat-square'
+  | 'for-the-badge'
+  | 'social';
+
 // should probably have this in a "badges-common" package
-interface BadgeConfig {
+export interface BadgeConfig {
   kind?: 'entity';
   label: string;
   message: string;
   color?: string;
   labelColor?: string;
-  style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
+  style?: BadgeStyle;
   title?: string;
   description?: string;
   link?: string;

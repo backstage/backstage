@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "^0.5.2",
+    "@backstage/catalog-model": "^0.7.1",
     "@backstage/config": "^0.1.2",
     "@types/express": "^4.17.6",
     "badge-maker": "^3.3.0",

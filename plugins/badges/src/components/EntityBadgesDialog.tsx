@@ -39,13 +39,13 @@ type Props = {
   entity: Entity;
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   codeBlock: {
     '& code': {
       whiteSpace: 'pre-wrap',
     },
   },
-}));
+});
 
 export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
   const theme = useTheme();
@@ -70,7 +70,7 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
       </DialogContentText>
       <Typography component="div" className={classes.codeBlock}>
         Copy the following snippet of markdown code for the badge:
-        <CodeSnippet text={markdown} showCopyCodeButton />
+        <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
       </Typography>
       <hr />
     </div>
