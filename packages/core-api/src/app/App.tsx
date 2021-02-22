@@ -64,6 +64,7 @@ import { AppThemeProvider } from './AppThemeProvider';
 import {
   AppComponents,
   AppConfigLoader,
+  AppContext,
   AppOptions,
   AppRouteBinder,
   BackstageApp,
@@ -139,6 +140,42 @@ function useConfigLoader(
   return { api: configReader };
 }
 
+class AppContextImpl implements AppContext {
+  constructor(private readonly app: PrivateAppImpl) {}
+
+  getPlugins(): BackstagePlugin<any, any>[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getPlugins() is deprecated and will be removed');
+    return this.app.getPlugins();
+  }
+
+  getSystemIcon(key: string): IconComponent {
+    return this.app.getSystemIcon(key);
+  }
+
+  getComponents(): AppComponents {
+    return this.app.getComponents();
+  }
+
+  getProvider(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getProvider() is deprecated and will be removed');
+    return this.app.getProvider();
+  }
+
+  getRouter(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRouter() is deprecated and will be removed');
+    return this.app.getRouter();
+  }
+
+  getRoutes(): JSX.Element[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRoutes() is deprecated and will be removed');
+    return this.app.getRoutes();
+  }
+}
+
 export class PrivateAppImpl implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
@@ -173,10 +210,12 @@ export class PrivateAppImpl implements BackstageApp {
     return this.icons[key];
   }
 
+  getComponents(): AppComponents {
+    return this.components;
+  }
+
   getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
-
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
     const { NotFoundErrorPage } = this.components;
 
@@ -211,13 +250,6 @@ export class PrivateAppImpl implements BackstageApp {
             routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
-          case 'feature-flag': {
-            featureFlagsApi.registerFlag({
-              name: output.name,
-              pluginId: plugin.getId(),
-            });
-            break;
-          }
           default:
             break;
         }
@@ -236,6 +268,27 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getProvider(): ComponentType<{}> {
+    const appContext = new AppContextImpl(this);
+    const apiHolder = this.getApiHolder();
+
+    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+    for (const plugin of this.plugins.values()) {
+      for (const output of plugin.output()) {
+        switch (output.type) {
+          case 'feature-flag': {
+            featureFlagsApi.registerFlag({
+              name: output.name,
+              pluginId: plugin.getId(),
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
@@ -272,8 +325,8 @@ export class PrivateAppImpl implements BackstageApp {
       this.configApi = loadedConfig.api;
 
       return (
-        <ApiProvider apis={this.getApiHolder()}>
-          <AppContextProvider app={this}>
+        <ApiProvider apis={apiHolder}>
+          <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider
                 routePaths={routePaths}
