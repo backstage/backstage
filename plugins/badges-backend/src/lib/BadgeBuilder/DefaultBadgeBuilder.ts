@@ -88,7 +88,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
 
   private render(template: string, context: object): string {
     try {
-      return interpolate(template.replace('_{', '${'), context);
+      return interpolate(template.replace(/_{/g, '${'), context);
     } catch (err) {
       return `${err} [${template}]`;
     }
