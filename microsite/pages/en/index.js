@@ -517,7 +517,12 @@ class Index extends React.Component {
             </Block.TextBox>
 
             <Breakpoint
-              wide={<img src={`${baseUrl}img/cards-plugins.png`} className="cust__plugins" />}
+              wide={
+                <img
+                  src={`${baseUrl}img/cards-plugins.png`}
+                  className="cust__plugins"
+                />
+              }
             />
           </Block.Container>
         </Block>
