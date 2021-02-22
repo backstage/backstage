@@ -39,15 +39,11 @@ class Index extends React.Component {
             </Block.TextBox>
             <Block.Graphics>
               <Block.Graphic
-                x={-12.5}
-                y={16}
-                width={120}
+                className="Block__Graphic__cust__laptop"
                 src={`${baseUrl}img/laptop.svg`}
               />
               <Block.Graphic
-                x={5.8}
-                y={20}
-                width={88}
+                className="Block__Graphic__cust__laptop_img"
                 src={`${baseUrl}animations/backstage-logos-hero-8.gif`}
               />
             </Block.Graphics>
@@ -276,9 +272,7 @@ class Index extends React.Component {
               wide={
                 <Block.Graphics>
                   <Block.Graphic
-                    x={-50}
-                    y={-2}
-                    width={200}
+                    className="Block__Graphic__cust"
                     src={`${baseUrl}img/cards.png`}
                   />
                 </Block.Graphics>
@@ -363,15 +357,11 @@ class Index extends React.Component {
               wide={
                 <Block.Graphics padding={0}>
                   <Block.Graphic
-                    x={-55}
-                    y={-5}
-                    width={210}
+                    className="Block__Graphic__cust__mkdocs"
                     src={`${baseUrl}img/techdocs-web.png`}
                   />
                   <Block.Graphic
-                    x={-55}
-                    y={-5}
-                    width={210}
+                    className="Block__Graphic__cust__mkdocs"
                     src={`${baseUrl}img/techdocs2.gif`}
                   />
                 </Block.Graphics>
@@ -527,7 +517,7 @@ class Index extends React.Component {
             </Block.TextBox>
 
             <Breakpoint
-              wide={<img src={`${baseUrl}img/cards-plugins.png`} />}
+              wide={<img src={`${baseUrl}img/cards-plugins.png`} className="cust__plugins" />}
             />
           </Block.Container>
         </Block>

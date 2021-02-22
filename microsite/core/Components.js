@@ -66,7 +66,7 @@ Block.Graphics = ({ padding, children }) => {
 };
 Block.Graphic = props => {
   /* Coordinates and size are in % of graphics container size, e.g. width={50} is 50% of parent width */
-  const { x = 0, y = 0, width = 0, src, className = '' } = props;
+  const { x, y, width, src, className = '' } = props;
   const style = Object.assign(
     { left: `${x}%`, top: `${y}%`, width: `${width}%` },
     props.style,

@@ -857,6 +857,8 @@ code {
   padding-bottom: 80px;
 }
 
+
+
 @media only screen and (max-width: 485px) {
   .Block__GraphicsContainer {
     max-width: calc(100vw - 40px);
@@ -1164,4 +1166,57 @@ code {
 /* Zoomed images using the medium-zoom library should be on top of screen. */
 .medium-zoom-image {
   z-index: 10000;
+}
+
+.Block__Graphic__cust{
+  width: 200%;
+  left: -50%;
+  top: -2%;
+}
+.Block__Graphic__cust__mkdocs{
+  width: 210%;
+  left: -55%;
+  top: -5%;
+}
+.Block__Graphic__cust__laptop{
+  width: 120%;
+  left: -12.5%;
+  top: 16%;
+}
+.Block__Graphic__cust__laptop_img{
+    width: 88%;
+    left: 5.8%;
+    top: 20%;
+}
+
+@media only screen and (min-width:1431px) and (max-width:1500px)
+{
+  .Block__GraphicsContainer {
+    margin: 0px;
+  }
+  .Banner{
+    margin:14px 97px;
+  }
+  .Block__TextBox{
+    padding:0px 50px;
+  }
+  .Block__Graphic__cust{
+    width: 195%;
+    left: -46%;
+  }
+  .Block__Graphic__cust__mkdocs{
+    width: 195%;
+    left: -46%;
+  }
+  .cust__plugins{
+    max-width: 93%;
+  }
+  .Block__Graphic__cust__laptop{
+    width: 100%;
+    left: -9.8%;
+    top: 16%;
+  }
+  .Block__Graphic__cust__laptop_img{
+    width: 73%;
+  }
 }
