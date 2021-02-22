@@ -20,6 +20,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
+import { catalogEntityRouteRef } from '../../routes';
 import { DomainExplorerContent } from './DomainExplorerContent';
 
 describe('<DomainExplorerContent />', () => {
@@ -71,6 +72,11 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
     );
 
     await waitFor(() => {
@@ -86,6 +92,11 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
     );
 
     await waitFor(() =>
@@ -101,6 +112,11 @@ describe('<DomainExplorerContent />', () => {
       <Wrapper>
         <DomainExplorerContent />
       </Wrapper>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
     );
 
     await waitFor(() =>

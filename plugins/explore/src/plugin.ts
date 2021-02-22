@@ -16,7 +16,7 @@
 
 import { createApiFactory, createPlugin } from '@backstage/core';
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
-import { exploreRouteRef } from './routes';
+import { catalogEntityRouteRef, exploreRouteRef } from './routes';
 import { exampleTools } from './util/examples';
 
 export const explorePlugin = createPlugin({
@@ -36,5 +36,8 @@ export const explorePlugin = createPlugin({
   ],
   routes: {
     explore: exploreRouteRef,
+  },
+  externalRoutes: {
+    catalogEntity: catalogEntityRouteRef,
   },
 });

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 import { DomainEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { ItemCard } from '@backstage/core';
+import { ItemCard, useRouteRef } from '@backstage/core';
 import {
   EntityRefLinks,
-  entityRoute,
   entityRouteParams,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
-import { generatePath } from 'react-router-dom';
+import { catalogEntityRouteRef } from '../../routes';
 
 type DomainCardProps = {
   entity: DomainEntity;
@@ -30,6 +29,7 @@ type DomainCardProps = {
 
 export const DomainCard = ({ entity }: DomainCardProps) => {
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
 
   return (
     <ItemCard
@@ -44,11 +44,7 @@ export const DomainCard = ({ entity }: DomainCardProps) => {
         />
       }
       label="Explore"
-      // TODO: Use useRouteRef here to generate the path
-      href={generatePath(
-        `/catalog/${entityRoute.path}`,
-        entityRouteParams(entity),
-      )}
+      href={catalogEntityRoute(entityRouteParams(entity))}
     />
   );
 };
