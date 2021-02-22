@@ -31,7 +31,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { badgesClientApiRef } from '../BadgesClientApi';
+import { badgesApiRef } from '../api';
 
 type Props = {
   open: boolean;
@@ -50,30 +50,31 @@ const useStyles = makeStyles(theme => ({
 export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
-  const badgesClientApi = useApi(badgesClientApiRef);
+  const badgesApi = useApi(badgesApiRef);
   const classes = useStyles();
 
   const { value: badges, loading, error } = useAsync(async () => {
-    const context = await badgesClientApi.getDefaultContext(entity);
-    return await badgesClientApi.getDefinedBadges('entity', context);
-  });
+    if (open) {
+      return await badgesApi.getDefinedEntityBadges(entity);
+    }
 
-  const content = (badges || []).map(
-    ({ id, title, description, url, target, markdown }) => (
-      <div key={id}>
-        <DialogContentText>
-          {title || description}
-          <br />
-          <img alt={description} src={url} />
-        </DialogContentText>
-        <Typography component="div" className={classes.codeBlock}>
-          Copy the following snippet of markdown code for the badge:
-          <CodeSnippet text={markdown} showCopyCodeButton />
-        </Typography>
-        <hr />
-      </div>
-    ),
-  );
+    return [];
+  }, [badgesApi, entity, open]);
+
+  const content = (badges || []).map(({ id, markdown, spec, url }) => (
+    <div key={id}>
+      <DialogContentText>
+        {spec.badge.title || spec.badge.description || id}
+        <br />
+        <img alt={spec.badge.description} src={url} />
+      </DialogContentText>
+      <Typography component="div" className={classes.codeBlock}>
+        Copy the following snippet of markdown code for the badge:
+        <CodeSnippet text={markdown} showCopyCodeButton />
+      </Typography>
+      <hr />
+    </div>
+  ));
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>

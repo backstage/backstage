@@ -13,27 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createPlugin,
-  createRoutableExtension,
-  createRouteRef,
-} from '@backstage/core';
-import BadgesDevPageComponent from './page';
 
-const devRouteRef = createRouteRef({
-  title: 'Badges (Dev Page)',
-});
-
-export const badgesDevPlugin = createPlugin({
-  id: 'badges-dev',
-  routes: {
-    root: devRouteRef,
-  },
-});
-
-export const BadgesDevPage = badgesDevPlugin.provide(
-  createRoutableExtension({
-    component: () => import('./page').then(m => m.default),
-    mountPoint: devRouteRef,
-  }),
-);
+export * from './BadgesClient';
+export * from './types';

@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export interface BadgeConfig {
+import { Entity } from '@backstage/catalog-model';
+import { createApiRef } from '@backstage/core';
+
+export const badgesApiRef = createApiRef<BadgesApi>({
+  id: 'plugin.badges.client',
+  description: 'Used to make requests to the badges backend',
+});
+
+// should probably have this in a "badges-common" package
+interface BadgeConfig {
   kind?: 'entity';
   label: string;
   message: string;
@@ -26,13 +35,22 @@ export interface BadgeConfig {
   link?: string;
 }
 
-export type BadgeOptions = {
-  context: object;
+export interface BadgeSpec {
+  /** The rendered data */
+  badge: BadgeConfig;
+  /** The configuration data, with placeholders and all */
   config: BadgeConfig;
-  format: 'svg' | 'json';
-};
+  /** The context used when rendering config -> badge */
+  context: object;
+}
 
-export type BadgeBuilder = {
-  createBadge(options: BadgeOptions): Promise<string>;
-  getBadgeConfig(badgeId: string): Promise<BadgeConfig>;
-};
+export interface Badge {
+  id: string;
+  markdown: string;
+  spec: BadgeSpec;
+  url: string;
+}
+
+export interface BadgesApi {
+  getDefinedEntityBadges(entity: Entity): Promise<Badge[]>;
+}

@@ -407,14 +407,14 @@ badges:
   pingback:
     kind: 'entity'
     description: 'Link back to _{app.title}'
-    target: '_{entity_url}'
+    link: '_{entity_url}'
     label: 'View _{entity.metadata.name} in'
     message: '_{app.title}'
 
   lifecycle:
     kind: 'entity'
     description: 'Entity lifecycle badge'
-    target: '_{entity_url}'
+    link: '_{entity_url}'
     label: 'Lifecycle'
     message: '_{entity.spec.lifecycle}'
 
@@ -422,14 +422,14 @@ badges:
     kind: 'entity'
     title: 'Resource Owner'
     description: 'Entity owner badge'
-    target: '_{entity_url}'
+    link: '_{entity_url}'
     label: 'Owner'
     message: '_{entity.spec.owner}'
     color: 'blue'
 
   docs:
     kind: 'entity'
-    target: '_{entity_url}/docs'
+    link: '_{entity_url}/docs'
     label: 'Documentation'
     message: '_{entity.metadata.name}'
     color: 'navyblue'

@@ -19,29 +19,9 @@ export interface Config {
   badges?: {
     [badgeId: string]: {
       /**
-       * Badge title, used as tooltip text in the markdown code.
-       *
        * @visibility frontend
        */
-      title?: string;
-
-      /**
-       * Badge description, used as alt text in the markdown code.
-       * Defaults to badge id.
-       *
-       * @visibility frontend
-       */
-      description?: string;
-
-      /**
-       * Badge target URL, turns badge into a link in the markdown code.
-       *
-       * For `entity` badges, there is a `entity_url` in the context
-       * that could be appropriate to use here.
-       *
-       * @visibility frontend
-       */
-      target?: string;
+      kind?: 'entity';
     };
   };
 }

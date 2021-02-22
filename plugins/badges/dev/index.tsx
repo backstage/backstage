@@ -15,14 +15,6 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { badgesPlugin, EntityBadgesCard } from '../src/plugin';
-import { badgesDevPlugin, BadgesDevPage } from './plugin';
+import { badgesPlugin } from '../src/plugin';
 
-createDevApp()
-  .registerPlugin(badgesPlugin)
-  .registerPlugin(badgesDevPlugin)
-  .addPage({
-    element: <BadgesDevPage />,
-    title: 'Dev Page',
-  })
-  .render();
+createDevApp().registerPlugin(badgesPlugin).render();

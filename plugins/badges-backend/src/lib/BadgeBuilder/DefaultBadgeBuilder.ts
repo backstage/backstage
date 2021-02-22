@@ -54,6 +54,15 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
 
     switch (options.format) {
       case 'json':
+        if (badge.title) {
+          params.title = this.render(badge.title, context);
+        }
+        if (badge.description) {
+          params.description = this.render(badge.description, context);
+        }
+        if (badge.link) {
+          params.link = this.render(badge.link, context);
+        }
         return JSON.stringify(
           {
             badge: params,
