@@ -25,8 +25,7 @@ import os from 'os';
 import path from 'path';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { PublisherBase, TechDocsMetadata } from './types';
-import type { Entity, EntityName } from '@backstage/catalog-model';
-import type { Logger } from 'winston';
+
 // NOTE: /packages/techdocs-common/__mocks__ is being used to mock Azure client library
 
 const createMockEntity = (annotations = {}) => {
@@ -224,21 +223,18 @@ describe('publishing with valid credentials', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      let error;
-      try {
-        await publisher.fetchTechDocsMetadata(entityNameMock);
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error).toEqual(
-        new Error(
-          `TechDocs metadata fetch failed, The file ${path.join(
-            entityRootDir,
-            'techdocs_metadata.json',
-          )} does not exist !`,
-        ),
-      );
+      await publisher
+        .fetchTechDocsMetadata(entityNameMock)
+        .catch(error =>
+          expect(error).toEqual(
+            new Error(
+              `TechDocs metadata fetch failed, The file ${path.join(
+                entityRootDir,
+                'techdocs_metadata.json',
+              )} does not exist !`,
+            ),
+          ),
+        );
     });
   });
 });

@@ -201,10 +201,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
             return;
           }
           body
-            .on('error', e => {
-              this.logger.error(e.message);
-              reject(e.message);
-            })
+            .on('error', reject)
             .on('data', chunk => {
               fileStreamChunks.push(chunk);
             })
