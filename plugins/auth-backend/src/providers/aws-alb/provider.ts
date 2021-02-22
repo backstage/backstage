@@ -82,9 +82,11 @@ export class AwsAlbAuthProvider implements AuthProviderRouteHandlers {
       } catch (e) {
         this.logger.error('exception occurred during JWT processing', e);
         res.status(401);
+        res.end();
       }
     } else {
       res.status(401);
+      res.end();
     }
   }
 

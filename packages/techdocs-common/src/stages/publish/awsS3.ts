@@ -240,7 +240,7 @@ export class AwsS3Publish implements PublisherBase {
           res.setHeader(headerKey, headerValue);
         }
 
-        res.json(await streamToBuffer(stream));
+        res.send(await streamToBuffer(stream));
       } catch (err) {
         this.logger.warn(err.message);
         res.status(404).json(err.message);

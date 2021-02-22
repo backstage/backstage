@@ -253,7 +253,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
           )) {
             res.setHeader(headerKey, headerValue);
           }
-          res.json(fileContent);
+          res.send(fileContent);
         });
       } catch (e) {
         this.logger.error(e.message);

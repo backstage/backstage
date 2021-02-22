@@ -75,7 +75,7 @@ export const makeRouter = (
       logger.error(
         `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
       );
-      res.status(500).send({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   });
 

@@ -111,7 +111,7 @@ export async function createRouter(
       const job = jobProcessor.get(params.jobId);
 
       if (!job) {
-        res.status(404).send({ error: 'job not found' });
+        res.status(404).json({ error: 'job not found' });
         return;
       }
 

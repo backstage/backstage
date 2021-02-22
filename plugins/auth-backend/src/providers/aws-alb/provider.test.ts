@@ -88,6 +88,7 @@ describe('AwsALBAuthProvider', () => {
     }),
   } as unknown) as express.Request;
   const mockResponse = ({
+    end: jest.fn(),
     header: () => jest.fn(),
     json: jest.fn().mockReturnThis(),
     status: jest.fn(),
@@ -173,6 +174,7 @@ describe('AwsALBAuthProvider', () => {
       await provider.refresh(mockRequest, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.end).toHaveBeenCalledTimes(1);
     });
   });
 });

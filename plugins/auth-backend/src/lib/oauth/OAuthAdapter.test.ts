@@ -172,7 +172,7 @@ describe('OAuthAdapter', () => {
 
     const mockResponse = ({
       cookie: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
 
@@ -206,8 +206,6 @@ describe('OAuthAdapter', () => {
     } as unknown) as express.Response;
 
     await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.status).toHaveBeenCalledTimes(1);
-    expect(mockResponse.status).toHaveBeenCalledWith(200);
     expect(mockResponse.json).toHaveBeenCalledTimes(1);
     expect(mockResponse.json).toHaveBeenCalledWith({
       ...mockResponseData,
@@ -233,14 +231,13 @@ describe('OAuthAdapter', () => {
     } as unknown) as express.Request;
 
     const mockResponse = ({
-      json: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
 
     await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.status).toHaveBeenCalledWith(406);
-    expect(mockResponse.json).toHaveBeenCalledTimes(1);
-    expect(mockResponse.json).toHaveBeenCalledWith(
+    expect(mockResponse.send).toHaveBeenCalledTimes(1);
+    expect(mockResponse.send).toHaveBeenCalledWith(
       'Refresh token not supported for provider: test-provider',
     );
   });

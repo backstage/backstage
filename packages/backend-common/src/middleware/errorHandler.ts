@@ -81,7 +81,8 @@ export function errorHandler(
     }
 
     res.status(status);
-    res.json(message);
+    res.setHeader('content-type', 'text/plain');
+    res.send(message);
   };
 }
 
