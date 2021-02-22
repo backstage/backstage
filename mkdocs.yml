@@ -70,6 +70,8 @@ nav:
           - Org Data: 'integrations/github/org.md'
       - LDAP:
           - Org Data: 'integrations/ldap/org.md'
+      - Google Analytics:
+          - Installation: 'integrations/google-analytics/installation.md'
   - Plugins:
       - Overview: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'

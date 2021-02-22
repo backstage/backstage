@@ -112,6 +112,11 @@
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Google Analytics",
+        "ids": ["integrations/google-analytics/installation"]
       }
     ],
     "Plugins": [
