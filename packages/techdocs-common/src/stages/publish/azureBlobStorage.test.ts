@@ -379,13 +379,16 @@ describe('error reporting', () => {
     it('should return an error if the techdocs_metadata.json file is not present', async () => {
       const entityNameMock = createMockEntityName();
 
-      await publisher
-        .fetchTechDocsMetadata(entityNameMock)
-        .catch(error =>
-          expect(error.message).toEqual(
-            expect.stringContaining('TechDocs metadata fetch'),
-          ),
-        );
+      let error;
+      try {
+        await publisher.fetchTechDocsMetadata(entityNameMock);
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error.message).toEqual(
+        expect.stringContaining('TechDocs metadata fetch'),
+      );
     });
   });
 });
