@@ -72,7 +72,11 @@ export function compileConfigSchemas(
  */
 export function mergeConfigSchemas(
   schemas: ConfigSchemaPackageEntry[],
-): { schema: JSONSchema; parser: Ajv } {
+): {
+  schema: JSONSchema;
+  parser: Ajv;
+  visibilityByPath: Map<string, ConfigVisibility>;
+} {
   // The ajv instance below is stateful and doesn't really allow for additional
   // output during validation. We work around this by having this extra piece
   // of state that we reset before each validation.

@@ -16,4 +16,8 @@
 
 export { mergeConfigSchemas } from './compile';
 export { loadConfigSchema } from './load';
-export type { ConfigSchema, ConfigVisibility } from './types';
+export type {
+  ConfigSchema,
+  ConfigSchemaPackageEntry,
+  ConfigVisibility,
+} from './types';
