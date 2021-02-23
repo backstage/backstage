@@ -46,4 +46,4 @@ jobs:
 
       - name: verify sidebars
         run: yarn verify:sidebars
-        working-directory: microsite    
+        working-directory: microsite
