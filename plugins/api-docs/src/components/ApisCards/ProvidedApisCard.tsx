@@ -72,7 +72,7 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div>
-          This {entity.kind.toLowerCase()} does not provide it's own APIs.{' '}
+          This {entity.kind.toLowerCase()} does not provide its own APIs.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
             (Learn how to change this.)
           </Link>
