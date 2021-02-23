@@ -46,6 +46,7 @@ import {
   InputError,
   NotFoundError,
   PluginDatabaseManager,
+  UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -53,6 +54,8 @@ import {
   TemplateEntityV1beta2,
   Entity,
 } from '@backstage/catalog-model';
+import { createFetchCookiecutterAction } from '../scaffolder/tasks/builtin';
+import { ScmIntegrations } from '@backstage/integration';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -61,6 +64,7 @@ export interface RouterOptions {
 
   logger: Logger;
   config: Config;
+  urlReader: UrlReader;
   dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
@@ -93,6 +97,7 @@ export async function createRouter(
     publishers,
     logger: parentLogger,
     config,
+    urlReader,
     dockerClient,
     database,
     catalogClient,
@@ -102,6 +107,7 @@ export async function createRouter(
   const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
   const entityClient = new CatalogEntityClient(catalogClient);
+  const integrations = ScmIntegrations.fromConfig(config);
 
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),
@@ -122,6 +128,14 @@ export async function createRouter(
     templaters,
     catalogClient,
   });
+  actionRegistry.register(
+    createFetchCookiecutterAction({
+      urlReader,
+      integrations,
+      dockerClient,
+      templaters,
+    }),
+  );
 
   worker.start();
 
