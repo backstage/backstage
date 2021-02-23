@@ -17,6 +17,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Breadcrumbs, Content, Link } from '@backstage/core';
 import {
+  Box,
   Typography,
   Paper,
   TableContainer,
@@ -33,9 +34,9 @@ import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    maxWidth: 720,
-  },
+  // root: {
+  //   maxWidth: 720,
+  // },
   table: {
     padding: theme.spacing(1),
   },
@@ -58,7 +59,7 @@ const BuildWithStepsView = () => {
         <Link to="../../..">Projects</Link>
         <Typography>Run</Typography>
       </Breadcrumbs>
-      <br />
+      <Box m={2} />
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
