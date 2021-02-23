@@ -171,7 +171,7 @@ export type BackstageApp = {
   /**
    * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: IconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent | undefined;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -202,7 +202,7 @@ export type AppContext = {
   /**
    * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: IconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent | undefined;
 
   /**
    * Get the components registered for various purposes in the app.

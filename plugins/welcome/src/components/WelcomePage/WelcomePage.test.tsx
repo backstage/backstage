@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import WelcomePage from './WelcomePage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import {
   ApiProvider,
   ApiRegistry,
-  errorApiRef,
   configApiRef,
   ConfigReader,
+  errorApiRef,
 } from '@backstage/core';
+import { renderInTestApp } from '@backstage/test-utils';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import React from 'react';
+import WelcomePage from './WelcomePage';
 
 describe('WelcomePage', () => {
-  it('should render', () => {
-    // TODO: use common test app with mock implementations of all core APIs
-    const rendered = render(
+  it('should render', async () => {
+    const { baseElement } = await renderInTestApp(
       <ApiProvider
         apis={ApiRegistry.from([
           [errorApiRef, { post: jest.fn() }],
@@ -42,6 +41,6 @@ describe('WelcomePage', () => {
         </ThemeProvider>
       </ApiProvider>,
     );
-    expect(rendered.baseElement).toBeInTheDocument();
+    expect(baseElement).toBeInTheDocument();
   });
 });

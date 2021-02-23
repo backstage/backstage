@@ -19,11 +19,11 @@ import {
   ExploreTool,
   exploreToolsConfigRef,
 } from '@backstage/plugin-explore-react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { render, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { ToolExplorerContent } from './ToolExplorerContent';
 
 describe('<ToolExplorerContent />', () => {
@@ -33,13 +33,11 @@ describe('<ToolExplorerContent />', () => {
 
   const Wrapper = ({ children }: { children?: React.ReactNode }) => (
     <ThemeProvider theme={lightTheme}>
-      <MemoryRouter>
-        <ApiProvider
-          apis={ApiRegistry.with(exploreToolsConfigRef, exploreToolsConfigApi)}
-        >
-          {children}
-        </ApiProvider>
-      </MemoryRouter>
+      <ApiProvider
+        apis={ApiRegistry.with(exploreToolsConfigRef, exploreToolsConfigApi)}
+      >
+        {children}
+      </ApiProvider>
     </ThemeProvider>
   );
 
@@ -70,9 +68,11 @@ describe('<ToolExplorerContent />', () => {
     ];
     exploreToolsConfigApi.getTools.mockResolvedValue(tools);
 
-    const { getByText } = render(<ToolExplorerContent />, {
-      wrapper: Wrapper,
-    });
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ToolExplorerContent />
+      </Wrapper>,
+    );
 
     await waitFor(() => {
       expect(getByText('Lighthouse')).toBeInTheDocument();
@@ -83,9 +83,11 @@ describe('<ToolExplorerContent />', () => {
   it('renders empty state', async () => {
     exploreToolsConfigApi.getTools.mockResolvedValue([]);
 
-    const { getByText } = render(<ToolExplorerContent />, {
-      wrapper: Wrapper,
-    });
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ToolExplorerContent />
+      </Wrapper>,
+    );
 
     await waitFor(() =>
       expect(getByText('No tools to display')).toBeInTheDocument(),
