@@ -74,7 +74,6 @@ export const MultistepJsonForm = ({
             </StepLabel>
             <StepContent key={title}>
               <Form
-                key={title}
                 noHtml5Validate
                 formData={formData}
                 onChange={onChange}

@@ -269,7 +269,7 @@ export async function createRouter(
         }
         if (kind.toLowerCase() !== 'template') {
           throw new InputError(
-            `Invalid kind, only 'template' kind is supported`,
+            `Invalid kind, only 'Template' kind is supported`,
           );
         }
 
