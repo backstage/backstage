@@ -1,5 +1,21 @@
 # @backstage/plugin-cost-insights
 
+## 0.8.2
+
+### Patch Changes
+
+- 38205492a: Default alert properties can be overridden using accessors
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a1f5e6545]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/config@0.1.3
+
 ## 0.8.1
 
 ### Patch Changes

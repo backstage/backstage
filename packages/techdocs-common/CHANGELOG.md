@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.4.2
+
+### Patch Changes
+
+- 2499f6cde: Add support for assuming role in AWS integrations
+- 1e4ddd71d: Fix AWS, GCS and Azure publisher to work on Windows.
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
 ## 0.4.1
 
 ### Patch Changes

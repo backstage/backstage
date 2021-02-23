@@ -1,5 +1,117 @@
 # @backstage/plugin-scaffolder
 
+## 0.6.0
+
+### Minor Changes
+
+- a5f42cf66: The Scaffolder and Catalog plugins have been migrated to partially require use of the [new composability API](https://backstage.io/docs/plugins/composability). The Scaffolder used to register its pages using the deprecated route registration plugin API, but those registrations have been removed. This means you now need to add the Scaffolder plugin page to the app directly.
+
+  The page is imported from the Scaffolder plugin and added to the `<FlatRoutes>` component:
+
+  ```tsx
+  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  The Catalog plugin has also been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the catalog plugin to use the new extension components, as well as bind the external route.
+
+  To use the new extension components, replace existing usage of the `CatalogRouter` with the following:
+
+  ```tsx
+  <Route path="/catalog" element={<CatalogIndexPage />} />
+  <Route path="/catalog/:namespace/:kind/:name" element={<CatalogEntityPage />}>
+    <EntityPage />
+  </Route>
+  ```
+
+  And to bind the external route from the catalog plugin to the scaffolder template index page, make sure you have the appropriate imports and add the following to the `createApp` call:
+
+  ```ts
+  import { catalogPlugin } from '@backstage/plugin-catalog';
+  import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+    },
+  });
+  ```
+
+- d0760ecdf: Moved common useStarredEntities hook to plugin-catalog-react
+- e8e35fb5f: Adding Search and Filter features to Scaffolder/Templates Grid
+
+### Patch Changes
+
+- a5f42cf66: # Stateless scaffolding
+
+  The scaffolder has been redesigned to be horizontally scalable and to persistently store task state and execution logs in the database.
+
+  Each scaffolder task is given a unique task ID which is persisted in the database.
+  Tasks are then picked up by a `TaskWorker` which performs the scaffolding steps.
+  Execution logs are also persisted in the database meaning you can now refresh the scaffolder task status page without losing information.
+
+  The task status page is now dynamically created based on the step information stored in the database.
+  This allows for custom steps to be displayed once the next version of the scaffolder template schema is available.
+
+  The task page is updated to display links to both the git repository and to the newly created catalog entity.
+
+  Component registration has moved from the frontend into a separate registration step executed by the `TaskWorker`. This requires that a `CatalogClient` is passed to the scaffolder backend instead of the old `CatalogEntityClient`.
+
+  Make sure to update `plugins/scaffolder.ts`
+
+  ```diff
+   import {
+     CookieCutter,
+     createRouter,
+     Preparers,
+     Publishers,
+     CreateReactAppTemplater,
+     Templaters,
+  -  CatalogEntityClient,
+   } from '@backstage/plugin-scaffolder-backend';
+
+  +import { CatalogClient } from '@backstage/catalog-client';
+
+   const discovery = SingleHostDiscovery.fromConfig(config);
+  -const entityClient = new CatalogEntityClient({ discovery });
+  +const catalogClient = new CatalogClient({ discoveryApi: discovery })
+
+   return await createRouter({
+     preparers,
+     templaters,
+     publishers,
+     logger,
+     config,
+     dockerClient,
+  -  entityClient,
+     database,
+  +  catalogClient,
+   });
+  ```
+
+  As well as adding the `@backstage/catalog-client` packages as a dependency of your backend package.
+
+- e488f0502: Update messages that process during loading, error, and no templates found.
+  Remove unused dependencies.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a1f5e6545]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
 ## 0.5.1
 
 ### Patch Changes

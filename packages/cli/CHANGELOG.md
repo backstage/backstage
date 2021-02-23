@@ -1,5 +1,14 @@
 # @backstage/cli
 
+## 0.6.2
+
+### Patch Changes
+
+- e780e119c: Add missing `file-loader` dependency which could cause issues with loading images and other assets.
+- 6266ddd11: The `yarn backstage-cli app:diff` has been broken since a couple of months. The command to perform updates `yarn backstage-cli versions:bump` prints change logs which seems to be a good replacement for this command.
+- Updated dependencies [a1f5e6545]
+  - @backstage/config@0.1.3
+
 ## 0.6.1
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @backstage/plugin-techdocs
 
+## 0.5.8
+
+### Patch Changes
+
+- f37992797: Got rid of some `attr` and cleaned up a bit in the TechDocs config schema.
+- 2499f6cde: Add support for assuming role in AWS integrations
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [dc12852c9]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2499f6cde]
+- Updated dependencies [a1f5e6545]
+- Updated dependencies [1e4ddd71d]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/test-utils@0.1.8
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+  - @backstage/techdocs-common@0.4.2
+  - @backstage/config@0.1.3
+
 ## 0.5.7
 
 ### Patch Changes
