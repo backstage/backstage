@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, act } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import {
   ApiRegistry,
   alertApiRef,
@@ -62,18 +62,16 @@ describe('TriggerDialog', () => {
       },
     };
 
-    const { getByText, getByRole, getByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
-          <TriggerDialog
-            showDialog
-            handleDialog={() => {}}
-            name={entity.metadata.name}
-            integrationKey="abc123"
-            onIncidentCreated={() => {}}
-          />
-        </ApiProvider>,
-      ),
+    const { getByText, getByRole, getByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <TriggerDialog
+          showDialog
+          handleDialog={() => {}}
+          name={entity.metadata.name}
+          integrationKey="abc123"
+          onIncidentCreated={() => {}}
+        />
+      </ApiProvider>,
     );
 
     expect(getByRole('dialog')).toBeInTheDocument();
