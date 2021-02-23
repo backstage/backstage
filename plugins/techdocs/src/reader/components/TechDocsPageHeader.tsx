@@ -17,10 +17,10 @@
 import React from 'react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import CodeIcon from '@material-ui/icons/Code';
-import { EntityName } from '@backstage/catalog-model';
+import { EntityName, parseEntityName } from '@backstage/catalog-model';
 import { Header, HeaderLabel, Link, useRouteRef } from '@backstage/core';
 import { TechDocsMetadata } from '../../types';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { EntityRefLink, entityRouteRef } from '@backstage/plugin-catalog-react';
 
 type TechDocsPageHeaderProps = {
   entityId: EntityName;
@@ -54,6 +54,11 @@ export const TechDocsPageHeader = ({
 
   const componentLink = useRouteRef(entityRouteRef);
 
+  let ownerEntity;
+  if (owner) {
+    ownerEntity = parseEntityName(owner, { defaultKind: 'group' });
+  }
+
   const labels = (
     <>
       <HeaderLabel
@@ -64,7 +69,22 @@ export const TechDocsPageHeader = ({
           </Link>
         }
       />
-      {owner ? <HeaderLabel label="Site Owner" value={owner} /> : null}
+      {owner ? (
+        <HeaderLabel
+          label="Site Owner"
+          value={
+            ownerEntity ? (
+              <EntityRefLink
+                style={{ color: '#fff' }}
+                entityRef={ownerEntity}
+                defaultKind="group"
+              />
+            ) : (
+              owner
+            )
+          }
+        />
+      ) : null}
       {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
