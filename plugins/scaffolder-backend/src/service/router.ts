@@ -328,12 +328,7 @@ export async function createRouter(
     )
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: TemplaterValues = {
-        ...req.body.values,
-        destination: {
-          git: parseGitUrl(req.body.values.storePath),
-        },
-      };
+      const values: TemplaterValues = req.body.values;
       const template = await entityClient.findTemplate(templateName);
 
       let taskSpec;

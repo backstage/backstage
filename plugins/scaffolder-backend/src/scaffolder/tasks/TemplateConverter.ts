@@ -16,6 +16,7 @@
 
 import { resolve as resolvePath, dirname } from 'path';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import parseGitUrl from 'git-url-parse';
 import { TaskSpec } from './types';
 import {
   getTemplaterKey,
@@ -26,7 +27,7 @@ import {
 
 export function templateEntityToSpec(
   template: TemplateEntityV1alpha1,
-  values: TemplaterValues,
+  inputValues: TemplaterValues,
 ): TaskSpec {
   const steps: TaskSpec['steps'] = [];
 
@@ -41,6 +42,13 @@ export function templateEntityToSpec(
     url = joinGitUrlPath(location, template.spec.path);
   }
   const templater = getTemplaterKey(template);
+
+  const values = {
+    ...inputValues,
+    destination: {
+      git: parseGitUrl(inputValues.storePath),
+    },
+  } as TemplaterValues;
 
   steps.push({
     id: 'prepare',
@@ -81,6 +89,7 @@ export function templateEntityToSpec(
   });
 
   return {
+    baseUrl: undefined, // not used by legacy actions
     values: {},
     steps,
     output: {
