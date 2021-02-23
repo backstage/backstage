@@ -72,7 +72,7 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
-          <Typography variant="h6">No component consumes this API. </Typography>
+          <Typography variant="h6">No component consumes this API.</Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
               Learn how to change this.
