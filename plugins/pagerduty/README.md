@@ -28,12 +28,12 @@ Add it to the app in `plugins.ts`:
 export { plugin as Pagerduty } from '@backstage/plugin-pagerduty';
 ```
 
-Add it to the `EntityPage.ts`:
+Add it to the `EntityPage.tsx`:
 
 ```ts
 import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
+  EntityPagerDutyCard,
 } from '@backstage/plugin-pagerduty';
 // add to code
 {
@@ -43,6 +43,18 @@ import {
     </Grid>
   );
 }
+```
+
+Add the proxy configuration in `app-config.yaml`
+
+```yaml
+proxy:
+  ...
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
 ```
 
 ## Client configuration
