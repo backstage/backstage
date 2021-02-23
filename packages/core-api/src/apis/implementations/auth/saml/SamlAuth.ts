@@ -83,7 +83,7 @@ class SamlAuth implements ProfileInfoApi, BackstageIdentityApi, SessionApi {
   }
 
   async getBackstageIdentity(
-    options: AuthRequestOptions,
+    options: AuthRequestOptions = {},
   ): Promise<BackstageIdentity | undefined> {
     const session = await this.sessionManager.getSession(options);
     return session?.backstageIdentity;
