@@ -112,15 +112,30 @@ export class TaskWorker {
 
           const stepOutputs: { [name: string]: JsonValue } = {};
 
+          // Keep track of all tmp dirs that are created by the action so we can remove them after
+          const tmpDirs = new Array<string>();
+
           await action.handler({
             logger: taskLogger,
             logStream: stream,
             parameters,
             workspacePath,
+            async createTemporaryDirectory() {
+              const tmpDir = await fs.mkdtemp(
+                `${workspacePath}_step-${step.id}-`,
+              );
+              tmpDirs.push(tmpDir);
+              return tmpDir;
+            },
             output(name: string, value: JsonValue) {
               stepOutputs[name] = value;
             },
           });
+
+          // Remove all temporary directories that were created when executing the action
+          for (const tmpDir of tmpDirs) {
+            await fs.remove(tmpDir);
+          }
 
           templateCtx.steps[step.id] = { output: stepOutputs };
 

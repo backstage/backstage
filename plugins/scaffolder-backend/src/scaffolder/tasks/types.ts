@@ -122,6 +122,11 @@ export type ActionContext = {
   workspacePath: string;
   parameters: { [name: string]: JsonValue };
   output(name: string, value: JsonValue): void;
+
+  /**
+   * Creates a temporary directory for use by the action, which is then cleaned up automatically.
+   */
+  createTemporaryDirectory(): Promise<string>;
 };
 
 export type TemplateAction = {
