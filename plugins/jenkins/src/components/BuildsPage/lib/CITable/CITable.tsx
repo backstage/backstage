@@ -16,7 +16,7 @@
 import React from 'react';
 import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
-import GitHubIcon from '@material-ui/icons/GitHub';
+import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { Table, TableColumn } from '@backstage/core';
 import { JenkinsRunStatus } from '../Status';
@@ -231,9 +231,9 @@ export const CITableView = ({
       onChangeRowsPerPage={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
-          <GitHubIcon />
-          <Box mr={1} />
-          <Typography variant="h6">{projectName}</Typography>
+          <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
+          <Box mr={2} />
+          <Typography variant="h6">Project: {projectName}</Typography>
         </Box>
       }
       columns={generatedColumns}
