@@ -73,7 +73,7 @@ export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
         <div>
           No component provides this API.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
+            (Learn how to provide APIs.)
           </Link>
         </div>
       }

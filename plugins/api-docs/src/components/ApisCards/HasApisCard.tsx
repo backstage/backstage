@@ -76,9 +76,9 @@ export const HasApisCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div>
-          No API is part of this system.{' '}
+          This {entity.kind.toLowerCase()} does not contain any APIs.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-api">
-            Learn how to add APIs.
+            (Learn how to add APIs.)
           </Link>
         </div>
       }
