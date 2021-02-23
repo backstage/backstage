@@ -21,7 +21,7 @@ import { JsonValue, JsonObject } from '@backstage/config';
 import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplateActionRegistry } from './TemplateConverter';
+import { TemplateActionRegistry } from './TemplateActionRegistry';
 import * as handlebars from 'handlebars';
 
 type Options = {

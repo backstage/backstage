@@ -15,6 +15,8 @@
  */
 
 import { JsonValue, JsonObject } from '@backstage/config';
+import { Logger } from 'winston';
+import { Writable } from 'stream';
 
 export type Status =
   | 'open'
@@ -112,3 +114,17 @@ export interface TaskStore {
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
 }
+
+export type ActionContext = {
+  logger: Logger;
+  logStream: Writable;
+
+  workspacePath: string;
+  parameters: { [name: string]: JsonValue };
+  output(name: string, value: JsonValue): void;
+};
+
+export type TemplateAction = {
+  id: string;
+  handler: (ctx: ActionContext) => Promise<void>;
+};

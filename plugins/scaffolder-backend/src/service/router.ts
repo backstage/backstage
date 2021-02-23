@@ -38,10 +38,8 @@ import {
   StorageTaskBroker,
   TaskWorker,
 } from '../scaffolder/tasks';
-import {
-  TemplateActionRegistry,
-  templateEntityToSpec,
-} from '../scaffolder/tasks/TemplateConverter';
+import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
+import { TemplateActionRegistry } from '../scaffolder/tasks/TemplateActionRegistry';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getWorkingDirectory } from './helpers';
 import {

@@ -15,13 +15,8 @@
  */
 
 import { resolve as resolvePath, dirname } from 'path';
-import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { Logger } from 'winston';
-import { Writable } from 'stream';
-
 import { TaskSpec } from './types';
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import {
   getTemplaterKey,
   joinGitUrlPath,
@@ -94,41 +89,4 @@ export function templateEntityToSpec(
       entityRef: '{{ steps.register.output.entityRef }}',
     },
   };
-}
-
-type ActionContext = {
-  logger: Logger;
-  logStream: Writable;
-
-  workspacePath: string;
-  parameters: { [name: string]: JsonValue };
-  output(name: string, value: JsonValue): void;
-};
-
-type TemplateAction = {
-  id: string;
-  handler: (ctx: ActionContext) => Promise<void>;
-};
-
-export class TemplateActionRegistry {
-  private readonly actions = new Map<string, TemplateAction>();
-
-  register(action: TemplateAction) {
-    if (this.actions.has(action.id)) {
-      throw new ConflictError(
-        `Template action with ID '${action.id}' has already been registered`,
-      );
-    }
-    this.actions.set(action.id, action);
-  }
-
-  get(actionId: string): TemplateAction {
-    const action = this.actions.get(actionId);
-    if (!action) {
-      throw new NotFoundError(
-        `Template action with ID '${actionId}' is not registered.`,
-      );
-    }
-    return action;
-  }
 }
