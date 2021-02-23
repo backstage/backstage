@@ -150,7 +150,7 @@ export class BitbucketPublisher implements PublisherBase {
     }
 
     throw new Error(
-      `Authorization has not been provided for Bitbucket. Please add username + appPassword or token to the integration config `,
+      `Authorization has not been provided for Bitbucket. Please add either username + appPassword or token to the Integrations config`,
     );
   }
 
