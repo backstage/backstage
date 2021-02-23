@@ -23,7 +23,7 @@ import {
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UnpackNestedValue, UseFormMethods } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -48,6 +48,7 @@ type FormData = {
   body: string;
   componentName: string;
   owner: string;
+  useCodeowners: boolean;
 };
 
 type Props = {
@@ -63,6 +64,7 @@ type Props = {
 
   renderFormFields: (
     props: Pick<UseFormMethods<FormData>, 'errors' | 'register' | 'control'> & {
+      values: UnpackNestedValue<FormData>;
       groups: string[];
       groupsLoading: boolean;
     },
@@ -72,7 +74,7 @@ type Props = {
 export function generateEntities(
   entities: PartialEntity[],
   componentName: string,
-  owner: string,
+  owner?: string,
 ): Entity[] {
   return entities.map(e => ({
     ...e,
@@ -84,7 +86,7 @@ export function generateEntities(
     },
     spec: {
       ...e.spec,
-      owner,
+      ...(owner ? { owner } : {}),
     },
   }));
 }
@@ -189,10 +191,12 @@ export const StepPrepareCreatePullRequest = ({
             (analyzeResult.generatedEntities[0]?.spec?.owner as string) || '',
           componentName:
             analyzeResult.generatedEntities[0]?.metadata?.name || '',
+          useCodeowners: false,
         }}
         render={({ values, errors, control, register }) => (
           <>
             {renderFormFields({
+              values,
               errors,
               register,
               control,

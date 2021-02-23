@@ -15,7 +15,15 @@
  */
 
 import { ConfigApi } from '@backstage/core';
-import { Box, StepLabel, TextField, Typography } from '@material-ui/core';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  FormHelperText,
+  StepLabel,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import React from 'react';
 import { BackButton } from '../Buttons';
 import { StepFinishImportLocation } from '../StepFinishImportLocation';
@@ -167,6 +175,7 @@ export function defaultGenerateStepper(
                 defaultTitle={title}
                 defaultBody={body}
                 renderFormFields={({
+                  values,
                   control,
                   errors,
                   groupsLoading,
@@ -219,22 +228,47 @@ export function defaultGenerateStepper(
                       required
                     />
 
-                    <AutocompleteTextField
-                      name="owner"
-                      control={control}
-                      errors={errors}
-                      options={groups || []}
-                      loading={groupsLoading}
-                      loadingText="Loading groups…"
-                      helperText="Select an owner from the list or enter a reference to a Group or a User"
-                      errorHelperText="required value"
-                      textFieldProps={{
-                        label: 'Entity Owner',
-                        placeholder: 'my-group',
-                      }}
-                      rules={{ required: true }}
-                      required
+                    {!values.useCodeowners && (
+                      <AutocompleteTextField
+                        name="owner"
+                        control={control}
+                        errors={errors}
+                        options={groups || []}
+                        loading={groupsLoading}
+                        loadingText="Loading groups…"
+                        helperText="Select an owner from the list or enter a reference to a Group or a User"
+                        errorHelperText="required value"
+                        textFieldProps={{
+                          label: 'Entity Owner',
+                          placeholder: 'my-group',
+                        }}
+                        rules={{ required: true }}
+                        required
+                      />
+                    )}
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name="useCodeowners"
+                          inputRef={register}
+                          onChange={(_, value) => {
+                            if (value) {
+                              control.setValue('owner', '');
+                            }
+                          }}
+                        />
+                      }
+                      label={
+                        <>
+                          Use <em>CODEOWNERS</em> file as Entity Owner
+                        </>
+                      }
                     />
+                    <FormHelperText>
+                      WARNING: This may fail is no CODEOWNERS file is found at
+                      the target location.
+                    </FormHelperText>
                   </>
                 )}
               />
