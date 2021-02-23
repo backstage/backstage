@@ -55,14 +55,17 @@ type AuthResult = {
 
 export type Options = OAuthProviderOptions & {
   metadataUrl: string;
+  scope?: string;
   tokenSignedResponseAlg?: string;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
+  private readonly scope?: string;
 
   constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
+    this.scope = options.scope;
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
@@ -70,7 +73,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     return await executeRedirectStrategy(req, strategy, {
       accessType: 'offline',
       prompt: 'none',
-      scope: req.scope,
+      scope: req.scope || this.scope || '',
       state: encodeState(req.state),
     });
   }
@@ -79,28 +82,29 @@ export class OidcAuthProvider implements OAuthHandlers {
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
+    const strategyResponse = await executeFrameHandlerStrategy<
+      AuthResult,
+      PrivateInfo
+    >(req, strategy);
     const {
       result: { userinfo, tokenset },
       privateInfo,
-    } = await executeFrameHandlerStrategy<AuthResult, PrivateInfo>(
-      req,
-      strategy,
-    );
-
+    } = strategyResponse;
+    const identityResponse = await this.populateIdentity({
+      profile: {
+        displayName: userinfo.name,
+        email: userinfo.email,
+        picture: userinfo.picture,
+      },
+      providerInfo: {
+        idToken: tokenset.id_token,
+        accessToken: tokenset.access_token || '',
+        scope: tokenset.scope || '',
+        expiresInSeconds: tokenset.expires_in,
+      },
+    });
     return {
-      response: await this.populateIdentity({
-        profile: {
-          displayName: userinfo.name,
-          email: userinfo.email,
-          picture: userinfo.picture,
-        },
-        providerInfo: {
-          idToken: tokenset.id_token,
-          accessToken: tokenset.access_token || '',
-          scope: tokenset.scope || '',
-          expiresInSeconds: tokenset.expires_in,
-        },
-      }),
+      response: identityResponse,
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -133,6 +137,7 @@ export class OidcAuthProvider implements OAuthHandlers {
       redirect_uris: [options.callbackUrl],
       response_types: ['code'],
       id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
+      scope: options.scope || '',
     });
 
     const strategy = new OidcStrategy(
@@ -188,6 +193,7 @@ export const createOidcProvider = (
       const tokenSignedResponseAlg = envConfig.getString(
         'tokenSignedResponseAlg',
       );
+      const scope = envConfig.getOptionalString('scope');
 
       const provider = new OidcAuthProvider({
         clientId,
@@ -195,6 +201,7 @@ export const createOidcProvider = (
         callbackUrl,
         tokenSignedResponseAlg,
         metadataUrl,
+        scope,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
