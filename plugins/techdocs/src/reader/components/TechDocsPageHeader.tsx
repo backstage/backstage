@@ -18,8 +18,9 @@ import React from 'react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import CodeIcon from '@material-ui/icons/Code';
 import { EntityName } from '@backstage/catalog-model';
-import { Header, HeaderLabel, Link } from '@backstage/core';
+import { Header, HeaderLabel, Link, useRouteRef } from '@backstage/core';
 import { TechDocsMetadata } from '../../types';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 type TechDocsPageHeaderProps = {
   entityId: EntityName;
@@ -41,7 +42,7 @@ export const TechDocsPageHeader = ({
   const { value: techdocsMetadataValues } = techdocsMetadata;
   const { value: entityMetadataValues } = entityMetadata;
 
-  const { kind, name } = entityId;
+  const { name } = entityId;
 
   const { site_name: siteName, site_description: siteDescription } =
     techdocsMetadataValues || {};
@@ -51,14 +52,14 @@ export const TechDocsPageHeader = ({
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
-  const componentLink = `/catalog/${kind}/${name}`;
+  const componentLink = useRouteRef(entityRouteRef);
 
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={componentLink}>
+          <Link style={{ color: '#fff' }} to={componentLink(entityId)}>
             {name}
           </Link>
         }
@@ -92,7 +93,7 @@ export const TechDocsPageHeader = ({
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
       type={name}
-      typeLink={componentLink}
+      typeLink={componentLink(entityId)}
     >
       {labels}
     </Header>

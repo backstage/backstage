@@ -15,44 +15,49 @@
  */
 import React from 'react';
 import { TechDocsPageHeader } from './TechDocsPageHeader';
-import { render, act } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { act } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 describe('<TechDocsPageHeader />', () => {
   it('should render a techdocs page header', async () => {
     await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <TechDocsPageHeader
-            entityId={{
-              kind: 'test',
-              name: 'test-name',
-              namespace: 'test-namespace',
-            }}
-            metadataRequest={{
-              entity: {
-                loading: false,
-                value: {
-                  locationMetadata: {
-                    type: 'github',
-                    target: 'https://example.com/',
-                  },
-                  spec: {
-                    owner: 'test',
-                  },
+      const rendered = await renderInTestApp(
+        <TechDocsPageHeader
+          entityId={{
+            kind: 'test',
+            name: 'test-name',
+            namespace: 'test-namespace',
+          }}
+          metadataRequest={{
+            entity: {
+              loading: false,
+              value: {
+                locationMetadata: {
+                  type: 'github',
+                  target: 'https://example.com/',
+                },
+                spec: {
+                  owner: 'test',
                 },
               },
-              techdocs: {
-                loading: false,
-                value: {
-                  site_name: 'test-site-name',
-                  site_description: 'test-site-desc',
-                },
+            },
+            techdocs: {
+              loading: false,
+              value: {
+                site_name: 'test-site-name',
+                site_description: 'test-site-desc',
               },
-            }}
-          />,
-        ),
+            },
+          }}
+        />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          },
+        },
       );
+
       expect(rendered.container.innerHTML).toContain('header');
       expect(rendered.getAllByText('test-site-name')).toHaveLength(2);
       expect(rendered.getByText('test-site-desc')).toBeDefined();
@@ -61,27 +66,65 @@ describe('<TechDocsPageHeader />', () => {
 
   it('should render a techdocs page header even if metadata is missing', async () => {
     await act(async () => {
-      const rendered = render(
-        wrapInTestApp(
-          <TechDocsPageHeader
-            entityId={{
-              kind: 'test',
-              name: 'test-name',
-              namespace: 'test-namespace',
-            }}
-            metadataRequest={{
-              entity: {
-                loading: false,
-              },
-              techdocs: {
-                loading: false,
-              },
-            }}
-          />,
-        ),
+      const rendered = await renderInTestApp(
+        <TechDocsPageHeader
+          entityId={{
+            kind: 'test',
+            name: 'test-name',
+            namespace: 'test-namespace',
+          }}
+          metadataRequest={{
+            entity: {
+              loading: false,
+            },
+            techdocs: {
+              loading: false,
+            },
+          }}
+        />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          },
+        },
       );
 
       expect(rendered.container.innerHTML).toContain('header');
+    });
+  });
+
+  it('should render a link back to the component page', async () => {
+    await act(async () => {
+      const rendered = await renderInTestApp(
+        <TechDocsPageHeader
+          entityId={{
+            kind: 'test',
+            name: 'test-name',
+            namespace: 'test-namespace',
+          }}
+          metadataRequest={{
+            entity: {
+              loading: false,
+            },
+            techdocs: {
+              loading: false,
+              value: {
+                site_name: 'test-site-name',
+                site_description: 'test-site-desc',
+              },
+            },
+          }}
+        />,
+        {
+          mountedRoutes: {
+            '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+          },
+        },
+      );
+
+      expect(rendered.container.innerHTML).toContain(
+        '/catalog/test-namespace/test/test-name',
+      );
     });
   });
 });
