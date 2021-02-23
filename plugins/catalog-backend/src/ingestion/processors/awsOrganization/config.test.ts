@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { CircularProgress, useTheme } from '@material-ui/core';
-import React from 'react';
-import { useAsync } from 'react-use';
+import { ConfigReader } from '@backstage/config';
+import { readAwsOrganizationConfig } from './config';
 
-export const AllServicesCount = () => {
-  const theme = useTheme();
-  const catalogApi = useApi(catalogApiRef);
-  const { value, loading } = useAsync(() => catalogApi.getEntities());
-
-  if (loading) {
-    return <CircularProgress size={theme.spacing(2)} />;
-  }
-
-  return <span>{value ?? length ?? '-'}</span>;
-};
+describe('readAwsOrganizationConfig', () => {
+  it('applies all of the defaults', () => {
+    const config = {
+      provider: {
+        roleArn: 'aws::arn::foo',
+      },
+    };
+    const actual = readAwsOrganizationConfig(new ConfigReader(config));
+    const expected = {
+      roleArn: 'aws::arn::foo',
+    };
+    expect(actual).toEqual(expected);
+  });
+});

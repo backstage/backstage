@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { Entity, serializeEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  formatEntityRefTitle,
+} from '@backstage/plugin-catalog-react';
 import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
-import { UseFormMethods } from 'react-hook-form';
+import { UnpackNestedValue, UseFormMethods } from 'react-hook-form';
 import { useAsync } from 'react-use';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -45,6 +48,7 @@ type FormData = {
   body: string;
   componentName: string;
   owner: string;
+  useCodeowners: boolean;
 };
 
 type Props = {
@@ -60,16 +64,17 @@ type Props = {
 
   renderFormFields: (
     props: Pick<UseFormMethods<FormData>, 'errors' | 'register' | 'control'> & {
+      values: UnpackNestedValue<FormData>;
       groups: string[];
       groupsLoading: boolean;
     },
   ) => React.ReactNode;
 };
 
-function generateEntities(
+export function generateEntities(
   entities: PartialEntity[],
   componentName: string,
-  owner: string,
+  owner?: string,
 ): Entity[] {
   return entities.map(e => ({
     ...e,
@@ -78,11 +83,10 @@ function generateEntities(
     metadata: {
       ...e.metadata,
       name: componentName,
-      namespace: e.metadata?.namespace ?? 'default',
     },
     spec: {
       ...e.spec,
-      owner,
+      ...(owner ? { owner } : {}),
     },
   }));
 }
@@ -107,8 +111,9 @@ export const StepPrepareCreatePullRequest = ({
       filter: { kind: 'group' },
     });
 
-    // TODO: defaultKind (=group), defaultNamespace (=same as entity)
-    return groupEntities.items.map(e => serializeEntityRef(e) as string).sort();
+    return groupEntities.items
+      .map(e => formatEntityRefTitle(e, { defaultKind: 'group' }))
+      .sort();
   });
 
   const handleResult = useCallback(
@@ -186,10 +191,12 @@ export const StepPrepareCreatePullRequest = ({
             (analyzeResult.generatedEntities[0]?.spec?.owner as string) || '',
           componentName:
             analyzeResult.generatedEntities[0]?.metadata?.name || '',
+          useCodeowners: false,
         }}
         render={({ values, errors, control, register }) => (
           <>
             {renderFormFields({
+              values,
               errors,
               register,
               control,

@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- ec504e7b4: Fix for refresh token being lost during Microsoft login.
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
 ## 0.3.1
 
 ### Patch Changes

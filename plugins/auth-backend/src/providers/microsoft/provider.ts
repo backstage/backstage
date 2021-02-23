@@ -72,7 +72,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
         fullProfile: passport.Profile,
         done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
-        done(undefined, { fullProfile, accessToken, refreshToken, params });
+        done(undefined, { fullProfile, accessToken, params }, { refreshToken });
       },
     );
   }

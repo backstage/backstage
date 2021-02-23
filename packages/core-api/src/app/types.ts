@@ -187,6 +187,40 @@ export type BackstageApp = {
 
   /**
    * Routes component that contains all routes for plugin pages in the app.
+   *
+   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
+   */
+  getRoutes(): JSX.Element[];
+};
+
+export type AppContext = {
+  /**
+   * @deprecated Will be removed
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
+   * Get a common or custom icon for this app.
+   */
+  getSystemIcon(key: IconKey): IconComponent;
+
+  /**
+   * Get the components registered for various purposes in the app.
+   */
+  getComponents(): AppComponents;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getProvider(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
    */
   getRoutes(): JSX.Element[];
 };

@@ -94,6 +94,7 @@ Zalando
 Zhou
 Zolotusky
 abc
+accessors
 adamdmharvey
 andrewthauer
 api
@@ -166,6 +167,7 @@ interop
 jq
 js
 json
+jsonnet
 jsx
 kubectl
 kubernetes
@@ -203,6 +205,7 @@ octokit
 oidc
 onboarding
 pagerduty
+pageview
 parallelization
 plantuml
 postgres

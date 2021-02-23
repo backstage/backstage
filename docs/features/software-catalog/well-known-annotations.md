@@ -70,6 +70,35 @@ The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
 
+### backstage.io/view-url, backstage.io/edit-url
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/view-url: https://some.website/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
+```
+
+These annotations allow customising links from the catalog pages. The view URL
+should point to the canonical metadata YAML that governs this entity. The edit
+URL should point to the source file for the metadata. In the example above,
+`my-org` generates its catalog data from Jsonnet files in a monorepo, so the
+view and edit links need changing.
+
+### backstage.io/source-location
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/source-location: github:https://github.com/my-org/my-service
+```
+
+A `Location` reference that points to the source code of the entity (typically a
+`Component`). Useful when catalog files do not get ingested from the source code
+repository itself.
+
 ### jenkins.io/github-folder
 
 ```yaml

@@ -1,5 +1,64 @@
 # example-app
 
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [38205492a]
+- Updated dependencies [e488f0502]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [e3bc5aad7]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [a8953a9c9]
+- Updated dependencies [f37992797]
+- Updated dependencies [347137ccf]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [d6593abe6]
+- Updated dependencies [bad21a085]
+- Updated dependencies [e8e35fb5f]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [e780e119c]
+- Updated dependencies [437bac549]
+- Updated dependencies [9f2b3a26e]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [968b588f7]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2499f6cde]
+- Updated dependencies [5469a9761]
+- Updated dependencies [60d1bc3e7]
+- Updated dependencies [2c1f2a7c2]
+- Updated dependencies [6266ddd11]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-scaffolder@0.6.0
+  - @backstage/plugin-cost-insights@0.8.2
+  - @backstage/plugin-org@0.3.8
+  - @backstage/plugin-catalog@0.4.0
+  - @backstage/plugin-catalog-import@0.4.2
+  - @backstage/plugin-techdocs@0.5.8
+  - @backstage/plugin-explore@0.2.7
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/plugin-api-docs@0.4.7
+  - @backstage/catalog-model@0.7.2
+  - @backstage/cli@0.6.2
+  - @backstage/plugin-tech-radar@0.3.6
+  - @backstage/plugin-circleci@0.2.10
+  - @backstage/plugin-cloudbuild@0.2.11
+  - @backstage/plugin-github-actions@0.3.4
+  - @backstage/plugin-jenkins@0.3.11
+  - @backstage/plugin-kafka@0.2.4
+  - @backstage/plugin-kubernetes@0.3.11
+  - @backstage/plugin-lighthouse@0.2.12
+  - @backstage/plugin-pagerduty@0.3.1
+  - @backstage/plugin-register-component@0.2.11
+  - @backstage/plugin-rollbar@0.3.2
+  - @backstage/plugin-search@0.3.2
+  - @backstage/plugin-sentry@0.3.7
+
 ## 0.2.16
 
 ### Patch Changes

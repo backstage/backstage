@@ -15,12 +15,13 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import aws from 'aws-sdk';
+import aws, { Credentials } from 'aws-sdk';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
@@ -59,14 +60,34 @@ export class AwsS3Publish implements PublisherBase {
     // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
     // 3. IAM Roles for EC2
     // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
-    const credentials = config.getOptionalConfig(
+    const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
     let accessKeyId = undefined;
     let secretAccessKey = undefined;
-    if (credentials) {
-      accessKeyId = credentials.getOptionalString('accessKeyId');
-      secretAccessKey = credentials.getOptionalString('secretAccessKey');
+    let credentials: Credentials | CredentialsOptions | undefined = undefined;
+    if (credentialsConfig) {
+      const roleArn = credentialsConfig.getOptionalString('roleArn');
+      if (roleArn && aws.config.credentials instanceof Credentials) {
+        credentials = new aws.ChainableTemporaryCredentials({
+          masterCredentials: aws.config.credentials as Credentials,
+          params: {
+            RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
+            RoleArn: roleArn,
+          },
+        });
+      } else {
+        accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
+        secretAccessKey = credentialsConfig.getOptionalString(
+          'secretAccessKey',
+        );
+        if (accessKeyId && secretAccessKey) {
+          credentials = {
+            accessKeyId,
+            secretAccessKey,
+          };
+        }
+      }
     }
 
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
@@ -74,14 +95,7 @@ export class AwsS3Publish implements PublisherBase {
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
     const storageClient = new aws.S3({
-      ...(credentials &&
-        accessKeyId &&
-        secretAccessKey && {
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        }),
+      credentials,
       ...(region && {
         region,
       }),

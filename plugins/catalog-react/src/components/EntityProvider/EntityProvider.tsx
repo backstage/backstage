@@ -26,7 +26,7 @@ export const EntityProvider = ({ entity, children }: EntityProviderProps) => (
   <EntityContext.Provider
     value={{
       entity,
-      loading: Boolean(entity),
+      loading: !Boolean(entity),
       error: undefined,
     }}
   >

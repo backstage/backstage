@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.3
+
+### Patch Changes
+
+- 2499f6cde: Add support for assuming role in AWS integrations
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
 ## 0.6.2
 
 ### Patch Changes
