@@ -15,10 +15,9 @@
  */
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, Link } from '@backstage/core';
+import { Breadcrumbs, Content, Link } from '@backstage/core';
 import {
   Typography,
-  Breadcrumbs,
   Paper,
   TableContainer,
   Table,
@@ -36,7 +35,6 @@ import ExternalLinkIcon from '@material-ui/icons/Launch';
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 720,
-    margin: theme.spacing(2),
   },
   table: {
     padding: theme.spacing(1),
@@ -57,9 +55,10 @@ const BuildWithStepsView = () => {
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link to="../../..">Jobs</Link>
+        <Link to="../../..">Projects</Link>
         <Typography>Run</Typography>
       </Breadcrumbs>
+      <br />
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
