@@ -20,9 +20,9 @@ export const badges: Badge[] = [
   {
     id: 'pingback',
     kind: 'entity',
-    description: 'Link back to _{app.title}',
-    label: '_{app.title}',
-    message: '_{entity.kind}: _{entity.metadata.name}',
+    description: 'Link to _{entity.metadata.name} in _{app.title}',
+    label: '_{entity.kind}',
+    message: '_{entity.metadata.name}',
     style: 'flat-square',
   },
   {
@@ -39,7 +39,6 @@ export const badges: Badge[] = [
     description: 'Entity owner badge',
     label: 'owner',
     message: '_{entity.spec.owner}',
-    color: 'blue',
     style: 'flat-square',
   },
   {
@@ -48,7 +47,6 @@ export const badges: Badge[] = [
     link: '_{entity_url}/docs',
     label: 'docs',
     message: '_{entity.metadata.name}',
-    color: 'navyblue',
     style: 'flat-square',
   },
 ];

@@ -401,13 +401,3 @@ homepage:
       timezone: 'Asia/Tokyo'
 pagerduty:
   eventsBaseUrl: 'https://events.pagerduty.com/v2'
-
-# sample badges
-badges:
-  lifecycle:
-    kind: 'entity'
-    description: 'Entity lifecycle badge'
-    link: '_{entity_url}'
-    label: 'lifecycle'
-    message: '_{entity.spec.lifecycle}'
-    style: for-the-badge

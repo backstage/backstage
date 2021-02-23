@@ -100,7 +100,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
 
   private render(template: string, context: object): string {
     try {
-      return interpolate(template.replace(/_{/g, '${'), context);
+      return interpolate(template.replace(/_{/g, '${'), context).toLowerCase();
     } catch (err) {
       this.logger.info(
         `badge template error: ${err}. In template: "${template}"`,
@@ -110,7 +110,10 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
   }
 
   private getMarkdownCode(params: Badge, badge_url: string): string {
-    const alt_text = `${params.description}, ${params.label}: ${params.message}`;
+    let alt_text = `${params.label}: ${params.message}`;
+    if (params.description !== params.label) {
+      alt_text = `${params.description}, ${alt_text}`;
+    }
     const tooltip = params.description ? ` "${params.description}"` : '';
     const img = `![${alt_text}](${badge_url}${tooltip})`;
     return params.link ? `[${img}](${params.link})` : img;
