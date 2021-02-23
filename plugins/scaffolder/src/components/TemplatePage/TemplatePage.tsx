@@ -33,6 +33,7 @@ import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
+import { RepoUrlPicker } from '../fields';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -53,7 +54,9 @@ const storePathValidator = (
   errors: FormValidation,
 ) => {
   const { storePath } = formData;
+
   if (!storePath) {
+    errors.storePath.addError('Store path is required and not present');
     return errors;
   }
 
@@ -131,6 +134,7 @@ export const TemplatePage = () => {
           <InfoCard title={schema.title} noPadding>
             <MultistepJsonForm
               formData={formState}
+              fields={{ RepoUrlPicker }}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}

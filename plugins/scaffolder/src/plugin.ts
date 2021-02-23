@@ -19,6 +19,7 @@ import {
   createApiFactory,
   discoveryApiRef,
   identityApiRef,
+  configApiRef,
   createRoutableExtension,
 } from '@backstage/core';
 import { rootRouteRef } from './routes';
@@ -29,9 +30,13 @@ export const scaffolderPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: scaffolderApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new ScaffolderClient({ discoveryApi, identityApi }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        configApi: configApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, configApi }) =>
+        new ScaffolderClient({ discoveryApi, identityApi, configApi }),
     }),
   ],
   routes: {

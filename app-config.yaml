@@ -248,6 +248,9 @@ catalog:
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
 
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/test-template-v2/template.yaml
+
 scaffolder:
   github:
     token:

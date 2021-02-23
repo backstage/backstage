@@ -45,6 +45,8 @@ type Props = {
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
   onFinish: () => void;
+  widgets?: FormProps<any>['widgets'];
+  fields?: FormProps<any>['fields'];
 };
 
 export const MultistepJsonForm = ({
@@ -53,6 +55,8 @@ export const MultistepJsonForm = ({
   onChange,
   onReset,
   onFinish,
+  fields,
+  widgets,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
 
@@ -77,6 +81,8 @@ export const MultistepJsonForm = ({
                 noHtml5Validate
                 formData={formData}
                 onChange={onChange}
+                fields={fields}
+                widgets={widgets}
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
                 }}
