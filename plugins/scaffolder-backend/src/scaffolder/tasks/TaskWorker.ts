@@ -117,6 +117,7 @@ export class TaskWorker {
           const tmpDirs = new Array<string>();
 
           await action.handler({
+            baseUrl: task.spec.baseUrl,
             logger: taskLogger,
             logStream: stream,
             parameters,

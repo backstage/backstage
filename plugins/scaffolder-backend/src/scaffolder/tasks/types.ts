@@ -45,6 +45,7 @@ export type DbTaskEventRow = {
 };
 
 export type TaskSpec = {
+  baseUrl?: string;
   values: JsonObject;
   steps: Array<{
     id: string;
@@ -116,6 +117,11 @@ export interface TaskStore {
 }
 
 export type ActionContext = {
+  /**
+   * Base URL for the location of the task spec, typically the url of the source entity file.
+   */
+  baseUrl?: string;
+
   logger: Logger;
   logStream: Writable;
 

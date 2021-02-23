@@ -41,7 +41,7 @@ import {
 import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
 import { TemplateActionRegistry } from '../scaffolder/tasks/TemplateActionRegistry';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
-import { getWorkingDirectory } from './helpers';
+import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   InputError,
   NotFoundError,
@@ -351,7 +351,10 @@ export async function createRouter(
           }
         }
 
+        const baseUrl = getEntityBaseUrl(template);
+
         taskSpec = {
+          baseUrl,
           values,
           steps: template.spec.steps.map((step, index) => ({
             ...step,
