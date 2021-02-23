@@ -73,7 +73,7 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
         <div>
           No system is part of this domain.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system">
-            Learn how to add systems.
+            (Learn how to add systems.)
           </Link>
         </div>
       }
