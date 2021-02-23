@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { Badge } from '../../types';
 
 export type BadgeOptions = {
-  context: object;
+  context: {
+    app?: {
+      title: string;
+    };
+    entity?: Entity;
+    entity_url?: string;
+    badge_url?: string;
+  };
   config: Badge;
   format: 'svg' | 'json';
 };

@@ -45,4 +45,10 @@ export interface Badge {
   message: string;
   /** Badge style (apperance). One of "plastic", "flat", "flat-square", "for-the-badge" and "social" */
   style?: BadgeStyle;
+  /** (generated) markdown code */
+  markdown?: string;
+}
+
+export interface BadgeConfig {
+  [id: string]: Badge;
 }

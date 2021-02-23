@@ -25,7 +25,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
-import { Badge, BadgeStyle, BadgeStyles } from '../types';
+import { Badge, BadgeConfig, BadgeStyle, BadgeStyles } from '../types';
 
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
@@ -43,7 +43,7 @@ export async function createRouter(
   const title = options.config.getString('app.title') || 'Backstage';
   const catalogUrl = `${options.config.getString('app.baseUrl')}/catalog`;
   const badgesConfig = (options.config.getOptional('badges') ??
-    {}) as JsonObject;
+    {}) as BadgeConfig;
 
   for (const badge of options.badges || []) {
     if (!badge.id) {
@@ -70,6 +70,7 @@ export async function createRouter(
 
     const context = {
       app: { title },
+      badge_url: '',
       entity,
       entity_url,
     };
@@ -81,7 +82,7 @@ export async function createRouter(
         context.badge_url = [
           `${req.protocol}://`,
           req.headers.host,
-          req.originalUrl.replace(/badge-specs$/, badge.id),
+          req.originalUrl.replace(/badge-specs$/, badge.id!),
         ].join('');
         specs.push(
           await badgeBuilder.createBadge({

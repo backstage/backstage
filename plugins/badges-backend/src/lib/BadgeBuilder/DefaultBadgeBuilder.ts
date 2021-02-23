@@ -16,32 +16,36 @@
 
 import { Logger } from 'winston';
 import { makeBadge } from 'badge-maker';
-import { JsonObject } from '@backstage/config';
 import { BadgeBuilder, BadgeOptions } from './types';
-import { Badge, BadgeStyle, BadgeStyles } from '../../types';
+import { Badge, BadgeConfig, BadgeStyle, BadgeStyles } from '../../types';
 import { interpolate } from '../../utils';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(
     private readonly logger: Logger,
-    private readonly config: JsonObject,
+    private readonly config: BadgeConfig,
   ) {
     for (const [badgeId, badge] of Object.entries(config)) {
-      badge.id = badgeId;
+      if (badge) {
+        badge.id = badgeId;
+      }
     }
   }
 
   public async getAllBadgeConfigs(): Promise<Badge[]> {
-    return Object.values(this.config) as Badge[];
+    return Object.values(this.config);
   }
 
   public async getBadgeConfig(badgeId: string): Promise<Badge> {
-    return ((this.config[badgeId] as unknown) ||
-      (this.config.default as unknown) || {
+    return (
+      this.config[badgeId] ||
+      this.config.default ||
+      ({
         label: 'Unknown badge ID',
         message: badgeId,
         color: 'red',
-      }) as Badge;
+      } as Badge)
+    );
   }
 
   public async createBadge(options: BadgeOptions): Promise<string> {
@@ -69,7 +73,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
         params.description = badge.description
           ? this.render(badge.description, context)
           : badge.id;
-        params.markdown = this.getMarkdownCode(params, context.badge_url);
+        params.markdown = this.getMarkdownCode(params, context.badge_url!);
 
         return JSON.stringify(
           {
