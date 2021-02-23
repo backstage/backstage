@@ -44,10 +44,11 @@ export class TaskWorker {
   }
 
   async runOneTask(task: Task) {
+    let workspacePath: string | undefined = undefined;
     try {
       const { actionRegistry } = this.options;
 
-      const workspacePath = path.join(
+      workspacePath = path.join(
         this.options.workingDirectory,
         await task.getWorkspaceName(),
       );
@@ -172,6 +173,10 @@ export class TaskWorker {
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });
+    } finally {
+      if (workspacePath) {
+        await fs.remove(workspacePath);
+      }
     }
   }
 }
