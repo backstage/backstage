@@ -76,7 +76,7 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
         <div>
           No subcomponent is part of this component.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">
-            Learn how to add subcomponents.
+            (Learn how to add subcomponents.)
           </Link>
         </div>
       }

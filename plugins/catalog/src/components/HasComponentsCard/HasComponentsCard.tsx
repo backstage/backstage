@@ -76,7 +76,7 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
         <div>
           No component is part of this system.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component">
-            Learn how to add components.
+            (Learn how to add components.)
           </Link>
         </div>
       }
