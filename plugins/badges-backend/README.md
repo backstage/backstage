@@ -6,24 +6,21 @@ the badges, in svg.
 
 ## Setup
 
-Define which badges to offer in the backend api by declaring them in
-the app-config, under a `badges` key. Example:
+The list of all badges to offer are passed to the badges-backend
+`createRouter()`.
+
+You may also add/redefine badges in the `app-config.yaml`, under a
+`badges` key. Example:
 
 ```yaml
 badges:
   docs:
     kind: 'entity'
     target: '_{entity_url}/docs'
-    label: 'Documentation'
+    label: 'docs'
     message: '_{entity.metadata.name}'
     color: 'navyblue'
-
-  lifecycle:
-    kind: 'entity'
-    description: 'Entity lifecycle badge'
-    target: '_{entity_url}'
-    label: 'Lifecycle'
-    message: '_{entity.spec.lifecycle}'
+    style: for-the-badge
 ```
 
 ## Links
