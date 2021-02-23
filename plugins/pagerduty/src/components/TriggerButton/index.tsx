@@ -16,7 +16,7 @@
 import React, { useCallback, PropsWithChildren } from 'react';
 import { createGlobalState } from 'react-use';
 import { makeStyles, Button } from '@material-ui/core';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity, withEntitySuspense } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 
 import { TriggerDialog } from '../TriggerDialog';
@@ -52,7 +52,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const useShowDialog = createGlobalState(false);
 
-export function TriggerButton({
+export const TriggerButton = withEntitySuspense(function TriggerButton({
   design,
   onIncidentCreated,
   children,
@@ -91,4 +91,4 @@ export function TriggerButton({
       />
     </>
   );
-}
+});

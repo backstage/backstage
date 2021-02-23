@@ -16,7 +16,7 @@
 import React, { useState, useCallback } from 'react';
 import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useEntity, withEntitySuspense } from '@backstage/plugin-catalog-react';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
@@ -32,7 +32,7 @@ import { TriggerButton, useShowDialog } from './TriggerButton';
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
-export const PagerDutyCard = () => {
+export const PagerDutyCard = withEntitySuspense(() => {
   const { entity } = useEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
@@ -104,4 +104,4 @@ export const PagerDutyCard = () => {
       </CardContent>
     </Card>
   );
-};
+});
