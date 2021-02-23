@@ -73,7 +73,7 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
         <div>
           No component consumes this API.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-            Learn how to consume APIs.
+            (Learn how to consume APIs.)
           </Link>
         </div>
       }

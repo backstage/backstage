@@ -72,9 +72,9 @@ export const ConsumedApisCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div>
-          No Component consumes this API.{' '}
+          This {entity.kind.toLowerCase()} does not consume any APIs.{' '}
           <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-            Learn how to consume APIs.
+            (Learn how to change this.)
           </Link>
         </div>
       }
