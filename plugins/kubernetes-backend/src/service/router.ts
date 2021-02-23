@@ -27,6 +27,7 @@ import {
   ServiceLocatorMethod,
   ClusterLocatorMethod,
   ClusterDetails,
+  KubernetesClustersSupplier,
 } from '..';
 import { getCombinedClusterDetails } from '../cluster-locator';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
@@ -34,6 +35,7 @@ import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 export interface RouterOptions {
   logger: Logger;
   config: Config;
+  clusterSupplier?: KubernetesClustersSupplier;
 }
 
 const getServiceLocator = (
@@ -98,10 +100,17 @@ export async function createRouter(
     'kubernetes.clusterLocatorMethods',
   ) as ClusterLocatorMethod[];
 
-  const clusterDetails = await getCombinedClusterDetails(
-    clusterLocatorMethods,
-    options.config,
-  );
+  let clusterDetails: ClusterDetails[];
+
+  if (options.clusterSupplier) {
+    clusterDetails = await options.clusterSupplier.getClusters();
+    // Append supplied clusters to cluster retrieved via getCombinedClusterDetails
+  } else {
+    clusterDetails = await getCombinedClusterDetails(
+      clusterLocatorMethods,
+      options.config,
+    );
+  }
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
 
