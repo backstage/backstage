@@ -34,9 +34,9 @@ import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 
 const useStyles = makeStyles(theme => ({
-  // root: {
-  //   maxWidth: 720,
-  // },
+  root: {
+    maxWidth: 720,
+  },
   table: {
     padding: theme.spacing(1),
   },
