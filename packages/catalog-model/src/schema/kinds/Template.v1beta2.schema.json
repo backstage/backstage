@@ -111,7 +111,7 @@
               "items": {
                 "type": "object",
                 "description": "A description of the step to execute.",
-                "required": ["id", "name", "action"],
+                "required": ["action"],
                 "properties": {
                   "id": {
                     "type": "string",

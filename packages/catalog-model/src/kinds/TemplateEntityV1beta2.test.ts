@@ -106,4 +106,19 @@ describe('templateEntityV1beta2Validator', () => {
     delete (entity as any).spec.steps;
     await expect(validator.check(entity)).rejects.toThrow(/steps/);
   });
+
+  it('accepts step with missing id', async () => {
+    delete (entity as any).spec.steps[0].id;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts step with missing name', async () => {
+    delete (entity as any).spec.steps[0].name;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects step with missing action', async () => {
+    delete (entity as any).spec.steps[0].action;
+    await expect(validator.check(entity)).rejects.toThrow(/action/);
+  });
 });
