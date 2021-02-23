@@ -101,24 +101,27 @@ spec:
         description: Copy https://github.com/aeothgiaetgh/aetkijhahte and hammer in some more letters
 
   steps:
-    - id: fetch
-      name: Fetch
-      action: fetch
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
       parameters:
-        protocol: file
-        url: file:///Users/patriko/dev/backstage/plugins/scaffolder-backend/sample-templates/test-template-v2
-        templater:
-          type: cookiecutter
-          values:
-            name: '{{ parameters.name }}'
-    - id: publish
-      name: Publish
-      action: legacy:publish
-      parameters:
+        url: ./template
+        targetDir: blob
         values:
           name: '{{ parameters.name }}'
-          storePath: '{{ parameters.storePath }}'
-          owner: kungen # not use
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      parameters:
+        url: https://github.com/aeothgiaetgh/aetkijhahte/tree/master/docs/template
+    - id: publish
+      name: Publish
+      action: publish
+      parameters:
+        name: '{{ parameters.name }}'
+        # storePath: github.com?owner=spotify&repo=name
+        storePath: '{{ parameters.storePath }}'
     - id: register
       name: Register
       action: catalog:register
