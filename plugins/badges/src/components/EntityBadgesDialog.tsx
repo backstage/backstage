@@ -55,26 +55,32 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
 
   const { value: badges, loading, error } = useAsync(async () => {
     if (open) {
-      return await badgesApi.getDefinedEntityBadges(entity);
+      return await badgesApi.getEntityBadgeSpecs(entity);
     }
 
     return [];
   }, [badgesApi, entity, open]);
 
-  const content = (badges || []).map(({ id, markdown, spec, url }) => (
-    <div key={id}>
-      <DialogContentText>
-        {spec.badge.title || spec.badge.description || id}
-        <br />
-        <img alt={spec.badge.description} src={url} />
-      </DialogContentText>
-      <Typography component="div" className={classes.codeBlock}>
-        Copy the following snippet of markdown code for the badge:
-        <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
-      </Typography>
-      <hr />
-    </div>
-  ));
+  const content = (badges || []).map(
+    ({
+      badge: { description, markdown },
+      config: { id },
+      context: { badge_url },
+    }) => (
+      <div key={id}>
+        <DialogContentText>
+          {description}
+          <br />
+          <img alt={description} src={badge_url} />
+        </DialogContentText>
+        <Typography component="div" className={classes.codeBlock}>
+          Copy the following snippet of markdown code for the badge:
+          <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
+        </Typography>
+        <hr />
+      </div>
+    ),
+  );
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>

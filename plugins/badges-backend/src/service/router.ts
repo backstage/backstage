@@ -24,15 +24,12 @@ import {
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
-import {
-  BadgeBuilder,
-  BadgeStyle,
-  BadgeStyles,
-  DefaultBadgeBuilder,
-} from '../lib/BadgeBuilder';
+import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
+import { Badge, BadgeStyle, BadgeStyles } from '../types';
 
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
+  badges?: Badge[];
   logger: Logger;
   config: Config;
   discovery: PluginEndpointDiscovery;
@@ -47,10 +44,58 @@ export async function createRouter(
   const catalogUrl = `${options.config.getString('app.baseUrl')}/catalog`;
   const badgesConfig = (options.config.getOptional('badges') ??
     {}) as JsonObject;
+
+  for (const badge of options.badges || []) {
+    if (!badge.id) {
+      logger.warning(`badge without "id": ${JSON.stringify(badge, null, 2)}`);
+    } else if (!badgesConfig[badge.id]) {
+      badgesConfig[badge.id] = badge;
+      logger.info(`register builtin badge: ${badge.id}`);
+    } else {
+      logger.info(`builtin badge replaced from configuration: ${badge.id}`);
+    }
+  }
+
   const badgeBuilder =
     options.badgeBuilder || new DefaultBadgeBuilder(logger, badgesConfig);
 
-  logger.debug(`loading badges`);
+  router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
+    const entityUri = getEntityUri(req.params);
+    const entity_url = `${catalogUrl}/${entityUri}`;
+    const entity = await getEntity(options.discovery, entityUri);
+    if (!entity) {
+      res.status(404).send(`Unknown entity`);
+      return;
+    }
+
+    const context = {
+      app: { title },
+      entity,
+      entity_url,
+    };
+
+    const specs = [];
+    for (const badge of await badgeBuilder.getAllBadgeConfigs()) {
+      if (!badge.kind || badge.kind === 'entity') {
+        badge.link = badge.link ?? '_{entity_url}';
+        context.badge_url = [
+          `${req.protocol}://`,
+          req.headers.host,
+          req.originalUrl.replace(/badge-specs$/, badge.id),
+        ].join('');
+        specs.push(
+          await badgeBuilder.createBadge({
+            config: badge,
+            context,
+            format: 'json',
+          }),
+        );
+      }
+    }
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).send(`[${specs.join(',\n')}]`);
+  });
 
   router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
     const { badgeId } = req.params;
@@ -66,7 +111,7 @@ export async function createRouter(
     const entityUri = getEntityUri(req.params);
     const entity = await getEntity(options.discovery, entityUri);
     if (!entity) {
-      res.status(400).send(`Unknown entity`);
+      res.status(404).send(`Unknown entity`);
       return;
     }
 
@@ -80,12 +125,21 @@ export async function createRouter(
       badge.style = req.query.style as BadgeStyle;
     }
 
+    const badge_url = [
+      `${req.protocol}://`,
+      req.headers.host,
+      req.originalUrl,
+    ].join('');
+    const entity_url = `${catalogUrl}/${entityUri}`;
+    badge.link = badge.link ?? '_{entity_url}';
+
     const data = await badgeBuilder.createBadge({
       config: badge,
       context: {
         app: { title },
+        badge_url,
         entity,
-        entity_url: `${catalogUrl}/${entityUri}`,
+        entity_url,
       },
       format: format === 'application/json' ? 'json' : 'svg',
     });

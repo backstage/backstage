@@ -14,34 +14,16 @@
  * limitations under the License.
  */
 
-export const BadgeStyles = [
-  'plastic',
-  'flat',
-  'flat-square',
-  'for-the-badge',
-  'social',
-] as const;
-export type BadgeStyle = typeof BadgeStyles[number];
-
-export interface BadgeConfig {
-  kind?: 'entity';
-  label: string;
-  message: string;
-  color?: string;
-  labelColor?: string;
-  style?: BadgeStyle;
-  title?: string;
-  description?: string;
-  link?: string;
-}
+import { Badge } from '../../types';
 
 export type BadgeOptions = {
   context: object;
-  config: BadgeConfig;
+  config: Badge;
   format: 'svg' | 'json';
 };
 
 export type BadgeBuilder = {
   createBadge(options: BadgeOptions): Promise<string>;
-  getBadgeConfig(badgeId: string): Promise<BadgeConfig>;
+  getBadgeConfig(badgeId: string): Promise<Badge>;
+  getAllBadgeConfigs(): Promise<Badge[]>;
 };

@@ -16,7 +16,10 @@
 
 export interface Config {
   /**
-   * Define all badges.
+   * Define custom badges. By default, the badges are declared in
+   * code, and passed to the badges backend `createRouter`, which
+   * merges them with any additional badges defined in this
+   * configuration.
    *
    * The `label` and `message` fields may use templating to support
    * dynamic content, based on context. Use same syntax as for
@@ -33,7 +36,9 @@ export interface Config {
        * Useful when using templating for label and/or message if they
        * use context data only available for a certain kind of badge.
        *
-       * Available badge kinds:
+       * Context per badge kind.
+       *
+       * Entity badges:
        *
        *   * `entity` The entity data is available as `entity` in the template.
        *   * `entity_url` The (frontend) URL to view the entity in Backstage.
@@ -41,14 +46,13 @@ export interface Config {
        * Default context for all badges:
        *
        *   * `app.title` As configured or defaults to "Backstage".
+       *   * `badge_url` The URL to the badge image.
        *
-       * @visibility frontend
        */
       kind?: 'entity';
 
       /**
        * The badge label.
-       *
        */
       label: string;
 
@@ -70,21 +74,17 @@ export interface Config {
       /**
        * Visual design of the badge. One of: 'plastic', 'flat', 'flat-square',
        * 'for-the-badge' or 'social'.
+       *
+       * Default: 'flat'
+       *
        */
       style?: 'plastic' | 'flat' | 'flat-square' | 'for-the-badge' | 'social';
 
       /**
-       * Badge title, used as tooltip text in the markdown code.
+       * Badge description, used as prefix on the alt text in the markdown code.
        *
-       * @visibility frontend
-       */
-      title?: string;
-
-      /**
-       * Badge description, used as alt text in the markdown code.
        * Defaults to badge id.
        *
-       * @visibility frontend
        */
       description?: string;
 
@@ -94,7 +94,8 @@ export interface Config {
        * For `entity` badges, there is a `entity_url` in the context
        * that could be appropriate to use here.
        *
-       * @visibility frontend
+       * Defaults to the `entity_url`, set to falsey value to disable the link.
+       *
        */
       link?: string;
     };

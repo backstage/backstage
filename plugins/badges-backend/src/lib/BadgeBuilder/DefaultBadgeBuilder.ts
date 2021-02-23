@@ -17,28 +17,31 @@
 import { Logger } from 'winston';
 import { makeBadge } from 'badge-maker';
 import { JsonObject } from '@backstage/config';
-import {
-  BadgeBuilder,
-  BadgeConfig,
-  BadgeOptions,
-  BadgeStyle,
-  BadgeStyles,
-} from './types';
+import { BadgeBuilder, BadgeOptions } from './types';
+import { Badge, BadgeStyle, BadgeStyles } from '../../types';
 import { interpolate } from '../../utils';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(
     private readonly logger: Logger,
     private readonly config: JsonObject,
-  ) {}
+  ) {
+    for (const [badgeId, badge] of Object.entries(config)) {
+      badge.id = badgeId;
+    }
+  }
 
-  public async getBadgeConfig(badgeId: string): Promise<BadgeConfig> {
+  public async getAllBadgeConfigs(): Promise<Badge[]> {
+    return Object.values(this.config) as Badge[];
+  }
+
+  public async getBadgeConfig(badgeId: string): Promise<Badge> {
     return ((this.config[badgeId] as unknown) ||
       (this.config.default as unknown) || {
         label: 'Unknown badge ID',
         message: badgeId,
         color: 'red',
-      }) as BadgeConfig;
+      }) as Badge;
   }
 
   public async createBadge(options: BadgeOptions): Promise<string> {
@@ -47,7 +50,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
       label: this.render(badge.label, context),
       message: this.render(badge.message, context),
       color: badge.color || '#36BAA2',
-    } as BadgeConfig;
+    } as Badge;
 
     if (badge.labelColor) {
       params.labelColor = badge.labelColor;
@@ -59,15 +62,15 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
 
     switch (options.format) {
       case 'json':
-        if (badge.title) {
-          params.title = this.render(badge.title, context);
-        }
-        if (badge.description) {
-          params.description = this.render(badge.description, context);
-        }
         if (badge.link) {
           params.link = this.render(badge.link, context);
         }
+
+        params.description = badge.description
+          ? this.render(badge.description, context)
+          : badge.id;
+        params.markdown = this.getMarkdownCode(params, context.badge_url);
+
         return JSON.stringify(
           {
             badge: params,
@@ -100,5 +103,12 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
       );
       return `${err} [${template}]`;
     }
+  }
+
+  private getMarkdownCode(params: Badge, badge_url: string): string {
+    const alt_text = `${params.description}, ${params.label}: ${params.message}`;
+    const tooltip = params.description ? ` "${params.description}"` : '';
+    const img = `![${alt_text}](${badge_url}${tooltip})`;
+    return params.link ? `[${img}](${params.link})` : img;
   }
 }

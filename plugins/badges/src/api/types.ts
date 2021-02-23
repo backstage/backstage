@@ -29,35 +29,42 @@ export type BadgeStyle =
   | 'for-the-badge'
   | 'social';
 
-// should probably have this in a "badges-common" package
-export interface BadgeConfig {
+interface BadgeParams {
+  color?: string;
+  description?: string;
   kind?: 'entity';
   label: string;
-  message: string;
-  color?: string;
   labelColor?: string;
-  style?: BadgeStyle;
-  title?: string;
-  description?: string;
   link?: string;
+  message: string;
+  style?: BadgeStyle;
+}
+
+interface Badge extends BadgeParams {
+  markdown: string;
+}
+
+interface BadgeConfig extends BadgeParams {
+  id: string;
 }
 
 export interface BadgeSpec {
-  /** The rendered data */
-  badge: BadgeConfig;
+  /** The rendered fields, markdown code */
+  badge: Badge;
+
   /** The configuration data, with placeholders and all */
   config: BadgeConfig;
-  /** The context used when rendering config -> badge */
-  context: object;
-}
 
-export interface Badge {
-  id: string;
-  markdown: string;
-  spec: BadgeSpec;
-  url: string;
+  /** The context used when rendering config -> badge */
+  context: {
+    // here is more, but only badge_url we care about
+    badge_url: string;
+  };
+
+  format: 'json'; // or 'svg', but we'll never see that as structured
+  // data, only as an svg element
 }
 
 export interface BadgesApi {
-  getDefinedEntityBadges(entity: Entity): Promise<Badge[]>;
+  getEntityBadgeSpecs(entity: Entity): Promise<BadgeSpec[]>;
 }
