@@ -1880,29 +1880,7 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/plugin-catalog@^0.2.1":
-  version "0.4.0"
-  dependencies:
-    "@backstage/catalog-client" "^0.3.6"
-    "@backstage/catalog-model" "^0.7.2"
-    "@backstage/core" "^0.6.3"
-    "@backstage/plugin-catalog-react" "^0.1.0"
-    "@backstage/theme" "^0.2.3"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    classnames "^2.2.6"
-    git-url-parse "^11.4.4"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-    swr "^0.3.0"
-
-"@backstage/plugin-catalog@^0.3.1":
+"@backstage/plugin-catalog@^0.2.1", "@backstage/plugin-catalog@^0.3.1":
   version "0.4.0"
   dependencies:
     "@backstage/catalog-client" "^0.3.6"
