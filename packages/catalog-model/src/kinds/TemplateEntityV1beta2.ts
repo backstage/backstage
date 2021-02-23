@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Entity } from '../entity/Entity';
+import type { Entity, EntityMeta } from '../entity/Entity';
 import schema from '../schema/kinds/Template.v1beta2.schema.json';
 import entitySchema from '../schema/Entity.schema.json';
 import entityMetaSchema from '../schema/EntityMeta.schema.json';
@@ -28,6 +28,9 @@ const KIND = 'Template' as const;
 export interface TemplateEntityV1beta2 extends Entity {
   apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
+  metadata: EntityMeta & {
+    title?: string;
+  };
   spec: {
     type: string;
     parameters?: JsonObject | JsonObject[];

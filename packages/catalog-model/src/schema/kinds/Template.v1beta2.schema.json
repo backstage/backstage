@@ -29,6 +29,27 @@
               "description": "Description of the component"
             }
           }
+        },
+        "steps": [
+          {
+            "id": "fetch",
+            "name": "Fetch",
+            "action": "fetch:plain",
+            "parameters": {
+              "url": "./template"
+            }
+          },
+          {
+            "id": "publish",
+            "name": "Publish to GitHub",
+            "action": "publish:github",
+            "parameters": {
+              "repoUrl": "{{ parameters.repoUrl }}"
+            }
+          }
+        ],
+        "output": {
+          "catalogInfoUrl": "{{ steps.publish.output.catalogInfoUrl }}"
         }
       }
     }
@@ -52,7 +73,7 @@
           "properties": {
             "title": {
               "type": "string",
-              "description": "The nice display name for the template. This field is required as is used to reference the template to the user instead of the metadata.name field.",
+              "description": "The nice display name for the template.",
               "examples": ["React SSR Template"],
               "minLength": 1
             }
@@ -89,7 +110,7 @@
               "description": "A list of steps to execute.",
               "items": {
                 "type": "object",
-                "description": "The JSONSchema describing a template The ID of the step, which can be used to refer to its outputs.",
+                "description": "A description of the step to execute.",
                 "required": ["id", "name", "action"],
                 "properties": {
                   "id": {
