@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.0
+
+### Minor Changes
+
+- d0760ecdf: Moved common useStarredEntities hook to plugin-catalog-react
+
+### Patch Changes
+
+- 88f1f1b60: Truncate and show ellipsis with tooltip if content of
+  `createMetadataDescriptionColumn` is too wide.
+- 9615e68fb: Forward link styling of `EntityRefLink` and `EnriryRefLinks` into the underling
+  `Link`.
+- 5c2e2863f: Added the proper type parameters to entityRouteRef.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/catalog-model@0.7.2
+
 ## 0.0.4
 
 ### Patch Changes

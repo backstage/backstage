@@ -1,5 +1,70 @@
 # @backstage/plugin-catalog
 
+## 0.4.0
+
+### Minor Changes
+
+- a5f42cf66: The Scaffolder and Catalog plugins have been migrated to partially require use of the [new composability API](https://backstage.io/docs/plugins/composability). The Scaffolder used to register its pages using the deprecated route registration plugin API, but those registrations have been removed. This means you now need to add the Scaffolder plugin page to the app directly.
+
+  The page is imported from the Scaffolder plugin and added to the `<FlatRoutes>` component:
+
+  ```tsx
+  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  The Catalog plugin has also been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the catalog plugin to use the new extension components, as well as bind the external route.
+
+  To use the new extension components, replace existing usage of the `CatalogRouter` with the following:
+
+  ```tsx
+  <Route path="/catalog" element={<CatalogIndexPage />} />
+  <Route path="/catalog/:namespace/:kind/:name" element={<CatalogEntityPage />}>
+    <EntityPage />
+  </Route>
+  ```
+
+  And to bind the external route from the catalog plugin to the scaffolder template index page, make sure you have the appropriate imports and add the following to the `createApp` call:
+
+  ```ts
+  import { catalogPlugin } from '@backstage/plugin-catalog';
+  import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+    },
+  });
+  ```
+
+- d0760ecdf: Moved common useStarredEntities hook to plugin-catalog-react
+
+### Patch Changes
+
+- d6593abe6: Remove domain column from `HasSystemsCard` and system from `HasComponentsCard`,
+  `HasSubcomponentsCard`, and `HasApisCard`.
+- bad21a085: Implement annotations for customising Entity URLs in the Catalog pages.
+- 437bac549: Make the description column in the catalog table and api-docs table use up as
+  much space as possible before hiding overflowing text.
+- 5469a9761: Changes made in CatalogTable and ApiExplorerTable for using the OverflowTooltip component for truncating large description and showing tooltip on hover-over.
+- 60d1bc3e7: Fix Japanese Good Morning
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
 ## 0.3.2
 
 ### Patch Changes
