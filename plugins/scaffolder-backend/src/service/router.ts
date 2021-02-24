@@ -57,6 +57,7 @@ import {
 import {
   createFetchPlainAction,
   createFetchCookiecutterAction,
+  createCatalogRegisterAction,
 } from '../scaffolder/tasks/builtin';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -129,7 +130,6 @@ export async function createRouter(
     preparers,
     publishers,
     templaters,
-    catalogClient,
   });
   actionRegistry.register(
     createFetchPlainAction({
@@ -145,6 +145,7 @@ export async function createRouter(
       templaters,
     }),
   );
+  actionRegistry.register(createCatalogRegisterAction({ catalogClient }));
 
   worker.start();
 

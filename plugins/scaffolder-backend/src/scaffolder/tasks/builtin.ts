@@ -22,6 +22,8 @@ import { TemplateAction } from './types';
 import { InputError, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonValue } from '@backstage/config';
+import { CatalogApi } from '@backstage/catalog-client';
+import { getEntityName } from '@backstage/catalog-model';
 
 async function fetchContents({
   urlReader,
@@ -171,6 +173,29 @@ export function createFetchCookiecutterAction(options: {
         );
       }
       await fs.copy(resultDir, outputPath);
+    },
+  };
+}
+
+export function createCatalogRegisterAction(options: {
+  catalogClient: CatalogApi;
+}): TemplateAction {
+  const { catalogClient } = options;
+
+  return {
+    id: 'catalog:register',
+    async handler(ctx) {
+      const { catalogInfoUrl } = ctx.parameters;
+      ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
+
+      const result = await catalogClient.addLocation({
+        type: 'url',
+        target: catalogInfoUrl as string,
+      });
+      if (result.entities.length >= 1) {
+        const { kind, name, namespace } = getEntityName(result.entities[0]);
+        ctx.output('entityRef', `${kind}:${namespace}/${name}`);
+      }
     },
   };
 }
