@@ -154,7 +154,6 @@ export class TaskWorker {
         }
       }
 
-      console.log('DEBUG: templateCtx =', JSON.stringify(templateCtx, 0, 2));
       const output = JSON.parse(
         JSON.stringify(task.spec.output),
         (_key, value) => {
@@ -169,7 +168,6 @@ export class TaskWorker {
           return value;
         },
       );
-      console.log('DEBUG: output =', output);
 
       await task.complete('completed', { output });
     } catch (error) {

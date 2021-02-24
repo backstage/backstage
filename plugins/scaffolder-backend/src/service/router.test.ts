@@ -32,6 +32,7 @@ import {
   SingleConnectionDatabaseManager,
   PluginDatabaseManager,
   getVoidLogger,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -60,6 +61,11 @@ function createDatabase(): PluginDatabaseManager {
     }),
   ).forPlugin('scaffolder');
 }
+
+const mockUrlReader = UrlReaders.default({
+  logger: getVoidLogger(),
+  config: new ConfigReader({}),
+});
 
 describe('createRouter - working directory', () => {
   const mockPrepare = jest.fn();
@@ -112,6 +118,7 @@ describe('createRouter - working directory', () => {
         dockerClient: new Docker(),
         database: createDatabase(),
         catalogClient: createCatalogClient([template]),
+        urlReader: mockUrlReader,
       }),
     ).rejects.toThrow('access error');
   });
@@ -126,6 +133,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
+      urlReader: mockUrlReader,
     });
 
     const app = express().use(router);
@@ -155,6 +163,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
+      urlReader: mockUrlReader,
     });
 
     const app = express().use(router);
@@ -228,6 +237,7 @@ describe('createRouter', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
+      urlReader: mockUrlReader,
     });
     app = express().use(router);
   });

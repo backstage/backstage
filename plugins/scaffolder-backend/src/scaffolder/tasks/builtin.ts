@@ -27,9 +27,7 @@ import {
 import { JsonValue } from '@backstage/config';
 import { CatalogApi } from '@backstage/catalog-client';
 import { getEntityName } from '@backstage/catalog-model';
-import { PublisherBuilder } from '../stages';
 import { Octokit } from '@octokit/rest';
-import { Config } from '@backstage/config';
 import { initRepoAndPush } from '../stages/publish/helpers';
 
 async function fetchContents({
@@ -53,6 +51,7 @@ async function fetchContents({
 
   let fetchUrlIsAbsolute = false;
   try {
+    // eslint-disable-next-line no-new
     new URL(fetchUrl);
     fetchUrlIsAbsolute = true;
   } catch {
@@ -300,10 +299,8 @@ export function createPublishGithubAction(options: {
         });
       }
 
-      const remoteUrl = data?.clone_url;
-      const repoContentsUrl = data?.html_url
-        ? `${data?.html_url}/blob/master`
-        : undefined;
+      const remoteUrl = data.clone_url;
+      const repoContentsUrl = `${data?.html_url}/blob/master`;
 
       await initRepoAndPush({
         dir: ctx.workspacePath,
@@ -354,7 +351,6 @@ export function createCatalogRegisterAction(options: {
         type: 'url',
         target: catalogInfoUrl as string,
       });
-      console.log('DEBUG: result.entities =', result.entities);
       if (result.entities.length >= 1) {
         const { kind, name, namespace } = getEntityName(result.entities[0]);
         ctx.output('entityRef', `${kind}:${namespace}/${name}`);

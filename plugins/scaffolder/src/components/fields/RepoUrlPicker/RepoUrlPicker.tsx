@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Field } from '@rjsf/core';
 import { useApi, Progress } from '@backstage/core';
 import { scaffolderApiRef } from '../../../api';
@@ -104,7 +104,7 @@ export const RepoUrlPicker: Field = ({
     if (host === undefined && integrations?.length) {
       onChange(serializeFormData({ host: integrations[0].host, owner, repo }));
     }
-  }, [integrations, host]);
+  }, [onChange, integrations, host, owner, repo]);
 
   if (loading) {
     return <Progress />;
@@ -121,9 +121,9 @@ export const RepoUrlPicker: Field = ({
         <Select native id="hostInput" onChange={updateHost} value={host}>
           {integrations!
             .filter(i => allowedHosts?.includes(i.host))
-            .map(({ host, title }) => (
-              <option key={host} value={host}>
-                {title}
+            .map(i => (
+              <option key={i.host} value={i.host}>
+                {i.title}
               </option>
             ))}
         </Select>
