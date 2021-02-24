@@ -15,11 +15,10 @@
  */
 import React, { useCallback, PropsWithChildren, useState } from 'react';
 import { makeStyles, Button } from '@material-ui/core';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 
+import { usePagerdutyEntity } from '../../hooks';
 import { TriggerDialog } from '../TriggerDialog';
-import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 
 export type TriggerButtonProps = {};
 
@@ -37,7 +36,7 @@ export function TriggerButton({
   children,
 }: PropsWithChildren<TriggerButtonProps>) {
   const { buttonStyle } = useStyles();
-  const { entity } = useEntity();
+  const { integrationKey } = usePagerdutyEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
@@ -46,9 +45,6 @@ export function TriggerButton({
   const hideDialog = useCallback(() => {
     setDialogShown(false);
   }, [setDialogShown]);
-
-  const integrationKey =
-    entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY];
 
   return (
     <>
@@ -63,12 +59,7 @@ export function TriggerButton({
           : 'Missing integration key'}
       </Button>
       {integrationKey && (
-        <TriggerDialog
-          showDialog={dialogShown}
-          handleDialog={hideDialog}
-          name={entity.metadata.name}
-          integrationKey={integrationKey}
-        />
+        <TriggerDialog showDialog={dialogShown} handleDialog={hideDialog} />
       )}
     </>
   );

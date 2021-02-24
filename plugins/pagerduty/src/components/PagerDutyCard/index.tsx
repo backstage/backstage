@@ -21,7 +21,6 @@ import {
   IconLinkVerticalProps,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
@@ -31,6 +30,7 @@ import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
+import { usePagerdutyEntity } from '../../hooks';
 import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 import { TriggerDialog } from '../TriggerDialog';
 
@@ -38,7 +38,7 @@ export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
 export const PagerDutyCard = () => {
-  const { entity } = useEntity();
+  const { integrationKey } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const [dialogShown, setDialogShown] = useState<boolean>(false);
@@ -50,16 +50,14 @@ export const PagerDutyCard = () => {
     setDialogShown(false);
   }, [setDialogShown]);
 
-  const integrationKey = entity.metadata.annotations![
-    PAGERDUTY_INTEGRATION_KEY
-  ];
-
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
   }, []);
 
   const { value: service, loading, error } = useAsync(async () => {
-    const services = await api.getServiceByIntegrationKey(integrationKey);
+    const services = await api.getServiceByIntegrationKey(
+      integrationKey as string,
+    );
 
     return {
       id: services[0].id,
@@ -119,8 +117,6 @@ export const PagerDutyCard = () => {
         data-testid="trigger-dialog"
         showDialog={dialogShown}
         handleDialog={hideDialog}
-        name={entity.metadata.name}
-        integrationKey={integrationKey}
         onIncidentCreated={handleRefresh}
       />
     </>

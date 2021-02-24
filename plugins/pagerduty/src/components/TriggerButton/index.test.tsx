@@ -66,7 +66,7 @@ describe('TriggerButton', () => {
     const { queryByRole, getByRole, getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
-          <TriggerButton design="button" />
+          <TriggerButton />
         </EntityProvider>
       </ApiProvider>,
     );
@@ -108,7 +108,7 @@ describe('TriggerButton', () => {
     const { getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
-          <TriggerButton design="button">Send an alert</TriggerButton>
+          <TriggerButton>Send an alert</TriggerButton>
         </EntityProvider>
       </ApiProvider>,
     );
@@ -129,7 +129,7 @@ describe('TriggerButton', () => {
     const { queryByRole, getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
-          <TriggerButton design="button" />
+          <TriggerButton />
         </EntityProvider>
       </ApiProvider>,
     );
