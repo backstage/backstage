@@ -15,12 +15,11 @@
  */
 
 import { Command } from 'commander';
+import { JSONSchema7 as JSONSchema } from 'json-schema';
 import { stringify as stringifyYaml } from 'yaml';
 import { loadCliConfig } from '../../lib/config';
-import {
-  mergeConfigSchemas,
-  ConfigSchemaPackageEntry,
-} from '@backstage/config-loader';
+import { JsonObject } from '@backstage/config';
+import { mergeConfigSchemas } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
   const { schema } = await loadCliConfig({
@@ -30,7 +29,9 @@ export default async (cmd: Command) => {
   });
 
   const merged = mergeConfigSchemas(
-    schema.serialize().schemas.map(_ => _.value),
+    (schema.serialize().schemas as JsonObject[]).map(
+      _ => _.value as JSONSchema,
+    ),
   );
 
   merged.title = 'Application Configuration Schema';
