@@ -15,7 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import pkgcloud from 'pkgcloud';
+import { storage } from 'pkgcloud';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -57,7 +57,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
       'techdocs.publisher.openStackSwift',
     );
 
-    const storageClient = pkgcloud.storage.createClient({
+    const storageClient = storage.createClient({
       provider: 'openstack',
       username: openStackSwiftConfig.getString('username'),
       password: openStackSwiftConfig.getString('password'),
@@ -86,7 +86,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
         );
 
         logger.error(`from OpenStack client library: ${err.message}`);
-        throw new Error();
       }
     });
 
@@ -94,7 +93,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: pkgcloud.storage.Client,
+    private readonly storageClient: storage.Client,
     private readonly containerName: string,
     private readonly logger: Logger,
   ) {
