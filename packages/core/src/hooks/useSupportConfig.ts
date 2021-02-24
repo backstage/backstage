@@ -24,7 +24,7 @@ export type SupportItemLink = {
 export type SupportItem = {
   title: string;
   icon?: string;
-  links?: SupportItemLink[];
+  links: SupportItemLink[];
 };
 
 export type SupportConfig = {
@@ -32,25 +32,43 @@ export type SupportConfig = {
   items: SupportItem[];
 };
 
+const DEFAULT_SUPPORT_CONFIG: SupportConfig = {
+  url: 'https://github.com/backstage/backstage/issues',
+  items: [
+    {
+      title: 'Support Not Configured',
+      icon: 'warning',
+      links: [
+        {
+          // TODO: Update to dedicated support page on backstage.io/docs
+          title: 'Add `app.support` config key',
+          url:
+            'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
+        },
+      ],
+    },
+  ],
+};
+
 export function useSupportConfig(): SupportConfig {
   const config = useApi(configApiRef);
-  const supportConfig = config.getOptional('app.support') as SupportConfig;
+  const supportConfig = config.getOptionalConfig('app.support');
+
+  if (!supportConfig) {
+    return DEFAULT_SUPPORT_CONFIG;
+  }
 
   return {
-    url: supportConfig?.url ?? 'https://github.com/backstage/backstage/issues',
-    items: supportConfig?.items ?? [
-      {
-        title: 'Support Not Configured',
-        icon: 'warning',
-        links: [
-          {
-            // TODO: Update to dedicated support page on backstage.io/docs
-            title: 'Add `app.support` config key',
-            url:
-              'https://github.com/andrewthauer/backstage/blob/master/app-config.yaml',
-          },
-        ],
-      },
-    ],
+    url: supportConfig.getString('url'),
+    items: supportConfig.getConfigArray('items').flatMap(itemConf => ({
+      title: itemConf.getString('title'),
+      icon: itemConf.getOptionalString('icon'),
+      links: (itemConf.getOptionalConfigArray('links') ?? []).flatMap(
+        linkConf => ({
+          url: linkConf.getString('url'),
+          title: linkConf.getString('title'),
+        }),
+      ),
+    })),
   };
 }

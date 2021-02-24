@@ -57,7 +57,7 @@ export interface Config {
         /**
          * A list of support links for the Backstage instance.
          */
-        links?: {
+        links: {
           /** @visibility frontend */
           url: string;
           /** @visibility frontend */
