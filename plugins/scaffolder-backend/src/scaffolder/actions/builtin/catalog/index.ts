@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export * from './builtin';
-export { TemplateActionRegistry } from './TemplateActionRegistry';
-export type { ActionContext, TemplateAction } from './types';
+export { createCatalogRegisterAction } from './register';
