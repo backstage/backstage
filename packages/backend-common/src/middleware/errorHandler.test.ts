@@ -134,4 +134,20 @@ describe('errorHandler', () => {
 
     expect(mockLogger.error).not.toHaveBeenCalled();
   });
+
+  it('log 400 errors when logClientErrors is true', async () => {
+    const app = express();
+
+    const mockLogger = { child: jest.fn(), error: jest.fn() };
+    mockLogger.child.mockImplementation(() => mockLogger as any);
+
+    app.use('/NotFound', () => {
+      throw new errors.NotFoundError();
+    });
+    app.use(errorHandler({ logger: mockLogger as any, logClientErrors: true }));
+
+    await request(app).get('/NotFound');
+
+    expect(mockLogger.error).toHaveBeenCalled();
+  });
 });

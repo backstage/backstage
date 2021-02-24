@@ -28,11 +28,18 @@ export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
 
   /**
-   * Logger instance to log any 5xx errors.
+   * Logger instance to log errors.
    *
    * If not specified, the root logger will be used.
    */
   logger?: Logger;
+
+  /**
+   * Whether any error < 4XX should be logged or not.
+   *
+   * If not specified, by default log any 5xx errors.
+   */
+  logClientErrors?: boolean;
 };
 
 /**
@@ -59,7 +66,6 @@ export function errorHandler(
     type: 'errorHandler',
   });
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   return (
     error: Error,
     _request: Request,
@@ -76,7 +82,7 @@ export function errorHandler(
     const status = getStatusCode(error);
     const message = showStackTraces ? error.stack : error.message;
 
-    if (logger && status >= 500) {
+    if (options.logClientErrors || status >= 500) {
       logger.error(error);
     }
 
