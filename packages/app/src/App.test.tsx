@@ -25,7 +25,10 @@ describe('App', () => {
       value: [
         {
           data: {
-            app: { title: 'Test' },
+            app: {
+              title: 'Test',
+              support: { url: 'http://localhost:7000/support' },
+            },
             backend: { baseUrl: 'http://localhost:7000' },
             lighthouse: {
               baseUrl: 'http://localhost:3003',

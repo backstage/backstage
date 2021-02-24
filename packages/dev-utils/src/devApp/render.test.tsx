@@ -33,7 +33,7 @@ describe('DevAppBuilder', () => {
     };
 
     const DevApp = createDevApp()
-      .addRootChild(<MyComponent />)
+      .addRootChild(<MyComponent key="test-key" />)
       .build();
 
     const rendered = render(<DevApp />);
