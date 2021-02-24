@@ -63,9 +63,8 @@ if (process.env.HTTPS_PROXY) {
 
 If your development environment is in the cloud (like with [AWS Cloud9](https://aws.amazon.com/cloud9/) or an instance of [Theia](https://theia-ide.org/)), you will need to update your configuration.
 
-In `app-config.local.yaml`, you will probably need to make some changes, the exact values will depend on your setup.
-
-For instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are open:
+You will probably need to make some changes in `app-config.yaml` (or another config file like `app-config.local.yaml` if you've created it, see the [configuration doc](https://backstage.io/docs/conf/#supplying-configuration)).  
+The exact values will depend on your setup but for instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are open:
 
 ```yaml
 app:
