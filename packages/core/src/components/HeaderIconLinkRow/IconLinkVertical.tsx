@@ -20,7 +20,6 @@ import LinkIcon from '@material-ui/icons/Link';
 import { Link as RouterLink } from '../Link';
 
 export type IconLinkVerticalProps = {
-  key?: React.Key;
   icon?: React.ReactNode;
   href?: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
