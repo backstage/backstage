@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
+import {
+  useApi,
+  Progress,
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
@@ -80,22 +85,23 @@ export const PagerDutyCard = () => {
     return <Progress />;
   }
 
-  const serviceLink = {
+  const serviceLink: IconLinkVerticalProps = {
     label: 'Service Directory',
     href: service!.url,
     icon: <WebIcon />,
   };
 
-  const triggerLink = {
+  const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
     onClick: showDialog,
     icon: <AlarmAddIcon />,
-    color: 'secondary' as 'secondary', // DUH
+    color: 'secondary',
+    testId: 'trigger-link',
   };
 
   return (
     <>
-      <Card>
+      <Card data-testid="pagerduty-card">
         <CardHeader
           title="PagerDuty"
           subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
@@ -110,6 +116,7 @@ export const PagerDutyCard = () => {
         </CardContent>
       </Card>
       <TriggerDialog
+        data-testid="trigger-dialog"
         showDialog={dialogShown}
         handleDialog={hideDialog}
         name={entity.metadata.name}

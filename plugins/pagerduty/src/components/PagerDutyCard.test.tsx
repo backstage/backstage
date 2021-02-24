@@ -150,9 +150,9 @@ describe('PageDutyCard', () => {
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Service Directory')).toBeInTheDocument();
     expect(getByText('Create Incident')).toBeInTheDocument();
-    const triggerButton = getByTestId('trigger-button');
+    const triggerLink = getByTestId('trigger-link');
     await act(async () => {
-      fireEvent.click(triggerButton);
+      fireEvent.click(triggerLink);
     });
     expect(getByRole('dialog')).toBeInTheDocument();
   });

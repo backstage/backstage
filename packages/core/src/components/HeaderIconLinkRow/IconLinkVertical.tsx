@@ -20,12 +20,13 @@ import LinkIcon from '@material-ui/icons/Link';
 import { Link as RouterLink } from '../Link';
 
 export type IconLinkVerticalProps = {
-  key?: string;
+  key?: React.Key;
   icon?: React.ReactNode;
   href?: string;
-  onClick?: React.AnchorHTMLAttributes<HTMLAnchorElement>['onClick'];
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
   disabled?: boolean;
   label: string;
+  testId?: string;
   color?: 'primary' | 'secondary';
 };
 
@@ -59,6 +60,7 @@ export function IconLinkVertical({
   disabled = false,
   color = 'primary',
   label,
+  testId,
   onClick,
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
@@ -66,6 +68,7 @@ export function IconLinkVertical({
   if (disabled) {
     return (
       <Link
+        data-testid={testId}
         className={classnames(classes.link, classes.disabled)}
         underline="none"
       >
@@ -77,6 +80,7 @@ export function IconLinkVertical({
 
   return (
     <Link
+      data-testid={testId}
       className={classnames(classes.link, classes[color])}
       to={href}
       component={RouterLink}

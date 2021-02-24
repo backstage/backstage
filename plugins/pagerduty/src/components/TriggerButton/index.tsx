@@ -21,10 +21,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { TriggerDialog } from '../TriggerDialog';
 import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 
-export interface TriggerButtonProps {
-  design: 'link' | 'button';
-  onIncidentCreated?: () => void;
-}
+export type TriggerButtonProps = {};
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   buttonStyle: {
@@ -34,27 +31,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       backgroundColor: theme.palette.error.dark,
     },
   },
-  triggerAlarm: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    fontSize: '0.7rem',
-    textTransform: 'uppercase',
-    fontWeight: 600,
-    letterSpacing: 1.2,
-    lineHeight: 1.5,
-    '&:hover, &:focus, &.focus': {
-      backgroundColor: 'transparent',
-      textDecoration: 'none',
-    },
-  },
 }));
 
 export function TriggerButton({
-  design,
-  onIncidentCreated,
   children,
 }: PropsWithChildren<TriggerButtonProps>) {
-  const { buttonStyle, triggerAlarm } = useStyles();
+  const { buttonStyle } = useStyles();
   const { entity } = useEntity();
   const [dialogShown, setDialogShown] = useState<boolean>(false);
 
@@ -72,9 +54,8 @@ export function TriggerButton({
     <>
       <Button
         data-testid="trigger-button"
-        {...(design === 'link' && { color: 'secondary' })}
         onClick={showDialog}
-        className={design === 'link' ? triggerAlarm : buttonStyle}
+        className={buttonStyle}
         disabled={!integrationKey}
       >
         {integrationKey
@@ -87,7 +68,6 @@ export function TriggerButton({
           handleDialog={hideDialog}
           name={entity.metadata.name}
           integrationKey={integrationKey}
-          onIncidentCreated={onIncidentCreated}
         />
       )}
     </>
