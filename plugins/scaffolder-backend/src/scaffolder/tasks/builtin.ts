@@ -20,10 +20,17 @@ import Docker from 'dockerode';
 import { TemplaterBuilder, TemplaterValues } from '../stages/templater';
 import { TemplateAction } from './types';
 import { InputError, UrlReader } from '@backstage/backend-common';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { JsonValue } from '@backstage/config';
 import { CatalogApi } from '@backstage/catalog-client';
 import { getEntityName } from '@backstage/catalog-model';
+import { PublisherBuilder } from '../stages';
+import { Octokit } from '@octokit/rest';
+import { Config } from '@backstage/config';
+import { initRepoAndPush } from '../stages/publish/helpers';
 
 async function fetchContents({
   urlReader,
@@ -44,8 +51,16 @@ async function fetchContents({
     );
   }
 
+  let fetchUrlIsAbsolute = false;
+  try {
+    new URL(fetchUrl);
+    fetchUrlIsAbsolute = true;
+  } catch {
+    /* ignored */
+  }
+
   // We handle both file locations and url ones
-  if (baseUrl?.startsWith('file://')) {
+  if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
     if (isAbsolute(fetchUrl)) {
       throw new InputError(
@@ -57,28 +72,27 @@ async function fetchContents({
   } else {
     let readUrl;
 
-    if (baseUrl) {
+    if (fetchUrlIsAbsolute) {
+      readUrl = fetchUrl;
+    } else if (baseUrl) {
       const integration = integrations.byUrl(baseUrl);
       if (!integration) {
         throw new InputError(`No integration found for location ${baseUrl}`);
       }
+
       readUrl = integration.resolveUrl({
         url: fetchUrl,
         base: baseUrl,
       });
     } else {
-      // If we don't have a baseUrl, check if our provided fetch url is absolute
-      try {
-        readUrl = new URL(fetchUrl).toString();
-      } catch {
-        throw new InputError(
-          `Failed to fetch, template location could not be determined and the fetch URL is relative, ${fetchUrl}`,
-        );
-      }
-
-      const res = await urlReader.readTree(readUrl);
-      await res.dir({ targetDir: outputPath });
+      throw new InputError(
+        `Failed to fetch, template location could not be determined and the fetch URL is relative, ${fetchUrl}`,
+      );
     }
+
+    const res = await urlReader.readTree(readUrl);
+    await fs.ensureDir(outputPath);
+    await res.dir({ targetDir: outputPath });
   }
 }
 
@@ -177,24 +191,174 @@ export function createFetchCookiecutterAction(options: {
   };
 }
 
+export function createPublishGithubAction(options: {
+  integrations: ScmIntegrations;
+  repoVisibility: 'private' | 'internal' | 'public';
+}): TemplateAction {
+  const { integrations, repoVisibility } = options;
+
+  const credentialsProviders = new Map(
+    integrations.github.list().map(integration => {
+      const provider = GithubCredentialsProvider.create(integration.config);
+      return [integration.config.host, provider];
+    }),
+  );
+
+  return {
+    id: 'publish:github',
+    async handler(ctx) {
+      const { repoUrl, description, access } = ctx.parameters;
+
+      if (typeof repoUrl !== 'string') {
+        throw new Error(
+          `Invalid repo URL passed to publish:github, got ${typeof repoUrl}`,
+        );
+      }
+      let parsed;
+      try {
+        parsed = new URL(`https://${repoUrl}`);
+      } catch (error) {
+        throw new InputError(
+          `Invalid repo URL passed to publish:github, got ${repoUrl}, ${error}`,
+        );
+      }
+      const host = parsed.host;
+      const owner = parsed.searchParams.get('owner');
+      if (!owner) {
+        throw new InputError(
+          `Invalid repo URL passed to publish:github, missing owner`,
+        );
+      }
+      const repo = parsed.searchParams.get('repo');
+      if (!repo) {
+        throw new InputError(
+          `Invalid repo URL passed to publish:github, missing repo`,
+        );
+      }
+
+      const credentialsProvider = credentialsProviders.get(host);
+      const integrationConfig = integrations.github.byHost(host);
+
+      if (!credentialsProvider || !integrationConfig) {
+        throw new InputError(
+          `No matching integration configuration for host ${host}, please check your Integrations config`,
+        );
+      }
+
+      const { token } = await credentialsProvider.getCredentials({
+        url: `${host}/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+      });
+
+      if (!token) {
+        throw new InputError(
+          `No token available for host: ${host}, with owner ${owner}, and repo ${repo}`,
+        );
+      }
+
+      const client = new Octokit({
+        auth: token,
+        baseUrl: integrationConfig.config.apiBaseUrl,
+      });
+
+      const user = await client.users.getByUsername({
+        username: owner,
+      });
+
+      const repoCreationPromise =
+        user.data.type === 'Organization'
+          ? client.repos.createInOrg({
+              name: repo,
+              org: owner,
+              private: repoVisibility !== 'public',
+              visibility: repoVisibility,
+              description: description as string,
+            })
+          : client.repos.createForAuthenticatedUser({
+              name: repo,
+              private: repoVisibility === 'private',
+              description: description as string,
+            });
+
+      const { data } = await repoCreationPromise;
+      const accessString = access as string;
+      if (accessString?.startsWith(`${owner}/`)) {
+        const [, team] = accessString.split('/');
+        await client.teams.addOrUpdateRepoPermissionsInOrg({
+          org: owner,
+          team_slug: team,
+          owner,
+          repo,
+          permission: 'admin',
+        });
+        // no need to add accessString if it's the person who own's the personal account
+      } else if (accessString && accessString !== owner) {
+        await client.repos.addCollaborator({
+          owner,
+          repo,
+          username: accessString,
+          permission: 'admin',
+        });
+      }
+
+      const remoteUrl = data?.clone_url;
+      const repoContentsUrl = data?.html_url
+        ? `${data?.html_url}/blob/master`
+        : undefined;
+
+      await initRepoAndPush({
+        dir: ctx.workspacePath,
+        remoteUrl,
+        auth: {
+          username: 'x-access-token',
+          password: token,
+        },
+        logger: ctx.logger,
+      });
+
+      ctx.output('remoteUrl', remoteUrl);
+      ctx.output('repoContentsUrl', repoContentsUrl);
+    },
+  };
+}
+
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
+  integrations: ScmIntegrations;
 }): TemplateAction {
-  const { catalogClient } = options;
+  const { catalogClient, integrations } = options;
 
   return {
     id: 'catalog:register',
     async handler(ctx) {
-      const { catalogInfoUrl } = ctx.parameters;
+      const {
+        repoContentsUrl,
+        catalogInfoPath = '/catalog-info.yaml',
+      } = ctx.parameters;
+
+      let { catalogInfoUrl } = ctx.parameters;
+      if (!catalogInfoUrl) {
+        const integration = integrations.byUrl(repoContentsUrl as string);
+        if (!integration) {
+          throw new InputError('No integration found for host');
+        }
+
+        catalogInfoUrl = integration.resolveUrl({
+          base: repoContentsUrl as string,
+          url: catalogInfoPath as string,
+        });
+      }
+
       ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
 
       const result = await catalogClient.addLocation({
         type: 'url',
         target: catalogInfoUrl as string,
       });
+      console.log('DEBUG: result.entities =', result.entities);
       if (result.entities.length >= 1) {
         const { kind, name, namespace } = getEntityName(result.entities[0]);
         ctx.output('entityRef', `${kind}:${namespace}/${name}`);
+        ctx.output('catalogInfoUrl', catalogInfoUrl);
       }
     },
   };

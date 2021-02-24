@@ -69,11 +69,7 @@ export const RepoUrlPicker: Field = ({
   formData,
 }) => {
   const api = useApi(scaffolderApiRef);
-  // const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
-  const allowedHosts = React.useMemo(
-    () => ['github.com', 'gitlab.com'] as string[],
-    [],
-  );
+  const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
 
   const { value: integrations, loading } = useAsync(async () => {
     return await api.getIntegrationsList({ allowedHosts });

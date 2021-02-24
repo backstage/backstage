@@ -82,8 +82,8 @@ spec:
   type: service
 
   parameters:
-    - title: Fill in some parameters for the template
-      required: 
+    - title: Fill in some steps
+      required:
         - name
       properties:
         name:
@@ -93,7 +93,7 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
-    - title: Choose destination
+    - title: Choose a location
       required:
         - repoUrl
       properties:
@@ -104,7 +104,6 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
-      
 
   steps:
     - id: fetch-base
@@ -112,7 +111,6 @@ spec:
       action: fetch:cookiecutter
       parameters:
         url: ./template
-        targetDir: blob
         values:
           name: '{{ parameters.name }}'
 
@@ -120,23 +118,26 @@ spec:
       name: Fetch Docs
       action: fetch:plain
       parameters:
-        url: https://github.com/aeothgiaetgh/aetkijhahte/tree/master/docs/template
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
 
     - id: publish
       name: Publish
       action: publish:github
       parameters:
-        allowedHosts: ['ghe.mycompany.com']
-        name: '{{ parameters.name }}'
-        # storePath: github.com?owner=spotify&repo=name
-        storePath: '{{ parameters.storePath }}'
+        allowedHosts: ['github.com']
+        description: 'This is {{ parameters.name }}'
+        # repoUrl: github.com?owner=spotify&repo=name
+        repoUrl: '{{ parameters.repoUrl }}'
 
     - id: register
       name: Register
       action: catalog:register
       parameters:
-        catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+        
 
   output:
-    catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}'
-    entityRef: '{{ steps.register.entityRef }}'
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'

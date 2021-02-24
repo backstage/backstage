@@ -57,6 +57,7 @@ import {
 import {
   createFetchPlainAction,
   createFetchCookiecutterAction,
+  createPublishGithubAction,
   createCatalogRegisterAction,
 } from '../scaffolder/tasks/builtin';
 import { ScmIntegrations } from '@backstage/integration';
@@ -145,7 +146,16 @@ export async function createRouter(
       templaters,
     }),
   );
-  actionRegistry.register(createCatalogRegisterAction({ catalogClient }));
+  actionRegistry.register(
+    createPublishGithubAction({
+      integrations,
+      repoVisibility: 'public',
+    }),
+  );
+
+  actionRegistry.register(
+    createCatalogRegisterAction({ catalogClient, integrations }),
+  );
 
   worker.start();
 
