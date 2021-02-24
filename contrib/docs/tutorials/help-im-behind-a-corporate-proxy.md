@@ -61,9 +61,9 @@ if (process.env.HTTPS_PROXY) {
 
 ## config
 
-If your development environnement is in the cloud (like with [AWS Cloud9](https://aws.amazon.com/cloud9/) or an instance of [Theia](https://theia-ide.org/)), you will need to update your configuration.
+If your development environment is in the cloud (like with [AWS Cloud9](https://aws.amazon.com/cloud9/) or an instance of [Theia](https://theia-ide.org/)), you will need to update your configuration.
 
-In `app.local.config`, you will probably need to make some changes, the exact values will depend of your setup.
+In `app-config.local.yaml`, you will probably need to make some changes, the exact values will depend on your setup.
 
 For instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are proxified as is:
 
@@ -71,7 +71,7 @@ For instance, if your public url is `https://your-public-url.com` and the port `
 app:
   baseUrl: https://your-public-url.com:3000
   listen:
-    host: 0.0.0.0 # This make the dev server bind to localhost and not the baseUrl hostname
+    host: 0.0.0.0 # This makes the dev server bind to all IPv4 interfaces and not just the baseUrl hostname
 
 backend:
   baseUrl: https://your-public-url.com:8080
@@ -81,6 +81,6 @@ backend:
     origin: https://your-public-url.com:3000
 ```
 
-If the protocole is `http`, you will need to set `backend.csp.upgrade-insecure-requests` to `false` as well.
+If the protocol is `http`, you will need to set `backend.csp.upgrade-insecure-requests` to `false` as well.
 
-The app port must proxy websocket connection in order to have hot reloading.
+The app port must proxy websocket connections in order to make hot reloading work.
