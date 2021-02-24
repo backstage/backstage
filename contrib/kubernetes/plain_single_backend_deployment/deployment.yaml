@@ -53,7 +53,7 @@ spec:
 
           volumeMounts:
             - name: config-volume
-              mountPath: /usr/src/app/k8s-config.yaml
+              mountPath: /app/k8s-config.yaml
               subPath: k8s-config.yaml
 
           resources:
