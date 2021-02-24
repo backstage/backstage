@@ -1880,7 +1880,29 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/plugin-catalog@^0.2.1", "@backstage/plugin-catalog@^0.3.1":
+"@backstage/plugin-catalog@^0.2.1":
+  version "0.4.0"
+  dependencies:
+    "@backstage/catalog-client" "^0.3.6"
+    "@backstage/catalog-model" "^0.7.2"
+    "@backstage/core" "^0.6.3"
+    "@backstage/plugin-catalog-react" "^0.1.0"
+    "@backstage/theme" "^0.2.3"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@types/react" "^16.9"
+    classnames "^2.2.6"
+    git-url-parse "^11.4.4"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-helmet "6.1.0"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    swr "^0.3.0"
+
+"@backstage/plugin-catalog@^0.3.1":
   version "0.4.0"
   dependencies:
     "@backstage/catalog-client" "^0.3.6"
@@ -1944,9 +1966,9 @@
     semver "^5.4.1"
 
 "@changesets/cli@^2.14.0":
-  version "2.14.0"
-  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.14.0.tgz#b8d1d33d832c640ce0b95333bbd8d5ac5b9c9824"
-  integrity sha512-rbQMRDXl1cXOglnjUvYyrFLlYBbS0YZdfxZfW3ZbGLzLoS4n50+B9fLSE9oW20hQuL3zAnyLyacb9cwNhF2lig==
+  version "2.14.1"
+  resolved "https://registry.npmjs.org/@changesets/cli/-/cli-2.14.1.tgz#ef6ba9f69e4dd5f6cde4220e032200e3039a52f8"
+  integrity sha512-ydU2ZUP/s7nHQmz8TrliT+kE2dJUpZYKh8MBHrkV6suchCBhT4DmoP4VDF9M4215r18iPbMpE1TjskzXGXB8eQ==
   dependencies:
     "@babel/runtime" "^7.10.4"
     "@changesets/apply-release-plan" "^4.2.0"
@@ -13290,7 +13312,7 @@ fs-extra@8.1.0, fs-extra@^8.1.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@9.0.1, fs-extra@^9.0.0, fs-extra@^9.0.1:
+fs-extra@9.0.1:
   version "9.0.1"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-9.0.1.tgz#910da0062437ba4c39fedd863f1675ccfefcb9fc"
   integrity sha512-h2iAoN838FqAFJY2/qVpzFXy+EBxfVE220PalAqQLDVsFOHLJrZvut5puAbCdNv6WJk+B8ihI+k0c7JK5erwqQ==
@@ -13320,7 +13342,7 @@ fs-extra@^7.0.1:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@^9.1.0:
+fs-extra@^9.0.0, fs-extra@^9.0.1, fs-extra@^9.1.0:
   version "9.1.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-9.1.0.tgz#5954460c764a8da2094ba3554bf839e6b9a7c86d"
   integrity sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==
