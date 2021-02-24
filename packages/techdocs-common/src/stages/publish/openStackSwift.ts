@@ -103,16 +103,19 @@ export class OpenStackSwiftPublish implements PublisherBase {
     this.logger = logger;
   }
 
+  public myName: string = 'hey';
+
   /**
-   * Upload all the files from the generated `directory` to the S3 bucket.
+   * Upload all the files from the generated `directory` to the OpenStack Swift container.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    console.log(entity, directory, 'Publish hey');
     try {
-      // Note: S3 manages creation of parent directories if they do not exist.
+      // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
-
+      console.log(allFilesToUpload, entity, 'hey');
       const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<unknown>> = [];
       for (const filePath of allFilesToUpload) {
@@ -169,6 +172,8 @@ export class OpenStackSwiftPublish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
+    console.log(entityName, 'fetchTechDocsMetadata hey');
+
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
@@ -208,6 +213,8 @@ export class OpenStackSwiftPublish implements PublisherBase {
     return async (req, res) => {
       // Trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
+      console.log('docsRouter hey');
+
       const filePath = req.path.replace(/^\//, '');
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
@@ -241,6 +248,8 @@ export class OpenStackSwiftPublish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
+      console.log(entity, 'hasDocsBeenGenerated hey');
+
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
       this.storageClient.getFile(
         this.containerName,

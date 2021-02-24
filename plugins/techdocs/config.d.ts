@@ -86,6 +86,62 @@ export interface Config {
           };
         }
       | {
+          type: 'openStackSwift';
+
+          /**
+           * Required when 'type' is set to awsS3
+           */
+          openStackSwift?: {
+            /**
+             * (Optional) Credentials used to access a storage bucket.
+             * If not set, environment variables or aws config file will be used to authenticate.
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
+             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             * @visibility secret
+             */
+            /**
+             * (Required) Cloud Storage Container Name
+             * @visibility backend
+             */
+            containerName: string;
+            /**
+             * (Required) Root user name
+             * @visibility backend
+             */
+            username: string;
+            /**
+             * (Required) Root user password
+             * @visibility backend
+             */
+            password: string; // required
+            /**
+             * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
+             * @visibility backend
+             */
+            authUrl: string;
+            /**
+             * (Required) Auth version
+             * @visibility backend
+             */
+            keystoneAuthVersion: string;
+            /**
+             * (Required) Domaind Id
+             * @visibility backend
+             */
+            domainId: string;
+            /**
+             * (Required) Domaind Name
+             * @visibility backend
+             */
+            domainName: 'Default';
+            /**
+             * (Required) Region
+             * @visibility backend
+             */
+            region: 'earth';
+          };
+        }
+      | {
           type: 'azureBlobStorage';
 
           /**
