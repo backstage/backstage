@@ -46,13 +46,15 @@ export function TriggerButton({
     setDialogShown(false);
   }, [setDialogShown]);
 
+  const disabled = !integrationKey;
   return (
     <>
       <Button
         data-testid="trigger-button"
         onClick={showDialog}
-        className={buttonStyle}
-        disabled={!integrationKey}
+        variant="contained"
+        className={disabled ? '' : buttonStyle}
+        disabled={disabled}
       >
         {integrationKey
           ? children ?? 'Create Incident'
