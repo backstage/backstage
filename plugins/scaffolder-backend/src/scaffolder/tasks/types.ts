@@ -15,8 +15,6 @@
  */
 
 import { JsonValue, JsonObject } from '@backstage/config';
-import { Logger } from 'winston';
-import { Writable } from 'stream';
 
 export type Status =
   | 'open'
@@ -93,6 +91,7 @@ export type TaskStoreGetEventsOptions = {
   taskId: string;
   after?: number | undefined;
 };
+
 export interface TaskStore {
   createTask(task: TaskSpec): Promise<{ taskId: string }>;
   getTask(taskId: string): Promise<DbTaskRow>;
@@ -115,27 +114,3 @@ export interface TaskStore {
     after,
   }: TaskStoreGetEventsOptions): Promise<{ events: DbTaskEventRow[] }>;
 }
-
-export type ActionContext = {
-  /**
-   * Base URL for the location of the task spec, typically the url of the source entity file.
-   */
-  baseUrl?: string;
-
-  logger: Logger;
-  logStream: Writable;
-
-  workspacePath: string;
-  parameters: { [name: string]: JsonValue };
-  output(name: string, value: JsonValue): void;
-
-  /**
-   * Creates a temporary directory for use by the action, which is then cleaned up automatically.
-   */
-  createTemporaryDirectory(): Promise<string>;
-};
-
-export type TemplateAction = {
-  id: string;
-  handler: (ctx: ActionContext) => Promise<void>;
-};

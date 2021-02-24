@@ -39,7 +39,7 @@ import {
   TaskWorker,
 } from '../scaffolder/tasks';
 import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
-import { TemplateActionRegistry } from '../scaffolder/tasks/TemplateActionRegistry';
+import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
@@ -59,7 +59,7 @@ import {
   createFetchCookiecutterAction,
   createPublishGithubAction,
   createCatalogRegisterAction,
-} from '../scaffolder/tasks/builtin';
+} from '../scaffolder/actions/builtin';
 import { ScmIntegrations } from '@backstage/integration';
 
 export interface RouterOptions {

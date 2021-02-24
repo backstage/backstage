@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TemplateActionRegistry } from '../tasks/TemplateActionRegistry';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { FilePreparer, PreparerBuilder } from './prepare';
 import Docker from 'dockerode';
 import { TemplaterBuilder, TemplaterValues } from './templater';
