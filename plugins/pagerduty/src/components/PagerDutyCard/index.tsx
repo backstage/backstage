@@ -23,16 +23,16 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
-import { Incidents } from './Incident';
-import { EscalationPolicy } from './Escalation';
+import { Incidents } from '../Incident';
+import { EscalationPolicy } from '../Escalation';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { pagerDutyApiRef, UnauthorizedError } from '../api';
+import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
-import { MissingTokenError } from './Errors/MissingTokenError';
+import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
-import { PAGERDUTY_INTEGRATION_KEY } from './constants';
-import { TriggerDialog } from './TriggerDialog';
+import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
+import { TriggerDialog } from '../TriggerDialog';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
