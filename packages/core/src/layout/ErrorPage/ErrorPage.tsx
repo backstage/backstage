@@ -20,6 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { BackstageTheme } from '@backstage/theme';
 import { MicDrop } from './MicDrop';
 import { useNavigate } from 'react-router';
+import { useSupportConfig } from '../../hooks';
 
 interface IErrorPageProps {
   status: string;
@@ -53,6 +54,7 @@ export const ErrorPage = ({
 }: IErrorPageProps) => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const support = useSupportConfig();
 
   return (
     <Grid container spacing={0} className={classes.container}>
@@ -71,13 +73,11 @@ export const ErrorPage = ({
           <Link data-testid="go-back-link" onClick={() => navigate(-1)}>
             Go back
           </Link>
-          ... or if you think this is a bug, please file an{' '}
-          <Link
-            href="https://github.com/backstage/backstage/issues"
-            rel="noopener noreferrer"
-          >
-            issue.
-          </Link>
+          ... or please{' '}
+          <Link href={support.url} rel="noopener noreferrer">
+            contact support
+          </Link>{' '}
+          if you think this is a bug.
         </Typography>
       </Grid>
     </Grid>

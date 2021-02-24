@@ -149,7 +149,7 @@ class AppContextImpl implements AppContext {
     return this.app.getPlugins();
   }
 
-  getSystemIcon(key: string): IconComponent {
+  getSystemIcon(key: IconKey): IconComponent | undefined {
     return this.app.getSystemIcon(key);
   }
 
@@ -206,7 +206,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.plugins;
   }
 
-  getSystemIcon(key: IconKey): IconComponent {
+  getSystemIcon(key: IconKey): IconComponent | undefined {
     return this.icons[key];
   }
 
