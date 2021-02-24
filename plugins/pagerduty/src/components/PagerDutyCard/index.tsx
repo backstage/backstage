@@ -94,7 +94,6 @@ export const PagerDutyCard = () => {
     onClick: showDialog,
     icon: <AlarmAddIcon />,
     color: 'secondary',
-    testId: 'trigger-link',
   };
 
   return (

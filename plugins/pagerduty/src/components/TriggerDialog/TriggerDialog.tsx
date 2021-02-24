@@ -138,12 +138,7 @@ export const TriggerDialog = ({
         >
           Trigger Incident
         </Button>
-        <Button
-          data-testid="close-button"
-          id="close"
-          color="primary"
-          onClick={handleDialog}
-        >
+        <Button id="close" color="primary" onClick={handleDialog}>
           Close
         </Button>
       </DialogActions>
