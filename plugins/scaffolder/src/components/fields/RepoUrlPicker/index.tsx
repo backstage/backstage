@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 import React, { useState, useCallback, useEffect } from 'react';
-import { Field, Widget } from '@rjsf/core';
+import { Field } from '@rjsf/core';
 import { useApi, Progress } from '@backstage/core';
 import { scaffolderApiRef } from '../../../api';
 import { useAsync } from 'react-use';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
 import { Typography } from '@material-ui/core';
+import { rest } from 'msw/lib/types';
 
-export const RepoUrlPicker: Field = ({ onChange, uiSchema }) => {
+export const RepoUrlPicker: Field = ({ onChange, uiSchema, ...rest }) => {
   const api = useApi(scaffolderApiRef);
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
 
@@ -31,14 +33,16 @@ export const RepoUrlPicker: Field = ({ onChange, uiSchema }) => {
     return await api.getIntegrationsList({ allowedHosts });
   });
 
-  const [hostname, setHostname] = useState('');
+  console.log(rest);
+
+  const [host, setHost] = useState('');
   const [owner, setOwner] = useState('');
   const [repo, setRepo] = useState('');
 
-  const updateHostname = useCallback(
+  const updateHost = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
-      setHostname(evt.target.value as string),
-    [setHostname],
+      setHost(evt.target.value as string),
+    [setHost],
   );
 
   const updateOwner = useCallback(
@@ -54,18 +58,18 @@ export const RepoUrlPicker: Field = ({ onChange, uiSchema }) => {
   );
 
   useEffect(() => {
-    if (hostname === '' && integrations?.length) {
-      setHostname(integrations[0].host);
+    if (host === '' && integrations?.length) {
+      setHost(integrations[0].host);
     }
-  }, [integrations, hostname]);
+  }, [integrations, host]);
 
   useEffect(() => {
     const params = new URLSearchParams();
     params.set('owner', owner);
     params.set('repo', repo);
 
-    onChange(`${hostname}?${params.toString()}`);
-  }, [hostname, owner, repo, onChange]);
+    onChange(`${encodeURIComponent(host)}?${params.toString()}`);
+  }, [host, owner, repo, onChange]);
 
   if (loading) {
     return <Progress />;
@@ -73,23 +77,27 @@ export const RepoUrlPicker: Field = ({ onChange, uiSchema }) => {
 
   return (
     <>
-      <Typography>Repository Location</Typography>
-      <TextField
-        select
-        label={hostname ? '' : 'Hostname'}
-        value={hostname}
-        onChange={updateHostname}
-      >
-        {integrations!
-          .filter(i => allowedHosts?.includes(i.host))
-          .map(({ host, title }) => (
-            <MenuItem key={host} value={host}>
-              {title}
-            </MenuItem>
-          ))}
-      </TextField>
-      <TextField label="Owner" onBlur={updateOwner} />
-      <TextField label="Repository name" onBlur={updateRepo} />
+      <Typography variant="body1">Repository Location</Typography>
+      <FormControl margin="normal" required>
+        <InputLabel htmlFor="hostInput">Host</InputLabel>
+        <Select native id="hostInput" onChange={updateHost}>
+          {integrations!
+            .filter(i => allowedHosts?.includes(i.host))
+            .map(({ host, title }) => (
+              <option key={host} value={host}>
+                {title}
+              </option>
+            ))}
+        </Select>
+      </FormControl>
+      <FormControl margin="normal" required>
+        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+        <Input id="ownerInput" onBlur={updateOwner} />
+      </FormControl>
+      <FormControl margin="normal" required>
+        <InputLabel htmlFor="repoInput">Repository</InputLabel>
+        <Input id="repoInput" onBlur={updateRepo} />
+      </FormControl>
     </>
   );
 };
