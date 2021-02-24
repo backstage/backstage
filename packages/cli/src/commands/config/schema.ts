@@ -29,13 +29,17 @@ export default async (cmd: Command) => {
     mockEnv: true,
   });
 
-  const { schema: data } = mergeConfigSchemas(
-    schema.serialize().schemas as ConfigSchemaPackageEntry[],
+  const merged = mergeConfigSchemas(
+    schema.serialize().schemas.map(_ => _.value),
   );
 
+  merged.title = 'Application Configuration Schema';
+  merged.description =
+    'This is the schema describing the structure of the app-config.yaml configuration file.';
+
   if (cmd.format === 'json') {
-    process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(merged, null, 2)}\n`);
   } else {
-    process.stdout.write(`${stringifyYaml(data)}\n`);
+    process.stdout.write(`${stringifyYaml(merged)}\n`);
   }
 };
