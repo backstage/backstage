@@ -15,8 +15,7 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import aws, { Credentials } from 'aws-sdk';
-import { ManagedUpload } from 'aws-sdk/clients/s3';
+import { storage } from 'pkgcloud';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -63,30 +62,34 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    let accessKeyId = undefined;
-    let secretAccessKey = undefined;
-    let credentials: Credentials | CredentialsOptions | undefined = undefined;
-    if (credentialsConfig) {
-      const roleArn = credentialsConfig.getOptionalString('roleArn');
-      if (roleArn && aws.config.credentials instanceof Credentials) {
-        credentials = new aws.ChainableTemporaryCredentials({
-          masterCredentials: aws.config.credentials as Credentials,
-          params: {
-            RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
-            RoleArn: roleArn,
-          },
-        });
+
+    const storageClient = storage.createClient({
+      provider: 'openstack',
+      username: openStackSwiftConfig.getString('username'),
+      password: openStackSwiftConfig.getString('password'),
+      authUrl: openStackSwiftConfig.getString('authUrl'),
+      keystoneAuthVersion:
+        openStackSwiftConfig.getOptionalString('keystoneAuthVersion') || 'v3',
+      domainId: openStackSwiftConfig.getOptionalString('domainId') || 'default',
+      domainName:
+        openStackSwiftConfig.getOptionalString('domainName') || 'Default',
+      region: openStackSwiftConfig.getString('region'),
+    });
+
+    // Check if the defined container exists. Being able to connect means the configuration is good
+    // and the storage client will work.
+    storageClient.getContainer(containerName, (err, container) => {
+      if (container) {
+        logger.info(
+          `Successfully connected to the OpenStack Swift container ${containerName}.`,
+        );
       } else {
         accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
         secretAccessKey = credentialsConfig.getOptionalString(
           'secretAccessKey',
         );
-        if (accessKeyId && secretAccessKey) {
-          credentials = {
-            accessKeyId,
-            secretAccessKey,
-          };
-        }
+
+        logger.error(`from OpenStack client library: ${err.message}`);
       }
     }
 
@@ -129,8 +132,8 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: aws.S3,
-    private readonly bucketName: string,
+    private readonly storageClient: storage.Client,
+    private readonly containerName: string,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
