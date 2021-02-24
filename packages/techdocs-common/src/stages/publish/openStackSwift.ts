@@ -103,8 +103,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
     this.logger = logger;
   }
 
-  public myName: string = 'hey';
-
   /**
    * Upload all the files from the generated `directory` to the OpenStack Swift container.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
