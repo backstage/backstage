@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { configApiRef, Link, useApi } from '@backstage/core';
+import { configApiRef, Breadcrumbs, Link, useApi } from '@backstage/core';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
-  Breadcrumbs,
   CircularProgress,
   LinearProgress,
   Link as MaterialLink,
@@ -54,6 +53,9 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   title: {
     padding: theme.spacing(1, 0, 2, 0),
+  },
+  breadcrumb: {
+    margin: theme.spacing(0, 0, 3, 0),
   },
   table: {
     padding: theme.spacing(1),
@@ -184,7 +186,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   }
   return (
     <div className={classes.root}>
-      <Breadcrumbs aria-label="breadcrumb">
+      <Breadcrumbs aria-label="breadcrumb" className={classes.breadcrumb}>
         <Link to="..">Workflow runs</Link>
         <Typography>Workflow run details</Typography>
       </Breadcrumbs>
