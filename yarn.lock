@@ -81,13 +81,13 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.3.2.tgz#6ff22680ff0e9aaf732121040e01e1f5836a305d"
-  integrity sha512-YDGdxoVA3+gQ3jvWDp+J3IV5XsvAe+nSHSytPg9m5hfJ48R+mBPMnO7Bnh//gR17LjbmyebPj27h4Ceyaa4d3Q==
+"@asyncapi/parser@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.4.0.tgz#a0b0e3cb1803400d93b15f7c354fe95824a36e2c"
+  integrity sha512-rI0UF9niaqUxZqFS2+iBvkekxhI3cXOv/O+i+w/1EhpPppLicPVnazQbBqQ1iO37sio+CPejJbeoBgj8m+ylPw==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
-    "@asyncapi/specs" "^2.7.5"
+    "@asyncapi/specs" "^2.7.6"
     "@fmvilas/pseudo-yaml-ast" "^0.3.1"
     ajv "^6.10.1"
     js-yaml "^3.13.1"
@@ -95,14 +95,14 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@^0.18.2":
-  version "0.18.2"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.18.2.tgz#74882b4c2a5ecd00c156898f38d0a5c9e8c4384d"
-  integrity sha512-vsD3acSM0hTxxSsTJoU79kpI9FXVA64OqNCu8xrawfaU4wdsSQWWn0y7SD8pUfwe4gohwmms0xNcAaMzYIhGLw==
+"@asyncapi/react-component@^0.19.2":
+  version "0.19.2"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.19.2.tgz#364a1d839e6f49a454fcb44b544f9496d1501b93"
+  integrity sha512-NXLBVaJdXqsIX98tF8fKxjTDf6cE+ym3Fkp3IQhMQh/6o1X2y/YVp+XkjfLO2C/Ccb/Cys1C5OnqipfwEY1oqA==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.2.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.3.2"
+    "@asyncapi/parser" "^1.4.0"
     constate "^1.2.0"
     dompurify "^2.1.1"
     markdown-it "^11.0.1"
@@ -110,10 +110,10 @@
     openapi-sampler "^1.0.0-beta.15"
     react-use "^12.2.0"
 
-"@asyncapi/specs@^2.7.5":
-  version "2.7.5"
-  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.5.tgz#3a516d198fc41a1103695bd889fdd4fbbebe7f5d"
-  integrity sha512-T1Ham9sqZKCtSowXRPaBCRy2oz3KHglqqrKiaO7lEudpP6lwH5SwXaq4qliyKzWaqd22srJHE4szdsorbFZKlw==
+"@asyncapi/specs@^2.7.6":
+  version "2.7.6"
+  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.6.tgz#d04ad015a148cd222f7939b9561360ab903de632"
+  integrity sha512-2IYlLA02beYQKVJVCAqV+G5tXRI4s8yeKYiszuoxS178psdAMKxgXtng8hUYPOqSvU6X4lc+Jabk1zSQFHifVg==
 
 "@aws-sdk/credential-provider-env@3.3.0":
   version "3.3.0"
@@ -1880,7 +1880,29 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
-"@backstage/plugin-catalog@^0.2.1", "@backstage/plugin-catalog@^0.3.1":
+"@backstage/plugin-catalog@^0.2.1":
+  version "0.4.0"
+  dependencies:
+    "@backstage/catalog-client" "^0.3.6"
+    "@backstage/catalog-model" "^0.7.2"
+    "@backstage/core" "^0.6.3"
+    "@backstage/plugin-catalog-react" "^0.1.0"
+    "@backstage/theme" "^0.2.3"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@types/react" "^16.9"
+    classnames "^2.2.6"
+    git-url-parse "^11.4.4"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-helmet "6.1.0"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    swr "^0.3.0"
+
+"@backstage/plugin-catalog@^0.3.1":
   version "0.4.0"
   dependencies:
     "@backstage/catalog-client" "^0.3.6"
