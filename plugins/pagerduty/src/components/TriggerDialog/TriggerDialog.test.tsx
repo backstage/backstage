@@ -26,6 +26,7 @@ import {
 } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerDialog } from './TriggerDialog';
 
 describe('TriggerDialog', () => {
@@ -64,13 +65,13 @@ describe('TriggerDialog', () => {
 
     const { getByText, getByRole, getByTestId } = await renderInTestApp(
       <ApiProvider apis={apis}>
-        <TriggerDialog
-          showDialog
-          handleDialog={() => {}}
-          name={entity.metadata.name}
-          integrationKey="abc123"
-          onIncidentCreated={() => {}}
-        />
+        <EntityProvider entity={entity}>
+          <TriggerDialog
+            showDialog
+            handleDialog={() => {}}
+            onIncidentCreated={() => {}}
+          />
+        </EntityProvider>
       </ApiProvider>,
     );
 

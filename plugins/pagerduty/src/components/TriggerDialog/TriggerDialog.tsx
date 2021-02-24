@@ -29,22 +29,20 @@ import { useApi, alertApiRef, identityApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { pagerDutyApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
+import { usePagerdutyEntity } from '../../hooks';
 
 type Props = {
-  name: string;
-  integrationKey: string;
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated?: () => void;
 };
 
 export const TriggerDialog = ({
-  name,
-  integrationKey,
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
 }: Props) => {
+  const { name, integrationKey } = usePagerdutyEntity();
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const userName = identityApi.getUserId();
@@ -54,7 +52,7 @@ export const TriggerDialog = ({
   const [{ value, loading, error }, handleTriggerAlarm] = useAsyncFn(
     async (descriptions: string) =>
       await api.triggerAlarm({
-        integrationKey,
+        integrationKey: integrationKey as string,
         source: window.location.toString(),
         description: descriptions,
         userName,
