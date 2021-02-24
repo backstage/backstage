@@ -27,7 +27,9 @@ import {
   Progress,
   useApi,
 } from '@backstage/core';
+import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
 
@@ -90,8 +92,8 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
             switch (relation.type) {
               case RELATION_PROVIDES_API:
                 systemEdges.push({
-                  from: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
-                  to: getEntityNodeId(catalogItem),
+                  from: getEntityNodeId(catalogItem),
+                  to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
                   label: 'provides API',
                 });
                 break;
@@ -119,12 +121,22 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
 
   return (
     <InfoCard title="System Diagram">
-      <DependencyGraph
-        nodes={systemNodes}
-        edges={systemEdges}
-        paddingX={15}
-        direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
-      />
+      <div>
+        <DependencyGraph
+          nodes={systemNodes}
+          edges={systemEdges}
+          nodeMargin={10}
+          direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
+        />
+      </div>
+      <Box m={1} />
+      <Typography
+        variant="caption"
+        style={{ display: 'block', textAlign: 'right' }}
+      >
+        <ZoomOutMap style={{ verticalAlign: 'bottom' }} /> Use pinch &amp; zoom
+        to move around the diagram.
+      </Typography>
     </InfoCard>
   );
 }
