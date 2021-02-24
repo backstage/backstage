@@ -138,7 +138,7 @@ describe('PageDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => [service]);
 
-    const { getByText, queryByTestId, getByTestId, getByRole } = render(
+    const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <EntityProvider entity={entity}>
@@ -149,8 +149,8 @@ describe('PageDutyCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Service Directory')).toBeInTheDocument();
-    expect(getByText('Create Incident')).toBeInTheDocument();
-    const triggerLink = getByTestId('trigger-link');
+
+    const triggerLink = getByText('Create Incident');
     await act(async () => {
       fireEvent.click(triggerLink);
     });

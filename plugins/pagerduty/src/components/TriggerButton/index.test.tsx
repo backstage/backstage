@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
   ApiRegistry,
@@ -63,7 +63,7 @@ describe('TriggerButton', () => {
       },
     };
 
-    const { queryByRole, getByRole, getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <TriggerButton />
@@ -71,25 +71,22 @@ describe('TriggerButton', () => {
       </ApiProvider>,
     );
 
-    expect(getByTestId('trigger-button')).toBeInTheDocument();
-    expect(queryByRole('dialog')).not.toBeInTheDocument();
-
-    const triggerButton = getByTestId('trigger-button');
-    expect(triggerButton.textContent).toBe('Create Incident');
+    const triggerButton = screen.getByText('Create Incident');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     await act(async () => {
       fireEvent.click(triggerButton);
     });
     await waitFor(() => {
-      expect(getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    const closeButton = getByTestId('close-button');
+    const closeButton = screen.getByText('Close');
     await act(async () => {
       fireEvent.click(closeButton);
     });
     await waitFor(() => {
-      expect(queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 
@@ -105,7 +102,7 @@ describe('TriggerButton', () => {
       },
     };
 
-    const { getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <TriggerButton>Send an alert</TriggerButton>
@@ -113,8 +110,7 @@ describe('TriggerButton', () => {
       </ApiProvider>,
     );
 
-    const triggerButton = getByTestId('trigger-button');
-    expect(triggerButton.textContent).toBe('Send an alert');
+    expect(screen.getByText('Send an alert')).toBeInTheDocument();
   });
 
   it('renders a disabled trigger button if entity does not include key', async () => {
@@ -126,7 +122,7 @@ describe('TriggerButton', () => {
       },
     };
 
-    const { queryByRole, getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
           <TriggerButton />
@@ -134,16 +130,13 @@ describe('TriggerButton', () => {
       </ApiProvider>,
     );
 
-    expect(getByTestId('trigger-button')).toBeInTheDocument();
-
-    const triggerButton = getByTestId('trigger-button');
-    expect(triggerButton.textContent).toBe('Missing integration key');
+    const triggerButton = screen.getByText('Missing integration key');
 
     await act(async () => {
       fireEvent.click(triggerButton);
     });
     await waitFor(() => {
-      expect(queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });

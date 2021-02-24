@@ -50,7 +50,6 @@ export function TriggerButton({
   return (
     <>
       <Button
-        data-testid="trigger-button"
         onClick={showDialog}
         variant="contained"
         className={disabled ? '' : buttonStyle}
