@@ -4,6 +4,8 @@ Let's admit it, we've all been there. Sometimes you've gotta run stuff with no w
 
 Whilst this isn't supported natively by Backstage, this might help you get your installation up and running making calls through the said proxy tunnel.
 
+## backend
+
 Unfortunately, `nodejs` does not respect `HTTP(S)_PROXY` environment variables by default, and the library that we use to provide `fetch` functionality `node-fetch` (provided by `cross-fetch`) does not also respect these environment variables.
 
 There are however some ways to get this to work without too much effort. It's most likely that you're going to run into these issues from the `backend` part of `backstage` as that's the part that isn't helped by your browser or OS's settings for the corporate proxy.
@@ -56,3 +58,29 @@ if (process.env.HTTPS_PROXY) {
 ```
 
 4. Start the backend with `yarn start`
+
+## config
+
+If your development environnement is in the cloud (like with [AWS Cloud9](https://aws.amazon.com/cloud9/) or an instance of [Theia](https://theia-ide.org/)), you will need to update your configuration.
+
+In `app.local.config`, you will probably need to make some changes, the exact values will depend of your setup.
+
+For instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are proxified as is:
+
+```yaml
+app:
+  baseUrl: https://your-public-url.com:3000
+  listen:
+    host: 0.0.0.0 # This make the dev server bind to localhost and not the baseUrl hostname
+
+backend:
+  baseUrl: https://your-public-url.com:8080
+  listen:
+    port: 8080
+  cors:
+    origin: https://your-public-url.com:3000
+```
+
+If the protocole is `http`, you will need to set `backend.csp.upgrade-insecure-requests` to `false` as well.
+
+The app port must proxy websocket connection in order to have hot reloading.
