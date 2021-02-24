@@ -27,7 +27,7 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError } from './Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
 import { PAGERDUTY_INTEGRATION_KEY } from './constants';
-import { TriggerButton, useShowDialog } from './TriggerButton';
+import { TriggerDialog } from './TriggerDialog';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
@@ -36,14 +36,18 @@ export const PagerDutyCard = () => {
   const { entity } = useEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
+  const [dialogShown, setDialogShown] = useState<boolean>(false);
+
+  const showDialog = useCallback(() => {
+    setDialogShown(true);
+  }, [setDialogShown]);
+  const hideDialog = useCallback(() => {
+    setDialogShown(false);
+  }, [setDialogShown]);
+
   const integrationKey = entity.metadata.annotations![
     PAGERDUTY_INTEGRATION_KEY
   ];
-  const setShowDialog = useShowDialog()[1];
-
-  const showDialog = useCallback(() => {
-    setShowDialog(true);
-  }, [setShowDialog]);
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -84,24 +88,34 @@ export const PagerDutyCard = () => {
 
   const triggerLink = {
     label: 'Create Incident',
-    action: <TriggerButton design="link" onIncidentCreated={handleRefresh} />,
-    icon: <AlarmAddIcon onClick={showDialog} />,
+    onClick: showDialog,
+    icon: <AlarmAddIcon />,
+    color: 'secondary' as 'secondary', // DUH
   };
 
   return (
-    <Card>
-      <CardHeader
-        title="PagerDuty"
-        subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
-      />
-      <Divider />
-      <CardContent>
-        <Incidents
-          serviceId={service!.id}
-          refreshIncidents={refreshIncidents}
+    <>
+      <Card>
+        <CardHeader
+          title="PagerDuty"
+          subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
         />
-        <EscalationPolicy policyId={service!.policyId} />
-      </CardContent>
-    </Card>
+        <Divider />
+        <CardContent>
+          <Incidents
+            serviceId={service!.id}
+            refreshIncidents={refreshIncidents}
+          />
+          <EscalationPolicy policyId={service!.policyId} />
+        </CardContent>
+      </Card>
+      <TriggerDialog
+        showDialog={dialogShown}
+        handleDialog={hideDialog}
+        name={entity.metadata.name}
+        integrationKey={integrationKey}
+        onIncidentCreated={handleRefresh}
+      />
+    </>
   );
 };

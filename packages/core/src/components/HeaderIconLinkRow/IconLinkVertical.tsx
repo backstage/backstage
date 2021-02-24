@@ -20,11 +20,13 @@ import LinkIcon from '@material-ui/icons/Link';
 import { Link as RouterLink } from '../Link';
 
 export type IconLinkVerticalProps = {
+  key?: string;
   icon?: React.ReactNode;
   href?: string;
+  onClick?: React.AnchorHTMLAttributes<HTMLAnchorElement>['onClick'];
   disabled?: boolean;
   label: string;
-  action?: React.ReactNode;
+  color?: 'primary' | 'secondary';
 };
 
 const useIconStyles = makeStyles(theme => ({
@@ -37,14 +39,17 @@ const useIconStyles = makeStyles(theme => ({
   disabled: {
     color: 'gray',
   },
+  primary: {
+    color: theme.palette.primary.main,
+  },
+  secondary: {
+    color: theme.palette.secondary.main,
+  },
   label: {
     fontSize: '0.7rem',
     textTransform: 'uppercase',
     fontWeight: 600,
     letterSpacing: 1.2,
-  },
-  linkStyle: {
-    color: theme.palette.secondary.main,
   },
 }));
 
@@ -52,8 +57,9 @@ export function IconLinkVertical({
   icon = <LinkIcon />,
   href = '#',
   disabled = false,
-  action,
-  ...props
+  color = 'primary',
+  label,
+  onClick,
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
 
@@ -62,27 +68,22 @@ export function IconLinkVertical({
       <Link
         className={classnames(classes.link, classes.disabled)}
         underline="none"
-        {...props}
       >
         {icon}
-        <span className={classes.label}>{props.label}</span>
-      </Link>
-    );
-  }
-
-  if (action) {
-    return (
-      <Link className={classnames(classes.link, classes.linkStyle)} {...props}>
-        {icon}
-        {action}
+        <span className={classes.label}>{label}</span>
       </Link>
     );
   }
 
   return (
-    <Link className={classes.link} to={href} component={RouterLink} {...props}>
+    <Link
+      className={classnames(classes.link, classes[color])}
+      to={href}
+      component={RouterLink}
+      onClick={onClick}
+    >
       {icon}
-      <span className={classes.label}>{props.label}</span>
+      <span className={classes.label}>{label}</span>
     </Link>
   );
 }
