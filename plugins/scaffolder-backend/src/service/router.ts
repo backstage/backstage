@@ -54,7 +54,10 @@ import {
   TemplateEntityV1beta2,
   Entity,
 } from '@backstage/catalog-model';
-import { createFetchCookiecutterAction } from '../scaffolder/tasks/builtin';
+import {
+  createFetchPlainAction,
+  createFetchCookiecutterAction,
+} from '../scaffolder/tasks/builtin';
 import { ScmIntegrations } from '@backstage/integration';
 
 export interface RouterOptions {
@@ -128,6 +131,12 @@ export async function createRouter(
     templaters,
     catalogClient,
   });
+  actionRegistry.register(
+    createFetchPlainAction({
+      urlReader,
+      integrations,
+    }),
+  );
   actionRegistry.register(
     createFetchCookiecutterAction({
       urlReader,
