@@ -65,7 +65,7 @@ If your development environment is in the cloud (like with [AWS Cloud9](https://
 
 In `app-config.local.yaml`, you will probably need to make some changes, the exact values will depend on your setup.
 
-For instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are proxified as is:
+For instance, if your public url is `https://your-public-url.com` and the port `3000` and `8080` are open:
 
 ```yaml
 app:
@@ -83,4 +83,4 @@ backend:
 
 If the protocol is `http`, you will need to set `backend.csp.upgrade-insecure-requests` to `false` as well.
 
-The app port must proxy websocket connections in order to make hot reloading work.
+The app port must proxy web socket connections in order to make hot reloading work.

@@ -255,6 +255,7 @@ techdocs
 templated
 templater
 templaters
+theia
 toc
 tolerations
 toolchain
