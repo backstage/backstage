@@ -82,25 +82,29 @@ spec:
   type: service
 
   parameters:
-    title: Fill in some BS params
-    required:
-      - name
-    properties:
-      name:
-        title: Name
-        type: string
-        description: Unique name of the component
-        ui:autofocus: true
-        ui:options:
-          rows: 5
-      repoUrl:
-        title: Repository Location
-        type: string
-        description: Copy https://github.com/aeothgiaetgh/aetkijhahte and hammer in some more letters
-        ui:field: RepoUrlPicker
-        ui:options:
-          allowedHosts:
-            - github.com
+    - title: Fill in some parameters for the template
+      required: 
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose destination
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+      
 
   steps:
     - id: fetch-base
