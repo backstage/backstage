@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, dirname } from 'path';
 import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { Logger } from 'winston';
@@ -39,7 +39,7 @@ export function templateEntityToSpec(
 
   let url: string;
   if (protocol === 'file') {
-    const path = resolvePath(location, template.spec.path || '.');
+    const path = resolvePath(dirname(location), template.spec.path || '.');
 
     url = `file://${path}`;
   } else {
@@ -86,6 +86,7 @@ export function templateEntityToSpec(
   });
 
   return {
+    values: {},
     steps,
     output: {
       remoteUrl: '{{ steps.publish.output.remoteUrl }}',

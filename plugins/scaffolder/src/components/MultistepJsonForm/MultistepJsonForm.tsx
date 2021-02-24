@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import { Content, StructuredMetadataTable } from '@backstage/core';
 import {
   Box,
@@ -28,16 +28,17 @@ import {
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
+import { transformSchemaToProps } from './schema';
 
 const Form = withTheme(MuiTheme);
 type Step = {
-  schema: JSONSchema;
-  label: string;
+  schema: JsonObject;
+  title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
 
 type Props = {
   /**
-   * Steps for the form, each contains label and form schema
+   * Steps for the form, each contains title and form schema
    */
   steps: Step[];
   formData: Record<string, any>;
@@ -66,20 +67,21 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, schema, ...formProps }) => (
-          <StepUI key={label}>
-            <StepLabel>{label}</StepLabel>
-            <StepContent key={label}>
+        {steps.map(({ title, schema, ...formProps }) => (
+          <StepUI key={title}>
+            <StepLabel>
+              <Typography variant="h6">{title}</Typography>
+            </StepLabel>
+            <StepContent key={title}>
               <Form
-                key={label}
                 noHtml5Validate
                 formData={formData}
                 onChange={onChange}
-                schema={schema as FormProps<any>['schema']}
                 onSubmit={e => {
                   if (e.errors.length === 0) handleNext();
                 }}
                 {...formProps}
+                {...transformSchemaToProps(schema)}
               >
                 <Button disabled={activeStep === 0} onClick={handleBack}>
                   Back

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, renderWithEffects } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
@@ -25,45 +24,6 @@ import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { TemplatePage } from './TemplatePage';
 
-const templateMock = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Template',
-  metadata: {
-    annotations: {
-      'backstage.io/managed-by-location':
-        'file:/something/sample-templates/react-ssr-template/template.yaml',
-    },
-    name: 'react-ssr-template',
-    title: 'React SSR Template',
-    description:
-      'Next.js application skeleton for creating isomorphic web applications.',
-    tags: ['Recommended', 'React'],
-    uid: '55efc748-4a2b-460f-9e47-3f4fd23b46f7',
-    etag: 'MTM3YThjY2QtYTc1MS00MTFkLTk3YTAtNzgyMDg3MDVmZTVm',
-    generation: 1,
-  },
-  spec: {
-    processor: 'cookiecutter',
-    type: 'website',
-    path: '.',
-    schema: {
-      required: ['component_id', 'description'],
-      properties: {
-        component_id: {
-          title: 'Name',
-          type: 'string',
-          description: 'Unique name of the component',
-        },
-        description: {
-          title: 'Description',
-          type: 'string',
-          description: 'Description of the component',
-        },
-      },
-    },
-  },
-};
-
 jest.mock('react-router-dom', () => {
   return {
     ...(jest.requireActual('react-router-dom') as any),
@@ -73,26 +33,28 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-const scaffolderApiMock: Partial<ScaffolderApi> = {
+const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   scaffold: jest.fn(),
+  getTemplateParameterSchema: jest.fn(),
+  getTask: jest.fn(),
+  streamLogs: jest.fn(),
 };
 
-const catalogApiMock = {
-  getEntities: jest.fn() as jest.MockedFunction<CatalogApi['getEntities']>,
-};
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 
 const apis = ApiRegistry.from([
   [scaffolderApiRef, scaffolderApiMock],
   [errorApiRef, errorApiMock],
-  [catalogApiRef, catalogApiMock],
 ]);
 
 describe('TemplatePage', () => {
   beforeEach(() => jest.resetAllMocks());
 
   it('renders correctly', async () => {
-    catalogApiMock.getEntities.mockResolvedValueOnce({ items: [templateMock] });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+      title: 'React SSR Template',
+      steps: [],
+    });
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <TemplatePage />
@@ -113,7 +75,7 @@ describe('TemplatePage', () => {
     const promise = new Promise<any>(res => {
       resolve = res;
     });
-    catalogApiMock.getEntities.mockReturnValueOnce(promise);
+    scaffolderApiMock.getTemplateParameterSchema.mockReturnValueOnce(promise);
     const rendered = await renderInTestApp(
       <ApiProvider apis={apis}>
         <TemplatePage />
@@ -129,12 +91,17 @@ describe('TemplatePage', () => {
     expect(rendered.queryByTestId('loading-progress')).toBeInTheDocument();
 
     await act(async () => {
-      resolve!({ items: [templateMock] });
+      resolve!({
+        title: 'React SSR Template',
+        steps: [],
+      });
     });
   });
 
   it('navigates away if no template was loaded', async () => {
-    catalogApiMock.getEntities.mockResolvedValueOnce({ items: [] });
+    scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue(
+      undefined as any,
+    );
 
     const rendered = await renderWithEffects(
       <ApiProvider apis={apis}>

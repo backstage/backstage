@@ -17,7 +17,7 @@
 import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import * as winston from 'winston';
-import { JsonValue } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/config';
 import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
@@ -57,10 +57,11 @@ export class TaskWorker {
       );
 
       const templateCtx: {
+        parameters: JsonObject;
         steps: {
           [stepName: string]: { output: { [outputName: string]: JsonValue } };
         };
-      } = { steps: {} };
+      } = { parameters: task.spec.values, steps: {} };
 
       for (const step of task.spec.steps) {
         const metadata = { stepId: step.id };
@@ -94,22 +95,20 @@ export class TaskWorker {
             throw new Error(`Action '${step.action}' does not exist`);
           }
 
-          const parameters: { [name: string]: JsonValue } = {};
-          for (const [name, maybeTemplateStr] of Object.entries(
-            step.parameters ?? {},
-          )) {
-            if (typeof maybeTemplateStr === 'string') {
-              const value = handlebars.compile(maybeTemplateStr, {
-                noEscape: true,
-                strict: true,
-                data: false,
-                preventIndent: true,
-              })(templateCtx);
-              parameters[name] = value;
-            } else {
-              parameters[name] = maybeTemplateStr;
-            }
-          }
+          const parameters = JSON.parse(
+            JSON.stringify(step.parameters),
+            (_key, value) => {
+              if (typeof value === 'string') {
+                return handlebars.compile(value, {
+                  noEscape: true,
+                  strict: true,
+                  data: false,
+                  preventIndent: true,
+                })(templateCtx);
+              }
+              return value;
+            },
+          );
 
           const stepOutputs: { [name: string]: JsonValue } = {};
 
@@ -138,16 +137,19 @@ export class TaskWorker {
         }
       }
 
-      const output = Object.fromEntries(
-        Object.entries(task.spec.output).map(([name, templateStr]) => {
-          const value = handlebars.compile(templateStr, {
-            noEscape: true,
-            strict: true,
-            data: false,
-            preventIndent: true,
-          })(templateCtx);
-          return [name, value];
-        }),
+      const output = JSON.parse(
+        JSON.stringify(task.spec.output),
+        (_key, value) => {
+          if (typeof value === 'string') {
+            return handlebars.compile(value, {
+              noEscape: true,
+              strict: true,
+              data: false,
+              preventIndent: true,
+            })(templateCtx);
+          }
+          return value;
+        },
       );
 
       await task.complete('completed', { output });

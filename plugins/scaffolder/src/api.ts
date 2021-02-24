@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { EntityName } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import {
   createApiRef,
   DiscoveryApi,
@@ -28,6 +30,14 @@ export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   description: 'Used to make requests towards the scaffolder backend',
 });
 
+type TemplateParameterSchema = {
+  title: string;
+  steps: Array<{
+    title: string;
+    schema: JsonObject;
+  }>;
+};
+
 export type LogEvent = {
   type: 'log' | 'completion';
   body: {
@@ -41,6 +51,10 @@ export type LogEvent = {
 };
 
 export interface ScaffolderApi {
+  getTemplateParameterSchema(
+    templateName: EntityName,
+  ): Promise<TemplateParameterSchema>;
+
   /**
    * Executes the scaffolding of a component, given a template and its
    * parameter values.
@@ -70,6 +84,34 @@ export class ScaffolderClient implements ScaffolderApi {
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+  }
+
+  async getTemplateParameterSchema(
+    templateName: EntityName,
+  ): Promise<TemplateParameterSchema> {
+    const { namespace, kind, name } = templateName;
+
+    const token = await this.identityApi.getIdToken();
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const templatePath = [namespace, kind, name]
+      .map(s => encodeURIComponent(s))
+      .join('/');
+    const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
+
+    const response = await fetch(url, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch template parameter schema, ${await response.text()}`,
+      );
+    }
+
+    const schema: TemplateParameterSchema = await response.json();
+    return schema;
   }
 
   /**
