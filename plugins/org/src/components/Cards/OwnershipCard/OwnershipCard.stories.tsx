@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid } from '@material-ui/core';
+import { Grid, ThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 import { GroupEntity } from '@backstage/catalog-model';
+import {
+  createTheme,
+  genPageTheme,
+  shapes,
+  BackstageTheme,
+} from '@backstage/theme';
 import {
   EntityContext,
   CatalogApi,
@@ -87,10 +93,44 @@ export const Default = () => (
       <EntityContext.Provider value={{ entity: defaultEntity, loading: false }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
-            <OwnershipCard variant="gridItem" />
+            <OwnershipCard />
           </Grid>
         </Grid>
       </EntityContext.Provider>
     </ApiProvider>
+  </MemoryRouter>
+);
+
+const monochromeTheme = (outer: BackstageTheme) =>
+  createTheme({
+    ...outer,
+    defaultPageTheme: 'home',
+    pageTheme: {
+      home: genPageTheme(['#444'], shapes.wave2),
+      documentation: genPageTheme(['#474747'], shapes.wave2),
+      tool: genPageTheme(['#222'], shapes.wave2),
+      service: genPageTheme(['#aaa'], shapes.wave2),
+      website: genPageTheme(['#0e0e0e'], shapes.wave2),
+      library: genPageTheme(['#9d9d9d'], shapes.wave2),
+      other: genPageTheme(['#aaa'], shapes.wave2),
+      app: genPageTheme(['#666'], shapes.wave2),
+    },
+  });
+
+export const Themed = () => (
+  <MemoryRouter>
+    <ThemeProvider theme={monochromeTheme}>
+      <ApiProvider apis={apiRegistry}>
+        <EntityContext.Provider
+          value={{ entity: defaultEntity, loading: false }}
+        >
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <OwnershipCard />
+            </Grid>
+          </Grid>
+        </EntityContext.Provider>
+      </ApiProvider>
+    </ThemeProvider>
   </MemoryRouter>
 );

@@ -74,7 +74,7 @@ describe('systemEntityColumns', () => {
       expect(getByText('my-namespace/my-system')).toBeInTheDocument();
       expect(getByText('my-namespace/my-domain')).toBeInTheDocument();
       expect(getByText('Test')).toBeInTheDocument();
-      expect(getByText('Some description')).toBeInTheDocument();
+      expect(getByText(/Some/)).toBeInTheDocument();
     });
   });
 });
@@ -131,7 +131,7 @@ describe('componentEntityColumns', () => {
       expect(getByText('Test')).toBeInTheDocument();
       expect(getByText('production')).toBeInTheDocument();
       expect(getByText('service')).toBeInTheDocument();
-      expect(getByText('Some description')).toBeInTheDocument();
+      expect(getByText(/Some/)).toBeInTheDocument();
     });
   });
 });

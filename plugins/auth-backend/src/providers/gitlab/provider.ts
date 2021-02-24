@@ -51,12 +51,12 @@ export class GitlabAuthProvider implements OAuthHandlers {
       },
       (
         accessToken: any,
-        refreshToken: any,
+        _refreshToken: any,
         params: any,
         fullProfile: any,
         done: PassportDoneCallback<OAuthResult>,
       ) => {
-        done(undefined, { fullProfile, params, accessToken, refreshToken });
+        done(undefined, { fullProfile, params, accessToken });
       },
     );
   }

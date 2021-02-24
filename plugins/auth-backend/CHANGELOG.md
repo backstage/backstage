@@ -1,5 +1,28 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- ec504e7b4: Fix for refresh token being lost during Microsoft login.
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.3.1
+
+### Patch Changes
+
+- 92f01d75c: Refactored auth provider factories to accept options along with other internal refactoring of the auth providers.
+- d9687c524: Fixed parsing of OIDC key timestamps when using SQLite.
+- 3600ac3b0: Migrated the package from using moment to Luxon. #4278
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+
 ## 0.3.0
 
 ### Minor Changes

@@ -48,6 +48,22 @@
       }
     </style>
     <title><%= app.title %></title>
+    <% if (app.googleAnalyticsTrackingId && typeof app.googleAnalyticsTrackingId
+    === 'string') { %>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=<%= app.googleAnalyticsTrackingId %>"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', '<%= app.googleAnalyticsTrackingId %>');
+    </script>
+    <% } %>
   </head>
   <body style="margin: 0;">
     <noscript>You need to enable JavaScript to run this app.</noscript>

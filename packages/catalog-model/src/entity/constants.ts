@@ -27,3 +27,9 @@ export const ENTITY_META_GENERATED_FIELDS = [
   'etag',
   'generation',
 ] as const;
+
+/**
+ * Annotations for linking to entity from catalog pages.
+ */
+export const VIEW_URL_ANNOTATION = 'backstage.io/view-url';
+export const EDIT_URL_ANNOTATION = 'backstage.io/edit-url';

@@ -24,7 +24,6 @@ Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
 app:build                Build an app for a production release
-app:diff                 Diff an existing app with the creation template
 app:serve                Serve an app for local development
 
 backend:build            Build a backend plugin
@@ -113,25 +112,6 @@ Options:
   -h, --help       display help for command
 ```
 
-## app:diff
-
-Scope: `app`
-
-Diff an existing app with the template used in `@backstage/create-app`. This
-will verify that your app package has not diverged from the template, and can be
-useful to run after updating the version of `@backstage/cli` in your app.
-
-This command is experimental and may be removed in the future.
-
-```text
-Usage: backstage-cli app:diff
-
-Options:
-  --check     Fail if changes are required
-  --yes       Apply all changes
-  -h, --help  display help for command
-```
-
 ## app:serve
 
 Scope: `app`
@@ -207,15 +187,15 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of `backstage-cli backend:bundle` into an image:
 
 ```Dockerfile
-FROM node:14-buster
+FROM node:14-buster-slim
 WORKDIR /app
 
 ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN yarn install --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
 
-CMD node packages/backend
+CMD ["node", "packages/backend"]
 ```
 
 ```text

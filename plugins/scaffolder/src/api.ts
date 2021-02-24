@@ -14,14 +14,53 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core';
+import {
+  createApiRef,
+  DiscoveryApi,
+  Observable,
+  IdentityApi,
+} from '@backstage/core';
+import ObservableImpl from 'zen-observable';
+import { ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
   description: 'Used to make requests towards the scaffolder backend',
 });
 
-export class ScaffolderApi {
+export type LogEvent = {
+  type: 'log' | 'completion';
+  body: {
+    message: string;
+    stepId?: string;
+    status?: Status;
+  };
+  createdAt: string;
+  id: string;
+  taskId: string;
+};
+
+export interface ScaffolderApi {
+  /**
+   * Executes the scaffolding of a component, given a template and its
+   * parameter values.
+   *
+   * @param templateName Name of the Template entity for the scaffolder to use. New project is going to be created out of this template.
+   * @param values Parameters for the template, e.g. name, description
+   */
+  scaffold(templateName: string, values: Record<string, any>): Promise<string>;
+
+  getTask(taskId: string): Promise<ScaffolderTask>;
+
+  streamLogs({
+    taskId,
+    after,
+  }: {
+    taskId: string;
+    after?: number;
+  }): Observable<LogEvent>;
+}
+export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
 
@@ -40,9 +79,12 @@ export class ScaffolderApi {
    * @param templateName Template name for the scaffolder to use. New project is going to be created out of this template.
    * @param values Parameters for the template, e.g. name, description
    */
-  async scaffold(templateName: string, values: Record<string, any>) {
+  async scaffold(
+    templateName: string,
+    values: Record<string, any>,
+  ): Promise<string> {
     const token = await this.identityApi.getIdToken();
-    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v1/jobs`;
+    const url = `${await this.discoveryApi.getBaseUrl('scaffolder')}/v2/tasks`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -58,16 +100,65 @@ export class ScaffolderApi {
       throw new Error(`Backend request failed, ${status} ${body.trim()}`);
     }
 
-    const { id } = await response.json();
+    const { id } = (await response.json()) as { id: string };
     return id;
   }
 
-  async getJob(jobId: string) {
+  async getTask(taskId: string) {
     const token = await this.identityApi.getIdToken();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
-    const url = `${baseUrl}/v1/job/${encodeURIComponent(jobId)}`;
+    const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
     return fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     }).then(x => x.json());
+  }
+
+  streamLogs({
+    taskId,
+    after,
+  }: {
+    taskId: string;
+    after?: number;
+  }): Observable<LogEvent> {
+    return new ObservableImpl(subscriber => {
+      const params = new URLSearchParams();
+      if (after !== undefined) {
+        params.set('after', String(Number(after)));
+      }
+
+      this.discoveryApi.getBaseUrl('scaffolder').then(
+        baseUrl => {
+          const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
+            taskId,
+          )}/eventstream`;
+          const eventSource = new EventSource(url);
+          eventSource.addEventListener('log', (event: any) => {
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+          });
+          eventSource.addEventListener('completion', (event: any) => {
+            if (event.data) {
+              try {
+                subscriber.next(JSON.parse(event.data));
+              } catch (ex) {
+                subscriber.error(ex);
+              }
+            }
+            subscriber.complete();
+          });
+          eventSource.addEventListener('error', event => {
+            subscriber.error(event);
+          });
+        },
+        error => {
+          subscriber.error(error);
+        },
+      );
+    });
   }
 }

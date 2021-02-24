@@ -20,4 +20,8 @@ export {
   locationSpecSchema,
   analyzeLocationSchema,
 } from './validation';
-export { LOCATION_ANNOTATION, ORIGIN_LOCATION_ANNOTATION } from './annotation';
+export {
+  LOCATION_ANNOTATION,
+  ORIGIN_LOCATION_ANNOTATION,
+  SOURCE_LOCATION_ANNOTATION,
+} from './annotation';

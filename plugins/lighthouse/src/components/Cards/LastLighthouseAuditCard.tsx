@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
 import {
   InfoCard,
+  InfoCardVariants,
   Progress,
   StatusError,
   StatusOK,
   StatusWarning,
   StructuredMetadataTable,
 } from '@backstage/core';
+import React from 'react';
+import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import AuditStatusIcon from '../AuditStatusIcon';
 
@@ -96,7 +97,7 @@ export const LastLighthouseAuditCard = ({
   variant,
 }: {
   dense?: boolean;
-  variant?: string;
+  variant?: InfoCardVariants;
 }) => {
   const { value: website, loading, error } = useWebsiteForEntity();
 

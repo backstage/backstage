@@ -21,8 +21,11 @@ import { Route, Routes } from 'react-router-dom';
 import { rootCatalogKubernetesRouteRef } from './plugin';
 import { KubernetesContent } from './components/KubernetesContent';
 import { MissingAnnotationEmptyState } from '@backstage/core';
+import { Button } from '@material-ui/core';
 
 const KUBERNETES_ANNOTATION = 'backstage.io/kubernetes-id';
+const KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION =
+  'backstage.io/kubernetes-label-selector';
 
 type Props = {
   /** @deprecated The entity is now grabbed from context instead */
@@ -35,16 +38,37 @@ export const Router = (_props: Props) => {
   const kubernetesAnnotationValue =
     entity.metadata.annotations?.[KUBERNETES_ANNOTATION];
 
-  if (!kubernetesAnnotationValue) {
-    return <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />;
+  const kubernetesLabelSelectorQueryAnnotationValue =
+    entity.metadata.annotations?.[KUBERNETES_LABEL_SELECTOR_QUERY_ANNOTATION];
+
+  if (
+    kubernetesAnnotationValue ||
+    kubernetesLabelSelectorQueryAnnotationValue
+  ) {
+    return (
+      <Routes>
+        <Route
+          path={`/${rootCatalogKubernetesRouteRef.path}`}
+          element={<KubernetesContent entity={entity} />}
+        />
+      </Routes>
+    );
   }
 
   return (
-    <Routes>
-      <Route
-        path={`/${rootCatalogKubernetesRouteRef.path}`}
-        element={<KubernetesContent entity={entity} />}
-      />
-    </Routes>
+    <>
+      <MissingAnnotationEmptyState annotation={KUBERNETES_ANNOTATION} />
+      <h1>
+        Or use a label selector query, which takes precedence over the previous
+        annotation.
+      </h1>
+      <Button
+        variant="contained"
+        color="primary"
+        href="https://backstage.io/docs/features/kubernetes/configuration#surfacing-your-kubernetes-components-as-part-of-an-entity"
+      >
+        Read Kubernetes Plugin Docs
+      </Button>
+    </>
   );
 };

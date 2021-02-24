@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   EmptyState,
   InfoCard,
+  InfoCardVariants,
   MissingAnnotationEmptyState,
   Progress,
   useApi,
@@ -88,7 +89,7 @@ export const SonarQubeCard = ({
   duplicationRatings = defaultDuplicationRatings,
 }: {
   entity?: Entity;
-  variant?: string;
+  variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {
   const { entity } = useEntity();

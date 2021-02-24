@@ -21,10 +21,8 @@ import {
   identityApiRef,
   createRoutableExtension,
 } from '@backstage/core';
-import { ScaffolderPage as ScaffolderPageComponent } from './components/ScaffolderPage';
-import { TemplatePage as TemplatePageComponent } from './components/TemplatePage';
-import { rootRoute, templateRoute } from './routes';
-import { scaffolderApiRef, ScaffolderApi } from './api';
+import { rootRouteRef } from './routes';
+import { scaffolderApiRef, ScaffolderClient } from './api';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -33,31 +31,17 @@ export const scaffolderPlugin = createPlugin({
       api: scaffolderApiRef,
       deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
       factory: ({ discoveryApi, identityApi }) =>
-        new ScaffolderApi({ discoveryApi, identityApi }),
+        new ScaffolderClient({ discoveryApi, identityApi }),
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRoute, ScaffolderPageComponent);
-    router.addRoute(templateRoute, TemplatePageComponent);
-  },
   routes: {
-    templateIndex: rootRoute,
-    template: templateRoute,
+    root: rootRouteRef,
   },
 });
 
-export const TemplateIndexPage = scaffolderPlugin.provide(
+export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/ScaffolderPage').then(m => m.ScaffolderPage),
-    mountPoint: rootRoute,
-  }),
-);
-
-export const TemplatePage = scaffolderPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/TemplatePage').then(m => m.TemplatePage),
-    mountPoint: templateRoute,
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
   }),
 );

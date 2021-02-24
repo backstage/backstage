@@ -1,5 +1,43 @@
 # @backstage/dev-utils
 
+## 0.1.12
+
+### Patch Changes
+
+- 5aa4ceea6: Make sure to provide dummy routes for all external routes of plugins given to DevApp
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [dc12852c9]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/test-utils@0.1.8
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
 ## 0.1.10
 
 ### Patch Changes

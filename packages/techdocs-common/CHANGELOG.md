@@ -1,5 +1,33 @@
 # @backstage/techdocs-common
 
+## 0.4.2
+
+### Patch Changes
+
+- 2499f6cde: Add support for assuming role in AWS integrations
+- 1e4ddd71d: Fix AWS, GCS and Azure publisher to work on Windows.
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.4.1
+
+### Patch Changes
+
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- 26e143e60: After TechDocs generate step, insert build timestamp to techdocs_metadata.json
+- c6655413d: Improved error reporting in AzureBlobStorage to surface errors when fetching metadata and uploading files fails.
+- 44414239f: Pass user and group ID when invoking docker container. When TechDocs invokes Docker, docker could be run as a `root` user which results in generation of files by applications run by non-root user (e.g. TechDocs) will not have access to modify. This PR passes in current user and group ID to docker so that the file permissions of the generated files and folders are correct.
+- b0a41c707: Add etag of the prepared file tree to techdocs_metadata.json in the storage
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

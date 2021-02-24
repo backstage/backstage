@@ -17,8 +17,7 @@
 export {
   scaffolderPlugin,
   scaffolderPlugin as plugin,
-  TemplateIndexPage,
-  TemplatePage,
+  ScaffolderPage,
 } from './plugin';
-export { ScaffolderApi, scaffolderApiRef } from './api';
-export { rootRoute, templateRoute } from './routes';
+export type { ScaffolderApi } from './api';
+export { ScaffolderClient, scaffolderApiRef } from './api';

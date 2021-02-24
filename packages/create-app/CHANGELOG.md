@@ -1,5 +1,277 @@
 # @backstage/create-app
 
+## 0.3.11
+
+### Patch Changes
+
+- 4594f7efc: Add the google analytics scripts in the `index.html` template for new applications.
+
+  To apply this change to an existing application, change the following in `packages\app\public\index.html`:
+
+  ```diff
+      <title><%= app.title %></title>
+
+  +    <% if (app.googleAnalyticsTrackingId && typeof app.googleAnalyticsTrackingId
+  +    === 'string') { %>
+  +    <script
+  +      async
+  +      src="https://www.googletagmanager.com/gtag/js?id=<%= app.googleAnalyticsTrackingId %>"
+  +    ></script>
+  +    <script>
+  +      window.dataLayer = window.dataLayer || [];
+  +      function gtag() {
+  +        dataLayer.push(arguments);
+  +      }
+  +      gtag('js', new Date());
+  +
+  +      gtag('config', '<%= app.googleAnalyticsTrackingId %>');
+  +    </script>
+  +    <% } %>
+    </head>
+  ```
+
+- 08fa2176a: **BREAKING CHANGE**
+
+  The Scaffolder and Catalog plugins have been migrated to partially require use of the [new composability API](https://backstage.io/docs/plugins/composability). The Scaffolder used to register its pages using the deprecated route registration plugin API, but those registrations have been removed. This means you now need to add the Scaffolder plugin page to the app directly.
+
+  The Catalog plugin has also been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the catalog plugin to use the new extension components, as well as bind the external route.
+
+  Apply the following changes to `packages/app/src/App.tsx`:
+
+  ```diff
+  -import { Router as CatalogRouter } from '@backstage/plugin-catalog';
+  +import {
+  +  catalogPlugin,
+  +  CatalogIndexPage,
+  +  CatalogEntityPage,
+  +} from '@backstage/plugin-catalog';
+  +import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
+
+  # The following addition to the app config allows the catalog plugin to link to the
+  # component creation page, i.e. the scaffolder. You can chose a different target if you want to.
+   const app = createApp({
+     apis,
+     plugins: Object.values(plugins),
+  +  bindRoutes({ bind }) {
+  +    bind(catalogPlugin.externalRoutes, {
+  +      createComponent: scaffolderPlugin.routes.root,
+  +    });
+  +  }
+   });
+
+  # Apply these changes within FlatRoutes. It is important to have migrated to using FlatRoutes
+  # for this to work, if you haven't done that yet, see the previous entries in this changelog.
+  -  <Route
+  -    path="/catalog"
+  -    element={<CatalogRouter EntityPage={EntityPage} />}
+  -  />
+  +  <Route path="/catalog" element={<CatalogIndexPage />} />
+  +  <Route
+  +    path="/catalog/:namespace/:kind/:name"
+  +    element={<CatalogEntityPage />}
+  +  >
+  +    <EntityPage />
+  +  </Route>
+     <Route path="/docs" element={<DocsRouter />} />
+  +  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  The scaffolder has been redesigned to be horizontally scalable and to persistently store task state and execution logs in the database. Component registration has moved from the frontend into a separate registration step executed by the `TaskWorker`. This requires that a `CatalogClient` is passed to the scaffolder backend instead of the old `CatalogEntityClient`.
+
+  The default catalog client comes from the `@backstage/catalog-client`, which you need to add as a dependency in `packages/backend/package.json`.
+
+  Once the dependency has been added, apply the following changes to`packages/backend/src/plugins/scaffolder.ts`:
+
+  ```diff
+   import {
+     CookieCutter,
+     createRouter,
+     Preparers,
+     Publishers,
+     CreateReactAppTemplater,
+     Templaters,
+  -  CatalogEntityClient,
+   } from '@backstage/plugin-scaffolder-backend';
+  +import { CatalogClient } from '@backstage/catalog-client';
+
+   const discovery = SingleHostDiscovery.fromConfig(config);
+  -const entityClient = new CatalogEntityClient({ discovery });
+  +const catalogClient = new CatalogClient({ discoveryApi: discovery })
+
+   return await createRouter({
+     preparers,
+     templaters,
+     publishers,
+     logger,
+     config,
+     dockerClient,
+  -  entityClient,
+     database,
+  +  catalogClient,
+   });
+  ```
+
+  See the `@backstage/scaffolder-backend` changelog for more information about this change.
+
+- Updated dependencies [ec504e7b4]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [e488f0502]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [dc12852c9]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [a8953a9c9]
+- Updated dependencies [f37992797]
+- Updated dependencies [347137ccf]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [d6593abe6]
+- Updated dependencies [bad21a085]
+- Updated dependencies [e8e35fb5f]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [e780e119c]
+- Updated dependencies [437bac549]
+- Updated dependencies [9f2b3a26e]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [1c06cb312]
+- Updated dependencies [968b588f7]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2499f6cde]
+- Updated dependencies [5469a9761]
+- Updated dependencies [a1f5e6545]
+- Updated dependencies [60d1bc3e7]
+- Updated dependencies [2c1f2a7c2]
+- Updated dependencies [6266ddd11]
+  - @backstage/plugin-auth-backend@0.3.2
+  - @backstage/core@0.6.3
+  - @backstage/plugin-scaffolder@0.6.0
+  - @backstage/plugin-scaffolder-backend@0.8.0
+  - @backstage/test-utils@0.1.8
+  - @backstage/plugin-catalog@0.4.0
+  - @backstage/plugin-catalog-import@0.4.2
+  - @backstage/plugin-techdocs@0.5.8
+  - @backstage/plugin-techdocs-backend@0.6.2
+  - @backstage/plugin-explore@0.2.7
+  - @backstage/plugin-api-docs@0.4.7
+  - @backstage/catalog-model@0.7.2
+  - @backstage/cli@0.6.2
+  - @backstage/plugin-tech-radar@0.3.6
+  - @backstage/plugin-app-backend@0.3.8
+  - @backstage/plugin-catalog-backend@0.6.3
+  - @backstage/config@0.1.3
+  - @backstage/plugin-circleci@0.2.10
+  - @backstage/plugin-github-actions@0.3.4
+  - @backstage/plugin-lighthouse@0.2.12
+  - @backstage/plugin-search@0.3.2
+
+## 0.3.10
+
+### Patch Changes
+
+- d50e9b81e: Updated docker build to use `backstage-cli backend:bundle` instead of `backstage-cli backend:build-image`.
+
+  To apply this change to an existing application, change the following in `packages/backend/package.json`:
+
+  ```diff
+  -  "build": "backstage-cli backend:build",
+  -  "build-image": "backstage-cli backend:build-image --build --tag backstage",
+  +  "build": "backstage-cli backend:bundle",
+  +  "build-image": "docker build ../.. -f Dockerfile --tag backstage",
+  ```
+
+  Note that the backend build is switched to `backend:bundle`, and the `build-image` script simply calls `docker build`. This means the `build-image` script no longer builds all packages, so you have to run `yarn build` in the root first.
+
+  In order to work with the new build method, the `Dockerfile` at `packages/backend/Dockerfile` has been updated with the following contents:
+
+  ```dockerfile
+  # This dockerfile builds an image for the backend package.
+  # It should be executed with the root of the repo as docker context.
+  #
+  # Before building this image, be sure to have run the following commands in the repo root:
+  #
+  # yarn install
+  # yarn tsc
+  # yarn build
+  #
+  # Once the commands have been run, you can build the image using `yarn build-image`
+
+  FROM node:14-buster-slim
+
+  WORKDIR /app
+
+  # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
+  # The skeleton contains the package.json of each package in the monorepo,
+  # and along with yarn.lock and the root package.json, that's enough to run yarn install.
+  ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+
+  RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
+
+  # Then copy the rest of the backend bundle, along with any other files we might want.
+  ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
+
+  CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+  ```
+
+  Note that the base image has been switched from `node:14-buster` to `node:14-buster-slim`, significantly reducing the image size. This is enabled by the removal of the `nodegit` dependency, so if you are still using this in your project you will have to stick with the `node:14-buster` base image.
+
+  A `.dockerignore` file has been added to the root of the repo as well, in order to keep the docker context upload small. It lives in the root of the repo with the following contents:
+
+  ```gitignore
+  .git
+  node_modules
+  packages
+  !packages/backend/dist
+  plugins
+  ```
+
+- 532bc0ec0: Upgrading to lerna@4.0.0.
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [92f01d75c]
+- Updated dependencies [6c4a76c59]
+- Updated dependencies [32a950409]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [f10950bd2]
+- Updated dependencies [914c89b13]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [257a753ff]
+- Updated dependencies [d872f662d]
+- Updated dependencies [edbc27bfd]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+- Updated dependencies [9337f509d]
+- Updated dependencies [0ada34a0f]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [d9687c524]
+- Updated dependencies [53b69236d]
+- Updated dependencies [29c8bcc53]
+- Updated dependencies [3600ac3b0]
+- Updated dependencies [07e226872]
+- Updated dependencies [b0a41c707]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [a341a8716]
+- Updated dependencies [96f378d10]
+- Updated dependencies [532bc0ec0]
+- Updated dependencies [688b73110]
+  - @backstage/backend-common@0.5.4
+  - @backstage/plugin-auth-backend@0.3.1
+  - @backstage/plugin-scaffolder@0.5.1
+  - @backstage/plugin-catalog@0.3.2
+  - @backstage/core@0.6.2
+  - @backstage/cli@0.6.1
+  - @backstage/plugin-user-settings@0.2.6
+  - @backstage/plugin-scaffolder-backend@0.7.1
+  - @backstage/plugin-api-docs@0.4.6
+  - @backstage/plugin-catalog-import@0.4.1
+  - @backstage/plugin-github-actions@0.3.3
+  - @backstage/plugin-lighthouse@0.2.11
+  - @backstage/plugin-techdocs-backend@0.6.1
+  - @backstage/plugin-catalog-backend@0.6.2
+  - @backstage/plugin-circleci@0.2.9
+  - @backstage/plugin-explore@0.2.6
+  - @backstage/plugin-search@0.3.1
+  - @backstage/plugin-techdocs@0.5.7
+
 ## 0.3.9
 
 ### Patch Changes

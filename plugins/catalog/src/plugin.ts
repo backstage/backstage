@@ -29,6 +29,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { CatalogClientWrapper } from './CatalogClientWrapper';
+import { createComponentRouteRef } from './routes';
 
 export const catalogPlugin = createPlugin({
   id: 'catalog',
@@ -46,6 +47,9 @@ export const catalogPlugin = createPlugin({
   routes: {
     catalogIndex: catalogRouteRef,
     catalogEntity: entityRouteRef,
+  },
+  externalRoutes: {
+    createComponent: createComponentRouteRef,
   },
 });
 

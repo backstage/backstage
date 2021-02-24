@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-import { hot } from 'react-hot-loader';
-import React, { ComponentType, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
+  AlertDisplay,
+  AnyApiFactory,
+  ApiFactory,
+  attachComponentData,
   createApp,
-  SidebarPage,
+  createPlugin,
+  createRouteRef,
+  FlatRoutes,
+  IconComponent,
+  OAuthRequestDialog,
+  RouteRef,
   Sidebar,
   SidebarItem,
+  SidebarPage,
   SidebarSpacer,
-  ApiFactory,
-  createPlugin,
-  AlertDisplay,
-  OAuthRequestDialog,
-  AnyApiFactory,
-  IconComponent,
-  FlatRoutes,
-  attachComponentData,
 } from '@backstage/core';
+import { Box } from '@material-ui/core';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
+import React, { ComponentType, ReactNode } from 'react';
+import ReactDOM from 'react-dom';
+import { hot } from 'react-hot-loader';
+import { Route } from 'react-router';
 
 const GatheringRoute: (props: {
   path: string;
@@ -128,9 +132,22 @@ class DevAppBuilder {
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
+    const dummyRouteRef = createRouteRef({ title: 'Page of another plugin' });
+    const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
+    attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
+
     const app = createApp({
       apis: this.apis,
       plugins: this.plugins,
+      bindRoutes: ({ bind }) => {
+        for (const plugin of this.plugins ?? []) {
+          const targets: Record<string, RouteRef<any>> = {};
+          for (const routeKey of Object.keys(plugin.externalRoutes)) {
+            targets[routeKey] = dummyRouteRef;
+          }
+          bind(plugin.externalRoutes, targets);
+        }
+      },
     });
 
     const AppProvider = app.getProvider();
@@ -145,13 +162,13 @@ class DevAppBuilder {
           <AlertDisplay />
           <OAuthRequestDialog />
           {this.rootChildren}
-
           <AppRouter>
             <SidebarPage>
               {sidebar}
               <FlatRoutes>
                 {this.routes}
                 {deprecatedAppRoutes}
+                <Route path="/_external_route" element={<DummyPage />} />
               </FlatRoutes>
             </SidebarPage>
           </AppRouter>

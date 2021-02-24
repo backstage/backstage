@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonObject } from '@backstage/config';
 import { Logger } from 'winston';
 import {
   CompletedTaskState,
@@ -22,6 +23,7 @@ import {
   TaskBroker,
   DispatchResult,
   DbTaskEventRow,
+  DbTaskRow,
 } from './types';
 
 export class TaskAgent implements Task {
@@ -54,18 +56,24 @@ export class TaskAgent implements Task {
     return this.isDone;
   }
 
-  async emitLog(message: string): Promise<void> {
+  async emitLog(message: string, metadata?: JsonObject): Promise<void> {
     await this.storage.emitLogEvent({
       taskId: this.state.taskId,
-      body: { message },
+      body: { message, ...metadata },
     });
   }
 
-  async complete(result: CompletedTaskState): Promise<void> {
+  async complete(
+    result: CompletedTaskState,
+    metadata?: JsonObject,
+  ): Promise<void> {
     await this.storage.completeTask({
       taskId: this.state.taskId,
       status: result === 'failed' ? 'failed' : 'completed',
-      eventBody: { message: `Run completed with status: ${result}` },
+      eventBody: {
+        message: `Run completed with status: ${result}`,
+        ...metadata,
+      },
     });
     this.isDone = true;
     if (this.heartbeatTimeoutId) {
@@ -134,6 +142,10 @@ export class StorageTaskBroker implements TaskBroker {
     return {
       taskId: taskRow.taskId,
     };
+  }
+
+  async get(taskId: string): Promise<DbTaskRow> {
+    return this.storage.getTask(taskId);
   }
 
   observe(

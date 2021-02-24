@@ -15,6 +15,10 @@
  */
 
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  SOURCE_LOCATION_ANNOTATION,
+  EDIT_URL_ANNOTATION,
+} from '@backstage/catalog-model';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { AboutCard } from './AboutCard';
@@ -120,6 +124,44 @@ describe('<AboutCard /> BitBucket', () => {
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'edithref',
       'https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
+    );
+  });
+});
+
+describe('<AboutCard /> custom links', () => {
+  it('renders info and "view source" link', () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/managed-by-location':
+            'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
+          [EDIT_URL_ANNOTATION]: 'https://another.place',
+          [SOURCE_LOCATION_ANNOTATION]:
+            'url:https://another.place/backstage.git',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+    const { getByText } = render(
+      <EntityProvider entity={entity}>
+        <AboutCard />
+      </EntityProvider>,
+    );
+    expect(getByText('service')).toBeInTheDocument();
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'href',
+      'https://another.place/backstage.git',
+    );
+    expect(getByText('View Source').closest('a')).toHaveAttribute(
+      'edithref',
+      'https://another.place',
     );
   });
 });

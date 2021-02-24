@@ -44,7 +44,11 @@ import {
 } from '../scaffolder/tasks/TemplateConverter';
 import { registerLegacyActions } from '../scaffolder/stages/legacy';
 import { getWorkingDirectory } from './helpers';
-import { PluginDatabaseManager } from '@backstage/backend-common';
+import {
+  NotFoundError,
+  PluginDatabaseManager,
+} from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -54,8 +58,8 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   dockerClient: Docker;
-  entityClient: CatalogEntityClient;
   database: PluginDatabaseManager;
+  catalogClient: CatalogApi;
 }
 
 export async function createRouter(
@@ -71,13 +75,14 @@ export async function createRouter(
     logger: parentLogger,
     config,
     dockerClient,
-    entityClient,
     database,
+    catalogClient,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
+  const entityClient = new CatalogEntityClient(catalogClient);
 
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),
@@ -96,6 +101,7 @@ export async function createRouter(
     preparers,
     publishers,
     templaters,
+    catalogClient,
   });
 
   worker.start();
@@ -248,6 +254,14 @@ export async function createRouter(
       const result = await taskBroker.dispatch(taskSpec);
 
       res.status(201).json({ id: result.taskId });
+    })
+    .get('/v2/tasks/:taskId', async (req, res) => {
+      const { taskId } = req.params;
+      const task = await taskBroker.get(taskId);
+      if (!task) {
+        throw new NotFoundError(`Task with id ${taskId} does not exist`);
+      }
+      res.status(200).json(task);
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const { taskId } = req.params;

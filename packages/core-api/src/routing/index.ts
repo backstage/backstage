@@ -21,6 +21,10 @@ export type {
   MutableRouteRef,
 } from './types';
 export { FlatRoutes } from './FlatRoutes';
-export { createRouteRef, createExternalRouteRef } from './RouteRef';
+export {
+  createRouteRef,
+  createExternalRouteRef,
+  ExternalRouteRef,
+} from './RouteRef';
 export type { RouteRefConfig } from './RouteRef';
 export { useRouteRef } from './hooks';

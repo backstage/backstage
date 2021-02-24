@@ -1,5 +1,13 @@
 # @backstage/plugin-app-backend
 
+## 0.3.8
+
+### Patch Changes
+
+- 1c06cb312: Clarify troubleshooting steps for schema serialization issues.
+- Updated dependencies [a1f5e6545]
+  - @backstage/config@0.1.3
+
 ## 0.3.7
 
 ### Patch Changes

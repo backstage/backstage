@@ -1,5 +1,27 @@
 # example-backend
 
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies [a70af22a2]
+- Updated dependencies [ec504e7b4]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [f37992797]
+- Updated dependencies [bad21a085]
+- Updated dependencies [1c06cb312]
+- Updated dependencies [2499f6cde]
+- Updated dependencies [a1f5e6545]
+  - @backstage/plugin-kubernetes-backend@0.2.7
+  - @backstage/plugin-auth-backend@0.3.2
+  - @backstage/plugin-scaffolder-backend@0.8.0
+  - @backstage/plugin-techdocs-backend@0.6.2
+  - @backstage/catalog-model@0.7.2
+  - @backstage/plugin-app-backend@0.3.8
+  - @backstage/plugin-catalog-backend@0.6.3
+  - @backstage/config@0.1.3
+  - example-app@0.2.17
+
 ## 0.2.15
 
 ### Patch Changes

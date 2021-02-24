@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
+export { catalogPlugin } from '@backstage/plugin-catalog';
+export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 export { plugin as TechRadar } from '@backstage/plugin-tech-radar';
 export { explorePlugin } from '@backstage/plugin-explore';
 export { plugin as Circleci } from '@backstage/plugin-circleci';

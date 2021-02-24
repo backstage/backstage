@@ -98,10 +98,6 @@ export class BitbucketPublisher implements PublisherBase {
     const { project, name, description } = opts;
 
     let response: Response;
-    const buffer = Buffer.from(
-      `${this.config.username}:${this.config.appPassword}`,
-      'utf8',
-    );
 
     const options: RequestInit = {
       method: 'POST',
@@ -111,7 +107,7 @@ export class BitbucketPublisher implements PublisherBase {
         is_private: this.config.repoVisibility === 'private',
       }),
       headers: {
-        Authorization: `Basic ${buffer.toString('base64')}`,
+        Authorization: this.getAuthorizationHeader(),
         'Content-Type': 'application/json',
       },
     };
@@ -132,11 +128,30 @@ export class BitbucketPublisher implements PublisherBase {
         }
       }
 
-      // TODO use the urlReader to get the defautl branch
+      // TODO use the urlReader to get the default branch
       const catalogInfoUrl = `${r.links.html.href}/src/master/catalog-info.yaml`;
       return { remoteUrl, catalogInfoUrl };
     }
     throw new Error(`Not a valid response code ${await response.text()}`);
+  }
+
+  private getAuthorizationHeader(): string {
+    if (this.config.username && this.config.appPassword) {
+      const buffer = Buffer.from(
+        `${this.config.username}:${this.config.appPassword}`,
+        'utf8',
+      );
+
+      return `Basic ${buffer.toString('base64')}`;
+    }
+
+    if (this.config.token) {
+      return `Bearer ${this.config.token}`;
+    }
+
+    throw new Error(
+      `Authorization has not been provided for Bitbucket. Please add either username + appPassword or token to the Integrations config`,
+    );
   }
 
   private async createBitbucketServerRepository(opts: {
@@ -155,10 +170,11 @@ export class BitbucketPublisher implements PublisherBase {
         is_private: this.config.repoVisibility === 'private',
       }),
       headers: {
-        Authorization: `Bearer ${this.config.token}`,
+        Authorization: this.getAuthorizationHeader(),
         'Content-Type': 'application/json',
       },
     };
+
     try {
       response = await fetch(
         `https://${this.config.host}/rest/api/1.0/projects/${project}/repos`,

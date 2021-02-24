@@ -29,6 +29,7 @@ export * from './Lifecycle';
 export * from './Link';
 export * from './MarkdownContent';
 export * from './OAuthRequestDialog';
+export * from './OverflowTooltip';
 export * from './Progress';
 export * from './ProgressBars';
 export * from './Select';

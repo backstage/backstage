@@ -21,7 +21,7 @@ import { ClientMetadata, IssuerMetadata } from 'openid-client';
 import { createOidcProvider, OidcAuthProvider } from './provider';
 import { JWT, JWK } from 'jose';
 import { AuthProviderFactoryOptions } from '../types';
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { OAuthAdapter } from '../../lib/oauth';
 
 const issuerMetadata = {
@@ -103,23 +103,18 @@ describe('OidcAuthProvider', () => {
     const scope = nock('https://oidc.test')
       .get('/.well-known/openid-configuration')
       .reply(200, issuerMetadata);
+    const config: Config = new ConfigReader({
+      testEnv: {
+        ...clientMetadata,
+        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+      },
+    });
     const options = {
       globalConfig: {
         appUrl: 'https://oidc.test',
         baseUrl: 'https://oidc.test',
       },
-      config: ({
-        keys: jest.fn(() => ['test']),
-        getConfig: jest.fn(() => ({
-          getString: (key: string) => {
-            const conf = {
-              ...clientMetadata,
-              metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
-            } as any;
-            return conf[key] as string;
-          },
-        })),
-      } as any) as Config,
+      config,
     } as AuthProviderFactoryOptions;
     const provider = createOidcProvider()(options) as OAuthAdapter;
     expect(provider.start).toBeDefined();

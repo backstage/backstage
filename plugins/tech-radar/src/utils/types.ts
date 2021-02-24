@@ -68,6 +68,8 @@ export type Entry = {
   url?: string;
   // How this entry has recently moved; -1 for "down", +1 for "up", 0 for not moved
   moved?: MovedState;
+  // Most recent description to display in the UI
+  description?: string;
   active?: boolean;
   timeline?: Array<EntrySnapshot>;
 };

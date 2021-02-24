@@ -15,20 +15,39 @@
  */
 
 import { ComponentType, ReactNode } from 'react';
+import { globalObject } from '../lib/globalObject';
 
+// TODO(Rugvip): Access via symbol is deprecated, remove once on 0.3.x
 const DATA_KEY = Symbol('backstage-component-data');
-
-type DataContainer = {
-  map: Map<string, unknown>;
-};
 
 type ComponentWithData<P> = ComponentType<P> & {
   [DATA_KEY]?: DataContainer;
 };
 
-type ReactNodeWithData = ReactNode & {
-  type?: { [DATA_KEY]?: DataContainer };
+type DataContainer = {
+  map: Map<string, unknown>;
 };
+
+type MaybeComponentNode = ReactNode & {
+  type?: ComponentType<any> & { [DATA_KEY]?: DataContainer };
+};
+
+const GLOBAL_KEY = '__@backstage/component-data-store__';
+
+// The store is bridged across versions using the global object
+function getStore() {
+  let storeObj = globalObject[GLOBAL_KEY] as
+    | { store: WeakMap<ComponentType<any>, DataContainer> }
+    | undefined;
+  if (!storeObj) {
+    const store = new WeakMap<ComponentType<any>, DataContainer>();
+    storeObj = { store };
+    globalObject[GLOBAL_KEY] = storeObj;
+  }
+  return storeObj.store;
+}
+
+const store = getStore();
 
 export function attachComponentData<P>(
   component: ComponentType<P>,
@@ -37,9 +56,11 @@ export function attachComponentData<P>(
 ) {
   const dataComponent = component as ComponentWithData<P>;
 
-  let container = dataComponent[DATA_KEY];
+  let container = store.get(component) || dataComponent[DATA_KEY];
   if (!container) {
-    container = dataComponent[DATA_KEY] = { map: new Map() };
+    container = { map: new Map() };
+    store.set(component, container);
+    dataComponent[DATA_KEY] = container;
   }
 
   if (container.map.has(type)) {
@@ -60,7 +81,12 @@ export function getComponentData<T>(
     return undefined;
   }
 
-  const container = (node as ReactNodeWithData).type?.[DATA_KEY];
+  const component = (node as MaybeComponentNode).type;
+  if (!component) {
+    return undefined;
+  }
+
+  const container = store.get(component) || component[DATA_KEY];
   if (!container) {
     return undefined;
   }

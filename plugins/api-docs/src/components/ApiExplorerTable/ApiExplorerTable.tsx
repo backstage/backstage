@@ -23,6 +23,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  OverflowTooltip,
   Table,
   TableColumn,
   TableFilter,
@@ -92,6 +93,13 @@ const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Description',
     field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        text={entity.metadata.description}
+        placement="bottom-start"
+      />
+    ),
+    width: 'auto',
   },
   {
     title: 'Tags',

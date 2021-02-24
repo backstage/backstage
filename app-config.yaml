@@ -2,6 +2,19 @@ app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
+  support:
+    url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
+    items: # Used by common SupportButton component
+      - title: Issues
+        icon: github
+        links:
+          - url: https://github.com/backstage/backstage/issues
+            title: GitHub Issues
+      - title: Discord Chatroom
+        icon: chat
+        links:
+          - url: https://discord.gg/MUpMjP2
+            title: '#backstage'
 
 backend:
   baseUrl: http://localhost:7000

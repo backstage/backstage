@@ -33,27 +33,27 @@ it doesn't.
 Add the following entry to the head of your `packages/app/src/plugins.ts`:
 
 ```ts
-export { plugin as ScaffolderPlugin } from '@backstage/plugin-scaffolder';
+export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 ```
 
-Add the following to your `packages/app/src/apis.ts`:
+Next we need to install the root page that the Scaffolder plugin provides. You
+can choose any path for the route, but we recommend the following:
 
-```ts
-import { scaffolderApiRef, ScaffolderApi } from '@backstage/plugin-scaffolder';
+```tsx
+import { ScaffolderPage } from '@backstage/plugin-scaffolder';
 
-// Inside the ApiRegistry builder function ...
-
-builder.add(
-  scaffolderApiRef,
-  new ScaffolderApi({
-    apiOrigin: backendUrl,
-    basePath: '/scaffolder/v1',
-  }),
-);
+// Add to the top-level routes, directly within <FlatRoutes>
+<Route path="/create" element={<ScaffolderPage />} />;
 ```
 
-Where `backendUrl` is the `backend.baseUrl` from config, i.e.
-`const backendUrl = config.getString('backend.baseUrl')`.
+You may also want to add a link to the template index page to your sidebar:
+
+```tsx
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+
+// Somewhere within the <Sidebar>
+<SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />;
+```
 
 This is all that is needed for the frontend part of the Scaffolder plugin to
 work!
@@ -85,29 +85,25 @@ following contents to get you up and running quickly.
 import {
   CookieCutter,
   createRouter,
-  FilePreparer,
-  GithubPreparer,
-  GitlabPreparer,
   Preparers,
   Publishers,
-  GithubPublisher,
-  GitlabPublisher,
   CreateReactAppTemplater,
   Templaters,
-  RepoVisibilityOptions,
 } from '@backstage/plugin-scaffolder-backend';
-import { Octokit } from '@octokit/rest';
-import { Gitlab } from '@gitbeaker/node';
+import { SingleHostDiscovery } from '@backstage/backend-common';
 import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export default async function createPlugin({
   logger,
   config,
+  database,
 }: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();
+
   templaters.register('cookiecutter', cookiecutterTemplater);
   templaters.register('cra', craTemplater);
 
@@ -115,12 +111,19 @@ export default async function createPlugin({
   const publishers = await Publishers.fromConfig(config, { logger });
 
   const dockerClient = new Docker();
+
+  const discovery = SingleHostDiscovery.fromConfig(config);
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
   return await createRouter({
     preparers,
     templaters,
     publishers,
     logger,
+    config,
     dockerClient,
+    database,
+    catalogClient,
   });
 }
 ```

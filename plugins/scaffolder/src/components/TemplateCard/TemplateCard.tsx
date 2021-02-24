@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button } from '@backstage/core';
+import { Button, useRouteRef } from '@backstage/core';
 import { BackstageTheme, pageTheme } from '@backstage/theme';
 import {
   Card,
@@ -25,8 +25,8 @@ import {
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
-import { generatePath } from 'react-router-dom';
-import { templateRoute } from '../../routes';
+import { generatePath } from 'react-router';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -59,11 +59,14 @@ export const TemplateCard = ({
   name,
 }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
+  const rootLink = useRouteRef(rootRouteRef);
 
   const themeId = pageTheme[type] ? type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
-  const href = generatePath(templateRoute.path, { templateName: name });
+  const href = generatePath(`${rootLink()}/templates/:templateName`, {
+    templateName: name,
+  });
 
   return (
     <Card>

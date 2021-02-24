@@ -1,5 +1,119 @@
 # @backstage/plugin-catalog
 
+## 0.4.0
+
+### Minor Changes
+
+- a5f42cf66: The Scaffolder and Catalog plugins have been migrated to partially require use of the [new composability API](https://backstage.io/docs/plugins/composability). The Scaffolder used to register its pages using the deprecated route registration plugin API, but those registrations have been removed. This means you now need to add the Scaffolder plugin page to the app directly.
+
+  The page is imported from the Scaffolder plugin and added to the `<FlatRoutes>` component:
+
+  ```tsx
+  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  The Catalog plugin has also been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the catalog plugin to use the new extension components, as well as bind the external route.
+
+  To use the new extension components, replace existing usage of the `CatalogRouter` with the following:
+
+  ```tsx
+  <Route path="/catalog" element={<CatalogIndexPage />} />
+  <Route path="/catalog/:namespace/:kind/:name" element={<CatalogEntityPage />}>
+    <EntityPage />
+  </Route>
+  ```
+
+  And to bind the external route from the catalog plugin to the scaffolder template index page, make sure you have the appropriate imports and add the following to the `createApp` call:
+
+  ```ts
+  import { catalogPlugin } from '@backstage/plugin-catalog';
+  import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+    },
+  });
+  ```
+
+- d0760ecdf: Moved common useStarredEntities hook to plugin-catalog-react
+
+### Patch Changes
+
+- d6593abe6: Remove domain column from `HasSystemsCard` and system from `HasComponentsCard`,
+  `HasSubcomponentsCard`, and `HasApisCard`.
+- bad21a085: Implement annotations for customising Entity URLs in the Catalog pages.
+- 437bac549: Make the description column in the catalog table and api-docs table use up as
+  much space as possible before hiding overflowing text.
+- 5469a9761: Changes made in CatalogTable and ApiExplorerTable for using the OverflowTooltip component for truncating large description and showing tooltip on hover-over.
+- 60d1bc3e7: Fix Japanese Good Morning
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
+## 0.3.2
+
+### Patch Changes
+
+- 32a950409: Hide the kind of the owner if it's the default kind for the `ownedBy`
+  relationship (group).
+- f10950bd2: Minor refactoring of BackstageApp.getSystemIcons to support custom registered
+  icons. Custom Icons can be added using:
+
+  ```tsx
+  import AlarmIcon from '@material-ui/icons/Alarm';
+  import MyPersonIcon from './MyPerson';
+
+  const app = createApp({
+    icons: {
+      user: MyPersonIcon // override system icon
+      alert: AlarmIcon, // Custom icon
+    },
+  });
+  ```
+
+- 914c89b13: Remove the "Move repository" menu entry from the catalog page, as it's just a placeholder.
+- 0af242b6d: Introduce new cards to `@backstage/plugin-catalog` that can be added to entity pages:
+
+  - `EntityHasSystemsCard` to display systems of a domain.
+  - `EntityHasComponentsCard` to display components of a system.
+  - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
+  - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
+
+  `@backstage/plugin-catalog-react` now provides an `EntityTable` to build own cards for entities.
+  The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
+  `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 53b69236d: Migrate about card to new composability API, exporting the entity cards as `EntityAboutCard`.
+- Updated dependencies [6c4a76c59]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/plugin-scaffolder@0.5.1
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
 ## 0.3.1
 
 ### Patch Changes

@@ -32,6 +32,7 @@ import {
   TaskStoreEmitOptions,
   TaskStoreGetEventsOptions,
 } from './types';
+import { DateTime } from 'luxon';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -64,7 +65,7 @@ export class DatabaseTaskStore implements TaskStore {
 
   constructor(private readonly db: Knex) {}
 
-  async get(taskId: string): Promise<DbTaskRow> {
+  async getTask(taskId: string): Promise<DbTaskRow> {
     const [result] = await this.db<RawDbTaskRow>('tasks')
       .where({ id: taskId })
       .select();
@@ -255,11 +256,14 @@ export class DatabaseTaskStore implements TaskStore {
       try {
         const body = JSON.parse(event.body) as JsonObject;
         return {
-          id: event.id,
+          id: Number(event.id),
           taskId,
           body,
           type: event.event_type,
-          createdAt: event.created_at,
+          createdAt:
+            typeof event.created_at === 'string'
+              ? DateTime.fromSQL(event.created_at, { zone: 'UTC' }).toISO()
+              : event.created_at,
         };
       } catch (error) {
         throw new Error(

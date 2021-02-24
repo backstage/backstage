@@ -15,10 +15,14 @@
  */
 
 import { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
+import * as winston from 'winston';
 
 describe('AwsOrganizationCloudAccountProcessor', () => {
   describe('readLocation', () => {
-    const processor = new AwsOrganizationCloudAccountProcessor();
+    const processor = new AwsOrganizationCloudAccountProcessor({
+      provider: {},
+      logger: winston.createLogger(),
+    });
     const location = { type: 'aws-cloud-accounts', target: '' };
     const emit = jest.fn();
     const listAccounts = jest.fn();

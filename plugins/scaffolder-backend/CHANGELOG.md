@@ -1,5 +1,83 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.8.0
+
+### Minor Changes
+
+- a5f42cf66: # Stateless scaffolding
+
+  The scaffolder has been redesigned to be horizontally scalable and to persistently store task state and execution logs in the database.
+
+  Each scaffolder task is given a unique task ID which is persisted in the database.
+  Tasks are then picked up by a `TaskWorker` which performs the scaffolding steps.
+  Execution logs are also persisted in the database meaning you can now refresh the scaffolder task status page without losing information.
+
+  The task status page is now dynamically created based on the step information stored in the database.
+  This allows for custom steps to be displayed once the next version of the scaffolder template schema is available.
+
+  The task page is updated to display links to both the git repository and to the newly created catalog entity.
+
+  Component registration has moved from the frontend into a separate registration step executed by the `TaskWorker`. This requires that a `CatalogClient` is passed to the scaffolder backend instead of the old `CatalogEntityClient`.
+
+  Make sure to update `plugins/scaffolder.ts`
+
+  ```diff
+   import {
+     CookieCutter,
+     createRouter,
+     Preparers,
+     Publishers,
+     CreateReactAppTemplater,
+     Templaters,
+  -  CatalogEntityClient,
+   } from '@backstage/plugin-scaffolder-backend';
+
+  +import { CatalogClient } from '@backstage/catalog-client';
+
+   const discovery = SingleHostDiscovery.fromConfig(config);
+  -const entityClient = new CatalogEntityClient({ discovery });
+  +const catalogClient = new CatalogClient({ discoveryApi: discovery })
+
+   return await createRouter({
+     preparers,
+     templaters,
+     publishers,
+     logger,
+     config,
+     dockerClient,
+  -  entityClient,
+     database,
+  +  catalogClient,
+   });
+  ```
+
+  As well as adding the `@backstage/catalog-client` packages as a dependency of your backend package.
+
+### Patch Changes
+
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.7.1
+
+### Patch Changes
+
+- edbc27bfd: Added githubApp authentication to the scaffolder-backend plugin
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- 0ada34a0f: Minor typo in migration
+- 29c8bcc53: Fixed the `prepare` step for when using local templates that were added to the catalog using the `file:` target configuration.
+  No more `EPERM: operation not permitted` error messages.
+- a341a8716: Fix parsing of the path to default to empty string not undefined if git-url-parse throws something we don't expect. Fixes the error `The "path" argument must be of type string.` when preparing.
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
 ## 0.7.0
 
 ### Minor Changes

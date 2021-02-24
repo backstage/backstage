@@ -19,28 +19,37 @@ import { FilePreparer, PreparerBuilder } from './prepare';
 import Docker from 'dockerode';
 import { TemplaterBuilder, TemplaterValues } from './templater';
 import { PublisherBuilder } from './publish';
+import { CatalogApi } from '@backstage/catalog-client';
+import { getEntityName } from '@backstage/catalog-model';
 
 type Options = {
   dockerClient: Docker;
   preparers: PreparerBuilder;
   templaters: TemplaterBuilder;
   publishers: PublisherBuilder;
+  catalogClient: CatalogApi;
 };
 
 export function registerLegacyActions(
   registry: TemplateActionRegistry,
   options: Options,
 ) {
-  const { dockerClient, preparers, templaters, publishers } = options;
+  const {
+    dockerClient,
+    preparers,
+    templaters,
+    publishers,
+    catalogClient,
+  } = options;
 
   registry.register({
     id: 'legacy:prepare',
     async handler(ctx) {
+      ctx.logger.info('Preparing the skeleton');
       const { protocol, url } = ctx.parameters;
       const preparer =
         protocol === 'file' ? new FilePreparer() : preparers.get(url as string);
 
-      ctx.logger.info('Prepare the skeleton');
       await preparer.prepare({
         url: url as string,
         logger: ctx.logger,
@@ -52,11 +61,8 @@ export function registerLegacyActions(
   registry.register({
     id: 'legacy:template',
     async handler(ctx) {
-      const { logger } = ctx;
-
+      ctx.logger.info('Running the templater');
       const templater = templaters.get(ctx.parameters.templater as string);
-
-      logger.info('Run the templater');
       await templater.run({
         workspacePath: ctx.workspacePath,
         dockerClient,
@@ -104,6 +110,23 @@ export function registerLegacyActions(
       ctx.output('remoteUrl', remoteUrl);
       if (catalogInfoUrl) {
         ctx.output('catalogInfoUrl', catalogInfoUrl);
+      }
+    },
+  });
+
+  registry.register({
+    id: 'catalog:register',
+    async handler(ctx) {
+      const { catalogInfoUrl } = ctx.parameters;
+      ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
+
+      const result = await catalogClient.addLocation({
+        type: 'url',
+        target: catalogInfoUrl as string,
+      });
+      if (result.entities.length >= 1) {
+        const { kind, name, namespace } = getEntityName(result.entities[0]);
+        ctx.output('entityRef', `${kind}:${namespace}/${name}`);
       }
     },
   });

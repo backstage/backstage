@@ -20,10 +20,10 @@ import {
   RELATION_CHILD_OF,
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
-import { Avatar, InfoCard } from '@backstage/core';
+import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core';
 import {
-  getEntityRelations,
   entityRouteParams,
+  getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
@@ -81,7 +81,7 @@ export const GroupProfileCard = ({
 }: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
-  variant: string;
+  variant?: InfoCardVariants;
 }) => {
   const group = useEntity().entity as GroupEntity;
   const {

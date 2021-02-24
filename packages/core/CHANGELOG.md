@@ -1,5 +1,44 @@
 # @backstage/core
 
+## 0.6.3
+
+### Patch Changes
+
+- 3a58084b6: The `FlatRoutes` components now renders the not found page of the app if no routes are matched.
+- e799e74d4: Fix `OverflowTooltip` cutting off the bottom of letters like "g" and "y".
+- 1407b34c6: More informative error message for missing ApiContext.
+- 9615e68fb: Forward link styling of `EntityRefLink` and `EnriryRefLinks` into the underling
+  `Link`.
+- 49f9b7346: Deprecate `type` of `ItemCard` and introduce new `subtitle` which allows passing
+  react nodes.
+- 3a58084b6: Created separate `AppContext` type to be returned from `useApp` rather than the `BackstageApp` itself. The `AppContext` type includes but deprecates `getPlugins`, `getProvider`, `getRouter`, and `getRoutes`. In addition, the `AppContext` adds a new `getComponents` method which providers access to the app components.
+- 2c1f2a7c2: Introduced generic OverflowTooltip component for cases where longer text needs to be truncated with ellipsis and show hover tooltip with full text. This is particularly useful in the cases where longer description text is rendered in table. e.g. CatalogTable and ApiExplorerTable.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [b6c4f485d]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a1f5e6545]
+  - @backstage/core-api@0.2.11
+  - @backstage/config@0.1.3
+
+## 0.6.2
+
+### Patch Changes
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 07e226872: Export Select component
+- f62e7abe5: Make sure that SidebarItems are also active when on sub route.
+- 96f378d10: Add support for custom empty state of `Table` components.
+
+  You can now optionally pass `emptyContent` to `Table` that is displayed
+  if the table has now rows.
+
+- 688b73110: Add Breadcrumbs component
+- Updated dependencies [f10950bd2]
+- Updated dependencies [fd3f2a8c0]
+  - @backstage/core-api@0.2.10
+
 ## 0.6.1
 
 ### Patch Changes

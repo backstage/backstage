@@ -33,9 +33,8 @@ export const EntityLinksCard = ({ cols = undefined }: Props) => {
   const { entity } = useEntity();
   const app = useApp();
 
-  const iconResolver = (key: IconKey | undefined): IconComponent => {
-    return app.getSystemIcon(key ?? '') ?? LanguageIcon;
-  };
+  const iconResolver = (key: IconKey | undefined): IconComponent =>
+    key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
 
   const links = entity?.metadata?.links;
 

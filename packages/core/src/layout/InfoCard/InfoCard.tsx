@@ -87,6 +87,8 @@ const VARIANT_STYLES = {
   },
 };
 
+export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
+
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
  *
@@ -111,7 +113,7 @@ type Props = {
   divider?: boolean;
   deepLink?: BottomLinkProps;
   slackChannel?: string;
-  variant?: string;
+  variant?: InfoCardVariants;
   style?: object;
   cardStyle?: object;
   children?: ReactNode;

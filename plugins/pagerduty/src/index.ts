@@ -23,6 +23,7 @@ export {
   isPluginApplicableToEntity as isPagerDutyAvailable,
   PagerDutyCard,
 } from './components/PagerDutyCard';
+export { TriggerButton } from './components/TriggerButton';
 export {
   PagerDutyClient,
   pagerDutyApiRef,
