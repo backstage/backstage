@@ -159,6 +159,9 @@ const CatalogPageContents = () => {
   const showAddExampleEntities =
     configApi.has('catalog.exampleEntityLocations') && isCatalogEmpty;
 
+  const showCreateComponent =
+    configApi.getOptionalBoolean('catalog.showCreateComponentLink') ?? true;
+
   return (
     <CatalogLayout>
       <CatalogTabs
@@ -167,14 +170,16 @@ const CatalogPageContents = () => {
       />
       <Content>
         <ContentHeader title={selectedTab ?? ''}>
-          <Button
-            component={RouterLink}
-            variant="contained"
-            color="primary"
-            to={createComponentLink()}
-          >
-            Create Component
-          </Button>
+          {showCreateComponent && (
+            <Button
+              component={RouterLink}
+              variant="contained"
+              color="primary"
+              to={createComponentLink()}
+            >
+              Create Component
+            </Button>
+          )}
           {showAddExampleEntities && (
             <Button
               className={styles.buttonSpacing}
