@@ -143,11 +143,14 @@ export class AwsS3Publish implements PublisherBase {
     this.logger = logger;
   }
 
+  public myName: string = 'hey';
+
   /**
    * Upload all the files from the generated `directory` to the OpenStack Swift container.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    console.log(entity, directory, 'Publish hey');
     try {
       // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
@@ -208,6 +211,8 @@ export class AwsS3Publish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
+    console.log(entityName, 'fetchTechDocsMetadata hey');
+
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
@@ -281,6 +286,8 @@ export class AwsS3Publish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
+      console.log(entity, 'hasDocsBeenGenerated hey');
+
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
 
       return new Promise(res => {
