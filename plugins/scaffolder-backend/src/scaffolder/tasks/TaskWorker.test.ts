@@ -74,11 +74,7 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
 
-    if (!event) {
-      throw new Error('Expected event');
-    }
-
-    expect((event.body?.error as JsonObject)?.message).toBe(
+    expect((event?.body?.error as JsonObject)?.message).toBe(
       "Template action with ID 'not-found-action' is not registered.",
     );
   });
@@ -104,9 +100,6 @@ describe('TaskWorker', () => {
 
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
-    if (!event) {
-      throw new Error('Expected event');
-    }
-    expect((event.body?.output as JsonObject).result).toBe('winning');
+    expect((event?.body?.output as JsonObject).result).toBe('winning');
   });
 });
