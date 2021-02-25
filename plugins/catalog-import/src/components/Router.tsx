@@ -16,11 +16,11 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { ImportComponentPage } from './ImportComponentPage';
+import { ImportEntityPage } from './ImportEntityPage';
 import { StepperProviderOpts } from './ImportStepper/defaults';
 
 export const Router = (opts: StepperProviderOpts) => (
   <Routes>
-    <Route element={<ImportComponentPage {...opts} />} />
+    <Route element={<ImportEntityPage {...opts} />} />
   </Routes>
 );

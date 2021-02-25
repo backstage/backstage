@@ -62,7 +62,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
         apiVersion: '1',
         kind: 'Component',
         metadata: {
-          name: 'my-component',
+          name: 'my-entity',
           namespace: 'default',
         },
         spec: {
@@ -92,7 +92,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
               <>
                 <TextField name="title" inputRef={register()} />
                 <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
+                <TextField name="entityName" inputRef={register()} />
                 <TextField name="type" inputRef={register()} />
                 <TextField name="owner" inputRef={register()} />
               </>
@@ -138,7 +138,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
                 <TextField
                   id="name"
                   label="name"
-                  name="componentName"
+                  name="entityName"
                   inputRef={register()}
                 />
                 <TextField
@@ -179,7 +179,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
         fileContent: `apiVersion: "1"
 kind: Component
 metadata:
-  name: my-component-changed
+  name: my-entity-changed
   namespace: default
 spec:
   type: website
@@ -203,7 +203,7 @@ spec:
             entities: [
               {
                 kind: 'Component',
-                name: 'my-component-changed',
+                name: 'my-entity-changed',
                 namespace: 'default',
               },
             ],
@@ -236,7 +236,7 @@ spec:
               <>
                 <TextField name="title" inputRef={register()} />
                 <TextField name="body" inputRef={register()} />
-                <TextField name="componentName" inputRef={register()} />
+                <TextField name="entityName" inputRef={register()} />
                 <TextField name="owner" inputRef={register()} />
               </>
             );
@@ -308,7 +308,7 @@ spec:
         expect(
           generateEntities(
             [{ metadata: { namespace: namespace as any } }],
-            'my-component',
+            'my-entity',
             'service',
             'group-1',
           ),
@@ -328,7 +328,7 @@ spec:
         expect(
           generateEntities(
             [{ metadata: { namespace } }],
-            'my-component',
+            'my-entity',
             'service',
             'group-1',
           ),

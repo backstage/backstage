@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 type FormData = {
   title: string;
   body: string;
-  componentName: string;
+  entityName: string;
   type: string;
   owner: string;
   useCodeowners: boolean;
@@ -74,7 +74,7 @@ type Props = {
 
 export function generateEntities(
   entities: PartialEntity[],
-  componentName: string,
+  entityName: string,
   type: string,
   owner?: string,
 ): Entity[] {
@@ -84,7 +84,7 @@ export function generateEntities(
     kind: e.kind!,
     metadata: {
       ...e.metadata,
-      name: componentName,
+      name: entityName,
     },
     spec: {
       ...e.spec,
@@ -130,7 +130,7 @@ export const StepPrepareCreatePullRequest = ({
           body: data.body,
           fileContent: generateEntities(
             analyzeResult.generatedEntities,
-            data.componentName,
+            data.entityName,
             data.type,
             data.owner,
           )
@@ -151,7 +151,7 @@ export const StepPrepareCreatePullRequest = ({
                 target: pr.location,
                 entities: generateEntities(
                   analyzeResult.generatedEntities,
-                  data.componentName,
+                  data.entityName,
                   data.type,
                   data.owner,
                 ).map(e => ({
@@ -196,8 +196,7 @@ export const StepPrepareCreatePullRequest = ({
             (analyzeResult.generatedEntities[0]?.spec?.type as string) || '',
           owner:
             (analyzeResult.generatedEntities[0]?.spec?.owner as string) || '',
-          componentName:
-            analyzeResult.generatedEntities[0]?.metadata?.name || '',
+          entityName: analyzeResult.generatedEntities[0]?.metadata?.name || '',
           useCodeowners: false,
         }}
         render={({ values, errors, control, register }) => (
@@ -231,7 +230,7 @@ export const StepPrepareCreatePullRequest = ({
             <PreviewCatalogInfoComponent
               entities={generateEntities(
                 analyzeResult.generatedEntities,
-                values.componentName,
+                values.entityName,
                 values.type,
                 values.owner,
               )}

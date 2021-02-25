@@ -48,7 +48,7 @@ function repositories(configApi: ConfigApi): string[] {
   return repos;
 }
 
-export const ImportComponentPage = (opts: StepperProviderOpts) => {
+export const ImportEntityPage = (opts: StepperProviderOpts) => {
   const configApi = useApi(configApiRef);
   const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
@@ -57,11 +57,11 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
 
   return (
     <Page themeId="home">
-      <Header title="Register an existing component" />
+      <Header title="Register an existing entity" />
       <Content>
-        <ContentHeader title={`Start tracking your component in ${appTitle}`}>
+        <ContentHeader title={`Start tracking your entity in ${appTitle}`}>
           <SupportButton>
-            Start tracking your component in {appTitle} by adding it to the
+            Start tracking your entity in {appTitle} by adding it to the
             software catalog.
           </SupportButton>
         </ContentHeader>
@@ -69,7 +69,7 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
         <Grid container spacing={2} direction="row-reverse">
           <Grid item xs={12} md={4} lg={6} xl={8}>
             <InfoCard
-              title="Register an existing component"
+              title="Register an existing entity"
               deepLink={{
                 title: 'Learn more about the Software Catalog',
                 link:

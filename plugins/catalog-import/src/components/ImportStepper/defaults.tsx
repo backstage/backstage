@@ -91,9 +91,9 @@ function defaultPreparePullRequest(apis: StepperApis) {
   return {
     title: 'Add catalog-info.yaml config file',
     body: `This pull request adds a **Backstage entity metadata file** \
-to this repository so that the component can be added to the \
+to this repository so that the entity can be added to the \
 [${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
-the component will become available.\n\nFor more information, read an \
+the entity will become available.\n\nFor more information, read an \
 [overview of the Backstage software catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview).`,
   };
 }
@@ -230,14 +230,14 @@ export function defaultGenerateStepper(
                     </Box>
 
                     <TextField
-                      name="componentName"
-                      label="Name of the created component"
-                      placeholder="my-component"
+                      name="entityName"
+                      label="Name of the created entity"
+                      placeholder="my-entity"
                       margin="normal"
                       variant="outlined"
                       fullWidth
                       inputRef={register({ required: true })}
-                      error={Boolean(errors.componentName)}
+                      error={Boolean(errors.entityName)}
                       required
                     />
 

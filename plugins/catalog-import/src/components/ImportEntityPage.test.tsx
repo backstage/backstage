@@ -26,9 +26,9 @@ import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
 import { catalogImportApiRef, CatalogImportClient } from '../api';
-import { ImportComponentPage } from './ImportComponentPage';
+import { ImportEntityPage } from './ImportEntityPage';
 
-describe('<ImportComponentPage />', () => {
+describe('<ImportEntityPage />', () => {
   const identityApi = {
     getUserId: () => {
       return 'user';
@@ -71,13 +71,13 @@ describe('<ImportComponentPage />', () => {
       const { getByText } = render(
         wrapInTestApp(
           <ApiProvider apis={apis}>
-            <ImportComponentPage />
+            <ImportEntityPage />
           </ApiProvider>,
         ),
       );
 
       expect(
-        await getByText('Start tracking your component in Backstage'),
+        await getByText('Start tracking your entity in Backstage'),
       ).toBeInTheDocument();
     });
   });
