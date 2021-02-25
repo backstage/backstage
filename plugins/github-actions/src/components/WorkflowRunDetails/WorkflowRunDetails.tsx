@@ -54,9 +54,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   title: {
     padding: theme.spacing(1, 0, 2, 0),
   },
-  breadcrumb: {
-    margin: theme.spacing(0, 0, 3, 0),
-  },
   table: {
     padding: theme.spacing(1),
   },
@@ -186,10 +183,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   }
   return (
     <div className={classes.root}>
-      <Breadcrumbs aria-label="breadcrumb" className={classes.breadcrumb}>
-        <Link to="..">Workflow runs</Link>
-        <Typography>Workflow run details</Typography>
-      </Breadcrumbs>
+      <Box mb={3}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to="..">Workflow runs</Link>
+          <Typography>Workflow run details</Typography>
+        </Breadcrumbs>
+      </Box>
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
