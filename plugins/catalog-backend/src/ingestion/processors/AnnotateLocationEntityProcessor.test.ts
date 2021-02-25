@@ -15,6 +15,8 @@
  */
 
 import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
 
 describe('AnnotateLocationEntityProcessor', () => {
@@ -30,14 +32,17 @@ describe('AnnotateLocationEntityProcessor', () => {
 
       const location: LocationSpec = {
         type: 'url',
-        target: 'my-location',
+        target:
+          'https://github.com/backstage/backstage/blob/master/packages/app/catalog-info.yaml',
       };
       const originLocation: LocationSpec = {
         type: 'url',
-        target: 'my-origin-location',
+        target:
+          'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       };
 
-      const processor = new AnnotateLocationEntityProcessor();
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor = new AnnotateLocationEntityProcessor({ integrations });
 
       expect(
         await processor.preProcessEntity(
@@ -52,8 +57,110 @@ describe('AnnotateLocationEntityProcessor', () => {
         metadata: {
           name: 'my-component',
           annotations: {
-            'backstage.io/managed-by-location': 'url:my-location',
-            'backstage.io/managed-by-origin-location': 'url:my-origin-location',
+            'backstage.io/managed-by-location':
+              'url:https://github.com/backstage/backstage/blob/master/packages/app/catalog-info.yaml',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+            'backstage.io/view-url':
+              'https://github.com/backstage/backstage/blob/master/packages/app/catalog-info.yaml',
+            'backstage.io/edit-url':
+              'https://github.com/backstage/backstage/edit/master/packages/app/catalog-info.yaml',
+            'backstage.io/source-location':
+              'https://github.com/backstage/backstage/tree/master/packages/app/',
+          },
+        },
+      });
+    });
+
+    it('does not override existing annotations', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'backstage.io/view-url': 'https://example.com/view',
+            'backstage.io/edit-url': 'https://example.com/edit',
+            'backstage.io/source-location': 'https://example.com/source',
+          },
+        },
+      };
+
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://github.com/backstage/backstage/blob/master/packages/app/catalog-info.yaml',
+      };
+      const originLocation: LocationSpec = {
+        type: 'url',
+        target:
+          'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+      };
+
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor = new AnnotateLocationEntityProcessor({ integrations });
+
+      expect(
+        await processor.preProcessEntity(
+          entity,
+          location,
+          () => {},
+          originLocation,
+        ),
+      ).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/backstage/backstage/blob/master/packages/app/catalog-info.yaml',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+            'backstage.io/view-url': 'https://example.com/view',
+            'backstage.io/edit-url': 'https://example.com/edit',
+            'backstage.io/source-location': 'https://example.com/source',
+          },
+        },
+      });
+    });
+
+    it('does not output view, edit or source location annotations for non url type locations', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+        },
+      };
+
+      const location: LocationSpec = {
+        type: 'file',
+        target: './test.yaml',
+      };
+      const originLocation: LocationSpec = {
+        type: 'file',
+        target: './test.yaml',
+      };
+
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor = new AnnotateLocationEntityProcessor({ integrations });
+
+      expect(
+        await processor.preProcessEntity(
+          entity,
+          location,
+          () => {},
+          originLocation,
+        ),
+      ).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'backstage.io/managed-by-location': 'file:./test.yaml',
+            'backstage.io/managed-by-origin-location': 'file:./test.yaml',
           },
         },
       });
