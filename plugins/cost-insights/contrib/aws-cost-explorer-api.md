@@ -1,9 +1,8 @@
 # Using the AWS Cost Explorer API with Cost Insights
 
-Cost Insights implementers are currently expected to write their own Cost Insights client to interact with the frontend plugin. We've looked into short-term solutions which we've since punted on, but wanted to share our findings from our exploration of the AWS Cost Explorer API.
+Cost Insights currently does not provide a CostInsightsApi client out of the box, this is left up to the implementr. We plan to provide an open-source client and backend eventually that can pull cost data from different cloud providers. In the meantime, we briefly explored the AWS Cost Explorer API and wanted to share our findings. Please contribute to this documentation if you try any experiments with AWS Cost Explorer.
 
-**Note:** Each request using the Cost Explorer API will incur a cost of \$0.01.
-`
+**Note:** Each request using the Cost Explorer API will incur a cost of \$0.01. If you anticipate high usage, adding some caching of Cost Explorer API responses could prove worthwhile over time.
 
 ## Authentication
 
@@ -31,7 +30,7 @@ Cost Explorer permission policy:
 
 ## Setup
 
-1. Install the AWS Cost Explorer SDK. The AWS docs recommend using the SDK over making calls to the API directly as it simplifies authentication and provides direct access to commands.
+Install the AWS Cost Explorer SDK. The AWS docs recommend using the SDK over making calls to the API directly as it simplifies authentication and provides direct access to commands.
 
 ```bash
 yarn add @aws-sdk/client-cost-explorer
@@ -297,7 +296,7 @@ There are a couple of options for breaking down costs for a resource.
 
 ## Cost Allocation Tags
 
-Tags are labels that you can assign to an AWS resource, each with a key and value. You can use cost allocation tags to track your AWS costs on a detailed level. You can tag resources through the AWS UI by using the Tags tab on the relevant resource screen. You can also add tags progrmatically via the relevant cloud product API.
+Tags are labels that you can assign to an AWS resource, each with a key and value. You can use cost allocation tags to track your AWS costs on a detailed level. You can tag resources through the AWS UI by using the Tags tab on the relevant resource screen. You can also add tags programatically via the relevant cloud product API.
 
 After tagging your resources (either through UI or API), you still need to activate the tags through the UI. Once tags are activated there’s a 24-hour delay until you see the data in Cost Explorer. The tags don’t apply to historical data, so you only get cost allocation for dates after the tag activation date. More info on activating tags [here](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/activating-tags.html).
 
@@ -327,4 +326,3 @@ Similar to S3, you can add tags through the UI as well the EC2 API itself. The [
 
 4. GroupBy:
    Valid values: AZ, INSTANCE_TYPE, LEGAL_ENTITY_NAME, LINKED_ACCOUNT, OPERATION, PLATFORM, PURCHASE_TYPE, SERVICE, TAGS, TENANCY, RECORD_TYPE, and USAGE_TYPE.
-   `
