@@ -23,11 +23,11 @@ import { parseRepoUrl } from './util';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrations;
-  repoVisibility: 'private' | 'internal' | 'public';
 }): TemplateAction<{
   repoUrl: string;
+  repoVisibility: 'private' | 'internal' | 'public';
 }> {
-  const { integrations, repoVisibility } = options;
+  const { integrations } = options;
 
   return {
     id: 'publish:gitlab',
@@ -39,6 +39,11 @@ export function createPublishGitlabAction(options: {
           repoUrl: {
             title: 'Repository Location',
             type: 'string',
+          },
+          repoVisibility: {
+            title: 'Repository Visiblity',
+            type: 'string',
+            enum: ['private', 'public', 'internal'],
           },
         },
       },
@@ -57,7 +62,7 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl } = ctx.parameters;
+      const { repoUrl, repoVisibility = 'private' } = ctx.parameters;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 

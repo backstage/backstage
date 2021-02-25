@@ -26,13 +26,13 @@ import { parseRepoUrl } from './util';
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrations;
-  repoVisibility: 'private' | 'internal' | 'public';
 }): TemplateAction<{
   repoUrl: string;
   description?: string;
   access?: string;
+  repoVisibility: 'private' | 'internal' | 'public';
 }> {
-  const { integrations, repoVisibility } = options;
+  const { integrations } = options;
 
   const credentialsProviders = new Map(
     integrations.github.list().map(integration => {
@@ -60,6 +60,11 @@ export function createPublishGithubAction(options: {
             title: 'Repository Access',
             type: 'string',
           },
+          repoVisibility: {
+            title: 'Repository Visiblity',
+            type: 'string',
+            enum: ['private', 'public', 'internal'],
+          },
         },
       },
       output: {
@@ -77,7 +82,7 @@ export function createPublishGithubAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, description, access } = ctx.parameters;
+      const { repoUrl, description, access, repoVisibility } = ctx.parameters;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 

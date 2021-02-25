@@ -152,20 +152,17 @@ export async function createRouter(
   actionRegistry.register(
     createPublishGithubAction({
       integrations,
-      repoVisibility: 'public',
     }),
   );
   actionRegistry.register(
     createPublishGitlabAction({
       integrations,
-      repoVisibility: 'public',
     }),
   );
 
   actionRegistry.register(
     createPublishBitbucketAction({
       integrations,
-      repoVisibility: 'public',
     }),
   );
 

@@ -145,12 +145,12 @@ const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
 
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrations;
-  repoVisibility: 'private' | 'public';
 }): TemplateAction<{
   repoUrl: string;
   description: string;
+  repoVisibility: 'private' | 'public';
 }> {
-  const { integrations, repoVisibility } = options;
+  const { integrations } = options;
 
   return {
     id: 'publish:bitbucket',
@@ -166,6 +166,11 @@ export function createPublishBitbucketAction(options: {
           description: {
             title: 'Repository Description',
             type: 'string',
+          },
+          repoVisibility: {
+            title: 'Repository Visiblity',
+            type: 'string',
+            enum: ['private', 'public'],
           },
         },
       },
@@ -184,7 +189,11 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, description } = ctx.parameters;
+      const {
+        repoUrl,
+        description,
+        repoVisibility = 'private',
+      } = ctx.parameters;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
