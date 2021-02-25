@@ -146,6 +146,7 @@ export class AwsS3Publish implements PublisherBase {
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
+    this.logger.info(`Publish Called hey`);
     try {
       // Note: OpenStack Swift manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
@@ -198,6 +199,7 @@ export class AwsS3Publish implements PublisherBase {
   async fetchTechDocsMetadata(
     entityName: EntityName,
   ): Promise<TechDocsMetadata> {
+    this.logger.info(`fetchTechDocsMetadata Called hey`);
     try {
       return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
@@ -237,6 +239,7 @@ export class AwsS3Publish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return async (req, res) => {
+      this.logger.info(`docsRouter Called hey`);
       // Trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
 
@@ -271,14 +274,21 @@ export class AwsS3Publish implements PublisherBase {
    */
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
+      this.logger.info(`hasDocsBeenGenerated Called hey`);
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      await this.storageClient
-        .headObject({
-          Bucket: this.bucketName,
-          Key: `${entityRootDir}/index.html`,
-        })
-        .promise();
-      return Promise.resolve(true);
+
+      return new Promise(res => {
+        this.storageClient.getFile(
+          this.containerName,
+          `${entityRootDir}/index.html`,
+          (err: any, file: any) => {
+            console.log(file);
+            if (!err && file) {
+              res(true);
+            } else res(false);
+          },
+        );
+      });
     } catch (e) {
       return Promise.resolve(false);
     }
