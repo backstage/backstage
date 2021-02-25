@@ -73,7 +73,7 @@ try {
 
 ## Implementing methods on [CostInsightsApi](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts)
 
-The Cost Explorer SDK allows for easy access to cost data for easier implementation of CostInsightsApi methods such as `getGroupDailyCost`, `getProjectDailyCost`, and `getProductInsights`.
+We can use the data provided by the Cost Explorer API to implement CostInsightsApi methods such as `getGroupDailyCost`, `getProjectDailyCost`, and `getProductInsights`. You'll still need to provide external data for methods such as `getUserGroups` and `getAlerts`.
 
 ### 1. [getGroupDailyCost](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts#L93)
 
