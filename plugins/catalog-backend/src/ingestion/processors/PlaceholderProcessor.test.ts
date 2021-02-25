@@ -331,7 +331,7 @@ describe('PlaceholderProcessor', () => {
         },
       ),
     ).rejects.toThrow(
-      'Placeholder $text could not form an URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
+      'Placeholder $text could not form a URL out of ./a/b/catalog-info.yaml and ../c/catalog-info.yaml',
     );
 
     expect(read).not.toBeCalled();
