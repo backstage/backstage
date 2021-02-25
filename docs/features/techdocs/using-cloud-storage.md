@@ -281,11 +281,9 @@ techdocs:
 
 **3b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use a service account, you can
-follow these steps.
+Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
+your `app-config.yaml` to the your account name.
 
-To get credentials, access the Azure Portal and go to "Settings > Access Keys",
-and get your Storage account name and Primary Key.
 https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 for more details.
 
@@ -314,7 +312,7 @@ the logs.
 
 Follow the
 [official OpenStack Api documentation](https://docs.openstack.org/api-ref/identity/v3/)
-for the latest instructions on the following steps involving Azure Blob Storage.
+for the latest instructions on the following steps involving Open Stack Storage.
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
@@ -326,7 +324,7 @@ techdocs:
     type: 'openStackSwift'
 ```
 
-**2. Create an Azure Blob Storage Container**
+**2. Create an OpenStack Swift Storage Container**
 
 Create a dedicated container for TechDocs sites.
 [Refer to the official documentation](https://docs.openstack.org/mitaka/user-guide/dashboard_manage_containers.html).
@@ -346,57 +344,40 @@ techdocs:
       containerName: 'name-of-techdocs-storage-container'
 ```
 
-**3a. (Recommended) Authentication using environment variable**
+**3. Authentication using app-config.yaml**
 
-Set the config `techdocs.publisher.openStackSwift.accountName` in
-your `app-config.yaml` to the your account name.
+Set the configs in your `app-config.yaml` to the your container name.
 
-The storage blob client will automatically use the environment variable
-`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` to authenticate with
-Azure Blob Storage.
-[Steps to create the service where the variables can be retrieved from](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal).
-
-https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad for more
-details.
-
-```yaml
-techdocs:
-  publisher:
-    type: 'azureBlobStorage'
-    azureBlobStorage:
-      containerName: 'name-of-techdocs-storage-bucket'
-      credentials:
-        accountName:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
-```
-
-**3b. Authentication using app-config.yaml**
-
-If you do not prefer (3a) and optionally like to use a service account, you can
-follow these steps.
-
-To get credentials, access the Azure Portal and go to "Settings > Access Keys",
-and get your Storage account name and Primary Key.
-https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
 for more details.
 
 ```yaml
 techdocs:
   publisher:
-    type: 'azureBlobStorage'
-    azureBlobStorage:
+    type: 'openStackSwift'
+    openStackSwift:
       containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        accountName:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
-        accountKey:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
+        userName:
+          $env: OPENSTACK_SWIFT_STORAGE_USERNAME
+        password:
+          $env: OPENSTACK_SWIFT_STORAGE_PASSWORD
+      authUrl:
+        $env: OPENSTACK_SWIFT_STORAGE_AUTH_URL
+      keystoneAuthVersion:
+        $env: OPENSTACK_SWIFT_STORAGE_AUTH_VERSION
+      domainId:
+        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_ID
+      domainName:
+        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME
+      region: 
+        $env: OPENSTACK_SWIFT_STORAGE_REGION
 ```
 
 **4. That's it!**
 
-Your Backstage app is now ready to use Azure Blob Storage for TechDocs, to store
+Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to store
 and read the static generated documentation files. When you start the backend of
 the app, you should be able to see
-`techdocs info Successfully connected to the Azure Blob Storage container` in
+`techdocs info Successfully connected to the OpenStack Swift Storage container` in
 the logs.
