@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
+import { SingleHostDiscovery } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   CookieCutter,
+  CreateReactAppTemplater,
   createRouter,
   Preparers,
   Publishers,
-  CreateReactAppTemplater,
   Templaters,
 } from '@backstage/plugin-scaffolder-backend';
-import { SingleHostDiscovery } from '@backstage/backend-common';
-import type { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
-import { CatalogClient } from '@backstage/catalog-client';
+import { Router } from 'express';
+import type { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
   config,
   database,
-}: PluginEnvironment) {
+}: PluginEnvironment): Promise<Router> {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
   const templaters = new Templaters();

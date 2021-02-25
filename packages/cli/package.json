@@ -52,7 +52,7 @@
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
     "@types/webpack-node-externals": "^2.5.0",
-    "@typescript-eslint/eslint-plugin": "^v4.14.0",
+    "@typescript-eslint/eslint-plugin": "^v4.15.2",
     "@typescript-eslint/parser": "^v4.14.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
