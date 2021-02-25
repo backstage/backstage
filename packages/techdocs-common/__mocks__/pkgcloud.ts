@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { OpenstackProviderOptions } from 'pkgcloud';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
+import { ObjectWritableMock, BufferReadableMock } from 'stream-mock';
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const checkFileExists = async (Key: string): Promise<boolean> => {
   // Key will always have / as file separator irrespective of OS since S3 expects /.
   // Normalize Key to OS specific path before checking if file exists.
-  const relativeFilePath = Key.split(path.posix.sep).join(path.sep);
   const filePath = path.join(rootDir, Key);
 
   try {
-    await fs.access(filePath, fs.constants.F_OK);
+    fs.accessSync(filePath, fs.constants.F_OK);
     return true;
   } catch (err) {
     return false;
@@ -38,11 +37,11 @@ class PkgCloudStorageClient {
   getFile(
     containerName: string,
     file: string,
-    callback: (err: string, file: string) => any,
+    callback: (err: any, file: string) => any,
   ) {
     checkFileExists(file).then(res => {
       if (!res) {
-        callback('File does not exist', undefined);
+        callback('File does not exist', file);
         throw new Error('File does not exist');
       } else {
         callback(undefined, 'success');
@@ -55,40 +54,28 @@ class PkgCloudStorageClient {
     callback: (err: string, container: string) => any,
   ) {
     if (containerName !== 'mock') {
-      callback("Container doesn't exist", undefined);
+      callback("Container doesn't exist", containerName);
       throw new Error('Container does not exist');
     } else {
-      callback(undefined, 'success');
+      callback('Container does not exist', 'success');
     }
   }
 
-  upload({ containerName, remote }: { containerName: string; remote: string }) {
-    checkFileExists(remote).then(res => {
-      if (!res) {
-        return new Error("File doesn't exists");
-      }
-      return fs.createWriteStream(`${containerName}/${remote}`);
-    });
+  upload() {
+     return new ObjectWritableMock();
   }
 
-  download({
-    containerName,
-    remote,
-  }: {
-    containerName: string;
-    remote: string;
-  }) {
-    checkFileExists(remote).then(res => {
-      if (!res) {
-        return new Error("File doesn't exists");
-      }
-      return fs.createReadStream(remote);
+  download() {
+    const stringify = JSON.stringify({
+      "site_description": 'site_content',
+      "site_name": "backstage"
     });
+    return new BufferReadableMock([stringify]);
   }
 }
 
 export class storage {
-  static createClient(params: OpenstackProviderOptions) {
+  static createClient() {
     return new PkgCloudStorageClient();
   }
 }
