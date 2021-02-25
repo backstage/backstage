@@ -141,3 +141,218 @@ spec:
   output:
     remoteUrl: '{{ steps.publish.output.remoteUrl }}'
     entityRef: '{{ steps.register.output.entityRef }}'
+
+---
+
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: test-template-v2-gitlab 
+  title: Test Template v2-gitlab
+  description: Testing out the new template schema
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - gitlab.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      parameters:
+        url: ./template
+        values:
+          name: '{{ parameters.name }}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      parameters:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:gitlab
+      parameters:
+        allowedHosts: ['gitlab.com']
+        description: 'This is {{ parameters.name }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      parameters:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+        
+
+  output:
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'
+
+---
+
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: test-template-v2-bitbucket 
+  title: Test Template v2-bitbucket
+  description: Testing out the new template schema
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - bitbucket.org
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      parameters:
+        url: ./template
+        values:
+          name: '{{ parameters.name }}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      parameters:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:bitbucket
+      parameters:
+        allowedHosts: ['bitbucket.org']
+        description: 'This is {{ parameters.name }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      parameters:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+        
+
+  output:
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'
+
+---
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: test-template-v2-azure 
+  title: Test Template v2-azure
+  description: Testing out the new template schema
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - dev.azure.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      parameters:
+        url: ./template
+        values:
+          name: '{{ parameters.name }}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      parameters:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:azure
+      parameters:
+        allowedHosts: ['dev.azure.com']
+        description: 'This is {{ parameters.name }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      parameters:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+        
+
+  output:
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'

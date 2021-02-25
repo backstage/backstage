@@ -87,7 +87,7 @@ export function createPublishGitlabAction(options: {
 
       await initRepoAndPush({
         dir: ctx.workspacePath,
-        remoteUrl,
+        remoteUrl: http_url_to_repo as string,
         auth: {
           username: 'oauth2',
           password: integrationConfig.config.token,

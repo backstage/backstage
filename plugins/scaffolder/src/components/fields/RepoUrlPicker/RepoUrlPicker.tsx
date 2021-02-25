@@ -28,6 +28,7 @@ function splitFormData(url: string | undefined) {
   let host = undefined;
   let owner = undefined;
   let repo = undefined;
+  let organization = undefined;
 
   try {
     if (url) {
@@ -35,18 +36,21 @@ function splitFormData(url: string | undefined) {
       host = parsed.host;
       owner = parsed.searchParams.get('owner') || undefined;
       repo = parsed.searchParams.get('repo') || undefined;
+      // This is azure dev ops specific. not used for any other provider.
+      organization = parsed.searchParams.get('organization') || undefined;
     }
   } catch {
     /* ok */
   }
 
-  return { host, owner, repo };
+  return { host, owner, repo, organization };
 }
 
 function serializeFormData(data: {
   host?: string;
   owner?: string;
   repo?: string;
+  organization?: string;
 }) {
   if (!data.host) {
     return undefined;
@@ -57,6 +61,9 @@ function serializeFormData(data: {
   }
   if (data.repo) {
     params.set('repo', data.repo);
+  }
+  if (data.organization) {
+    params.set('organization', data.organization);
   }
 
   return `${data.host}?${params.toString()}`;
@@ -75,36 +82,71 @@ export const RepoUrlPicker: Field = ({
     return await api.getIntegrationsList({ allowedHosts });
   });
 
-  const { host, owner, repo } = splitFormData(formData);
+  const { host, owner, repo, organization } = splitFormData(formData);
   const updateHost = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
       onChange(
-        serializeFormData({ host: evt.target.value as string, owner, repo }),
+        serializeFormData({
+          host: evt.target.value as string,
+          owner,
+          repo,
+          organization,
+        }),
       ),
-    [onChange, owner, repo],
+    [onChange, owner, repo, organization],
   );
 
   const updateOwner = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
       onChange(
-        serializeFormData({ host, owner: evt.target.value as string, repo }),
+        serializeFormData({
+          host,
+          owner: evt.target.value as string,
+          repo,
+          organization,
+        }),
       ),
-    [onChange, host, repo],
+    [onChange, host, repo, organization],
   );
 
   const updateRepo = useCallback(
     (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
       onChange(
-        serializeFormData({ host, owner, repo: evt.target.value as string }),
+        serializeFormData({
+          host,
+          owner,
+          repo: evt.target.value as string,
+          organization,
+        }),
       ),
-    [onChange, host, owner],
+    [onChange, host, owner, organization],
+  );
+
+  const updateOrganization = useCallback(
+    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+      onChange(
+        serializeFormData({
+          host,
+          owner,
+          repo,
+          organization: evt.target.value as string,
+        }),
+      ),
+    [onChange, host, owner, repo],
   );
 
   useEffect(() => {
     if (host === undefined && integrations?.length) {
-      onChange(serializeFormData({ host: integrations[0].host, owner, repo }));
+      onChange(
+        serializeFormData({
+          host: integrations[0].host,
+          owner,
+          repo,
+          organization,
+        }),
+      );
     }
-  }, [onChange, integrations, host, owner, repo]);
+  }, [onChange, integrations, host, owner, repo, organization]);
 
   if (loading) {
     return <Progress />;
@@ -119,18 +161,37 @@ export const RepoUrlPicker: Field = ({
       >
         <InputLabel htmlFor="hostInput">Host</InputLabel>
         <Select native id="hostInput" onChange={updateHost} value={host}>
-          {integrations!
-            .filter(i => allowedHosts?.includes(i.host))
-            .map(i => (
-              <option key={i.host} value={i.host}>
-                {i.title}
-              </option>
-            ))}
+          {integrations ? (
+            integrations
+              .filter(i => allowedHosts?.includes(i.host))
+              .map(i => (
+                <option key={i.host} value={i.host}>
+                  {i.title}
+                </option>
+              ))
+          ) : (
+            <p>loading</p>
+          )}
         </Select>
         <FormHelperText>
           The host where the repository will be created
         </FormHelperText>
       </FormControl>
+      {host === 'dev.azure.com' && (
+        <FormControl
+          margin="normal"
+          required
+          error={rawErrors?.length > 0 && !organization}
+        >
+          <InputLabel htmlFor="repoInput">Organization</InputLabel>
+          <Input
+            id="repoInput"
+            onChange={updateOrganization}
+            value={organization}
+          />
+          <FormHelperText>The name of the organization</FormHelperText>
+        </FormControl>
+      )}
       <FormControl
         margin="normal"
         required

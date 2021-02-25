@@ -47,7 +47,16 @@ export function createPublishAzureAction(options: {
       },
     },
     async handler(ctx) {
-      const { owner, repo, host } = parseRepoUrl(ctx.parameters.repoUrl);
+      const { owner, repo, host, organization } = parseRepoUrl(
+        ctx.parameters.repoUrl,
+      );
+
+      if (!organization) {
+        throw new InputError(
+          `No Organization was included in the repo URL to create ${ctx.parameters.repoUrl}`,
+        );
+      }
+
       const integrationConfig = integrations.azure.byHost(host);
 
       if (!integrationConfig) {
@@ -62,10 +71,18 @@ export function createPublishAzureAction(options: {
         integrationConfig.config.token,
       );
 
-      const webApi = new WebApi(`https://${host}/${owner}`, authHandler);
+      const webApi = new WebApi(`https://${host}/${organization}`, authHandler);
       const client = await webApi.getGitApi();
       const createOptions: GitRepositoryCreateOptions = { name: repo };
-      const { remoteUrl } = await client.createRepository(createOptions, owner);
+      const returnedRepo = await client.createRepository(createOptions, owner);
+
+      if (!returnedRepo) {
+        throw new InputError(
+          `Unable to create the repository with Organization ${organization}, Project ${owner} and Repo ${repo}. 
+          Please make sure you that both the Org and Project are typed corrected and exist.`,
+        );
+      }
+      const remoteUrl = returnedRepo.remoteUrl;
 
       if (!remoteUrl) {
         throw new InputError(

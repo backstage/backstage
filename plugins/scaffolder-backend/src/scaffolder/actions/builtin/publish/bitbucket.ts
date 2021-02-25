@@ -22,6 +22,7 @@ import {
 import { TemplateAction } from '../../types';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
+import fetch from 'cross-fetch';
 
 const createBitbucketCloudRepository = async (opts: {
   owner: string;
