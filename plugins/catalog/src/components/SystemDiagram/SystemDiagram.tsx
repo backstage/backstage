@@ -147,14 +147,12 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
 
   return (
     <InfoCard title="System Diagram">
-      <div>
-        <DependencyGraph
-          nodes={systemNodes}
-          edges={systemEdges}
-          nodeMargin={10}
-          direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
-        />
-      </div>
+      <DependencyGraph
+        nodes={systemNodes}
+        edges={systemEdges}
+        nodeMargin={10}
+        direction={DependencyGraphTypes.Direction.BOTTOM_TOP}
+      />
       <Box m={1} />
       <Typography
         variant="caption"
