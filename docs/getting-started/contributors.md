@@ -135,7 +135,7 @@ default app configs.
 > NOTE: If you want to add your own configuration values to access in the
 > frontend you also need to mark those values as visible using configuration
 > schema, either in the app or in your own plugin. For more information, see
-> [Defining Configuration](../conf/defining.md)
+> [Defining Configuration](../conf/defining.md).
 
 You can learn more about the local configuration in
 [Static Configuration in Backstage](../conf/) section.
