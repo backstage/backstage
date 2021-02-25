@@ -1818,10 +1818,9 @@
 "@backstage/catalog-model@^0.2.0":
   version "0.7.3"
   dependencies:
-    "@backstage/config" "^0.1.3"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
     json-schema "^0.2.5"
     lodash "^4.17.15"
     uuid "^8.0.0"
@@ -1830,10 +1829,9 @@
 "@backstage/catalog-model@^0.3.0":
   version "0.7.3"
   dependencies:
-    "@backstage/config" "^0.1.3"
+    "@backstage/config" "^0.1.1"
     "@types/json-schema" "^7.0.5"
     "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
     json-schema "^0.2.5"
     lodash "^4.17.15"
     uuid "^8.0.0"
@@ -1981,6 +1979,7 @@
     "@types/react-text-truncate" "^0.14.0"
     classnames "^2.2.6"
     git-url-parse "^11.4.4"
+    moment "^2.26.0"
     react "^16.13.1"
     react-dom "^16.13.1"
     react-helmet "6.1.0"
@@ -2034,6 +2033,56 @@
     react "^16.13.1"
     react-dom "^16.13.1"
     react-helmet "6.1.0"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    swr "^0.3.0"
+
+"@backstage/plugin-scaffolder@^0.4.1":
+  version "0.4.2"
+  resolved "https://registry.npmjs.org/@backstage/plugin-scaffolder/-/plugin-scaffolder-0.4.2.tgz#58159227997f7e248ce52535bc32f19fcd0990dc"
+  integrity sha512-YuyHM587Rqg6KufxfFqQdI7dsZniBM/11Aj8Q0m5ZszOpCuNmDDkR1VX8MKHTBJ709mnLAqRgArdla7FOrOAXQ==
+  dependencies:
+    "@backstage/catalog-model" "^0.7.1"
+    "@backstage/core" "^0.6.0"
+    "@backstage/plugin-catalog-react" "^0.0.2"
+    "@backstage/theme" "^0.2.3"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@rjsf/core" "^2.4.0"
+    "@rjsf/material-ui" "^2.4.0"
+    classnames "^2.2.6"
+    git-url-parse "^11.4.4"
+    moment "^2.26.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-lazylog "^4.5.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    swr "^0.3.0"
+
+"@backstage/plugin-scaffolder@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/@backstage/plugin-scaffolder/-/plugin-scaffolder-0.5.1.tgz#9d36f6b01991ddd9f9f2996068f3f31c766db8db"
+  integrity sha512-EG+iUc107bneVBPQpFKGp2jD9Y9+x50g/gY6TBN1je8TkgyluoxMj7wKv9e+d4TeGzXwK/LW/suajG9Zo0TJGQ==
+  dependencies:
+    "@backstage/catalog-model" "^0.7.1"
+    "@backstage/core" "^0.6.2"
+    "@backstage/plugin-catalog-react" "^0.0.4"
+    "@backstage/theme" "^0.2.3"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@rjsf/core" "^2.4.0"
+    "@rjsf/material-ui" "^2.4.0"
+    classnames "^2.2.6"
+    git-url-parse "^11.4.4"
+    moment "^2.26.0"
+    react "^16.13.1"
+    react-dom "^16.13.1"
+    react-lazylog "^4.5.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
@@ -14937,6 +14986,11 @@ immer@1.10.0:
   resolved "https://registry.npmjs.org/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
+immer@^7.0.9:
+  version "7.0.15"
+  resolved "https://registry.npmjs.org/immer/-/immer-7.0.15.tgz#dc3bc6db87401659d2e737c67a21b227c484a4ad"
+  integrity sha512-yM7jo9+hvYgvdCQdqvhCNRRio0SCXc8xDPzA25SvKWa7b1WVPjLwQs1VYU5JPXjcJPTqAa5NP5dqpORGYBQ2AA==
+
 immer@^8.0.1:
   version "8.0.1"
   resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
@@ -23775,6 +23829,11 @@ stream-http@^2.7.2:
     readable-stream "^2.3.6"
     to-arraybuffer "^1.0.0"
     xtend "^4.0.0"
+
+stream-mock@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.npmjs.org/stream-mock/-/stream-mock-2.0.5.tgz#c99d24bd6dbb0eaa57cf6ffefdb064150747826e"
+  integrity sha512-dx9skT8QYjwLsal+MhGHr4UtgS49brw851C/oTixmhCi4Ip+/qnZmhV1qOcznYYAED6gYKmKea+jjza4/wjpSg==
 
 stream-shift@^1.0.0:
   version "1.0.1"
