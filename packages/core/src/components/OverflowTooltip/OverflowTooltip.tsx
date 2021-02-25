@@ -40,6 +40,10 @@ export const OverflowTooltip = (props: Props) => {
     setHover(truncated);
   };
 
+  if (!props.text) {
+    return null;
+  }
+
   return (
     <Tooltip
       title={props.title ?? props.text!}
