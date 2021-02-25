@@ -25,7 +25,7 @@ import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 
-// @todo Simplify / remove as much state handling here. The goal is for this to
+// TODO: Simplify / remove as much state handling here. The goal is for this to
 // more or less use the publicly exposed components from the search plugin and
 // not much else.
 export const SearchPage = () => {

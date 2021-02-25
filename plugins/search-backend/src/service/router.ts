@@ -34,7 +34,7 @@ export async function createRouter({
       req: express.Request<any, unknown, unknown, SearchQuery>,
       res: express.Response<SearchResultSet>,
     ) => {
-      // @todo Actually transform req.params into search engine specific query.
+      // TODO: Actually transform req.params into search engine specific query.
       const { term, filters = {}, pageIndex = 0, pageSize = 30 } = req.query;
       logger.info(
         `Search request received: ${term}, ${JSON.stringify(
@@ -43,8 +43,8 @@ export async function createRouter({
       );
 
       try {
-        // @todo Actually query search engine.
-        // @todo And actually transform results into frontend-readable result
+        // TODO: Actually query search engine.
+        // TODO: And actually transform results into frontend-readable result
         res.send({
           results: [],
         });

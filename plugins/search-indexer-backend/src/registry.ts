@@ -68,7 +68,7 @@ export class Registry {
     });
   }
 
-  // @todo But like with coordination, timing, error handling, and what have you.
+  // TODO: But like with coordination, timing, error handling, and what have you.
   async execute(): Promise<void> {
     return new Promise(resolve => {
       Object.keys(this.collators).forEach(async type => {
@@ -81,7 +81,7 @@ export class Registry {
           documents = await decorators[i](documents);
         }
 
-        // @todo: push documents to a configured search engine.
+        // TODO: push documents to a configured search engine.
         resolve(undefined);
       });
     });

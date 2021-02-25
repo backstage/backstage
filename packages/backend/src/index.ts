@@ -111,7 +111,7 @@ async function main() {
     process.exit(1);
   });
 
-  // @todo Start Search Refresh Loop Here?
+  // TODO: Start Search Refresh Loop Here?
 }
 
 module.hot?.accept();

@@ -62,7 +62,7 @@ class SearchApi {
     return this.entities();
   }
 
-  // @todo Productionalize as we implement search milestones.
+  // TODO: Productionalize as we implement search milestones.
   public async _alphaPerformSearch(
     query: SearchQuery,
   ): Promise<SearchResultSet> {
