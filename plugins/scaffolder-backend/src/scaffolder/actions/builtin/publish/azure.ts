@@ -76,7 +76,7 @@ export function createPublishAzureAction(options: {
 
       if (!integrationConfig) {
         throw new InputError(
-          `No matching integration configuration for host ${host}, please check your Integrations config`,
+          `No matching integration configuration for host ${host}, please check your integrations config`,
         );
       }
       if (!integrationConfig.config.token) {
