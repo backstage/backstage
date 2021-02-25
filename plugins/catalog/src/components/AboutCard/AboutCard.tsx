@@ -21,7 +21,7 @@ import {
   SOURCE_LOCATION_ANNOTATION,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { HeaderIconLinkRow } from '@backstage/core';
+import { HeaderIconLinkRow, IconLinkVerticalProps } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -105,11 +105,12 @@ export function AboutCard({ variant }: AboutCardProps) {
   const codeLink = getCodeLinkInfo(entity);
   // TODO: Also support RELATION_CONSUMES_API here
   const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
-  const viewInSource = {
+  const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
-    ...codeLink,
+    href: codeLink.href,
+    icon: codeLink.icon,
   };
-  const viewInTechDocs = {
+  const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
     disabled: !entity.metadata.annotations?.['backstage.io/techdocs-ref'],
     icon: <DocsIcon />,
@@ -117,7 +118,7 @@ export function AboutCard({ variant }: AboutCardProps) {
       entity.kind
     }/${entity.metadata.name}`,
   };
-  const viewApi = {
+  const viewApi: IconLinkVerticalProps = {
     title: hasApis ? '' : 'No APIs available',
     label: 'View API',
     disabled: !hasApis,
