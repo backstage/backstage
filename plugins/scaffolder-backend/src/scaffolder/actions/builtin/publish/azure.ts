@@ -68,7 +68,7 @@ export function createPublishAzureAction(options: {
 
       if (!organization) {
         throw new InputError(
-          `No Organization was included in the repo URL to create ${ctx.input.repoUrl}`,
+          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing organization`,
         );
       }
 
