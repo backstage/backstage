@@ -1,18 +1,20 @@
 import {
   createRouter,
-  Preparers,
-  Generators,
-  Publisher,
+
+  Generators, Preparers,
+
+  Publisher
 } from '@backstage/plugin-techdocs-backend';
-import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
   config,
   discovery,
   reader,
-}: PluginEnvironment) {
+}: PluginEnvironment): Promise<Router> {
   // Preparers are responsible for fetching source files for documentation.
   const preparers = await Preparers.fromConfig(config, {
     logger,
