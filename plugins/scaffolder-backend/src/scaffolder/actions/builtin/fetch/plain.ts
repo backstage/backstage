@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import path from 'path';
 import { InputError, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
@@ -53,7 +53,7 @@ export function createFetchPlainAction(options: {
 
       // Finally move the template result into the task workspace
       const targetPath = ctx.input.targetPath ?? './';
-      const outputPath = resolvePath(ctx.workspacePath, targetPath);
+      const outputPath = path.resolve(ctx.workspacePath, targetPath);
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(
           `Fetch action targetPath may not specify a path outside the working directory`,
