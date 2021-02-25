@@ -25,7 +25,6 @@ export type IconLinkVerticalProps = {
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
   disabled?: boolean;
   label: string;
-  testId?: string;
   color?: 'primary' | 'secondary';
 };
 
@@ -59,7 +58,6 @@ export function IconLinkVertical({
   disabled = false,
   color = 'primary',
   label,
-  testId,
   onClick,
 }: IconLinkVerticalProps) {
   const classes = useIconStyles();
@@ -67,7 +65,6 @@ export function IconLinkVertical({
   if (disabled) {
     return (
       <Link
-        data-testid={testId}
         className={classnames(classes.link, classes.disabled)}
         underline="none"
       >
@@ -79,7 +76,6 @@ export function IconLinkVertical({
 
   return (
     <Link
-      data-testid={testId}
       className={classnames(classes.link, classes[color])}
       to={href}
       component={RouterLink}
