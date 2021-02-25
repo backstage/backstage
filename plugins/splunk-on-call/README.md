@@ -51,6 +51,9 @@ import {
 In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide the username of the user making the action.
 The user supplied must be a valid Splunk On-Call user and a member of your organization.
 
+In addition, you also need to enable the REST Endpoint integration on https://portal.victorops.com/ by going to Integrations > 3rd Party Integrations > REST – Generic.  
+You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
+
 In `app-config.yaml`:
 
 ```yaml
@@ -87,6 +90,14 @@ If you want to use this plugin for an entity, you need to label it with the belo
 annotations:
   splunk.com/on-call-team': <SPLUNK_ON_CALL_TEAM_NAME>
 ```
+
+### Create the Routing Key
+
+To be able to use the REST Endpoint seen above, you must have created a routing key with the **same name** as the provided team.
+
+You can create a new routing key on https://portal.victorops.com/ by going to Settings > Routing Keys.
+
+You can read [Create & Manage Alert Routing Keys](https://help.victorops.com/knowledge-base/routing-keys/#routing-key-tips-tricks) for further information.
 
 ## Providing the API key and API id
 
