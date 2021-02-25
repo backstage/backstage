@@ -19,6 +19,7 @@ import { resolve as resolvePath } from 'path';
 import Docker from 'dockerode';
 import { InputError, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
+import { JsonObject } from '@backstage/config';
 import { TemplaterBuilder, TemplaterValues } from '../../../stages/templater';
 import { TemplateAction } from '../../types';
 import { fetchContents } from './helpers';
@@ -28,11 +29,34 @@ export function createFetchCookiecutterAction(options: {
   urlReader: UrlReader;
   integrations: ScmIntegrations;
   templaters: TemplaterBuilder;
-}): TemplateAction {
+}): TemplateAction<{ url: string; targetPath?: string; values: JsonObject }> {
   const { dockerClient, urlReader, templaters, integrations } = options;
 
   return {
     id: 'fetch:cookiecutter',
+    parameterSchema: {
+      type: 'object',
+      required: ['url'],
+      properties: {
+        url: {
+          title: 'Fetch URL',
+          description:
+            'Relative path or absolute URL pointing to the directory tree to fetch',
+          type: 'string',
+        },
+        targetPath: {
+          title: 'Target Path',
+          description:
+            'Target path within the working directory to download the contents to.',
+          type: 'string',
+        },
+        values: {
+          title: 'Template Values',
+          description: 'Values to pass on to cookiecutter for templating',
+          type: 'object',
+        },
+      },
+    },
     async handler(ctx) {
       ctx.logger.info('Fetching and then templating using cookiecutter');
       const workDir = await ctx.createTemporaryDirectory();
@@ -66,11 +90,6 @@ export function createFetchCookiecutterAction(options: {
 
       // Finally move the template result into the task workspace
       const targetPath = ctx.parameters.targetPath ?? './';
-      if (typeof targetPath !== 'string') {
-        throw new InputError(
-          `Fetch action targetPath is not a string, got ${targetPath}`,
-        );
-      }
       const outputPath = resolvePath(ctx.workspacePath, targetPath);
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(

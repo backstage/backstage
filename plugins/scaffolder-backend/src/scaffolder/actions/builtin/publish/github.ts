@@ -26,7 +26,11 @@ import { initRepoAndPush } from '../../../stages/publish/helpers';
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrations;
   repoVisibility: 'private' | 'internal' | 'public';
-}): TemplateAction {
+}): TemplateAction<{
+  repoUrl: string;
+  description?: string;
+  access?: string;
+}> {
   const { integrations, repoVisibility } = options;
 
   const credentialsProviders = new Map(
@@ -38,14 +42,27 @@ export function createPublishGithubAction(options: {
 
   return {
     id: 'publish:github',
+    parameterSchema: {
+      type: 'object',
+      required: ['repoUrl'],
+      properties: {
+        repoUrl: {
+          title: 'Repository Location',
+          type: 'string',
+        },
+        description: {
+          title: 'Repository Description',
+          type: 'string',
+        },
+        access: {
+          title: 'Additional Repository Access',
+          type: 'string',
+        },
+      },
+    },
     async handler(ctx) {
       const { repoUrl, description, access } = ctx.parameters;
 
-      if (typeof repoUrl !== 'string') {
-        throw new Error(
-          `Invalid repo URL passed to publish:github, got ${typeof repoUrl}`,
-        );
-      }
       let parsed;
       try {
         parsed = new URL(`https://${repoUrl}`);
@@ -103,18 +120,17 @@ export function createPublishGithubAction(options: {
               org: owner,
               private: repoVisibility !== 'public',
               visibility: repoVisibility,
-              description: description as string,
+              description: description,
             })
           : client.repos.createForAuthenticatedUser({
               name: repo,
               private: repoVisibility === 'private',
-              description: description as string,
+              description: description,
             });
 
       const { data } = await repoCreationPromise;
-      const accessString = access as string;
-      if (accessString?.startsWith(`${owner}/`)) {
-        const [, team] = accessString.split('/');
+      if (access?.startsWith(`${owner}/`)) {
+        const [, team] = access.split('/');
         await client.teams.addOrUpdateRepoPermissionsInOrg({
           org: owner,
           team_slug: team,
@@ -122,12 +138,12 @@ export function createPublishGithubAction(options: {
           repo,
           permission: 'admin',
         });
-        // no need to add accessString if it's the person who own's the personal account
-      } else if (accessString && accessString !== owner) {
+        // no need to add access if it's the person who own's the personal account
+      } else if (access && access !== owner) {
         await client.repos.addCollaborator({
           owner,
           repo,
-          username: accessString,
+          username: access,
           permission: 'admin',
         });
       }

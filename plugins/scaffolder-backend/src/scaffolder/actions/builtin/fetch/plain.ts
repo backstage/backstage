@@ -23,21 +23,34 @@ import { fetchContents } from './helpers';
 export function createFetchPlainAction(options: {
   urlReader: UrlReader;
   integrations: ScmIntegrations;
-}): TemplateAction {
+}): TemplateAction<{ url: string; targetPath?: string }> {
   const { urlReader, integrations } = options;
 
   return {
     id: 'fetch:plain',
+    parameterSchema: {
+      type: 'object',
+      required: ['url'],
+      properties: {
+        url: {
+          title: 'Fetch URL',
+          description:
+            'Relative path or absolute URL pointing to the directory tree to fetch',
+          type: 'string',
+        },
+        targetPath: {
+          title: 'Target Path',
+          description:
+            'Target path within the working directory to download the contents to.',
+          type: 'string',
+        },
+      },
+    },
     async handler(ctx) {
       ctx.logger.info('Fetching plain content from remote URL');
 
       // Finally move the template result into the task workspace
       const targetPath = ctx.parameters.targetPath ?? './';
-      if (typeof targetPath !== 'string') {
-        throw new InputError(
-          `Fetch action targetPath is not a string, got ${targetPath}`,
-        );
-      }
       const outputPath = resolvePath(ctx.workspacePath, targetPath);
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(

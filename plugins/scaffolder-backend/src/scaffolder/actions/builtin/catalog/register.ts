@@ -23,19 +23,59 @@ import { TemplateAction } from '../../types';
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
-}): TemplateAction {
+}): TemplateAction<
+  | { catalogInfoUrl: string }
+  | { repoContentsUrl: string; catalogInfoPath?: string }
+> {
   const { catalogClient, integrations } = options;
 
   return {
     id: 'catalog:register',
+    parameterSchema: {
+      oneOf: [
+        {
+          type: 'object',
+          required: ['catalogInfoUrl'],
+          properties: {
+            catalogInfoUrl: {
+              title: 'Catalog Info URL',
+              description:
+                'An absolute URL pointing to the catalog info file location',
+              type: 'string',
+            },
+          },
+        },
+        {
+          type: 'object',
+          required: ['repoContentsUrl'],
+          properties: {
+            repoContentsUrl: {
+              title: 'Repository Contents URL',
+              description:
+                'An absolute URL pointing to the root of a repository directory tree',
+              type: 'string',
+            },
+            catalogInfoPath: {
+              title: 'Fetch URL',
+              description:
+                'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
+              type: 'string',
+            },
+          },
+        },
+      ],
+    },
     async handler(ctx) {
-      const {
-        repoContentsUrl,
-        catalogInfoPath = '/catalog-info.yaml',
-      } = ctx.parameters;
+      const { parameters } = ctx;
 
-      let { catalogInfoUrl } = ctx.parameters;
-      if (!catalogInfoUrl) {
+      let catalogInfoUrl;
+      if ('catalogInfoUrl' in parameters) {
+        catalogInfoUrl = parameters.catalogInfoUrl;
+      } else {
+        const {
+          repoContentsUrl,
+          catalogInfoPath = '/catalog-info.yaml',
+        } = parameters;
         const integration = integrations.byUrl(repoContentsUrl as string);
         if (!integration) {
           throw new InputError('No integration found for host');

@@ -16,9 +16,14 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonValue } from '@backstage/config';
+import { JsonValue, JsonObject } from '@backstage/config';
+import { Schema } from 'jsonschema';
 
-export type ActionContext = {
+type PartialJsonObject = Partial<JsonObject>;
+type PartialJsonValue = PartialJsonObject | JsonValue | undefined;
+export type ParameterBase = Partial<{ [name: string]: PartialJsonValue }>;
+
+export type ActionContext<Parameters extends ParameterBase> = {
   /**
    * Base URL for the location of the task spec, typically the url of the source entity file.
    */
@@ -28,7 +33,7 @@ export type ActionContext = {
   logStream: Writable;
 
   workspacePath: string;
-  parameters: { [name: string]: JsonValue };
+  parameters: Parameters;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -37,7 +42,8 @@ export type ActionContext = {
   createTemporaryDirectory(): Promise<string>;
 };
 
-export type TemplateAction = {
+export type TemplateAction<Parameters extends ParameterBase> = {
   id: string;
-  handler: (ctx: ActionContext) => Promise<void>;
+  parameterSchema?: Schema;
+  handler: (ctx: ActionContext<Parameters>) => Promise<void>;
 };

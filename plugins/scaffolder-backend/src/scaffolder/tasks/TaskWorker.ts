@@ -18,11 +18,13 @@ import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import * as winston from 'winston';
 import { JsonValue, JsonObject } from '@backstage/config';
+import { validate as validateJsonSchema } from 'jsonschema';
 import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import * as handlebars from 'handlebars';
+import { InputError } from '@backstage/backend-common';
 
 type Options = {
   logger: Logger;
@@ -110,6 +112,20 @@ export class TaskWorker {
               return value;
             },
           );
+
+          if (action.parameterSchema) {
+            const validateResult = validateJsonSchema(
+              parameters,
+              action.parameterSchema,
+              { propertyName: 'parameters' },
+            );
+            if (!validateResult.valid) {
+              const errors = validateResult.errors.join(', ');
+              throw new InputError(
+                `Invalid parameters passed to action ${action.id}, ${errors}`,
+              );
+            }
+          }
 
           const stepOutputs: { [name: string]: JsonValue } = {};
 
