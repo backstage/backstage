@@ -1,7 +1,7 @@
 {
   "name": "@backstage/techdocs-common",
   "description": "Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -57,7 +57,6 @@
     "mock-fs": "^4.13.0",
     "p-limit": "^3.1.0",
     "recursive-readdir": "^2.2.2",
-    "stream-mock": "^2.0.5",
     "winston": "^3.2.1"
   },
   "devDependencies": {
