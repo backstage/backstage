@@ -16,7 +16,7 @@
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { ObjectWritableMock, BufferReadableMock } from 'stream-mock';
+import { EventEmitter } from 'events';
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
@@ -61,16 +61,44 @@ class PkgCloudStorageClient {
     }
   }
 
-  upload() {
-     return new ObjectWritableMock();
+  upload({ remote }: { remote: string }) {
+    const filePath = path.join(rootDir, remote);
+
+    const emitter = new EventEmitter();
+
+    process.nextTick(() => {
+      if (fs.existsSync(filePath)) {
+        emitter.emit('success');
+        (emitter as any).end = () => true;
+      } else {
+        emitter.emit(
+          'error',
+          new Error(`The file ${filePath} does not exist !`),
+        );
+      }
+    });
+
+    return emitter;
   }
 
-  download() {
-    const stringify = JSON.stringify({
-      "site_description": 'site_content',
-      "site_name": "backstage"
+  download({ remote }: { remote: string }) {
+    const filePath = path.join(rootDir, remote);
+
+    const emitter = new EventEmitter();
+
+    process.nextTick(() => {
+      if (fs.existsSync(filePath)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+        emitter.emit('end');
+      } else {
+        emitter.emit(
+          'error',
+          new Error(`The file ${filePath} does not exist !`),
+        );
+      }
     });
-    return new BufferReadableMock([stringify]);
+
+    return emitter;
   }
 }
 
