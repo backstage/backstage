@@ -18,6 +18,7 @@ import {
   Entity,
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
+  serializeEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -40,9 +41,21 @@ type SystemDiagramProps = {
   entity: Entity;
 };
 
-const getEntityNodeId = (entity: Entity) => {
-  return `${entity.kind}:${entity.metadata.name}`.toLowerCase();
-};
+function simplifiedEntityName(
+  ref:
+    | Entity
+    | {
+        kind?: string;
+        namespace?: string;
+        name: string;
+      },
+): string {
+  // Simplify the diagram output by hiding only the default namespace
+  return serializeEntityRef(ref)
+    .toString()
+    .toLowerCase()
+    .replace(':default/', ':');
+}
 
 export function SystemDiagram({ entity }: SystemDiagramProps) {
   const catalogApi = useApi(catalogApiRef);
@@ -55,36 +68,43 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
   }, [catalogApi]);
 
   const currentSystemName = entity.metadata.name;
-  const currentSystemNode = `system:${entity.metadata.name}`.toLowerCase();
+  const currentSystemNode = simplifiedEntityName(entity);
   const systemNodes = new Array<{ id: string }>();
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
   if (catalogResponse && catalogResponse.items) {
     for (const catalogItem of catalogResponse.items) {
       // pick out the system itself
-      if (catalogItem.metadata.name === entity.metadata.name) {
+      if (catalogItem.metadata.name === currentSystemName) {
         systemNodes.push({
           id: currentSystemNode,
         });
 
         // check if the system has an assigned domain
         // even if the domain object doesn't exist in the catalog, display it in the map
-        if (catalogItem.spec?.domain) {
+        const catalogItemDomain = getEntityRelations(
+          catalogItem,
+          RELATION_PART_OF,
+          { kind: 'domain' },
+        );
+        catalogItemDomain.forEach(foundDomain =>
           systemNodes.push({
-            id: `domain:${catalogItem.spec.domain}`.toLowerCase(),
-          });
+            id: simplifiedEntityName(foundDomain),
+          }),
+        );
+        catalogItemDomain.forEach(foundDomain =>
           systemEdges.push({
             from: currentSystemNode,
-            to: `domain:${catalogItem.spec.domain}`.toLowerCase(),
+            to: simplifiedEntityName(foundDomain),
             label: 'part of',
-          });
-        }
+          }),
+        );
       }
 
       // process any entity assigned to the system
       if (catalogItem.spec?.system === currentSystemName) {
         systemNodes.push({
-          id: getEntityNodeId(catalogItem),
+          id: simplifiedEntityName(catalogItem),
         });
 
         // Check relations of the entity assigned to this system to see
@@ -98,8 +118,8 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
         );
         catalogItemRelations_partOf.forEach(foundRelation =>
           systemEdges.push({
-            from: getEntityNodeId(catalogItem),
-            to: `${foundRelation.kind}:${foundRelation.name}`.toLowerCase(),
+            from: simplifiedEntityName(catalogItem),
+            to: simplifiedEntityName(foundRelation),
             label: 'part of',
           }),
         );
@@ -110,8 +130,8 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
         );
         catalogItemRelations_providesApi.forEach(foundRelation =>
           systemEdges.push({
-            from: getEntityNodeId(catalogItem),
-            to: `${foundRelation.kind}:${foundRelation.name}`.toLowerCase(),
+            from: simplifiedEntityName(catalogItem),
+            to: simplifiedEntityName(foundRelation),
             label: 'provides API',
           }),
         );
