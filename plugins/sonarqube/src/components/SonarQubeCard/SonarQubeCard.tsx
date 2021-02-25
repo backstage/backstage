@@ -85,9 +85,9 @@ const defaultDuplicationRatings: DuplicationRating[] = [
 ];
 
 export const SonarQubeCard = ({
-  variant = 'gridItem',
-  duplicationRatings = defaultDuplicationRatings,
-}: {
+                                variant = 'gridItem',
+                                duplicationRatings = defaultDuplicationRatings,
+                              }: {
   entity?: Entity;
   variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
@@ -105,9 +105,9 @@ export const SonarQubeCard = ({
   const deepLink =
     !loading && value
       ? {
-          title: 'View more',
-          link: value.projectUrl,
-        }
+        title: 'View more',
+        link: value.projectUrl,
+      }
       : undefined;
 
   const classes = useStyles();
@@ -232,7 +232,7 @@ export const SonarQubeCard = ({
                 link={value.getComponentMeasuresUrl('COVERAGE')}
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
-                rightSlot={<Value value={`${value.metrics.coverage || 0}%`}/>}
+                rightSlot={<Value value={`${value.metrics.coverage || 0}%`} />}
               />
               <RatingCard
                 title="Duplications"
