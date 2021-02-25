@@ -21,6 +21,7 @@ import {
   MissingAnnotationEmptyState,
   configApiRef,
   EmptyState,
+  IconLinkVerticalProps,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -159,19 +160,11 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     );
   };
 
-  const triggerLink = {
+  const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
-    action: (
-      <Button
-        data-testid="trigger-button"
-        color="secondary"
-        onClick={handleDialog}
-        className={classes.triggerAlarm}
-      >
-        Create Incident
-      </Button>
-    ),
-    icon: <AlarmAddIcon onClick={handleDialog} />,
+    onClick: handleDialog,
+    color: 'secondary',
+    icon: <AlarmAddIcon />,
   };
 
   return (
