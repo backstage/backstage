@@ -96,7 +96,7 @@ type ExtractKeysWithType<Obj extends { [key in string]: any }, Type> = {
 }[keyof Obj];
 
 /**
- * Given a map of boolean values denoting whether a rout is optional, create a
+ * Given a map of boolean values denoting whether a route is optional, create a
  * map of needed RouteRefs.
  *
  * For example { foo: false, bar: true } gives { foo: RouteRef<any>, bar?: RouteRef<any> }

@@ -321,7 +321,7 @@ app, allowing it to be used as a switch for whether a particular link should be
 displayed or action should be taken.
 
 When calling `useRouteRef` with an optional external route, its return signature
-is change to `RouteFunc | undefined`, allowing for logic like this:
+is changed to `RouteFunc | undefined`, allowing for logic like this:
 
 ```tsx
 const MyComponent = () => {

@@ -83,7 +83,7 @@ export type ExternalRouteRefOptions<Optional extends boolean = false> = {
    * Whether or not this route is optional, defaults to false.
    *
    * Optional external routes are not required to be bound in the app, and
-   * if aren't, `useRouteRef` will return `undefined`.
+   * if they aren't, `useRouteRef` will return `undefined`.
    */
   optional?: Optional;
 };
