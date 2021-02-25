@@ -19,7 +19,10 @@ import {
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import {
   DependencyGraph,
   DependencyGraphTypes,
@@ -84,31 +87,34 @@ export function SystemDiagram({ entity }: SystemDiagramProps) {
           id: getEntityNodeId(catalogItem),
         });
 
-        // check relations of the entity to see if it relates to other entities
-        // note those relations may, or may not, be explicitly
-        // assigned to the system
-        if (catalogItem.relations) {
-          for (const relation of catalogItem.relations) {
-            switch (relation.type) {
-              case RELATION_PROVIDES_API:
-                systemEdges.push({
-                  from: getEntityNodeId(catalogItem),
-                  to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
-                  label: 'provides API',
-                });
-                break;
-              case RELATION_PART_OF:
-                systemEdges.push({
-                  from: getEntityNodeId(catalogItem),
-                  to: `${relation.target.kind}:${relation.target.name}`.toLowerCase(),
-                  label: 'part of',
-                });
-                break;
-              default:
-                break;
-            }
-          }
-        }
+        // Check relations of the entity assigned to this system to see
+        // if it relates to other entities.
+        // Note those relations may, or may not, be explicitly
+        // assigned to the system.
+
+        const catalogItemRelations_partOf = getEntityRelations(
+          catalogItem,
+          RELATION_PART_OF,
+        );
+        catalogItemRelations_partOf.forEach(foundRelation =>
+          systemEdges.push({
+            from: getEntityNodeId(catalogItem),
+            to: `${foundRelation.kind}:${foundRelation.name}`.toLowerCase(),
+            label: 'part of',
+          }),
+        );
+
+        const catalogItemRelations_providesApi = getEntityRelations(
+          catalogItem,
+          RELATION_PROVIDES_API,
+        );
+        catalogItemRelations_providesApi.forEach(foundRelation =>
+          systemEdges.push({
+            from: getEntityNodeId(catalogItem),
+            to: `${foundRelation.kind}:${foundRelation.name}`.toLowerCase(),
+            label: 'provides API',
+          }),
+        );
       }
     }
   }
