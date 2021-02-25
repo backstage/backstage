@@ -57,7 +57,6 @@
     "mock-fs": "^4.13.0",
     "p-limit": "^3.1.0",
     "recursive-readdir": "^2.2.2",
-    "stream-mock": "^2.0.5",
     "winston": "^3.2.1"
   },
   "devDependencies": {
