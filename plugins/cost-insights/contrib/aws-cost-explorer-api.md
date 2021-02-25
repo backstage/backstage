@@ -51,7 +51,7 @@ const client = new CostExplorerClient({
 });
 ```
 
-2. Initiate a command with the relevant input params. The SDK provides a variety of commands, but you can access most cost data using the [GetCostAndUsageCommand](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html) command. You can find more information on the required input params for each command [here](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_Operations_AWS_Cost_Explorer_Service.html).
+2. Initiate a command with the relevant input params. The SDK provides a variety of commands, but you can access most cost data using the [GetCostAndUsageCommand](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_GetCostAndUsage.html) commands with the relevant [parameters](#GetCostAndUsageCommand-Parameters).
 
 ```ts
 const command = new GetCostAndUsageCommand(params);
@@ -133,7 +133,7 @@ You can get grouped daily costs from the API by using the `GetCostAndUsageComman
 Sample command:
 
 ```ts
-new GetCostAndUsageCommand({
+const command = new GetCostAndUsageCommand({
   TimePeriod: { Start: '2020-12-01', End: '2021-01-02' },
   Metrics: ['Unblended Cost'],
   Filter: {
