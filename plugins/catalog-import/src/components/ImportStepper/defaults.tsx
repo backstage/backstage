@@ -71,6 +71,19 @@ export type StepperProvider = {
   ) => StepConfiguration;
 };
 
+/**
+ * The types that are creatable from a repository which does not yet include a catalog-info.yaml file
+ *
+ * @see https://backstage.io/docs/features/software-catalog/descriptor-format#spectype-required
+ */
+enum CreatableFromRepositoryEntityType {
+  service = 'service',
+  website = 'website',
+  library = 'library',
+  documentation = 'documentation',
+  other = 'other',
+}
+
 function defaultPreparePullRequest(apis: StepperApis) {
   const appTitle = apis.configApi.getOptionalString('app.title') ?? 'Backstage';
   const appBaseUrl = apis.configApi.getString('app.baseUrl');
@@ -225,6 +238,22 @@ export function defaultGenerateStepper(
                       fullWidth
                       inputRef={register({ required: true })}
                       error={Boolean(errors.componentName)}
+                      required
+                    />
+
+                    <AutocompleteTextField
+                      name="type"
+                      control={control}
+                      errors={errors}
+                      freeSolo={false}
+                      options={Object.keys(CreatableFromRepositoryEntityType)}
+                      helperText="Select a type from the list"
+                      errorHelperText="required value"
+                      textFieldProps={{
+                        label: 'Entity Type',
+                        placeholder: 'entity-type',
+                      }}
+                      rules={{ required: true }}
                       required
                     />
 

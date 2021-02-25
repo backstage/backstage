@@ -66,6 +66,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
           namespace: 'default',
         },
         spec: {
+          type: 'service',
           owner: 'my-owner',
         },
       },
@@ -92,6 +93,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
                 <TextField name="title" inputRef={register()} />
                 <TextField name="body" inputRef={register()} />
                 <TextField name="componentName" inputRef={register()} />
+                <TextField name="type" inputRef={register()} />
                 <TextField name="owner" inputRef={register()} />
               </>
             );
@@ -140,6 +142,12 @@ describe('<StepPrepareCreatePullRequest />', () => {
                   inputRef={register()}
                 />
                 <TextField
+                  id="type"
+                  label="type"
+                  name="type"
+                  inputRef={register()}
+                />
+                <TextField
                   id="owner"
                   label="owner"
                   name="owner"
@@ -155,6 +163,9 @@ describe('<StepPrepareCreatePullRequest />', () => {
       );
 
       await userEvent.type(await result.getByLabelText('name'), '-changed');
+      const typeTargetElement = await result.getByLabelText('type');
+      await userEvent.clear(typeTargetElement);
+      await userEvent.type(typeTargetElement, 'website');
       await userEvent.type(await result.getByLabelText('owner'), '-changed');
       await userEvent.click(
         await result.getByRole('button', { name: /Create PR/i }),
@@ -171,6 +182,7 @@ metadata:
   name: my-component-changed
   namespace: default
 spec:
+  type: website
   owner: my-owner-changed
 `,
         repositoryUrl: 'https://my-repository',
@@ -297,6 +309,7 @@ spec:
           generateEntities(
             [{ metadata: { namespace: namespace as any } }],
             'my-component',
+            'service',
             'group-1',
           ),
         ).toEqual([
@@ -316,6 +329,7 @@ spec:
           generateEntities(
             [{ metadata: { namespace } }],
             'my-component',
+            'service',
             'group-1',
           ),
         ).toEqual([
