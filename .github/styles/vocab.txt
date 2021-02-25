@@ -207,6 +207,7 @@ onboarding
 pagerduty
 pageview
 parallelization
+params
 plantuml
 postgres
 postpack
@@ -276,6 +277,7 @@ validators
 varchar
 winston
 www
+xlarge
 xyz
 yaml
 zoomable
