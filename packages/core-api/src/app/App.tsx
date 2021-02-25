@@ -84,8 +84,14 @@ export function generateBoundRoutes(
         if (!externalRoute) {
           throw new Error(`Key ${key} is not an existing external route`);
         }
-
-        result.set(externalRoute, value);
+        if (!value && !externalRoute.optional) {
+          throw new Error(
+            `External route ${key} is required but was undefined`,
+          );
+        }
+        if (value) {
+          result.set(externalRoute, value);
+        }
       }
     };
     bindRoutes({ bind });
