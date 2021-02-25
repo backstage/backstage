@@ -50,7 +50,7 @@ import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
-import { SearchPage } from './components/search/SearchPage';
+import { SearchPage as SearchPageNext } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -101,7 +101,6 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/search-next" element={<SearchPage />} />
     <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
@@ -114,6 +113,7 @@ const routes = (
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
     <Route path="/search" element={<SearchPage />} />
+    <Route path="/search-next" element={<SearchPageNext />} />
     <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
       path="/cost-insights/investigating-growth"
