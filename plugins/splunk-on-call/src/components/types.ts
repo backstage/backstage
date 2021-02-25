@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { IncidentTarget } from '../api/types';
-
 export type Team = {
   name?: string;
   slug?: string;
@@ -68,14 +66,6 @@ export type User = {
   _selfUrl?: string;
 };
 
-export type CreateIncidentRequest = {
-  summary: string;
-  details: string;
-  userName: string;
-  targets: IncidentTarget;
-  isMultiResponder: boolean;
-};
-
 export type IncidentPhase = 'UNACKED' | 'ACKED' | 'RESOLVED';
 
 export type Incident = {
@@ -88,7 +78,7 @@ export type Incident = {
   alertCount?: number;
   lastAlertTime?: string;
   lastAlertId?: string;
-  entityId?: string;
+  entityId: string;
   host?: string;
   service?: string;
   pagedUsers?: string[];

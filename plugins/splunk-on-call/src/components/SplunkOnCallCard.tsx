@@ -57,6 +57,16 @@ export const MissingUsername = () => (
   </CardContent>
 );
 
+export const MissingEventsRestEndpoint = () => (
+  <CardContent>
+    <EmptyState
+      title="No Splunk On-Call REST endpoint available."
+      missing="info"
+      description="You need to add a valid REST endpoint to your 'app-config.yaml' if you want to enable Splunk On-Call."
+    />
+  </CardContent>
+);
+
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
 
@@ -71,7 +81,10 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
 
-  const username = config.getOptionalString('splunkOnCall.username');
+  const username = config.getOptionalString('splunkOnCall.username') || null;
+
+  const eventsRestEndpoint =
+    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -122,15 +135,19 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
       return <MissingUsername />;
     }
 
+    if (!eventsRestEndpoint) {
+      return <MissingEventsRestEndpoint />;
+    }
+
     return (
       <>
         <Incidents team={team} refreshIncidents={refreshIncidents} />
         {users?.usersHashMap && team && (
           <EscalationPolicy team={team} users={users.usersHashMap} />
         )}
-        {users && incidentCreator && (
+        {incidentCreator && (
           <TriggerDialog
-            users={users.userList}
+            team={team}
             incidentCreator={incidentCreator}
             showDialog={showDialog}
             handleDialog={handleDialog}

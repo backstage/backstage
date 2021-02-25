@@ -56,6 +56,7 @@ In `app-config.yaml`:
 ```yaml
 splunkOnCall:
   username: <SPLUNK_ON_CALL_USERNAME>
+  eventsRestEndpoint: <SPLUNK_ON_CALL_REST_ENDPOINT>
 ```
 
 The user supplied must be a valid Splunk On-Call user and a member of your organization.

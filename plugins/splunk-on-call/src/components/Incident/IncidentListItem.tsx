@@ -39,7 +39,7 @@ import { Incident, IncidentPhase } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { splunkOnCallApiRef } from '../../api/client';
 import { useAsyncFn } from 'react-use';
-import { PatchIncidentRequest } from '../../api/types';
+import { TriggerAlarmRequest } from '../../api/types';
 
 const useStyles = makeStyles({
   denseListIcon: {
@@ -61,6 +61,7 @@ const useStyles = makeStyles({
 });
 
 type Props = {
+  team: string;
   incident: Incident;
   onIncidentAction: () => void;
 };
@@ -93,20 +94,24 @@ const incidentPhaseTooltip = (currentPhase: IncidentPhase) => {
 
 const IncidentAction = ({
   currentPhase,
-  incidentNames,
+  incidentId,
   resolveAction,
   acknowledgeAction,
 }: {
   currentPhase: string;
-  incidentNames: string[];
-  resolveAction: (args: PatchIncidentRequest) => void;
-  acknowledgeAction: (args: PatchIncidentRequest) => void;
+  incidentId: string;
+  resolveAction: (args: TriggerAlarmRequest) => void;
+  acknowledgeAction: (args: TriggerAlarmRequest) => void;
 }) => {
   switch (currentPhase) {
     case 'UNACKED':
       return (
         <Tooltip title="Aknowledge" placement="top">
-          <IconButton onClick={() => acknowledgeAction({ incidentNames })}>
+          <IconButton
+            onClick={() =>
+              acknowledgeAction({ incidentId, incidentType: 'ACKNOWLEDGEMENT' })
+            }
+          >
             <DoneIcon />
           </IconButton>
         </Tooltip>
@@ -114,7 +119,11 @@ const IncidentAction = ({
     case 'ACKED':
       return (
         <Tooltip title="Resolve" placement="top">
-          <IconButton onClick={() => resolveAction({ incidentNames })}>
+          <IconButton
+            onClick={() =>
+              resolveAction({ incidentId, incidentType: 'RECOVERY' })
+            }
+          >
             <DoneAllIcon />
           </IconButton>
         </Tooltip>
@@ -124,7 +133,11 @@ const IncidentAction = ({
   }
 };
 
-export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
+export const IncidentListItem = ({
+  incident,
+  onIncidentAction,
+  team,
+}: Props) => {
   const classes = useStyles();
   const duration =
     new Date().getTime() - new Date(incident.startTime!).getTime();
@@ -136,17 +149,26 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
 
   const hasBeenManuallyTriggered = incident.monitorName?.includes('vouser-');
 
-  const user = hasBeenManuallyTriggered
-    ? incident.monitorName?.replace('vouser-', '')
-    : incident.monitorName;
+  const source = () => {
+    if (hasBeenManuallyTriggered) {
+      return incident.monitorName?.replace('vouser-', '');
+    }
+    if (incident.monitorType === 'API') {
+      return '{ REST }';
+    }
+
+    return incident.monitorName;
+  };
 
   const [
     { value: resolveValue, error: resolveError },
     handleResolveIncident,
   ] = useAsyncFn(
-    async ({ incidentNames }: PatchIncidentRequest) =>
-      await api.resolveIncident({
-        incidentNames,
+    async ({ incidentId, incidentType }: TriggerAlarmRequest) =>
+      await api.incidentAction({
+        routingKey: team,
+        incidentType,
+        incidentId,
       }),
   );
 
@@ -154,9 +176,11 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
     { value: acknowledgeValue, error: acknowledgeError },
     handleAcknowledgeIncident,
   ] = useAsyncFn(
-    async ({ incidentNames }: PatchIncidentRequest) =>
-      await api.acknowledgeIncident({
-        incidentNames,
+    async ({ incidentId, incidentType }: TriggerAlarmRequest) =>
+      await api.incidentAction({
+        routingKey: team,
+        incidentType,
+        incidentId,
       }),
   );
 
@@ -211,7 +235,8 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
         }}
         secondary={
           <Typography noWrap variant="body2" color="textSecondary">
-            Created {createdAt} {user && `by ${user}`}
+            #{incident.incidentNumber} - Created {createdAt}{' '}
+            {source() && `by ${source()}`}
           </Typography>
         }
       />
@@ -220,7 +245,7 @@ export const IncidentListItem = ({ incident, onIncidentAction }: Props) => {
         <ListItemSecondaryAction>
           <IncidentAction
             currentPhase={incident.currentPhase || ''}
-            incidentNames={[incident.incidentNumber]}
+            incidentId={incident.entityId}
             resolveAction={handleResolveIncident}
             acknowledgeAction={handleAcknowledgeIncident}
           />
