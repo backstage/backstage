@@ -34,6 +34,8 @@ type Props<TFieldValue extends string> = {
   errors?: FieldErrors<Record<TFieldValue, string>>;
   rules?: ValidationRules;
 
+  freeSolo?: boolean;
+
   loading?: boolean;
   loadingText?: string;
 
@@ -50,6 +52,7 @@ export const AutocompleteTextField = <TFieldValue extends string>({
   control,
   errors,
   rules,
+  freeSolo = true,
   loading = false,
   loadingText,
   helperText,
@@ -70,7 +73,7 @@ export const AutocompleteTextField = <TFieldValue extends string>({
           onBlur={onBlur}
           value={value}
           autoSelect
-          freeSolo
+          freeSolo={freeSolo}
           renderInput={params => (
             <TextField
               {...params}
