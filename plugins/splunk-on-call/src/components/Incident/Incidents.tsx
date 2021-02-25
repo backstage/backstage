@@ -33,6 +33,10 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
     async () => {
+      // For some reason the changes applied to incidents (trigger-resolve-acknowledge)
+      // may take some time to actually be applied after receiving the response from the server.
+      // The timeout compensates for this latency.
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const allIncidents = await api.getIncidents();
       const teams = await api.getTeams();
       const teamSlug = teams.find(teamValue => teamValue.name === team)?.slug;
@@ -71,6 +75,7 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
         <IncidentListItem
           onIncidentAction={() => getIncidents()}
           key={index}
+          team={team}
           incident={incident}
         />
       ))}
