@@ -88,8 +88,8 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
     <div className={classes.root}>
       <Box mb={3}>
         <Breadcrumbs aria-label="breadcrumb">
-          <Link to="..">Workflow runs</Link>
-          <Typography>Workflow run details</Typography>
+          <Link to="..">Build history</Link>
+          <Typography>Build details</Typography>
         </Breadcrumbs>
       </Box>
       <TableContainer component={Paper} className={classes.table}>
