@@ -58,6 +58,16 @@ export const MissingEventsRestEndpoint = () => (
   </CardContent>
 );
 
+export const MissingEventsRestEndpoint = () => (
+  <CardContent>
+    <EmptyState
+      title="No Splunk On-Call REST endpoint available."
+      missing="info"
+      description="You need to add a valid REST endpoint to your 'app-config.yaml' if you want to enable Splunk On-Call."
+    />
+  </CardContent>
+);
+
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
 
@@ -116,6 +126,10 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   const Content = () => {
     if (!team) {
       return <MissingTeamAnnotation />;
+    }
+
+    if (!eventsRestEndpoint) {
+      return <MissingEventsRestEndpoint />;
     }
 
     if (!eventsRestEndpoint) {
