@@ -73,8 +73,10 @@ beforeEach(() => {
       publisher: {
         type: 'openStackSwift',
         openStackSwift: {
-          username: 'mockuser',
-          password: 'verystrongpass',
+          credentials: {
+            username: 'mockuser',
+            password: 'verystrongpass',
+          },
           authUrl: 'mockauthurl',
           region: 'mockregion',
           containerName: 'mock',
@@ -116,7 +118,7 @@ describe('OpenStackSwiftPublish', () => {
           entity,
           directory: entityRootDir,
         }),
-      ).toBeUndefined()
+      ).toBeUndefined();
     });
 
     it('should fail to publish a directory', async () => {

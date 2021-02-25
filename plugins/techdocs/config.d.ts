@@ -89,56 +89,57 @@ export interface Config {
           type: 'openStackSwift';
 
           /**
-           * Required when 'type' is set to awsS3
+           * Required when 'type' is set to openStackSwift
            */
           openStackSwift?: {
             /**
-             * (Optional) Credentials used to access a storage bucket.
-             * If not set, environment variables or aws config file will be used to authenticate.
-             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-             * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
+             * (Required) Credentials used to access a storage bucket.
+             * @see https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
              * @visibility secret
              */
+            credentials: {
+              /**
+               * (Required) Root user name
+               * @visibility backend
+               */
+              username: string;
+              /**
+               * (Required) Root user password
+               * @visibility backend
+               */
+              password: string; // required
+            };
             /**
              * (Required) Cloud Storage Container Name
              * @visibility backend
              */
             containerName: string;
             /**
-             * (Required) Root user name
-             * @visibility backend
-             */
-            username: string;
-            /**
-             * (Required) Root user password
-             * @visibility backend
-             */
-            password: string; // required
-            /**
              * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
              * @visibility backend
              */
             authUrl: string;
             /**
-             * (Required) Auth version
+             * (Optional) Auth version
+             * If not set, 'v2.0' will be used.
              * @visibility backend
              */
             keystoneAuthVersion: string;
             /**
-             * (Required) Domaind Id
+             * (Required) Domain Id
              * @visibility backend
              */
             domainId: string;
             /**
-             * (Required) Domaind Name
+             * (Required) Domain Name
              * @visibility backend
              */
-            domainName: 'Default';
+            domainName: string;
             /**
              * (Required) Region
              * @visibility backend
              */
-            region: 'earth';
+            region: string;
           };
         }
       | {

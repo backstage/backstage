@@ -170,8 +170,10 @@ describe('Publisher', () => {
         publisher: {
           type: 'openStackSwift',
           openStackSwift: {
-            username: 'mockuser',
-            password: 'verystrongpass',
+            credentials: {
+              username: 'mockuser',
+              password: 'verystrongpass',
+            },
             authUrl: 'mockauthurl',
             region: 'mockregion',
             containerName: 'mock',
