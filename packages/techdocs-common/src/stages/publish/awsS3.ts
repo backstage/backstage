@@ -47,8 +47,8 @@ export class AwsS3Publish implements PublisherBase {
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
     } catch (error) {
       throw new Error(
-        "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
-          'techdocs.publisher.awsS3.bucketName is required.',
+        "Since techdocs.publisher.type is set to 'openStackSwift' in your app config, " +
+        'techdocs.publisher.openStackSwift.containerName is required.',
       );
     }
 
@@ -65,8 +65,8 @@ export class AwsS3Publish implements PublisherBase {
 
     const storageClient = storage.createClient({
       provider: 'openstack',
-      username: openStackSwiftConfig.getString('username'),
-      password: openStackSwiftConfig.getString('password'),
+      username: openStackSwiftConfig.getString('credentials.username'),
+      password: openStackSwiftConfig.getString('credentials.password'),
       authUrl: openStackSwiftConfig.getString('authUrl'),
       keystoneAuthVersion:
         openStackSwiftConfig.getOptionalString('keystoneAuthVersion') || 'v3',
@@ -84,9 +84,11 @@ export class AwsS3Publish implements PublisherBase {
           `Successfully connected to the OpenStack Swift container ${containerName}.`,
         );
       } else {
-        accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
-        secretAccessKey = credentialsConfig.getOptionalString(
-          'secretAccessKey',
+        logger.error(
+          `Could not retrieve metadata about the OpenStack Swift container ${containerName}. ` +
+          'Make sure the container exists. Also make sure that authentication is setup either by ' +
+          'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
+          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
 
         logger.error(`from OpenStack client library: ${err.message}`);
@@ -171,17 +173,16 @@ export class AwsS3Publish implements PublisherBase {
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
-            new Promise((res, rej) => {
-              const writeStream = this.storageClient.upload(params);
+          new Promise((res, rej) => {
+            const writeStream = this.storageClient.upload(params);
 
-          const params = {
-            Bucket: this.bucketName,
-            Key: destination,
-            Body: fileStream,
-          };
+            writeStream.on('error', rej);
 
-          return this.storageClient.upload(params).promise();
-        });
+            writeStream.on('success', res);
+
+            readStream.pipe(writeStream);
+          }),
+        );
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);

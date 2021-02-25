@@ -111,14 +111,12 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      setTimeout(async () => {
-        expect(
-          await publisher.publish({
-            entity,
-            directory: entityRootDir,
-          }),
-        ).toBeUndefined()
-      }, 5000);
+      expect(
+        await publisher.publish({
+          entity,
+          directory: entityRootDir,
+        }),
+      ).toBeUndefined()
     });
 
     it('should fail to publish a directory', async () => {
