@@ -43,4 +43,14 @@ describe('GitLabIntegration', () => {
     expect(integration.type).toBe('gitlab');
     expect(integration.title).toBe('h.com');
   });
+
+  it('resolve edit URL', () => {
+    const integration = new GitLabIntegration({ host: 'h.com' } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://gitlab.com/my-org/my-project/-/blob/develop/README.md',
+      ),
+    ).toBe('https://gitlab.com/my-org/my-project/-/edit/develop/README.md');
+  });
 });
