@@ -138,7 +138,7 @@ describe('SplunkOnCallCard', () => {
       .fn()
       .mockImplementationOnce(async () => [MOCKED_USER]);
 
-    const { getByText, queryByTestId, getByTestId, getByRole } = render(
+    const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <SplunkOnCallCard entity={entity} />
