@@ -33,7 +33,7 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  makeStyles,
+  makeStyles
 } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';

@@ -81,7 +81,7 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
             identity,
           ),
         },
-        
+
       },
       entity,
     );
