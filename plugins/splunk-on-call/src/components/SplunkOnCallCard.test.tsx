@@ -91,7 +91,10 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Create Incident')).toBeInTheDocument();
-    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
+    await waitFor(
+      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
     expect(getByText('Empty escalation policy')).toBeInTheDocument();
   });
 

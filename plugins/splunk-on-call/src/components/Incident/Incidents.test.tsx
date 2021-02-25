@@ -62,7 +62,10 @@ describe('Incidents', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(getByText('Nice! No incidents found!')).toBeInTheDocument();
+    await waitFor(
+      () => expect(getByText('Nice! No incidents found!')).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
   });
 
   it('Renders all incidents', async () => {
@@ -87,11 +90,15 @@ describe('Incidents', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(
-      getByText('user', {
-        exact: false,
-      }),
-    ).toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(
+          getByText('user', {
+            exact: false,
+          }),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
     expect(getByText('test-incident')).toBeInTheDocument();
     expect(getByTitle('Acknowledged')).toBeInTheDocument();
     expect(getByLabelText('Status warning')).toBeInTheDocument();
@@ -113,8 +120,14 @@ describe('Incidents', () => {
       ),
     );
     await waitFor(() => !queryByTestId('progress'));
-    expect(
-      getByText('Error encountered while fetching information. Error occurred'),
-    ).toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(
+          getByText(
+            'Error encountered while fetching information. Error occurred',
+          ),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
   });
 });
