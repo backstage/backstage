@@ -17,3 +17,4 @@
 export * from './catalog';
 export * from './fetch';
 export * from './publish';
+export { createBuiltinActions } from './createBuiltinActions';

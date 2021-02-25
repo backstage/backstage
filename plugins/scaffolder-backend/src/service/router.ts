@@ -40,7 +40,7 @@ import {
 } from '../scaffolder/tasks';
 import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
-import { registerLegacyActions } from '../scaffolder/stages/legacy';
+import { createLegacyActions } from '../scaffolder/stages/legacy';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   InputError,
@@ -54,16 +54,9 @@ import {
   TemplateEntityV1beta2,
   Entity,
 } from '@backstage/catalog-model';
-import {
-  createFetchPlainAction,
-  createFetchCookiecutterAction,
-  createPublishGithubAction,
-  createPublishBitbucketAction,
-  createPublishAzureAction,
-  createPublishGitlabAction,
-  createCatalogRegisterAction,
-} from '../scaffolder/actions/builtin';
 import { ScmIntegrations } from '@backstage/integration';
+import { TemplateAction } from '../scaffolder/actions';
+import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -76,6 +69,7 @@ export interface RouterOptions {
   dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+  actions?: TemplateAction<any>[];
 }
 
 function isAlpha1Template(
@@ -109,6 +103,7 @@ export async function createRouter(
     dockerClient,
     database,
     catalogClient,
+    actions,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -129,52 +124,25 @@ export async function createRouter(
     workingDirectory,
   });
 
-  registerLegacyActions(actionRegistry, {
-    dockerClient,
-    preparers,
-    publishers,
-    templaters,
-  });
-  actionRegistry.register(
-    createFetchPlainAction({
-      reader,
-      integrations,
-    }),
-  );
-  actionRegistry.register(
-    createFetchCookiecutterAction({
-      reader,
-      integrations,
-      dockerClient,
-      templaters,
-    }),
-  );
-  actionRegistry.register(
-    createPublishGithubAction({
-      integrations,
-    }),
-  );
-  actionRegistry.register(
-    createPublishGitlabAction({
-      integrations,
-    }),
-  );
+  const actionsToRegister = Array.isArray(actions)
+    ? actions
+    : [
+        ...createLegacyActions({
+          dockerClient,
+          preparers,
+          publishers,
+          templaters,
+        }),
+        ...createBuiltinActions({
+          dockerClient,
+          integrations,
+          catalogClient,
+          templaters,
+          reader,
+        }),
+      ];
 
-  actionRegistry.register(
-    createPublishBitbucketAction({
-      integrations,
-    }),
-  );
-
-  actionRegistry.register(
-    createPublishAzureAction({
-      integrations,
-    }),
-  );
-
-  actionRegistry.register(
-    createCatalogRegisterAction({ catalogClient, integrations }),
-  );
+  actionsToRegister.forEach(action => actionRegistry.register(action));
 
   worker.start();
 
