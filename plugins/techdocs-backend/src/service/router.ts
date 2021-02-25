@@ -155,6 +155,7 @@ export async function createRouter({
           break;
         case 'awsS3':
         case 'azureBlobStorage':
+        case 'openStackSwift':
         case 'googleGcs':
           // This block should be valid for all external storage implementations. So no need to duplicate in future,
           // add the publisher type in the list here.
