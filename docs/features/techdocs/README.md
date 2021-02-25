@@ -22,18 +22,17 @@ about TechDocs and the philosophy in its
 
 ## Features
 
-- Discover technical documentation of a service closer to the service page in
-  Backstage catalog.
-
-- Create new documentation-only sites for any purpose by just writing Markdown.
-
-- Explore the large ecosystem of
+- Deploy TechDocs no matter how your software environment is set up.
+- Discover your Service's technical documentation from the Service's page in
+  Backstage Catalog.
+- Create documentation-only sites for any purpose by just writing Markdown.
+- Explore and take advantage of the large ecosystem of
   [MkDocs plugins](https://www.mkdocs.org/user-guide/plugins/) to create a rich
   reading experience.
-
-- A tightly coupled feedback loop with the developer workflow. (_Future work_)
-
-- A developer ecosystem for creating TechDocs widgets. (_Future work_)
+- Search for and find docs (coming soon).
+- Highlight text and raise an Issue to create feedback loop to drive quality
+  documentation (future).
+- Contribute to and deploy from a marketplace of TechDocs widgets (future).
 
 ## Platforms supported
 
@@ -80,9 +79,9 @@ providers are used.
   organizations.
 - Better integration with
   [Scaffolder V2](https://github.com/backstage/backstage/issues/2771) (e.g. easy
-  to choose and plug docs with Software Templates).
-- Possible to configure several aspects about TechDocs e.g. URL, homepage,
-  theme.
+  to choose and plug documentation template with Software Templates).
+- Possible to configure several aspects about TechDocs (e.g. URL, homepage,
+  theme).
 
 **Implement Feedback loop** -
 [Milestone](https://github.com/backstage/backstage/milestone/31)
