@@ -1,4 +1,5 @@
 import { InputError } from '@backstage/backend-common';
+
 export const parseRepoUrl = (repoUrl: string) => {
   let parsed;
   try {

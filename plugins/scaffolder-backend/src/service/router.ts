@@ -58,6 +58,9 @@ import {
   createFetchPlainAction,
   createFetchCookiecutterAction,
   createPublishGithubAction,
+  createPublishBitbucketAction,
+  createPublishAzureAction,
+  createPublishGitlabAction,
   createCatalogRegisterAction,
 } from '../scaffolder/actions/builtin';
 import { ScmIntegrations } from '@backstage/integration';
@@ -150,6 +153,25 @@ export async function createRouter(
     createPublishGithubAction({
       integrations,
       repoVisibility: 'public',
+    }),
+  );
+  actionRegistry.register(
+    createPublishGitlabAction({
+      integrations,
+      repoVisibility: 'public',
+    }),
+  );
+
+  actionRegistry.register(
+    createPublishBitbucketAction({
+      integrations,
+      repoVisibility: 'public',
+    }),
+  );
+
+  actionRegistry.register(
+    createPublishAzureAction({
+      integrations,
     }),
   );
 
