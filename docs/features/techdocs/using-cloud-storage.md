@@ -282,11 +282,9 @@ techdocs:
 
 **3b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use a service account, you can
-follow these steps.
+Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
+your `app-config.yaml` to the your account name.
 
-To get credentials, access the Azure Portal and go to "Settings > Access Keys",
-and get your Storage account name and Primary Key.
 https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 for more details.
 
