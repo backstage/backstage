@@ -9845,10 +9845,10 @@ commander@^5.0.0, commander@^5.1.0:
   resolved "https://registry.npmjs.org/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
   integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
 
-commander@^6.1.0:
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/commander/-/commander-6.2.0.tgz#b990bfb8ac030aedc6d11bc04d1488ffef56db75"
-  integrity sha512-zP4jEKbe8SHzKJYQmq8Y9gYjtO/POJLgIdKgV7B9qNmABVFVc+ctqSX6iXh4mCpJfRBOabiZ2YKPg8ciDw6C+Q==
+commander@^6.1.0, commander@^6.2.0:
+  version "6.2.1"
+  resolved "https://registry.npmjs.org/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
 
 common-tags@1.8.0, common-tags@^1.8.0:
   version "1.8.0"
@@ -11025,10 +11025,10 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.npmjs.org/debug/-/debug-4.2.0.tgz#7f150f93920e94c58f5574c2fd01a3110effe7f1"
-  integrity sha512-IX2ncY78vDTjZMFUdmsvIRFY2Cf4FnD0wRs+nQwJU8Lu99/tPFdb0VybiiMTPe3I6rQmwsqQqRBvxU+bZ/I8sg==
+debug@4, debug@4.3.1, debug@^4.0.0, debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.2.0:
+  version "4.3.1"
+  resolved "https://registry.npmjs.org/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
+  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
   dependencies:
     ms "2.1.2"
 
@@ -16778,22 +16778,21 @@ klona@^2.0.3:
   integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
 
 knex@^0.21.6:
-  version "0.21.8"
-  resolved "https://registry.npmjs.org/knex/-/knex-0.21.8.tgz#e5c07af61ee6aa006d3468e10e3a69351deb0c26"
-  integrity sha512-ziUu4vAlIGA8j2l0S4xcD1d3XdpJA4HYGhwHEhgAgefGCmB1OLSjUGCs/ebkJal42fSvAkyZaB0tcOtTXKgS5g==
+  version "0.21.18"
+  resolved "https://registry.npmjs.org/knex/-/knex-0.21.18.tgz#ca16e95b8b5c0891a6b012fb3fb34185e067b0e2"
+  integrity sha512-hP4Qyy2LjQLsabQYc6YgDFHb+CJJBjQz1TMPTKyN85CF2NLIsZsF4FDe0NvQXeXMeak3E/kKr5iJog1JBm6ZCQ==
   dependencies:
     colorette "1.2.1"
-    commander "^5.1.0"
-    debug "4.1.1"
+    commander "^6.2.0"
+    debug "4.3.1"
     esm "^3.2.25"
     getopts "2.2.5"
     interpret "^2.2.0"
     liftoff "3.1.0"
     lodash "^4.17.20"
-    pg-connection-string "2.3.0"
+    pg-connection-string "2.4.0"
     tarn "^3.0.1"
     tildify "2.0.0"
-    uuid "^7.0.3"
     v8flags "^3.2.0"
 
 kuler@1.0.x:
@@ -20010,12 +20009,7 @@ pg-connection-string@0.1.3, pg-connection-string@^0.1.3:
   resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-0.1.3.tgz#da1847b20940e42ee1492beaf65d49d91b245df7"
   integrity sha1-2hhHsglA5C7hSSvq9l1J2RskXfc=
 
-pg-connection-string@2.3.0:
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.3.0.tgz#c13fcb84c298d0bfa9ba12b40dd6c23d946f55d6"
-  integrity sha512-ukMTJXLI7/hZIwTW7hGMZJ0Lj0S2XQBCJ4Shv4y1zgQ/vqVea+FLhzywvPj0ujSuofu+yA4MYHGZPTsgjBgJ+w==
-
-pg-connection-string@^2.3.0, pg-connection-string@^2.4.0:
+pg-connection-string@2.4.0, pg-connection-string@^2.3.0, pg-connection-string@^2.4.0:
   version "2.4.0"
   resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.4.0.tgz#c979922eb47832999a204da5dbe1ebf2341b6a10"
   integrity sha512-3iBXuv7XKvxeMrIgym7njT+HlZkwZqqGX4Bu9cci8xHZNT+Um1gWKqCsAzcC0d95rcKMU5WBg6YRUcHyV0HZKQ==
