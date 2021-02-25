@@ -19,7 +19,6 @@ import {
   IndexableDocumentCollator,
 } from '@backstage/plugin-search-indexer-backend';
 import { EntitiesCatalog } from '../catalog';
-import { EntityFilters } from '../service/EntityFilters';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -29,8 +28,7 @@ export const SearchCollatorFactory = (
   entitiesCatalog: EntitiesCatalog,
 ): IndexableDocumentCollator => {
   return async (): Promise<IndexableDocument[]> => {
-    const filter = EntityFilters.ofQuery({ kind: 'Component' });
-    const entities = await entitiesCatalog.entities(filter);
+    const entities = await entitiesCatalog.entities();
     return entities.map(
       (entity): CatalogEntityDocument => {
         return {
