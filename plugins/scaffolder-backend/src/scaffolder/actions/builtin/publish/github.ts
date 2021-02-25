@@ -22,6 +22,7 @@ import {
 import { Octokit } from '@octokit/rest';
 import { TemplateAction } from '../../types';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { parseRepoUrl } from './util';
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrations;
@@ -63,27 +64,7 @@ export function createPublishGithubAction(options: {
     async handler(ctx) {
       const { repoUrl, description, access } = ctx.parameters;
 
-      let parsed;
-      try {
-        parsed = new URL(`https://${repoUrl}`);
-      } catch (error) {
-        throw new InputError(
-          `Invalid repo URL passed to publish:github, got ${repoUrl}, ${error}`,
-        );
-      }
-      const host = parsed.host;
-      const owner = parsed.searchParams.get('owner');
-      if (!owner) {
-        throw new InputError(
-          `Invalid repo URL passed to publish:github, missing owner`,
-        );
-      }
-      const repo = parsed.searchParams.get('repo');
-      if (!repo) {
-        throw new InputError(
-          `Invalid repo URL passed to publish:github, missing repo`,
-        );
-      }
+      const { owner, repo, host } = parseRepoUrl(repoUrl);
 
       const credentialsProvider = credentialsProviders.get(host);
       const integrationConfig = integrations.github.byHost(host);
