@@ -16,29 +16,27 @@
 
 import {
   Entity,
-  LocationSpec,
   ENTITY_DEFAULT_NAMESPACE,
-  SOURCE_LOCATION_ANNOTATION,
-  RELATION_PROVIDES_API,
+  RELATION_CONSUMES_API,
+  RELATION_PROVIDES_API
 } from '@backstage/catalog-model';
-import { HeaderIconLinkRow, IconLinkVerticalProps } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { configApiRef, HeaderIconLinkRow, IconLinkVerticalProps, useApi } from '@backstage/core';
+import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
   CardHeader,
   Divider,
   IconButton,
-  makeStyles,
+  makeStyles
 } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import GitHubIcon from '@material-ui/icons/GitHub';
 import React from 'react';
-import { findLocationForEntityMeta, parseLocation } from '../../data/utils';
-import { findEditUrl, determineUrlType } from '../actions';
+import { getEntityMetadataEditUrl, getEntitySourceLocation } from '../../utils';
 import { AboutContent } from './AboutContent';
+import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -52,47 +50,6 @@ const useStyles = makeStyles({
   },
 });
 
-const iconMap: Record<string, React.ReactNode> = {
-  github: <GitHubIcon />,
-};
-
-type CodeLinkInfo = {
-  icon?: React.ReactNode;
-  edithref?: string;
-  href?: string;
-};
-
-function getSourceLocationForEntity(
-  entity: Entity,
-  location?: LocationSpec,
-): LocationSpec | undefined {
-  const annotation = entity.metadata?.annotations?.[SOURCE_LOCATION_ANNOTATION];
-  const parsed = annotation && parseLocation(annotation);
-
-  return parsed || location;
-}
-
-function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  const location = findLocationForEntityMeta(entity?.metadata);
-  const editUrl = findEditUrl(entity);
-  let sourceLocation = getSourceLocationForEntity(entity, location);
-
-  if (location) {
-    sourceLocation = sourceLocation || location;
-    const type =
-      sourceLocation.type === 'url'
-        ? determineUrlType(sourceLocation.target)
-        : sourceLocation.type;
-    return {
-      edithref: editUrl,
-      icon: iconMap[type],
-      href: sourceLocation.target,
-    };
-  }
-
-  return { edithref: editUrl, href: sourceLocation?.target };
-}
-
 type AboutCardProps = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
@@ -102,13 +59,25 @@ type AboutCardProps = {
 export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
   const { entity } = useEntity();
-  const codeLink = getCodeLinkInfo(entity);
-  // TODO: Also support RELATION_CONSUMES_API here
-  const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
-  const viewInSource: IconLinkVerticalProps = {
+  const configApi = useApi(configApiRef);
+  const entitySourceLocation = getEntitySourceLocation(entity, configApi);
+  const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
+  const providesApiRelations = getEntityRelations(
+    entity,
+    RELATION_PROVIDES_API,
+  );
+  const consumesApiRelations = getEntityRelations(
+    entity,
+    RELATION_CONSUMES_API,
+  );
+  const hasApis =
+    providesApiRelations.length > 0 || consumesApiRelations.length > 0;
+
+  const viewInSource: IconLinkVerticalProps  = {
     label: 'View Source',
-    href: codeLink.href,
-    icon: codeLink.icon,
+    disabled: !entitySourceLocation,
+    icon: <ScmIntegrationIcon type={entitySourceLocation?.type} />,
+    href: entitySourceLocation?.url,
   };
   const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
@@ -133,9 +102,10 @@ export function AboutCard({ variant }: AboutCardProps) {
         action={
           <IconButton
             aria-label="Edit"
+            disabled={!entityMetadataEditUrl}
             title="Edit Metadata"
             onClick={() => {
-              window.open(codeLink.edithref || '#', '_blank');
+              window.open(entityMetadataEditUrl ?? '#', '_blank');
             }}
           >
             <EditIcon />
