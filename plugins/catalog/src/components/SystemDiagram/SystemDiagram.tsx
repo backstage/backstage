@@ -57,6 +57,10 @@ function simplifiedEntityName(
     .replace(':default/', ':');
 }
 
+/**
+ * Dynamically generates a diagram of a system, its assigned entities,
+ * and relationships of those entities.
+ */
 export function SystemDiagram({ entity }: SystemDiagramProps) {
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: catalogResponse } = useAsync(() => {
