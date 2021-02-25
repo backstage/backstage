@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import parseGitUrl from 'git-url-parse';
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
@@ -50,5 +51,17 @@ export class BitbucketIntegration implements ScmIntegration {
 
   resolveUrl(options: { url: string; base: string }): string {
     return defaultScmResolveUrl(options);
+  }
+
+  resolveEditUrl(url: string): string {
+    const urlData = parseGitUrl(url);
+    const editUrl = new URL(url);
+
+    editUrl.searchParams.set('mode', 'edit');
+    // TODO: Not sure what spa=0 does, at least bitbucket.org doesn't support it
+    // but this is taken over from the initial implementation.
+    editUrl.searchParams.set('spa', '0');
+    editUrl.searchParams.set('at', urlData.ref);
+    return editUrl.toString();
   }
 }

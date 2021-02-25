@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, isValidUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
@@ -53,12 +53,8 @@ export class AzureIntegration implements ScmIntegration {
     const { url, base } = options;
 
     // If we can parse the url, it is absolute - then return it verbatim
-    try {
-      // eslint-disable-next-line no-new
-      new URL(url);
+    if (isValidUrl(url)) {
       return url;
-    } catch {
-      // Ignore intentionally - looks like a relative path
     }
 
     const parsed = parseGitUrl(base);
@@ -77,5 +73,11 @@ export class AzureIntegration implements ScmIntegration {
     newUrl.searchParams.set('path', updatedPath);
 
     return newUrl.toString();
+  }
+
+  resolveEditUrl(url: string): string {
+    // TODO: Implement edit URL for Azure, fallback to view url as I don't know
+    // how azure works.
+    return url;
   }
 }

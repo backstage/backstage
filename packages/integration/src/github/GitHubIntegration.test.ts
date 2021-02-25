@@ -49,4 +49,34 @@ describe('GitHubIntegration', () => {
     expect(integration.title).toBe('h.com');
     expect(integration.config.host).toBe('h.com');
   });
+
+  it('resolveUrl', () => {
+    const integration = new GitHubIntegration({ host: 'h.com' });
+
+    expect(
+      integration.resolveUrl({
+        url: '../a.yaml',
+        base:
+          'https://github.com/backstage/backstage/blob/master/test/README.md',
+      }),
+    ).toBe('https://github.com/backstage/backstage/tree/master/a.yaml');
+
+    expect(
+      integration.resolveUrl({
+        url: './',
+        base:
+          'https://github.com/backstage/backstage/blob/master/test/README.md',
+      }),
+    ).toBe('https://github.com/backstage/backstage/tree/master/test/');
+  });
+
+  it('resolve edit URL', () => {
+    const integration = new GitHubIntegration({ host: 'h.com' });
+
+    expect(
+      integration.resolveEditUrl(
+        'https://github.com/backstage/backstage/blob/master/README.md',
+      ),
+    ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+  });
 });

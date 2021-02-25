@@ -91,4 +91,13 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
     return integration.resolveUrl(options);
   }
+
+  resolveEditUrl(url: string): string {
+    const integration = this.byUrl(url);
+    if (!integration) {
+      return url;
+    }
+
+    return integration.resolveEditUrl(url);
+  }
 }
