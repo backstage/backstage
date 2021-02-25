@@ -72,7 +72,7 @@ export interface RouterOptions {
 
   logger: Logger;
   config: Config;
-  urlReader: UrlReader;
+  reader: UrlReader;
   dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
@@ -105,7 +105,7 @@ export async function createRouter(
     publishers,
     logger: parentLogger,
     config,
-    urlReader,
+    reader,
     dockerClient,
     database,
     catalogClient,
@@ -137,13 +137,13 @@ export async function createRouter(
   });
   actionRegistry.register(
     createFetchPlainAction({
-      urlReader,
+      reader,
       integrations,
     }),
   );
   actionRegistry.register(
     createFetchCookiecutterAction({
-      urlReader,
+      reader,
       integrations,
       dockerClient,
       templaters,

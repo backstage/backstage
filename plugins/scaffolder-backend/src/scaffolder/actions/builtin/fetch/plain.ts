@@ -21,10 +21,10 @@ import { TemplateAction } from '../../types';
 import { fetchContents } from './helpers';
 
 export function createFetchPlainAction(options: {
-  urlReader: UrlReader;
+  reader: UrlReader;
   integrations: ScmIntegrations;
 }): TemplateAction<{ url: string; targetPath?: string }> {
-  const { urlReader, integrations } = options;
+  const { reader, integrations } = options;
 
   return {
     id: 'fetch:plain',
@@ -59,7 +59,7 @@ export function createFetchPlainAction(options: {
       }
 
       await fetchContents({
-        urlReader,
+        reader,
         integrations,
         baseUrl: ctx.baseUrl,
         fetchUrl: ctx.parameters.url,

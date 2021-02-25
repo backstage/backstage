@@ -26,11 +26,11 @@ import { fetchContents } from './helpers';
 
 export function createFetchCookiecutterAction(options: {
   dockerClient: Docker;
-  urlReader: UrlReader;
+  reader: UrlReader;
   integrations: ScmIntegrations;
   templaters: TemplaterBuilder;
 }): TemplateAction<{ url: string; targetPath?: string; values: JsonObject }> {
-  const { dockerClient, urlReader, templaters, integrations } = options;
+  const { dockerClient, reader, templaters, integrations } = options;
 
   return {
     id: 'fetch:cookiecutter',
@@ -68,7 +68,7 @@ export function createFetchCookiecutterAction(options: {
       const resultDir = resolvePath(workDir, 'result');
 
       await fetchContents({
-        urlReader,
+        reader,
         integrations,
         baseUrl: ctx.baseUrl,
         fetchUrl: ctx.parameters.url,

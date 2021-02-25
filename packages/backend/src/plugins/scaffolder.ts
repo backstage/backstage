@@ -58,6 +58,6 @@ export default async function createPlugin({
     dockerClient,
     database,
     catalogClient,
-    urlReader: reader,
+    reader,
   });
 }

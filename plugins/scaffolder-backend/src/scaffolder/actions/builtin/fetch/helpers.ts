@@ -21,13 +21,13 @@ import { ScmIntegrations } from '@backstage/integration';
 import { JsonValue } from '@backstage/config';
 
 export async function fetchContents({
-  urlReader,
+  reader,
   integrations,
   baseUrl,
   fetchUrl = '.',
   outputPath,
 }: {
-  urlReader: UrlReader;
+  reader: UrlReader;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: JsonValue;
@@ -79,7 +79,7 @@ export async function fetchContents({
       );
     }
 
-    const res = await urlReader.readTree(readUrl);
+    const res = await reader.readTree(readUrl);
     await fs.ensureDir(outputPath);
     await res.dir({ targetDir: outputPath });
   }
