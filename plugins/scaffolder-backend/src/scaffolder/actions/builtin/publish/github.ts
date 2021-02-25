@@ -82,7 +82,12 @@ export function createPublishGithubAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, description, access, repoVisibility } = ctx.input;
+      const {
+        repoUrl,
+        description,
+        access,
+        repoVisibility = 'private',
+      } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -150,7 +155,7 @@ export function createPublishGithubAction(options: {
       }
 
       const remoteUrl = data.clone_url;
-      const repoContentsUrl = `${data?.html_url}/blob/master`;
+      const repoContentsUrl = `${data.html_url}/blob/master`;
 
       await initRepoAndPush({
         dir: ctx.workspacePath,
