@@ -35,6 +35,9 @@ const useIconStyles = makeStyles(theme => ({
     justifyItems: 'center',
     gridGap: 4,
     textAlign: 'center',
+    '&:active': {
+      cursor: 'grabbing',
+    },
   },
   disabled: {
     color: 'gray',
