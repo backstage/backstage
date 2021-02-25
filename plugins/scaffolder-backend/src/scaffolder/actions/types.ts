@@ -44,6 +44,9 @@ export type ActionContext<Parameters extends ParameterBase> = {
 
 export type TemplateAction<Parameters extends ParameterBase> = {
   id: string;
-  parameterSchema?: Schema;
+  schema?: {
+    input?: Schema;
+    output?: Schema;
+  };
   handler: (ctx: ActionContext<Parameters>) => Promise<void>;
 };

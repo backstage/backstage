@@ -31,13 +31,28 @@ export function createPublishGitlabAction(options: {
 
   return {
     id: 'publish:gitlab',
-    parameterSchema: {
-      type: 'object',
-      required: ['repoUrl'],
-      properties: {
-        repoUrl: {
-          title: 'Repository Location',
-          type: 'string',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: {
+            title: 'Repository Location',
+            type: 'string',
+          },
+        },
+      },
+      output: {
+        type: 'object',
+        properties: {
+          remoteUrl: {
+            title: 'A URL to the repository with the provider',
+            type: 'string',
+          },
+          repoContentsUrl: {
+            title: 'A URL to the root of the repository',
+            type: 'string',
+          },
         },
       },
     },

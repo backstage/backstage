@@ -32,17 +32,32 @@ export function createPublishAzureAction(options: {
 
   return {
     id: 'publish:azure',
-    parameterSchema: {
-      type: 'object',
-      required: ['repoUrl'],
-      properties: {
-        repoUrl: {
-          title: 'Repository Location',
-          type: 'string',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: {
+            title: 'Repository Location',
+            type: 'string',
+          },
+          description: {
+            title: 'Repository Description',
+            type: 'string',
+          },
         },
-        description: {
-          title: 'Repository Description',
-          type: 'string',
+      },
+      output: {
+        type: 'object',
+        properties: {
+          remoteUrl: {
+            title: 'A URL to the repository with the provider',
+            type: 'string',
+          },
+          repoContentsUrl: {
+            title: 'A URL to the root of the repository',
+            type: 'string',
+          },
         },
       },
     },
@@ -78,7 +93,7 @@ export function createPublishAzureAction(options: {
 
       if (!returnedRepo) {
         throw new InputError(
-          `Unable to create the repository with Organization ${organization}, Project ${owner} and Repo ${repo}. 
+          `Unable to create the repository with Organization ${organization}, Project ${owner} and Repo ${repo}.
           Please make sure you that both the Org and Project are typed corrected and exist.`,
         );
       }

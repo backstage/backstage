@@ -49,7 +49,7 @@ export type TaskSpec = {
     id: string;
     name: string;
     action: string;
-    parameters?: JsonObject;
+    input?: JsonObject;
   }>;
   output: { [name: string]: string };
 };

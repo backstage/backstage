@@ -99,7 +99,7 @@ export class TaskWorker {
           }
 
           const parameters = JSON.parse(
-            JSON.stringify(step.parameters),
+            JSON.stringify(step.input),
             (_key, value) => {
               if (typeof value === 'string') {
                 return handlebars.compile(value, {
@@ -113,10 +113,10 @@ export class TaskWorker {
             },
           );
 
-          if (action.parameterSchema) {
+          if (action.schema?.input) {
             const validateResult = validateJsonSchema(
               parameters,
-              action.parameterSchema,
+              action.schema,
               { propertyName: 'parameters' },
             );
             if (!validateResult.valid) {

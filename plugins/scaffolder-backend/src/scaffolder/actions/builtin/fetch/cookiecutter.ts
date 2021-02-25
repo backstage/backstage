@@ -34,26 +34,28 @@ export function createFetchCookiecutterAction(options: {
 
   return {
     id: 'fetch:cookiecutter',
-    parameterSchema: {
-      type: 'object',
-      required: ['url'],
-      properties: {
-        url: {
-          title: 'Fetch URL',
-          description:
-            'Relative path or absolute URL pointing to the directory tree to fetch',
-          type: 'string',
-        },
-        targetPath: {
-          title: 'Target Path',
-          description:
-            'Target path within the working directory to download the contents to.',
-          type: 'string',
-        },
-        values: {
-          title: 'Template Values',
-          description: 'Values to pass on to cookiecutter for templating',
-          type: 'object',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['url'],
+        properties: {
+          url: {
+            title: 'Fetch URL',
+            description:
+              'Relative path or absolute URL pointing to the directory tree to fetch',
+            type: 'string',
+          },
+          targetPath: {
+            title: 'Target Path',
+            description:
+              'Target path within the working directory to download the contents to.',
+            type: 'string',
+          },
+          values: {
+            title: 'Template Values',
+            description: 'Values to pass on to cookiecutter for templating',
+            type: 'object',
+          },
         },
       },
     },

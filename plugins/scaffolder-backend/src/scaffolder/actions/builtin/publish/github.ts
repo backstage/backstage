@@ -43,21 +43,36 @@ export function createPublishGithubAction(options: {
 
   return {
     id: 'publish:github',
-    parameterSchema: {
-      type: 'object',
-      required: ['repoUrl'],
-      properties: {
-        repoUrl: {
-          title: 'Repository Location',
-          type: 'string',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: {
+            title: 'Repository Location',
+            type: 'string',
+          },
+          description: {
+            title: 'Repository Description',
+            type: 'string',
+          },
+          access: {
+            title: 'Repository Access',
+            type: 'string',
+          },
         },
-        description: {
-          title: 'Repository Description',
-          type: 'string',
-        },
-        access: {
-          title: 'Additional Repository Access',
-          type: 'string',
+      },
+      output: {
+        type: 'object',
+        properties: {
+          remoteUrl: {
+            title: 'A URL to the repository with the provider',
+            type: 'string',
+          },
+          repoContentsUrl: {
+            title: 'A URL to the root of the repository',
+            type: 'string',
+          },
         },
       },
     },

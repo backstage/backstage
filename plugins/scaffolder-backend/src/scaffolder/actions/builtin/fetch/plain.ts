@@ -28,23 +28,26 @@ export function createFetchPlainAction(options: {
 
   return {
     id: 'fetch:plain',
-    parameterSchema: {
-      type: 'object',
-      required: ['url'],
-      properties: {
-        url: {
-          title: 'Fetch URL',
-          description:
-            'Relative path or absolute URL pointing to the directory tree to fetch',
-          type: 'string',
-        },
-        targetPath: {
-          title: 'Target Path',
-          description:
-            'Target path within the working directory to download the contents to.',
-          type: 'string',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['url'],
+        properties: {
+          url: {
+            title: 'Fetch URL',
+            description:
+              'Relative path or absolute URL pointing to the directory tree to fetch',
+            type: 'string',
+          },
+          targetPath: {
+            title: 'Target Path',
+            description:
+              'Target path within the working directory to download the contents to.',
+            type: 'string',
+          },
         },
       },
+      output: {},
     },
     async handler(ctx) {
       ctx.logger.info('Fetching plain content from remote URL');
