@@ -311,7 +311,7 @@ export class CatalogBuilder {
         new UrlReaderProcessor({ reader, logger }),
         new CodeOwnersProcessor({ reader, logger }),
         new LocationEntityProcessor({ integrations }),
-        new AnnotateLocationEntityProcessor(),
+        new AnnotateLocationEntityProcessor({ integrations }),
       );
     }
 

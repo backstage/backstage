@@ -15,31 +15,63 @@
  */
 
 import {
+  EDIT_URL_ANNOTATION,
   Entity,
   LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  SOURCE_LOCATION_ANNOTATION,
   stringifyLocationReference,
+  VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
-import lodash from 'lodash';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { identity, merge, pickBy } from 'lodash';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
+type Options = {
+  integrations: ScmIntegrationRegistry;
+};
+
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
+  constructor(private readonly options: Options) {}
+
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
     _: CatalogProcessorEmit,
     originLocation: LocationSpec,
   ): Promise<Entity> {
-    return lodash.merge(
+    const { integrations } = this.options;
+    let viewUrl;
+    let editUrl;
+    let sourceLocation;
+
+    if (location.type === 'url') {
+      const scmIntegration = integrations.byUrl(location.target);
+
+      viewUrl = location.target;
+      editUrl = scmIntegration?.resolveEditUrl(location.target);
+      sourceLocation = scmIntegration?.resolveUrl({
+        url: './',
+        base: location.target,
+      });
+    }
+
+    return merge(
       {
         metadata: {
-          annotations: {
-            [LOCATION_ANNOTATION]: stringifyLocationReference(location),
-            [ORIGIN_LOCATION_ANNOTATION]: stringifyLocationReference(
-              originLocation,
-            ),
-          },
+          annotations: pickBy(
+            {
+              [LOCATION_ANNOTATION]: stringifyLocationReference(location),
+              [ORIGIN_LOCATION_ANNOTATION]: stringifyLocationReference(
+                originLocation,
+              ),
+              [VIEW_URL_ANNOTATION]: viewUrl,
+              [EDIT_URL_ANNOTATION]: editUrl,
+              [SOURCE_LOCATION_ANNOTATION]: sourceLocation,
+            },
+            identity,
+          ),
         },
       },
       entity,
