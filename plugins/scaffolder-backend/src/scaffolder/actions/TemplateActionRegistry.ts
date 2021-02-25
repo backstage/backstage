@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { ParameterBase, TemplateAction } from './types';
+import { InputBase, TemplateAction } from './types';
 import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction<any>>();
 
-  register<Parameters extends ParameterBase>(
-    action: TemplateAction<Parameters>,
-  ) {
+  register<Parameters extends InputBase>(action: TemplateAction<Parameters>) {
     if (this.actions.has(action.id)) {
       throw new ConflictError(
         `Template action with ID '${action.id}' has already been registered`,

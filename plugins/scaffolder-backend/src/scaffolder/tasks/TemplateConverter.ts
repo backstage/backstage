@@ -54,7 +54,7 @@ export function templateEntityToSpec(
     id: 'prepare',
     name: 'Prepare',
     action: 'legacy:prepare',
-    parameters: {
+    input: {
       protocol,
       url,
     },
@@ -64,7 +64,7 @@ export function templateEntityToSpec(
     id: 'template',
     name: 'Template',
     action: 'legacy:template',
-    parameters: {
+    input: {
       templater,
       values,
     },
@@ -74,7 +74,7 @@ export function templateEntityToSpec(
     id: 'publish',
     name: 'Publish',
     action: 'legacy:publish',
-    parameters: {
+    input: {
       values,
     },
   });
@@ -83,7 +83,7 @@ export function templateEntityToSpec(
     id: 'register',
     name: 'Register',
     action: 'catalog:register',
-    parameters: {
+    input: {
       catalogInfoUrl: '{{ steps.publish.output.catalogInfoUrl }}',
     },
   });

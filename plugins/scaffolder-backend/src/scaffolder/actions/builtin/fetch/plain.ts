@@ -17,16 +17,16 @@
 import { resolve as resolvePath } from 'path';
 import { InputError, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../../types';
 import { fetchContents } from './helpers';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createFetchPlainAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-}): TemplateAction<{ url: string; targetPath?: string }> {
+}) {
   const { reader, integrations } = options;
 
-  return {
+  return createTemplateAction<{ url: string; targetPath?: string }>({
     id: 'fetch:plain',
     schema: {
       input: {
@@ -52,7 +52,7 @@ export function createFetchPlainAction(options: {
       ctx.logger.info('Fetching plain content from remote URL');
 
       // Finally move the template result into the task workspace
-      const targetPath = ctx.parameters.targetPath ?? './';
+      const targetPath = ctx.input.targetPath ?? './';
       const outputPath = resolvePath(ctx.workspacePath, targetPath);
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(
@@ -64,9 +64,9 @@ export function createFetchPlainAction(options: {
         reader,
         integrations,
         baseUrl: ctx.baseUrl,
-        fetchUrl: ctx.parameters.url,
+        fetchUrl: ctx.input.url,
         outputPath,
       });
     },
-  };
+  });
 }

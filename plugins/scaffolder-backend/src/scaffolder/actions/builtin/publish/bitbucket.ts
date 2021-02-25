@@ -19,10 +19,10 @@ import {
   BitbucketIntegrationConfig,
   ScmIntegrations,
 } from '@backstage/integration';
-import { TemplateAction } from '../../types';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
 import fetch from 'cross-fetch';
+import { createTemplateAction } from '../../createTemplateAction';
 
 const createBitbucketCloudRepository = async (opts: {
   owner: string;
@@ -32,8 +32,6 @@ const createBitbucketCloudRepository = async (opts: {
   authorization: string;
 }) => {
   const { owner, repo, description, repoVisibility, authorization } = opts;
-
-  let response: Response;
 
   const options: RequestInit = {
     method: 'POST',
@@ -47,6 +45,8 @@ const createBitbucketCloudRepository = async (opts: {
       'Content-Type': 'application/json',
     },
   };
+
+  let response: Response;
   try {
     response = await fetch(
       `https://api.bitbucket.org/2.0/repositories/${owner}/${repo}`,
@@ -55,20 +55,26 @@ const createBitbucketCloudRepository = async (opts: {
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
-  if (response.status === 200) {
-    const r = await response.json();
-    let remoteUrl = '';
-    for (const link of r.links.clone) {
-      if (link.name === 'https') {
-        remoteUrl = link.href;
-      }
-    }
 
-    // TODO use the urlReader to get the default branch
-    const repoContentsUrl = `${r.links.html.href}/src/master`;
-    return { remoteUrl, repoContentsUrl };
+  if (response.status !== 200) {
+    throw new Error(
+      `Unable to create repository, ${response.status} ${
+        response.statusText
+      }, ${await response.text()}`,
+    );
   }
-  throw new Error(`Not a valid response code ${await response.text()}`);
+
+  const r = await response.json();
+  let remoteUrl = '';
+  for (const link of r.links.clone) {
+    if (link.name === 'https') {
+      remoteUrl = link.href;
+    }
+  }
+
+  // TODO use the urlReader to get the default branch
+  const repoContentsUrl = `${r.links.html.href}/src/master`;
+  return { remoteUrl, repoContentsUrl };
 };
 
 const createBitbucketServerRepository = async (opts: {
@@ -110,18 +116,25 @@ const createBitbucketServerRepository = async (opts: {
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
-  if (response.status === 201) {
-    const r = await response.json();
-    let remoteUrl = '';
-    for (const link of r.links.clone) {
-      if (link.name === 'http') {
-        remoteUrl = link.href;
-      }
-    }
-    const repoContentsUrl = `${r.links.self[0].href}`;
-    return { remoteUrl, repoContentsUrl };
+
+  if (response.status !== 201) {
+    throw new Error(
+      `Unable to create repository, ${response.status} ${
+        response.statusText
+      }, ${await response.text()}`,
+    );
   }
-  throw new Error(`Not a valid response code ${await response.text()}`);
+
+  const r = await response.json();
+  let remoteUrl = '';
+  for (const link of r.links.clone) {
+    if (link.name === 'http') {
+      remoteUrl = link.href;
+    }
+  }
+
+  const repoContentsUrl = `${r.links.self[0].href}`;
+  return { remoteUrl, repoContentsUrl };
 };
 
 const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
@@ -145,14 +158,14 @@ const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
 
 export function createPublishBitbucketAction(options: {
   integrations: ScmIntegrations;
-}): TemplateAction<{
-  repoUrl: string;
-  description: string;
-  repoVisibility: 'private' | 'public';
-}> {
+}) {
   const { integrations } = options;
 
-  return {
+  return createTemplateAction<{
+    repoUrl: string;
+    description: string;
+    repoVisibility: 'private' | 'public';
+  }>({
     id: 'publish:bitbucket',
     schema: {
       input: {
@@ -189,11 +202,7 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
-      const {
-        repoUrl,
-        description,
-        repoVisibility = 'private',
-      } = ctx.parameters;
+      const { repoUrl, description, repoVisibility = 'private' } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -238,5 +247,5 @@ export function createPublishBitbucketAction(options: {
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
-  };
+  });
 }

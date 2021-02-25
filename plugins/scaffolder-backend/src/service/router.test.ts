@@ -118,7 +118,7 @@ describe('createRouter - working directory', () => {
         dockerClient: new Docker(),
         database: createDatabase(),
         catalogClient: createCatalogClient([template]),
-        urlReader: mockUrlReader,
+        reader: mockUrlReader,
       }),
     ).rejects.toThrow('access error');
   });
@@ -133,7 +133,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
-      urlReader: mockUrlReader,
+      reader: mockUrlReader,
     });
 
     const app = express().use(router);
@@ -163,7 +163,7 @@ describe('createRouter - working directory', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
-      urlReader: mockUrlReader,
+      reader: mockUrlReader,
     });
 
     const app = express().use(router);
@@ -237,7 +237,7 @@ describe('createRouter', () => {
       dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
-      urlReader: mockUrlReader,
+      reader: mockUrlReader,
     });
     app = express().use(router);
   });

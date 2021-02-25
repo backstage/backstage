@@ -16,21 +16,21 @@
 
 import { InputError } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../../types';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { parseRepoUrl } from './util';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishAzureAction(options: {
   integrations: ScmIntegrations;
-}): TemplateAction<{
-  repoUrl: string;
-  description?: string;
-}> {
+}) {
   const { integrations } = options;
 
-  return {
+  return createTemplateAction<{
+    repoUrl: string;
+    description?: string;
+  }>({
     id: 'publish:azure',
     schema: {
       input: {
@@ -63,12 +63,12 @@ export function createPublishAzureAction(options: {
     },
     async handler(ctx) {
       const { owner, repo, host, organization } = parseRepoUrl(
-        ctx.parameters.repoUrl,
+        ctx.input.repoUrl,
       );
 
       if (!organization) {
         throw new InputError(
-          `No Organization was included in the repo URL to create ${ctx.parameters.repoUrl}`,
+          `No Organization was included in the repo URL to create ${ctx.input.repoUrl}`,
         );
       }
 
@@ -122,5 +122,5 @@ export function createPublishAzureAction(options: {
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
-  };
+  });
 }

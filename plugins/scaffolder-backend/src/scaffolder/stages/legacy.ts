@@ -37,7 +37,7 @@ export function registerLegacyActions(
     id: 'legacy:prepare',
     async handler(ctx) {
       ctx.logger.info('Preparing the skeleton');
-      const { protocol, url } = ctx.parameters;
+      const { protocol, url } = ctx.input;
       const preparer =
         protocol === 'file' ? new FilePreparer() : preparers.get(url as string);
 
@@ -53,12 +53,12 @@ export function registerLegacyActions(
     id: 'legacy:template',
     async handler(ctx) {
       ctx.logger.info('Running the templater');
-      const templater = templaters.get(ctx.parameters.templater as string);
+      const templater = templaters.get(ctx.input.templater as string);
       await templater.run({
         workspacePath: ctx.workspacePath,
         dockerClient,
         logStream: ctx.logStream,
-        values: ctx.parameters.values as TemplaterValues,
+        values: ctx.input.values as TemplaterValues,
       });
     },
   });
@@ -66,7 +66,7 @@ export function registerLegacyActions(
   registry.register({
     id: 'legacy:publish',
     async handler(ctx) {
-      const { values } = ctx.parameters;
+      const { values } = ctx.input;
       if (
         typeof values !== 'object' ||
         values === null ||

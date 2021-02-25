@@ -16,20 +16,20 @@
 
 import { InputError } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { TemplateAction } from '../../types';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGitlabAction(options: {
   integrations: ScmIntegrations;
-}): TemplateAction<{
-  repoUrl: string;
-  repoVisibility: 'private' | 'internal' | 'public';
-}> {
+}) {
   const { integrations } = options;
 
-  return {
+  return createTemplateAction<{
+    repoUrl: string;
+    repoVisibility: 'private' | 'internal' | 'public';
+  }>({
     id: 'publish:gitlab',
     schema: {
       input: {
@@ -62,7 +62,7 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, repoVisibility = 'private' } = ctx.parameters;
+      const { repoUrl, repoVisibility = 'private' } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -118,5 +118,5 @@ export function createPublishGitlabAction(options: {
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
-  };
+  });
 }

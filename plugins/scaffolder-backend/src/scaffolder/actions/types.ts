@@ -21,9 +21,9 @@ import { Schema } from 'jsonschema';
 
 type PartialJsonObject = Partial<JsonObject>;
 type PartialJsonValue = PartialJsonObject | JsonValue | undefined;
-export type ParameterBase = Partial<{ [name: string]: PartialJsonValue }>;
+export type InputBase = Partial<{ [name: string]: PartialJsonValue }>;
 
-export type ActionContext<Parameters extends ParameterBase> = {
+export type ActionContext<Input extends InputBase> = {
   /**
    * Base URL for the location of the task spec, typically the url of the source entity file.
    */
@@ -33,7 +33,7 @@ export type ActionContext<Parameters extends ParameterBase> = {
   logStream: Writable;
 
   workspacePath: string;
-  parameters: Parameters;
+  input: Input;
   output(name: string, value: JsonValue): void;
 
   /**
@@ -42,11 +42,11 @@ export type ActionContext<Parameters extends ParameterBase> = {
   createTemporaryDirectory(): Promise<string>;
 };
 
-export type TemplateAction<Parameters extends ParameterBase> = {
+export type TemplateAction<Input extends InputBase> = {
   id: string;
   schema?: {
     input?: Schema;
     output?: Schema;
   };
-  handler: (ctx: ActionContext<Parameters>) => Promise<void>;
+  handler: (ctx: ActionContext<Input>) => Promise<void>;
 };

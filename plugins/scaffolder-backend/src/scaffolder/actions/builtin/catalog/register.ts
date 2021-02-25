@@ -18,72 +18,76 @@ import { InputError } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { getEntityName } from '@backstage/catalog-model';
-import { TemplateAction } from '../../types';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
-}): TemplateAction<
-  | { catalogInfoUrl: string }
-  | { repoContentsUrl: string; catalogInfoPath?: string }
-> {
+}) {
   const { catalogClient, integrations } = options;
 
-  return {
+  return createTemplateAction<
+    | { catalogInfoUrl: string }
+    | { repoContentsUrl: string; catalogInfoPath?: string }
+  >({
     id: 'catalog:register',
-    parameterSchema: {
-      oneOf: [
-        {
-          type: 'object',
-          required: ['catalogInfoUrl'],
-          properties: {
-            catalogInfoUrl: {
-              title: 'Catalog Info URL',
-              description:
-                'An absolute URL pointing to the catalog info file location',
-              type: 'string',
+    schema: {
+      input: {
+        oneOf: [
+          {
+            type: 'object',
+            required: ['catalogInfoUrl'],
+            properties: {
+              catalogInfoUrl: {
+                title: 'Catalog Info URL',
+                description:
+                  'An absolute URL pointing to the catalog info file location',
+                type: 'string',
+              },
             },
           },
-        },
-        {
-          type: 'object',
-          required: ['repoContentsUrl'],
-          properties: {
-            repoContentsUrl: {
-              title: 'Repository Contents URL',
-              description:
-                'An absolute URL pointing to the root of a repository directory tree',
-              type: 'string',
-            },
-            catalogInfoPath: {
-              title: 'Fetch URL',
-              description:
-                'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
-              type: 'string',
+          {
+            type: 'object',
+            required: ['repoContentsUrl'],
+            properties: {
+              repoContentsUrl: {
+                title: 'Repository Contents URL',
+                description:
+                  'An absolute URL pointing to the root of a repository directory tree',
+                type: 'string',
+              },
+              catalogInfoPath: {
+                title: 'Fetch URL',
+                description:
+                  'A relative path from the repo root pointing to the catalog info file, defaults to /catalog-info.yaml',
+                type: 'string',
+              },
             },
           },
-        },
-      ],
+        ],
+      },
     },
     async handler(ctx) {
-      const { parameters } = ctx;
+      const { input } = ctx;
 
       let catalogInfoUrl;
-      if ('catalogInfoUrl' in parameters) {
-        catalogInfoUrl = parameters.catalogInfoUrl;
+      if ('catalogInfoUrl' in input) {
+        catalogInfoUrl = input.catalogInfoUrl;
       } else {
         const {
           repoContentsUrl,
           catalogInfoPath = '/catalog-info.yaml',
-        } = parameters;
-        const integration = integrations.byUrl(repoContentsUrl as string);
+        } = input;
+        const integration = integrations.byUrl(repoContentsUrl);
         if (!integration) {
-          throw new InputError('No integration found for host');
+          throw new InputError(
+            `No integration found for host ${repoContentsUrl}`,
+          );
         }
 
         catalogInfoUrl = integration.resolveUrl({
-          base: repoContentsUrl as string,
-          url: catalogInfoPath as string,
+          base: repoContentsUrl,
+          url: catalogInfoPath,
         });
       }
 
@@ -91,13 +95,15 @@ export function createCatalogRegisterAction(options: {
 
       const result = await catalogClient.addLocation({
         type: 'url',
-        target: catalogInfoUrl as string,
+        target: catalogInfoUrl,
       });
       if (result.entities.length >= 1) {
         const { kind, name, namespace } = getEntityName(result.entities[0]);
         ctx.output('entityRef', `${kind}:${namespace}/${name}`);
-        ctx.output('catalogInfoUrl', catalogInfoUrl);
+        if (catalogInfoUrl) {
+          ctx.output('catalogInfoUrl', catalogInfoUrl);
+        }
       }
     },
-  };
+  });
 }

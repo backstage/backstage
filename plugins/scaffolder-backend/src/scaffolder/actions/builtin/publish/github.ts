@@ -20,18 +20,13 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
-import { TemplateAction } from '../../types';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrations;
-}): TemplateAction<{
-  repoUrl: string;
-  description?: string;
-  access?: string;
-  repoVisibility: 'private' | 'internal' | 'public';
-}> {
+}) {
   const { integrations } = options;
 
   const credentialsProviders = new Map(
@@ -41,7 +36,12 @@ export function createPublishGithubAction(options: {
     }),
   );
 
-  return {
+  return createTemplateAction<{
+    repoUrl: string;
+    description?: string;
+    access?: string;
+    repoVisibility: 'private' | 'internal' | 'public';
+  }>({
     id: 'publish:github',
     schema: {
       input: {
@@ -82,7 +82,7 @@ export function createPublishGithubAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, description, access, repoVisibility } = ctx.parameters;
+      const { repoUrl, description, access, repoVisibility } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
 
@@ -91,7 +91,7 @@ export function createPublishGithubAction(options: {
 
       if (!credentialsProvider || !integrationConfig) {
         throw new InputError(
-          `No matching integration configuration for host ${host}, please check your Integrations config`,
+          `No matching integration configuration for host ${host}, please check your integrations config`,
         );
       }
 
@@ -165,5 +165,5 @@ export function createPublishGithubAction(options: {
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
     },
-  };
+  });
 }

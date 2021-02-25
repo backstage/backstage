@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-export * from './builtin';
-export { TemplateActionRegistry } from './TemplateActionRegistry';
-export { createTemplateAction } from './createTemplateAction';
-export type { ActionContext, TemplateAction } from './types';
+// function createTemplateAction<Parameters extends ParameterBase>(
+//   options: TemplateAction<Parameters>,
+// ): TemplateAction<any>;
+
+import { InputBase, TemplateAction } from './types';
+
+export const createTemplateAction = <Input extends InputBase>(
+  templateAction: TemplateAction<Input>,
+): TemplateAction<any> => {
+  // TODO(blam): Can add some more validation here to validate the action later on
+  return templateAction;
+};

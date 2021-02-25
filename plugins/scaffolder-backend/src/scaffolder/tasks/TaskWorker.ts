@@ -98,7 +98,7 @@ export class TaskWorker {
             throw new Error(`Action '${step.action}' does not exist`);
           }
 
-          const parameters = JSON.parse(
+          const input = JSON.parse(
             JSON.stringify(step.input),
             (_key, value) => {
               if (typeof value === 'string') {
@@ -114,15 +114,13 @@ export class TaskWorker {
           );
 
           if (action.schema?.input) {
-            const validateResult = validateJsonSchema(
-              parameters,
-              action.schema,
-              { propertyName: 'parameters' },
-            );
+            const validateResult = validateJsonSchema(input, action.schema, {
+              propertyName: 'input',
+            });
             if (!validateResult.valid) {
               const errors = validateResult.errors.join(', ');
               throw new InputError(
-                `Invalid parameters passed to action ${action.id}, ${errors}`,
+                `Invalid input passed to action ${action.id}, ${errors}`,
               );
             }
           }
@@ -136,7 +134,7 @@ export class TaskWorker {
             baseUrl: task.spec.baseUrl,
             logger: taskLogger,
             logStream: stream,
-            parameters,
+            input,
             workspacePath,
             async createTemporaryDirectory() {
               const tmpDir = await fs.mkdtemp(

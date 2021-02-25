@@ -21,18 +21,22 @@ import { InputError, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject } from '@backstage/config';
 import { TemplaterBuilder, TemplaterValues } from '../../../stages/templater';
-import { TemplateAction } from '../../types';
 import { fetchContents } from './helpers';
+import { createTemplateAction } from '../../createTemplateAction';
 
 export function createFetchCookiecutterAction(options: {
   dockerClient: Docker;
   reader: UrlReader;
   integrations: ScmIntegrations;
   templaters: TemplaterBuilder;
-}): TemplateAction<{ url: string; targetPath?: string; values: JsonObject }> {
+}) {
   const { dockerClient, reader, templaters, integrations } = options;
 
-  return {
+  return createTemplateAction<{
+    url: string;
+    targetPath?: string;
+    values: JsonObject;
+  }>({
     id: 'fetch:cookiecutter',
     schema: {
       input: {
@@ -73,7 +77,7 @@ export function createFetchCookiecutterAction(options: {
         reader,
         integrations,
         baseUrl: ctx.baseUrl,
-        fetchUrl: ctx.parameters.url,
+        fetchUrl: ctx.input.url,
         outputPath: templateContentsDir,
       });
 
@@ -87,11 +91,11 @@ export function createFetchCookiecutterAction(options: {
         workspacePath: workDir,
         dockerClient,
         logStream: ctx.logStream,
-        values: ctx.parameters.values as TemplaterValues,
+        values: ctx.input.values as TemplaterValues,
       });
 
       // Finally move the template result into the task workspace
-      const targetPath = ctx.parameters.targetPath ?? './';
+      const targetPath = ctx.input.targetPath ?? './';
       const outputPath = resolvePath(ctx.workspacePath, targetPath);
       if (!outputPath.startsWith(ctx.workspacePath)) {
         throw new InputError(
@@ -100,5 +104,5 @@ export function createFetchCookiecutterAction(options: {
       }
       await fs.copy(resultDir, outputPath);
     },
-  };
+  });
 }
