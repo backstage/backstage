@@ -69,22 +69,21 @@ export class Registry {
   }
 
   // TODO: But like with coordination, timing, error handling, and what have you.
-  async execute(): Promise<void> {
-    return new Promise(resolve => {
-      Object.keys(this.collators).forEach(async type => {
+  async execute() {
+    return Promise.all(
+      Object.keys(this.collators).map(async type => {
         const decorators: IndexableDocumentDecorator[] = (
           this.decorators['*'] || []
         ).concat(this.decorators[type] || []);
-        let documents = await this.collators[type].collate();
 
+        let documents = await this.collators[type].collate();
         for (let i = 0; i < decorators.length; i++) {
           documents = await decorators[i](documents);
         }
 
         // TODO: push documents to a configured search engine.
-        resolve(undefined);
-      });
-    });
+      }),
+    );
   }
 
   /**
