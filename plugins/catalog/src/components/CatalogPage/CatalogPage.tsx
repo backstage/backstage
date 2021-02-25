@@ -167,14 +167,16 @@ const CatalogPageContents = () => {
       />
       <Content>
         <ContentHeader title={selectedTab ?? ''}>
-          <Button
-            component={RouterLink}
-            variant="contained"
-            color="primary"
-            to={createComponentLink()}
-          >
-            Create Component
-          </Button>
+          {createComponentLink && (
+            <Button
+              component={RouterLink}
+              variant="contained"
+              color="primary"
+              to={createComponentLink()}
+            >
+              Create Component
+            </Button>
+          )}
           {showAddExampleEntities && (
             <Button
               className={styles.buttonSpacing}
