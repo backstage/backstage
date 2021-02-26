@@ -179,15 +179,25 @@ export async function createRouter({
               return;
             }
           } else {
-            logger.info(
-              'Found pre-generated docs for this entity. Serving them.',
-            );
-            // TODO: re-trigger build for cache invalidation.
-            // Add build info in techdocs_metadata.json and compare it against
-            // the etag/commit in the repository.
-            // Without this, docs will not be re-built once they have been generated.
-            // Although it is unconventional that anyone will face this issue - because
-            // if you have an external storage, you should be using CI/CD to build and publish docs.
+            // Fetch the etag from stored metadata file
+            const { etag: storedEtag } = await publisher.fetchTechDocsMetadata({
+              namespace,
+              kind,
+              name,
+            });
+            // Get etag from preparer for comparison
+            const preparer = preparers.get(entity);
+            const { etag: preparerEtag } = await preparer.prepare(entity, {
+              etag: storedEtag,
+            });
+            if (preparerEtag !== storedEtag) {
+              logger.info('Found possibly outdated docs, rebuilding them...');
+              await docsBuilder.build();
+            } else {
+              logger.info(
+                'Found pre-generated docs for this entity. Serving them.',
+              );
+            }
           }
           break;
         default:
