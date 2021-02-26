@@ -89,7 +89,6 @@ export type OnCallsResponse = {
 };
 
 export type ClientApiConfig = {
-  username: string | null;
   eventsRestEndpoint: string | null;
   discoveryApi: DiscoveryApi;
 };
