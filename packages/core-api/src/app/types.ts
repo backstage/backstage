@@ -16,8 +16,8 @@
 
 import { ComponentType } from 'react';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
-import { BackstagePlugin, AnyExternalRoutes } from '../plugin/types';
-import { RouteRef } from '../routing';
+import { BackstagePlugin } from '../plugin/types';
+import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
@@ -79,9 +79,49 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
-export type AppRouteBinder = <T extends AnyExternalRoutes>(
-  externalRoutes: T,
-  targetRoutes: { [key in keyof T]: RouteRef<any> },
+/**
+ * Extracts the Optional type of a map of ExternalRouteRefs, leaving only the boolean in place as value
+ */
+type ExternalRouteRefsToOptionalMap<
+  T extends { [name in string]: ExternalRouteRef<boolean> }
+> = {
+  [name in keyof T]: T[name] extends ExternalRouteRef<infer U> ? U : never;
+};
+
+/**
+ * Extracts a union of the keys in a map whose value extends the given type
+ */
+type ExtractKeysWithType<Obj extends { [key in string]: any }, Type> = {
+  [key in keyof Obj]: Obj[key] extends Type ? key : never;
+}[keyof Obj];
+
+/**
+ * Given a map of boolean values denoting whether a route is optional, create a
+ * map of needed RouteRefs.
+ *
+ * For example { foo: false, bar: true } gives { foo: RouteRef<any>, bar?: RouteRef<any> }
+ */
+type CombineOptionalAndRequiredRoutes<
+  OptionalMap extends { [key in string]: boolean }
+> = {
+  [name in ExtractKeysWithType<OptionalMap, false>]: RouteRef<any>;
+} &
+  { [name in keyof OptionalMap]?: RouteRef<any> };
+
+/**
+ * Creates a map of required target routes based on whether the input external
+ * routes are optional or not. The external routes that are marked as optional
+ * will also be optional in the target routes map.
+ */
+type TargetRoutesMap<
+  T extends { [name in string]: ExternalRouteRef<boolean> }
+> = CombineOptionalAndRequiredRoutes<ExternalRouteRefsToOptionalMap<T>>;
+
+export type AppRouteBinder = <
+  ExternalRoutes extends { [name in string]: ExternalRouteRef<boolean> }
+>(
+  externalRoutes: ExternalRoutes,
+  targetRoutes: TargetRoutesMap<ExternalRoutes>,
 ) => void;
 
 export type AppOptions = {

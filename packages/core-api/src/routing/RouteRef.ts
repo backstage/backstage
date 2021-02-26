@@ -64,23 +64,36 @@ export function createRouteRef<
   return new AbsoluteRouteRef<Params>(config);
 }
 
-export class ExternalRouteRef {
-  private constructor(id: string) {
+export class ExternalRouteRef<Optional extends boolean = true> {
+  readonly optional: boolean;
+
+  private constructor({ id, optional }: ExternalRouteRefOptions<Optional>) {
     this.toString = () => `externalRouteRef{${id}}`;
+    this.optional = Boolean(optional);
   }
 }
 
-export type ExternalRouteRefOptions = {
+export type ExternalRouteRefOptions<Optional extends boolean = false> = {
   /**
    * An identifier for this route, used to identify it in error messages
    */
   id: string;
+
+  /**
+   * Whether or not this route is optional, defaults to false.
+   *
+   * Optional external routes are not required to be bound in the app, and
+   * if they aren't, `useRouteRef` will return `undefined`.
+   */
+  optional?: Optional;
 };
 
-export function createExternalRouteRef(
-  options: ExternalRouteRefOptions,
-): ExternalRouteRef {
+export function createExternalRouteRef<Optional extends boolean = false>(
+  options: ExternalRouteRefOptions<Optional>,
+): ExternalRouteRef<Optional> {
   return new ((ExternalRouteRef as unknown) as {
-    new (id: string): ExternalRouteRef;
-  })(options.id);
+    new (options: ExternalRouteRefOptions<Optional>): ExternalRouteRef<
+      Optional
+    >;
+  })(options);
 }

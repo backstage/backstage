@@ -305,6 +305,37 @@ in a different file than the one that creates the plugin instance, for example a
 top-level `routes.ts`. This is to avoid circular imports when you use the route
 references from other parts of the same plugin.
 
+### Optional External Routes
+
+When creating an `ExternalRouteRef` it is possible to mark it as optional:
+
+```ts
+const headerLinkRouteRef = createExternalRouteRef({
+  id: 'header-link',
+  optional: true,
+});
+```
+
+An external route that is marked as optional is not required to be bound in the
+app, allowing it to be used as a switch for whether a particular link should be
+displayed or action should be taken.
+
+When calling `useRouteRef` with an optional external route, its return signature
+is changed to `RouteFunc | undefined`, allowing for logic like this:
+
+```tsx
+const MyComponent = () => {
+  const headerLink = useRouteRef(headerLinkRouteRef);
+
+  return (
+    <header>
+      My Header
+      {headerLink && <a href={headerLink()}>External Link</a>}
+    </header>
+  );
+};
+```
+
 ### Parameterized Routes
 
 A new addition to `RouteRef`s is the possibility of adding named and typed

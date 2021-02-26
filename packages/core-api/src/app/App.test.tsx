@@ -52,11 +52,21 @@ describe('Integration Test', () => {
   const plugin1RouteRef = createRouteRef({ path: '/blah1', title: '' });
   const plugin2RouteRef = createRouteRef({ path: '/blah2', title: '' });
   const externalRouteRef = createExternalRouteRef({ id: '3' });
+  const optionalBarExternalRouteRef = createExternalRouteRef({
+    id: 'bar',
+    optional: true,
+  });
+  const optionalBazExternalRouteRef = createExternalRouteRef({
+    id: 'baz',
+    optional: true,
+  });
 
   const plugin1 = createPlugin({
     id: 'blob',
     externalRoutes: {
       foo: externalRouteRef,
+      bar: optionalBarExternalRouteRef,
+      baz: optionalBazExternalRouteRef,
     },
   });
 
@@ -76,14 +86,21 @@ describe('Integration Test', () => {
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          const routeRefFunction = useRouteRef(externalRouteRef);
-          return <div>Our Route Is: {routeRefFunction()}</div>;
+          const externalLink = useRouteRef(externalRouteRef);
+          const barLink = useRouteRef(optionalBarExternalRouteRef);
+          const bazLink = useRouteRef(optionalBazExternalRouteRef);
+          return (
+            <div>
+              Our routes are: {externalLink()}, bar: {barLink?.() ?? 'none'},
+              baz: {bazLink?.() ?? 'none'}
+            </div>
+          );
         }),
       mountPoint: plugin1RouteRef,
     }),
   );
 
-  it('runs happy path', async () => {
+  it('runs happy paths', async () => {
     const components = {
       NotFoundErrorPage: () => null,
       BootErrorPage: () => null,
@@ -106,7 +123,10 @@ describe('Integration Test', () => {
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
-        bind(plugin1.externalRoutes, { foo: plugin2RouteRef });
+        bind(plugin1.externalRoutes, {
+          foo: plugin2RouteRef,
+          bar: plugin2RouteRef,
+        });
       },
     });
 
@@ -124,7 +144,9 @@ describe('Integration Test', () => {
       </Provider>,
     );
 
-    expect(screen.getByText('Our Route Is: /foo/bar')).toBeInTheDocument();
+    expect(
+      screen.getByText('Our routes are: /foo/bar, bar: /foo/bar, baz: none'),
+    ).toBeInTheDocument();
   });
 
   it('should throw some error when the route has duplicate params', () => {

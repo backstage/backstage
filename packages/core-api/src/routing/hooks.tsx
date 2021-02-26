@@ -35,22 +35,23 @@ class RouteResolver {
     private readonly routePaths: Map<AnyRouteRef, string>,
     private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<ExternalRouteRef, RouteRef>,
+    private readonly routeBindings: Map<RouteRef | ExternalRouteRef, RouteRef>,
   ) {}
 
   resolve<Params extends { [param in string]: string }>(
     routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef,
     sourceLocation: ReturnType<typeof useLocation>,
-  ): RouteFunc<Params> {
+  ): RouteFunc<Params> | undefined {
     const routeRef =
       this.routeBindings.get(routeRefOrExternalRouteRef) ??
       (routeRefOrExternalRouteRef as RouteRef<Params>);
 
     const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
 
+    // If our route isn't bound to a path we fail the resolution and let the caller decide the failure mode
     const lastPath = this.routePaths.get(routeRef);
     if (!lastPath) {
-      throw new Error(`No path for ${routeRef}`);
+      return undefined;
     }
     const targetRefStack = Array<AnyRouteRef>();
     let matchIndex = -1;
@@ -111,9 +112,15 @@ class RouteResolver {
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
+export function useRouteRef<Optional extends boolean>(
+  routeRef: ExternalRouteRef<Optional>,
+): Optional extends true ? RouteFunc<{}> | undefined : RouteFunc<{}>;
+export function useRouteRef<Params extends { [param in string]: string } = {}>(
+  routeRef: RouteRef<Params>,
+): RouteFunc<Params>;
 export function useRouteRef<Params extends { [param in string]: string } = {}>(
   routeRef: RouteRef<Params> | ExternalRouteRef,
-): RouteFunc<Params> {
+): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);
   const routeFunc = useMemo(
@@ -121,8 +128,13 @@ export function useRouteRef<Params extends { [param in string]: string } = {}>(
     [resolver, routeRef, sourceLocation],
   );
 
-  if (!routeFunc) {
+  if (!routeFunc && !resolver) {
     throw new Error('No route resolver found in context');
+  }
+
+  const isOptional = 'optional' in routeRef && routeRef.optional;
+  if (!routeFunc && !isOptional) {
+    throw new Error(`No path for ${routeRef}`);
   }
 
   return routeFunc;

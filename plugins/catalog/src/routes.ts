@@ -18,4 +18,5 @@ import { createExternalRouteRef } from '@backstage/core';
 
 export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',
+  optional: true,
 });

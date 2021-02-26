@@ -15,6 +15,7 @@
  */
 
 import { IconComponent } from '../icons';
+import { ExternalRouteRef } from './RouteRef';
 
 // @ts-ignore, we're just embedding the Params type for usage in other places
 export type RouteRef<Params extends { [param in string]: string } = {}> = {
@@ -25,7 +26,7 @@ export type RouteRef<Params extends { [param in string]: string } = {}> = {
   title: string;
 };
 
-export type AnyRouteRef = RouteRef<any>;
+export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any>;
 
 /**
  * This type should not be used
