@@ -75,9 +75,7 @@ export function createPublishGitlabAction(options: {
       }
 
       if (!integrationConfig.config.token) {
-        throw new InputError(
-          `No token provided for GitLab Integration ${host}`,
-        );
+        throw new InputError(`No token available for host ${host}`);
       }
 
       const client = new Gitlab({

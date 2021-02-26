@@ -40,6 +40,7 @@ describe('Github Publish Action', () => {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
       repoVisibility: 'private',
+      access: 'owner/blam',
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -51,7 +52,7 @@ describe('Github Publish Action', () => {
   const { mockGithubClient } = require('@octokit/rest');
 
   beforeEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   it('should throw an error when the repoUrl is not well formed', async () => {
@@ -175,6 +176,59 @@ describe('Github Publish Action', () => {
       remoteUrl: 'https://github.com/clone/url.git',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
+    });
+  });
+
+  it('should add access for the team when it starts with the owner', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler(mockContext);
+
+    expect(
+      mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg,
+    ).toHaveBeenCalledWith({
+      org: 'owner',
+      team_slug: 'blam',
+      owner: 'owner',
+      repo: 'repo',
+      permission: 'admin',
+    });
+  });
+
+  it('should add outside collaborators when provided', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        access: 'outsidecollaborator',
+      },
+    });
+
+    expect(mockGithubClient.repos.addCollaborator).toHaveBeenCalledWith({
+      username: 'outsidecollaborator',
+      owner: 'owner',
+      repo: 'repo',
+      permission: 'admin',
     });
   });
 
