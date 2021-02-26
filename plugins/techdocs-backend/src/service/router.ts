@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  NotModifiedError,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -185,18 +188,25 @@ export async function createRouter({
               kind,
               name,
             });
-            // Get etag from preparer for comparison
+            // Send storedEtag to preparer to see if we need to rebuild them.
             const preparer = preparers.get(entity);
-            const { etag: preparerEtag } = await preparer.prepare(entity, {
-              etag: storedEtag,
-            });
-            if (preparerEtag !== storedEtag) {
-              logger.info('Found possibly outdated docs, rebuilding them...');
-              await docsBuilder.build();
-            } else {
+            try {
+              await preparer.prepare(entity, {
+                etag: storedEtag,
+              });
               logger.info(
-                'Found pre-generated docs for this entity. Serving them.',
+                'Found outdated docs for this entity. Rebuilding them.',
               );
+              await docsBuilder.build();
+            } catch (err) {
+              if (err instanceof NotModifiedError) {
+                logger.info(
+                  'Found pre-generated docs for this entity. Serving them.',
+                );
+              } else {
+                // Unexpected error, pass it to the logger
+                logger.error(err);
+              }
             }
           }
           break;
