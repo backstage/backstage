@@ -46,6 +46,7 @@ remove-plugin            Removes plugin in the current repository
 
 config:print             Print the app configuration for the current package
 config:check             Validate that the given configuration loads and matches schema
+config:schema            Dump the app configuration schema
 
 versions:bump            Bump Backstage packages to the latest versions
 versions:check           Check Backstage package versioning
@@ -482,6 +483,27 @@ Options:
   --package &lt;name&gt;  Only load config schema that applies to the given package
   --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
+```
+
+## config:schema
+
+Scope: `root`
+
+Dump the configuration schema that was collected from all local packages in the
+repo.
+
+Note: when run by `yarn`, supply the yarn option `--silent` if you are using the
+output in a command line pipe to avoid non schema output in the pipeline.
+
+```text
+Usage: backstage-cli config:schema [options]
+
+Print configuration schema
+
+Options:
+  --package &lt;name&gt;  Only output config schema that applies to the given package
+  -h, --help        display help for command
+
 ```
 
 ## versions:bump

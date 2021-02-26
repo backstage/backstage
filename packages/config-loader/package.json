@@ -32,6 +32,7 @@
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.1",
+    "@types/json-schema": "^7.0.6",
     "ajv": "^7.0.3",
     "fs-extra": "^9.0.0",
     "json-schema": "^0.2.5",
@@ -42,7 +43,6 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.7",
-    "@types/json-schema": "^7.0.6",
     "@types/json-schema-merge-allof": "^0.6.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^12.0.0",
