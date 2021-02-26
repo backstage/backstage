@@ -281,12 +281,11 @@ techdocs:
 
 **3b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use a service account, you can	Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
-follow these steps.	your `app-config.yaml` to the your account name.
+If you do not prefer (3a) and optionally like to use a service account, you can
+follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
 and get your Storage account name and Primary Key.
-
 https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
 for more details.
 
@@ -373,14 +372,14 @@ techdocs:
         $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_ID
       domainName:
         $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME
-      region: 
+      region:
         $env: OPENSTACK_SWIFT_STORAGE_REGION
 ```
 
 **4. That's it!**
 
-Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to store
-and read the static generated documentation files. When you start the backend of
-the app, you should be able to see
-`techdocs info Successfully connected to the OpenStack Swift Storage container` in
-the logs.
+Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to
+store and read the static generated documentation files. When you start the
+backend of the app, you should be able to see
+`techdocs info Successfully connected to the OpenStack Swift Storage container`
+in the logs.
