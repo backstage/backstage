@@ -21,7 +21,7 @@ import { EventEmitter } from 'events';
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 const checkFileExists = async (Key: string): Promise<boolean> => {
-  // Key will always have / as file separator irrespective of OS since S3 expects /.
+  // Key will always have / as file separator irrespective of OS since cloud providers expects /.
   // Normalize Key to OS specific path before checking if file exists.
   const filePath = path.join(rootDir, Key);
 
