@@ -48,7 +48,7 @@ export class AwsS3Publish implements PublisherBase {
     } catch (error) {
       throw new Error(
         "Since techdocs.publisher.type is set to 'openStackSwift' in your app config, " +
-        'techdocs.publisher.openStackSwift.containerName is required.',
+          'techdocs.publisher.openStackSwift.containerName is required.',
       );
     }
 
@@ -86,9 +86,9 @@ export class AwsS3Publish implements PublisherBase {
       } else {
         logger.error(
           `Could not retrieve metadata about the OpenStack Swift container ${containerName}. ` +
-          'Make sure the container exists. Also make sure that authentication is setup either by ' +
-          'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
-          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+            'Make sure the container exists. Also make sure that authentication is setup either by ' +
+            'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
+            'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
         );
 
         logger.error(`from OpenStack client library: ${err.message}`);
@@ -183,12 +183,12 @@ export class AwsS3Publish implements PublisherBase {
 
               const writeStream = this.storageClient.upload(params);
 
-            writeStream.on('error', rej);
+              writeStream.on('error', rej);
 
-            writeStream.on('success', res);
+              writeStream.on('success', res);
 
-            readStream.pipe(writeStream);
-          }),
+              readStream.pipe(writeStream);
+            }),
         );
         uploadPromises.push(uploadFile);
       }
