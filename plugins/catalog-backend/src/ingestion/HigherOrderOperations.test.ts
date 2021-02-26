@@ -335,6 +335,82 @@ describe('HigherOrderOperations', () => {
       );
     });
 
+    it('filters out duplicate named entities', async () => {
+      const locationStatus: LocationUpdateStatus = {
+        message: '',
+        status: DatabaseLocationUpdateLogStatus.SUCCESS,
+        timestamp: new Date(314159265).toISOString(),
+      };
+      const location: Location = {
+        id: '123',
+        type: 'some',
+        target: 'thing',
+      };
+      const descGood: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'good' },
+        spec: { type: 'service' },
+      };
+      const entityIdGood = 'good';
+
+      const descDup1: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+      const entityIdDup1 = 'xyz123';
+
+      const descDup2: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'c1' },
+        spec: { type: 'service' },
+      };
+      const entityIdDup2 = 'xyz124';
+
+      locationsCatalog.locations.mockResolvedValue([
+        { currentStatus: locationStatus, data: location },
+      ]);
+      locationReader.read.mockResolvedValue({
+        entities: [
+          { entity: descDup1, location, relations: [] },
+          { entity: descDup2, location, relations: [] },
+          { entity: descGood, location, relations: [] },
+        ],
+        errors: [],
+      });
+      entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([
+        { entityId: entityIdDup1 },
+        { entityId: entityIdDup2 },
+        { entityId: entityIdGood },
+      ]);
+
+      await expect(
+        higherOrderOperation.refreshAllLocations(),
+      ).resolves.toBeUndefined();
+
+      expect(locationsCatalog.locations).toHaveBeenCalledTimes(1);
+      expect(locationReader.read).toHaveBeenCalledTimes(1);
+      expect(locationReader.read).toHaveBeenNthCalledWith(1, {
+        type: 'some',
+        target: 'thing',
+      });
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.batchAddOrUpdateEntities).toHaveBeenCalledWith(
+        [
+          expect.objectContaining({
+            entity: expect.objectContaining({ metadata: { name: 'good' } }),
+            relations: [],
+          }),
+        ],
+        {
+          locationId: '123',
+        },
+      );
+    });
+
     it('logs successful updates', async () => {
       const locationStatus: LocationUpdateStatus = {
         message: '',

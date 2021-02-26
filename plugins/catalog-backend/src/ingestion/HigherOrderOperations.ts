@@ -23,6 +23,7 @@ import {
   AddLocationResult,
   HigherOrderOperation,
   LocationReader,
+  ReadLocationEntity,
 } from './types';
 
 /**
@@ -147,6 +148,24 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
   }
 
+  private deduplicateEntities(
+    entities: ReadLocationEntity[],
+  ): ReadLocationEntity[] {
+    const dedupedEntities: { [id: string]: ReadLocationEntity } = {};
+
+    entities.forEach(entity => {
+      if (dedupedEntities.hasOwnProperty(entity.entity.metadata.name)) {
+        this.logger.warn(
+          `there are duplicate entries for ${entity.entity.metadata.name}, dropping`,
+        );
+        delete dedupedEntities[entity.entity.metadata.name];
+      } else {
+        dedupedEntities[entity.entity.metadata.name] = entity;
+      }
+    });
+    return Object.values(dedupedEntities);
+  }
+
   // Performs a full refresh of a single location
   private async refreshSingleLocation(
     location: Location,
@@ -176,7 +195,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     try {
       await this.entitiesCatalog.batchAddOrUpdateEntities(
-        readerOutput.entities,
+        this.deduplicateEntities(readerOutput.entities),
         { locationId: location.id },
       );
     } catch (e) {
@@ -198,9 +217,11 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
 
     logger.info(
-      `Wrote ${readerOutput.entities.length} entities from location ${
-        location.type
-      }:${location.target} in ${durationText(startTimestamp)}`,
+      `Wrote ${
+        this.deduplicateEntities(readerOutput.entities).length
+      } entities from location ${location.type}:${
+        location.target
+      } in ${durationText(startTimestamp)}`,
     );
   }
 }
