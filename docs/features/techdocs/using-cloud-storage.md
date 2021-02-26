@@ -257,7 +257,8 @@ techdocs:
 
 **3a. (Recommended) Authentication using environment variable**
 
-Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
+If you do not prefer (3a) and optionally like to use a service account, you can
+set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
 your `app-config.yaml` to the your account name.
 
 The storage blob client will automatically use the environment variable
