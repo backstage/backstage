@@ -99,6 +99,9 @@ describe('AwsS3Publish', () => {
           assets: {
             'main.css': '',
           },
+          attachments: {
+            'image.png': Buffer.from([2, 3, 5, 3, 5, 3, 5, 9, 1]),
+          },
         },
       });
     });
