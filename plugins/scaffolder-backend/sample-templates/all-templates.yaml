@@ -4,10 +4,6 @@ metadata:
   name: example-templates
   description: A collection of all Backstage example templates
 spec:
-  type: url
   targets:
-    - https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
-    - https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-    - https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
-    - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
-    - https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+    - ./local-templates.yaml
+    - ./remote-templates.yaml
