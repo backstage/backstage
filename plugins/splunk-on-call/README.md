@@ -53,7 +53,7 @@ In order to be able to perform certain action (create-acknowledge-resolve an act
 To enable the REST Endpoint integration you can go on https://portal.victorops.com/ inside Integrations > 3rd Party Integrations > REST – Generic.  
 You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
 
-In addition, you also need to enable the REST Endpoint integration on https://portal.victorops.com/ by going to Integrations > 3rd Party Integrations > REST – Generic.  
+To enable the REST Endpoint integration you can go on https://portal.victorops.com/ inside Integrations > 3rd Party Integrations > REST – Generic.  
 You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
 
 In `app-config.yaml`:

@@ -165,6 +165,12 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     icon: <WebIcon />,
   };
 
+  const serviceLink = {
+    label: 'Portal',
+    href: 'https://portal.victorops.com/',
+    icon: <WebIcon />,
+  };
+
   return (
     <Card>
       <CardHeader
