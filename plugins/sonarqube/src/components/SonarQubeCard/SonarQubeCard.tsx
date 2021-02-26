@@ -233,7 +233,7 @@ export const SonarQubeCard = ({
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
                 rightSlot={
-                  <Value value={`${value.metrics.coverage || '-'}%`} />
+                  <Value value={`${value.metrics.coverage || '—'}%`} />
                 }
               />
               <RatingCard
