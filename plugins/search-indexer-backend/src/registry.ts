@@ -17,6 +17,8 @@
 import {
   IndexableDocumentCollator,
   IndexableDocumentDecorator,
+} from '@backstage/search-common';
+import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';

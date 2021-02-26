@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { JsonObject } from '@backstage/config';
-import { IndexableDocument } from '@backstage/plugin-search-indexer-backend';
 
 export interface SearchQuery {
   term: string;
@@ -29,3 +28,49 @@ export interface SearchResult {
 export interface SearchResultSet {
   results: SearchResult[];
 }
+
+/**
+ * Base properties that all indexed documents must include, as well as some
+ * common properties that documents are encouraged to use where appropriate.
+ */
+export interface IndexableDocument {
+  /**
+   * The primary name of the document (e.g. name, title, identifier, etc).
+   */
+  title: string;
+
+  /**
+   * Free-form text of the document (e.g. description, content, etc).
+   */
+  text: string;
+
+  /**
+   * The relative or absolute URL of the document (target when a search result
+   * is clicked).
+   */
+  location: string;
+
+  /**
+   * (Optional) The owner of the document (e.g. spec.owner on a catalog entity).
+   */
+  owner?: string;
+
+  /**
+   * (Optional) The lifecycle of the document (e.g. spec.lifecycle on a catalog entity).
+   */
+  lifecycle?: string;
+}
+
+/**
+ * Signature for the callback function that implementors must register to have
+ * their documents indexed.
+ */
+export type IndexableDocumentCollator = () => Promise<IndexableDocument[]>;
+
+/**
+ * Signature for the callback function that implementors must register to
+ * decorate existing documents with additional metadata.
+ */
+export type IndexableDocumentDecorator = (
+  documents: IndexableDocument[],
+) => Promise<IndexableDocument[]>;

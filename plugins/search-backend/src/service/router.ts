@@ -17,7 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { SearchQuery, SearchResultSet } from '../types';
+import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 
 type RouterOptions = {
   logger: Logger;

@@ -36,6 +36,7 @@
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@backstage/plugin-search-indexer-backend": "^0.1.1",
+    "@backstage/search-common": "^0.1.1",
     "@octokit/graphql": "^4.5.8",
     "@types/express": "^4.17.6",
     "@types/ldapjs": "^1.0.9",

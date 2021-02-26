@@ -27,9 +27,3 @@ export const registerCollator = (params: RegisterCollatorParameters) => {
 export const registerDecorator = (params: RegisterDecoratorParameters) => {
   registry.addDecorator(params);
 };
-
-export type {
-  IndexableDocument,
-  IndexableDocumentCollator,
-  IndexableDocumentDecorator,
-} from './types';

@@ -17,7 +17,7 @@
 import {
   IndexableDocument,
   IndexableDocumentCollator,
-} from '@backstage/plugin-search-indexer-backend';
+} from '@backstage/search-common';
 import { EntitiesCatalog } from '../catalog';
 
 export interface CatalogEntityDocument extends IndexableDocument {
