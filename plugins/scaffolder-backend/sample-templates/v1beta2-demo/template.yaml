@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1beta2
 kind: Template
 metadata:
-  name: test-template-v2
-  title: Test Template v2
-  description: Testing out the new template schema
+  name: v1beta2-demo
+  title: Test Action template
+  description: scaffolder v1beta2 template demo publishing to github
 spec:
   owner: backstage/techdocs-core
   type: service
