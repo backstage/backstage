@@ -36,12 +36,10 @@ import { useApi, alertApiRef } from '@backstage/core';
 import { useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import { User } from '../types';
 import { TriggerAlarmRequest } from '../../api/types';
 
 type Props = {
   team: string;
-  incidentCreator: User;
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated: () => void;
@@ -58,7 +56,16 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
       minWidth: `calc(100% - ${theme.spacing(2)}px)`,
+    },
+    formHeader: {
+      width: '50%',
+    },
+    incidentType: {
+      width: '90%',
     },
     targets: {
       display: 'flex',
@@ -70,7 +77,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const TriggerDialog = ({
   team,
-  incidentCreator,
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
@@ -142,10 +148,7 @@ export const TriggerDialog = ({
       <DialogTitle>This action will trigger an incident</DialogTitle>
       <DialogContent>
         <Typography variant="subtitle1" gutterBottom align="justify">
-          Created by:{' '}
-          <b>
-            {incidentCreator?.firstName} {incidentCreator?.lastName}
-          </b>
+          Created by: <b>{`{ REST } Endpoint`}</b>
         </Typography>
         <Alert severity="info">
           <Typography variant="body1" align="justify">
@@ -163,22 +166,35 @@ export const TriggerDialog = ({
           align="justify"
         >
           Please describe the problem you want to report. Be as descriptive as
-          possible. Your signed in user and a reference to the current page will
-          automatically be amended to the alarm so that the receiver can reach
-          out to you if necessary.
+          possible. <br />
+          Note that only the <b>Incident type</b>, <b>Incident display name</b>{' '}
+          and the <b>Incident message</b> fields are <b>required</b>.
         </Typography>
         <FormControl className={classes.formControl}>
-          <InputLabel id="demo-simple-select-label">Incident type</InputLabel>
-          <Select
-            id="incident-type"
-            value={incidentType}
-            onChange={handleIncidentType}
-            inputProps={{ 'data-testid': 'trigger-incident-type' }}
-          >
-            <MenuItem value="CRITICAL">Critical</MenuItem>
-            <MenuItem value="WARNING">Warning</MenuItem>
-            <MenuItem value="INFO">Info</MenuItem>
-          </Select>
+          <div className={classes.formHeader}>
+            <InputLabel id="demo-simple-select-label">Incident type</InputLabel>
+            <Select
+              id="incident-type"
+              className={classes.incidentType}
+              value={incidentType}
+              onChange={handleIncidentType}
+              inputProps={{ 'data-testid': 'trigger-incident-type' }}
+            >
+              <MenuItem value="CRITICAL">Critical</MenuItem>
+              <MenuItem value="WARNING">Warning</MenuItem>
+              <MenuItem value="INFO">Info</MenuItem>
+            </Select>
+          </div>
+          <TextField
+            className={classes.formHeader}
+            id="datetime-local"
+            label="Incident start time"
+            type="datetime-local"
+            onChange={handleIncidentStartTime}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
         </FormControl>
         <TextField
           inputProps={{ 'data-testid': 'trigger-incident-id' }}
@@ -210,15 +226,6 @@ export const TriggerDialog = ({
           label="Incident message"
           variant="outlined"
           onChange={handleIncidentMessage}
-        />
-        <TextField
-          id="datetime-local"
-          label="Incident start time"
-          type="datetime-local"
-          onChange={handleIncidentStartTime}
-          InputLabelProps={{
-            shrink: true,
-          }}
         />
       </DialogContent>
       <DialogActions>

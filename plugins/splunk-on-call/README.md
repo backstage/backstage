@@ -48,21 +48,17 @@ import {
 
 ## Client configuration
 
-In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide the username of the user making the action.
-The user supplied must be a valid Splunk On-Call user and a member of your organization.
+In order to be able to perform certain action (create-acknowledge-resolve an action), you need to provide a REST Endpoint.
 
-In addition, you also need to enable the REST Endpoint integration on https://portal.victorops.com/ by going to Integrations > 3rd Party Integrations > REST – Generic.  
+To enable the REST Endpoint integration you can go on https://portal.victorops.com/ inside Integrations > 3rd Party Integrations > REST – Generic.  
 You can now copy the URL to notify: `<SPLUNK_ON_CALL_REST_ENDPOINT>/$routing_key`
 
 In `app-config.yaml`:
 
 ```yaml
 splunkOnCall:
-  username: <SPLUNK_ON_CALL_USERNAME>
   eventsRestEndpoint: <SPLUNK_ON_CALL_REST_ENDPOINT>
 ```
-
-The user supplied must be a valid Splunk On-Call user and a member of your organization.
 
 In order to make the API calls, you need to provide a new proxy config which will redirect to the Splunk On-Call API endpoint and add authentication information in the headers:
 

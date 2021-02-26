@@ -15,7 +15,13 @@
  */
 
 import React, { useEffect } from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import {
+  createStyles,
+  List,
+  ListSubheader,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
 import { useAsyncFn } from 'react-use';
@@ -23,12 +29,28 @@ import { splunkOnCallApiRef } from '../../api';
 import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      maxHeight: '400px',
+      overflow: 'auto',
+    },
+    subheader: {
+      backgroundColor: 'white',
+    },
+    progress: {
+      margin: `0 ${theme.spacing(2)}px`,
+    },
+  }),
+);
+
 type Props = {
   refreshIncidents: boolean;
   team: string;
 };
 
 export const Incidents = ({ refreshIncidents, team }: Props) => {
+  const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
@@ -61,24 +83,32 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
     );
   }
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (!incidents?.length) {
+  if (!loading && !incidents?.length) {
     return <IncidentsEmptyState />;
   }
 
   return (
-    <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
-      {incidents!.map((incident, index) => (
-        <IncidentListItem
-          onIncidentAction={() => getIncidents()}
-          key={index}
-          team={team}
-          incident={incident}
-        />
-      ))}
+    <List
+      className={classes.root}
+      dense
+      subheader={
+        <ListSubheader className={classes.subheader}>
+          CRITICAL INCIDENTS
+        </ListSubheader>
+      }
+    >
+      {loading ? (
+        <Progress className={classes.progress} />
+      ) : (
+        incidents!.map((incident, index) => (
+          <IncidentListItem
+            onIncidentAction={() => getIncidents()}
+            key={index}
+            team={team}
+            incident={incident}
+          />
+        ))
+      )}
     </List>
   );
 };
