@@ -50,7 +50,7 @@ const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
 
 const configApi: ConfigApi = new ConfigReader({
   splunkOnCall: {
-    username: MOCKED_USER.username,
+    eventsRestEndpoint: 'EXAMPLE_REST_ENDPOINT',
   },
 });
 
