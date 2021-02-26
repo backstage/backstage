@@ -167,18 +167,18 @@ export class AwsS3Publish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
 
-        const fileContent = await fs.readFile(filePath, 'utf8');
-
-        const params = {
-          Bucket: this.bucketName,
-          Key: destination,
-          Body: fileContent,
-        };
-
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
-        const uploadFile = limiter(() =>
-          this.storageClient.upload(params).promise(),
-        );
+        const uploadFile = limiter(() => {
+          const fileStream = fs.createReadStream(filePath);
+
+          const params = {
+            Bucket: this.bucketName,
+            Key: destination,
+            Body: fileStream,
+          };
+
+          return this.storageClient.upload(params).promise();
+        });
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
