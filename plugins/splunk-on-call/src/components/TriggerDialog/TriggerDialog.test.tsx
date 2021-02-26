@@ -24,7 +24,6 @@ import {
 } from '@backstage/core';
 import { splunkOnCallApiRef } from '../../api';
 import { TriggerDialog } from './TriggerDialog';
-import { MOCKED_USER } from '../../api/mocks';
 
 describe('TriggerDialog', () => {
   const mockTriggerAlarmFn = jest.fn();
@@ -48,8 +47,8 @@ describe('TriggerDialog', () => {
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <TriggerDialog
+            team="Example"
             showDialog
-            incidentCreator={MOCKED_USER}
             handleDialog={() => {}}
             onIncidentCreated={() => {}}
           />
@@ -88,6 +87,7 @@ describe('TriggerDialog', () => {
     expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
       incidentType: 'CRITICAL',
       incidentId: 'incident-id',
+      routingKey: 'Example',
       incidentDisplayName: 'incident-display-name',
       incidentMessage: 'incident-message',
     });
