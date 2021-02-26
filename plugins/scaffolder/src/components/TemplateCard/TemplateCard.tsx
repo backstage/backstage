@@ -40,6 +40,9 @@ const useStyles = makeStyles({
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
   },
+  primary: {
+    color: ({ palette }: any) => palette.primary.light,
+  },
 });
 
 export type TemplateCardProps = {
@@ -85,7 +88,7 @@ export const TemplateCard = ({
         <Box className={classes.description}>{description}</Box>
       </CardContent>
       <CardActions>
-        <Button color="primary" to={href}>
+        <Button className={classes.primary} to={href}>
           Choose
         </Button>
       </CardActions>
