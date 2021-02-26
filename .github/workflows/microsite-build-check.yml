@@ -43,3 +43,7 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
+
+      - name: verify sidebars
+        run: yarn verify:sidebars
+        working-directory: microsite
