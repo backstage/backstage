@@ -18,7 +18,7 @@ import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 import { CatalogApi } from '@backstage/plugin-catalog-react';
-import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-backend';
+import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import qs from 'qs';
 
 export const searchApiRef = createApiRef<SearchApi>({
