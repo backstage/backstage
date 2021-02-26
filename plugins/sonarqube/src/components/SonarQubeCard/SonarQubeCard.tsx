@@ -232,7 +232,9 @@ export const SonarQubeCard = ({
                 link={value.getComponentMeasuresUrl('COVERAGE')}
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
-                rightSlot={<Value value={`${value.metrics.coverage || 0}%`} />}
+                rightSlot={
+                  <Value value={`${value.metrics.coverage || '-'}%`} />
+                }
               />
               <RatingCard
                 title="Duplications"
