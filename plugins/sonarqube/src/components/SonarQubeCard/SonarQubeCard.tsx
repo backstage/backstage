@@ -235,7 +235,7 @@ export const SonarQubeCard = ({
                 rightSlot={
                   <Value
                     value={
-                      value.metrics.coverage
+                      value.metrics.coverage !== undefined
                         ? `${value.metrics.coverage}%`
                         : '—'
                     }
