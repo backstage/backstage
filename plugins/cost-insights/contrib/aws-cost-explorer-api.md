@@ -1,6 +1,6 @@
 # Using the AWS Cost Explorer API with Cost Insights
 
-Cost Insights currently does not provide a CostInsightsApi client out of the box, this is left up to the implementr. We plan to provide an open-source client and backend eventually that can pull cost data from different cloud providers. In the meantime, we briefly explored the AWS Cost Explorer API and wanted to share our findings. Please contribute to this documentation if you try any experiments with AWS Cost Explorer.
+Cost Insights currently does not provide a CostInsightsApi client out of the box, this is left up to the implementer. We plan to provide an open-source client and backend eventually that can pull cost data from different cloud providers. In the meantime, we briefly explored the AWS Cost Explorer API and wanted to share our findings. Please contribute to this documentation if you try any experiments with AWS Cost Explorer.
 
 **Note:** Each request using the Cost Explorer API will incur a cost of \$0.01. If you anticipate high usage, adding some caching of Cost Explorer API responses could prove worthwhile over time.
 
