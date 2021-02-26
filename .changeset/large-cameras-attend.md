@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-backend': patch
 ---
 
-Automaticly rebuild docs if etag differs between stored and latest commit
+Rebuild docs if etag differ between stored and latest commit
