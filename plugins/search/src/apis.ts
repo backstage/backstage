@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { DiscoveryApi } from '@backstage/core';
+
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-backend';
 import qs from 'qs';
+
+export const searchApiRef = createApiRef<SearchApi>({
+  id: 'plugin.search.queryservice',
+  description: 'Used to make requests against the search API',
+});
 
 export type Result = {
   name: string;
@@ -31,7 +37,7 @@ export type Result = {
 
 export type SearchResults = Array<Result>;
 
-class SearchApi {
+export class SearchApi {
   private catalogApi: CatalogApi;
   private discoveryApi: DiscoveryApi;
 
@@ -74,5 +80,3 @@ class SearchApi {
     return response.json();
   }
 }
-
-export default SearchApi;

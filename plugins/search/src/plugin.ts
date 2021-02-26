@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createPlugin,
   createRouteRef,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core';
+import { SearchApi, searchApiRef } from './apis';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { SearchPage as SearchPageComponent } from './components/SearchPage';
 
 export const rootRouteRef = createRouteRef({
@@ -27,6 +31,15 @@ export const rootRouteRef = createRouteRef({
 
 export const searchPlugin = createPlugin({
   id: 'search',
+  apis: [
+    createApiFactory({
+      api: searchApiRef,
+      deps: { catalogApi: catalogApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ catalogApi, discoveryApi }) => {
+        return new SearchApi(catalogApi, discoveryApi);
+      },
+    }),
+  ],
   register({ router }) {
     router.addRoute(rootRouteRef, SearchPageComponent);
   },
