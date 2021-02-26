@@ -20,8 +20,7 @@ import { IndexableDocument } from '@backstage/plugin-search-indexer-backend';
 export interface SearchQuery {
   term: string;
   filters?: JsonObject;
-  pageIndex?: number;
-  pageSize?: number;
+  pageCursor: string;
 }
 
 export interface SearchResult {

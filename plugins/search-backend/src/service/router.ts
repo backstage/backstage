@@ -35,11 +35,11 @@ export async function createRouter({
       res: express.Response<SearchResultSet>,
     ) => {
       // TODO: Actually transform req.params into search engine specific query.
-      const { term, filters = {}, pageIndex = 0, pageSize = 30 } = req.query;
+      const { term, filters = {}, pageCursor = '' } = req.query;
       logger.info(
         `Search request received: ${term}, ${JSON.stringify(
           filters,
-        )}, ${pageIndex}, ${pageSize}`,
+        )}, ${pageCursor}`,
       );
 
       try {
