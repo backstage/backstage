@@ -1,29 +1,28 @@
-import React from 'react';
 import {
-  createApp,
   AlertDisplay,
+  createApp,
+  FlatRoutes,
   OAuthRequestDialog,
   SidebarPage,
-  FlatRoutes,
 } from '@backstage/core';
+import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  catalogPlugin,
+} from '@backstage/plugin-catalog';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { SearchPage } from '@backstage/plugin-search';
+import { TechRadarPage } from '@backstage/plugin-tech-radar';
+import { TechdocsPage } from '@backstage/plugin-techdocs';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import React from 'react';
+import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
+import { EntityPage } from './components/catalog/EntityPage';
 import * as plugins from './plugins';
 import { AppSidebar } from './sidebar';
-import { Route, Navigate } from 'react-router';
-import {
-  catalogPlugin,
-  CatalogIndexPage,
-  CatalogEntityPage,
-} from '@backstage/plugin-catalog';
-import { TechdocsPage } from '@backstage/plugin-techdocs';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-import { TechRadarPage } from '@backstage/plugin-tech-radar';
-import { SearchPage } from '@backstage/plugin-search';
-import { UserSettingsPage } from '@backstage/plugin-user-settings';
-import { ApiExplorerPage } from '@backstage/plugin-api-docs';
-
-import { EntityPage } from './components/catalog/EntityPage';
-import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
 
 const app = createApp({
   apis,
@@ -32,7 +31,10 @@ const app = createApp({
     bind(catalogPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
     });
-  }
+    bind(apiDocsPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+  },
 });
 
 const AppProvider = app.getProvider();

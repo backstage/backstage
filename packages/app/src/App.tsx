@@ -21,19 +21,29 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core';
+import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
-  catalogPlugin,
-  CatalogIndexPage,
   CatalogEntityPage,
+  CatalogIndexPage,
+  catalogPlugin,
 } from '@backstage/plugin-catalog';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {
+  CostInsightsLabelDataflowInstructionsPage,
+  CostInsightsPage,
+  CostInsightsProjectGrowthInstructionsPage,
+} from '@backstage/plugin-cost-insights';
 import { ExplorePage } from '@backstage/plugin-explore';
+import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
+import { NewRelicPage } from '@backstage/plugin-newrelic';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
@@ -42,16 +52,6 @@ import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
-import AlarmIcon from '@material-ui/icons/Alarm';
-import { ApiExplorerPage } from '@backstage/plugin-api-docs';
-import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
-import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { SearchPage } from '@backstage/plugin-search';
-import {
-  CostInsightsLabelDataflowInstructionsPage,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-} from '@backstage/plugin-cost-insights';
 
 const app = createApp({
   apis,
@@ -74,6 +74,9 @@ const app = createApp({
   },
   bindRoutes({ bind }) {
     bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
     });
   },
