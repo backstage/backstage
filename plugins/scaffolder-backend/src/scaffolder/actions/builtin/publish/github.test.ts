@@ -23,7 +23,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
-describe('Github Publish Action', () => {
+describe('publish:github', () => {
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {

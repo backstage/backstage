@@ -25,7 +25,7 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
-describe('Bitbucket Publish Action', () => {
+describe('publish:bitbucket', () => {
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {

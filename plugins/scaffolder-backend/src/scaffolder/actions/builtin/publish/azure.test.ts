@@ -27,7 +27,7 @@ import { WebApi } from 'azure-devops-node-api';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 
-describe('Azure Publish Action', () => {
+describe('publish:azure', () => {
   const integrations = ScmIntegrations.fromConfig(
     new ConfigReader({
       integrations: {

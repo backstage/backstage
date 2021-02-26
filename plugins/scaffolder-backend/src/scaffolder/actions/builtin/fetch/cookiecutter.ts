@@ -82,9 +82,6 @@ export function createFetchCookiecutterAction(options: {
       });
 
       const cookiecutter = templaters.get('cookiecutter');
-      if (!cookiecutter) {
-        throw new Error('No cookiecutter templater available');
-      }
 
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
