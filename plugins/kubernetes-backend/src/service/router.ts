@@ -104,7 +104,6 @@ export async function createRouter(
 
   if (options.clusterSupplier) {
     clusterDetails = await options.clusterSupplier.getClusters();
-    // Append supplied clusters to cluster retrieved via getCombinedClusterDetails
   } else {
     clusterDetails = await getCombinedClusterDetails(
       clusterLocatorMethods,
