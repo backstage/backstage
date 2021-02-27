@@ -15,7 +15,7 @@
  */
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-function getGlobal() {
+function getGlobalObject() {
   if (typeof window !== 'undefined' && window.Math === Math) {
     return window;
   }
@@ -26,4 +26,17 @@ function getGlobal() {
   return Function('return this')();
 }
 
-export const globalObject = getGlobal();
+export const globalObject = getGlobalObject();
+
+export function getGlobalSingleton<T>(id: string, supplier: () => T): T {
+  const key = `__@backstage/${id}__`;
+
+  let value = globalObject[key];
+  if (value) {
+    return value;
+  }
+
+  value = supplier();
+  globalObject[key] = value;
+  return value;
+}
