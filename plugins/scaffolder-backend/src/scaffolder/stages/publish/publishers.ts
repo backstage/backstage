@@ -51,32 +51,16 @@ export class Publishers implements PublisherBuilder {
 
   static async fromConfig(
     config: Config,
-    { logger }: { logger: Logger },
+    _options: { logger: Logger },
   ): Promise<PublisherBuilder> {
     const publishers = new Publishers();
 
     const scm = ScmIntegrations.fromConfig(config);
 
-    const deprecationWarning = (name: string) => {
-      logger.warn(
-        `'Specifying credentials for ${name} in the Scaffolder configuration is deprecated. This will cause errors in a future release. Please migrate to using integrations config and specifying tokens under hostnames'`,
-      );
-    };
-
     for (const integration of scm.azure.list()) {
       const publisher = await AzurePublisher.fromConfig(integration.config);
       if (publisher) {
         publishers.register(integration.config.host, publisher);
-      } else {
-        deprecationWarning('Azure');
-
-        publishers.register(
-          integration.config.host,
-          await AzurePublisher.fromConfig({
-            token: config.getOptionalString('scaffolder.azure.token'),
-            host: integration.config.host,
-          }),
-        );
       }
     }
 
@@ -90,19 +74,6 @@ export class Publishers implements PublisherBuilder {
       });
       if (publisher) {
         publishers.register(integration.config.host, publisher);
-      } else {
-        deprecationWarning('GitHub');
-
-        publishers.register(
-          integration.config.host,
-          await GithubPublisher.fromConfig(
-            {
-              token: config.getOptionalString('scaffolder.github.token') ?? '',
-              host: integration.config.host,
-            },
-            { repoVisibility },
-          ),
-        );
       }
     }
 
@@ -117,21 +88,6 @@ export class Publishers implements PublisherBuilder {
 
       if (publisher) {
         publishers.register(integration.config.host, publisher);
-      } else {
-        deprecationWarning('Gitlab');
-
-        publishers.register(
-          integration.config.host,
-          await GitlabPublisher.fromConfig(
-            {
-              token: config.getOptionalString('scaffolder.gitlab.token') ?? '',
-              host: integration.config.host,
-              apiBaseUrl: `<ignored>`,
-              baseUrl: `https://${integration.config.host}`,
-            },
-            { repoVisibility },
-          ),
-        );
       }
     }
 
@@ -149,25 +105,6 @@ export class Publishers implements PublisherBuilder {
 
       if (publisher) {
         publishers.register(integration.config.host, publisher);
-      } else {
-        deprecationWarning('Bitbucket');
-
-        publishers.register(
-          integration.config.host,
-          await BitbucketPublisher.fromConfig(
-            {
-              token:
-                config.getOptionalString('scaffolder.bitbucket.token') ?? '',
-              username:
-                config.getOptionalString('scaffolder.bitbucket.username') ?? '',
-              appPassword:
-                config.getOptionalString('scaffolder.bitbucket.appPassword') ??
-                '',
-              host: integration.config.host,
-            },
-            { repoVisibility },
-          ),
-        );
       }
     }
 
