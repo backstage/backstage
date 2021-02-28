@@ -17,20 +17,15 @@
 import { IconComponent } from '../icons';
 import { getGlobalSingleton } from '../lib/globalObject';
 
-export type AnyParams = { [param in string]: string } | undefined;
-export type ParamKeys<Params extends AnyParams> = keyof Params extends never
-  ? []
-  : (keyof Params)[];
-
 export const routeRefType: unique symbol = getGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
 
-export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
+export type RouteRef<Params extends { [param in string]: string } = any> = {
+  [routeRefType]: 'absolute';
 
-  params: ParamKeys<Params>;
+  params?: keyof Params;
 
   // TODO(Rugvip): Remove all of these once plugins don't rely on the path
   /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
@@ -41,18 +36,17 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
+export type ExternalRouteRef<Optional extends boolean = any> = {
+  [routeRefType]: 'external';
+
+  optional?: Optional;
+};
+
 export type ExternalRouteRef<
   Params extends AnyParams = any,
   Optional extends boolean = any
 > = {
   readonly [routeRefType]: 'external';
-
-  params: ParamKeys<Params>;
-
-  optional?: Optional;
-};
-
-export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any, any>;
 
 // TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
 /** @deprecated */

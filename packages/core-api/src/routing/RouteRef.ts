@@ -14,39 +14,30 @@
  * limitations under the License.
  */
 
-import {
-  RouteRef,
-  ExternalRouteRef,
-  routeRefType,
-  AnyParams,
-  ParamKeys,
-} from './types';
+import { RouteRef, ExternalRouteRef, routeRefType } from './types';
 import { IconComponent } from '../icons';
 
 // TODO(Rugvip): Remove this once we get rid of the deprecated fields, it's not exported
-export type RouteRefConfig<Params extends AnyParams> = {
-  params?: ParamKeys<Params>;
+export type RouteRefConfig<Params extends { [param in string]: string }> = {
+  params?: Array<keyof Params>;
   path?: string;
   icon?: IconComponent;
   title: string;
 };
 
-class RouteRefBase {
+class RouteRefBaseBase {
   constructor(type: string, id: string) {
     this.toString = () => `routeRef{type=${type},id=${id}}`;
   }
 }
 
-export class RouteRefImpl<Params extends AnyParams> extends RouteRefBase
-  implements RouteRef<Params> {
+export class RouteRefImpl<
+  Params extends { [param in string]: string }
+> extends RouteRefBaseBase {
   readonly [routeRefType] = 'absolute';
 
   constructor(private readonly config: RouteRefConfig<Params>) {
     super('absolute', config.title);
-  }
-
-  get params(): ParamKeys<Params> {
-    return this.config.params as any;
   }
 
   get icon() {
@@ -83,32 +74,22 @@ export function createRouteRef<
   icon?: IconComponent;
   /** @deprecated Route refs no longer decide their own title */
   title: string;
-}): RouteRef<OptionalParams<Params>> {
-  return new RouteRefImpl<OptionalParams<Params>>({
-    ...config,
-    params: (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
-  });
+}): RouteRef<Params> {
+  return new RouteRefImpl<Params>(config);
 }
 
 export class ExternalRouteRefImpl<
-  Params extends AnyParams,
   Optional extends boolean
-> extends RouteRefBase implements ExternalRouteRef<Params, Optional> {
+> extends RouteRefBaseBase {
   readonly [routeRefType] = 'external';
 
-  constructor(
-    id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-  ) {
+  constructor(id: string, readonly optional: Optional) {
     super('external', id);
   }
 }
 
 export function createExternalRouteRef<
-  Params extends { [param in ParamKey]: string },
-  Optional extends boolean = false,
-  ParamKey extends string = never
+  Optional extends boolean = false
 >(options: {
   /**
    * An identifier for this route, used to identify it in error messages
@@ -127,10 +108,9 @@ export function createExternalRouteRef<
    * if they aren't, `useRouteRef` will return `undefined`.
    */
   optional?: Optional;
-}): ExternalRouteRef<OptionalParams<Params>, Optional> {
-  return new ExternalRouteRefImpl<OptionalParams<Params>, Optional>(
+}): ExternalRouteRef<Optional> {
+  return new ExternalRouteRefImpl<Optional>(
     options.id,
-    (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
     Boolean(options.optional) as Optional,
   );
 }
