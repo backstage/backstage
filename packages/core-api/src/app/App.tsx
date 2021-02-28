@@ -50,14 +50,13 @@ import {
 } from '../extensions/traversal';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
-import { RouteRef } from '../routing';
+import { RouteRef, ExternalRouteRef } from '../routing';
 import {
   routeObjectCollector,
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
 import { RoutingProvider, validateRoutes } from '../routing/hooks';
-import { ExternalRouteRef } from '../routing/RouteRef';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
 import { AppThemeProvider } from './AppThemeProvider';

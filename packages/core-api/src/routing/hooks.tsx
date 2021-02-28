@@ -15,9 +15,13 @@
  */
 
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { AnyRouteRef, BackstageRouteObject, RouteRef } from './types';
+import {
+  AnyRouteRef,
+  BackstageRouteObject,
+  RouteRef,
+  ExternalRouteRef,
+} from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
-import { ExternalRouteRef } from './RouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.

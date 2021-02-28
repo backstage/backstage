@@ -15,35 +15,41 @@
  */
 
 import { IconComponent } from '../icons';
-import { ExternalRouteRef } from './RouteRef';
+import { getGlobalSingleton } from '../lib/globalObject';
 
-// @ts-ignore, we're just embedding the Params type for usage in other places
-export type RouteRef<Params extends { [param in string]: string } = {}> = {
-  // TODO(Rugvip): Remove path, look up via registry instead
+export const routeRefType: unique symbol = getGlobalSingleton<any>(
+  'route-ref-type',
+  () => Symbol('route-ref-type'),
+);
+
+export type RouteRef<Params extends { [param in string]: string } = any> = {
+  [routeRefType]: 'absolute';
+
+  params?: keyof Params;
+
+  // TODO(Rugvip): Remove all of these once plugins don't rely on the path
   /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
   path: string;
+  /** @deprecated icons are no longer accessed via RouteRefs */
   icon?: IconComponent;
-  title: string;
+  /** @deprecated titles are no longer accessed via RouteRefs */
+  title?: string;
+};
+
+export type ExternalRouteRef<Optional extends boolean = any> = {
+  [routeRefType]: 'external';
+
+  optional?: Optional;
 };
 
 export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any>;
 
-/**
- * This type should not be used
- * @deprecated
- */
+// TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
+/** @deprecated */
 export type ConcreteRoute = {};
-
-/**
- * This type should not be used, use RouteRef instead
- * @deprecated
- */
+/** @deprecated */
 export type AbsoluteRouteRef = RouteRef<{}>;
-
-/**
- * This type should not be used, use RouteRef instead
- * @deprecated
- */
+/** @deprecated */
 export type MutableRouteRef = RouteRef<{}>;
 
 // A duplicate of the react-router RouteObject, but with routeRef added

@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-import { RouteRef } from './types';
+import { RouteRef, ExternalRouteRef, routeRefType } from './types';
 import { IconComponent } from '../icons';
 
+// TODO(Rugvip): Remove this once we get rid of the deprecated fields, it's not exported
 export type RouteRefConfig<Params extends { [param in string]: string }> = {
   params?: Array<keyof Params>;
-  /** @deprecated Route refs no longer decide their own path */
   path?: string;
   icon?: IconComponent;
   title: string;
 };
 
-export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
-  constructor(private readonly config: RouteRefConfig<Params>) {}
+class RouteRefBaseBase {
+  constructor(type: string, id: string) {
+    this.toString = () => `routeRef{type=${type},id=${id}}`;
+  }
+}
+
+export class RouteRefImpl<
+  Params extends { [param in string]: string }
+> extends RouteRefBaseBase {
+  readonly [routeRefType] = 'absolute';
+
+  constructor(private readonly config: RouteRefConfig<Params>) {
+    super('absolute', config.title);
+  }
 
   get icon() {
     return this.config.icon;
@@ -39,10 +51,6 @@ export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
 
   get title() {
     return this.config.title;
-  }
-
-  toString() {
-    return `routeRef{title=${this.title}}`;
   }
 }
 
@@ -58,22 +66,27 @@ export function createRouteRef<
   params?: ParamKey[];
   /** @deprecated Route refs no longer decide their own path */
   path?: string;
+  /** @deprecated Route refs no longer decide their own icon */
   icon?: IconComponent;
+  /** @deprecated Route refs no longer decide their own title */
   title: string;
 }): RouteRef<Params> {
-  return new AbsoluteRouteRef<Params>(config);
+  return new RouteRefImpl<Params>(config);
 }
 
-export class ExternalRouteRef<Optional extends boolean = true> {
-  readonly optional: boolean;
+export class ExternalRouteRefImpl<
+  Optional extends boolean
+> extends RouteRefBaseBase {
+  readonly [routeRefType] = 'external';
 
-  private constructor({ id, optional }: ExternalRouteRefOptions<Optional>) {
-    this.toString = () => `externalRouteRef{${id}}`;
-    this.optional = Boolean(optional);
+  constructor(id: string, readonly optional: Optional) {
+    super('external', id);
   }
 }
 
-export type ExternalRouteRefOptions<Optional extends boolean = false> = {
+export function createExternalRouteRef<
+  Optional extends boolean = false
+>(options: {
   /**
    * An identifier for this route, used to identify it in error messages
    */
@@ -86,14 +99,9 @@ export type ExternalRouteRefOptions<Optional extends boolean = false> = {
    * if they aren't, `useRouteRef` will return `undefined`.
    */
   optional?: Optional;
-};
-
-export function createExternalRouteRef<Optional extends boolean = false>(
-  options: ExternalRouteRefOptions<Optional>,
-): ExternalRouteRef<Optional> {
-  return new ((ExternalRouteRef as unknown) as {
-    new (options: ExternalRouteRefOptions<Optional>): ExternalRouteRef<
-      Optional
-    >;
-  })(options);
+}): ExternalRouteRef<Optional> {
+  return new ExternalRouteRefImpl<Optional>(
+    options.id,
+    Boolean(options.optional) as Optional,
+  );
 }

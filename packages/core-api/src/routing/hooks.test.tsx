@@ -38,10 +38,9 @@ import {
 import {
   createRouteRef,
   createExternalRouteRef,
-  ExternalRouteRef,
   RouteRefConfig,
 } from './RouteRef';
-import { AnyRouteRef, RouteRef } from './types';
+import { AnyRouteRef, RouteRef, ExternalRouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
