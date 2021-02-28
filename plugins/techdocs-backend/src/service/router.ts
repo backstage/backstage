@@ -104,7 +104,7 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
     const storageUrl =
       config.getOptionalString('techdocs.storageUrl') ??
-      `${await discovery.getBaseUrl('techdocs')}/static/docs`;
+      `${await discovery.getExternalBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
