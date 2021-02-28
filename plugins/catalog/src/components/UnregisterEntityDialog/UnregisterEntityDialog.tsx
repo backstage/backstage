@@ -28,8 +28,6 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
@@ -79,8 +77,6 @@ export const UnregisterEntityDialog = ({
   entity,
 }: Props) => {
   const { value: entities, loading, error } = useColocatedEntities(entity);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const configApi = useApi(configApiRef);
@@ -97,7 +93,7 @@ export const UnregisterEntityDialog = ({
   };
 
   return (
-    <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle id="responsive-dialog-title">
         Are you sure you want to unregister this entity?
       </DialogTitle>
