@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// function createTemplateAction<Parameters extends ParameterBase>(
-//   options: TemplateAction<Parameters>,
-// ): TemplateAction<any>;
-
 import { InputBase, TemplateAction } from './types';
 
 export const createTemplateAction = <Input extends InputBase>(
