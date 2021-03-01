@@ -120,5 +120,5 @@ After installing the plugins in the code, you'll need to then
 
 ## Troubleshooting
 
-After installing the plugins in the code, and the kubernetes informations is not
+After installing the plugins in the code, and the kubernetes information is not
 showing up, you'll need to [troubleshoot it](troubleshooting.md).
