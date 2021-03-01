@@ -82,9 +82,13 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
 
     try {
+      const token = getBearerToken(req.headers.authorization);
       const entity = (await (
         await fetch(
           `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
         )
       ).json()) as Entity;
 
@@ -109,7 +113,10 @@ export async function createRouter({
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
-    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
+    const token = getBearerToken(req.headers.authorization);
+    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     if (!catalogRes.ok) {
       const catalogResText = await catalogRes.text();
       res.status(catalogRes.status);
@@ -201,4 +208,8 @@ export async function createRouter({
   router.use('/static/docs', publisher.docsRouter());
 
   return router;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }

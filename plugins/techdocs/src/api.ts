@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsMetadata } from './types';
@@ -51,16 +51,20 @@ export interface TechDocs {
 export class TechDocsApi implements TechDocs {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
+  public identityApi: IdentityApi;
 
   constructor({
     configApi,
     discoveryApi,
+    identityApi,
   }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
   }) {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
   }
 
   async getApiOrigin() {
@@ -84,8 +88,11 @@ export class TechDocsApi implements TechDocs {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/techdocs/${namespace}/${kind}/${name}`;
+    const token = await this.identityApi.getIdToken();
 
-    const request = await fetch(`${requestUrl}`);
+    const request = await fetch(`${requestUrl}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     const res = await request.json();
 
     return res;
@@ -104,8 +111,11 @@ export class TechDocsApi implements TechDocs {
 
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metadata/entity/${namespace}/${kind}/${name}`;
+    const token = await this.identityApi.getIdToken();
 
-    const request = await fetch(`${requestUrl}`);
+    const request = await fetch(`${requestUrl}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     const res = await request.json();
 
     return res;
@@ -120,16 +130,20 @@ export class TechDocsApi implements TechDocs {
 export class TechDocsStorageApi implements TechDocsStorage {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
+  public identityApi: IdentityApi;
 
   constructor({
     configApi,
     discoveryApi,
+    identityApi,
   }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
   }) {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
   }
 
   async getApiOrigin() {
@@ -152,9 +166,13 @@ export class TechDocsStorageApi implements TechDocsStorage {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     );
 
     let errorMessage = '';

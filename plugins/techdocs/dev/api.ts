@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsStorage } from '../src/api';
@@ -21,16 +21,20 @@ import { TechDocsStorage } from '../src/api';
 export class TechDocsDevStorageApi implements TechDocsStorage {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
+  public identityApi: IdentityApi;
 
   constructor({
     configApi,
     discoveryApi,
+    identityApi,
   }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
   }) {
     this.configApi = configApi;
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
   }
 
   async getApiOrigin() {
@@ -45,9 +49,13 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/${name}/${path}`;
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     );
 
     if (request.status === 404) {

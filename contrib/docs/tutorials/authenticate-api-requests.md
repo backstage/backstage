@@ -11,10 +11,34 @@ Caveat: as of writing this, Backstage does not refresh the identity token so eve
 ```typescript
 // packages/backend/src/index.ts from a create-app deployment
 
+import cookieParser from 'cookie-parser';
 import { Request, Response, NextFunction } from 'express';
+import { JWT } from 'jose';
+import { URL } from 'url';
 import { IdentityClient } from '@backstage/plugin-auth-backend';
 
 // ...
+
+function setTokenCookie(
+  res: Response,
+  options: { token: string; secure: boolean; cookieDomain: string },
+) {
+  try {
+    const payload = JWT.decode(options.token) as object & {
+      exp: number;
+    };
+    res.cookie(`token`, options.token, {
+      expires: new Date(payload?.exp ? payload?.exp * 1000 : 0),
+      secure: options.secure,
+      sameSite: 'lax',
+      domain: options.cookieDomain,
+      path: '/',
+      httpOnly: true,
+    });
+  } catch (_err) {
+    // Ignore
+  }
+}
 
 async function main() {
   // ...
@@ -24,14 +48,30 @@ async function main() {
     discovery,
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
+  const baseUrl = config.getString('backend.baseUrl');
+  const secure = baseUrl.startsWith('https://');
+  const cookieDomain = new URL(baseUrl).hostname;
   const authMiddleware = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => {
     try {
-      const token = IdentityClient.getBearerToken(req.headers.authorization);
+      const token =
+        IdentityClient.getBearerToken(req.headers.authorization) ||
+        req.cookies['token'];
       req.user = await identity.authenticate(token);
+      if (!req.headers.authorization) {
+        // Authorization header may be forwarded by plugin requests
+        req.headers.authorization = `Bearer ${token}`;
+      }
+      if (token !== req.cookies['token']) {
+        setTokenCookie(res, {
+          token,
+          secure,
+          cookieDomain,
+        });
+      }
       next();
     } catch (error) {
       res.status(401).send(`Unauthorized`);
@@ -39,6 +79,7 @@ async function main() {
   };
 
   const apiRouter = Router();
+  apiRouter.use(cookieParser());
   // The auth route must be publically available as it is used during login
   apiRouter.use('/auth', await auth(authEnv));
   // Only authenticated requests are allowed to the routes below
