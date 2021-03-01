@@ -100,12 +100,12 @@ export interface Config {
             credentials: {
               /**
                * (Required) Root user name
-               * @visibility backend
+               * @visibility secret
                */
               username: string;
               /**
                * (Required) Root user password
-               * @visibility backend
+               * @visibility secret
                */
               password: string; // required
             };

@@ -130,8 +130,6 @@ export class OpenStackSwiftPublish implements PublisherBase {
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
         const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
 
-        const readStream = fs.createReadStream(filePath, 'utf8');
-
         const params = {
           container: this.containerName,
           remote: destination,
@@ -141,6 +139,8 @@ export class OpenStackSwiftPublish implements PublisherBase {
         const uploadFile = limiter(
           () =>
             new Promise((res, rej) => {
+              const readStream = fs.createReadStream(filePath, 'utf8');
+
               const writeStream = this.storageClient.upload(params);
 
               writeStream.on('error', rej);
@@ -246,10 +246,13 @@ export class OpenStackSwiftPublish implements PublisherBase {
         this.storageClient.getFile(
           this.containerName,
           `${entityRootDir}/index.html`,
-          (err: any, file: any) => {
+          (err, file) => {
             if (!err && file) {
               res(true);
-            } else res(false);
+            } else {
+              res(false);
+              this.logger.warn(err.message);
+            }
           },
         );
       });
