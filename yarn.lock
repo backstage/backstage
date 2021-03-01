@@ -21487,9 +21487,9 @@ react-lifecycles-compat@^3.0.4:
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
 react-markdown@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/react-markdown/-/react-markdown-5.0.2.tgz#d15a8beb37b4ec34fc23dd892e7755eb7040b8db"
-  integrity sha512-kmkB4JbV7LqkDAjvaKRKtodB3n3Id76/DalaDun1U8FuLB0SenPfvH+jAQ5Pcpo54cACRQc1LB1yXmuuuIVecw==
+  version "5.0.3"
+  resolved "https://registry.npmjs.org/react-markdown/-/react-markdown-5.0.3.tgz#41040ea7a9324b564b328fb81dd6c04f2a5373ac"
+  integrity sha512-jDWOc1AvWn0WahpjW6NK64mtx6cwjM4iSsLHJPNBqoAgGOVoIdJMqaKX4++plhOtdd4JksdqzlDibgPx6B/M2w==
   dependencies:
     "@types/mdast" "^3.0.3"
     "@types/unist" "^2.0.3"
