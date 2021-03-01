@@ -216,6 +216,7 @@ prebaked
 preconfigured
 prepack
 productional
+programatically
 proxying
 pygments
 pymdownx
