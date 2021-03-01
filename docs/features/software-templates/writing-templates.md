@@ -205,11 +205,11 @@ spec:
 
 So in order to make working with repository providers easier, we've built a
 custom picker that can be used by overriding the `ui:field` option in the
-`uiSchema` for a `string` field. Instead of displaing a text input block it will
-render our custom component that we've built which makes it easy to select a
-repository provider, and insert a project or owner, and repository name.
+`uiSchema` for a `string` field. Instead of displaying a text input block it
+will render our custom component that we've built which makes it easy to select
+a repository provider, and insert a project or owner, and repository name.
 
-You can see it in the above full example which is a seperate step and it looks a
+You can see it in the above full example which is a separate step and it looks a
 little like this:
 
 ```yaml
