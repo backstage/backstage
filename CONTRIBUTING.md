@@ -80,6 +80,22 @@ Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if t
 
 If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
 
+## Developer Certificate of Origin
+
+As with other CNCF projects, Backstage has adopted a [Developers Certificate of Origin (DCO)](https://developercertificate.org/). A DCO is a lightweight way for a developer to certify that they wrote or otherwise have the right to submit code or documentation to a project.
+
+To certify the code you submit to the repository you'll need to add a `Signed-off-by` line to your commits.
+
+`$ git commit -s -m 'Awesome commit message'`
+
+Which will look something like the following in the repo;
+
+```
+Awesome commit message
+
+Signed-off-by: Jane Smith jane.smith@example.com
+```
+
 ## Creating Changesets
 
 We use [changesets](https://github.com/atlassian/changesets) to help us prepare releases. They help us make sure that every package affected by a change gets a proper version number and an entry in its `CHANGELOG.md`. To make the process of generating releases easy, it helps when contributors include changesets with their pull requests.
