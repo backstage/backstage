@@ -10,6 +10,9 @@ App.
 A Backstage App is a monorepo setup with `lerna` that includes everything you
 need to run Backstage in your own environment.
 
+If you intend to develop a plugin or contribute to the Backstage project, you
+may want to [Run Backstage Locally](./running-backstage-locally.md) instead.
+
 ## Create an app
 
 To create a Backstage app, you will need to have
@@ -38,7 +41,96 @@ app-folder is the name that was provided when prompted.
 Inside that directory, it will generate all the files and folder structure
 needed for you to run your app.
 
-### Linking in local Backstage packages
+### General folder structure
+
+Below is a simplified layout of the files and folders generated when creating an
+app.
+
+```
+app
+├── app-config.yaml
+├── catalog-info.yaml
+├── lerna.json
+├── package.json
+└── packages
+    ├── app
+    └── backend
+```
+
+- **app-config.yaml**: Main configuration file for the app. See
+  [Configuration](https://backstage.io/docs/conf/) for more information.
+- **catalog-info.yaml**: Catalog Entities descriptors. See
+  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
+  to get started.
+- **lerna.json**: Contains information about workspaces and other lerna
+  configuration needed for the monorepo setup.
+- **package.json**: Root package.json for the project. _Note: Be sure that you
+  don't add any npm dependencies here as they probably should be installed in
+  the intended workspace rather than in the root._
+- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
+  to be a separate package, managed by lerna.
+- **packages/app/**: An fully functioning Backstage frontend app, that acts as a
+  good starting point for you to get to know Backstage.
+- **packages/backend/**: We include a backend that helps power features such as
+  [Authentication](https://backstage.io/docs/auth/),
+  [Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
+  [Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
+  and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)
+  amongst other things.
+
+### Troubleshooting
+
+The create app command doesn't always work as expected, this is a collection of
+some of the commonly encountered issues and solutions.
+
+#### Couldn't find any versions for "file-saver"
+
+You may encounter the following error message:
+
+```text
+Couldn't find any versions for "file-saver" that matches "eligrey-FileSaver.js-1.3.8.tar.gz-art-external"
+```
+
+This is likely because you have a globally configured npm proxy, which breaks
+the installation of the `material-table` dependency. This is a known issue and
+being worked on in `material-table`, but for now you can work around it using
+the following:
+
+```bash
+NPM_CONFIG_REGISTRY=https://registry.npmjs.org npx @backstage/create-app
+```
+
+#### Can't find Python executable "python"
+
+The install process may also fail if no Python installation is available. Python
+is commonly available in most systems already, but if it isn't you can head for
+example [here](https://www.python.org/downloads/) to install it.
+
+## Run the app
+
+When the installation is complete you can open the app folder and start the app.
+
+```bash
+cd my-backstage-app
+yarn start
+```
+
+_When `yarn start` is ready it should open up a browser window displaying your
+app, if not you can navigate to `http://localhost:3000`._
+
+In most cases you will want to start the backend as well, as it is required for
+the catalog to work, along with many other plugins.
+
+To start the backend, open a separate terminal session and run the following in
+the root directory:
+
+```bash
+yarn workspace backend start
+```
+
+Now you're free to hack away on your own Backstage installation!
+
+## Linking in local Backstage packages
 
 It can often be useful to try out changes to the packages in the main Backstage
 repo within your own app. For example if you want to make modifications to
@@ -89,94 +181,3 @@ invalidate correctly for the linked in packages, causing type checking to not
 reflect changes made to types. You can work around this by either setting
 `compilerOptions.incremental = false` in `tsconfig.json`, or by deleting the
 types cache folder `dist-types` before running `yarn tsc`.
-
-### Troubleshooting
-
-The create app command doesn't always work as expected, this is a collection of
-some of the commonly encountered issues and solutions.
-
-#### Couldn't find any versions for "file-saver"
-
-You may encounter the following error message:
-
-```text
-Couldn't find any versions for "file-saver" that matches "eligrey-FileSaver.js-1.3.8.tar.gz-art-external"
-```
-
-This is likely because you have a globally configured npm proxy, which breaks
-the installation of the `material-table` dependency. This is a known issue and
-being worked on in `material-table`, but for now you can work around it using
-the following:
-
-```bash
-NPM_CONFIG_REGISTRY=https://registry.npmjs.org npx @backstage/create-app
-```
-
-#### Can't find Python executable "python"
-
-The install process may also fail if no Python installation is available. Python
-is commonly available in most systems already, but if it isn't you can head for
-example [here](https://www.python.org/downloads/) to install it.
-
-### General folder structure
-
-Below is a simplified layout of the files and folders generated when creating an
-app.
-
-```
-app
-├── app-config.yaml
-├── catalog-info.yaml
-├── lerna.json
-├── package.json
-└── packages
-    ├── app
-    └── backend
-```
-
-- **app-config.yaml**: Main configuration file for the app. See
-  [Configuration](https://backstage.io/docs/conf/) for more information.
-- **catalog-info.yaml**: Catalog Entities descriptors. See
-  [Descriptor Format of Catalog Entities](https://backstage.io/docs/features/software-catalog/descriptor-format)
-  to get started.
-- **lerna.json**: Contains information about workspaces and other lerna
-  configuration needed for the monorepo setup.
-- **package.json**: Root package.json for the project. _Note: Be sure that you
-  don't add any npm dependencies here as they probably should be installed in
-  the intended workspace rather than in the root._
-- **packages/**: Lerna leaf packages or "workspaces". Everything here is going
-  to be a separate package, managed by lerna.
-- **packages/app/**: An fully functioning Backstage frontend app, that acts as a
-  good starting point for you to get to know Backstage.
-- **packages/backend/**: We include a backend that helps power features such as
-  [Authentication](https://backstage.io/docs/auth/),
-  [Software Catalog](https://backstage.io/docs/features/software-catalog/software-catalog-overview),
-  [Software Templates](https://backstage.io/docs/features/software-templates/software-templates-index)
-  and [TechDocs](https://backstage.io/docs/features/techdocs/techdocs-overview)
-  amongst other things.
-
-## Run the app
-
-When the installation is complete you can open the app folder and start the app.
-
-```bash
-cd my-backstage-app
-yarn start
-```
-
-_When `yarn start` is ready it should open up a browser window displaying your
-app, if not you can navigate to `http://localhost:3000`._
-
-In most cases you will want to start the backend as well, as it is required for
-the catalog to work, along with many other plugins.
-
-To start the backend, open a separate terminal session and run the following in
-the root directory:
-
-```bash
-yarn workspace backend start
-```
-
-Now you're free to hack away on your own Backstage installation!
-
-### Troubleshooting

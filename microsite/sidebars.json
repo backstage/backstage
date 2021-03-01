@@ -12,9 +12,8 @@
     ],
     "Getting Started": [
       "getting-started/index",
-      "getting-started/running-backstage-locally",
-      "getting-started/contributors",
       "getting-started/create-an-app",
+      "getting-started/running-backstage-locally",
       {
         "type": "subcategory",
         "label": "App configuration",
@@ -32,7 +31,8 @@
           "getting-started/deployment-helm",
           "getting-started/deployment-other"
         ]
-      }
+      },
+      "getting-started/contributors"
     ],
     "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
