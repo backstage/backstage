@@ -74,7 +74,7 @@ describe('catalog:register', () => {
             namespace: 'default',
             name: 'test',
           },
-          kind: 'service',
+          kind: 'Component',
         } as Entity,
       ],
     });
@@ -91,7 +91,7 @@ describe('catalog:register', () => {
 
     expect(mockContext.output).toBeCalledWith(
       'entityRef',
-      'service:default/test',
+      'Component:default/test',
     );
     expect(mockContext.output).toBeCalledWith(
       'catalogInfoUrl',
