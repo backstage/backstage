@@ -85,11 +85,6 @@ export function buildMiddleware(
   // Attach the logger to the proxy config
   fullConfig.logProvider = () => logger;
 
-  // Only permit the allowed HTTP methods if configured
-  const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
-    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
-  };
-
   // Only return the allowed HTTP headers to not forward unwanted secret headers
   const requestHeaderAllowList = new Set<string>(
     [
@@ -104,15 +99,18 @@ export function buildMiddleware(
     ].map(h => h.toLocaleLowerCase()),
   );
 
-  // only forward the allowed headers in client->backend
-  fullConfig.onProxyReq = (proxyReq: http.ClientRequest) => {
-    const headerNames = proxyReq.getHeaderNames();
-
+  // Use the custom middleware filter to do two things:
+  //  1. Remove any headers not in the allow list to stop them being forwarded
+  //  2. Only permit the allowed HTTP methods if configured
+  const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
+    const headerNames = Object.keys(req.headers);
     headerNames.forEach(h => {
       if (!requestHeaderAllowList.has(h.toLocaleLowerCase())) {
-        proxyReq.removeHeader(h);
+        delete req.headers[h];
       }
     });
+
+    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
   };
 
   // Only forward the allowed HTTP headers to not forward unwanted secret headers
