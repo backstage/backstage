@@ -94,7 +94,7 @@ export function createPublishAzureAction(options: {
       if (!returnedRepo) {
         throw new InputError(
           `Unable to create the repository with Organization ${organization}, Project ${owner} and Repo ${repo}.
-          Please make sure you that both the Org and Project are typed corrected and exist.`,
+          Please make sure that both the Org and Project are typed corrected and exist.`,
         );
       }
       const remoteUrl = returnedRepo.remoteUrl;
