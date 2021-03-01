@@ -23,7 +23,7 @@ type Props = {
 export const ApiExplorerLayout = ({ children }: Props) => {
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
-    configApi.getString('organization.name') ?? 'Backstage'
+    configApi.getOptionalString('organization.name') ?? 'Backstage'
   } API Explorer`;
   return (
     <Page themeId="home">
