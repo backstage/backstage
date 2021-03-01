@@ -68,7 +68,7 @@ export const makeRouter = (
         }));
       }),
     );
-    res.send({ consumerId, offsets: groupWithTopicOffsets.flat() });
+    res.json({ consumerId, offsets: groupWithTopicOffsets.flat() });
   });
 
   return router;

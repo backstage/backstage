@@ -257,7 +257,7 @@ export class AwsS3Publish implements PublisherBase {
         res.send(await streamToBuffer(stream));
       } catch (err) {
         this.logger.warn(err.message);
-        res.status(404).send(err.message);
+        res.status(404).json(err.message);
       }
     };
   }

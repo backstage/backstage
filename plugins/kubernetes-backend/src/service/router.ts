@@ -70,12 +70,12 @@ export const makeRouter = (
       const response = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
         requestBody,
       );
-      res.send(response);
+      res.json(response);
     } catch (e) {
       logger.error(
         `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
       );
-      res.status(500).send({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   });
 
