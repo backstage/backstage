@@ -102,6 +102,11 @@ export function buildMiddleware(
   // Use the custom middleware filter to do two things:
   //  1. Remove any headers not in the allow list to stop them being forwarded
   //  2. Only permit the allowed HTTP methods if configured
+  //
+  // We are filtering the proxy request headers here rather than in
+  // `onProxyReq` becuase when global-agent is enabled then `onProxyReq`
+  // fires _after_ the agent has already sent the headers to the proxy
+  // target, causing a ERR_HTTP_HEADERS_SENT crash
   const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
     const headerNames = Object.keys(req.headers);
     headerNames.forEach(h => {
