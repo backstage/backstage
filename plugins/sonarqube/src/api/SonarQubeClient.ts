@@ -16,6 +16,7 @@
 
 import { DiscoveryApi } from '@backstage/core';
 import fetch from 'cross-fetch';
+import qs from 'qs';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
 import { ComponentWrapper, MeasuresWrapper } from './types';
 
@@ -34,9 +35,13 @@ export class SonarQubeClient implements SonarQubeApi {
     this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   }
 
-  private async callApi<T>(path: string): Promise<T | undefined> {
+  private async callApi<T>(
+    path: string,
+    query?: { [key in string]: any },
+  ): Promise<T | undefined> {
+    const queryString = query ? `?${qs.stringify(query)}` : '';
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
-    const response = await fetch(`${apiUrl}/${path}`);
+    const response = await fetch(`${apiUrl}/${path}${queryString}`);
     if (response.status === 200) {
       return (await response.json()) as T;
     }
@@ -44,10 +49,23 @@ export class SonarQubeClient implements SonarQubeApi {
   }
 
   private async getSupportedMetrics(): Promise<string[]> {
-    const result = await this.callApi<{ metrics: Array<{ key: string }> }>(
-      'metrics/search',
-    );
-    return result?.metrics?.map(m => m.key) ?? [];
+    const metrics: string[] = [];
+    let pageSize: number | undefined;
+    let nextPage: number = 1;
+
+    do {
+      const result = await this.callApi<{
+        metrics: Array<{ key: string }>;
+        total: number;
+      }>('metrics/search', { ps: 500, p: nextPage });
+
+      metrics.push(...(result?.metrics?.map(m => m.key) ?? []));
+
+      pageSize = result?.total;
+      nextPage++;
+    } while (pageSize && nextPage <= pageSize);
+
+    return metrics;
   }
 
   async getFindingSummary(
@@ -57,9 +75,9 @@ export class SonarQubeClient implements SonarQubeApi {
       return undefined;
     }
 
-    const component = await this.callApi<ComponentWrapper>(
-      `components/show?component=${componentKey}`,
-    );
+    const component = await this.callApi<ComponentWrapper>('components/show', {
+      component: componentKey,
+    });
     if (!component) {
       return undefined;
     }
@@ -84,11 +102,10 @@ export class SonarQubeClient implements SonarQubeApi {
       supportedMetrics.includes(m),
     );
 
-    const measures = await this.callApi<MeasuresWrapper>(
-      `measures/search?projectKeys=${componentKey}&metricKeys=${metricKeys.join(
-        ',',
-      )}`,
-    );
+    const measures = await this.callApi<MeasuresWrapper>('measures/search', {
+      projectKeys: componentKey,
+      metricKeys: metricKeys.join(','),
+    });
     if (!measures) {
       return undefined;
     }

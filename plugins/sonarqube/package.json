@@ -41,6 +41,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "@material-ui/styles": "^4.10.0",
     "cross-fetch": "^3.0.6",
+    "qs": "^6.9.4",
     "rc-progress": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
