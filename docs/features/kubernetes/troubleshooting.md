@@ -71,15 +71,17 @@ The curl response should have resources from kubernetes
 Kubernetes will not be showing anything if annotations not match with annotations
 on k8s service.yaml / deployment.yaml / k8s related yaml. We recommend you for
 using label selector with adding two labels:  
+
 `backstage: <selector>` and `backstage.io/kubernetes-id: <entity-service-name>`.
+
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
 metadata: {
   creationTimestamp: "2022-03-13T13:52:46.000Z",
   labels: {
-    "app": <entity-service-name>,
+    "app": <service-entity-name>,
     "backstage": <selector>,
-    "backstage.io/kubernetes-id": <entity-service-name>
+    "backstage.io/kubernetes-id": <service-entity-name>
   },
   "name": <service-entity-name>,
   "namespace": <namespace>
