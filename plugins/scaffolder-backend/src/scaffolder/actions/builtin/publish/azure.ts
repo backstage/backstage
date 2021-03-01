@@ -15,7 +15,7 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { ScmIntegrations } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
@@ -23,7 +23,7 @@ import { parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishAzureAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
 

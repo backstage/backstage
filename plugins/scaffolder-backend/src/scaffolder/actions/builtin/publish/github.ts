@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/backend-common';
 import {
   GithubCredentialsProvider,
-  ScmIntegrations,
+  ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
@@ -25,7 +25,7 @@ import { parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGithubAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
 

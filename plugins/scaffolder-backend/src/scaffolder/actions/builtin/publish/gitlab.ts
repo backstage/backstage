@@ -15,14 +15,14 @@
  */
 
 import { InputError } from '@backstage/backend-common';
-import { ScmIntegrations } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGitlabAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
 

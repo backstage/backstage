@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/backend-common';
 import {
   BitbucketIntegrationConfig,
-  ScmIntegrations,
+  ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
@@ -157,7 +157,7 @@ const getAuthorizationHeader = (config: BitbucketIntegrationConfig) => {
 };
 
 export function createPublishBitbucketAction(options: {
-  integrations: ScmIntegrations;
+  integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
 
