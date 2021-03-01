@@ -53,7 +53,7 @@ describe('SonarQubeClient', () => {
           return res(
             ctx.json({
               metrics: metricKeys.slice(0, 5).map(k => ({ key: k })),
-              total: 2,
+              total: metricKeys.length,
             }),
           );
         }
@@ -63,7 +63,7 @@ describe('SonarQubeClient', () => {
         return res(
           ctx.json({
             metrics: metricKeys.slice(5).map(k => ({ key: k })),
-            total: 2,
+            total: metricKeys.length,
           }),
         );
       }),

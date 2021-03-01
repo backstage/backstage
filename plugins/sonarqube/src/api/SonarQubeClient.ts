@@ -16,7 +16,6 @@
 
 import { DiscoveryApi } from '@backstage/core';
 import fetch from 'cross-fetch';
-import qs from 'qs';
 import { FindingSummary, Metrics, SonarQubeApi } from './SonarQubeApi';
 import { ComponentWrapper, MeasuresWrapper } from './types';
 
@@ -37,11 +36,12 @@ export class SonarQubeClient implements SonarQubeApi {
 
   private async callApi<T>(
     path: string,
-    query?: { [key in string]: any },
+    query: { [key in string]: any },
   ): Promise<T | undefined> {
-    const queryString = query ? `?${qs.stringify(query)}` : '';
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
-    const response = await fetch(`${apiUrl}/${path}${queryString}`);
+    const response = await fetch(
+      `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
+    );
     if (response.status === 200) {
       return (await response.json()) as T;
     }
@@ -50,10 +50,9 @@ export class SonarQubeClient implements SonarQubeApi {
 
   private async getSupportedMetrics(): Promise<string[]> {
     const metrics: string[] = [];
-    let pageSize: number | undefined;
     let nextPage: number = 1;
 
-    do {
+    for (;;) {
       const result = await this.callApi<{
         metrics: Array<{ key: string }>;
         total: number;
@@ -61,11 +60,13 @@ export class SonarQubeClient implements SonarQubeApi {
 
       metrics.push(...(result?.metrics?.map(m => m.key) ?? []));
 
-      pageSize = result?.total;
-      nextPage++;
-    } while (pageSize && nextPage <= pageSize);
+      if (result && metrics.length < result.total) {
+        nextPage++;
+        continue;
+      }
 
-    return metrics;
+      return metrics;
+    }
   }
 
   async getFindingSummary(
