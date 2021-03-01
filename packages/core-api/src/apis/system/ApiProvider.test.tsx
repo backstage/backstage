@@ -108,11 +108,11 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHookConsumer />);
-        }).toThrow('No ApiProvider available in react context');
+        }).toThrow(/^No ApiProvider available in react context. /);
       }).error,
     ).toEqual([
       expect.stringMatching(
-        /^Error: Uncaught \[Error: No ApiProvider available in react context\]/,
+        /^Error: Uncaught \[Error: No ApiProvider available in react context. /,
       ),
       expect.stringMatching(
         /^The above error occurred in the <MyHookConsumer> component/,
@@ -123,11 +123,11 @@ describe('ApiProvider', () => {
       withLogCollector(['error'], () => {
         expect(() => {
           render(<MyHocConsumer />);
-        }).toThrow('No ApiProvider available in react context');
+        }).toThrow(/^No ApiProvider available in react context. /);
       }).error,
     ).toEqual([
       expect.stringMatching(
-        /^Error: Uncaught \[Error: No ApiProvider available in react context\]/,
+        /^Error: Uncaught \[Error: No ApiProvider available in react context. /,
       ),
       expect.stringMatching(
         /^The above error occurred in the <withApis\(Component\)> component/,

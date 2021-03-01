@@ -185,17 +185,6 @@ separate Docker images.
 
 ![Boxes around the architecture to indicate how it is containerised](../assets/architecture-overview/containerised.png)
 
-The frontend container can be built with a provided command.
-
-```bash
-yarn install
-yarn tsc
-yarn run docker-build:app
-```
-
-Running this will simply generate a Docker container containing the contents of
-the UIs `dist` directory.
-
 The backend container can be built by running the following command:
 
 ```bash

@@ -37,7 +37,7 @@ type LockfileQueryEntry = {
   version: string;
 };
 
-/** Entries that have an invalid version range, for example an NPM tag */
+/** Entries that have an invalid version range, for example an npm tag */
 type AnalyzeResultInvalidRange = {
   name: string;
   range: string;
@@ -153,7 +153,7 @@ export class Lockfile {
         const acceptedVersion = versions.find(v => semver.satisfies(v, range));
         if (!acceptedVersion) {
           throw new Error(
-            `No existing version was accepted for range ${range}, searching through ${versions}`,
+            `No existing version was accepted for range ${range}, searching through ${versions}, for package ${name}`,
           );
         }
 

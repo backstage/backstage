@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import { Config, ConfigReader } from '@backstage/config';
+import { msw } from '@backstage/test-utils';
 import express from 'express';
 import { Session } from 'express-session';
-import nock from 'nock';
+import { JWK, JWT } from 'jose';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import { ClientMetadata, IssuerMetadata } from 'openid-client';
-import { createOidcProvider, OidcAuthProvider } from './provider';
-import { JWT, JWK } from 'jose';
-import { AuthProviderFactoryOptions } from '../types';
-import { Config } from '@backstage/config';
 import { OAuthAdapter } from '../../lib/oauth';
+import { AuthProviderFactoryOptions } from '../types';
+import { createOidcProvider, OidcAuthProvider } from './provider';
 
 const issuerMetadata = {
   issuer: 'https://oidc.test',
@@ -49,10 +51,24 @@ const clientMetadata = {
 };
 
 describe('OidcAuthProvider', () => {
+  const worker = setupServer();
+  msw.setupDefaultHandlers(worker);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('hit the metadata url', async () => {
-    const scope = nock('https://oidc.test')
-      .get('/.well-known/openid-configuration')
-      .reply(200, issuerMetadata);
+    const handler = jest.fn((_req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.set('Content-Type', 'application/json'),
+        ctx.json(issuerMetadata),
+      );
+    });
+    worker.use(
+      rest.get('https://oidc.test/.well-known/openid-configuration', handler),
+    );
     const provider = new OidcAuthProvider(clientMetadata);
     const { strategy } = ((await (provider as any).implementation) as any) as {
       strategy: {
@@ -61,7 +77,7 @@ describe('OidcAuthProvider', () => {
       };
     };
     // Assert that the expected request to the metadaurl was made.
-    expect(scope.isDone()).toBeTruthy();
+    expect(handler).toBeCalledTimes(1);
     const { _client, _issuer } = strategy;
     expect(_client.client_id).toBe(clientMetadata.clientId);
     expect(_issuer.token_endpoint).toBe(issuerMetadata.token_endpoint);
@@ -71,23 +87,53 @@ describe('OidcAuthProvider', () => {
     const jwt = {
       sub: 'alice',
       iss: 'https://oidc.test',
+      iat: Date.now(),
       aud: clientMetadata.clientId,
       exp: Date.now() + 10000,
     };
-    const scope = nock('https://oidc.test')
-      .get('/.well-known/openid-configuration')
-      .reply(200, issuerMetadata)
-      .post('/as/token.oauth2')
-      .reply(200, {
-        id_token: JWT.sign(jwt, JWK.None),
-        access_token: 'test',
-        authorization_signed_response_alg: 'HS256',
-      })
-      .get('/idp/userinfo.openid')
-      .reply(200, {
-        sub: 'alice',
-        email: 'alice@oidc.test',
-      });
+    const requestSequence: Array<string> = [];
+
+    // The array of expected requests executed by the provider handler
+    const requests: Array<{
+      method: 'get' | 'post';
+      url: string;
+      payload: object;
+    }> = [
+      {
+        method: 'get',
+        url: 'https://oidc.test/.well-known/openid-configuration',
+        payload: issuerMetadata,
+      },
+      {
+        method: 'post',
+        url: 'https://oidc.test/as/token.oauth2',
+        payload: {
+          id_token: JWT.sign(jwt, JWK.None),
+          access_token: 'test',
+          authorization_signed_response_alg: 'HS256',
+        },
+      },
+      {
+        method: 'get',
+        url: 'https://oidc.test/idp/userinfo.openid',
+        payload: {
+          sub: 'alice',
+          email: 'alice@oidc.test',
+        },
+      },
+    ];
+    worker.use(
+      ...requests.map(r => {
+        return rest[r.method](r.url, (_req, res, ctx) => {
+          requestSequence.push(r.url);
+          return res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(r.payload),
+          );
+        });
+      }),
+    );
     const provider = new OidcAuthProvider(clientMetadata);
     const req = {
       method: 'GET',
@@ -95,34 +141,38 @@ describe('OidcAuthProvider', () => {
       session: ({ 'oidc:oidc.test': 'test' } as any) as Session,
     } as express.Request;
     await provider.handler(req);
-    expect(scope.isDone()).toBeTruthy();
+    expect(requestSequence).toEqual([0, 1, 2].map(i => requests[i].url));
   });
 
   it('createOidcProvider', async () => {
-    const scope = nock('https://oidc.test')
-      .get('/.well-known/openid-configuration')
-      .reply(200, issuerMetadata);
+    const handler = jest.fn((_req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.set('Content-Type', 'application/json'),
+        ctx.json(issuerMetadata),
+      );
+    });
+    worker.use(
+      rest.get('https://oidc.test/.well-known/openid-configuration', handler),
+    );
+    const config: Config = new ConfigReader({
+      testEnv: {
+        ...clientMetadata,
+        metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+      },
+    });
     const options = {
       globalConfig: {
         appUrl: 'https://oidc.test',
         baseUrl: 'https://oidc.test',
       },
-      config: ({
-        keys: jest.fn(() => ['test']),
-        getConfig: jest.fn(() => ({
-          getString: (key: string) => {
-            const conf = {
-              ...clientMetadata,
-              metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
-            } as any;
-            return conf[key] as string;
-          },
-        })),
-      } as any) as Config,
+      config,
     } as AuthProviderFactoryOptions;
-    const provider = createOidcProvider(options) as OAuthAdapter;
+    const provider = createOidcProvider()(options) as OAuthAdapter;
     expect(provider.start).toBeDefined();
-    await new Promise(resolve => process.nextTick(resolve)); // advance a tick to give nock a chance to intercept the request
-    expect(scope.isDone()).toBeTruthy();
+    // Cast provider as any here to be able to inspect private members
+    await (provider as any).handlers.get('testEnv').handlers.implementation;
+    // Assert that the expected request to the metadaurl was made.
+    expect(handler).toBeCalledTimes(1);
   });
 });

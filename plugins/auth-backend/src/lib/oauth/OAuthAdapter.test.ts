@@ -173,6 +173,7 @@ describe('OAuthAdapter', () => {
     const mockResponse = ({
       cookie: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
 
     await oauthProvider.logout(mockRequest, mockResponse);
@@ -200,12 +201,13 @@ describe('OAuthAdapter', () => {
     } as unknown) as express.Request;
 
     const mockResponse = ({
-      send: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
 
     await oauthProvider.refresh(mockRequest, mockResponse);
-    expect(mockResponse.send).toHaveBeenCalledTimes(1);
-    expect(mockResponse.send).toHaveBeenCalledWith({
+    expect(mockResponse.json).toHaveBeenCalledTimes(1);
+    expect(mockResponse.json).toHaveBeenCalledWith({
       ...mockResponseData,
       backstageIdentity: {
         id: mockResponseData.backstageIdentity.id,
@@ -230,6 +232,7 @@ describe('OAuthAdapter', () => {
 
     const mockResponse = ({
       send: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis(),
     } as unknown) as express.Response;
 
     await oauthProvider.refresh(mockRequest, mockResponse);

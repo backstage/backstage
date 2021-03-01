@@ -58,10 +58,12 @@ export async function serveBundle(options: ServeOptions) {
     host,
     port,
     proxy: pkg.proxy,
+    // When the dev server is behind a proxy, the host and public hostname differ
+    allowedHosts: [url.hostname],
   });
 
   await new Promise<void>((resolve, reject) => {
-    server.listen(port, url.hostname, (err?: Error) => {
+    server.listen(port, host, (err?: Error) => {
       if (err) {
         reject(err);
         return;

@@ -24,9 +24,10 @@ import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { optimization } from './optimization';
 import { Config } from '@backstage/config';
-import { BundlingPaths } from './paths';
+import { BundlingPaths, isChildPath } from './paths';
 import { transforms } from './transforms';
-import { BundlingOptions, BackendBundlingOptions } from './types';
+import { LinkedPackageResolvePlugin } from './LinkedPackageResolvePlugin';
+import { BundlingOptions, BackendBundlingOptions, LernaPackage } from './types';
 import { version } from '../../lib/version';
 import { paths as cliPaths } from '../../lib/paths';
 import { runPlain } from '../run';
@@ -70,11 +71,9 @@ async function readBuildInfo() {
   };
 }
 
-async function loadLernaPackages(): Promise<
-  { name: string; location: string }[]
-> {
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(cliPaths.targetDir);
+async function loadLernaPackages(): Promise<LernaPackage[]> {
+  const { Project } = require('@lerna/project');
+  const project = new Project(cliPaths.targetDir);
   return project.getPackages();
 }
 
@@ -85,12 +84,12 @@ export async function createConfig(
   const { checksEnabled, isDev, frontendConfig } = options;
 
   const packages = await loadLernaPackages();
-  const { plugins, loaders } = transforms({
-    ...options,
-    externalTransforms: packages.map(({ name }) =>
-      cliPaths.resolveTargetRoot('node_modules', name),
-    ),
-  });
+  const { plugins, loaders } = transforms(options);
+  // Any package that is part of the monorepo but outside the monorepo root dir need
+  // separate resolution logic.
+  const externalPkgs = packages.filter(
+    p => !isChildPath(paths.root, p.location),
+  );
 
   const baseUrl = frontendConfig.getString('app.baseUrl');
   const validBaseUrl = new URL(baseUrl);
@@ -165,6 +164,7 @@ export async function createConfig(
       extensions: ['.ts', '.tsx', '.mjs', '.js', '.jsx'],
       mainFields: ['browser', 'module', 'main'],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
@@ -173,10 +173,6 @@ export async function createConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
-      // Enables proper resolution of packages when linking in external packages.
-      // Without this the packages would depend on dependencies in the node_modules
-      // of the external packages themselves, leading to module duplication
-      symlinks: false,
     },
     module: {
       rules: loaders,
@@ -205,13 +201,11 @@ export async function createBackendConfig(
   const moduleDirs = packages.map((p: any) =>
     resolvePath(p.location, 'node_modules'),
   );
+  const externalPkgs = packages.filter(
+    p => !isChildPath(paths.root, p.location),
+  ); // See frontend config
 
-  const { loaders } = transforms({
-    ...options,
-    externalTransforms: packages.map(({ name }) =>
-      cliPaths.resolveTargetRoot('node_modules', name),
-    ),
-  });
+  const { loaders } = transforms(options);
 
   return {
     mode: isDev ? 'development' : 'production',
@@ -225,7 +219,7 @@ export async function createBackendConfig(
         }
       : {}),
     externals: [
-      nodeExternals({
+      nodeExternalsWithResolve({
         modulesDir: paths.rootNodeModules,
         additionalModuleDirs: moduleDirs,
         allowlist: ['webpack/hot/poll?100', ...localPackageNames],
@@ -253,6 +247,7 @@ export async function createBackendConfig(
       mainFields: ['browser', 'module', 'main'],
       modules: [paths.rootNodeModules, ...moduleDirs],
       plugins: [
+        new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
@@ -261,7 +256,6 @@ export async function createBackendConfig(
       alias: {
         'react-dom': '@hot-loader/react-dom',
       },
-      symlinks: false, // See frontend config, added here for the same reason
     },
     module: {
       rules: loaders,
@@ -300,5 +294,34 @@ export async function createBackendConfig(
           ]
         : []),
     ],
+  };
+}
+
+// This makes the module resolution happen from the context of each non-external module, rather
+// than the main entrypoint. This fixes a bug where dependencies would be resolved from the backend
+// package rather than each individual backend package and plugin.
+//
+// TODO(Rugvip): Feature suggestion/contribute this to webpack-externals
+function nodeExternalsWithResolve(
+  options: Parameters<typeof nodeExternals>[0],
+) {
+  let currentContext: string;
+  const externals = nodeExternals({
+    ...options,
+    importType(request) {
+      const resolved = require.resolve(request, {
+        paths: [currentContext],
+      });
+      return `commonjs ${resolved}`;
+    },
+  });
+
+  return (
+    context: string,
+    request: string,
+    callback: webpack.ExternalsFunctionCallback,
+  ) => {
+    currentContext = context;
+    return externals(context, request, callback);
   };
 }

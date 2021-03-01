@@ -127,88 +127,67 @@ appConfig:
           appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
-            $secret:
-              env: AUTH_GOOGLE_CLIENT_ID
+            $env: AUTH_GOOGLE_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_GOOGLE_CLIENT_SECRET
+            $env: AUTH_GOOGLE_CLIENT_SECRET
       github:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
-            $secret:
-              env: AUTH_GITHUB_CLIENT_ID
+            $env: AUTH_GITHUB_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_GITHUB_CLIENT_SECRET
+            $env: AUTH_GITHUB_CLIENT_SECRET
           enterpriseInstanceUrl:
-            $secret:
-              env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+            $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
       gitlab:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
-            $secret:
-              env: AUTH_GITLAB_CLIENT_ID
+            $env: AUTH_GITLAB_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_GITLAB_CLIENT_SECRET
+            $env: AUTH_GITLAB_CLIENT_SECRET
           audience:
-            $secret:
-              env: GITLAB_BASE_URL
+            $env: GITLAB_BASE_URL
       okta:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
-            $secret:
-              env: AUTH_OKTA_CLIENT_ID
+            $env: AUTH_OKTA_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_OKTA_CLIENT_SECRET
+            $env: AUTH_OKTA_CLIENT_SECRET
           audience:
-            $secret:
-              env: AUTH_OKTA_AUDIENCE
+            $env: AUTH_OKTA_AUDIENCE
       oauth2:
         development:
           appOrigin: 'http://localhost:3000/'
           secure: false
           clientId:
-            $secret:
-              env: AUTH_OAUTH2_CLIENT_ID
+            $env: AUTH_OAUTH2_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_OAUTH2_CLIENT_SECRET
+            $env: AUTH_OAUTH2_CLIENT_SECRET
           authorizationURL:
-            $secret:
-              env: AUTH_OAUTH2_AUTH_URL
+            $env: AUTH_OAUTH2_AUTH_URL
           tokenURL:
-            $secret:
-              env: AUTH_OAUTH2_TOKEN_URL
+            $env: AUTH_OAUTH2_TOKEN_URL
       auth0:
         development:
           clientId:
-            $secret:
-              env: AUTH_AUTH0_CLIENT_ID
+            $env: AUTH_AUTH0_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_AUTH0_CLIENT_SECRET
+            $env: AUTH_AUTH0_CLIENT_SECRET
           domain:
-            $secret:
-              env: AUTH_AUTH0_DOMAIN
+            $env: AUTH_AUTH0_DOMAIN
       microsoft:
         development:
           clientId:
-            $secret:
-              env: AUTH_MICROSOFT_CLIENT_ID
+            $env: AUTH_MICROSOFT_CLIENT_ID
           clientSecret:
-            $secret:
-              env: AUTH_MICROSOFT_CLIENT_SECRET
+            $env: AUTH_MICROSOFT_CLIENT_SECRET
           tenantId:
-            $secret:
-              env: AUTH_MICROSOFT_TENANT_ID
+            $env: AUTH_MICROSOFT_TENANT_ID
 
 auth:
   google:
@@ -250,3 +229,4 @@ auth:
   gitlabToken: g
   newRelicRestApiKey: r
   travisciAuthToken: fake-travis-ci-auth-token
+  pagerdutyToken: h

@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
-import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
 import {
   InfoCard,
+  InfoCardVariants,
   Progress,
   StatusError,
   StatusOK,
   StatusWarning,
   StructuredMetadataTable,
 } from '@backstage/core';
+import React from 'react';
+import { Audit, AuditCompleted, LighthouseCategoryId } from '../../api';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
 import AuditStatusIcon from '../AuditStatusIcon';
 
-const LighthouseCategoryScoreStatus: FC<{ score: number }> = ({ score }) => {
-  const scoreAsPercentage = score * 100;
+const LighthouseCategoryScoreStatus = ({ score }: { score: number }) => {
+  const scoreAsPercentage = Math.round(score * 100);
   switch (true) {
     case scoreAsPercentage >= 90:
       return (
@@ -55,16 +56,19 @@ const LighthouseCategoryScoreStatus: FC<{ score: number }> = ({ score }) => {
   }
 };
 
-const LighthouseAuditStatus: FC<{ audit: Audit }> = ({ audit }) => (
+const LighthouseAuditStatus = ({ audit }: { audit: Audit }) => (
   <>
     <AuditStatusIcon audit={audit} />
     {audit.status.toUpperCase()}
   </>
 );
 
-const LighthouseAuditSummary: FC<{ audit: Audit; dense?: boolean }> = ({
+const LighthouseAuditSummary = ({
   audit,
   dense = false,
+}: {
+  audit: Audit;
+  dense?: boolean;
 }) => {
   const { url } = audit;
   const flattenedCategoryData: Record<string, React.ReactNode> = {};
@@ -88,10 +92,13 @@ const LighthouseAuditSummary: FC<{ audit: Audit; dense?: boolean }> = ({
   return <StructuredMetadataTable metadata={tableData} dense={dense} />;
 };
 
-export const LastLighthouseAuditCard: FC<{
+export const LastLighthouseAuditCard = ({
+  dense = false,
+  variant,
+}: {
   dense?: boolean;
-  variant?: string;
-}> = ({ dense = false, variant }) => {
+  variant?: InfoCardVariants;
+}) => {
   const { value: website, loading, error } = useWebsiteForEntity();
 
   let content;

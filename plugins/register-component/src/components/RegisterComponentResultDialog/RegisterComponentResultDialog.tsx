@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef, StructuredMetadataTable } from '@backstage/core';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Button,
   Dialog,

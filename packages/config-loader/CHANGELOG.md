@@ -1,5 +1,51 @@
 # @backstage/config-loader
 
+## 0.5.1
+
+### Patch Changes
+
+- 062df71db: Bump `config-loader` to `ajv` 7, to enable v7 feature use elsewhere
+- e9aab60c7: Each piece of the configuration schema is now validated upfront, in order to produce more informative errors.
+
+## 0.5.0
+
+### Minor Changes
+
+- ef7957be4: Removed support for the deprecated `$data` placeholder.
+- ef7957be4: Enable further processing of configuration files included using the `$include` placeholder. Meaning that for example for example `$env` includes will be processed as usual in included files.
+
+### Patch Changes
+
+- ef7957be4: Added support for environment variable substitutions in string configuration values using a `${VAR}` placeholder. All environment variables must be available, or the entire expression will be evaluated to `undefined`. To escape a substitution, use `${...}`, which will end up as `${...}`.
+
+  For example:
+
+  ```yaml
+  app:
+    baseUrl: https://${BASE_HOST}
+  ```
+
+## 0.4.1
+
+### Patch Changes
+
+- ad5c56fd9: Deprecate `$data` and replace it with `$include` which allows for any type of json value to be read from external files. In addition, `$include` can be used without a path, which causes the value at the root of the file to be loaded.
+
+  Most usages of `$data` can be directly replaced with `$include`, except if the referenced value is not a string, in which case the value needs to be changed. For example:
+
+  ```yaml
+  # app-config.yaml
+  foo:
+    $data: foo.yaml#myValue # replacing with $include will turn the value into a number
+    $data: bar.yaml#myValue # replacing with $include is safe
+
+  # foo.yaml
+  myValue: 0xf00
+
+  # bar.yaml
+  myValue: bar
+  ```
+
 ## 0.4.0
 
 ### Minor Changes

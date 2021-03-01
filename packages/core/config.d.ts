@@ -30,6 +30,41 @@ export interface Config {
      * @visibility frontend
      */
     title?: string;
+
+    /**
+     * Information about support of this Backstage instance and how to contact the integrator team.
+     */
+    support?: {
+      /**
+       * The primary support url.
+       * @visibility frontend
+       */
+      url: string;
+      /**
+       * A list of categorized support item groupings.
+       */
+      items: {
+        /**
+         * The title of the support item grouping.
+         * @visibility frontend
+         */
+        title: string;
+        /**
+         * An optional icon for the support item grouping.
+         * @visibility frontend
+         */
+        icon?: string;
+        /**
+         * A list of support links for the Backstage instance.
+         */
+        links: {
+          /** @visibility frontend */
+          url: string;
+          /** @visibility frontend */
+          title?: string;
+        }[];
+      }[];
+    };
   };
 
   /**
@@ -61,5 +96,18 @@ export interface Config {
       /** @visibility frontend */
       timezone: string;
     }[];
+  };
+
+  /**
+   * Configuration that provides information on available authentication providers configured for app
+   */
+  auth?: {
+    /**
+     * The 'environment' attribute added as an optional parameter to have configurable environment value for `auth.providers`.
+     * default value: 'development'
+     * optional values: 'development' | 'production'
+     * @visibility frontend
+     */
+    environment?: string;
   };
 }

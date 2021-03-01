@@ -13,64 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
+import { Git } from '@backstage/backend-common';
+import { GitLabIntegrationConfig } from '@backstage/integration';
 import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
 import path from 'path';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { InputError } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
-import { Clone, Cred } from 'nodegit';
-import { Config } from '@backstage/config';
 
 export class GitlabPreparer implements PreparerBase {
-  private readonly privateToken: string;
-
-  constructor(config: Config) {
-    this.privateToken =
-      config.getOptionalString('catalog.processors.gitlabApi.privateToken') ??
-      '';
+  static fromConfig(config: GitLabIntegrationConfig) {
+    return new GitlabPreparer({ token: config.token });
   }
 
-  async prepare(
-    template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
-  ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
+  constructor(private readonly config: { token?: string }) {}
 
-    if (!['gitlab', 'gitlab/api', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath ?? '',
+    );
+    parsedGitUrl.git_suffix = true;
+
+    const git = this.config.token
+      ? Git.fromAuth({
+          password: this.config.token,
+          username: 'oauth2',
+          logger,
+        })
+      : Git.fromAuth({ logger });
+
+    await git.clone({
+      url: parsedGitUrl.toString('https'),
+      dir: checkoutPath,
+      ref: parsedGitUrl.ref,
+    });
+
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
     }
-    const templateId = template.metadata.name;
-
-    const parsedGitLocation = GitUriParser(location);
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(workingDirectory, templateId),
-    );
-
-    const templateDirectory = path.join(
-      `${path.dirname(parsedGitLocation.filepath)}`,
-      template.spec.path ?? '.',
-    );
-
-    const options = this.privateToken
-      ? {
-          fetchOpts: {
-            callbacks: {
-              credentials: () =>
-                Cred.userpassPlaintextNew('oauth2', this.privateToken),
-            },
-          },
-        }
-      : {};
-
-    await Clone.clone(repositoryCheckoutUrl, tempDir, options);
-
-    return path.resolve(tempDir, templateDirectory);
   }
 }

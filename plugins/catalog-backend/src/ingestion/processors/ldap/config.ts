@@ -109,6 +109,15 @@ export type GroupConfig = {
     // The name of the attribute that shall be used for the value of the
     // spec.type field of the entity. Defaults to "groupType".
     type: string;
+    // The name of the attribute that shall be used for the value of the
+    // spec.profile.displayName field of the entity. Defaults to "cn".
+    displayName: string;
+    // The name of the attribute that shall be used for the value of the
+    // spec.profile.email field of the entity.
+    email?: string;
+    // The name of the attribute that shall be used for the value of the
+    // spec.profile.picture field of the entity.
+    picture?: string;
     // The name of the attribute that shall be used for the values of the
     // spec.parent field of the entity. Defaults to "memberOf".
     memberOf: string;
@@ -141,6 +150,7 @@ const defaultConfig = {
       rdn: 'cn',
       name: 'cn',
       description: 'description',
+      displayName: 'cn',
       type: 'groupType',
       memberOf: 'memberOf',
       members: 'member',
@@ -220,6 +230,9 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       name: c.getOptionalString('name'),
       description: c.getOptionalString('description'),
       type: c.getOptionalString('type'),
+      displayName: c.getOptionalString('displayName'),
+      email: c.getOptionalString('email'),
+      picture: c.getOptionalString('picture'),
       memberOf: c.getOptionalString('memberOf'),
       members: c.getOptionalString('members'),
     };

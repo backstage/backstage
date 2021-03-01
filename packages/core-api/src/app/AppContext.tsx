@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import React, { createContext, useContext, FC } from 'react';
-import { BackstageApp } from './types';
+import React, { createContext, PropsWithChildren, useContext } from 'react';
+import { AppContext } from './types';
 
-const Context = createContext<BackstageApp | undefined>(undefined);
+const Context = createContext<AppContext | undefined>(undefined);
 
 type Props = {
-  app: BackstageApp;
+  appContext: AppContext;
 };
 
-export const AppContextProvider: FC<Props> = ({ app, children }) => (
-  <Context.Provider value={app} children={children} />
+export const AppContextProvider = ({
+  appContext,
+  children,
+}: PropsWithChildren<Props>) => (
+  <Context.Provider value={appContext} children={children} />
 );
 
-export const useApp = (): BackstageApp => {
-  const app = useContext(Context);
-  if (!app) {
+export const useApp = (): AppContext => {
+  const appContext = useContext(Context);
+  if (!appContext) {
     throw new Error('No app context available');
   }
-  return app;
+  return appContext;
 };

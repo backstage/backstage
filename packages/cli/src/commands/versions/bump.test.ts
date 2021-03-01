@@ -23,6 +23,15 @@ import * as runObj from '../../lib/run';
 import bump from './bump';
 import { withLogCollector } from '@backstage/test-utils';
 
+// Remove log coloring to simplify log matching
+jest.mock('chalk', () => ({
+  blue: (str: string) => str,
+  cyan: (str: string) => str,
+  green: (str: string) => str,
+  magenta: (str: string) => str,
+  yellow: (str: string) => str,
+}));
+
 const REGISTRY_VERSIONS: { [name: string]: string } = {
   '@backstage/core': '1.0.6',
   '@backstage/core-api': '1.0.7',
@@ -99,7 +108,7 @@ describe('bump', () => {
     paths.targetDir = '/';
     jest
       .spyOn(paths, 'resolveTargetRoot')
-      .mockImplementation((...paths) => resolvePath('/', ...paths));
+      .mockImplementation((...path) => resolvePath('/', ...path));
     jest.spyOn(runObj, 'runPlain').mockImplementation(async (...[, , , name]) =>
       JSON.stringify({
         type: 'inspect',
@@ -121,11 +130,15 @@ describe('bump', () => {
       'Checking for updates of @backstage/core',
       'Checking for updates of @backstage/core-api',
       'Some packages are outdated, updating',
-      'Removing lockfile entry for @backstage/core@^1.0.3 to bump to 1.0.6',
-      'Removing lockfile entry for @backstage/core-api@^1.0.6 to bump to 1.0.7',
-      'Removing lockfile entry for @backstage/core-api@^1.0.3 to bump to 1.0.7',
-      'Bumping @backstage/theme in b to ^2.0.0',
-      "Running 'yarn install' to install new versions",
+      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
+      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
+      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
+      'bumping @backstage/theme in b to ^2.0.0',
+      'Running yarn install to install new versions',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'Version bump complete!',
     ]);
 
     expect(runObj.runPlain).toHaveBeenCalledTimes(3);
@@ -161,6 +174,73 @@ describe('bump', () => {
       dependencies: {
         '@backstage/core': '^1.0.3', // not bumped
         '@backstage/theme': '^2.0.0', // bumped since newer
+      },
+    });
+  });
+
+  it('should ignore not found packages', async () => {
+    // Make sure all modules involved in package discovery are in the module cache before we mock fs
+    await mapDependencies(paths.targetDir);
+    mockFs({
+      '/yarn.lock': lockfileMockResult,
+      '/lerna.json': JSON.stringify({
+        packages: ['packages/*'],
+      }),
+      '/packages/a/package.json': JSON.stringify({
+        name: 'a',
+        dependencies: {
+          '@backstage/core': '^1.0.5',
+        },
+      }),
+      '/packages/b/package.json': JSON.stringify({
+        name: 'b',
+        dependencies: {
+          '@backstage/core': '^1.0.3',
+          '@backstage/theme': '^2.0.0',
+        },
+      }),
+    });
+
+    paths.targetDir = '/';
+    jest
+      .spyOn(paths, 'resolveTargetRoot')
+      .mockImplementation((...path) => resolvePath('/', ...path));
+    jest.spyOn(runObj, 'runPlain').mockImplementation(async () => '');
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump();
+    });
+    expect(logs.filter(Boolean)).toEqual([
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
+      'Package info not found, ignoring package @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Checking for updates of @backstage/core',
+      'Package info not found, ignoring package @backstage/theme',
+      'Package info not found, ignoring package @backstage/core',
+      'All Backstage packages are up to date!',
+    ]);
+
+    expect(runObj.run).toHaveBeenCalledTimes(0);
+
+    const lockfileContents = await fs.readFile('/yarn.lock', 'utf8');
+    expect(lockfileContents).toBe(lockfileMockResult);
+
+    const packageA = await fs.readJson('/packages/a/package.json');
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage/core': '^1.0.5', // not bumped
+      },
+    });
+    const packageB = await fs.readJson('/packages/b/package.json');
+    expect(packageB).toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage/core': '^1.0.3', // not bumped
+        '@backstage/theme': '^2.0.0', // not bumped
       },
     });
   });

@@ -15,8 +15,11 @@
  */
 
 import { createStatusCheckRouter } from '@backstage/backend-common';
+import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
-export default async function createRouter({ logger }: PluginEnvironment) {
+export default async function createRouter({
+  logger,
+}: PluginEnvironment): Promise<Router> {
   return await createStatusCheckRouter({ logger, path: '/healthcheck' });
 }

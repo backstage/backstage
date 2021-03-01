@@ -21,7 +21,7 @@ import { OAuthApiCreateOptions } from '../types';
 
 const DEFAULT_PROVIDER = {
   id: 'gitlab',
-  title: 'Gitlab',
+  title: 'GitLab',
   icon: GitlabIcon,
 };
 

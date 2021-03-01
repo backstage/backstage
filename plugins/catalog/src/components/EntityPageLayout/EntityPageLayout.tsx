@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import { Content, Header, HeaderLabel, Page, Progress } from '@backstage/core';
+import {
+  EntityContext,
+  EntityRefLinks,
+  getEntityRelations,
+  useEntityCompoundName,
+} from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { PropsWithChildren, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { EntityContext } from '../../hooks/useEntity';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { useEntityCompoundName } from '../useEntityCompoundName';
 import { Tabbed } from './Tabbed';
 
 const EntityPageTitle = ({
@@ -39,12 +47,32 @@ const EntityPageTitle = ({
   </Box>
 );
 
-function headerProps(
+const EntityLabels = ({ entity }: { entity: Entity }) => {
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  return (
+    <>
+      {ownedByRelations.length > 0 && (
+        <HeaderLabel
+          label="Owner"
+          value={
+            <EntityRefLinks entityRefs={ownedByRelations} color="inherit" />
+          }
+        />
+      )}
+      {entity.spec?.lifecycle && (
+        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+      )}
+    </>
+  );
+};
+
+const headerProps = (
   kind: string,
   namespace: string | undefined,
   name: string,
   entity: Entity | undefined,
-): { headerTitle: string; headerType: string } {
+): { headerTitle: string; headerType: string } => {
   return {
     headerTitle: `${name}${
       namespace && namespace !== ENTITY_DEFAULT_NAMESPACE
@@ -60,7 +88,7 @@ function headerProps(
       return t;
     })(),
   };
-}
+};
 
 export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
   const { kind, namespace, name } = useEntityCompoundName();
@@ -88,16 +116,10 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
+        {/* TODO: Make entity labels configurable for entity kind / type */}
         {entity && (
           <>
-            <HeaderLabel
-              label="Owner"
-              value={entity.spec?.owner || 'unknown'}
-            />
-            <HeaderLabel
-              label="Lifecycle"
-              value={entity.spec?.lifecycle || 'unknown'}
-            />
+            <EntityLabels entity={entity} />
             <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
           </>
         )}

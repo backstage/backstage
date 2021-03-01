@@ -42,23 +42,25 @@ export function compileConfigSchemas(
 
   const ajv = new Ajv({
     allErrors: true,
+    allowUnionTypes: true,
     schemas: {
       'https://backstage.io/schema/config-v1': true,
     },
-  }).addKeyword('visibility', {
+  }).addKeyword({
+    keyword: 'visibility',
     metaSchema: {
       type: 'string',
       enum: CONFIG_VISIBILITIES,
     },
     compile(visibility: ConfigVisibility) {
-      return (_data, dataPath) => {
-        if (!dataPath) {
+      return (_data, context) => {
+        if (context?.dataPath === undefined) {
           return false;
         }
         if (visibility && visibility !== 'backend') {
-          const normalizedPath = dataPath.replace(
+          const normalizedPath = context.dataPath.replace(
             /\['?(.*?)'?\]/g,
-            (_, segment) => `.${segment}`,
+            (_, segment) => `/${segment}`,
           );
           visibilityByPath.set(normalizedPath, visibility);
         }
@@ -67,8 +69,49 @@ export function compileConfigSchemas(
     },
   });
 
+  for (const schema of schemas) {
+    try {
+      ajv.compile(schema.value);
+    } catch (error) {
+      throw new Error(`Schema at ${schema.path} is invalid, ${error}`);
+    }
+  }
+
+  const merged = mergeConfigSchemas(schemas.map(_ => _.value));
+  const validate = ajv.compile(merged);
+
+  return configs => {
+    const config = ConfigReader.fromConfigs(configs).get();
+
+    visibilityByPath.clear();
+
+    const valid = validate(config);
+    if (!valid) {
+      const errors = validate.errors ?? [];
+      return {
+        errors: errors.map(({ dataPath, message, params }) => {
+          const paramStr = Object.entries(params)
+            .map(([name, value]) => `${name}=${value}`)
+            .join(' ');
+          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
+        }),
+        visibilityByPath: new Map(),
+      };
+    }
+
+    return {
+      visibilityByPath: new Map(visibilityByPath),
+    };
+  };
+}
+
+/**
+ * Given a list of configuration schemas from packages, merge them
+ * into a single json schema.
+ */
+export function mergeConfigSchemas(schemas: JSONSchema[]): JSONSchema {
   const merged = mergeAllOf(
-    { allOf: schemas.map(_ => _.value) },
+    { allOf: schemas },
     {
       // JSONSchema is typically subtractive, as in it always reduces the set of allowed
       // inputs through constraints. This changes the object property merging to be additive
@@ -97,30 +140,5 @@ export function compileConfigSchemas(
       } as Partial<Resolvers<JSONSchema>>,
     },
   );
-
-  const validate = ajv.compile(merged);
-
-  return configs => {
-    const config = ConfigReader.fromConfigs(configs).get();
-
-    visibilityByPath.clear();
-
-    const valid = validate(config);
-    if (!valid) {
-      const errors = validate.errors ?? [];
-      return {
-        errors: errors.map(({ dataPath, message, params }) => {
-          const paramStr = Object.entries(params)
-            .map(([name, value]) => `${name}=${value}`)
-            .join(' ');
-          return `Config ${message || ''} { ${paramStr} } at ${dataPath}`;
-        }),
-        visibilityByPath: new Map(),
-      };
-    }
-
-    return {
-      visibilityByPath: new Map(visibilityByPath),
-    };
-  };
+  return merged;
 }

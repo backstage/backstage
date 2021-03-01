@@ -15,82 +15,125 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
+import { initRepoAndPush } from './helpers';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
-import { pushToRemoteUserPass } from './helpers';
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
+import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
-interface GithubPublisherParams {
-  client: Octokit;
-  token: string;
-  repoVisibility: RepoVisibilityOptions;
-}
-
 export class GithubPublisher implements PublisherBase {
-  private client: Octokit;
-  private token: string;
-  private repoVisibility: RepoVisibilityOptions;
+  static async fromConfig(
+    config: GitHubIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token && !config.apps) {
+      return undefined;
+    }
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'public',
-  }: GithubPublisherParams) {
-    this.client = client;
-    this.token = token;
-    this.repoVisibility = repoVisibility;
+    const credentialsProvider = GithubCredentialsProvider.create(config);
+
+    return new GithubPublisher({
+      credentialsProvider,
+      repoVisibility,
+      apiBaseUrl: config.apiBaseUrl,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      credentialsProvider: GithubCredentialsProvider;
+      repoVisibility: RepoVisibilityOptions;
+      apiBaseUrl: string | undefined;
+    },
+  ) {}
 
   async publish({
     values,
-    directory,
+    workspacePath,
+    logger,
   }: PublisherOptions): Promise<PublisherResult> {
-    const remoteUrl = await this.createRemote(values);
-    await pushToRemoteUserPass(
-      directory,
+    const { owner, name } = parseGitUrl(values.storePath);
+
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url: values.storePath,
+    });
+
+    if (!token) {
+      throw new Error(
+        `No token could be acquired for URL: ${values.storePath}`,
+      );
+    }
+
+    const client = new Octokit({
+      auth: token,
+      baseUrl: this.config.apiBaseUrl,
+    });
+
+    const description = values.description as string;
+    const access = values.access as string;
+    const remoteUrl = await this.createRemote({
+      client,
+      description,
+      access,
+      name,
+      owner,
+    });
+
+    await initRepoAndPush({
+      dir: path.join(workspacePath, 'result'),
       remoteUrl,
-      this.token,
-      'x-oauth-basic',
-    );
+      auth: {
+        username: 'x-access-token',
+        password: token,
+      },
+      logger,
+    });
+
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,
       '/blob/master/catalog-info.yaml',
     );
-
     return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [owner, name] = values.storePath.split('/');
-    const description = values.description as string;
+  private async createRemote(opts: {
+    client: Octokit;
+    access: string;
+    name: string;
+    owner: string;
+    description: string;
+  }) {
+    const { client, access, description, owner, name } = opts;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const user = await client.users.getByUsername({
+      username: owner,
+    });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? client.repos.createInOrg({
             name,
             org: owner,
-            private: this.repoVisibility !== 'public',
-            visibility: this.repoVisibility,
+            private: this.config.repoVisibility !== 'public',
+            visibility: this.config.repoVisibility,
             description,
           })
-        : this.client.repos.createForAuthenticatedUser({
+        : client.repos.createForAuthenticatedUser({
             name,
-            private: this.repoVisibility === 'private',
+            private: this.config.repoVisibility === 'private',
             description,
           });
 
     const { data } = await repoCreationPromise;
 
-    const access = values.access as string;
     if (access?.startsWith(`${owner}/`)) {
       const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
+      await client.teams.addOrUpdateRepoPermissionsInOrg({
         org: owner,
         team_slug: team,
         owner,
@@ -99,7 +142,7 @@ export class GithubPublisher implements PublisherBase {
       });
       // no need to add access if it's the person who own's the personal account
     } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
+      await client.repos.addCollaborator({
         owner,
         repo: name,
         username: access,

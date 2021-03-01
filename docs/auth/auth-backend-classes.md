@@ -61,16 +61,31 @@ If your authentication provider is any of the above mentioned providers, you can
 configure them by setting the right variables in `app-config.yaml` under the
 `auth` section.
 
+### SAML
+
+The SAML Provider is currently under development. Additional validation and
+profile handling is still required before use in production.
+
+To configure the SAML Auth provider, look at the configuration parameters
+supported by
+[Passport-SAML](https://github.com/node-saml/passport-saml#config-parameter-details)
+under the `auth.providers.saml` key
+
+For security reasons, validate that the response from the IdP is indeed signed
+by also providing the `cert` configuration.
+
 ### Configuration
 
-Each authentication provider (except SAML) needs five parameters: an OAuth
-client ID, a client secret, an authorization endpoint, a token endpoint, and an
-app origin. The app origin is the URL at which the frontend of the application
-is hosted, and it is read from the `app.baseUrl` config. This is required
-because the application opens a popup window to perform the authentication, and
-once the flow is completed, the popup window sends a `postMessage` to the
-frontend application to indicate the result of the operation. Also this URL is
-used to verify that authentication requests are coming from only this endpoint.
+Each authentication provider (except SAML) needs six parameters: an OAuth client
+ID, a client secret, an authorization endpoint, a token endpoint, an optional
+list of scopes (as a string separated by spaces) that may be required by the
+OAuth2 Server to enable end-user sign-on, and an app origin. The app origin is
+the URL at which the frontend of the application is hosted, and it is read from
+the `app.baseUrl` config. This is required because the application opens a popup
+window to perform the authentication, and once the flow is completed, the popup
+window sends a `postMessage` to the frontend application to indicate the result
+of the operation. Also this URL is used to verify that authentication requests
+are coming from only this endpoint.
 
 These values are configured via the `app-config.yaml` present in the root of
 your app folder.
@@ -96,6 +111,23 @@ auth:
       development:
         clientId:
           $env:
+    oauth2:
+      development:
+        clientId:
+          $env: AUTH_OAUTH2_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OAUTH2_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OAUTH2_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OAUTH2_TOKEN_URL
+        scope:
+          $env: AUTH_OAUTH2_SCOPE
+    saml:
+      entryPoint:
+        $env: AUTH_SAML_ENTRY_POINT
+      issuer:
+        $env: AUTH_SAML_ISSUER
             ...
 ```
 

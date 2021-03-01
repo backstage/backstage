@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useCallback, FC } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   makeStyles,
@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const CreateAuditContent: FC<{}> = () => {
+export const CreateAuditContent = () => {
   const errorApi = useApi(errorApiRef);
   const lighthouseApi = useApi(lighthouseApiRef);
   const classes = useStyles();
@@ -79,7 +79,7 @@ export const CreateAuditContent: FC<{}> = () => {
       // TODO use the id from the response to redirect to the audit page for that id when
       // FAILED and RUNNING audits are supported
       await lighthouseApi.triggerAudit({
-        url,
+        url: url.replace(/\/$/, ''),
         options: {
           lighthouseConfig: {
             settings: {

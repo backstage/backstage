@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Content,
   Header,
@@ -30,7 +30,7 @@ import { useParams } from 'react-router-dom';
 import { gitOpsApiRef, Status } from '../../api';
 import { transformRunStatus } from '../ProfileCatalog';
 
-const ClusterPage: FC<{}> = () => {
+const ClusterPage = () => {
   const params = useParams() as { owner: string; repo: string };
 
   const [pollingLog, setPollingLog] = useState(true);

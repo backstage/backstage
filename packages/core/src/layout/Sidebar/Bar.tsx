@@ -16,7 +16,7 @@
 
 import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import React, { FC, useRef, useState, useContext } from 'react';
+import React, { useRef, useState, useContext, PropsWithChildren } from 'react';
 import { sidebarConfig, SidebarContext } from './config';
 import { BackstageTheme } from '@backstage/theme';
 import { SidebarPinStateContext } from './Page';
@@ -39,6 +39,8 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     padding: 0,
     background: theme.palette.navigation.background,
     overflowX: 'hidden',
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
     width: sidebarConfig.drawerWidthClosed,
     transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
@@ -46,6 +48,9 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
     }),
     '& > *': {
       flexShrink: 0,
+    },
+    '&::-webkit-scrollbar': {
+      display: 'none',
     },
   },
   drawerOpen: {
@@ -71,11 +76,11 @@ type Props = {
   closeDelayMs?: number;
 };
 
-export const Sidebar: FC<Props> = ({
+export const Sidebar = ({
   openDelayMs = sidebarConfig.defaultOpenDelayMs,
   closeDelayMs = sidebarConfig.defaultCloseDelayMs,
   children,
-}) => {
+}: PropsWithChildren<Props>) => {
   const classes = useStyles();
   const [state, setState] = useState(State.Closed);
   const hoverTimerRef = useRef<number>();

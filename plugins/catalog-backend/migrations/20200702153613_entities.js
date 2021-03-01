@@ -20,16 +20,14 @@
  * @param {import('knex')} knex
  */
 exports.up = async function up(knex) {
-  // Drop constraints (Postgres)
-  try {
+  // SQLite does not support FK and PK
+  if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
       table.dropForeign(['entity_id']);
     });
     await knex.schema.alterTable('entities', table => {
       table.dropPrimary('entities_pkey');
     });
-  } catch (e) {
-    // SQLite does not support FK and PK, carry on
   }
   await knex.schema.alterTable('entities', table => {
     table.dropUnique([], 'entities_unique_name');
@@ -131,16 +129,14 @@ exports.up = async function up(knex) {
  * @param {import('knex')} knex
  */
 exports.down = async function down(knex) {
-  // Drop constraints (Postgres)
-  try {
+  // SQLite does not support FK and PK
+  if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
       table.dropForeign(['entity_id']);
     });
     await knex.schema.alterTable('entities', table => {
       table.dropPrimary('entities_pkey');
     });
-  } catch (e) {
-    // SQLite does not support FK and PK, carry on
   }
   await knex.schema.alterTable('entities', table => {
     table.dropUnique([], 'entities_unique_name');

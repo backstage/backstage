@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useMemo, FC, ReactNode } from 'react';
+import React, { useState, useMemo, ReactNode } from 'react';
 import { useLocalStorage, useAsync } from 'react-use';
 import { useNavigate } from 'react-router-dom';
 import { Grid, Button } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import Pagination from '@material-ui/lab/Pagination';
 import {
   InfoCard,
@@ -28,6 +27,7 @@ import {
   HeaderLabel,
   Progress,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 
 import { lighthouseApiRef } from '../../api';
@@ -35,11 +35,10 @@ import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
 import AuditListTable from './AuditListTable';
-import { createAuditRouteRef } from '../../plugin';
 
 export const LIMIT = 10;
 
-const AuditList: FC<{}> = () => {
+const AuditList = () => {
   const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
   const [dismissed, setDismissed] = useState(dismissedStored);
 
@@ -86,9 +85,9 @@ const AuditList: FC<{}> = () => {
     content = <Progress />;
   } else if (error) {
     content = (
-      <Alert severity="error" data-testid="error-message">
+      <WarningPanel severity="error" title="Could not load audit list.">
         {error.message}
-      </Alert>
+      </WarningPanel>
     );
   }
 
@@ -110,7 +109,7 @@ const AuditList: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate(createAuditRouteRef.path)}
+            onClick={() => navigate('create-audit')}
           >
             Create Audit
           </Button>

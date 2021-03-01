@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, waitForElement } from '@testing-library/react';
-import { ThemeProvider } from '@material-ui/core';
+import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import {
+  MockErrorApi,
+  renderInTestApp,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
-import { ApiRegistry, ApiProvider, errorApiRef } from '@backstage/core';
-
+import { ThemeProvider } from '@material-ui/core';
+import { render, waitForElement } from '@testing-library/react';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
 import GetBBoxPolyfill from '../utils/polyfills/getBBox';
 import { RadarPage } from './RadarPage';
-import { act } from 'react-dom/test-utils';
-import { MockErrorApi, wrapInTestApp } from '@backstage/test-utils';
 
 describe('RadarPage', () => {
   beforeAll(() => {
@@ -67,12 +70,10 @@ describe('RadarPage', () => {
       svgProps: { 'data-testid': 'tech-radar-svg' },
     };
 
-    const { getByText, getByTestId } = render(
-      wrapInTestApp(
-        <ThemeProvider theme={lightTheme}>
-          <RadarPage {...techRadarProps} />
-        </ThemeProvider>,
-      ),
+    const { getByText, getByTestId } = await renderInTestApp(
+      <ThemeProvider theme={lightTheme}>
+        <RadarPage {...techRadarProps} />
+      </ThemeProvider>,
     );
 
     await waitForElement(() => getByTestId('tech-radar-svg'));
@@ -94,7 +95,7 @@ describe('RadarPage', () => {
       svgProps: { 'data-testid': 'tech-radar-svg' },
     };
 
-    const { queryByTestId } = render(
+    const { queryByTestId } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
         <ApiProvider apis={ApiRegistry.with(errorApiRef, errorApi)}>
           <RadarPage {...techRadarProps} />

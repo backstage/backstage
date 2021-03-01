@@ -135,6 +135,7 @@ export interface KubernetesClustersSupplier {
 }
 
 export type KubernetesErrorTypes =
+  | 'BAD_REQUEST'
   | 'UNAUTHORIZED_ERROR'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
@@ -147,4 +148,4 @@ export interface KubernetesFetchError {
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 export type ClusterLocatorMethod = 'config';
-export type AuthProviderType = 'google' | 'serviceAccount';
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';

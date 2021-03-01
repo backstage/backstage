@@ -34,6 +34,9 @@ import {
   createRouteRef,
   createApiFactory,
   configApiRef,
+  discoveryApiRef,
+  identityApiRef,
+  createRoutableExtension,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -57,25 +60,54 @@ export const rootCatalogDocsRouteRef = createRouteRef({
   title: 'Docs',
 });
 
-// TODO: Use discovery API for frontend to get URL for techdocs-backend instead of requestUrl
-export const plugin = createPlugin({
+export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
       api: techdocsStorageApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new TechDocsStorageApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
+          identityApi,
         }),
     }),
     createApiFactory({
       api: techdocsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) =>
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ configApi, discoveryApi, identityApi }) =>
         new TechDocsApi({
-          apiOrigin: configApi.getString('techdocs.requestUrl'),
+          configApi,
+          discoveryApi,
+          identityApi,
         }),
     }),
   ],
+  routes: {
+    root: rootRouteRef,
+    entityContent: rootCatalogDocsRouteRef,
+  },
 });
+
+export const TechdocsPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityTechdocsContent = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
+    mountPoint: rootCatalogDocsRouteRef,
+  }),
+);

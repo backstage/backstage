@@ -14,55 +14,100 @@
  * limitations under the License.
  */
 
-import { ApiEntityV1alpha1, Entity } from '@backstage/catalog-model';
 import {
+  ApiEntityV1alpha1,
+  Entity,
+  EntityName,
+  RELATION_OWNED_BY,
+  RELATION_PART_OF,
+} from '@backstage/catalog-model';
+import {
+  CodeSnippet,
+  OverflowTooltip,
   Table,
   TableColumn,
   TableFilter,
   TableState,
   useQueryParamState,
+  WarningPanel,
 } from '@backstage/core';
+import {
+  EntityRefLink,
+  EntityRefLinks,
+  formatEntityRefTitle,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
-import { EntityLink } from '../EntityLink';
 
-const columns: TableColumn<Entity>[] = [
+type EntityRow = {
+  entity: ApiEntityV1alpha1;
+  resolved: {
+    name: string;
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};
+
+const columns: TableColumn<EntityRow>[] = [
   {
     title: 'Name',
-    field: 'metadata.name',
+    field: 'resolved.name',
     highlight: true,
-    render: (entity: any) => (
-      <EntityLink entity={entity}>{entity.metadata.name}</EntityLink>
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity} defaultKind="API" />
+    ),
+  },
+  {
+    title: 'System',
+    field: 'resolved.partOfSystemRelationTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.partOfSystemRelations}
+        defaultKind="system"
+      />
     ),
   },
   {
     title: 'Owner',
-    field: 'spec.owner',
-  },
-  {
-    title: 'Lifecycle',
-    field: 'spec.lifecycle',
-  },
-  {
-    title: 'Type',
-    field: 'spec.type',
-    render: (entity: Entity) => (
-      <ApiTypeTitle apiEntity={entity as ApiEntityV1alpha1} />
+    field: 'resolved.ownedByRelationsTitle',
+    render: ({ resolved }) => (
+      <EntityRefLinks
+        entityRefs={resolved.ownedByRelations}
+        defaultKind="group"
+      />
     ),
   },
   {
+    title: 'Lifecycle',
+    field: 'entity.spec.lifecycle',
+  },
+  {
+    title: 'Type',
+    field: 'entity.spec.type',
+    render: ({ entity }) => <ApiTypeTitle apiEntity={entity} />,
+  },
+  {
     title: 'Description',
-    field: 'metadata.description',
+    field: 'entity.metadata.description',
+    render: ({ entity }) => (
+      <OverflowTooltip
+        text={entity.metadata.description}
+        placement="bottom-start"
+      />
+    ),
+    width: 'auto',
   },
   {
     title: 'Tags',
-    field: 'metadata.tags',
+    field: 'entity.metadata.tags',
     cellStyle: {
       padding: '0px 16px 0px 20px',
     },
-    render: (entity: Entity) => (
+    render: ({ entity }) => (
       <>
         {entity.metadata.tags &&
           entity.metadata.tags.map(t => (
@@ -115,16 +160,42 @@ export const ApiExplorerTable = ({
 
   if (error) {
     return (
-      <div>
-        <Alert severity="error">
-          Error encountered while fetching catalog entities. {error.toString()}
-        </Alert>
-      </div>
+      <WarningPanel severity="error" title="Could not fetch catalog entities.">
+        <CodeSnippet language="text" text={error.toString()} />
+      </WarningPanel>
     );
   }
 
+  const rows = entities.map(entity => {
+    const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
+      kind: 'system',
+    });
+    const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+    return {
+      entity: entity as ApiEntityV1alpha1,
+      resolved: {
+        name: formatEntityRefTitle(entity, {
+          defaultKind: 'API',
+        }),
+        ownedByRelationsTitle: ownedByRelations
+          .map(r => formatEntityRefTitle(r, { defaultKind: 'group' }))
+          .join(', '),
+        ownedByRelations,
+        partOfSystemRelationTitle: partOfSystemRelations
+          .map(r =>
+            formatEntityRefTitle(r, {
+              defaultKind: 'system',
+            }),
+          )
+          .join(', '),
+        partOfSystemRelations,
+      },
+    };
+  });
+
   return (
-    <Table
+    <Table<EntityRow>
       isLoading={loading}
       columns={columns}
       options={{
@@ -134,7 +205,7 @@ export const ApiExplorerTable = ({
         padding: 'dense',
         showEmptyDataSourceMessage: !loading,
       }}
-      data={entities}
+      data={rows}
       filters={filters}
       initialState={queryParamState}
       onStateChange={setQueryParamState}

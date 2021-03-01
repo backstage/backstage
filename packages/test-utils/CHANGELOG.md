@@ -1,5 +1,42 @@
 # @backstage/test-utils
 
+## 0.1.8
+
+### Patch Changes
+
+- dc12852c9: Allow `ExternalRouteRef` instances to be passed as a route ref to `mountedRoutes`.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [b6c4f485d]
+- Updated dependencies [3a58084b6]
+  - @backstage/core-api@0.2.11
+
+## 0.1.7
+
+### Patch Changes
+
+- b51ee6ece: Added `mountedRoutes` option to `wrapInTestApp`, allowing routes to be associated to concrete paths to make `useRouteRef` usable in tested components.
+
+## 0.1.6
+
+### Patch Changes
+
+- 1dc445e89: Update to use new plugin extension API
+- Updated dependencies [d681db2b5]
+- Updated dependencies [1dc445e89]
+  - @backstage/core-api@0.2.7
+
+## 0.1.5
+
+### Patch Changes
+
+- e1f4e24ef: Fix @backstage/cli not being a devDependency
+- Updated dependencies [b6557c098]
+- Updated dependencies [d8d5a17da]
+- Updated dependencies [1665ae8bb]
+  - @backstage/core-api@0.2.5
+  - @backstage/theme@0.2.2
+
 ## 0.1.4
 
 ### Patch Changes

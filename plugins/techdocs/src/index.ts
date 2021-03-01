@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  techdocsPlugin,
+  techdocsPlugin as plugin,
+  TechdocsPage,
+  EntityTechdocsContent,
+} from './plugin';
 export { Router, EmbeddedDocsRouter } from './Router';
 export * from './reader';
 export * from './api';

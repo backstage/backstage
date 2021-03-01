@@ -10,7 +10,7 @@ you're planning to do.
 
 Creating a standalone instance makes it simpler to customize the application for
 your needs whilst staying up to date with the project. You will also depend on
-`@backstage` packages from NPM, making the project much smaller. This is the
+`@backstage` packages from npm, making the project much smaller. This is the
 recommended approach if you want to kick the tyres of Backstage or setup your
 own instance.
 
@@ -19,7 +19,7 @@ general, it's easier to fork and clone this project. That will let you stay up
 to date with the latest changes, and gives you an easier path to make Pull
 Requests towards this repo.
 
-### Creating a Standalone App
+### Create your Backstage App
 
 Backstage provides the `@backstage/create-app` package to scaffold standalone
 instances of Backstage. You will need to have
@@ -46,8 +46,3 @@ look something like this. You can read more about this process in
 You can read more in our
 [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
 guide, which can help you get setup with a Backstage development environment.
-
-### Next steps
-
-Take a look at the [Running Backstage Locally](./running-backstage-locally.md)
-guide to learn how to set up Backstage, and how to develop on the platform.

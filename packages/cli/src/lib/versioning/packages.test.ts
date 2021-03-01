@@ -19,6 +19,7 @@ import path from 'path';
 import * as runObj from '../run';
 import { paths } from '../paths';
 import { fetchPackageInfo, mapDependencies } from './packages';
+import { NotFoundError } from '../errors';
 
 describe('fetchPackageInfo', () => {
   afterEach(() => {
@@ -40,6 +41,14 @@ describe('fetchPackageInfo', () => {
       'my-package',
     );
   });
+
+  it('should throw if no info', async () => {
+    jest.spyOn(runObj, 'runPlain').mockResolvedValue('');
+
+    await expect(fetchPackageInfo('my-package')).rejects.toThrow(
+      new NotFoundError(`No package information found for package my-package`),
+    );
+  });
 });
 
 describe('mapDependencies', () => {
@@ -50,8 +59,8 @@ describe('mapDependencies', () => {
 
   it('should read dependencies', async () => {
     // Make sure all modules involved in package discovery are in the module cache before we mock fs
-    const LernaProject = require('@lerna/project');
-    const project = new LernaProject(paths.targetDir);
+    const { Project } = require('@lerna/project');
+    const project = new Project(paths.targetDir);
     await project.getPackages();
 
     mockFs({

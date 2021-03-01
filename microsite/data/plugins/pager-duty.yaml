@@ -1,0 +1,13 @@
+---
+title: PagerDuty
+author: Spotify
+authorUrl: https://github.com/spotify
+category: Monitoring
+description: PagerDuty offers a simple way to identify any active incidents for an entity and the escalation policy.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/pagerduty
+iconUrl: https://avatars2.githubusercontent.com/u/766800?s=200&v=4
+npmPackageName: '@backstage/plugin-pagerduty'
+tags:
+  - monitoring
+  - errors
+  - alerting

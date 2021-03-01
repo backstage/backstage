@@ -1,0 +1,130 @@
+name: Tugboat E2E Tests
+on: deployment_status
+jobs:
+  set-pending:
+    if: github.event.deployment_status.state != 'success' && github.event.deployment_status.state != 'failed'
+    name: Set pending waiting for Tugboat
+    runs-on: ubuntu-latest
+    steps:
+      # Set an initial commit status message to indicate that the tests are
+      # running.
+      - name: set pending status
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          debug: true
+          script: |
+            return github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'pending',
+              context: 'Backstage Tugboat E2E Tests',
+              description: 'Waiting for Tugboat to complete deployment',
+              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+            });
+
+  run-tests:
+    # Only run after a successful Tugboat deployment.
+    if: github.event.deployment_status.state == 'success'
+    name: Run tests against Tugboat deployment
+    runs-on: ubuntu-latest
+    steps:
+      # Set an initial commit status message to indicate that the tests are
+      # running.
+      - name: set pending status
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          debug: true
+          script: |
+            return github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'pending',
+              context: 'Backstage Tugboat E2E Tests',
+              description: 'Running against tugboat preview',
+              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+            });
+
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: yarn install
+        run: yarn --cwd cypress install
+
+      # This is required because the environment_url param that Tugboat uses
+      # to tell us where the preview is located isn't supported unless you
+      # specify the custom Accept header when getting the deployment_status,
+      # and GitHub actions doesn't do that by default. So instead we have to
+      # load the status object manually and get the data we need.
+      # https://developer.github.com/changes/2016-04-06-deployment-and-deployment-status-enhancements/
+      - name: get deployment status
+        id: get-status-env
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          result-encoding: string
+          script: |
+            const result = await github.repos.getDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              status_id: context.payload.deployment_status.id,
+              headers: {
+                'Accept': 'application/vnd.github.ant-man-preview+json'
+              },
+            });
+            console.log(result);
+            return result.data.environment_url;
+
+      - name: cypress run
+        uses: cypress-io/github-action@v2
+        env:
+          CYPRESS_baseUrl: ${{steps.get-status-env.outputs.result}}
+        with:
+          config-file: ./cypress.json
+          working-directory: ./cypress
+          browser: chrome
+          install: false
+          headless: true
+
+      - name: update artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: cypress-videos
+          path: ./cypress/cypress/videos
+
+      - name: set status
+        if: ${{ failure() }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          script: |
+            return github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: "error",
+              context: 'Backstage Tugboat E2E Tests',
+              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+            });
+
+      - name: set status
+        if: ${{ success() }}
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GH_SERVICE_ACCOUNT_TOKEN}}
+          script: |
+            return github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: "success",
+              context: 'Backstage Tugboat E2E Tests',
+              target_url: "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
+            });

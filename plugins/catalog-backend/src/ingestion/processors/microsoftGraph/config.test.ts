@@ -29,9 +29,7 @@ describe('readMicrosoftGraphConfig', () => {
         },
       ],
     };
-    const actual = readMicrosoftGraphConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readMicrosoftGraphConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',
@@ -60,9 +58,7 @@ describe('readMicrosoftGraphConfig', () => {
         },
       ],
     };
-    const actual = readMicrosoftGraphConfig(
-      ConfigReader.fromConfigs([{ context: '', data: config }]),
-    );
+    const actual = readMicrosoftGraphConfig(new ConfigReader(config));
     const expected = [
       {
         target: 'target',

@@ -14,48 +14,37 @@
  * limitations under the License.
  */
 
-import fetch from 'cross-fetch';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
-  ConflictError,
-  NotFoundError,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+  TemplateEntityV1alpha1,
+  TemplateEntityV1beta2,
+} from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
+import { ConflictError, NotFoundError } from '@backstage/backend-common';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.
  */
 export class CatalogEntityClient {
-  private readonly discovery: PluginEndpointDiscovery;
-
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
-    this.discovery = options.discovery;
-  }
+  constructor(private readonly catalogClient: CatalogApi) {}
 
   /**
    * Looks up a single template using a template name.
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple templates are found.
    */
-  async findTemplate(templateName: string): Promise<TemplateEntityV1alpha1> {
-    const conditions = [
-      'kind=template',
-      `metadata.name=${encodeURIComponent(templateName)}`,
-    ];
-
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const response = await fetch(
-      `${baseUrl}/entities?filter=${conditions.join(',')}`,
-    );
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${text}`,
-      );
-    }
-
-    const templates: TemplateEntityV1alpha1[] = await response.json();
+  async findTemplate(
+    templateName: string,
+    options?: { token?: string },
+  ): Promise<TemplateEntityV1alpha1 | TemplateEntityV1beta2> {
+    const { items: templates } = (await this.catalogClient.getEntities(
+      {
+        filter: {
+          kind: 'template',
+          'metadata.name': templateName,
+        },
+      },
+      options,
+    )) as { items: (TemplateEntityV1alpha1 | TemplateEntityV1beta2)[] };
 
     if (templates.length !== 1) {
       if (templates.length > 1) {

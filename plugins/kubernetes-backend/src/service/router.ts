@@ -22,18 +22,14 @@ import { MultiTenantServiceLocator } from '../service-locator/MultiTenantService
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
-  GetKubernetesObjectsForServiceHandler,
-  handleGetKubernetesObjectsForService,
-} from './getKubernetesObjectsForServiceHandler';
-import {
   KubernetesRequestBody,
   KubernetesServiceLocator,
-  KubernetesFetcher,
   ServiceLocatorMethod,
   ClusterLocatorMethod,
   ClusterDetails,
 } from '..';
 import { getCombinedClusterDetails } from '../cluster-locator';
+import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 export interface RouterOptions {
   logger: Logger;
@@ -62,9 +58,7 @@ const getServiceLocator = (
 
 export const makeRouter = (
   logger: Logger,
-  fetcher: KubernetesFetcher,
-  serviceLocator: KubernetesServiceLocator,
-  handleGetByEntity: GetKubernetesObjectsForServiceHandler,
+  kubernetesFanOutHandler: KubernetesFanOutHandler,
 ): express.Router => {
   const router = Router();
   router.use(express.json());
@@ -73,19 +67,15 @@ export const makeRouter = (
     const serviceId = req.params.serviceId;
     const requestBody: KubernetesRequestBody = req.body;
     try {
-      const response = await handleGetByEntity(
-        serviceId,
-        fetcher,
-        serviceLocator,
-        logger,
+      const response = await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
         requestBody,
       );
-      res.send(response);
+      res.json(response);
     } catch (e) {
       logger.error(
         `action=retrieveObjectsByServiceId service=${serviceId}, error=${e}`,
       );
-      res.status(500).send({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   });
 
@@ -115,10 +105,11 @@ export async function createRouter(
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
 
-  return makeRouter(
+  const kubernetesFanOutHandler = new KubernetesFanOutHandler(
     logger,
     fetcher,
     serviceLocator,
-    handleGetKubernetesObjectsForService,
   );
+
+  return makeRouter(logger, kubernetesFanOutHandler);
 }

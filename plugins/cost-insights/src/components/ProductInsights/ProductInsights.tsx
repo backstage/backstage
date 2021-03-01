@@ -21,7 +21,7 @@ import { useApi } from '@backstage/core';
 import { costInsightsApiRef } from '../../api';
 import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';
 import { Duration, Entity, Maybe, Product } from '../../types';
-import { DEFAULT_DURATION } from '../../utils/duration';
+import { intervalsOf, DEFAULT_DURATION } from '../../utils/duration';
 import {
   DefaultLoadingAction,
   initialStatesOf,
@@ -75,20 +75,14 @@ export const ProductInsights = ({
         group: group,
         project: project,
         product: product.kind,
-        duration: duration,
-        lastCompleteBillingDate: lastCompleteBillingDate,
+        intervals: intervalsOf(duration, lastCompleteBillingDate),
       });
     },
     [client, group, project, lastCompleteBillingDate],
   );
 
   useEffect(() => {
-    async function getAllProductInsights(
-      group: string,
-      project: Maybe<string>,
-      products: Product[],
-      lastCompleteBillingDate: string,
-    ) {
+    async function getAllProductInsights() {
       try {
         dispatchLoadingProducts(true);
         const responses = await Promise.allSettled(
@@ -97,16 +91,15 @@ export const ProductInsights = ({
               group: group,
               project: project,
               product: product.kind,
-              duration: DEFAULT_DURATION,
-              lastCompleteBillingDate: lastCompleteBillingDate,
+              intervals: intervalsOf(DEFAULT_DURATION, lastCompleteBillingDate),
             }),
           ),
         ).then(settledResponseOf);
 
-        const initialStates = initialStatesOf(products, responses).sort(
+        const updatedInitialStates = initialStatesOf(products, responses).sort(
           totalAggregationSort,
         );
-        setStates(initialStates);
+        setStates(updatedInitialStates);
       } catch (e) {
         setError(e);
       } finally {
@@ -114,7 +107,7 @@ export const ProductInsights = ({
       }
     }
 
-    getAllProductInsights(group, project, products, lastCompleteBillingDate);
+    getAllProductInsights();
   }, [
     client,
     group,
@@ -127,8 +120,8 @@ export const ProductInsights = ({
   useEffect(
     function handleOnLoaded() {
       if (onceRef.current) {
-        const products = initialStates.map(state => state.product);
-        onLoaded(products);
+        const initialProducts = initialStates.map(state => state.product);
+        onLoaded(initialProducts);
       } else {
         onceRef.current = true;
       }

@@ -1,5 +1,252 @@
 # example-backend
 
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies [a70af22a2]
+- Updated dependencies [ec504e7b4]
+- Updated dependencies [a5f42cf66]
+- Updated dependencies [f37992797]
+- Updated dependencies [bad21a085]
+- Updated dependencies [1c06cb312]
+- Updated dependencies [2499f6cde]
+- Updated dependencies [a1f5e6545]
+  - @backstage/plugin-kubernetes-backend@0.2.7
+  - @backstage/plugin-auth-backend@0.3.2
+  - @backstage/plugin-scaffolder-backend@0.8.0
+  - @backstage/plugin-techdocs-backend@0.6.2
+  - @backstage/catalog-model@0.7.2
+  - @backstage/plugin-app-backend@0.3.8
+  - @backstage/plugin-catalog-backend@0.6.3
+  - @backstage/config@0.1.3
+  - example-app@0.2.17
+
+## 0.2.15
+
+### Patch Changes
+
+- Updated dependencies [1deb31141]
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [77ad0003a]
+- Updated dependencies [d2441aee3]
+- Updated dependencies [727f0deec]
+- Updated dependencies [fb53eb7cb]
+- Updated dependencies [07bafa248]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [f3fbfb452]
+- Updated dependencies [615103a63]
+- Updated dependencies [84364b35c]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [5a5163519]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [08142b256]
+- Updated dependencies [08142b256]
+  - @backstage/plugin-auth-backend@0.3.0
+  - @backstage/plugin-scaffolder-backend@0.7.0
+  - @backstage/plugin-catalog-backend@0.6.1
+  - @backstage/plugin-app-backend@0.3.7
+  - example-app@0.2.15
+  - @backstage/backend-common@0.5.3
+  - @backstage/plugin-techdocs-backend@0.6.0
+
+## 0.2.14
+
+### Patch Changes
+
+- Updated dependencies [c777df180]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [e44925723]
+- Updated dependencies [9d6ef14bc]
+- Updated dependencies [a26668913]
+- Updated dependencies [025e122c3]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [24e47ef1e]
+- Updated dependencies [7881f2117]
+- Updated dependencies [529d16d27]
+- Updated dependencies [cdea0baf1]
+- Updated dependencies [11cb5ef94]
+  - @backstage/plugin-techdocs-backend@0.5.5
+  - @backstage/backend-common@0.5.2
+  - @backstage/plugin-catalog-backend@0.6.0
+  - @backstage/catalog-model@0.7.1
+  - example-app@0.2.14
+  - @backstage/plugin-scaffolder-backend@0.6.0
+  - @backstage/plugin-app-backend@0.3.6
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [681111228]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+- Updated dependencies [234e7d985]
+- Updated dependencies [d7b1d317f]
+- Updated dependencies [a91aa6bf2]
+- Updated dependencies [39b05b9ae]
+- Updated dependencies [4eaa06057]
+  - @backstage/backend-common@0.5.1
+  - @backstage/plugin-scaffolder-backend@0.5.2
+  - @backstage/plugin-kubernetes-backend@0.2.6
+  - @backstage/plugin-catalog-backend@0.5.5
+  - @backstage/plugin-kafka-backend@0.2.0
+  - @backstage/plugin-auth-backend@0.2.12
+  - example-app@0.2.13
+  - @backstage/plugin-app-backend@0.3.5
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [d54857099]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [318a6af9f]
+- Updated dependencies [294a70cab]
+- Updated dependencies [ac7be581a]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [ad838c02f]
+- Updated dependencies [a5e27d5c1]
+- Updated dependencies [0643a3336]
+- Updated dependencies [a2291d7cc]
+- Updated dependencies [f9ba00a1c]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/plugin-catalog-backend@0.5.4
+  - @backstage/plugin-kubernetes-backend@0.2.5
+  - @backstage/backend-common@0.5.0
+  - @backstage/plugin-scaffolder-backend@0.5.0
+  - @backstage/plugin-techdocs-backend@0.5.4
+  - @backstage/plugin-auth-backend@0.2.11
+  - example-app@0.2.12
+  - @backstage/plugin-kafka-backend@0.1.1
+  - @backstage/plugin-app-backend@0.3.4
+  - @backstage/plugin-graphql-backend@0.1.5
+  - @backstage/plugin-proxy-backend@0.2.4
+  - @backstage/plugin-rollbar-backend@0.1.7
+
+## 0.2.11
+
+### Patch Changes
+
+- cc068c0d6: Bump the gitbeaker dependencies to 28.x.
+
+  To update your own installation, go through the `package.json` files of all of
+  your packages, and ensure that all dependencies on `@gitbeaker/node` or
+  `@gitbeaker/core` are at version `^28.0.2`. Then run `yarn install` at the root
+  of your repo.
+
+- Updated dependencies [68ad5af51]
+- Updated dependencies [5a9a7e7c2]
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [94fdf4955]
+- Updated dependencies [cc068c0d6]
+- Updated dependencies [ade6b3bdf]
+- Updated dependencies [468579734]
+- Updated dependencies [cb7af51e7]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+- Updated dependencies [711ba55a2]
+  - @backstage/plugin-techdocs-backend@0.5.3
+  - @backstage/plugin-kubernetes-backend@0.2.4
+  - @backstage/catalog-model@0.6.1
+  - @backstage/plugin-catalog-backend@0.5.3
+  - @backstage/plugin-scaffolder-backend@0.4.1
+  - @backstage/plugin-auth-backend@0.2.10
+  - @backstage/backend-common@0.4.3
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [5eb8c9b9e]
+- Updated dependencies [7e3451700]
+  - @backstage/plugin-scaffolder-backend@0.4.0
+
+## 0.2.8
+
+### Patch Changes
+
+- 7cfcd58ee: use node 14 for backend Dockerfile
+- Updated dependencies [19554f6d6]
+- Updated dependencies [33a82a713]
+- Updated dependencies [5de26b9a6]
+- Updated dependencies [30d6c78fb]
+- Updated dependencies [5084e5039]
+- Updated dependencies [a8573e53b]
+- Updated dependencies [aed8f7f12]
+  - @backstage/plugin-scaffolder-backend@0.3.6
+  - @backstage/plugin-catalog-backend@0.5.1
+  - @backstage/plugin-techdocs-backend@0.5.0
+  - example-app@0.2.8
+
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [c6eeefa35]
+- Updated dependencies [fb386b760]
+- Updated dependencies [c911061b7]
+- Updated dependencies [7c3ffc0cd]
+- Updated dependencies [dae4f3983]
+- Updated dependencies [7b15cc271]
+- Updated dependencies [e7496dc3e]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [8dd0a906d]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [6b37c95bf]
+- Updated dependencies [8c31c681c]
+- Updated dependencies [7b98e7fee]
+- Updated dependencies [ac3560b42]
+- Updated dependencies [94c65a9d4]
+- Updated dependencies [0097057ed]
+  - @backstage/plugin-catalog-backend@0.5.0
+  - @backstage/catalog-model@0.6.0
+  - @backstage/plugin-techdocs-backend@0.4.0
+  - @backstage/plugin-auth-backend@0.2.7
+  - @backstage/backend-common@0.4.1
+  - @backstage/plugin-scaffolder-backend@0.3.5
+  - example-app@0.2.7
+  - @backstage/plugin-kubernetes-backend@0.2.3
+
+## 0.2.6
+
+### Patch Changes
+
+- 1e22f8e0b: Unify `dockerode` library and type dependency versions
+- Updated dependencies [6e8bb3ac0]
+- Updated dependencies [e708679d7]
+- Updated dependencies [047c018c9]
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [38d63fbe1]
+- Updated dependencies [1e22f8e0b]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/plugin-catalog-backend@0.4.0
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/plugin-scaffolder-backend@0.3.4
+  - @backstage/plugin-techdocs-backend@0.3.2
+  - @backstage/catalog-model@0.5.0
+  - example-app@0.2.6
+  - @backstage/plugin-app-backend@0.3.3
+  - @backstage/plugin-auth-backend@0.2.6
+  - @backstage/plugin-graphql-backend@0.1.4
+  - @backstage/plugin-kubernetes-backend@0.2.2
+  - @backstage/plugin-proxy-backend@0.2.3
+  - @backstage/plugin-rollbar-backend@0.1.5
+
 ## 0.2.5
 
 ### Patch Changes

@@ -22,7 +22,7 @@ use.
 # Example:
 metadata:
   annotations:
-    backstage.io/managed-by-location: github:http://github.com/backstage/backstage/catalog-info.yaml
+    backstage.io/managed-by-location: url:http://github.com/backstage/backstage/blob/master/catalog-info.yaml
 ```
 
 The value of this annotation is a so called location reference string, that
@@ -30,8 +30,8 @@ points to the source from which the entity was originally fetched. This
 annotation is added automatically by the catalog as it fetches the data from a
 registered location, and is not meant to normally be written by humans. The
 annotation may point to any type of generic location that the catalog supports,
-so it cannot be relied on to always be specifically of type `github`, nor that
-it even represents a single file. Note also that a single location can be the
+so it cannot be relied on to always be specifically of type `url`, nor that it
+even represents a single file. Note also that a single location can be the
 source of many entities, so it represents a many-to-one relationship.
 
 The format of the value is `<type>:<target>`. Note that the target may also
@@ -40,18 +40,64 @@ expecting a two-item array out of it. The format of the target part is
 type-dependent and could conceivably even be an empty string, but the separator
 colon is always present.
 
+### backstage.io/managed-by-origin-location
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/managed-by-origin-location: url:http://github.com/backstage/backstage/blob/master/catalog-info.yaml
+```
+
+The value of this annotation is a location reference string (see above). It
+points to the location, whose registration lead to the creation of the entity.
+In most cases, the `backstage.io/managed-by-location` and
+`backstage.io/managed-by-origin-location` will be equal. They will be different
+if the original location delegates to another location. A common case is, that a
+location is registered as `bootstrap:bootstrap` which means that it is part of
+the `app-config.yaml` of a Backstage installation.
+
 ### backstage.io/techdocs-ref
 
 ```yaml
 # Example:
 metadata:
   annotations:
-    backstage.io/techdocs-ref: github:https://github.com/backstage/backstage.git
+    backstage.io/techdocs-ref: url:https://github.com/backstage/backstage/tree/master
 ```
 
 The value of this annotation is a location reference string (see above). If this
 annotation is specified, it is expected to point to a repository that the
 TechDocs system can read and generate docs from.
+
+### backstage.io/view-url, backstage.io/edit-url
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/view-url: https://some.website/catalog-info.yaml
+    backstage.io/edit-url: https://github.com/my-org/catalog/edit/master/my-service.jsonnet
+```
+
+These annotations allow customising links from the catalog pages. The view URL
+should point to the canonical metadata YAML that governs this entity. The edit
+URL should point to the source file for the metadata. In the example above,
+`my-org` generates its catalog data from Jsonnet files in a monorepo, so the
+view and edit links need changing.
+
+### backstage.io/source-location
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/source-location: github:https://github.com/my-org/my-service
+```
+
+A `Location` reference that points to the source code of the entity (typically a
+`Component`). Useful when catalog files do not get ingested from the source code
+repository itself.
 
 ### jenkins.io/github-folder
 

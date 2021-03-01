@@ -15,82 +15,65 @@
  */
 
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import { PreparerBase, PreparerBuilder } from './types';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  DeprecatedLocationTypeDetector,
-  makeDeprecatedLocationTypeDetector,
-  parseLocationAnnotation,
-} from '../helpers';
-import { RemoteProtocol } from '../types';
-import { FilePreparer } from './file';
+import { Logger } from 'winston';
+
 import { GitlabPreparer } from './gitlab';
 import { AzurePreparer } from './azure';
 import { GithubPreparer } from './github';
+import { BitbucketPreparer } from './bitbucket';
+import { ScmIntegrations } from '@backstage/integration';
 
 export class Preparers implements PreparerBuilder {
-  private preparerMap = new Map<RemoteProtocol, PreparerBase>();
+  private preparerMap = new Map<string, PreparerBase>();
 
-  constructor(private readonly typeDetector?: DeprecatedLocationTypeDetector) {}
-
-  register(protocol: RemoteProtocol, preparer: PreparerBase) {
-    this.preparerMap.set(protocol, preparer);
+  register(host: string, preparer: PreparerBase) {
+    this.preparerMap.set(host, preparer);
   }
 
-  get(template: TemplateEntityV1alpha1): PreparerBase {
-    const { protocol, location } = parseLocationAnnotation(template);
-
-    const preparer = this.preparerMap.get(protocol);
-
+  get(url: string): PreparerBase {
+    const preparer = this.preparerMap.get(new URL(url).host);
     if (!preparer) {
-      if ((protocol as string) === 'url') {
-        const type = this.typeDetector?.(location);
-        const detected = type && this.preparerMap.get(type as RemoteProtocol);
-        if (detected) {
-          return detected;
-        }
-        throw new Error(`No preparer integration found for url "${location}"`);
-      }
-      throw new Error(`No preparer registered for type: "${protocol}"`);
+      throw new Error(
+        `Unable to find a preparer for URL: ${url}. Please make sure to register this host under an integration in app-config`,
+      );
     }
-
     return preparer;
   }
 
   static async fromConfig(
     config: Config,
-    { logger }: { logger: Logger },
+    // eslint-disable-next-line
+    _: { logger: Logger },
   ): Promise<PreparerBuilder> {
-    const typeDetector = makeDeprecatedLocationTypeDetector(config);
+    const preparers = new Preparers();
+    const scm = ScmIntegrations.fromConfig(config);
+    for (const integration of scm.azure.list()) {
+      preparers.register(
+        integration.config.host,
+        AzurePreparer.fromConfig(integration.config),
+      );
+    }
 
-    const preparers = new Preparers(typeDetector);
+    for (const integration of scm.github.list()) {
+      preparers.register(
+        integration.config.host,
+        GithubPreparer.fromConfig(integration.config),
+      );
+    }
 
-    const filePreparer = new FilePreparer();
-    const gitlabPreparer = new GitlabPreparer(config);
-    const azurePreparer = new AzurePreparer(config);
+    for (const integration of scm.gitlab.list()) {
+      preparers.register(
+        integration.config.host,
+        GitlabPreparer.fromConfig(integration.config),
+      );
+    }
 
-    preparers.register('file', filePreparer);
-    preparers.register('gitlab', gitlabPreparer);
-    preparers.register('gitlab/api', gitlabPreparer);
-    preparers.register('azure/api', azurePreparer);
-
-    const githubConfig = config.getOptionalConfig('scaffolder.github');
-    if (githubConfig) {
-      try {
-        const githubToken = githubConfig.getString('token');
-        const githubPreparer = new GithubPreparer({ token: githubToken });
-
-        preparers.register('github', githubPreparer);
-      } catch (e) {
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize github scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(`Skipping github scaffolding provider, ${e.message}`);
-      }
+    for (const integration of scm.bitbucket.list()) {
+      preparers.register(
+        integration.config.host,
+        BitbucketPreparer.fromConfig(integration.config),
+      );
     }
 
     return preparers;

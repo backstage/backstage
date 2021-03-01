@@ -59,7 +59,7 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
         ring: loaderResponse!.rings.find(
           r => r.id === entry.timeline[0].ringId,
         )!,
-        history: entry.timeline.map(e => {
+        timeline: entry.timeline.map(e => {
           return {
             date: e.date,
             ring: loaderResponse!.rings.find(a => a.id === e.ringId)!,
@@ -67,6 +67,9 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
             moved: e.moved,
           };
         }),
+        moved: entry.timeline[0].moved,
+        description: entry.timeline[0].description,
+        url: entry.url,
       };
     });
   };

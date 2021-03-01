@@ -10,15 +10,16 @@
     "@backstage/core": "^{{version '@backstage/core'}}",
     "@backstage/plugin-api-docs": "^{{version '@backstage/plugin-api-docs'}}",
     "@backstage/plugin-catalog": "^{{version '@backstage/plugin-catalog'}}",
-    "@backstage/plugin-register-component": "^{{version '@backstage/plugin-register-component'}}",
+    "@backstage/plugin-catalog-react": "^{{version '@backstage/plugin-catalog-react'}}",
+    "@backstage/plugin-catalog-import": "^{{version '@backstage/plugin-catalog-import'}}",
     "@backstage/plugin-scaffolder": "^{{version '@backstage/plugin-scaffolder'}}",
     "@backstage/plugin-techdocs": "^{{version '@backstage/plugin-techdocs'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
     "@backstage/plugin-circleci": "^{{version '@backstage/plugin-circleci'}}",
-    "@backstage/plugin-lighthouse": "^{{version '@backstage/plugin-lighthouse'}}",
     "@backstage/plugin-tech-radar": "^{{version '@backstage/plugin-tech-radar'}}",
     "@backstage/plugin-github-actions": "^{{version '@backstage/plugin-github-actions'}}",
     "@backstage/plugin-user-settings": "^{{version '@backstage/plugin-user-settings'}}",
+    "@backstage/plugin-search": "^{{version '@backstage/plugin-search'}}",
     "@backstage/test-utils": "^{{version '@backstage/test-utils'}}",
     "@backstage/theme": "^{{version '@backstage/theme'}}",
     "history": "^5.0.0",
@@ -45,6 +46,7 @@
     "build": "backstage-cli app:build",
     "test": "backstage-cli test",
     "lint": "backstage-cli lint",
+    "clean": "backstage-cli clean",
     "test:e2e": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:dev",
     "test:e2e:ci": "cross-env PORT=3001 start-server-and-test start http://localhost:3001 cy:run",
     "cy:dev": "cypress open",
@@ -61,5 +63,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

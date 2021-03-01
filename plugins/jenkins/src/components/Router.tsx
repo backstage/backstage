@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { Route, Routes } from 'react-router';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { buildRouteRef, rootRouteRef } from '../plugin';
 import { DetailedViewPage } from './BuildWithStepsPage/';
 import { JENKINS_ANNOTATION } from '../constants';
@@ -22,13 +23,22 @@ import { Entity } from '@backstage/catalog-model';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 import { CITable } from './BuildsPage/lib/CITable';
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isJenkinsAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[JENKINS_ANNOTATION]);
 
-export const Router = ({ entity }: { entity: Entity }) => {
-  return !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={JENKINS_ANNOTATION} />
-  ) : (
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const Router = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isJenkinsAvailable(entity)) {
+    return <MissingAnnotationEmptyState annotation={JENKINS_ANNOTATION} />;
+  }
+
+  return (
     <Routes>
       <Route path={`/${rootRouteRef.path}`} element={<CITable />} />
       <Route path={`/${buildRouteRef.path}`} element={<DetailedViewPage />} />

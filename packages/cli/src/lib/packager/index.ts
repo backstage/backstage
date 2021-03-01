@@ -68,6 +68,11 @@ type Options = {
   buildDependencies?: boolean;
 
   /**
+   * When `buildDependencies` is set, this list of packages will not be built even if they are dependencies.
+   */
+  buildExcludes?: string[];
+
+  /**
    * Enable (true/false) or control amount of (number) parallelism in some build steps.
    */
   parallel?: ParallelOption;
@@ -76,7 +81,7 @@ type Options = {
    * If set, creates a skeleton tarball that contains all package.json files
    * with the same structure as the workspace dir.
    */
-  skeleton?: 'skeleton.tar';
+  skeleton?: 'skeleton.tar' | 'skeleton.tar.gz';
 };
 
 /**
@@ -85,7 +90,7 @@ type Options = {
  * will be suitable for packaging e.g. into a docker image.
  *
  * This creates a structure that is functionally similar to if the packages where
- * installed from NPM, but uses yarn workspaces to link to them at runtime.
+ * installed from npm, but uses Yarn workspaces to link to them at runtime.
  */
 export async function createDistWorkspace(
   packageNames: string[],
@@ -98,7 +103,11 @@ export async function createDistWorkspace(
   const targets = await findTargetPackages(packageNames);
 
   if (options.buildDependencies) {
-    const scopeArgs = targets.flatMap(target => ['--scope', target.name]);
+    const exclude = options.buildExcludes ?? [];
+    const scopeArgs = targets
+      .filter(target => !exclude.includes(target.name))
+      .flatMap(target => ['--scope', target.name]);
+
     const lernaArgs =
       options.parallel && Number.isInteger(options.parallel)
         ? ['--concurrency', options.parallel.toString()]
@@ -131,6 +140,7 @@ export async function createDistWorkspace(
         cwd: targetDir,
         portable: true,
         noMtime: true,
+        gzip: options.skeleton.endsWith('.gz'),
       } as CreateOptions & { noMtime: boolean },
       skeletonFiles,
     );
@@ -209,10 +219,10 @@ async function moveToDistWorkspace(
 }
 
 async function findTargetPackages(pkgNames: string[]): Promise<LernaPackage[]> {
-  const LernaProject = require('@lerna/project');
-  const PackageGraph = require('@lerna/package-graph');
+  const { Project } = require('@lerna/project');
+  const { PackageGraph } = require('@lerna/package-graph');
 
-  const project = new LernaProject(paths.targetDir);
+  const project = new Project(paths.targetDir);
   const packages = await project.getPackages();
   const graph = new PackageGraph(packages);
 

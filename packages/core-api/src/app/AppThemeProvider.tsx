@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, PropsWithChildren } from 'react';
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
 import { useApi, appThemeApiRef, AppTheme } from '../apis';
 import { useObservable } from 'react-use';
@@ -68,7 +68,7 @@ const useShouldPreferDarkTheme = () => {
   return shouldPreferDark;
 };
 
-export const AppThemeProvider: FC<{}> = ({ children }) => {
+export function AppThemeProvider({ children }: PropsWithChildren<{}>) {
   const appThemeApi = useApi(appThemeApiRef);
   const themeId = useObservable(
     appThemeApi.activeThemeId$(),
@@ -94,4 +94,4 @@ export const AppThemeProvider: FC<{}> = ({ children }) => {
       <CssBaseline>{children}</CssBaseline>
     </ThemeProvider>
   );
-};
+}

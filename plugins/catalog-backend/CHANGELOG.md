@@ -1,5 +1,246 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.3
+
+### Patch Changes
+
+- 2499f6cde: Add support for assuming role in AWS integrations
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 77ad0003a: Revert AWS SDK version to v2
+- d2441aee3: use child logger, if provided, to log single location refresh
+- fb53eb7cb: Don't respond to a request twice if an entity has not been found.
+- f3fbfb452: add indices on columns referring locations(id)
+- 84364b35c: Added an option to scan GitHub for repositories using a new location type `github-discovery`.
+  Example:
+
+  ```yaml
+  type: 'github-discovery',
+  target:
+     'https://github.com/backstage/techdocs-*/blob/master/catalog.yaml'
+  ```
+
+  You can use wildcards (`*`) as well. This will add `location` entities for each matching repository.
+  Currently though, you must specify the exact path of the `catalog.yaml` file in the repository.
+
+- 82b2c11b6: Refactored route response handling to use more explicit types and throw errors.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 3149bfe63: Make use of the `resolveUrl` facility of the `integration` package.
+
+  Also rename the `LocationRefProcessor` to `LocationEntityProcessor`, to match the file name. This constitutes an interface change since the class is exported, but it is unlikely to be consumed outside of the package since it sits comfortably with the other default processors inside the catalog builder.
+
+### Patch Changes
+
+- 24e47ef1e: Throw `NotAllowedError` when registering locations with entities of disallowed kinds
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
+## 0.5.5
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- a91aa6bf2: Support supplying a custom catalog descriptor file parser
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.5.4
+
+### Patch Changes
+
+- def2307f3: Adds a `backstage.io/managed-by-origin-location` annotation to all entities. It links to the
+  location that was registered to the catalog and which emitted this entity. It has a different
+  semantic than the existing `backstage.io/managed-by-location` annotation, which tells the direct
+  parent location that created this entity.
+
+  Consider this example: The Backstage operator adds a location of type `github-org` in the
+  `app-config.yaml`. This setting will be added to a `bootstrap:boostrap` location. The processor
+  discovers the entities in the following branch
+  `Location bootstrap:bootstrap -> Location github-org:… -> User xyz`. The user `xyz` will be:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: xyz
+    annotations:
+      # This entity was added by the 'github-org:…' location
+      backstage.io/managed-by-location: github-org:…
+      # The entity was added because the 'bootstrap:boostrap' was added to the catalog
+      backstage.io/managed-by-origin-location: bootstrap:bootstrap
+      # ...
+  spec:
+    # ...
+  ```
+
+- 318a6af9f: Change AWS Account type from Component to Resource
+- ac7be581a: Refuse to remove the bootstrap location
+- ad838c02f: Reduce log noise on locations refresh
+- f9ba00a1c: Update the @azure/msal-node dependency to 1.0.0-beta.3.
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+
+## 0.5.3
+
+### Patch Changes
+
+- 94fdf4955: Get rid of all usages of @octokit/types, and bump the rest of the octokit dependencies to the latest version
+- ade6b3bdf: AWS SDK version bump for Catalog Backend.
+- abbee6fff: Implement System, Domain and Resource entity kinds.
+- 147fadcb9: Add subcomponentOf to Component kind to represent subsystems of larger components.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.5.2
+
+### Patch Changes
+
+- 99be3057c: Fixed a bug where the catalog would read back all entities when adding a location that already exists.
+- 49d2016a4: Change `location_update_log` columns from `nvarchar(255)` to `text`
+- 73e75ea0a: Add processor for ingesting AWS accounts from AWS Organizations
+- 071711d70: Remove `sqlite3` as a dependency. You may need to add `sqlite3` as a dependency of your backend if you were relying on this indirect dependency.
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
+## 0.5.1
+
+### Patch Changes
+
+- 5de26b9a6: Start warning about usage of deprecated location types, such as `github`
+- 30d6c78fb: Added configuration schema for the commonly used properties
+- 5084e5039: Updated the config schema
+
+## 0.5.0
+
+### Minor Changes
+
+- 6b37c95bf: Write relations directly as part of batch add / update of entities.
+
+  Slight change of the `CommonDatabase` contract:
+
+  ## `addEntity` removed
+
+  This method was unused by the core, and rendered unnecessary when `addEntities`
+  exists.
+
+  If you were a user of `addEntity`, please call `addEntities` instead, with an
+  array of one element.
+
+  ## `DbEntityRequest` has a new field `relations`
+
+  This is the structure that is passed to `addEntities` and `updateEntity`. It
+  used to be the case that you needed to call `setRelations` separately, but now
+  this instead happens directly when you call `addEntities` or `updateEntity`.
+
+  If you were using `addEntities` or `updateEntity` directly, please adapt your
+  code to add the `relations` array to each request. If you were calling
+  `setRelations` separately next to these methods, you no longer need to do so,
+  after adding the relations to the `DbEntityRequest`s.
+
+- ac3560b42: Remove `implementsApis` from `Component` entities. Deprecation happened in [#3449](https://github.com/backstage/backstage/pull/3449).
+  Use `providesApis` instead.
+
+### Patch Changes
+
+- c6eeefa35: Add support for GitHub Enterprise in GitHubOrgReaderProcessor so you can properly ingest users of a GHE organization.
+- fb386b760: Break the refresh loop into several smaller transactions
+- 7c3ffc0cd: Support `profile` of groups including `displayName`, `email`, and `picture` in
+  `LdapOrgReaderProcessor`. The source fields for them can be configured in the
+  `ldapOrg` provider.
+- e7496dc3e: Break out GithubOrgReaderProcessor config into its own file for consistency with the other org processors.
+- 8dd0a906d: Support `profile` of groups including `displayName` and `picture` in
+  `GithubOrgReaderProcessor`. Fixes the import of `description` for groups.
+- 8c31c681c: Batch the writing of statuses after refreshes. This reduced the runtime on sqlite from 16s to 0.2s, and on pg from 60s to 1s on my machine, for the huge LDAP set.
+- 7b98e7fee: Add index to foreign key columns. Postgres (and others) do not do this on the "source" side of a foreign key relation, which was what led to the slowness on large datasets. The full LDAP dataset ingestion now takes two minutes, which is not optimal yet but still a huge improvement over before when it basically never finished :)
+- 0097057ed: Support `profile` of groups including `displayName` and `email` in
+  `MicrosoftGraphOrgReaderProcessor`. Importing `picture` doesn't work yet, as
+  the Microsoft Graph API does not expose them correctly.
+- Updated dependencies [c911061b7]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/backend-common@0.4.1
+
+## 0.4.0
+
+### Minor Changes
+
+- 83b6e0c1f: Remove the deprecated fields `ancestors` and `descendants` from the `Group` entity.
+
+  See https://github.com/backstage/backstage/issues/3049 and the PRs linked from it for details.
+
+### Patch Changes
+
+- 6e8bb3ac0: leave unknown placeholder-lookalikes untouched in the catalog processing loop
+- e708679d7: refreshAllLocations uses a child logger of the HigherOrderOperation with a meta `component` : `catalog-all-locations-refresh`
+- 047c018c9: Batch the fetching of relations
+- 38d63fbe1: Fix string template literal
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+
 ## 0.3.0
 
 ### Minor Changes

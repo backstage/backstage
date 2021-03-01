@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  registerComponentPlugin,
+  registerComponentPlugin as plugin,
+  RegisterComponentPage,
+} from './plugin';
 export { Router } from './components/Router';

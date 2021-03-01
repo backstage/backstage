@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect, ReactNode, FC } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import {
   Link,
   useParams,
@@ -47,7 +47,6 @@ import { lighthouseApiRef, Website, Audit } from '../../api';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
 import { formatTime } from '../../utils';
-import { viewAuditRouteRef, createAuditRouteRef } from '../../plugin';
 
 const useStyles = makeStyles({
   contentGrid: {
@@ -65,10 +64,7 @@ interface AuditLinkListProps {
   audits?: Audit[];
   selectedId: string;
 }
-const AuditLinkList: FC<AuditLinkListProps> = ({
-  audits = [],
-  selectedId,
-}: AuditLinkListProps) => (
+const AuditLinkList = ({ audits = [], selectedId }: AuditLinkListProps) => (
   <List
     data-testid="audit-sidebar"
     component="nav"
@@ -81,12 +77,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
         button
         component={Link}
         replace
-        to={resolvePath(
-          generatePath(viewAuditRouteRef.path, {
-            id: audit.id,
-          }),
-          '../../',
-        )}
+        to={resolvePath(generatePath('audit/:id', { id: audit.id }), '../../')}
       >
         <ListItemIcon>
           <AuditStatusIcon audit={audit} />
@@ -97,7 +88,7 @@ const AuditLinkList: FC<AuditLinkListProps> = ({
   </List>
 );
 
-const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
+const AuditView = ({ audit }: { audit?: Audit }) => {
   const classes = useStyles();
   const params = useParams() as { id: string };
   const { url: lighthouseUrl } = useApi(lighthouseApiRef);
@@ -123,7 +114,7 @@ const AuditView: FC<{ audit?: Audit }> = ({ audit }: { audit?: Audit }) => {
   );
 };
 
-export const AuditViewContent: FC<{}> = () => {
+export const AuditViewContent = () => {
   const lighthouseApi = useApi(lighthouseApiRef);
   const params = useParams() as { id: string };
   const classes = useStyles();
@@ -166,7 +157,7 @@ export const AuditViewContent: FC<{}> = () => {
     );
   }
 
-  let createAuditButtonUrl = createAuditRouteRef.path;
+  let createAuditButtonUrl = 'create-audit';
   if (value?.url) {
     createAuditButtonUrl += `?url=${encodeURIComponent(value.url)}`;
   }

@@ -31,13 +31,15 @@ import {
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
-} from '../src/utils/alerts';
+  KubernetesMigrationAlert,
+} from '../src/alerts';
 import {
-  trendlineOf,
+  aggregationFor,
   changeOf,
   entityOf,
   getGroupedProducts,
-  aggregationFor,
+  getGroupedProjects,
+  trendlineOf,
 } from './utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
@@ -99,9 +101,12 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily cost grouped by cloud product OR by project / billing account.
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+          project: getGroupedProjects(intervals),
+        },
       },
     );
 
@@ -117,9 +122,11 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
         aggregation: aggregation,
         change: changeOf(aggregation),
         trendline: trendlineOf(aggregation),
-        // Optional field on Cost which needs to be supplied in order to see
-        // the product breakdown view in the top panel.
-        groupedCosts: getGroupedProducts(intervals),
+        // Optional field providing cost groupings / breakdowns keyed by the type. In this example,
+        // daily project cost grouped by cloud product.
+        groupedCosts: {
+          product: getGroupedProducts(intervals),
+        },
       },
     );
 
@@ -171,9 +178,38 @@ export class ExampleCostInsightsClient implements CostInsightsApi {
       ],
     };
 
+    const today = dayjs();
     const alerts: Alert[] = await this.request({ group }, [
       new ProjectGrowthAlert(projectGrowthData),
       new UnlabeledDataflowAlert(unlabeledDataflowData),
+      new KubernetesMigrationAlert(this, {
+        startDate: today.subtract(30, 'day').format(DEFAULT_DATE_FORMAT),
+        endDate: today.format(DEFAULT_DATE_FORMAT),
+        change: {
+          ratio: 0,
+          amount: 0,
+        },
+        services: [
+          {
+            id: 'service-a',
+            aggregation: [20_000, 10_000],
+            change: {
+              ratio: -0.5,
+              amount: -10_000,
+            },
+            entities: {},
+          },
+          {
+            id: 'service-b',
+            aggregation: [30_000, 15_000],
+            change: {
+              ratio: -0.5,
+              amount: -15_000,
+            },
+            entities: {},
+          },
+        ],
+      }),
     ]);
 
     return alerts;

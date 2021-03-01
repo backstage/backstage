@@ -162,7 +162,7 @@ describe('AuditList', () => {
           </ApiProvider>,
         ),
       );
-      const element = await rendered.findByTestId('error-message');
+      const element = await rendered.findByText(/Could not load audit list./);
       expect(element).toBeInTheDocument();
     });
   });

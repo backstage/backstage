@@ -14,37 +14,15 @@
  * limitations under the License.
  */
 
-import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaValidator } from './util';
+import schema from '../schema/kinds/User.v1alpha1.schema.json';
+import entitySchema from '../schema/Entity.schema.json';
+import entityMetaSchema from '../schema/EntityMeta.schema.json';
+import commonSchema from '../schema/shared/common.schema.json';
+import { ajvCompiledJsonSchemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'User' as const;
-
-const schema = yup.object<Partial<UserEntityV1alpha1>>({
-  apiVersion: yup.string().required().oneOf(API_VERSION),
-  kind: yup.string().required().equals([KIND]),
-  spec: yup
-    .object({
-      profile: yup
-        .object({
-          displayName: yup.string().min(1).notRequired(),
-          email: yup.string().min(1).notRequired(),
-          picture: yup.string().min(1).notRequired(),
-        })
-        .notRequired(),
-      // Use this manual test because yup .required() requires at least one
-      // element and there is no simple workaround -_-
-      // the cast is there to convince typescript that the array itself is
-      // required without using .required()
-      memberOf: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'memberOf must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-    })
-    .required(),
-});
 
 export interface UserEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
@@ -59,8 +37,9 @@ export interface UserEntityV1alpha1 extends Entity {
   };
 }
 
-export const userEntityV1alpha1Validator = schemaValidator(
+export const userEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
   KIND,
   API_VERSION,
   schema,
+  [commonSchema, entityMetaSchema, entitySchema],
 );

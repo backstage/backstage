@@ -57,8 +57,6 @@ describe('date formatters', () => {
 
 describe.each`
   duration         | date            | isEndDate | output
-  ${Duration.P1M}  | ${'2020-10-11'} | ${true}   | ${'September 2020'}
-  ${Duration.P1M}  | ${'2020-10-11'} | ${false}  | ${'August 2020'}
   ${Duration.P3M}  | ${'2020-10-11'} | ${true}   | ${'Q3 2020'}
   ${Duration.P3M}  | ${'2020-10-11'} | ${false}  | ${'Q2 2020'}
   ${Duration.P30D} | ${'2020-10-11'} | ${true}   | ${'Last 30 Days'}

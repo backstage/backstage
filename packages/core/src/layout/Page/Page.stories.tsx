@@ -26,6 +26,7 @@ import {
   InfoCard,
   Page,
 } from '../';
+import { createApp } from '../../api-wrappers';
 import {
   GaugeCard,
   StatusOK,
@@ -192,46 +193,53 @@ const ExampleContentHeader = ({ selectedTab }: { selectedTab?: number }) => (
   </ContentHeader>
 );
 
+const app = createApp({ configLoader: async () => [] });
+const AppProvider = app.getProvider();
+
 export const PluginWithData = () => {
   const [selectedTab, setSelectedTab] = useState<number>(2);
   return (
-    <MemoryRouter>
-      <div style={{ border: '1px solid #ddd' }}>
-        <Page themeId="tool">
-          <ExampleHeader />
-          <HeaderTabs
-            selectedIndex={selectedTab}
-            onChange={index => setSelectedTab(index)}
-            tabs={tabs.map(({ label }, index) => ({
-              id: index.toString(),
-              label,
-            }))}
-          />
-          <Content>
-            <ExampleContentHeader selectedTab={selectedTab} />
-            <DataGrid />
-          </Content>
-        </Page>
-      </div>
-    </MemoryRouter>
+    <AppProvider>
+      <MemoryRouter>
+        <div style={{ border: '1px solid #ddd' }}>
+          <Page themeId="tool">
+            <ExampleHeader />
+            <HeaderTabs
+              selectedIndex={selectedTab}
+              onChange={index => setSelectedTab(index)}
+              tabs={tabs.map(({ label }, index) => ({
+                id: index.toString(),
+                label,
+              }))}
+            />
+            <Content>
+              <ExampleContentHeader selectedTab={selectedTab} />
+              <DataGrid />
+            </Content>
+          </Page>
+        </div>
+      </MemoryRouter>
+    </AppProvider>
   );
 };
 
 export const PluginWithTable = () => {
   return (
-    <div style={{ border: '1px solid #ddd' }}>
-      <Page themeId="tool">
-        <ExampleHeader />
-        <Content>
-          <ExampleContentHeader />
-          <Table
-            options={{ paging: true, padding: 'dense' }}
-            data={generateTestData(10)}
-            columns={columns}
-            title="Example Content"
-          />
-        </Content>
-      </Page>
-    </div>
+    <AppProvider>
+      <div style={{ border: '1px solid #ddd' }}>
+        <Page themeId="tool">
+          <ExampleHeader />
+          <Content>
+            <ExampleContentHeader />
+            <Table
+              options={{ paging: true, padding: 'dense' }}
+              data={generateTestData(10)}
+              columns={columns}
+              title="Example Content"
+            />
+          </Content>
+        </Page>
+      </div>
+    </AppProvider>
   );
 };

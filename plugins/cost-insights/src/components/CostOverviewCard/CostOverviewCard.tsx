@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
+  capitalize,
   Card,
   CardContent,
   Divider,
-  useTheme,
   Tab,
   Tabs,
+  useTheme,
 } from '@material-ui/core';
 import { CostOverviewChart } from './CostOverviewChart';
-import { CostOverviewByProductChart } from './CostOverviewByProductChart';
+import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import { useScroll, useFilters, useConfig } from '../../hooks';
+import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
 import { findAlways } from '../../utils/assert';
-import { Cost, CostInsightsTheme, MetricData } from '../../types';
+import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
 import { useOverviewTabsStyles } from '../../utils/styles';
+import { ScrollAnchor } from '../../utils/scroll';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
-  metricData: MetricData | null;
+  metricData: Maybe<MetricData>;
 };
 
 export const CostOverviewCard = ({
@@ -46,27 +48,38 @@ export const CostOverviewCard = ({
   metricData,
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
+  const styles = useOverviewTabsStyles(theme);
   const config = useConfig();
   const [tabIndex, setTabIndex] = useState(0);
-
-  const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
+  // Reset tabIndex if breakdowns available change
+  useEffect(() => {
+    // Intentionally off-by-one to account for the overview tab
+    const lastIndex = Object.keys(dailyCostData.groupedCosts ?? {}).length;
+    if (tabIndex > lastIndex) {
+      setTabIndex(0);
+    }
+  }, [dailyCostData, tabIndex, setTabIndex]);
+
   const metric = filters.metric
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
-  const styles = useOverviewTabsStyles(theme);
 
+  const breakdownTabs = Object.keys(dailyCostData.groupedCosts ?? {}).map(
+    key => ({
+      id: key,
+      label: `Breakdown by ${key}`,
+      title: `Cloud Cost By ${capitalize(key)}`,
+    }),
+  );
   const tabs = [
     { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
-    {
-      id: 'breakdown',
-      label: 'Breakdown by product',
-      title: 'Cloud Cost By Product',
-    },
-  ];
+  ].concat(breakdownTabs);
+  // tabIndex can temporarily be invalid while the useEffect above processes
+  const safeTabIndex = tabIndex > tabs.length - 1 ? 0 : tabIndex;
 
   const OverviewTabs = () => {
     return (
@@ -74,7 +87,7 @@ export const CostOverviewCard = ({
         <Tabs
           indicatorColor="primary"
           onChange={(_, index) => setTabIndex(index)}
-          value={tabIndex}
+          value={safeTabIndex}
         >
           {tabs.map((tab, index) => (
             <Tab
@@ -91,27 +104,27 @@ export const CostOverviewCard = ({
   };
 
   // Metrics can only be selected on the total cost graph
-  const showMetricSelect = config.metrics.length && tabIndex === 0;
+  const showMetricSelect = config.metrics.length && safeTabIndex === 0;
 
   return (
     <Card style={{ position: 'relative' }}>
-      <ScrollAnchor behavior="smooth" top={-20} />
+      <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
         {dailyCostData.groupedCosts && <OverviewTabs />}
-        <CostOverviewHeader title={tabs[tabIndex].title}>
+        <CostOverviewHeader title={tabs[safeTabIndex].title}>
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
         <Box ml={2} my={1} display="flex" flexDirection="column">
-          {tabIndex === 0 ? (
+          {safeTabIndex === 0 ? (
             <CostOverviewChart
               dailyCostData={dailyCostData}
               metric={metric}
               metricData={metricData}
             />
           ) : (
-            <CostOverviewByProductChart
-              costsByProduct={dailyCostData.groupedCosts!}
+            <CostOverviewBreakdownChart
+              costBreakdown={dailyCostData.groupedCosts![tabs[safeTabIndex].id]}
             />
           )}
         </Box>

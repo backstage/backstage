@@ -15,10 +15,10 @@
  */
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Content, Link } from '@backstage/core';
+import { Breadcrumbs, Content, Link } from '@backstage/core';
 import {
+  Box,
   Typography,
-  Breadcrumbs,
   Paper,
   TableContainer,
   Table,
@@ -36,7 +36,6 @@ import ExternalLinkIcon from '@material-ui/icons/Launch';
 const useStyles = makeStyles(theme => ({
   root: {
     maxWidth: 720,
-    margin: theme.spacing(2),
   },
   table: {
     padding: theme.spacing(1),
@@ -46,12 +45,6 @@ const useStyles = makeStyles(theme => ({
     verticalAlign: 'bottom',
   },
 }));
-
-const Page = () => (
-  <Content>
-    <BuildWithStepsView />
-  </Content>
-);
 
 const BuildWithStepsView = () => {
   const { owner, repo } = useProjectSlugFromEntity();
@@ -63,9 +56,10 @@ const BuildWithStepsView = () => {
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link to="../../..">Jobs</Link>
+        <Link to="../../..">Projects</Link>
         <Typography>Run</Typography>
       </Breadcrumbs>
+      <Box m={2} />
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
@@ -129,6 +123,11 @@ const BuildWithStepsView = () => {
     </div>
   );
 };
+const Page = () => (
+  <Content>
+    <BuildWithStepsView />
+  </Content>
+);
 
 export default Page;
 export { BuildWithStepsView as BuildWithSteps };

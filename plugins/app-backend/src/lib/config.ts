@@ -84,13 +84,22 @@ export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
   const schemaPath = resolvePath(appDistDir, '.config-schema.json');
   if (await fs.pathExists(schemaPath)) {
     const serializedSchema = await fs.readJson(schemaPath);
-    const schema = await loadConfigSchema({ serialized: serializedSchema });
 
-    const frontendConfigs = await schema.process(
-      [{ data: config.get() as JsonObject, context: 'app' }],
-      { visibility: ['frontend'] },
-    );
-    appConfigs.push(...frontendConfigs);
+    try {
+      const schema = await loadConfigSchema({ serialized: serializedSchema });
+
+      const frontendConfigs = await schema.process(
+        [{ data: config.get() as JsonObject, context: 'app' }],
+        { visibility: ['frontend'] },
+      );
+      appConfigs.push(...frontendConfigs);
+    } catch (error) {
+      throw new Error(
+        'Invalid app bundle schema. If this error is unexpected you need to run `yarn build` in the app. ' +
+          `If that doesn't help you should make sure your config schema is correct and rebuild the app bundle again. ` +
+          `Caused by the following schema error, ${error}`,
+      );
+    }
   }
 
   return appConfigs;

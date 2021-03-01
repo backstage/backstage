@@ -13,43 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
+import { fileURLToPath } from 'url';
 import { InputError } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
 
 export class FilePreparer implements PreparerBase {
-  async prepare(
-    template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
-  ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-
-    if (protocol !== 'file') {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'file'`,
-      );
+  async prepare({ url, workspacePath }: PreparerOptions) {
+    if (!url.startsWith('file:///')) {
+      throw new InputError(`Wrong location protocol, should be 'file', ${url}`);
     }
-    const templateId = template.metadata.name;
 
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(workingDirectory, templateId),
-    );
+    const targetDir = path.join(workspacePath, 'template');
+    await fs.ensureDir(targetDir);
 
-    const parentDirectory = path.resolve(
-      path.dirname(location),
-      template.spec.path ?? '.',
-    );
+    const templatePath = fileURLToPath(url);
 
-    await fs.copy(parentDirectory, tempDir, {
-      filter: src => src !== location,
+    await fs.copy(templatePath, targetDir, {
       recursive: true,
     });
-
-    return tempDir;
   }
 }

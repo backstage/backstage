@@ -16,13 +16,12 @@
 
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { InfoCard, Progress, Link } from '@backstage/core';
+import { Breadcrumbs, InfoCard, Progress, Link } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
 import {
   Grid,
   Box,
   IconButton,
-  Breadcrumbs,
   Typography,
   Link as MaterialLink,
 } from '@material-ui/core';
@@ -99,18 +98,6 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const BuildsList = ({ build }: { build?: BuildWithSteps }) => (
-  <Box>
-    {build &&
-      build.steps &&
-      build.steps.map(
-        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-          <ActionsList key={name} name={name} actions={actions} />
-        ),
-      )}
-  </Box>
-);
-
 const ActionsList = ({
   actions,
 }: {
@@ -132,6 +119,18 @@ const ActionsList = ({
   );
 };
 
+const BuildsList = ({ build }: { build?: BuildWithSteps }) => (
+  <Box>
+    {build &&
+      build.steps &&
+      build.steps.map(
+        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
+          <ActionsList key={name} name={name} actions={actions} />
+        ),
+      )}
+  </Box>
+);
+
 export const BuildWithStepsPage = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
@@ -146,10 +145,12 @@ export const BuildWithStepsPage = () => {
 
   return (
     <>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link to="..">All builds</Link>
-        <Typography>Build details</Typography>
-      </Breadcrumbs>
+      <Box mb={3}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to="..">All builds</Link>
+          <Typography>Build details</Typography>
+        </Breadcrumbs>
+      </Box>
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard

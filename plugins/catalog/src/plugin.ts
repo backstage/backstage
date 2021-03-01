@@ -14,27 +14,103 @@
  * limitations under the License.
  */
 
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { CatalogClient } from '@backstage/catalog-client';
 import {
   createApiFactory,
-  createApiRef,
+  createComponentExtension,
   createPlugin,
+  createRoutableExtension,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core';
+import {
+  catalogApiRef,
+  catalogRouteRef,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
+import { CatalogClientWrapper } from './CatalogClientWrapper';
+import { createComponentRouteRef } from './routes';
 
-export const catalogApiRef = createApiRef<CatalogApi>({
-  id: 'plugin.catalog.service',
-  description:
-    'Used by the Catalog plugin to make requests to accompanying backend',
-});
-
-export const plugin = createPlugin({
+export const catalogPlugin = createPlugin({
   id: 'catalog',
   apis: [
     createApiFactory({
       api: catalogApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new CatalogClientWrapper({
+          client: new CatalogClient({ discoveryApi }),
+          identityApi,
+        }),
     }),
   ],
+  routes: {
+    catalogIndex: catalogRouteRef,
+    catalogEntity: entityRouteRef,
+  },
+  externalRoutes: {
+    createComponent: createComponentRouteRef,
+  },
 });
+
+export const CatalogIndexPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogPage').then(m => m.CatalogPage),
+    mountPoint: catalogRouteRef,
+  }),
+);
+
+export const CatalogEntityPage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogEntityPage').then(m => m.CatalogEntityPage),
+    mountPoint: entityRouteRef,
+  }),
+);
+
+export const EntityAboutCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/AboutCard').then(m => m.AboutCard),
+    },
+  }),
+);
+
+export const EntityLinksCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/EntityLinksCard').then(m => m.EntityLinksCard),
+    },
+  }),
+);
+
+export const EntityHasSystemsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasSystemsCard').then(m => m.HasSystemsCard),
+    },
+  }),
+);
+
+export const EntityHasComponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasComponentsCard').then(m => m.HasComponentsCard),
+    },
+  }),
+);
+
+export const EntityHasSubcomponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasSubcomponentsCard').then(
+          m => m.HasSubcomponentsCard,
+        ),
+    },
+  }),
+);

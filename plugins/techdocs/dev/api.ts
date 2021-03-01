@@ -13,23 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
+import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsStorage } from '../src/api';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
-  public apiOrigin: string;
+  public configApi: Config;
+  public discoveryApi: DiscoveryApi;
+  public identityApi: IdentityApi;
 
-  constructor({ apiOrigin }: { apiOrigin: string }) {
-    this.apiOrigin = apiOrigin;
+  constructor({
+    configApi,
+    discoveryApi,
+    identityApi,
+  }: {
+    configApi: Config;
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
+    this.configApi = configApi;
+    this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
+  }
+
+  async getApiOrigin() {
+    return (
+      this.configApi.getOptionalString('techdocs.requestUrl') ??
+      (await this.discoveryApi.getBaseUrl('techdocs'))
+    );
   }
 
   async getEntityDocs(entityId: EntityName, path: string) {
     const { name } = entityId;
 
-    const url = `${this.apiOrigin}/${name}/${path}`;
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/${name}/${path}`;
+    const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
     );
 
     if (request.status === 404) {
@@ -39,8 +65,13 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     return request.text();
   }
 
-  getBaseUrl(oldBaseUrl: string, entityId: EntityName, path: string): string {
+  async getBaseUrl(
+    oldBaseUrl: string,
+    entityId: EntityName,
+    path: string,
+  ): Promise<string> {
     const { name } = entityId;
-    return new URL(oldBaseUrl, `${this.apiOrigin}/${name}/${path}`).toString();
+    const apiOrigin = await this.getApiOrigin();
+    return new URL(oldBaseUrl, `${apiOrigin}/${name}/${path}`).toString();
   }
 }

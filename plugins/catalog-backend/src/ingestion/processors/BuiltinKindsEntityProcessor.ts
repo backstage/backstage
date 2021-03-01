@@ -19,6 +19,8 @@ import {
   apiEntityV1alpha1Validator,
   ComponentEntity,
   componentEntityV1alpha1Validator,
+  DomainEntity,
+  domainEntityV1alpha1Validator,
   Entity,
   getEntityName,
   GroupEntity,
@@ -31,12 +33,19 @@ import {
   RELATION_CHILD_OF,
   RELATION_CONSUMES_API,
   RELATION_HAS_MEMBER,
+  RELATION_HAS_PART,
   RELATION_MEMBER_OF,
   RELATION_OWNED_BY,
   RELATION_OWNER_OF,
   RELATION_PARENT_OF,
+  RELATION_PART_OF,
   RELATION_PROVIDES_API,
+  ResourceEntity,
+  resourceEntityV1alpha1Validator,
+  SystemEntity,
+  systemEntityV1alpha1Validator,
   templateEntityV1alpha1Validator,
+  templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
@@ -47,35 +56,20 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
     componentEntityV1alpha1Validator,
+    resourceEntityV1alpha1Validator,
     groupEntityV1alpha1Validator,
     locationEntityV1alpha1Validator,
     templateEntityV1alpha1Validator,
+    templateEntityV1beta2Validator,
     userEntityV1alpha1Validator,
+    systemEntityV1alpha1Validator,
+    domainEntityV1alpha1Validator,
   ];
-
-  async preProcessEntity(entity: Entity): Promise<Entity> {
-    // NOTE(freben): Part of Group field deprecation on Nov 22nd, 2020. Fields
-    // scheduled for removal Dec 6th, 2020. This code can be deleted after that
-    // point. See https://github.com/backstage/backstage/issues/3049
-    if (
-      entity.apiVersion === 'backstage.io/v1alpha1' &&
-      entity.kind === 'Group' &&
-      entity.spec
-    ) {
-      if (!entity.spec.ancestors) {
-        entity.spec.ancestors = [];
-      }
-      if (!entity.spec.descendants) {
-        entity.spec.descendants = [];
-      }
-    }
-    return entity;
-  }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
-      const result = await validator.check(entity);
-      if (result) {
+      const results = await validator.check(entity);
+      if (results) {
         return true;
       }
     }
@@ -135,10 +129,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_OWNER_OF,
       );
       doEmit(
-        component.spec.implementsApis,
-        { defaultKind: 'API', defaultNamespace: selfRef.namespace },
-        RELATION_PROVIDES_API,
-        RELATION_API_PROVIDED_BY,
+        component.spec.subcomponentOf,
+        { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
       );
       doEmit(
         component.spec.providesApis,
@@ -151,6 +145,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_CONSUMES_API,
         RELATION_API_CONSUMED_BY,
+      );
+      doEmit(
+        component.spec.system,
+        { defaultKind: 'System', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
       );
     }
 
@@ -165,6 +165,32 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
+      );
+      doEmit(
+        api.spec.system,
+        { defaultKind: 'System', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
+      );
+    }
+
+    /*
+     * Emit relations for the Resource kind
+     */
+
+    if (entity.kind === 'Resource') {
+      const resource = entity as ResourceEntity;
+      doEmit(
+        resource.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
+      doEmit(
+        resource.spec.system,
+        { defaultKind: 'System', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
       );
     }
 
@@ -199,6 +225,40 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_PARENT_OF,
         RELATION_CHILD_OF,
+      );
+    }
+
+    /*
+     * Emit relations for the System kind
+     */
+
+    if (entity.kind === 'System') {
+      const system = entity as SystemEntity;
+      doEmit(
+        system.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
+      doEmit(
+        system.spec.domain,
+        { defaultKind: 'Domain', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
+      );
+    }
+
+    /*
+     * Emit relations for the Domain kind
+     */
+
+    if (entity.kind === 'Domain') {
+      const domain = entity as DomainEntity;
+      doEmit(
+        domain.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
       );
     }
 

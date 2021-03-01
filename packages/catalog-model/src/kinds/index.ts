@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { schemaValidator } from './util';
+export type { KindValidator } from './types';
 export { apiEntityV1alpha1Validator } from './ApiEntityV1alpha1';
 export type {
   ApiEntityV1alpha1 as ApiEntity,
@@ -24,6 +26,11 @@ export type {
   ComponentEntityV1alpha1 as ComponentEntity,
   ComponentEntityV1alpha1,
 } from './ComponentEntityV1alpha1';
+export { domainEntityV1alpha1Validator } from './DomainEntityV1alpha1';
+export type {
+  DomainEntityV1alpha1 as DomainEntity,
+  DomainEntityV1alpha1,
+} from './DomainEntityV1alpha1';
 export { groupEntityV1alpha1Validator } from './GroupEntityV1alpha1';
 export type {
   GroupEntityV1alpha1 as GroupEntity,
@@ -35,12 +42,23 @@ export type {
   LocationEntityV1alpha1,
 } from './LocationEntityV1alpha1';
 export * from './relations';
+export { resourceEntityV1alpha1Validator } from './ResourceEntityV1alpha1';
+export type {
+  ResourceEntityV1alpha1 as ResourceEntity,
+  ResourceEntityV1alpha1,
+} from './ResourceEntityV1alpha1';
+export { systemEntityV1alpha1Validator } from './SystemEntityV1alpha1';
+export type {
+  SystemEntityV1alpha1 as SystemEntity,
+  SystemEntityV1alpha1,
+} from './SystemEntityV1alpha1';
 export { templateEntityV1alpha1Validator } from './TemplateEntityV1alpha1';
 export type {
   TemplateEntityV1alpha1 as TemplateEntity,
   TemplateEntityV1alpha1,
 } from './TemplateEntityV1alpha1';
-export type { KindValidator } from './types';
+export { templateEntityV1beta2Validator } from './TemplateEntityV1beta2';
+export type { TemplateEntityV1beta2 } from './TemplateEntityV1beta2';
 export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,

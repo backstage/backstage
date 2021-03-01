@@ -15,14 +15,14 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { BuildSummary, GitType } from 'circleci-api';
+import { getOr } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { circleCIApiRef } from '../api';
 import type { CITableBuildInfo } from '../components/BuildsPage/lib/CITable';
-import { useEntity } from '@backstage/plugin-catalog';
 import { CIRCLECI_ANNOTATION } from '../constants';
-import { getOr } from 'lodash/fp';
 
 const makeReadableStatus = (status: string | undefined) => {
   if (!status) return '';

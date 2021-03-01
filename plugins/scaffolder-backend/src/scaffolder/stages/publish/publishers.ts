@@ -14,142 +14,97 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Octokit } from '@octokit/rest';
-import { Gitlab } from '@gitbeaker/node';
-import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
 import { Config } from '@backstage/config';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import {
-  DeprecatedLocationTypeDetector,
-  makeDeprecatedLocationTypeDetector,
-  parseLocationAnnotation,
-} from '../helpers';
 import { PublisherBase, PublisherBuilder } from './types';
-import { RemoteProtocol } from '../types';
-import { GithubPublisher, RepoVisibilityOptions } from './github';
-import { GitlabPublisher } from './gitlab';
+import {
+  GithubPublisher,
+  RepoVisibilityOptions as GithubRepoVisibilityOptions,
+} from './github';
+import {
+  GitlabPublisher,
+  RepoVisibilityOptions as GitlabRepoVisibilityOptions,
+} from './gitlab';
 import { AzurePublisher } from './azure';
+import {
+  BitbucketPublisher,
+  RepoVisibilityOptions as BitbucketRepoVisibilityOptions,
+} from './bitbucket';
+import { Logger } from 'winston';
+import { ScmIntegrations } from '@backstage/integration';
 
 export class Publishers implements PublisherBuilder {
-  private publisherMap = new Map<RemoteProtocol, PublisherBase>();
+  private publisherMap = new Map<string, PublisherBase | undefined>();
 
-  constructor(private readonly typeDetector?: DeprecatedLocationTypeDetector) {}
-
-  register(protocol: RemoteProtocol, publisher: PublisherBase) {
-    this.publisherMap.set(protocol, publisher);
+  register(host: string, preparer: PublisherBase | undefined) {
+    this.publisherMap.set(host, preparer);
   }
 
-  get(template: TemplateEntityV1alpha1): PublisherBase {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const publisher = this.publisherMap.get(protocol);
-
-    if (!publisher) {
-      if ((protocol as string) === 'url') {
-        const type = this.typeDetector?.(location);
-        const detected = type && this.publisherMap.get(type as RemoteProtocol);
-        if (detected) {
-          return detected;
-        }
-        throw new Error(`No preparer integration found for url "${location}"`);
-      }
-      throw new Error(`No publisher registered for type: "${protocol}"`);
+  get(url: string): PublisherBase {
+    const preparer = this.publisherMap.get(new URL(url).host);
+    if (!preparer) {
+      throw new Error(
+        `Unable to find a publisher for URL: ${url}. Please make sure to register this host under an integration in app-config`,
+      );
     }
-
-    return publisher;
+    return preparer;
   }
 
   static async fromConfig(
     config: Config,
-    { logger }: { logger: Logger },
+    _options: { logger: Logger },
   ): Promise<PublisherBuilder> {
-    const typeDetector = makeDeprecatedLocationTypeDetector(config);
-    const publishers = new Publishers(typeDetector);
+    const publishers = new Publishers();
 
-    const githubConfig = config.getOptionalConfig('scaffolder.github');
-    if (githubConfig) {
-      try {
-        const repoVisibility = githubConfig.getString(
-          'visibility',
-        ) as RepoVisibilityOptions;
+    const scm = ScmIntegrations.fromConfig(config);
 
-        const githubToken = githubConfig.getString('token');
-        const githubHost =
-          githubConfig.getOptionalString('host') ?? 'https://api.github.com';
-        const githubClient = new Octokit({
-          auth: githubToken,
-          baseUrl: githubHost,
-        });
-        const githubPublisher = new GithubPublisher({
-          client: githubClient,
-          token: githubToken,
+    for (const integration of scm.azure.list()) {
+      const publisher = await AzurePublisher.fromConfig(integration.config);
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      }
+    }
+
+    for (const integration of scm.github.list()) {
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.github.visibility',
+      ) ?? 'public') as GithubRepoVisibilityOptions;
+
+      const publisher = await GithubPublisher.fromConfig(integration.config, {
+        repoVisibility,
+      });
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      }
+    }
+
+    for (const integration of scm.gitlab.list()) {
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.gitlab.visibility',
+      ) ?? 'public') as GitlabRepoVisibilityOptions;
+
+      const publisher = await GitlabPublisher.fromConfig(integration.config, {
+        repoVisibility,
+      });
+
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
+      }
+    }
+
+    for (const integration of scm.bitbucket.list()) {
+      const repoVisibility = (config.getOptionalString(
+        'scaffolder.bitbucket.visibility',
+      ) ?? 'public') as BitbucketRepoVisibilityOptions;
+
+      const publisher = await BitbucketPublisher.fromConfig(
+        integration.config,
+        {
           repoVisibility,
-        });
+        },
+      );
 
-        publishers.register('file', githubPublisher);
-        publishers.register('github', githubPublisher);
-      } catch (e) {
-        const providerName = 'github';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
-
-    const gitLabConfig = config.getOptionalConfig('scaffolder.gitlab.api');
-    if (gitLabConfig) {
-      try {
-        const gitLabToken = gitLabConfig.getString('token');
-        const gitLabClient = new Gitlab({
-          host: gitLabConfig.getOptionalString('baseUrl'),
-          token: gitLabToken,
-        });
-        const gitLabPublisher = new GitlabPublisher(gitLabClient, gitLabToken);
-        publishers.register('gitlab', gitLabPublisher);
-        publishers.register('gitlab/api', gitLabPublisher);
-      } catch (e) {
-        const providerName = 'gitlab';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
-      }
-    }
-
-    const azureConfig = config.getOptionalConfig('scaffolder.azure');
-    if (azureConfig) {
-      try {
-        const baseUrl = azureConfig.getString('baseUrl');
-        const azureToken = azureConfig.getConfig('api').getString('token');
-
-        const authHandler = getPersonalAccessTokenHandler(azureToken);
-        const webApi = new WebApi(baseUrl, authHandler);
-        const azureClient = await webApi.getGitApi();
-
-        const azurePublisher = new AzurePublisher(azureClient, azureToken);
-        publishers.register('azure/api', azurePublisher);
-      } catch (e) {
-        const providerName = 'azure';
-        if (process.env.NODE_ENV !== 'development') {
-          throw new Error(
-            `Failed to initialize ${providerName} scaffolding provider, ${e.message}`,
-          );
-        }
-
-        logger.warn(
-          `Skipping ${providerName} scaffolding provider, ${e.message}`,
-        );
+      if (publisher) {
+        publishers.register(integration.config.host, publisher);
       }
     }
 

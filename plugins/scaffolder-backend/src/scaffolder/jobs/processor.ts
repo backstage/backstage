@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import os from 'os';
+import fs from 'fs-extra';
 import { Processor, Job, StageContext, StageInput } from './types';
-import { JsonValue } from '@backstage/config';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import Docker from 'dockerode';
-import { RequiredTemplateValues, TemplaterBase } from '../stages/templater';
+import path from 'path';
+import { TemplaterValues, TemplaterBase } from '../stages/templater';
 import { PreparerBuilder } from '../stages/prepare';
 import { makeLogStream } from './logger';
+import { Logger } from 'winston';
+import { Config } from '@backstage/config';
 
 export type JobProcessorArguments = {
   preparers: PreparerBuilder;
@@ -34,7 +39,45 @@ export type JobAndDirectoryTuple = {
 };
 
 export class JobProcessor implements Processor {
-  private jobs = new Map<string, Job>();
+  private readonly workingDirectory: string;
+  private readonly jobs: Map<string, Job>;
+
+  static async fromConfig({
+    config,
+    logger,
+  }: {
+    config: Config;
+    logger: Logger;
+  }) {
+    let workingDirectory: string;
+    if (config.has('backend.workingDirectory')) {
+      workingDirectory = config.getString('backend.workingDirectory');
+      try {
+        // Check if working directory exists and is writable
+        await fs.promises.access(
+          workingDirectory,
+          fs.constants.F_OK | fs.constants.W_OK,
+        );
+        logger.info(`using working directory: ${workingDirectory}`);
+      } catch (err) {
+        logger.error(
+          `working directory ${workingDirectory} ${
+            err.code === 'ENOENT' ? 'does not exist' : 'is not writable'
+          }`,
+        );
+        throw err;
+      }
+    } else {
+      workingDirectory = os.tmpdir();
+    }
+
+    return new JobProcessor(workingDirectory);
+  }
+
+  constructor(workingDirectory: string) {
+    this.workingDirectory = workingDirectory;
+    this.jobs = new Map<string, Job>();
+  }
 
   create({
     entity,
@@ -42,7 +85,7 @@ export class JobProcessor implements Processor {
     stages,
   }: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     stages: StageInput[];
   }): Job {
     const id = uuid.v4();
@@ -53,6 +96,7 @@ export class JobProcessor implements Processor {
       values,
       logger,
       logStream: stream,
+      workspacePath: path.join(this.workingDirectory, id),
     };
 
     const job: Job = {
@@ -81,11 +125,13 @@ export class JobProcessor implements Processor {
       throw new Error("Job is not in a 'PENDING' state");
     }
 
+    await fs.mkdir(job.context.workspacePath);
+
     job.status = 'STARTED';
 
     try {
       for (const stage of job.stages) {
-        // Create a logger for each stage so we can create seperate
+        // Create a logger for each stage so we can create separate
         // Streams for each step.
         const { logger, log, stream } = makeLogStream({
           id: job.id,
@@ -105,8 +151,8 @@ export class JobProcessor implements Processor {
             logStream: stream,
           });
 
-          // If the handler returns something, then let's merge this onto the ontext
-          // For the next stage to use as it might be relevant.
+          // If the handler returns something, then let's merge this onto the
+          // context for the next stage to use as it might be relevant.
           if (handlerResponse) {
             job.context = {
               ...job.context,
@@ -117,10 +163,10 @@ export class JobProcessor implements Processor {
           // Complete the current stage
           stage.status = 'COMPLETED';
         } catch (error) {
-          // Log to the current stage the error that occured and fail the stage.
+          // Log to the current stage the error that occurred and fail the stage.
           stage.status = 'FAILED';
           logger.error(`Stage failed with error: ${error.message}`);
-
+          logger.debug(error.stack);
           // Throw the error so the job can be failed too.
           throw error;
         } finally {
@@ -135,6 +181,8 @@ export class JobProcessor implements Processor {
       // If something went wrong, fail the job, and set the error property on the job.
       job.error = { name: error.name, message: error.message };
       job.status = 'FAILED';
+    } finally {
+      await fs.remove(job.context.workspacePath);
     }
   }
 }

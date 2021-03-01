@@ -37,10 +37,10 @@ import {
   executeRedirectStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import { RedirectInfo, AuthProviderFactory, ProfileInfo } from '../types';
+import { RedirectInfo, AuthProviderFactory } from '../types';
 
 type PrivateInfo = {
-  refreshToken: string;
+  refreshToken?: string;
 };
 
 type OidcImpl = {
@@ -48,16 +48,24 @@ type OidcImpl = {
   client: Client;
 };
 
-export type OidcAuthProviderOptions = OAuthProviderOptions & {
+type AuthResult = {
+  tokenset: TokenSet;
+  userinfo: UserinfoResponse;
+};
+
+export type Options = OAuthProviderOptions & {
   metadataUrl: string;
+  scope?: string;
   tokenSignedResponseAlg?: string;
 };
 
 export class OidcAuthProvider implements OAuthHandlers {
   private readonly implementation: Promise<OidcImpl>;
+  private readonly scope?: string;
 
-  constructor(options: OidcAuthProviderOptions) {
+  constructor(options: Options) {
     this.implementation = this.setupStrategy(options);
+    this.scope = options.scope;
   }
 
   async start(req: OAuthStartRequest): Promise<RedirectInfo> {
@@ -65,22 +73,38 @@ export class OidcAuthProvider implements OAuthHandlers {
     return await executeRedirectStrategy(req, strategy, {
       accessType: 'offline',
       prompt: 'none',
-      scope: `${req.scope} default`,
+      scope: req.scope || this.scope || '',
       state: encodeState(req.state),
     });
   }
 
   async handler(
     req: express.Request,
-  ): Promise<{ response: OAuthResponse; refreshToken: string }> {
+  ): Promise<{ response: OAuthResponse; refreshToken?: string }> {
     const { strategy } = await this.implementation;
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
+    const strategyResponse = await executeFrameHandlerStrategy<
+      AuthResult,
       PrivateInfo
     >(req, strategy);
-
+    const {
+      result: { userinfo, tokenset },
+      privateInfo,
+    } = strategyResponse;
+    const identityResponse = await this.populateIdentity({
+      profile: {
+        displayName: userinfo.name,
+        email: userinfo.email,
+        picture: userinfo.picture,
+      },
+      providerInfo: {
+        idToken: tokenset.id_token,
+        accessToken: tokenset.access_token || '',
+        scope: tokenset.scope || '',
+        expiresInSeconds: tokenset.expires_in,
+      },
+    });
     return {
-      response: await this.populateIdentity(response),
+      response: identityResponse,
       refreshToken: privateInfo.refreshToken,
     };
   }
@@ -105,9 +129,7 @@ export class OidcAuthProvider implements OAuthHandlers {
     });
   }
 
-  private async setupStrategy(
-    options: OidcAuthProviderOptions,
-  ): Promise<OidcImpl> {
+  private async setupStrategy(options: Options): Promise<OidcImpl> {
     const issuer = await Issuer.discover(options.metadataUrl);
     const client = new issuer.Client({
       client_id: options.clientId,
@@ -115,6 +137,7 @@ export class OidcAuthProvider implements OAuthHandlers {
       redirect_uris: [options.callbackUrl],
       response_types: ['code'],
       id_token_signed_response_alg: options.tokenSignedResponseAlg || 'RS256',
+      scope: options.scope || '',
     });
 
     const strategy = new OidcStrategy(
@@ -125,27 +148,13 @@ export class OidcAuthProvider implements OAuthHandlers {
       (
         tokenset: TokenSet,
         userinfo: UserinfoResponse,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        done: PassportDoneCallback<AuthResult, PrivateInfo>,
       ) => {
-        const profile: ProfileInfo = {
-          displayName: userinfo.name,
-          email: userinfo.email,
-          picture: userinfo.picture,
-        };
-
         done(
           undefined,
+          { tokenset, userinfo },
           {
-            providerInfo: {
-              idToken: tokenset.id_token || '',
-              accessToken: tokenset.access_token || '',
-              scope: tokenset.scope || '',
-              expiresInSeconds: tokenset.expires_in,
-            },
-            profile,
-          },
-          {
-            refreshToken: tokenset.refresh_token || '',
+            refreshToken: tokenset.refresh_token,
           },
         );
       },
@@ -170,32 +179,35 @@ export class OidcAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createOidcProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const metadataUrl = envConfig.getString('metadataUrl');
-    const tokenSignedResponseAlg = envConfig.getString(
-      'tokenSignedResponseAlg',
-    );
+export type OidcProviderOptions = {};
 
-    const provider = new OidcAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      tokenSignedResponseAlg,
-      metadataUrl,
-    });
+export const createOidcProvider = (
+  _options?: OidcProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const metadataUrl = envConfig.getString('metadataUrl');
+      const tokenSignedResponseAlg = envConfig.getString(
+        'tokenSignedResponseAlg',
+      );
+      const scope = envConfig.getOptionalString('scope');
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
+      const provider = new OidcAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        tokenSignedResponseAlg,
+        metadataUrl,
+        scope,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

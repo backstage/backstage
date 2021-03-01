@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import fs from 'fs-extra';
-import unzipper, { Entry } from 'unzipper';
 import archiver from 'archiver';
+import fs from 'fs-extra';
+import platformPath from 'path';
 import { Readable } from 'stream';
+import unzipper, { Entry } from 'unzipper';
 import {
   ReadTreeResponse,
-  ReadTreeResponseFile,
   ReadTreeResponseDirOptions,
+  ReadTreeResponseFile,
 } from '../types';
+import { stripFirstDirectoryFromPath } from './util';
 
 /**
  * Wraps a zip archive stream into a tree response reader.
@@ -35,6 +36,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     private readonly stream: Readable,
     private readonly subPath: string,
     private readonly workDir: string,
+    public readonly etag: string,
     private readonly filter?: (path: string) => boolean,
   ) {
     if (subPath) {
@@ -47,6 +49,8 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         );
       }
     }
+
+    this.etag = etag;
   }
 
   // Make sure the input stream is only read once
@@ -57,18 +61,21 @@ export class ZipArchiveResponse implements ReadTreeResponse {
     this.read = true;
   }
 
-  private getPath(entry: Entry): string {
-    return entry.path.slice(this.subPath.length);
+  // File path relative to the root extracted directory or a sub directory if subpath is set.
+  private getInnerPath(path: string): string {
+    return path.slice(this.subPath.length);
   }
 
   private shouldBeIncluded(entry: Entry): boolean {
+    const strippedPath = stripFirstDirectoryFromPath(entry.path);
+
     if (this.subPath) {
-      if (!entry.path.startsWith(this.subPath)) {
+      if (!strippedPath.startsWith(this.subPath)) {
         return false;
       }
     }
     if (this.filter) {
-      return this.filter(this.getPath(entry));
+      return this.filter(this.getInnerPath(entry.path));
     }
     return true;
   }
@@ -88,7 +95,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
         if (this.shouldBeIncluded(entry)) {
           files.push({
-            path: this.getPath(entry),
+            path: this.getInnerPath(stripFirstDirectoryFromPath(entry.path)),
             content: () => entry.buffer(),
           });
         } else {
@@ -112,7 +119,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
       .pipe(unzipper.Parse())
       .on('entry', (entry: Entry) => {
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          archive.append(entry, { name: this.getPath(entry) });
+          archive.append(entry, { name: this.getInnerPath(entry.path) });
         } else {
           entry.autodrain();
         }
@@ -128,7 +135,7 @@ export class ZipArchiveResponse implements ReadTreeResponse {
 
     const dir =
       options?.targetDir ??
-      (await fs.mkdtemp(path.join(this.workDir, 'backstage-')));
+      (await fs.mkdtemp(platformPath.join(this.workDir, 'backstage-')));
 
     await this.stream
       .pipe(unzipper.Parse())
@@ -136,12 +143,14 @@ export class ZipArchiveResponse implements ReadTreeResponse {
         // Ignore directory entries since we handle that with the file entries
         // as a zip can have files with directories without directory entries
         if (entry.type === 'File' && this.shouldBeIncluded(entry)) {
-          const entryPath = this.getPath(entry);
-          const dirname = path.dirname(entryPath);
+          const entryPath = this.getInnerPath(
+            stripFirstDirectoryFromPath(entry.path),
+          );
+          const dirname = platformPath.dirname(entryPath);
           if (dirname) {
-            await fs.mkdirp(path.join(dir, dirname));
+            await fs.mkdirp(platformPath.join(dir, dirname));
           }
-          entry.pipe(fs.createWriteStream(path.join(dir, entryPath)));
+          entry.pipe(fs.createWriteStream(platformPath.join(dir, entryPath)));
         } else {
           entry.autodrain();
         }

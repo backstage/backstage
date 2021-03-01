@@ -15,3 +15,7 @@
  */
 
 export const LOCATION_ANNOTATION = 'backstage.io/managed-by-location';
+export const ORIGIN_LOCATION_ANNOTATION =
+  'backstage.io/managed-by-origin-location';
+
+export const SOURCE_LOCATION_ANNOTATION = 'backstage.io/source-location';

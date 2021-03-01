@@ -15,25 +15,46 @@
  */
 
 import { SvgIconProps } from '@material-ui/core';
-import PeopleIcon from '@material-ui/icons/People';
-import PersonIcon from '@material-ui/icons/Person';
-import React, { FC } from 'react';
+import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
+import MuiChatIcon from '@material-ui/icons/Chat';
+import MuiDashboardIcon from '@material-ui/icons/Dashboard';
+import MuiEmailIcon from '@material-ui/icons/Email';
+import MuiGitHubIcon from '@material-ui/icons/GitHub';
+import MuiHelpIcon from '@material-ui/icons/Help';
+import MuiPeopleIcon from '@material-ui/icons/People';
+import MuiPersonIcon from '@material-ui/icons/Person';
+import MuiWarningIcon from '@material-ui/icons/Warning';
+import React from 'react';
 import { useApp } from '../app/AppContext';
-import { IconComponent, SystemIconKey, SystemIcons } from './types';
+import { IconComponent, IconComponentMap, SystemIconKey } from './types';
 
-export const defaultSystemIcons: SystemIcons = {
-  user: PersonIcon,
-  group: PeopleIcon,
+export const defaultSystemIcons: IconComponentMap = {
+  brokenImage: MuiBrokenImageIcon,
+  chat: MuiChatIcon,
+  dashboard: MuiDashboardIcon,
+  email: MuiEmailIcon,
+  github: MuiGitHubIcon,
+  group: MuiPeopleIcon,
+  help: MuiHelpIcon,
+  user: MuiPersonIcon,
+  warning: MuiWarningIcon,
 };
 
 const overridableSystemIcon = (key: SystemIconKey): IconComponent => {
-  const Component: FC<SvgIconProps> = props => {
+  const Component = (props: SvgIconProps) => {
     const app = useApp();
     const Icon = app.getSystemIcon(key);
-    return <Icon {...props} />;
+    return Icon ? <Icon {...props} /> : <MuiBrokenImageIcon {...props} />;
   };
   return Component;
 };
 
-export const UserIcon = overridableSystemIcon('user');
+export const BrokenImageIcon = overridableSystemIcon('brokenImage');
+export const ChatIcon = overridableSystemIcon('chat');
+export const DashboardIcon = overridableSystemIcon('dashboard');
+export const EmailIcon = overridableSystemIcon('email');
+export const GitHubIcon = overridableSystemIcon('github');
 export const GroupIcon = overridableSystemIcon('group');
+export const HelpIcon = overridableSystemIcon('help');
+export const UserIcon = overridableSystemIcon('user');
+export const WarningIcon = overridableSystemIcon('warning');

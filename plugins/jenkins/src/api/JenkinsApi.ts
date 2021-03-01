@@ -63,7 +63,7 @@ export class JenkinsApi {
     return lastBuild;
   }
 
-  extractScmDetailsFromJob(jobDetails: any): any {
+  extractScmDetailsFromJob(jobDetails: any): any | undefined {
     const scmInfo = jobDetails.actions
       .filter(
         (action: any) =>
@@ -78,6 +78,10 @@ export class JenkinsApi {
         };
       })
       .pop();
+
+    if (!scmInfo) {
+      return undefined;
+    }
 
     const author = jobDetails.actions
       .filter(
@@ -107,26 +111,48 @@ export class JenkinsApi {
 
   async getFolder(folderName: string) {
     const client = await this.getClient();
-    const folder = await client.job.get(folderName);
+    const folder = await client.job.get({
+      name: folderName,
+      // Filter only be the information we need, instead of loading all fields.
+      // Limit to only show the latest build for each job and only load 50 jobs
+      // at all.
+      // Whitespaces are only included for readablity here and stripped out
+      // before sending to Jenkins
+      tree: `jobs[
+               actions[*],
+               builds[
+                number,
+                url,
+                fullDisplayName,
+                building,
+                result,
+                actions[
+                  *[
+                    *[
+                      *[
+                        *
+                      ]
+                    ]
+                  ]
+                ]
+              ]{0,1},
+              jobs{0,1},
+              name
+            ]{0,50}
+            `.replace(/\s/g, ''),
+    });
     const results = [];
-    for (const jobSummary of folder.jobs) {
-      const jobDetails = await client.job.get({
-        name: `${folderName}/${jobSummary.name}`,
-        depth: 1,
-      });
 
+    for (const jobDetails of folder.jobs) {
       const jobScmInfo = this.extractScmDetailsFromJob(jobDetails);
-      if (jobDetails.jobs) {
+      if (jobDetails?.jobs) {
         // skipping folders inside folders for now
       } else {
         for (const buildDetails of jobDetails.builds) {
-          const build = await client.build.get({
-            name: `${folderName}/${jobSummary.name}`,
-            number: buildDetails.number,
-            depth: 1,
-          });
-
-          const ciTable = this.mapJenkinsBuildToCITable(build, jobScmInfo);
+          const ciTable = this.mapJenkinsBuildToCITable(
+            buildDetails,
+            jobScmInfo,
+          );
           results.push(ciTable);
         }
       }

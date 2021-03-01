@@ -15,6 +15,7 @@
  */
 
 import { runPlain } from '../../lib/run';
+import { NotFoundError } from '../errors';
 
 const PREFIX = '@backstage';
 
@@ -49,6 +50,11 @@ export async function fetchPackageInfo(
   name: string,
 ): Promise<YarnInfoInspectData> {
   const output = await runPlain('yarn', 'info', '--json', name);
+
+  if (!output) {
+    throw new NotFoundError(`No package information found for package ${name}`);
+  }
+
   const info = JSON.parse(output) as YarnInfo;
   if (info.type !== 'inspect') {
     throw new Error(`Received unknown yarn info for ${name}, ${output}`);
@@ -61,8 +67,8 @@ export async function fetchPackageInfo(
 export async function mapDependencies(
   targetDir: string,
 ): Promise<Map<string, PkgVersionInfo[]>> {
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(targetDir);
+  const { Project } = require('@lerna/project');
+  const project = new Project(targetDir);
   const packages = await project.getPackages();
 
   const dependencyMap = new Map<string, PkgVersionInfo[]>();

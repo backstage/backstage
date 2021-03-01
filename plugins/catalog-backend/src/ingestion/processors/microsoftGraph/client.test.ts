@@ -210,7 +210,7 @@ describe('MicrosoftGraphClient', () => {
     expect(photo).toBeFalsy();
   });
 
-  it('should load profile photo', async () => {
+  it('should load user profile photo', async () => {
     worker.use(
       rest.get('https://example.com/users/user-id/photo/*', (_, res, ctx) =>
         res(ctx.status(200), ctx.text('911')),
@@ -222,7 +222,7 @@ describe('MicrosoftGraphClient', () => {
     expect(photo).toEqual('data:image/jpeg;base64,OTEx');
   });
 
-  it('should load profile photo for size 120', async () => {
+  it('should load user profile photo for size 120', async () => {
     worker.use(
       rest.get(
         'https://example.com/users/user-id/photos/120/*',
@@ -250,6 +250,46 @@ describe('MicrosoftGraphClient', () => {
     const values = await collectAsyncIterable(client.getUsers());
 
     expect(values).toEqual([{ surname: 'Example' }]);
+  });
+
+  it('should load group profile photo with max size of 120', async () => {
+    worker.use(
+      rest.get('https://example.com/groups/group-id/photos', (_, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            value: [
+              {
+                height: 120,
+                id: 120,
+              },
+            ],
+          }),
+        ),
+      ),
+    );
+    worker.use(
+      rest.get(
+        'https://example.com/groups/group-id/photos/120/*',
+        (_, res, ctx) => res(ctx.status(200), ctx.text('911')),
+      ),
+    );
+
+    const photo = await client.getGroupPhotoWithSizeLimit('group-id', 120);
+
+    expect(photo).toEqual('data:image/jpeg;base64,OTEx');
+  });
+
+  it('should load group profile photo', async () => {
+    worker.use(
+      rest.get('https://example.com/groups/group-id/photo/*', (_, res, ctx) =>
+        res(ctx.status(200), ctx.text('911')),
+      ),
+    );
+
+    const photo = await client.getGroupPhoto('group-id');
+
+    expect(photo).toEqual('data:image/jpeg;base64,OTEx');
   });
 
   it('should load groups', async () => {

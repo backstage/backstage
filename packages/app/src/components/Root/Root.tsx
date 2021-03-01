@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { FC, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext, PropsWithChildren } from 'react';
 import { Link, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
+import LayersIcon from '@material-ui/icons/Layers';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
@@ -55,7 +55,7 @@ const useSidebarLogoStyles = makeStyles({
   },
 });
 
-const SidebarLogo: FC<{}> = () => {
+const SidebarLogo = () => {
   const classes = useSidebarLogoStyles();
   const { isOpen } = useContext(SidebarContext);
 
@@ -73,7 +73,7 @@ const SidebarLogo: FC<{}> = () => {
   );
 };
 
-const Root: FC<{}> = ({ children }) => (
+const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -83,6 +83,7 @@ const Root: FC<{}> = ({ children }) => (
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
+      <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
       <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
       {/* End global nav */}
       <SidebarDivider />
@@ -101,9 +102,5 @@ const Root: FC<{}> = ({ children }) => (
     {children}
   </SidebarPage>
 );
-
-Root.propTypes = {
-  children: PropTypes.node,
-};
 
 export default Root;

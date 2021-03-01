@@ -30,7 +30,6 @@ import transformer, {
   addLinkClickListener,
   removeMkdocsHeader,
   simplifyMkdocsFooter,
-  modifyCss,
   onCssReady,
   sanitizeDOM,
   injectCss,
@@ -71,15 +70,6 @@ export const Reader = ({ entityId, onReady }: Props) => {
         path,
       }),
       rewriteDocLinks(),
-      modifyCss({
-        cssTransforms: {
-          '.md-main__inner': [{ 'margin-top': '0' }],
-          '.md-sidebar': [{ top: '0' }, { width: '20rem' }],
-          '.md-typeset': [{ 'font-size': '1rem' }],
-          '.md-nav': [{ 'font-size': '1rem' }],
-          '.md-grid': [{ 'max-width': '80vw' }],
-        },
-      }),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
       injectCss({
@@ -92,6 +82,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
           --md-code-fg-color: ${theme.palette.text.primary};
           --md-code-bg-color: ${theme.palette.background.paper};
         }
+        .md-main__inner { margin-top: 0; }
+        .md-sidebar { top: 0; width: 20rem; }
+        .md-typeset { font-size: 1rem; }
+        .md-nav { font-size: 1rem; }
+        .md-grid { max-width: 80vw; }
         `,
       }),
     ]);
@@ -120,13 +115,21 @@ export const Reader = ({ entityId, onReady }: Props) => {
         baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
           const parsedUrl = new URL(url);
-          navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+          if (parsedUrl.hash) {
+            history.pushState(
+              null,
+              '',
+              `${parsedUrl.pathname}${parsedUrl.hash}`,
+            );
+          } else {
+            navigate(parsedUrl.pathname);
+          }
 
           shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
         },
       }),
       onCssReady({
-        docStorageUrl: techdocsStorageApi.apiOrigin,
+        docStorageUrl: techdocsStorageApi.getApiOrigin(),
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
@@ -152,7 +155,9 @@ export const Reader = ({ entityId, onReady }: Props) => {
   ]);
 
   if (error) {
-    return <TechDocsNotFound errorMessage={error.message} />;
+    // TODO Enhance API call to return customize error objects so we can identify which we ran into
+    // For now this defaults to display error code 404
+    return <TechDocsNotFound statusCode={404} errorMessage={error.message} />;
   }
 
   return (

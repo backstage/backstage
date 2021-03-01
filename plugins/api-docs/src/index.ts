@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export * from './catalog';
 export * from './components';
-export { plugin } from './plugin';
+export {
+  apiDocsPlugin,
+  apiDocsPlugin as plugin,
+  ApiExplorerPage,
+  EntityApiDefinitionCard,
+  EntityConsumedApisCard,
+  EntityConsumingComponentsCard,
+  EntityProvidedApisCard,
+  EntityProvidingComponentsCard,
+  EntityHasApisCard,
+} from './plugin';

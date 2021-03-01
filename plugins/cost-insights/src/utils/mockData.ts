@@ -36,7 +36,7 @@ import {
   getDefaultState as getDefaultLoadingState,
 } from '../utils/loading';
 import { findAlways } from '../utils/assert';
-import { inclusiveStartDateOf } from './duration';
+import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;
@@ -52,7 +52,7 @@ export const createMockEntity = (
   const defaultEntity: Entity = {
     id: 'test-entity',
     aggregation: [100, 200],
-    entities: [],
+    entities: {},
     change: {
       ratio: 0,
       amount: 0,
@@ -143,7 +143,7 @@ export const MockProductTypes: Record<string, string> = {
 
 export const MockProductFilters: ProductFilters = Object.keys(
   MockProductTypes,
-).map(productType => ({ duration: Duration.P1M, productType }));
+).map(productType => ({ duration: Duration.P30D, productType }));
 
 export const MockProducts: Product[] = Object.keys(MockProductTypes).map(
   productType =>
@@ -211,16 +211,15 @@ export function trendlineOf(aggregation: DateAggregation[]): Trendline {
 }
 
 export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const half = Math.ceil(aggregation.length / 2);
-  const before = aggregation
-    .slice(0, half)
-    .reduce((sum, a) => sum + a.amount, 0);
-  const after = aggregation
-    .slice(half, aggregation.length)
-    .reduce((sum, a) => sum + a.amount, 0);
+  const firstAmount = aggregation.length ? aggregation[0].amount : 0;
+  const lastAmount = aggregation.length
+    ? aggregation[aggregation.length - 1].amount
+    : 0;
+  const ratio =
+    firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
   return {
-    ratio: (after - before) / before,
-    amount: after - before,
+    ratio: ratio,
+    amount: lastAmount - firstAmount,
   };
 }
 
@@ -229,19 +228,30 @@ export function aggregationFor(
   baseline: number,
 ): DateAggregation[] {
   const { duration, endDate } = parseIntervals(intervals);
+  const inclusiveEndDate = inclusiveEndDateOf(duration, endDate);
   const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, endDate),
+    inclusiveStartDateOf(duration, inclusiveEndDate),
     'day',
   );
+
+  function nextDelta(): number {
+    const varianceFromBaseline = 0.15;
+    // Let's give positive vibes in trendlines - higher change for positive delta with >0.5 value
+    const positiveTrendChance = 0.55;
+    const normalization = positiveTrendChance - 1;
+    return baseline * (Math.random() + normalization) * varianceFromBaseline;
+  }
 
   return [...Array(days).keys()].reduce(
     (values: DateAggregation[], i: number): DateAggregation[] => {
       const last = values.length ? values[values.length - 1].amount : baseline;
+      const date = dayjs(inclusiveStartDateOf(duration, inclusiveEndDate))
+        .add(i, 'day')
+        .format(DEFAULT_DATE_FORMAT);
+      const amount = Math.max(0, last + nextDelta());
       values.push({
-        date: dayjs(inclusiveStartDateOf(duration, endDate))
-          .add(i, 'day')
-          .format(DEFAULT_DATE_FORMAT),
-        amount: Math.max(0, last + (baseline / 20) * (Math.random() * 2 - 1)),
+        date: date,
+        amount: amount,
       });
       return values;
     },
@@ -517,35 +527,37 @@ export const SampleBigQueryInsights: Entity = {
     ratio: 3,
     amount: 20_000,
   },
-  entities: [
-    {
-      id: 'entity-a',
-      aggregation: [5_000, 10_000],
-      change: {
-        ratio: 1,
-        amount: 5_000,
+  entities: {
+    dataset: [
+      {
+        id: 'dataset-a',
+        aggregation: [5_000, 10_000],
+        change: {
+          ratio: 1,
+          amount: 5_000,
+        },
+        entities: {},
       },
-      entities: [],
-    },
-    {
-      id: 'entity-b',
-      aggregation: [5_000, 10_000],
-      change: {
-        ratio: 1,
-        amount: 5_000,
+      {
+        id: 'dataset-b',
+        aggregation: [5_000, 10_000],
+        change: {
+          ratio: 1,
+          amount: 5_000,
+        },
+        entities: {},
       },
-      entities: [],
-    },
-    {
-      id: 'entity-c',
-      aggregation: [0, 10_000],
-      change: {
-        ratio: 10_000,
-        amount: 10_000,
+      {
+        id: 'dataset-c',
+        aggregation: [0, 10_000],
+        change: {
+          ratio: 10_000,
+          amount: 10_000,
+        },
+        entities: {},
       },
-      entities: [],
-    },
-  ],
+    ],
+  },
 };
 
 export const SampleCloudDataflowInsights: Entity = {
@@ -555,110 +567,118 @@ export const SampleCloudDataflowInsights: Entity = {
     ratio: 0.58,
     amount: 58_000,
   },
-  entities: [
-    {
-      id: null,
-      aggregation: [10_000, 12_000],
-      change: {
-        ratio: 0.2,
-        amount: 2_000,
+  entities: {
+    pipeline: [
+      {
+        id: null,
+        aggregation: [10_000, 12_000],
+        change: {
+          ratio: 0.2,
+          amount: 2_000,
+        },
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [3_000, 4_000],
+              change: {
+                ratio: 0.333333,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [7_000, 8_000],
+              change: {
+                ratio: 0.14285714,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+          ],
+        },
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [3_000, 4_000],
-          change: {
-            ratio: 0.333333,
-            amount: 1_000,
-          },
-          entities: [],
+      {
+        id: 'pipeline-a',
+        aggregation: [60_000, 70_000],
+        change: {
+          ratio: 0.16666666666666666,
+          amount: 10_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [7_000, 8_000],
-          change: {
-            ratio: 0.14285714,
-            amount: 1_000,
-          },
-          entities: [],
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [20_000, 15_000],
+              change: {
+                ratio: -0.25,
+                amount: -5_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [30_000, 35_000],
+              change: {
+                ratio: -0.16666666666666666,
+                amount: -5_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU C',
+              aggregation: [10_000, 20_000],
+              change: {
+                ratio: 1,
+                amount: 10_000,
+              },
+              entities: {},
+            },
+          ],
         },
-      ],
-    },
-    {
-      id: 'entity-a',
-      aggregation: [60_000, 70_000],
-      change: {
-        ratio: 0.16666666666666666,
-        amount: 10_000,
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [20_000, 15_000],
-          change: {
-            ratio: -0.25,
-            amount: -5_000,
-          },
-          entities: [],
+      {
+        id: 'pipeline-b',
+        aggregation: [12_000, 8_000],
+        change: {
+          ratio: -0.33333,
+          amount: -4_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [30_000, 35_000],
-          change: {
-            ratio: -0.16666666666666666,
-            amount: -5_000,
-          },
-          entities: [],
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [4_000, 4_000],
+              change: {
+                ratio: 0,
+                amount: 0,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [8_000, 4_000],
+              change: {
+                ratio: -0.5,
+                amount: -4_000,
+              },
+              entities: {},
+            },
+          ],
         },
-        {
-          id: 'Sample SKU C',
-          aggregation: [10_000, 20_000],
-          change: {
-            ratio: 1,
-            amount: 10_000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-b',
-      aggregation: [12_000, 8_000],
-      change: {
-        ratio: -0.33333,
-        amount: -4_000,
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [4_000, 4_000],
-          change: {
-            ratio: 0,
-            amount: 0,
-          },
-          entities: [],
+      {
+        id: 'pipeline-c',
+        aggregation: [0, 10_000],
+        change: {
+          ratio: 10_000,
+          amount: 10_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [8_000, 4_000],
-          change: {
-            ratio: -0.5,
-            amount: -4_000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-c',
-      aggregation: [0, 10_000],
-      change: {
-        ratio: 10_000,
-        amount: 10_000,
+        entities: {},
       },
-      entities: [],
-    },
-  ],
+    ],
+  },
 };
 
 export const SampleCloudStorageInsights: Entity = {
@@ -668,91 +688,97 @@ export const SampleCloudStorageInsights: Entity = {
     ratio: 0,
     amount: 0,
   },
-  entities: [
-    {
-      id: 'entity-a',
-      aggregation: [15_000, 20_000],
-      change: {
-        ratio: 0.333,
-        amount: 5_000,
+  entities: {
+    bucket: [
+      {
+        id: 'bucket-a',
+        aggregation: [15_000, 20_000],
+        change: {
+          ratio: 0.333,
+          amount: 5_000,
+        },
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [10_000, 11_000],
+              change: {
+                ratio: 0.1,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [2_000, 5_000],
+              change: {
+                ratio: 1.5,
+                amount: 3_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU C',
+              aggregation: [3_000, 4_000],
+              change: {
+                ratio: 0.3333,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+          ],
+        },
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [10_000, 11_000],
-          change: {
-            ratio: 0.1,
-            amount: 1_000,
-          },
-          entities: [],
+      {
+        id: 'bucket-b',
+        aggregation: [30_000, 25_000],
+        change: {
+          ratio: -0.16666,
+          amount: -5_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [2_000, 5_000],
-          change: {
-            ratio: 1.5,
-            amount: 3_000,
-          },
-          entities: [],
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [12_000, 13_000],
+              change: {
+                ratio: 0.08333333333333333,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [16_000, 12_000],
+              change: {
+                ratio: -0.25,
+                amount: -4_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU C',
+              aggregation: [2_000, 0],
+              change: {
+                ratio: -1,
+                amount: -2000,
+              },
+              entities: {},
+            },
+          ],
         },
-        {
-          id: 'Sample SKU C',
-          aggregation: [3_000, 4_000],
-          change: {
-            ratio: 0.3333,
-            amount: 1_000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-b',
-      aggregation: [30_000, 25_000],
-      change: {
-        ratio: -0.16666,
-        amount: -5_000,
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [12_000, 13_000],
-          change: {
-            ratio: 0.08333333333333333,
-            amount: 1_000,
-          },
-          entities: [],
+      {
+        id: 'bucket-c',
+        aggregation: [0, 0],
+        change: {
+          ratio: 0,
+          amount: 0,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [16_000, 12_000],
-          change: {
-            ratio: -0.25,
-            amount: -4_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'Sample SKU C',
-          aggregation: [2_000, 0],
-          change: {
-            ratio: -1,
-            amount: -2000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-c',
-      aggregation: [0, 0],
-      change: {
-        ratio: 0,
-        amount: 0,
+        entities: {},
       },
-      entities: [],
-    },
-  ],
+    ],
+  },
 };
 
 export const SampleComputeEngineInsights: Entity = {
@@ -762,91 +788,137 @@ export const SampleComputeEngineInsights: Entity = {
     ratio: 0.125,
     amount: 10_000,
   },
-  entities: [
-    {
-      id: 'entity-a',
-      aggregation: [20_000, 10_000],
-      change: {
-        ratio: -0.5,
-        amount: -10_000,
+  entities: {
+    service: [
+      {
+        id: 'service-a',
+        aggregation: [20_000, 10_000],
+        change: {
+          ratio: -0.5,
+          amount: -10_000,
+        },
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [4_000, 2_000],
+              change: {
+                ratio: -0.5,
+                amount: -2_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [7_000, 6_000],
+              change: {
+                ratio: -0.14285714285714285,
+                amount: -1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU C',
+              aggregation: [9_000, 2_000],
+              change: {
+                ratio: -0.7777777777777778,
+                amount: -7000,
+              },
+              entities: {},
+            },
+          ],
+          deployment: [
+            {
+              id: 'Compute Engine',
+              aggregation: [7_000, 6_000],
+              change: {
+                ratio: -0.5,
+                amount: -2_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Kubernetes',
+              aggregation: [4_000, 2_000],
+              change: {
+                ratio: -0.14285714285714285,
+                amount: -1_000,
+              },
+              entities: {},
+            },
+          ],
+        },
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [4_000, 2_000],
-          change: {
-            ratio: -0.5,
-            amount: -2_000,
-          },
-          entities: [],
+      {
+        id: 'service-b',
+        aggregation: [10_000, 20_000],
+        change: {
+          ratio: 1,
+          amount: 10_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [7_000, 6_000],
-          change: {
-            ratio: -0.14285714285714285,
-            amount: -1_000,
-          },
-          entities: [],
+        entities: {
+          SKU: [
+            {
+              id: 'Sample SKU A',
+              aggregation: [1_000, 2_000],
+              change: {
+                ratio: 1,
+                amount: 1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU B',
+              aggregation: [4_000, 8_000],
+              change: {
+                ratio: 1,
+                amount: 4_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample SKU C',
+              aggregation: [5_000, 10_000],
+              change: {
+                ratio: 1,
+                amount: 5_000,
+              },
+              entities: {},
+            },
+          ],
+          deployment: [
+            {
+              id: 'Compute Engine',
+              aggregation: [7_000, 6_000],
+              change: {
+                ratio: -0.5,
+                amount: -2_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Kubernetes',
+              aggregation: [4_000, 2_000],
+              change: {
+                ratio: -0.14285714285714285,
+                amount: -1_000,
+              },
+              entities: {},
+            },
+          ],
         },
-        {
-          id: 'Sample SKU C',
-          aggregation: [9_000, 2_000],
-          change: {
-            ratio: -0.7777777777777778,
-            amount: -7000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-b',
-      aggregation: [10_000, 20_000],
-      change: {
-        ratio: 1,
-        amount: 10_000,
       },
-      entities: [
-        {
-          id: 'Sample SKU A',
-          aggregation: [1_000, 2_000],
-          change: {
-            ratio: 1,
-            amount: 1_000,
-          },
-          entities: [],
+      {
+        id: 'service-c',
+        aggregation: [0, 10_000],
+        change: {
+          ratio: 10_000,
+          amount: 10_000,
         },
-        {
-          id: 'Sample SKU B',
-          aggregation: [4_000, 8_000],
-          change: {
-            ratio: 1,
-            amount: 4_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'Sample SKU C',
-          aggregation: [5_000, 10_000],
-          change: {
-            ratio: 1,
-            amount: 5_000,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-c',
-      aggregation: [0, 10_000],
-      change: {
-        ratio: 10_000,
-        amount: 10_000,
+        entities: {},
       },
-      entities: [],
-    },
-  ],
+    ],
+  },
 };
 
 export const SampleEventsInsights: Entity = {
@@ -856,83 +928,88 @@ export const SampleEventsInsights: Entity = {
     ratio: -0.5,
     amount: -10_000,
   },
-  entitiesLabel: 'Product',
-  entities: [
-    {
-      id: 'entity-a',
-      aggregation: [15_000, 7_000],
-      change: {
-        ratio: -0.53333333333,
-        amount: -8_000,
+  entities: {
+    event: [
+      {
+        id: 'event-a',
+        aggregation: [15_000, 7_000],
+        change: {
+          ratio: -0.53333333333,
+          amount: -8_000,
+        },
+        entities: {
+          product: [
+            {
+              id: 'Sample Product A',
+              aggregation: [5_000, 2_000],
+              change: {
+                ratio: -0.6,
+                amount: -3_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample Product B',
+              aggregation: [7_000, 2_500],
+              change: {
+                ratio: -0.64285714285,
+                amount: -4_500,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample Product C',
+              aggregation: [3_000, 2_500],
+              change: {
+                ratio: -0.16666666666,
+                amount: -500,
+              },
+              entities: {},
+            },
+          ],
+        },
       },
-      entities: [
-        {
-          id: 'Sample Product A',
-          aggregation: [5_000, 2_000],
-          change: {
-            ratio: -0.6,
-            amount: -3_000,
-          },
-          entities: [],
+      {
+        id: 'event-b',
+        aggregation: [5_000, 3_000],
+        change: {
+          ratio: -0.4,
+          amount: -2_000,
         },
-        {
-          id: 'Sample Product B',
-          aggregation: [7_000, 2_500],
-          change: {
-            ratio: -0.64285714285,
-            amount: -4_500,
-          },
-          entities: [],
+        entities: {
+          product: [
+            {
+              id: 'Sample Product A',
+              aggregation: [2_000, 1_000],
+              change: {
+                ratio: -0.5,
+                amount: -1_000,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample Product B',
+              aggregation: [1_000, 1_500],
+              change: {
+                ratio: 0.5,
+                amount: 500,
+              },
+              entities: {},
+            },
+            {
+              id: 'Sample Product C',
+              aggregation: [2_000, 500],
+              change: {
+                ratio: -0.75,
+                amount: -1_500,
+              },
+              entities: {},
+            },
+          ],
         },
-        {
-          id: 'Sample Product C',
-          aggregation: [3_000, 2_500],
-          change: {
-            ratio: -0.16666666666,
-            amount: -500,
-          },
-          entities: [],
-        },
-      ],
-    },
-    {
-      id: 'entity-b',
-      aggregation: [5_000, 3_000],
-      change: {
-        ratio: -0.4,
-        amount: -2_000,
       },
-      entities: [
-        {
-          id: 'Sample Product A',
-          aggregation: [2_000, 1_000],
-          change: {
-            ratio: -0.5,
-            amount: -1_000,
-          },
-          entities: [],
-        },
-        {
-          id: 'Sample Product B',
-          aggregation: [1_000, 1_500],
-          change: {
-            ratio: 0.5,
-            amount: 500,
-          },
-          entities: [],
-        },
-        {
-          id: 'Sample Product C',
-          aggregation: [2_000, 500],
-          change: {
-            ratio: -0.75,
-            amount: -1_500,
-          },
-          entities: [],
-        },
-      ],
-    },
-  ],
+    ],
+  },
 };
 
 export function entityOf(product: string): Entity {
@@ -986,5 +1063,20 @@ export const getGroupedProducts = (intervals: string) => [
   {
     id: 'Cloud Bigtable',
     aggregation: aggregationFor(intervals, 250),
+  },
+];
+
+export const getGroupedProjects = (intervals: string) => [
+  {
+    id: 'project-a',
+    aggregation: aggregationFor(intervals, 1_700),
+  },
+  {
+    id: 'project-b',
+    aggregation: aggregationFor(intervals, 350),
+  },
+  {
+    id: 'project-c',
+    aggregation: aggregationFor(intervals, 1_300),
   },
 ];

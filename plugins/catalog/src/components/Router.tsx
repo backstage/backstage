@@ -15,15 +15,18 @@
  */
 import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { Content } from '@backstage/core';
+import {
+  entityRoute,
+  rootRoute,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import { Link, Typography } from '@material-ui/core';
 import React, { ComponentType } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router';
-import { useEntity } from '../hooks/useEntity';
-import { entityRoute, rootRoute } from '../routes';
 import { CatalogPage } from './CatalogPage';
+import { EntityLoaderProvider } from './EntityLoaderProvider';
 import { EntityNotFound } from './EntityNotFound';
 import { EntityPageLayout } from './EntityPageLayout';
-import { EntityProvider } from './EntityProvider';
 
 const DefaultEntityPage = () => (
   <EntityPageLayout>
@@ -50,7 +53,7 @@ const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
   const { entity, loading, error } = useEntity();
   // Loading and error states
   if (loading) return <EntityPageLayout />;
-  if (error || (!loading && !entity)) return <EntityNotFound />;
+  if (error || !entity) return <EntityNotFound />;
 
   // Otherwise EntityPage provided from the App
   // Note that EntityPage will include EntityPageLayout already
@@ -79,9 +82,9 @@ export const Router = ({
     <Route
       path={`${entityRoute.path}`}
       element={
-        <EntityProvider>
+        <EntityLoaderProvider>
           <EntityPageSwitch EntityPage={EntityPage} />
-        </EntityProvider>
+        </EntityLoaderProvider>
       }
     />
     <Route

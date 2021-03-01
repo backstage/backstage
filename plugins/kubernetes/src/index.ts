@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+export {
+  kubernetesPlugin,
+  kubernetesPlugin as plugin,
+  EntityKubernetesContent,
+} from './plugin';
 export { Router } from './Router';

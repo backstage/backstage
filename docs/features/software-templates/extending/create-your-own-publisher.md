@@ -57,7 +57,7 @@ That type looks like the following:
 export type PublisherBase = {
   publish(opts: {
     entity: TemplateEntityV1alpha1;
-    values: RequiredTemplateValues & Record<string, JsonValue>;
+    values: TemplaterValues;
     directory: string;
   }): Promise<{ remoteUrl: string }>;
 };

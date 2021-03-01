@@ -14,44 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  ConcreteRoute,
-  routeReference,
-  ReferencedRoute,
-  resolveRoute,
-  RouteRefConfig,
-} from './types';
-import { generatePath } from 'react-router-dom';
+import { RouteRef } from './types';
+import { IconComponent } from '../icons';
 
-type SubRouteConfig = {
-  path: string;
+export type RouteRefConfig<Params extends { [param in string]: string }> = {
+  params?: Array<keyof Params>;
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
+  icon?: IconComponent;
+  title: string;
 };
 
-export class SubRouteRef<T extends { [name in string]: string } | never = never>
-  implements ReferencedRoute {
-  constructor(
-    private readonly parent: ConcreteRoute,
-    private readonly config: SubRouteConfig,
-  ) {}
-
-  get [routeReference]() {
-    return this;
-  }
-
-  link<Args extends T extends never ? [] : [T]>(...args: Args): ConcreteRoute {
-    return {
-      [routeReference]: this,
-      [resolveRoute]: (path: string) => {
-        const ownPart = generatePath(this.config.path, args[0] ?? {});
-        const parentPart = this.parent[resolveRoute](path);
-        return parentPart + ownPart;
-      },
-    };
-  }
-}
-
-export class AbsoluteRouteRef implements ConcreteRoute {
-  constructor(private readonly config: RouteRefConfig) {}
+export class AbsoluteRouteRef<Params extends { [param in string]: string }> {
+  constructor(private readonly config: RouteRefConfig<Params>) {}
 
   get icon() {
     return this.config.icon;
@@ -59,33 +34,66 @@ export class AbsoluteRouteRef implements ConcreteRoute {
 
   // TODO(Rugvip): Remove this, routes are looked up via the registry instead
   get path() {
-    return this.config.path;
+    return this.config.path ?? '';
   }
 
   get title() {
     return this.config.title;
   }
 
-  createSubRoute<T extends { [name in string]: string } | never = never>(
-    config: SubRouteConfig,
-  ) {
-    return new SubRouteRef<T>(this, config);
-  }
-
-  get [routeReference]() {
-    return this;
-  }
-
-  [resolveRoute](path: string) {
-    return path;
+  toString() {
+    return `routeRef{title=${this.title}}`;
   }
 }
 
-export function createRouteRef(config: RouteRefConfig): AbsoluteRouteRef {
-  return new AbsoluteRouteRef(config);
+export function createRouteRef<
+  // Params is the type that we care about and the one to be embedded in the route ref.
+  // For example, given the params ['name', 'kind'], Params will be {name: string, kind: string}
+  Params extends { [param in ParamKey]: string },
+  // ParamKey is here to make sure the Params type properly has its keys narrowed down
+  // to only the elements of params. Defaulting to never makes sure we end up with
+  // Param = {} if the params array is empty.
+  ParamKey extends string = never
+>(config: {
+  params?: ParamKey[];
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
+  icon?: IconComponent;
+  title: string;
+}): RouteRef<Params> {
+  return new AbsoluteRouteRef<Params>(config);
 }
 
-// TODO(Rugvip): Added for backwards compatibility, remove once old usage is gone
-// We may want to avoid exporting the AbsoluteRouteRef itself though, and consider
-// a different model for how to create sub routes, just avoid this
-export type MutableRouteRef = AbsoluteRouteRef;
+export class ExternalRouteRef<Optional extends boolean = true> {
+  readonly optional: boolean;
+
+  private constructor({ id, optional }: ExternalRouteRefOptions<Optional>) {
+    this.toString = () => `externalRouteRef{${id}}`;
+    this.optional = Boolean(optional);
+  }
+}
+
+export type ExternalRouteRefOptions<Optional extends boolean = false> = {
+  /**
+   * An identifier for this route, used to identify it in error messages
+   */
+  id: string;
+
+  /**
+   * Whether or not this route is optional, defaults to false.
+   *
+   * Optional external routes are not required to be bound in the app, and
+   * if they aren't, `useRouteRef` will return `undefined`.
+   */
+  optional?: Optional;
+};
+
+export function createExternalRouteRef<Optional extends boolean = false>(
+  options: ExternalRouteRefOptions<Optional>,
+): ExternalRouteRef<Optional> {
+  return new ((ExternalRouteRef as unknown) as {
+    new (options: ExternalRouteRefOptions<Optional>): ExternalRouteRef<
+      Optional
+    >;
+  })(options);
+}

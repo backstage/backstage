@@ -15,8 +15,9 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
-import { BackstagePlugin } from '../plugin';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
+import { BackstagePlugin } from '../plugin/types';
+import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
@@ -78,6 +79,51 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
+/**
+ * Extracts the Optional type of a map of ExternalRouteRefs, leaving only the boolean in place as value
+ */
+type ExternalRouteRefsToOptionalMap<
+  T extends { [name in string]: ExternalRouteRef<boolean> }
+> = {
+  [name in keyof T]: T[name] extends ExternalRouteRef<infer U> ? U : never;
+};
+
+/**
+ * Extracts a union of the keys in a map whose value extends the given type
+ */
+type ExtractKeysWithType<Obj extends { [key in string]: any }, Type> = {
+  [key in keyof Obj]: Obj[key] extends Type ? key : never;
+}[keyof Obj];
+
+/**
+ * Given a map of boolean values denoting whether a route is optional, create a
+ * map of needed RouteRefs.
+ *
+ * For example { foo: false, bar: true } gives { foo: RouteRef<any>, bar?: RouteRef<any> }
+ */
+type CombineOptionalAndRequiredRoutes<
+  OptionalMap extends { [key in string]: boolean }
+> = {
+  [name in ExtractKeysWithType<OptionalMap, false>]: RouteRef<any>;
+} &
+  { [name in keyof OptionalMap]?: RouteRef<any> };
+
+/**
+ * Creates a map of required target routes based on whether the input external
+ * routes are optional or not. The external routes that are marked as optional
+ * will also be optional in the target routes map.
+ */
+type TargetRoutesMap<
+  T extends { [name in string]: ExternalRouteRef<boolean> }
+> = CombineOptionalAndRequiredRoutes<ExternalRouteRefsToOptionalMap<T>>;
+
+export type AppRouteBinder = <
+  ExternalRoutes extends { [name in string]: ExternalRouteRef<boolean> }
+>(
+  externalRoutes: ExternalRoutes,
+  targetRoutes: TargetRoutesMap<ExternalRoutes>,
+) => void;
+
 export type AppOptions = {
   /**
    * A collection of ApiFactories to register in the application to either
@@ -88,12 +134,12 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<SystemIcons>;
+  icons?: IconComponentMap;
 
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: BackstagePlugin[];
+  plugins?: BackstagePlugin<any, any>[];
 
   /**
    * Supply components to the app to override the default ones.
@@ -134,18 +180,38 @@ export type AppOptions = {
    *  that was packaged by the backstage-cli and default docker container boot script.
    */
   configLoader?: AppConfigLoader;
+
+  /**
+   * A function that is used to register associations between cross-plugin route
+   * references, enabling plugins to navigate between each other.
+   *
+   * The `bind` function that is passed in should be used to bind all external
+   * routes of all used plugins.
+   *
+   * ```ts
+   * bindRoutes({ bind }) {
+   *   bind(docsPlugin.externalRoutes, {
+   *     homePage: managePlugin.routes.managePage,
+   *   })
+   *   bind(homePagePlugin.externalRoutes, {
+   *     settingsPage: settingsPlugin.routes.settingsPage,
+   *   })
+   * }
+   * ```
+   */
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
 export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
    */
-  getPlugins(): BackstagePlugin[];
+  getPlugins(): BackstagePlugin<any, any>[];
 
   /**
-   * Get a common icon for this app.
+   * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: SystemIconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent | undefined;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -161,6 +227,40 @@ export type BackstageApp = {
 
   /**
    * Routes component that contains all routes for plugin pages in the app.
+   *
+   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
+   */
+  getRoutes(): JSX.Element[];
+};
+
+export type AppContext = {
+  /**
+   * @deprecated Will be removed
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
+   * Get a common or custom icon for this app.
+   */
+  getSystemIcon(key: IconKey): IconComponent | undefined;
+
+  /**
+   * Get the components registered for various purposes in the app.
+   */
+  getComponents(): AppComponents;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getProvider(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
    */
   getRoutes(): JSX.Element[];
 };

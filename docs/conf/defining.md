@@ -36,6 +36,10 @@ export interface Config {
      * @visibility frontend
      */
     baseUrl: string;
+
+    // Use @items.<name> to assign annotations to primitive array items
+    /** @items.visibility frontend */
+    myItems: string[];
   };
 }
 ```
@@ -82,6 +86,12 @@ of the schema with `type: "object"`, but none of the descendants, only an empty
 object will be available in the frontend. The full ancestry does not need to
 have correctly defined visibilities however, so it is enough to only for example
 declare the visibility of a leaf node of `type: "string"`.
+
+| `visibility` |                                                                    |
+| ------------ | ------------------------------------------------------------------ |
+| `frontend`   | Visible in frontend and backend                                    |
+| `backend`    | (Default) Only in backend                                          |
+| `secret`     | Only in backend and may be excluded from logs for security reasons |
 
 ## Validation
 

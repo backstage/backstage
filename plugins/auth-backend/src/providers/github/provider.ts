@@ -27,12 +27,11 @@ import {
   OAuthAdapter,
   OAuthProviderOptions,
   OAuthHandlers,
-  OAuthResponse,
   OAuthEnvironmentHandler,
   OAuthStartRequest,
   encodeState,
+  OAuthResult,
 } from '../../lib/oauth';
-import passport from 'passport';
 
 export type GithubAuthProviderOptions = OAuthProviderOptions & {
   tokenUrl?: string;
@@ -42,55 +41,6 @@ export type GithubAuthProviderOptions = OAuthProviderOptions & {
 
 export class GithubAuthProvider implements OAuthHandlers {
   private readonly _strategy: GithubStrategy;
-
-  static transformPassportProfile(rawProfile: any): passport.Profile {
-    const profile: passport.Profile = {
-      id: rawProfile.username,
-      username: rawProfile.username,
-      provider: rawProfile.provider,
-      displayName: rawProfile.displayName || rawProfile.username,
-      photos: rawProfile.photos,
-      emails: rawProfile.emails,
-    };
-
-    return profile;
-  }
-
-  static transformOAuthResponse(
-    accessToken: string,
-    rawProfile: any,
-    params: any = {},
-  ): OAuthResponse {
-    const passportProfile = GithubAuthProvider.transformPassportProfile(
-      rawProfile,
-    );
-
-    const profile = makeProfileInfo(passportProfile, params.id_token);
-    const providerInfo = {
-      accessToken,
-      scope: params.scope,
-      expiresInSeconds: params.expires_in,
-      idToken: params.id_token,
-    };
-
-    // GitHub provides an id numeric value (123)
-    // as a fallback
-    const id = passportProfile!.id;
-
-    if (params.expires_in) {
-      providerInfo.expiresInSeconds = params.expires_in;
-    }
-    if (params.id_token) {
-      providerInfo.idToken = params.id_token;
-    }
-    return {
-      providerInfo,
-      profile,
-      backstageIdentity: {
-        id,
-      },
-    };
-  }
 
   constructor(options: GithubAuthProviderOptions) {
     this._strategy = new GithubStrategy(
@@ -104,17 +54,12 @@ export class GithubAuthProvider implements OAuthHandlers {
       },
       (
         accessToken: any,
-        _: any,
+        _refreshToken: any,
         params: any,
-        rawProfile: any,
-        done: PassportDoneCallback<OAuthResponse>,
+        fullProfile: any,
+        done: PassportDoneCallback<OAuthResult>,
       ) => {
-        const oauthResponse = GithubAuthProvider.transformOAuthResponse(
-          accessToken,
-          rawProfile,
-          params,
-        );
-        done(undefined, oauthResponse);
+        done(undefined, { fullProfile, params, accessToken });
       },
     );
   }
@@ -127,51 +72,73 @@ export class GithubAuthProvider implements OAuthHandlers {
   }
 
   async handler(req: express.Request) {
-    const { response } = await executeFrameHandlerStrategy<OAuthResponse>(
-      req,
-      this._strategy,
+    const {
+      result: { fullProfile, accessToken, params },
+    } = await executeFrameHandlerStrategy<OAuthResult>(req, this._strategy);
+
+    const profile = makeProfileInfo(
+      {
+        ...fullProfile,
+        id: fullProfile.username || fullProfile.id,
+        displayName:
+          fullProfile.displayName || fullProfile.username || fullProfile.id,
+      },
+      params.id_token,
     );
 
-    return { response };
+    return {
+      response: {
+        profile,
+        providerInfo: {
+          accessToken,
+          scope: params.scope,
+          expiresInSeconds: params.expires_in,
+        },
+        backstageIdentity: {
+          id: fullProfile.username || fullProfile.id,
+        },
+      },
+    };
   }
 }
 
-export const createGithubProvider: AuthProviderFactory = ({
-  providerId,
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const enterpriseInstanceUrl = envConfig.getOptionalString(
-      'enterpriseInstanceUrl',
-    );
-    const authorizationUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/login/oauth/authorize`
-      : undefined;
-    const tokenUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/login/oauth/access_token`
-      : undefined;
-    const userProfileUrl = enterpriseInstanceUrl
-      ? `${enterpriseInstanceUrl}/api/v3/user`
-      : undefined;
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+export type GithubProviderOptions = {};
 
-    const provider = new GithubAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      tokenUrl,
-      userProfileUrl,
-      authorizationUrl,
-    });
+export const createGithubProvider = (
+  _options?: GithubProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const enterpriseInstanceUrl = envConfig.getOptionalString(
+        'enterpriseInstanceUrl',
+      );
+      const authorizationUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/login/oauth/authorize`
+        : undefined;
+      const tokenUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/login/oauth/access_token`
+        : undefined;
+      const userProfileUrl = enterpriseInstanceUrl
+        ? `${enterpriseInstanceUrl}/api/v3/user`
+        : undefined;
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: true,
-      persistScopes: true,
-      providerId,
-      tokenIssuer,
+      const provider = new GithubAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        tokenUrl,
+        userProfileUrl,
+        authorizationUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: true,
+        persistScopes: true,
+        providerId,
+        tokenIssuer,
+      });
     });
-  });
+};

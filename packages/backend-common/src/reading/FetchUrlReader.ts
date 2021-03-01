@@ -16,12 +16,44 @@
 
 import fetch from 'cross-fetch';
 import { NotFoundError } from '../errors';
-import { ReadTreeResponse, UrlReader } from './types';
+import {
+  ReaderFactory,
+  ReadTreeResponse,
+  SearchResponse,
+  UrlReader,
+} from './types';
 
 /**
  * A UrlReader that does a plain fetch of the URL.
  */
 export class FetchUrlReader implements UrlReader {
+  /**
+   * The factory creates a single reader that will be used for reading any URL that's listed
+   * in configuration at `backend.reading.allow`. The allow list contains a list of objects describing
+   * targets to allow, containing the following fields:
+   *
+   * `host`:
+   *   Either full hostnames to match, or subdomain wildcard matchers with a leading `*`.
+   *   For example `example.com` and `*.example.com` are valid values, `prod.*.example.com` is not.
+   */
+  static factory: ReaderFactory = ({ config }) => {
+    const predicates =
+      config
+        .getOptionalConfigArray('backend.reading.allow')
+        ?.map(allowConfig => {
+          const host = allowConfig.getString('host');
+          if (host.startsWith('*.')) {
+            const suffix = host.slice(1);
+            return (url: URL) => url.host.endsWith(suffix);
+          }
+          return (url: URL) => url.host === host;
+        }) ?? [];
+
+    const reader = new FetchUrlReader();
+    const predicate = (url: URL) => predicates.some(p => p(url));
+    return [{ reader, predicate }];
+  };
+
   async read(url: string): Promise<Buffer> {
     let response: Response;
     try {
@@ -41,8 +73,12 @@ export class FetchUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
+  async readTree(): Promise<ReadTreeResponse> {
     throw new Error('FetchUrlReader does not implement readTree');
+  }
+
+  async search(): Promise<SearchResponse> {
+    throw new Error('FetchUrlReader does not implement search');
   }
 
   toString() {
