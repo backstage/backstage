@@ -37,13 +37,18 @@ export type Result = {
 
 export type SearchResults = Array<Result>;
 
-export class SearchApi {
-  private catalogApi: CatalogApi;
-  private discoveryApi: DiscoveryApi;
+export interface SearchApi {
+  getSearchResult(): Promise<SearchResults>;
+  _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet>;
+}
 
-  constructor(catalogApi: CatalogApi, discoveryApi: DiscoveryApi) {
-    this.catalogApi = catalogApi;
-    this.discoveryApi = discoveryApi;
+export class SearchClient implements SearchApi {
+  private readonly catalogApi: CatalogApi;
+  private readonly discoveryApi: DiscoveryApi;
+
+  constructor(options: { catalogApi: CatalogApi; discoveryApi: DiscoveryApi }) {
+    this.catalogApi = options.catalogApi;
+    this.discoveryApi = options.discoveryApi;
   }
 
   private async entities() {
@@ -64,14 +69,12 @@ export class SearchApi {
     }));
   }
 
-  public getSearchResult(): Promise<SearchResults> {
+  getSearchResult(): Promise<SearchResults> {
     return this.entities();
   }
 
   // TODO: Productionalize as we implement search milestones.
-  public async _alphaPerformSearch(
-    query: SearchQuery,
-  ): Promise<SearchResultSet> {
+  async _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet> {
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search/query',

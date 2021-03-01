@@ -20,7 +20,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
 } from '@backstage/core';
-import { SearchApi, searchApiRef } from './apis';
+import { SearchClient, searchApiRef } from './apis';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { SearchPage as SearchPageComponent } from './components/SearchPage';
 
@@ -36,7 +36,7 @@ export const searchPlugin = createPlugin({
       api: searchApiRef,
       deps: { catalogApi: catalogApiRef, discoveryApi: discoveryApiRef },
       factory: ({ catalogApi, discoveryApi }) => {
-        return new SearchApi(catalogApi, discoveryApi);
+        return new SearchClient({ catalogApi, discoveryApi });
       },
     }),
   ],
