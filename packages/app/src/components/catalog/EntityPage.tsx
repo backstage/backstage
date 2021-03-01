@@ -115,12 +115,12 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <BuildkiteRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
-    case isGitHubActionsAvailable(entity):
-      return <GitHubActionsRouter entity={entity} />;
     case isCloudbuildAvailable(entity):
       return <CloudbuildRouter entity={entity} />;
     case isTravisCIAvailable(entity):
       return <TravisCIRouter entity={entity} />;
+    case isGitHubActionsAvailable(entity):
+      return <GitHubActionsRouter entity={entity} />;
     default:
       return (
         <EmptyState
@@ -147,13 +147,13 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
     case isJenkinsAvailable(entity):
       content = <JenkinsLatestRunCard branch="master" variant="gridItem" />;
       break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
+      break;
     case isGitHubActionsAvailable(entity):
       content = (
         <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
       );
-      break;
-    case isTravisCIAvailable(entity):
-      content = <RecentTravisCIBuildsWidget entity={entity} />;
       break;
     default:
       content = null;
