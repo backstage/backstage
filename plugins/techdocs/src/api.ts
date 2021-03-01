@@ -171,7 +171,6 @@ export class TechDocsStorageApi implements TechDocsStorage {
     const request = await fetch(
       `${url.endsWith('/') ? url : `${url}/`}index.html`,
       {
-        credentials: 'include',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       },
     );
