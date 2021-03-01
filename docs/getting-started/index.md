@@ -38,7 +38,7 @@ npx @backstage/create-app
 ```
 
 You will be taken through a wizard to create your app. You can read more about
-this process in [Create an app](./create-an-app).
+this process in [Create an app](./create-an-app.md).
 
 ### Contributing to Backstage
 
