@@ -94,7 +94,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
             type: 'url',
             target: `${repository.url}${catalogPath}`,
           },
-          false,
+          true,
         ),
       );
     }
