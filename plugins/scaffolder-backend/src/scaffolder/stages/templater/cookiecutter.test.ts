@@ -18,16 +18,17 @@ const runDockerContainer = jest.fn();
 const runCommand = jest.fn();
 const commandExists = jest.fn();
 
-jest.mock('./helpers', () => ({ runDockerContainer, runCommand }));
+jest.mock('./helpers', () => ({ runCommand }));
+jest.mock('@backstage/backend-common', () => ({ runDockerContainer }));
 jest.mock('command-exists-promise', () => commandExists);
 jest.mock('fs-extra');
 
-import { CookieCutter } from './cookiecutter';
+import Docker from 'dockerode';
 import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
 import path from 'path';
 import { PassThrough } from 'stream';
-import Docker from 'dockerode';
-import parseGitUrl from 'git-url-parse';
+import { CookieCutter } from './cookiecutter';
 
 describe('CookieCutter Templater', () => {
   const mockDocker = {} as Docker;
@@ -149,12 +150,12 @@ describe('CookieCutter Templater', () => {
         'cookiecutter',
         '--no-input',
         '-o',
-        '/result',
-        '/template',
+        '/output',
+        '/input',
         '--verbose',
       ],
-      templateDir: path.join('tempdir', 'template'),
-      resultDir: path.join('tempdir', 'intermediate'),
+      inputDir: path.join('tempdir', 'template'),
+      outputDir: path.join('tempdir', 'intermediate'),
       logStream: undefined,
       dockerClient: mockDocker,
     });
@@ -188,12 +189,12 @@ describe('CookieCutter Templater', () => {
         'cookiecutter',
         '--no-input',
         '-o',
-        '/result',
-        '/template',
+        '/output',
+        '/input',
         '--verbose',
       ],
-      templateDir: path.join('tempdir', 'template'),
-      resultDir: path.join('tempdir', 'intermediate'),
+      inputDir: path.join('tempdir', 'template'),
+      outputDir: path.join('tempdir', 'intermediate'),
       logStream: stream,
       dockerClient: mockDocker,
     });
