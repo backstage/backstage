@@ -100,9 +100,7 @@ export function createCatalogRegisterAction(options: {
       if (result.entities.length >= 1) {
         const { kind, name, namespace } = getEntityName(result.entities[0]);
         ctx.output('entityRef', `${kind}:${namespace}/${name}`);
-        if (catalogInfoUrl) {
-          ctx.output('catalogInfoUrl', catalogInfoUrl);
-        }
+        ctx.output('catalogInfoUrl', catalogInfoUrl);
       }
     },
   });
