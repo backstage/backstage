@@ -70,9 +70,9 @@
           "features/software-templates/installation",
           "features/software-templates/adding-templates",
           "features/software-templates/writing-templates",
-          "featires/software-templates/builtin-actions",
+          "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
-          "features/software-templates/templates-legacy"
+          "features/software-templates/template-legacy"
         ]
       },
       {
