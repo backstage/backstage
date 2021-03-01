@@ -133,7 +133,7 @@ describe('GithubDiscoveryProcessor', () => {
           target:
             'https://github.com/backstage/backstage/blob/master/catalog.yaml',
         },
-        optional: false,
+        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -141,7 +141,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target: 'https://github.com/backstage/demo/blob/master/catalog.yaml',
         },
-        optional: false,
+        optional: true,
       });
     });
 
@@ -175,7 +175,7 @@ describe('GithubDiscoveryProcessor', () => {
           target:
             'https://github.com/backstage/techdocs-cli/blob/master/catalog.yaml',
         },
-        optional: false,
+        optional: true,
       });
       expect(emitter).toHaveBeenCalledWith({
         type: 'location',
@@ -184,7 +184,7 @@ describe('GithubDiscoveryProcessor', () => {
           target:
             'https://github.com/backstage/techdocs-container/blob/master/catalog.yaml',
         },
-        optional: false,
+        optional: true,
       });
     });
     it('filter unrelated repositories', async () => {
@@ -215,7 +215,7 @@ describe('GithubDiscoveryProcessor', () => {
           type: 'url',
           target: 'https://github.com/backstage/test/blob/master/catalog.yaml',
         },
-        optional: false,
+        optional: true,
       });
     });
   });
