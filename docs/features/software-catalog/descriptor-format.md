@@ -656,34 +656,6 @@ You can find out more about the `parameters` key
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
 
-## Kind: APIis `JSONSchema` with some extra goodies for styling what it might
-
-look like in the frontend. For these steps we rely very heavily on this library:
-https://github.com/rjsf-team/react-jsonschema-form. They have some great docs
-too here: https://react-jsonschema-form.readthedocs.io/ and a playground where
-you can play around with some examples here
-https://rjsf-team.github.io/react-jsonschema-form
-
-For example here is a simple parameters step
-
-```yaml
-   - title: Fill in some steps
-      required:
-        - name
-      properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-```
-
-You can find out more [here](../software-templates/writing-templates.md)
-
-### `spec.steps` [optional]
-
 ## Kind: API
 
 Describes the following entity kind:
