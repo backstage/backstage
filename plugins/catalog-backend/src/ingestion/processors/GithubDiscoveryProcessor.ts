@@ -94,6 +94,9 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
             type: 'url',
             target: `${repository.url}${catalogPath}`,
           },
+          // Not all locations may actually exist, since the user defined them as a wildcard pattern.
+          // Thus, we omit them as optional and let the downstream processor find them while not outputting
+          // an error if it couldn't.
           true,
         ),
       );
