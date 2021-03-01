@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { runDockerContainer } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { PassThrough } from 'stream';
@@ -22,7 +23,6 @@ import {
   addBuildTimestampMetadata,
   patchMkdocsYmlPreBuild,
   runCommand,
-  runDockerContainer,
   storeEtagMetadata,
 } from './helpers';
 import { GeneratorBase, GeneratorRunOptions } from './types';
@@ -96,9 +96,9 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'docker':
           await runDockerContainer({
             imageName: 'spotify/techdocs',
-            args: ['build', '-d', '/result'],
+            args: ['build', '-d', '/output'],
             logStream,
-            docsDir: inputDir,
+            inputDir,
             outputDir,
             dockerClient,
           });
