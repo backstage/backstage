@@ -60,9 +60,9 @@ close over the `TemplateAction`. Take a look at our
 for reference.
 
 We set the type generic to `{ contents: string, filename: string}` which is
-there to set the type on the handler `ctx` `inputs` property so we get good
-typechecking. This could be generated from the next part of this guide, the
-`input` schema, but it's not supported right now. Feel free to contribute 🚀 👍.
+there to set the type on the handler `ctx` `inputs` property so we get good type
+checking. This could be generated from the next part of this guide, the `input`
+schema, but it's not supported right now. Feel free to contribute 🚀 👍.
 
 The `createTemplateAction` takes an object which specifies the following:
 
@@ -70,9 +70,9 @@ The `createTemplateAction` takes an object which specifies the following:
   in someway so they wont collide with future built-in actions that we may ship
   with the `scaffolder-backend` plugin.
 - `schema.input` - A JSON schema for input values to your function
-- `schema.output` - A JSON schema for values which are outputed from the
+- `schema.output` - A JSON schema for values which are outputted from the
   function using `ctx.output`
-- `handler` the actual code pwhich is run part of the action, with a context.
+- `handler` the actual code which is run part of the action, with a context.
 
 #### The context object
 
