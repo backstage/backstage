@@ -2192,18 +2192,6 @@
     "@emotion/utils" "0.11.3"
     "@emotion/weak-memoize" "0.2.5"
 
-"@emotion/core@^10.0.0", "@emotion/core@^10.0.28":
-  version "10.0.28"
-  resolved "https://registry.npmjs.org/@emotion/core/-/core-10.0.28.tgz#bb65af7262a234593a9e952c041d0f1c9b9bef3d"
-  integrity sha512-pH8UueKYO5jgg0Iq+AmCLxBsvuGtvlmiDCOuv8fGNYn3cowFpLN98L8zO56U0H1PjDIyAlXymgL3Wu7u7v6hbA==
-  dependencies:
-    "@babel/runtime" "^7.5.5"
-    "@emotion/cache" "^10.0.27"
-    "@emotion/css" "^10.0.27"
-    "@emotion/serialize" "^0.11.15"
-    "@emotion/sheet" "0.9.4"
-    "@emotion/utils" "0.11.3"
-
 "@emotion/core@^10.1.1":
   version "10.1.1"
   resolved "https://registry.npmjs.org/@emotion/core/-/core-10.1.1.tgz#c956c1365f2f2481960064bcb8c4732e5fb612c3"
@@ -2230,14 +2218,14 @@
   resolved "https://registry.npmjs.org/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
   integrity sha512-kBJtf7PH6aWwZ6fka3zQ0p6SBYzx4fl1LoZXE2RrnYST9Xljm7WfKJrU4g/Xr3Beg72MLrp1AWNUmuYJTL7Cow==
 
-"@emotion/is-prop-valid@0.8.8", "@emotion/is-prop-valid@^0.8.1", "@emotion/is-prop-valid@^0.8.6":
+"@emotion/is-prop-valid@0.8.8", "@emotion/is-prop-valid@^0.8.6":
   version "0.8.8"
   resolved "https://registry.npmjs.org/@emotion/is-prop-valid/-/is-prop-valid-0.8.8.tgz#db28b1c4368a259b60a97311d6a952d4fd01ac1a"
   integrity sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==
   dependencies:
     "@emotion/memoize" "0.7.4"
 
-"@emotion/memoize@0.7.4", "@emotion/memoize@^0.7.1":
+"@emotion/memoize@0.7.4":
   version "0.7.4"
   resolved "https://registry.npmjs.org/@emotion/memoize/-/memoize-0.7.4.tgz#19bf0f5af19149111c40d98bb0cf82119f5d9eeb"
   integrity sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==
@@ -2268,7 +2256,7 @@
     "@emotion/serialize" "^0.11.15"
     "@emotion/utils" "0.11.3"
 
-"@emotion/styled@^10.0.0", "@emotion/styled@^10.0.23":
+"@emotion/styled@^10.0.23":
   version "10.0.27"
   resolved "https://registry.npmjs.org/@emotion/styled/-/styled-10.0.27.tgz#12cb67e91f7ad7431e1875b1d83a94b814133eaf"
   integrity sha512-iK/8Sh7+NLJzyp9a5+vIQIXTYxfT4yB/OJbjzQanB2RZpvmzBQOHZWhpAMZWYEKRNNbsD6WfBw5sVWkb6WzS/Q==
@@ -2406,6 +2394,16 @@
     snakeize "^0.1.0"
     stream-events "^1.0.1"
     xdg-basedir "^4.0.0"
+
+"@graphiql/toolkit@^0.1.0":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@graphiql/toolkit/-/toolkit-0.1.1.tgz#a7da3ba460ceae27bcdc8f03831ca4f88f90f3d7"
+  integrity sha512-cvsuaPkOA6/TZOdqEdvzqr7i+or2STTpSsteyDkrUXrwftRnH9ZfiUwnHPyf0AC2cKMwpP/Dny/UTS6CLC8ZNQ==
+  dependencies:
+    "@n1ru4l/push-pull-async-iterable-iterator" "^2.0.1"
+    graphql-ws "^4.1.0"
+    meros "^1.1.2"
+    subscriptions-transport-ws "^0.9.18"
 
 "@graphql-codegen/cli@^1.17.7":
   version "1.17.10"
@@ -3962,11 +3960,6 @@
   dependencies:
     "@types/whatwg-streams" "^0.0.7"
 
-"@mdx-js/react@^1.0.0", "@mdx-js/react@^1.5.2":
-  version "1.5.9"
-  resolved "https://registry.npmjs.org/@mdx-js/react/-/react-1.5.9.tgz#31873ab097fbe58c61c7585fc0be64e83182b6df"
-  integrity sha512-rengdUSedIdIQbXPSeafItCacTYocARAjUA51b6R1KNHmz+59efz7UmyTKr73viJQZ98ouu7iRGmOTtjRrbbWA==
-
 "@microsoft/microsoft-graph-types@^1.25.0":
   version "1.25.0"
   resolved "https://registry.npmjs.org/@microsoft/microsoft-graph-types/-/microsoft-graph-types-1.25.0.tgz#1f543ebc029a115dd1d48a1ae99d7ddd5ee9af57"
@@ -3979,6 +3972,11 @@
   dependencies:
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
+
+"@n1ru4l/push-pull-async-iterable-iterator@^2.0.1":
+  version "2.1.2"
+  resolved "https://registry.npmjs.org/@n1ru4l/push-pull-async-iterable-iterator/-/push-pull-async-iterable-iterator-2.1.2.tgz#e486bf86c4c29e78601694a26f31c2dec0c08d9b"
+  integrity sha512-KwZGeX2XK7Xj9ksWwei5923QnqIGoEuLlh3O46OW9vc8hQxjzmMTKCgJMVZ5ne5xaWFQYDT2dMpbUhq6hEOhxA==
 
 "@nodelib/fs.scandir@2.1.3":
   version "2.1.3"
@@ -5342,105 +5340,6 @@
     resolve-from "^5.0.0"
     store2 "^2.7.1"
 
-"@styled-system/background@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/background/-/background-5.1.2.tgz#75c63d06b497ab372b70186c0bf608d62847a2ba"
-  integrity sha512-jtwH2C/U6ssuGSvwTN3ri/IyjdHb8W9X/g8Y0JLcrH02G+BW3OS8kZdHphF1/YyRklnrKrBT2ngwGUK6aqqV3A==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/border@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.npmjs.org/@styled-system/border/-/border-5.1.5.tgz#0493d4332d2b59b74bb0d57d08c73eb555761ba6"
-  integrity sha512-JvddhNrnhGigtzWRCVuAHepniyVi6hBlimxWDVAdcTuk7aRn9BYJUwfHslURtwYFsF5FoEs8Zmr1oZq2M1AP0A==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/color@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/color/-/color-5.1.2.tgz#b8d6b4af481faabe4abca1a60f8daa4ccc2d9f43"
-  integrity sha512-1kCkeKDZkt4GYkuFNKc7vJQMcOmTl3bJY3YBUs7fCNM6mMYJeT1pViQ2LwBSBJytj3AB0o4IdLBoepgSgGl5MA==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/core@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/core/-/core-5.1.2.tgz#b8b7b86455d5a0514f071c4fa8e434b987f6a772"
-  integrity sha512-XclBDdNIy7OPOsN4HBsawG2eiWfCcuFt6gxKn1x4QfMIgeO6TOlA2pZZ5GWZtIhCUqEPTgIBta6JXsGyCkLBYw==
-  dependencies:
-    object-assign "^4.1.1"
-
-"@styled-system/css@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.npmjs.org/@styled-system/css/-/css-5.1.5.tgz#0460d5f3ff962fa649ea128ef58d9584f403bbbc"
-  integrity sha512-XkORZdS5kypzcBotAMPBoeckDs9aSZVkvrAlq5K3xP8IMAUek+x2O4NtwoSgkYkWWzVBu6DGdFZLR790QWGG+A==
-
-"@styled-system/flexbox@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/flexbox/-/flexbox-5.1.2.tgz#077090f43f61c3852df63da24e4108087a8beecf"
-  integrity sha512-6hHV52+eUk654Y1J2v77B8iLeBNtc+SA3R4necsu2VVinSD7+XY5PCCEzBFaWs42dtOEDIa2lMrgL0YBC01mDQ==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/grid@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/grid/-/grid-5.1.2.tgz#7165049877732900b99cd00759679fbe45c6c573"
-  integrity sha512-K3YiV1KyHHzgdNuNlaw8oW2ktMuGga99o1e/NAfTEi5Zsa7JXxzwEnVSDSBdJC+z6R8WYTCYRQC6bkVFcvdTeg==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/layout@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/layout/-/layout-5.1.2.tgz#12d73e79887e10062f4dbbbc2067462eace42339"
-  integrity sha512-wUhkMBqSeacPFhoE9S6UF3fsMEKFv91gF4AdDWp0Aym1yeMPpqz9l9qS/6vjSsDPF7zOb5cOKC3tcKKOMuDCPw==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/position@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/position/-/position-5.1.2.tgz#56961266566836f57a24d8e8e33ce0c1adb59dd3"
-  integrity sha512-60IZfMXEOOZe3l1mCu6sj/2NAyUmES2kR9Kzp7s2D3P4qKsZWxD1Se1+wJvevb+1TP+ZMkGPEYYXRyU8M1aF5A==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/shadow@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/shadow/-/shadow-5.1.2.tgz#beddab28d7de03cd0177a87ac4ed3b3b6d9831fd"
-  integrity sha512-wqniqYb7XuZM7K7C0d1Euxc4eGtqEe/lvM0WjuAFsQVImiq6KGT7s7is+0bNI8O4Dwg27jyu4Lfqo/oIQXNzAg==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/should-forward-prop@^5.1.2":
-  version "5.1.5"
-  resolved "https://registry.npmjs.org/@styled-system/should-forward-prop/-/should-forward-prop-5.1.5.tgz#c392008c6ae14a6eb78bf1932733594f7f7e5c76"
-  integrity sha512-+rPRomgCGYnUIaFabDoOgpSDc4UUJ1KsmlnzcEp0tu5lFrBQKgZclSo18Z1URhaZm7a6agGtS5Xif7tuC2s52Q==
-  dependencies:
-    "@emotion/is-prop-valid" "^0.8.1"
-    "@emotion/memoize" "^0.7.1"
-    styled-system "^5.1.5"
-
-"@styled-system/space@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/space/-/space-5.1.2.tgz#38925d2fa29a41c0eb20e65b7c3efb6e8efce953"
-  integrity sha512-+zzYpR8uvfhcAbaPXhH8QgDAV//flxqxSjHiS9cDFQQUSznXMQmxJegbhcdEF7/eNnJgHeIXv1jmny78kipgBA==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/typography@^5.1.2":
-  version "5.1.2"
-  resolved "https://registry.npmjs.org/@styled-system/typography/-/typography-5.1.2.tgz#65fb791c67d50cd2900d234583eaacdca8c134f7"
-  integrity sha512-BxbVUnN8N7hJ4aaPOd7wEsudeT7CxarR+2hns8XCX1zp0DFfbWw4xYa/olA0oQaqx7F1hzDg+eRaGzAJbF+jOg==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-
-"@styled-system/variant@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.npmjs.org/@styled-system/variant/-/variant-5.1.5.tgz#8446d8aad06af3a4c723d717841df2dbe4ddeafd"
-  integrity sha512-Yn8hXAFoWIro8+Q5J8YJd/mP85Teiut3fsGVR9CAxwgNfIAiqlYxsk5iHU7VHJks/0KjL4ATSjmbtCDC/4l1qw==
-  dependencies:
-    "@styled-system/core" "^5.1.2"
-    "@styled-system/css" "^5.1.5"
-
 "@sucrase/webpack-loader@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@sucrase/webpack-loader/-/webpack-loader-2.0.0.tgz#b8a70b8d3df3eeb570e6a3315e1a9c6b723e4a37"
@@ -5651,61 +5550,6 @@
   integrity sha512-v/1DS6V6P5zJVq5HCC/NU93CQaqML+exslOOYRmE71ULvtOCS4Fv6A2wgBjIsEEecjZtdS2LF+KlrOK3KvVZBA==
   dependencies:
     "@babel/runtime" "^7.10.2"
-
-"@theme-ui/color-modes@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@theme-ui/color-modes/-/color-modes-0.3.1.tgz#8c2b18fb170e6c998287b7381240a8b9cca8b0d1"
-  integrity sha512-WuZGgFW7M5wOWSse1PVZCEfM0OZip15/D6U3bB3B9KmWax7qiSnAm1yAMLRQKC+QYhndrjq3xU+WAQm11KnhIw==
-  dependencies:
-    "@emotion/core" "^10.0.0"
-    "@theme-ui/core" "^0.3.1"
-    "@theme-ui/css" "^0.3.1"
-    deepmerge "^4.2.2"
-
-"@theme-ui/components@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@theme-ui/components/-/components-0.3.1.tgz#fe023e156c1e1c076d5f2258466426e94adc2765"
-  integrity sha512-uG4dUM61s4tWv6N34uxs5VIh24bJyA/7TrYJ75WDiI+s72zbcNG7aGRpvX/hSZnAhxjdXpuskdEM3eEgOabdEg==
-  dependencies:
-    "@emotion/core" "^10.0.0"
-    "@emotion/styled" "^10.0.0"
-    "@styled-system/color" "^5.1.2"
-    "@styled-system/should-forward-prop" "^5.1.2"
-    "@styled-system/space" "^5.1.2"
-    "@theme-ui/css" "^0.3.1"
-
-"@theme-ui/core@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@theme-ui/core/-/core-0.3.1.tgz#dbe9800b9d6e923e1a7417e6adebce21524f8c02"
-  integrity sha512-cK6EVSOx0Kyx1Xpi4qb0JTLIxywx0DRh+53Ln1foXMplF2qKaDsFi3vD6duHIlT331E3CNOa9dftHHNM7y4rbA==
-  dependencies:
-    "@emotion/core" "^10.0.0"
-    "@theme-ui/css" "^0.3.1"
-    deepmerge "^4.2.2"
-
-"@theme-ui/css@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@theme-ui/css/-/css-0.3.1.tgz#b85c7e8fae948dc0de65aa30b853368993e25cb3"
-  integrity sha512-QB2/fZBpo4inaLHL3OrB8NOBgNfwnj8GtHzXWHb9iQSRjmtNX8zPXBe32jLT7qQP0+y8JxPT4YChZIkm5ZyIdg==
-
-"@theme-ui/mdx@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@theme-ui/mdx/-/mdx-0.3.0.tgz#8bb1342204acfaa69914d6b6567c5c49d9a8c1e6"
-  integrity sha512-/GHBNKqmUptWwkmF+zIASVQtjYs81XMEwtqPCHnHuaaCzhZxcXrtCwvcAgmCXF8hpRttCXVVxw1X3Gt0mhzaTQ==
-  dependencies:
-    "@emotion/core" "^10.0.0"
-    "@emotion/styled" "^10.0.0"
-    "@mdx-js/react" "^1.0.0"
-
-"@theme-ui/theme-provider@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/@theme-ui/theme-provider/-/theme-provider-0.3.1.tgz#910bc43454fd61b1047d7bb0dce05e36ffb6b44b"
-  integrity sha512-Sjj6lD0gPxBi+hcGCkawcGZECeESV/mW2YfmPqjNgmc296x5tulfNc+0/N5CJwLVOmnkn8zR5KNWZ8BjndfeTg==
-  dependencies:
-    "@emotion/core" "^10.0.0"
-    "@theme-ui/color-modes" "^0.3.1"
-    "@theme-ui/core" "^0.3.1"
-    "@theme-ui/mdx" "^0.3.0"
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -9822,18 +9666,18 @@ code-point-at@^1.0.0:
   resolved "https://registry.npmjs.org/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-0.12.0.tgz#55f782ffaaea7ff8dbda037e6b97b584dff2402a"
-  integrity sha512-C/0vKzQT5Uw+DLz6/MwKer29FQM52sh9Bem+VdDW42094j8nES1sdnuqj4k5ahNdQpW4FmVeoj/ngn2g3AWmgg==
+codemirror-graphql@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/codemirror-graphql/-/codemirror-graphql-1.0.0.tgz#ba8db60dc42b87768d643b3d19bf088f43dc5380"
+  integrity sha512-6LnSeRldL7psIBfjDr4xXKxCqPVYfQE4Yj04p2VpIyAIpc4MVE4VOjzvILgnmAW8X93ou5/s5gQXvB4huDwTUQ==
   dependencies:
-    graphql-language-service-interface "^2.4.0"
-    graphql-language-service-parser "^1.6.0"
+    graphql-language-service-interface "^2.8.2"
+    graphql-language-service-parser "^1.9.0"
 
-codemirror@^5.52.2:
-  version "5.53.2"
-  resolved "https://registry.npmjs.org/codemirror/-/codemirror-5.53.2.tgz#9799121cf8c50809cca487304e9de3a74d33f428"
-  integrity sha512-wvSQKS4E+P8Fxn/AQ+tQtJnF1qH5UOlxtugFLpubEZ5jcdH2iXTVinb+Xc/4QjshuOxRm4fUsU2QPF1JJKiyXA==
+codemirror@^5.54.0:
+  version "5.59.4"
+  resolved "https://registry.npmjs.org/codemirror/-/codemirror-5.59.4.tgz#bfc11c8ce32b04818e8d661bbd790a94f4b3a6f3"
+  integrity sha512-achw5JBgx8QPcACDDn+EUUXmCYzx/zxEtOGXyjvLEvYY8GleUrnfm5D+Zb+UjShHggXKDT9AXrbkBZX6a0YSQg==
 
 codeowners-utils@^1.0.2:
   version "1.0.2"
@@ -11808,6 +11652,11 @@ downshift@^6.0.6:
     compute-scroll-into-view "^1.0.16"
     prop-types "^15.7.2"
     react-is "^17.0.1"
+
+dset@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/dset/-/dset-3.1.0.tgz#23feb6df93816ea452566308b1374d6e869b0d7b"
+  integrity sha512-7xTQ5DzyE59Nn+7ZgXDXjKAGSGmXZHqttMVVz1r4QNfmGpyj+cm2YtI3II0c/+4zS4a9yq2mBhgdeq2QnpcYlw==
 
 dtrace-provider@~0.8:
   version "0.8.8"
@@ -14122,20 +13971,18 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphiql@^1.0.0-alpha.10:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.0.3.tgz#f6b5d5c417d8f1a28786d3228a69883426ba74ad"
-  integrity sha512-6YW76m2exdpGiVS75I0QsbM4NanvenKFR9FtW/IFbui0mWv89iVa1FbdjhUt+kxa+LX/WlqTshiqiZRz7E5Bgg==
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/graphiql/-/graphiql-1.4.0.tgz#8b17c988720a9da5ea3ebf7ff9d86939b462655e"
+  integrity sha512-E/Xzfu3YnifdINrK6dKHD1G0qnWkYYK2gHQ//vApUadMb4I4lZQ399ZKt5nqM5kzrATf5FDUTuSpnkaeSoARkQ==
   dependencies:
-    "@emotion/core" "^10.0.28"
-    "@mdx-js/react" "^1.5.2"
-    codemirror "^5.52.2"
-    codemirror-graphql "^0.12.0"
+    "@graphiql/toolkit" "^0.1.0"
+    codemirror "^5.54.0"
+    codemirror-graphql "^1.0.0"
     copy-to-clipboard "^3.2.0"
+    dset "^3.0.0"
     entities "^2.0.0"
+    graphql-language-service "^3.1.2"
     markdown-it "^10.0.0"
-    monaco-graphql "^0.2.0"
-    regenerator-runtime "^0.13.5"
-    theme-ui "^0.3.1"
 
 graphlib@^2.1.8:
   version "2.1.8"
@@ -14169,40 +14016,43 @@ graphql-extensions@^0.12.8:
     apollo-server-env "^3.0.0"
     apollo-server-types "^0.6.3"
 
-graphql-language-service-interface@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.4.0.tgz#4e2e63242c76197c4f56c61122db68187ea566b3"
-  integrity sha512-r7DQPyhCFY5TlpEukdh9tekJ9hAc7MD9TdOsb5CfAPlsIb1/faVVo2Ty19PxGSYDxygXjwpKLOQD0LqqFuw63A==
+graphql-language-service-interface@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.npmjs.org/graphql-language-service-interface/-/graphql-language-service-interface-2.8.2.tgz#b3bb2aef7eaf0dff0b4ea419fa412c5f66fa268b"
+  integrity sha512-otbOQmhgkAJU1QJgQkMztNku6SbJLu/uodoFOYOOtJsizTjrMs93vkYaHCcYnLA3oi1Goj27XcHjMnRCYQOZXQ==
   dependencies:
-    graphql-language-service-parser "^1.6.0"
-    graphql-language-service-types "^1.6.0"
-    graphql-language-service-utils "^2.4.0"
+    graphql-language-service-parser "^1.9.0"
+    graphql-language-service-types "^1.8.0"
+    graphql-language-service-utils "^2.5.1"
     vscode-languageserver-types "^3.15.1"
 
-graphql-language-service-parser@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.6.0.tgz#53a97619461ed41ae237b9070e7e20cfaca56118"
-  integrity sha512-tkfYXl6WBECWNcsyw7O09c0oCMrxqr3JGyDNvdISDSDhvk8EwEk+AOweBEJkycJwoiv1lVlM+EdLfj7dzw4/6w==
-
-graphql-language-service-types@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.npmjs.org/graphql-language-service-types/-/graphql-language-service-types-1.6.0.tgz#32529bb9d2e3b8ae9dd6d9646e15481ac5dfe9ad"
-  integrity sha512-7y4pkhTL+MtarC8CeHpvRYVc6pkT6ITdQXs+Gr7OClnk4Lz5nQEK0eO29kUdd0jEnYfHyh5iqhnL5Owfy+wT0A==
-
-graphql-language-service-utils@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/graphql-language-service-utils/-/graphql-language-service-utils-2.4.0.tgz#d4992a1968860abc43a118de498fec84361a4b87"
-  integrity sha512-aLa+8iqb7AJYgdcawsKH8/KLc14DHcRsnveshOm8hN6bBVT0YiQP6mEfJoci741O74uaDF2zj1J3c02vorichw==
+graphql-language-service-parser@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.npmjs.org/graphql-language-service-parser/-/graphql-language-service-parser-1.9.0.tgz#79af21294119a0a7e81b6b994a1af36833bab724"
+  integrity sha512-B5xPZLbBmIp0kHvpY1Z35I5DtPoDK9wGxQVRDIzcBaiIvAmlTrDvjo3bu7vKREdjFbYKvWNgrEWENuprMbF17Q==
   dependencies:
-    graphql-language-service-types "^1.6.0"
+    graphql-language-service-types "^1.8.0"
 
-graphql-language-service@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-3.0.0.tgz#953c3bbf4cc35ff9a7bd54e428bca17832367490"
-  integrity sha512-ySPrbecxtjQtzIFdCIOoSJzaco9dQvZK+wZN/tTjcSEEWh3fgMYXmctAG+WddJiZg3AB7I4Xsb2AsO5yFBbLHg==
+graphql-language-service-types@^1.8.0:
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/graphql-language-service-types/-/graphql-language-service-types-1.8.1.tgz#963810010924f2b5eaea415d5b8eb0b7d42c479b"
+  integrity sha512-IpYS0mEHEmRsFlq+loWCpSYYYizAID7Alri6GoFN1QqUdux+8rp1Tkp2NGsGDpDmm3Dbz5ojmJWzNWQGpuwveA==
+
+graphql-language-service-utils@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/graphql-language-service-utils/-/graphql-language-service-utils-2.5.1.tgz#832ad4b0a9da03fdded756932c27e057ccf71302"
+  integrity sha512-Lzz723cYrYlVN4WVzIyFGg3ogoe+QYAIBfdtDboiIILoy0FTmqbyC2TOErqbmWKqO4NK9xDA95cSRFbWiHYj0g==
   dependencies:
-    graphql-language-service-interface "^2.4.0"
-    graphql-language-service-types "^1.6.0"
+    graphql-language-service-types "^1.8.0"
+    nullthrows "^1.0.0"
+
+graphql-language-service@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.npmjs.org/graphql-language-service/-/graphql-language-service-3.1.2.tgz#6f50d5d824ea09c402cb02902b10e54b9da899d5"
+  integrity sha512-OiOH8mVE+uotrl3jGA2Pgt9k7rrI8lgw/8p+Cf6nwyEHbmIZj37vX9KoOWgpdFhuQlw824nNxWHSbz6k90xjWQ==
+  dependencies:
+    graphql-language-service-interface "^2.8.2"
+    graphql-language-service-types "^1.8.0"
 
 graphql-request@^3.1.0:
   version "3.1.0"
@@ -14254,6 +14104,11 @@ graphql-type-json@^0.3.2:
   version "0.3.2"
   resolved "https://registry.npmjs.org/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"
   integrity sha512-J+vjof74oMlCWXSvt0DOf2APEdZOCdubEvGDUAlqH//VBYcOYsGgRW7Xzorr44LvkjiuvecWc8fChxuZZbChtg==
+
+graphql-ws@^4.1.0:
+  version "4.2.0"
+  resolved "https://registry.npmjs.org/graphql-ws/-/graphql-ws-4.2.0.tgz#dfb8e355d3a226672ec682ea517b64e9e7e006a3"
+  integrity sha512-tPdRAFfl9Ypx+evsSYFa3nTGVcSKKaOMhTlOD7eEbiMpsb2hi6XJeSyenrH/hgf5+Q3v3GV6aZ9R/UEjakl7eQ==
 
 graphql@15.5.0, graphql@^15.3.0:
   version "15.5.0"
@@ -17995,6 +17850,11 @@ merge@^2.1.0:
   resolved "https://registry.npmjs.org/merge/-/merge-2.1.0.tgz#91fff62458ba2eca378dd395fa85f1690bf87f60"
   integrity sha512-TcuhVDV+e6X457MQAm7xIb19rWhZuEDEho7RrwxMpQ/3GhD5sDlnP188gjQQuweXHy9igdke5oUtVOXX1X8Sxg==
 
+meros@^1.1.2:
+  version "1.1.4"
+  resolved "https://registry.npmjs.org/meros/-/meros-1.1.4.tgz#c17994d3133db8b23807f62bec7f0cb276cfd948"
+  integrity sha512-E9ZXfK9iQfG9s73ars9qvvvbSIkJZF5yOo9j4tcwM5tN8mUKfj/EKN5PzOr3ZH0y5wL7dLAHw3RVEfpQV9Q7VQ==
+
 methods@^1.0.0, methods@^1.1.1, methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
@@ -18381,20 +18241,6 @@ moment@^2.19.3, moment@^2.25.3, moment@^2.27.0:
   version "2.29.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
-
-monaco-editor@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.20.0.tgz#5d5009343a550124426cb4d965a4d27a348b4dea"
-  integrity sha512-hkvf4EtPJRMQlPC3UbMoRs0vTAFAYdzFQ+gpMb8A+9znae1c43q8Mab9iVsgTcg/4PNiLGGn3SlDIa8uvK1FIQ==
-
-monaco-graphql@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/monaco-graphql/-/monaco-graphql-0.2.0.tgz#be6bd165b6cbdc624fde6c108fe9ee32f50f2e80"
-  integrity sha512-IwpbJvrNlFxq6xjnQQ8eC72ep+q2vfiUaHBNkfqe314CXYnUCcXYfoMBfR5EuLAXRBOTf4CKl6BCN1/9eHrq7A==
-  dependencies:
-    graphql-language-service "^3.0.0"
-    graphql-language-service-utils "^2.4.0"
-    monaco-editor "^0.20.0"
 
 morgan@^1.10.0:
   version "1.10.0"
@@ -19078,7 +18924,7 @@ nth-check@^1.0.2, nth-check@~1.0.1:
   dependencies:
     boolbase "~1.0.0"
 
-nullthrows@^1.1.1:
+nullthrows@^1.0.0, nullthrows@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/nullthrows/-/nullthrows-1.1.1.tgz#7818258843856ae971eae4208ad7d7eb19a431b1"
   integrity sha512-2vPPEi+Z7WqML2jZYddDIfy5Dqb0r2fze2zTxNNknZaFpVHU3mFB3R+DWeJWGVx0ecvttSGlJTI+WG+8Z4cDWw==
@@ -22163,7 +22009,7 @@ regenerator-runtime@^0.11.0:
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
 
-regenerator-runtime@^0.13.3, regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.5, regenerator-runtime@^0.13.7:
+regenerator-runtime@^0.13.3, regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.7"
   resolved "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.7.tgz#cac2dacc8a1ea675feaabaeb8ae833898ae46f55"
   integrity sha512-a54FxoJDIr27pgf7IgeQGxmqUNYrcV338lf/6gH456HZ/PhX+5BcwHXG9ajESmwe6WRO0tAzRUrRmNONWgkrew==
@@ -24028,25 +23874,6 @@ style-loader@^1.2.1:
     loader-utils "^2.0.0"
     schema-utils "^2.6.6"
 
-styled-system@^5.1.5:
-  version "5.1.5"
-  resolved "https://registry.npmjs.org/styled-system/-/styled-system-5.1.5.tgz#e362d73e1dbb5641a2fd749a6eba1263dc85075e"
-  integrity sha512-7VoD0o2R3RKzOzPK0jYrVnS8iJdfkKsQJNiLRDjikOpQVqQHns/DXWaPZOH4tIKkhAT7I6wIsy9FWTWh2X3q+A==
-  dependencies:
-    "@styled-system/background" "^5.1.2"
-    "@styled-system/border" "^5.1.5"
-    "@styled-system/color" "^5.1.2"
-    "@styled-system/core" "^5.1.2"
-    "@styled-system/flexbox" "^5.1.2"
-    "@styled-system/grid" "^5.1.2"
-    "@styled-system/layout" "^5.1.2"
-    "@styled-system/position" "^5.1.2"
-    "@styled-system/shadow" "^5.1.2"
-    "@styled-system/space" "^5.1.2"
-    "@styled-system/typography" "^5.1.2"
-    "@styled-system/variant" "^5.1.5"
-    object-assign "^4.1.1"
-
 stylehacks@^4.0.0:
   version "4.0.3"
   resolved "https://registry.npmjs.org/stylehacks/-/stylehacks-4.0.3.tgz#6718fcaf4d1e07d8a1318690881e8d96726a71d5"
@@ -24061,7 +23888,7 @@ stylis@3.5.0:
   resolved "https://registry.npmjs.org/stylis/-/stylis-3.5.0.tgz#016fa239663d77f868fef5b67cf201c4b7c701e1"
   integrity sha512-pP7yXN6dwMzAR29Q0mBrabPCe0/mNO1MSr93bhay+hcZondvMMTpeGyd8nbhYJdyperNT2DRxONQuUGcJr5iPw==
 
-subscriptions-transport-ws@0.9.18, subscriptions-transport-ws@^0.9.11, subscriptions-transport-ws@^0.9.16:
+subscriptions-transport-ws@0.9.18, subscriptions-transport-ws@^0.9.11, subscriptions-transport-ws@^0.9.16, subscriptions-transport-ws@^0.9.18:
   version "0.9.18"
   resolved "https://registry.npmjs.org/subscriptions-transport-ws/-/subscriptions-transport-ws-0.9.18.tgz#bcf02320c911fbadb054f7f928e51c6041a37b97"
   integrity sha512-tztzcBTNoEbuErsVQpTN2xUNN/efAZXyCyL5m3x4t6SKrEiTL2N8SaKWBFWM4u56pL79ULif3zjyeq+oV+nOaA==
@@ -24489,18 +24316,6 @@ text-table@0.2.0, text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
-
-theme-ui@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/theme-ui/-/theme-ui-0.3.1.tgz#b00ee2c03eb3d820536af8b121c64d13b3777cf0"
-  integrity sha512-My/TSALqp7Dst5Ez7nJA+94Q8zJhc26Z0qGo8kEWyoqHHJ5TU8xdhjLPBltTdQck3T32cSq5USIeSKU3JtxYUQ==
-  dependencies:
-    "@theme-ui/color-modes" "^0.3.1"
-    "@theme-ui/components" "^0.3.1"
-    "@theme-ui/core" "^0.3.1"
-    "@theme-ui/css" "^0.3.1"
-    "@theme-ui/mdx" "^0.3.0"
-    "@theme-ui/theme-provider" "^0.3.1"
 
 thenify-all@^1.0.0:
   version "1.6.0"
