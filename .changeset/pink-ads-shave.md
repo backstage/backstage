@@ -9,7 +9,7 @@ See documentation for more information how to create and register new template a
 
 **Breaking changes**
 
-The backend scaffolder plugin now needs a `UrlReader` which can be receieved from the PluginEnvironment.
+The backend scaffolder plugin now needs a `UrlReader` which can be pulled from the PluginEnvironment.
 
 The following change is required in `backend/src/plugins/scaffolder.ts`
 

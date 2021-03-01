@@ -71,7 +71,7 @@ output:
 ## `publish:gitlab`
 
 Initializes a git repository of contents in workspacePath and publishes to
-Gitlab.
+GitLab.
 
 input:
 
