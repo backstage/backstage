@@ -17,7 +17,7 @@
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
-import { act, render, RenderResult } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
@@ -120,9 +120,8 @@ describe('<StepPrepareCreatePullRequest />', () => {
       }),
     );
 
-    let result: RenderResult;
     await act(async () => {
-      result = await render(
+      await render(
         <StepPrepareCreatePullRequest
           defaultTitle="My title"
           defaultBody="My **body**"
@@ -154,10 +153,10 @@ describe('<StepPrepareCreatePullRequest />', () => {
         },
       );
 
-      await userEvent.type(await result.getByLabelText('name'), '-changed');
-      await userEvent.type(await result.getByLabelText('owner'), '-changed');
+      await userEvent.type(await screen.getByLabelText('name'), '-changed');
+      await userEvent.type(await screen.getByLabelText('owner'), '-changed');
       await userEvent.click(
-        await result.getByRole('button', { name: /Create PR/i }),
+        await screen.getByRole('button', { name: /Create PR/i }),
       );
     });
 
@@ -211,9 +210,8 @@ spec:
       new Error('some error'),
     );
 
-    let result: RenderResult;
     await act(async () => {
-      result = await render(
+      await render(
         <StepPrepareCreatePullRequest
           defaultTitle="My title"
           defaultBody="My **body**"
@@ -236,11 +234,11 @@ spec:
       );
 
       await userEvent.click(
-        await result.getByRole('button', { name: /Create PR/i }),
+        await screen.getByRole('button', { name: /Create PR/i }),
       );
     });
 
-    expect(result!.getByText('some error')).toBeInTheDocument();
+    expect(screen.getByText('some error')).toBeInTheDocument();
     expect(catalogImportApi.submitPullRequest).toBeCalledTimes(1);
     expect(onPrepareFn).toBeCalledTimes(0);
   });
