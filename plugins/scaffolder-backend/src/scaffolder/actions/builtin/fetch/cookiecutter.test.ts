@@ -57,8 +57,6 @@ describe('fetch:cookiecutter', () => {
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
 
-  mock({ [`${mockContext.workspacePath}/result`]: {} });
-
   const mockReader: UrlReader = {
     read: jest.fn(),
     readTree: jest.fn(),
@@ -75,7 +73,12 @@ describe('fetch:cookiecutter', () => {
   templaters.register('cookiecutter', cookiecutterTemplater);
 
   beforeEach(() => {
+    mock({ [`${mockContext.workspacePath}/result`]: {} });
     jest.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    mock.restore();
   });
 
   it('should call fetchContents with the correct values', async () => {
