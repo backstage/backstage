@@ -99,6 +99,7 @@ export default async function createPlugin({
   logger,
   config,
   database,
+  reader,
 }: PluginEnvironment) {
   const cookiecutterTemplater = new CookieCutter();
   const craTemplater = new CreateReactAppTemplater();
@@ -124,6 +125,7 @@ export default async function createPlugin({
     dockerClient,
     database,
     catalogClient,
+    reader,
   });
 }
 ```
@@ -136,10 +138,11 @@ import scaffolder from './plugins/scaffolder';
 
 const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
 
-const service = createServiceBuilder(module)
-  .loadConfig(configReader)
-  /** several different routers */
-  .addRouter('/scaffolder', await scaffolder(scaffolderEnv));
+const apiRouter = Router();
+/* several router .use calls */
+
+/* add this line */
+apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
 ```
 
 ### Adding Templates
@@ -170,14 +173,10 @@ catalog:
 
 ### Runtime Dependencies / Configuration
 
-For the scaffolder backend plugin to function, it needs a GitHub access token,
-and access to a running Docker daemon. You can create a GitHub access token
-[here](https://github.com/settings/tokens/new), select `repo` scope only. Full
-docs on creating private GitHub access tokens is available
-[here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token).
-Note that the need for private GitHub access tokens will be replaced with GitHub
-Apps integration further down the line by using the existing `integrations`
-config.
+For the scaffolder backend plugin to function, you'll need to setup the
+integrations config in your `app-config.yaml`.
+
+You can find help for different providers below.
 
 > Note: Some of this configuration may already be set up as part of your
 > `app-config.yaml`. We're moving away from the duplicated config for
@@ -218,6 +217,32 @@ integrations:
     - host: gitlab.com
       token:
         $env: GITLAB_TOKEN
+```
+
+#### BitBucket
+
+For Bitbucket there are two authentication methods supported. Either `token` or
+a combination of `appPassword` and `username`. It looks like either of the
+following:
+
+```yaml
+integrations:
+  bitbucket:
+    - host: bitbucket.org
+      token:
+        $env: BITBUCKET_TOKEN
+```
+
+or
+
+```yaml
+integrations:
+  bitbucket:
+    - host: bitbucket.org
+      appPassword:
+        $env: BITBUCKET_APP_PASSWORD
+      username:
+        $env: BITBUCKET_USERNAME
 ```
 
 #### Azure DevOps
