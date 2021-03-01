@@ -38,15 +38,6 @@
     "Core Features": [
       {
         "type": "subcategory",
-        "label": "Kubernetes",
-        "ids": [
-          "features/kubernetes/overview",
-          "features/kubernetes/installation",
-          "features/kubernetes/configuration"
-        ]
-      },
-      {
-        "type": "subcategory",
         "label": "Software Catalog",
         "ids": [
           "features/software-catalog/software-catalog-overview",
@@ -60,6 +51,16 @@
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Kubernetes",
+        "ids": [
+          "features/kubernetes/overview",
+          "features/kubernetes/installation",
+          "features/kubernetes/configuration",
+          "features/kubernetes/troubleshooting"
         ]
       },
       {
