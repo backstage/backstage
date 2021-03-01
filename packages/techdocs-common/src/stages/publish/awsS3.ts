@@ -169,12 +169,19 @@ export class AwsS3Publish implements PublisherBase {
 
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
+
+        const params = {
+          container: this.containerName,
+          remote: destination,
+        };
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(
           () =>
             new Promise((res, rej) => {
+              const readStream = fs.createReadStream(filePath, 'utf8');
+
               const writeStream = this.storageClient.upload(params);
 
               writeStream.on('error', rej);
@@ -280,10 +287,13 @@ export class AwsS3Publish implements PublisherBase {
         this.storageClient.getFile(
           this.containerName,
           `${entityRootDir}/index.html`,
-          (err: any, file: any) => {
+          (err, file) => {
             if (!err && file) {
               res(true);
-            } else res(false);
+            } else {
+              res(false);
+              this.logger.warn(err.message);
+            }
           },
         );
       });

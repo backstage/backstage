@@ -54,6 +54,7 @@ providers are used.
 | Google Cloud Storage (GCS)        | Yes ✅         |
 | Amazon Web Services (AWS) S3      | Yes ✅         |
 | Azure Blob Storage                | Yes ✅         |
+| OpenStack Swift                   | Yes ✅         |
 
 [Reach out to us](#feedback) if you want to request more platforms.
 
