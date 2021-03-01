@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './errors';
-export * from './hot';
-export * from './logging';
-export * from './middleware';
-export * from './paths';
-export * from './reading';
-export * from './scm';
-export * from './service';
-export * from './util';
+export { runDockerContainer } from './docker';

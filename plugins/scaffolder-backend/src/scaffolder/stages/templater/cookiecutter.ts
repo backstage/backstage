@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
+import { runDockerContainer } from '@backstage/backend-common';
 import { JsonValue } from '@backstage/config';
-import { runDockerContainer, runCommand } from './helpers';
-import { TemplaterBase, TemplaterRunOptions } from '.';
+import fs from 'fs-extra';
 import path from 'path';
+import { TemplaterBase, TemplaterRunOptions } from '.';
+import { runCommand } from './helpers';
 
 const commandExists = require('command-exists-promise');
 
@@ -71,12 +72,12 @@ export class CookieCutter implements TemplaterBase {
           'cookiecutter',
           '--no-input',
           '-o',
-          '/result',
-          '/template',
+          '/output',
+          '/input',
           '--verbose',
         ],
-        templateDir,
-        resultDir: intermediateDir,
+        inputDir: templateDir,
+        outputDir: intermediateDir,
         logStream,
         dockerClient,
       });

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { runDockerContainer } from '@backstage/backend-common';
 import fs from 'fs-extra';
-import { runDockerContainer } from '../helpers';
-import { TemplaterBase, TemplaterRunOptions } from '..';
 import path from 'path';
 import * as yaml from 'yaml';
+import { TemplaterBase, TemplaterRunOptions } from '..';
 
 // TODO(blam): Replace with the universal import from github-actions after a release
 // As it will break the E2E without it
@@ -49,8 +49,8 @@ export class CreateReactAppTemplater implements TemplaterBase {
         componentName as string,
         withTypescript ? ' --template typescript' : '',
       ],
-      templateDir: intermediateDir,
-      resultDir: intermediateDir,
+      inputDir: intermediateDir,
+      outputDir: intermediateDir,
       logStream: logStream,
       dockerClient: dockerClient,
       createOptions: {
