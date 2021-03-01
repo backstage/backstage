@@ -34,7 +34,10 @@
         ]
       }
     ],
-    "CLI": ["cli/index", "cli/commands"],
+    "CLI": [
+      "cli/index",
+      "cli/commands"
+    ],
     "Core Features": [
       {
         "type": "subcategory",
@@ -69,10 +72,10 @@
           "features/software-templates/software-templates-index",
           "features/software-templates/installation",
           "features/software-templates/adding-templates",
-          "features/software-templates/extending/extending-index",
-          "features/software-templates/extending/extending-templater",
-          "features/software-templates/extending/extending-publisher",
-          "features/software-templates/extending/extending-preparer"
+          "features/software-templates/writing-templates",
+          "featires/software-templates/builtin-actions",
+          "features/software-templates/writing-custom-actions",
+          "features/software-templates/templates-legacy"
         ]
       },
       {
@@ -105,17 +108,23 @@
       {
         "type": "subcategory",
         "label": "GitHub",
-        "ids": ["integrations/github/org"]
+        "ids": [
+          "integrations/github/org"
+        ]
       },
       {
         "type": "subcategory",
         "label": "LDAP",
-        "ids": ["integrations/ldap/org"]
+        "ids": [
+          "integrations/ldap/org"
+        ]
       },
       {
         "type": "subcategory",
         "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
+        "ids": [
+          "integrations/google-analytics/installation"
+        ]
       }
     ],
     "Plugins": [
@@ -138,7 +147,9 @@
       {
         "type": "subcategory",
         "label": "Testing",
-        "ids": ["plugins/testing"]
+        "ids": [
+          "plugins/testing"
+        ]
       },
       {
         "type": "subcategory",
@@ -165,7 +176,6 @@
       "auth/glossary",
       "auth/auth-backend-classes"
     ],
-
     "Designing for Backstage": [
       "dls/design",
       "dls/contributing-to-storybook",
@@ -185,7 +195,9 @@
       {
         "type": "subcategory",
         "label": "Backend APIs",
-        "ids": ["api/backend"]
+        "ids": [
+          "api/backend"
+        ]
       }
     ],
     "Tutorials": [
@@ -207,8 +219,15 @@
       "architecture-decisions/adrs-adr010",
       "architecture-decisions/adrs-adr011"
     ],
-    "Support": ["support/support", "support/project-structure"],
-    "Glossary": ["glossary"],
-    "FAQ": ["FAQ"]
+    "Support": [
+      "support/support",
+      "support/project-structure"
+    ],
+    "Glossary": [
+      "glossary"
+    ],
+    "FAQ": [
+      "FAQ"
+    ]
   }
 }
