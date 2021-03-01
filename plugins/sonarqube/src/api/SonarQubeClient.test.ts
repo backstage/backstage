@@ -45,10 +45,25 @@ describe('SonarQubeClient', () => {
     ],
   ) => {
     server.use(
-      rest.get(`${mockBaseUrl}/sonarqube/metrics/search`, (_, res, ctx) => {
+      rest.get(`${mockBaseUrl}/sonarqube/metrics/search`, (req, res, ctx) => {
+        expect(req.url.searchParams.get('ps')).toBe('500');
+
+        // emulate paging to check if everything is requested
+        if (req.url.searchParams.get('p') === '1') {
+          return res(
+            ctx.json({
+              metrics: metricKeys.slice(0, 5).map(k => ({ key: k })),
+              total: metricKeys.length,
+            }),
+          );
+        }
+
+        // make sure this is only called twice
+        expect(req.url.searchParams.get('p')).toBe('2');
         return res(
           ctx.json({
-            metrics: metricKeys.map(k => ({ key: k })),
+            metrics: metricKeys.slice(5).map(k => ({ key: k })),
+            total: metricKeys.length,
           }),
         );
       }),
