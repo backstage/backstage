@@ -530,7 +530,7 @@ The following describes the following entity kind:
 | `kind`       | `Template`             |
 
 If you're looking for docs on `v1alpha1` you can find them
-[here](../software-templates/legacy)
+[here](../software-templates/legacy.md)
 
 A template definition describes both the parameters that are rendered in the
 frontend part of the scaffolding wizard, and the steps that are executed when

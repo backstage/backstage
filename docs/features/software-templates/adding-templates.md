@@ -103,4 +103,4 @@ Or you can add the template using the `catalog-import` plugin, which unless
 configured differently should be running on `/catalog-import`.
 
 For information about writing your own templates, you can check out the docs
-[here](./writing-templates)
+[here](./writing-templates.md)
