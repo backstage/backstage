@@ -6,7 +6,10 @@ description: Troubleshooting for Kubernetes
 ---
 
 ## Kubernetes is not showing up on Service Entities 
-How to test your k8s cluster are already connected to backstage
+
+Sometimes, kubernetes is not showing up on service entities, we
+should test your k8s cluster are already connected to backstage
+or not.
 
 ```curl
 # curl request
