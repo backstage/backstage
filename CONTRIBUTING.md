@@ -80,7 +80,7 @@ Also be sure to skim through our [ADRs](https://github.com/backstage/backstage/t
 
 If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
 
-## DCO
+## Developer Certificate of Origin
 
 As with other CNCF projects, Backstage has adopted a [Developers Certificate of Origin (DCO)](https://developercertificate.org/). A DCO is a lightweight way for a developer to certify that they wrote or otherwise have the right to submit code or documentation to a project.
 
