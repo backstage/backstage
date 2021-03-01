@@ -66,12 +66,12 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
       <ListItemText
         primary={item.title}
         secondary={
-          <>
-            {item.links &&
-              item.links.map(link => (
-                <SupportLink link={link} key={link.url} />
-              ))}
-          </>
+          item.links &&
+          item.links
+            .map<React.ReactNode>(link => (
+              <SupportLink link={link} key={link.url} />
+            ))
+            .reduce((prev, curr, idx) => [prev, <br key={idx} />, curr])
         }
       />
     </ListItem>
