@@ -115,7 +115,7 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      this.logger.debug(`Build failed with error: ${log}`);
+      this.logger.error(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );
