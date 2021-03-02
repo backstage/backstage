@@ -53,18 +53,18 @@ Then make sure to export the plugin in your app's [\`plugins.ts\`](https://githu
 export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
 \`\`\`
 
-Modify your app routes in \`App.tsx\` to include the Router component exported from the plugin, for example:
+Modify your app routes in \`App.tsx\` or \`App.jsx\` to include the Router component exported from the plugin, for example:
 
 \`\`\`js
 // At the top imports
-import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
+import { LighthousePage } from '@backstage/plugin-lighthouse';
 
 // Inside App component
-<Routes>
+<FlatRoutes>
   // ...
-  <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+  <Route path="/lighthouse" element={<LighthousePage />} />
   // ...
-</Routes>;
+</FlatRoutes>;
 \`\`\`
 
 Then configure the \`lighthouse-audit-service\` URL in your [\`app-config.yaml\`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
