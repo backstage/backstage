@@ -71,7 +71,7 @@ export const TechDocsPageHeader = ({
       />
       {owner ? (
         <HeaderLabel
-          label="Site Owner"
+          label="Owner"
           value={
             ownerEntity ? (
               <EntityRefLink
