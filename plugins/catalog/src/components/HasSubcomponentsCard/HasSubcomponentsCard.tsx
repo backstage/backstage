@@ -75,7 +75,7 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
-          <Typography variant="h6">
+          <Typography variant="body1">
             No subcomponent is part of this component.
           </Typography>
           <Typography variant="body2">

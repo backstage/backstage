@@ -72,7 +72,7 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
-          <Typography variant="h6">
+          <Typography variant="body1">
             No system is part of this domain.
           </Typography>
           <Typography variant="body2">
