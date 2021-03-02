@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { wrapInTestApp } from '@backstage/test-utils';
-import { render } from '@testing-library/react';
 import * as React from 'react';
+import { Entity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry, TableFilter } from '@backstage/core';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { Chip } from '@material-ui/core';
+import { render } from '@testing-library/react';
 import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerTable } from './ApiExplorerTable';
+import { CustomizableTableProps, EntityRow } from './defaults';
 
 const entities: Entity[] = [
   {
@@ -77,5 +79,61 @@ describe('ApiCatalogTable component', () => {
     expect(rendered.getByText(/api1/)).toBeInTheDocument();
     expect(rendered.getByText(/api2/)).toBeInTheDocument();
     expect(rendered.getByText(/api3/)).toBeInTheDocument();
+  });
+
+  it('should display the specified table columns', async () => {
+    const entitiesWithCustomMetadata: Entity[] = entities.map((e, i) => {
+      const { metadata } = e;
+      const customMetadata = {
+        ...metadata,
+        foo: `foo${i}`,
+        bar: ['baz', 'qux', 'quux'],
+      };
+      return { ...e, metadata: customMetadata };
+    });
+    const fooColumn = { title: 'Foo', field: 'entity.metadata.foo' };
+    const barColumn = {
+      title: 'Bar',
+      field: 'entity.metadata.bar',
+      render: ({ entity }: EntityRow) => (
+        <>
+          {entity.metadata.bar &&
+            (entity.metadata.bar as string[]).map(t => (
+              <Chip key={t} label={t} size="small" variant="outlined" />
+          ))}
+        </>
+      ),
+    };
+    const barFilter = { column: 'Bar', type: 'select' } as TableFilter;
+    const columns = [
+      'Name',
+      'Description',
+      'Owner',
+      'Type',
+      fooColumn,
+      barColumn,
+    ];
+    const filters = [
+      'Type',
+      'Lifecycle',
+      barFilter,
+    ] as CustomizableTableProps['filters'];
+
+    const rendered = render(
+      wrapInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <ApiExplorerTable
+            entities={entitiesWithCustomMetadata}
+            loading={false}
+            columns={columns}
+            filters={filters}
+          />
+        </ApiProvider>,
+      ),
+    );
+
+    expect(rendered.getByText('Name')).toBeInTheDocument();
+    expect(rendered.getByText('Foo')).toBeInTheDocument();
+    expect(rendered.getByText('Bar')).toBeInTheDocument();
   });
 });

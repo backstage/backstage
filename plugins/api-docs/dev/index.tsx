@@ -29,6 +29,7 @@ import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
+import { customColumns, customFilters } from './customizations';
 
 createDevApp()
   .registerApi({
@@ -111,6 +112,12 @@ createDevApp()
           </EntityProvider>
         </Content>
       </Page>
+    ),
+  })
+  .addPage({
+    path: '/api-docs/custom',
+    element: (
+      <ApiExplorerPage columns={customColumns} filters={customFilters} />
     ),
   })
   .render();

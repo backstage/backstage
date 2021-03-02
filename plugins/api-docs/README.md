@@ -219,6 +219,36 @@ security:
     - [read_pets, write_pets]
 ```
 
+### Customizing table columns and filters
+
+It's possible to specify which columns and filters you want this plugin to
+display. You can do so by declaring the columns and/or filters that you want to
+display, and then letting the `ApiExplorerTable` component know about them like
+so:
+
+```tsx
+const domainColumn = { title: 'Domain', field: 'entity.metadata.domain' };
+// We can use plain strings to denote default Backstage columns...
+const customColumns = [
+  'Name',
+  'Description',
+  'Owner',
+  'Lifecycle',
+  'Type',
+  domainColumn,
+];
+// ...and filters
+const customFilters = [
+  'Owner',
+  'Type',
+  'Lifecycle',
+  { column: 'Domain', type: 'select' } as TableFilter,
+];
+
+// When you're ready to declare the plugin component
+<ApiExplorerPage columns={customColumns} filters={customFilters} />;
+```
+
 ## Links
 
 - [The Backstage homepage](https://backstage.io)

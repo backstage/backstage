@@ -28,9 +28,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerTable } from '../ApiExplorerTable';
+import { CustomizableTableProps } from "../ApiExplorerTable/defaults";
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
-export const ApiExplorerPage = () => {
+type ContentProps = CustomizableTableProps;
+
+export const ApiExplorerPage = (contentProps: ContentProps) => {
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: catalogResponse } = useAsync(() => {
@@ -54,6 +57,7 @@ export const ApiExplorerPage = () => {
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <ApiExplorerTable
+          {...contentProps}
           entities={catalogResponse?.items ?? []}
           loading={loading}
           error={error}
