@@ -132,12 +132,13 @@ describe('SplunkOnCallCard', () => {
       ),
     ).toBeInTheDocument();
   });
+
   it('opens the dialog when trigger button is clicked', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
       .mockImplementationOnce(async () => [MOCKED_USER]);
 
-    const { getByText, queryByTestId, getByTestId, getByRole } = render(
+    const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <SplunkOnCallCard entity={entity} />
@@ -146,7 +147,7 @@ describe('SplunkOnCallCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Create Incident')).toBeInTheDocument();
-    const triggerButton = getByTestId('trigger-button');
+    const triggerButton = getByText('Create Incident');
     await act(async () => {
       fireEvent.click(triggerButton);
     });

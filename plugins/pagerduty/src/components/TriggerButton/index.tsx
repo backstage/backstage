@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, PropsWithChildren } from 'react';
-import { createGlobalState } from 'react-use';
+import React, { useCallback, PropsWithChildren, useState } from 'react';
 import { makeStyles, Button } from '@material-ui/core';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
 
+import { usePagerdutyEntity } from '../../hooks';
 import { TriggerDialog } from '../TriggerDialog';
-import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
 
-export interface TriggerButtonProps {
-  design: 'link' | 'button';
-  onIncidentCreated?: () => void;
-}
+export type TriggerButtonProps = {};
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   buttonStyle: {
@@ -35,31 +30,14 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
       backgroundColor: theme.palette.error.dark,
     },
   },
-  triggerAlarm: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    fontSize: '0.7rem',
-    textTransform: 'uppercase',
-    fontWeight: 600,
-    letterSpacing: 1.2,
-    lineHeight: 1.5,
-    '&:hover, &:focus, &.focus': {
-      backgroundColor: 'transparent',
-      textDecoration: 'none',
-    },
-  },
 }));
 
-export const useShowDialog = createGlobalState(false);
-
 export function TriggerButton({
-  design,
-  onIncidentCreated,
   children,
 }: PropsWithChildren<TriggerButtonProps>) {
-  const { buttonStyle, triggerAlarm } = useStyles();
-  const { entity } = useEntity();
-  const [dialogShown = false, setDialogShown] = useShowDialog();
+  const { buttonStyle } = useStyles();
+  const { integrationKey } = usePagerdutyEntity();
+  const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
     setDialogShown(true);
@@ -68,27 +46,22 @@ export function TriggerButton({
     setDialogShown(false);
   }, [setDialogShown]);
 
-  const integrationKey = entity.metadata.annotations![
-    PAGERDUTY_INTEGRATION_KEY
-  ];
-
+  const disabled = !integrationKey;
   return (
     <>
       <Button
-        data-testid="trigger-button"
-        {...(design === 'link' && { color: 'secondary' })}
         onClick={showDialog}
-        className={design === 'link' ? triggerAlarm : buttonStyle}
+        variant="contained"
+        className={disabled ? '' : buttonStyle}
+        disabled={disabled}
       >
-        {children ?? 'Create Incident'}
+        {integrationKey
+          ? children ?? 'Create Incident'
+          : 'Missing integration key'}
       </Button>
-      <TriggerDialog
-        showDialog={dialogShown}
-        handleDialog={hideDialog}
-        name={entity.metadata.name}
-        integrationKey={integrationKey}
-        onIncidentCreated={onIncidentCreated}
-      />
+      {integrationKey && (
+        <TriggerDialog showDialog={dialogShown} handleDialog={hideDialog} />
+      )}
     </>
   );
 }

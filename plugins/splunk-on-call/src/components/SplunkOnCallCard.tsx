@@ -21,11 +21,10 @@ import {
   MissingAnnotationEmptyState,
   configApiRef,
   EmptyState,
+  IconLinkVerticalProps,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import {
-  Button,
-  makeStyles,
   Card,
   CardHeader,
   Divider,
@@ -41,22 +40,6 @@ import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { TriggerDialog } from './TriggerDialog';
 import { MissingApiKeyOrApiIdError } from './Errors/MissingApiKeyOrApiIdError';
 import { User } from './types';
-
-const useStyles = makeStyles({
-  triggerAlarm: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    fontSize: '0.7rem',
-    textTransform: 'uppercase',
-    fontWeight: 600,
-    letterSpacing: 1.2,
-    lineHeight: 1.5,
-    '&:hover, &:focus, &.focus': {
-      backgroundColor: 'transparent',
-      textDecoration: 'none',
-    },
-  },
-});
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
 
@@ -82,7 +65,6 @@ type Props = {
 };
 
 export const SplunkOnCallCard = ({ entity }: Props) => {
-  const classes = useStyles();
   const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -159,19 +141,11 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     );
   };
 
-  const triggerLink = {
+  const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
-    action: (
-      <Button
-        data-testid="trigger-button"
-        color="secondary"
-        onClick={handleDialog}
-        className={classes.triggerAlarm}
-      >
-        Create Incident
-      </Button>
-    ),
-    icon: <AlarmAddIcon onClick={handleDialog} />,
+    onClick: handleDialog,
+    color: 'secondary',
+    icon: <AlarmAddIcon />,
   };
 
   return (

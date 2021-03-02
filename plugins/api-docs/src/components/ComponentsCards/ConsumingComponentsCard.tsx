@@ -26,6 +26,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 import {
   EntityTable,
   useEntity,
@@ -70,11 +71,15 @@ export const ConsumingComponentsCard = ({ variant = 'gridItem' }: Props) => {
       title="Consumers"
       variant={variant}
       emptyContent={
-        <div>
-          No component consumes this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
-            Learn how to consume APIs.
-          </Link>
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            No component consumes this API.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
+              Learn how to change this.
+            </Link>
+          </Typography>
         </div>
       }
       columns={EntityTable.componentEntityColumns}

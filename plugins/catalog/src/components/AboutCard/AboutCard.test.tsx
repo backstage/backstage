@@ -19,12 +19,12 @@ import {
   SOURCE_LOCATION_ANNOTATION,
   EDIT_URL_ANNOTATION,
 } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
+import { render, act, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { AboutCard } from './AboutCard';
 
 describe('<AboutCard /> GitHub', () => {
-  it('renders info and "view source" link', () => {
+  it('renders info and "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -41,7 +41,7 @@ describe('<AboutCard /> GitHub', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(
+    const { getByText, getByTitle } = render(
       <EntityProvider entity={entity}>
         <AboutCard />
       </EntityProvider>,
@@ -51,15 +51,21 @@ describe('<AboutCard /> GitHub', () => {
       'href',
       'https://github.com/backstage/backstage/blob/master/software.yaml',
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://github.com/backstage/backstage/edit/master/software.yaml',
+
+    const editButton = getByTitle('Edit Metadata');
+    window.open = jest.fn();
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+    expect(window.open).toHaveBeenCalledWith(
+      `https://github.com/backstage/backstage/edit/master/software.yaml`,
+      '_blank',
     );
   });
 });
 
 describe('<AboutCard /> GitLab', () => {
-  it('renders info and "view source" link', () => {
+  it('renders info and "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -76,25 +82,32 @@ describe('<AboutCard /> GitLab', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(
+    const { getByText, getByTitle } = render(
       <EntityProvider entity={entity}>
         <AboutCard />
       </EntityProvider>,
     );
+
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
       'https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://gitlab.com/backstage/backstage/-/edit/master/software.yaml',
+
+    const editButton = getByTitle('Edit Metadata');
+    window.open = jest.fn();
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+    expect(window.open).toHaveBeenCalledWith(
+      `https://gitlab.com/backstage/backstage/-/edit/master/software.yaml`,
+      '_blank',
     );
   });
 });
 
 describe('<AboutCard /> BitBucket', () => {
-  it('renders info and "view source" link', () => {
+  it('renders info and "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -111,7 +124,7 @@ describe('<AboutCard /> BitBucket', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(
+    const { getByText, getByTitle } = render(
       <EntityProvider entity={entity}>
         <AboutCard />
       </EntityProvider>,
@@ -121,15 +134,21 @@ describe('<AboutCard /> BitBucket', () => {
       'href',
       'https://bitbucket.org/backstage/backstage/src/master/software.yaml',
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
+
+    const editButton = getByTitle('Edit Metadata');
+    window.open = jest.fn();
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+    expect(window.open).toHaveBeenCalledWith(
+      `https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master`,
+      '_blank',
     );
   });
 });
 
 describe('<AboutCard /> custom links', () => {
-  it('renders info and "view source" link', () => {
+  it('renders info and "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
@@ -149,7 +168,7 @@ describe('<AboutCard /> custom links', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(
+    const { getByText, getByTitle } = render(
       <EntityProvider entity={entity}>
         <AboutCard />
       </EntityProvider>,
@@ -159,9 +178,12 @@ describe('<AboutCard /> custom links', () => {
       'href',
       'https://another.place/backstage.git',
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://another.place',
-    );
+
+    const editButton = getByTitle('Edit Metadata');
+    window.open = jest.fn();
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+    expect(window.open).toHaveBeenCalledWith(`https://another.place`, '_blank');
   });
 });

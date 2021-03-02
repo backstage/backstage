@@ -501,9 +501,9 @@ Usage: backstage-cli config:schema [options]
 Print configuration schema
 
 Options:
-  --package &lt;name&gt;  Only output config schema that applies to the given package
-  -h, --help        display help for command
-
+  --package &lt;name&gt;   Only output config schema that applies to the given package
+  --format &lt;format&gt;  Format to print the schema in, either json or yaml [yaml]
+  -h, --help         display help for command
 ```
 
 ## versions:bump

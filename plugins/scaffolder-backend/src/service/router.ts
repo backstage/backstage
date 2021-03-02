@@ -38,16 +38,15 @@ import {
   StorageTaskBroker,
   TaskWorker,
 } from '../scaffolder/tasks';
-import {
-  TemplateActionRegistry,
-  templateEntityToSpec,
-} from '../scaffolder/tasks/TemplateConverter';
-import { registerLegacyActions } from '../scaffolder/stages/legacy';
-import { getWorkingDirectory } from './helpers';
+import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
+import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
+import { createLegacyActions } from '../scaffolder/stages/legacy';
+import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import {
   InputError,
   NotFoundError,
   PluginDatabaseManager,
+  UrlReader,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -55,6 +54,9 @@ import {
   TemplateEntityV1beta2,
   Entity,
 } from '@backstage/catalog-model';
+import { ScmIntegrations } from '@backstage/integration';
+import { TemplateAction } from '../scaffolder/actions';
+import { createBuiltinActions } from '../scaffolder/actions/builtin/createBuiltinActions';
 
 export interface RouterOptions {
   preparers: PreparerBuilder;
@@ -63,9 +65,11 @@ export interface RouterOptions {
 
   logger: Logger;
   config: Config;
+  reader: UrlReader;
   dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
+  actions?: TemplateAction<any>[];
 }
 
 function isAlpha1Template(
@@ -95,15 +99,18 @@ export async function createRouter(
     publishers,
     logger: parentLogger,
     config,
+    reader,
     dockerClient,
     database,
     catalogClient,
+    actions,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
   const jobProcessor = await JobProcessor.fromConfig({ config, logger });
   const entityClient = new CatalogEntityClient(catalogClient);
+  const integrations = ScmIntegrations.fromConfig(config);
 
   const databaseTaskStore = await DatabaseTaskStore.create(
     await database.getClient(),
@@ -117,13 +124,25 @@ export async function createRouter(
     workingDirectory,
   });
 
-  registerLegacyActions(actionRegistry, {
-    dockerClient,
-    preparers,
-    publishers,
-    templaters,
-    catalogClient,
-  });
+  const actionsToRegister = Array.isArray(actions)
+    ? actions
+    : [
+        ...createLegacyActions({
+          dockerClient,
+          preparers,
+          publishers,
+          templaters,
+        }),
+        ...createBuiltinActions({
+          dockerClient,
+          integrations,
+          catalogClient,
+          templaters,
+          reader,
+        }),
+      ];
+
+  actionsToRegister.forEach(action => actionRegistry.register(action));
 
   worker.start();
 
@@ -330,12 +349,7 @@ export async function createRouter(
     )
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
-      const values: TemplaterValues = {
-        ...req.body.values,
-        destination: {
-          git: parseGitUrl(req.body.values.storePath),
-        },
-      };
+      const values: TemplaterValues = req.body.values;
       const template = await entityClient.findTemplate(templateName);
 
       let taskSpec;
@@ -358,7 +372,10 @@ export async function createRouter(
           }
         }
 
+        const baseUrl = getEntityBaseUrl(template);
+
         taskSpec = {
+          baseUrl,
           values,
           steps: template.spec.steps.map((step, index) => ({
             ...step,

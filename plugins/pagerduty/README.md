@@ -39,7 +39,7 @@ import {
 {
   isPagerDutyAvailable(entity) && (
     <Grid item md={6}>
-      <PagerDutyCard entity={entity} />
+      <EntityPagerDutyCard />
     </Grid>
   );
 }

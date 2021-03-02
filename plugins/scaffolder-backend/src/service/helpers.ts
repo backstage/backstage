@@ -18,6 +18,11 @@ import os from 'os';
 import fs from 'fs-extra';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import {
+  Entity,
+  LOCATION_ANNOTATION,
+  SOURCE_LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 export async function getWorkingDirectory(
   config: Config,
@@ -41,4 +46,35 @@ export async function getWorkingDirectory(
     throw err;
   }
   return workingDirectory;
+}
+
+/**
+ * Gets the base URL of the entity location that points to the source location
+ * of the entity description within a repo. If there is not source location
+ * or if it has an invalid type, undefined will be returned instead.
+ *
+ * For file locations this will return a `file://` URL.
+ */
+export function getEntityBaseUrl(entity: Entity): string | undefined {
+  let location = entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
+  if (!location) {
+    location = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+  }
+  if (!location) {
+    return undefined;
+  }
+
+  const [type, url] = location.split(/:(.+)/);
+  if (!url) {
+    return undefined;
+  }
+
+  if (type === 'url') {
+    return url;
+  } else if (type === 'file') {
+    return `file://${url}`;
+  }
+  // Only url and file location are handled, as we otherwise don't know if
+  // what the url is pointing to makes sense to use as a baseUrl
+  return undefined;
 }

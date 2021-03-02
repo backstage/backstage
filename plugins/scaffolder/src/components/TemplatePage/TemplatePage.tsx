@@ -33,6 +33,8 @@ import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
+import { RepoUrlPicker } from '../fields';
+import { JsonObject } from '@backstage/config';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -48,12 +50,69 @@ const useTemplateParameterSchema = (templateName: string) => {
   return { schema: value, loading, error };
 };
 
+function isObject(obj: unknown): obj is JsonObject {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+}
+
+export const createValidator = (rootSchema: JsonObject) => {
+  function validate(
+    schema: JsonObject,
+    formData: JsonObject,
+    errors: FormValidation,
+  ) {
+    const schemaProps = schema.properties;
+    if (!isObject(schemaProps)) {
+      return;
+    }
+
+    for (const [key, propData] of Object.entries(formData)) {
+      const propErrors = errors[key];
+
+      if (isObject(propData)) {
+        const propSchemaProps = schemaProps[key];
+        if (isObject(propSchemaProps)) {
+          validate(
+            propSchemaProps,
+            propData as JsonObject,
+            propErrors as FormValidation,
+          );
+        }
+      } else {
+        const propSchema = schemaProps[key];
+        if (
+          isObject(propSchema) &&
+          propSchema['ui:field'] === 'RepoUrlPicker'
+        ) {
+          try {
+            const { host, searchParams } = new URL(`https://${propData}`);
+            if (
+              !host ||
+              !searchParams.get('owner') ||
+              !searchParams.get('repo')
+            ) {
+              propErrors.addError('Incomplete repository location provided');
+            }
+          } catch {
+            propErrors.addError('Unable to parse the Repository URL');
+          }
+        }
+      }
+    }
+  }
+
+  return (formData: JsonObject, errors: FormValidation) => {
+    validate(rootSchema, formData, errors);
+    return errors;
+  };
+};
+
 const storePathValidator = (
   formData: { storePath?: string },
   errors: FormValidation,
 ) => {
   const { storePath } = formData;
   if (!storePath) {
+    errors.storePath.addError('Store path is required and not present');
     return errors;
   }
 
@@ -131,19 +190,24 @@ export const TemplatePage = () => {
           <InfoCard title={schema.title} noPadding>
             <MultistepJsonForm
               formData={formState}
+              fields={{ RepoUrlPicker }}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
               steps={schema.steps.map(step => {
-                // TODO: Using this workaround to keep storePath validation, but we should replace
-                //       it with a custom store path selection widget
+                // TODO: Can delete this function when the migration from v1 to v2 beta is completed
+                // And just have the default validator for all fields.
                 if ((step.schema as any)?.properties?.storePath) {
                   return {
                     ...step,
                     validate: (a, b) => storePathValidator(a, b),
                   };
                 }
-                return step;
+
+                return {
+                  ...step,
+                  validate: createValidator(step.schema),
+                };
               })}
             />
           </InfoCard>

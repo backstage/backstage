@@ -74,7 +74,7 @@ describe('<ProvidedApisCard />', () => {
     );
 
     expect(getByText(/Provided APIs/i)).toBeInTheDocument();
-    expect(getByText(/No component provides this API/i)).toBeInTheDocument();
+    expect(getByText(/does not provide any APIs/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {

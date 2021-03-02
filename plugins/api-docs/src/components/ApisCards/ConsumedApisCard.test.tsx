@@ -74,7 +74,7 @@ describe('<ConsumedApisCard />', () => {
     );
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
-    expect(getByText(/No Component consumes this API/i)).toBeInTheDocument();
+    expect(getByText(/does not consume any APIs/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {

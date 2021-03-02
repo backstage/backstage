@@ -522,49 +522,90 @@ consumed by the component, e.g. `artist-api`. This field is optional.
 
 ## Kind: Template
 
-Describes the following entity kind:
+The following describes the following entity kind:
 
-| Field        | Value                   |
-| ------------ | ----------------------- |
-| `apiVersion` | `backstage.io/v1alpha1` |
-| `kind`       | `Template`              |
+| Field        | Value                  |
+| ------------ | ---------------------- |
+| `apiVersion` | `backstage.io/v1beta2` |
+| `kind`       | `Template`             |
 
-A Template describes a skeleton for use with the Scaffolder. It is used for
-describing what templating library is supported, and also for documenting the
-variables that the template requires using
-[JSON Forms Schema](https://jsonforms.io/).
+If you're looking for docs on `v1alpha1` you can find them
+[here](../software-templates/legacy.md)
+
+A template definition describes both the parameters that are rendered in the
+frontend part of the scaffolding wizard, and the steps that are executed when
+scaffolding that component.
 
 Descriptor files for this kind may look as follows.
 
 ```yaml
-apiVersion: backstage.io/v1alpha1
+apiVersion: backstage.io/v1beta2
 kind: Template
+# some metadata about the template itself
 metadata:
-  name: react-ssr-template
-  title: React SSR Template
-  description:
-    Next.js application skeleton for creating isomorphic web applications.
-  tags:
-    - recommended
-    - react
+  name: v1beta2-demo
+  title: Test Action template
+  description: scaffolder v1beta2 template demo
 spec:
-  owner: web@example.com
-  templater: cookiecutter
-  type: website
-  path: '.'
-  schema:
-    required:
-      - component_id
-      - description
-    properties:
-      component_id:
-        title: Name
-        type: string
-        description: Unique name of the component
-      description:
-        title: Description
-        type: string
-        description: Description of the component
+  owner: backstage/techdocs-core
+  type: service
+
+  # these are the steps which are rendered in the frontend with the form input
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  # here's the steps that are executed in series in the scaffolder backend
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      input:
+        url: ./template
+        values:
+          name: '{{ parameters.name }}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: 'This is {{ parameters.name }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -572,7 +613,7 @@ shape, this kind has the following structure.
 
 ### `apiVersion` and `kind` [required]
 
-Exactly equal to `backstage.io/v1alpha1` and `Template`, respectively.
+Exactly equal to `backstage.io/v1beta2` and `Template`, respectively.
 
 ### `metadata.title` [required]
 
@@ -605,31 +646,15 @@ The current set of well-known and common values for this field is:
 - `website` - a website
 - `library` - a software library, such as an npm module or a Java library
 
-### `spec.templater` [required]
+### `spec.parameters` [required]
 
-The templating library that is supported by the template skeleton as a string,
-e.g `cookiecutter`.
+You can find out more about the `parameters` key
+[here](../software-templates/writing-templates.md)
 
-Different skeletons will use different templating syntax, so it's common that
-the template will need to be run with a particular piece of software.
+### `spec.steps` [optional]
 
-This key will be used to identify the correct templater which is registered into
-the `TemplatersBuilder`.
-
-The values which are available by default are:
-
-- `cookiecutter` - [cookiecutter](https://github.com/cookiecutter/cookiecutter).
-
-### `spec.path` [optional]
-
-The string location where the templater should be run if it is not on the same
-level as the `template.yaml` definition, e.g. `./cookiecutter/skeleton`.
-
-This will set the `cwd` when running the templater to the folder path that you
-specify relative to the `template.yaml` definition.
-
-This is also particularly useful when you have multiple template definitions in
-the same repository but only a single `template.yaml` registered in backstage.
+You can find out more about the `steps` key
+[here](../software-templates/writing-templates.md)
 
 ## Kind: API
 

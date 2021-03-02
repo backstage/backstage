@@ -176,6 +176,10 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only output config schema that applies to the given package',
     )
+    .option(
+      '--format <format>',
+      'Format to print the schema in, either json or yaml [yaml]',
+    )
     .description('Print configuration schema')
     .action(lazy(() => import('./config/schema').then(m => m.default)));
 

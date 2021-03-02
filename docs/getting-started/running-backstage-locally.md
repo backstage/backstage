@@ -4,6 +4,11 @@ title: Running Backstage Locally
 description: Documentation on How to run Backstage Locally
 ---
 
+To develop a plugin or contribute to the Backstage project, we recommend cloning
+the Backstage repository and running locally in development mode. If you are not
+trying to contribute, follow the instructions to
+[Create an App](./create-an-app.md) instead.
+
 ## Prerequisites
 
 - Node.js

@@ -12,9 +12,8 @@
     ],
     "Getting Started": [
       "getting-started/index",
-      "getting-started/running-backstage-locally",
-      "getting-started/contributors",
       "getting-started/create-an-app",
+      "getting-started/running-backstage-locally",
       {
         "type": "subcategory",
         "label": "App configuration",
@@ -32,7 +31,8 @@
           "getting-started/deployment-helm",
           "getting-started/deployment-other"
         ]
-      }
+      },
+      "getting-started/contributors"
     ],
     "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
@@ -69,10 +69,10 @@
           "features/software-templates/software-templates-index",
           "features/software-templates/installation",
           "features/software-templates/adding-templates",
-          "features/software-templates/extending/extending-index",
-          "features/software-templates/extending/extending-templater",
-          "features/software-templates/extending/extending-publisher",
-          "features/software-templates/extending/extending-preparer"
+          "features/software-templates/writing-templates",
+          "features/software-templates/builtin-actions",
+          "features/software-templates/writing-custom-actions",
+          "features/software-templates/template-legacy"
         ]
       },
       {
@@ -132,7 +132,8 @@
         "ids": [
           "plugins/proxying",
           "plugins/backend-plugin",
-          "plugins/call-existing-api"
+          "plugins/call-existing-api",
+          "plugins/github-apps"
         ]
       },
       {
@@ -165,7 +166,6 @@
       "auth/glossary",
       "auth/auth-backend-classes"
     ],
-
     "Designing for Backstage": [
       "dls/design",
       "dls/contributing-to-storybook",
