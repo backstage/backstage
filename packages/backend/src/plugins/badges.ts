@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createRouter, badges } from '@backstage/plugin-badges-backend';
+import {
+  createRouter,
+  createDefaultBadges,
+} from '@backstage/plugin-badges-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
@@ -22,5 +25,10 @@ export default async function createPlugin({
   config,
   discovery,
 }: PluginEnvironment) {
-  return await createRouter({ logger, config, discovery, badges });
+  return await createRouter({
+    logger,
+    config,
+    discovery,
+    badges: createDefaultBadges(),
+  });
 }

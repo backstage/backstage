@@ -48,8 +48,6 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist",
-    "config.d.ts"
-  ],
-  "configSchema": "config.d.ts"
+    "dist"
+  ]
 }

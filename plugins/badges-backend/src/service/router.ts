@@ -25,7 +25,7 @@ import {
 import { Entity } from '@backstage/catalog-model';
 import { Config, JsonObject } from '@backstage/config';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
-import { Badge, BadgeConfig, BadgeStyle, BadgeStyles } from '../types';
+import { Badge, BadgeStyle, BADGE_STYLES } from '../types';
 
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
@@ -42,22 +42,9 @@ export async function createRouter(
   const logger = options.logger.child({ plugin: 'badges' });
   const title = options.config.getString('app.title') || 'Backstage';
   const catalogUrl = `${options.config.getString('app.baseUrl')}/catalog`;
-  const badgesConfig = (options.config.getOptional('badges') ??
-    {}) as BadgeConfig;
-
-  for (const badge of options.badges || []) {
-    if (!badge.id) {
-      logger.warning(`badge without "id": ${JSON.stringify(badge, null, 2)}`);
-    } else if (!badgesConfig[badge.id]) {
-      badgesConfig[badge.id] = badge;
-      logger.info(`register builtin badge: ${badge.id}`);
-    } else {
-      logger.info(`builtin badge replaced from configuration: ${badge.id}`);
-    }
-  }
-
   const badgeBuilder =
-    options.badgeBuilder || new DefaultBadgeBuilder(logger, badgesConfig);
+    options.badgeBuilder ||
+    new DefaultBadgeBuilder(logger, options.badges || []);
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const entityUri = getEntityUri(req.params);
@@ -122,7 +109,7 @@ export async function createRouter(
       format = 'application/json';
     }
 
-    if (BadgeStyles.includes(req.query.style as BadgeStyle)) {
+    if (BADGE_STYLES.includes(req.query.style as BadgeStyle)) {
       badge.style = req.query.style as BadgeStyle;
     }
 

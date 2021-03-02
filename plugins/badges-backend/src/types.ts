@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export const BadgeStyles = [
+export const BADGE_STYLES = [
   'plastic',
   'flat',
   'flat-square',
   'for-the-badge',
   'social',
 ] as const;
-export type BadgeStyle = typeof BadgeStyles[number];
+export type BadgeStyle = typeof BADGE_STYLES[number];
 
 export interface Badge {
   /** Unique name for the badge. */

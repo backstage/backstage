@@ -16,7 +16,7 @@
 
 import { Badge } from './types';
 
-export const badges: Badge[] = [
+export const createDefaultBadges = (): Badge[] => [
   {
     id: 'pingback',
     kind: 'entity',

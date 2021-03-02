@@ -17,29 +17,31 @@
 import { Logger } from 'winston';
 import { makeBadge } from 'badge-maker';
 import { BadgeBuilder, BadgeOptions } from './types';
-import { Badge, BadgeConfig, BadgeStyle, BadgeStyles } from '../../types';
+import { Badge, BadgeConfig, BadgeStyle, BADGE_STYLES } from '../../types';
 import { interpolate } from '../../utils';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
-  constructor(
-    private readonly logger: Logger,
-    private readonly config: BadgeConfig,
-  ) {
-    for (const [badgeId, badge] of Object.entries(config)) {
-      if (badge) {
-        badge.id = badgeId;
+  private readonly badges: BadgeConfig = {};
+
+  constructor(private readonly logger: Logger, initBadges: Badge[]) {
+    for (const badge of initBadges) {
+      if (!badge.id) {
+        logger.warning(`badge without "id": ${JSON.stringify(badge, null, 2)}`);
+      } else {
+        this.badges[badge.id] = badge;
+        logger.info(`register ${badge.kind || 'entity'} badge: "${badge.id}"`);
       }
     }
   }
 
   public async getAllBadgeConfigs(): Promise<Badge[]> {
-    return Object.values(this.config);
+    return Object.values(this.badges);
   }
 
   public async getBadgeConfig(badgeId: string): Promise<Badge> {
     return (
-      this.config[badgeId] ||
-      this.config.default ||
+      this.badges[badgeId] ||
+      this.badges.default ||
       ({
         label: 'Unknown badge ID',
         message: badgeId,
@@ -60,7 +62,7 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
       params.labelColor = badge.labelColor;
     }
 
-    if (BadgeStyles.includes(badge.style as BadgeStyle)) {
+    if (BADGE_STYLES.includes(badge.style as BadgeStyle)) {
       params.style = badge.style as BadgeStyle;
     }
 
