@@ -16,6 +16,7 @@
 jest.mock('./helpers');
 
 import os from 'os';
+import { resolve as resolvePath } from 'path';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
@@ -89,7 +90,10 @@ describe('fetch:cookiecutter', () => {
       integrations,
       baseUrl: mockContext.baseUrl,
       fetchUrl: mockContext.input.url,
-      outputPath: `${mockContext.workspacePath}/template/{{cookiecutter and 'contents'}}`,
+      outputPath: resolvePath(
+        mockContext.workspacePath,
+        `template/{{cookiecutter and 'contents'}}`,
+      ),
     });
   });
 
