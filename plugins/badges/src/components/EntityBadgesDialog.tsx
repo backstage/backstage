@@ -40,6 +40,9 @@ type Props = {
 };
 
 const useStyles = makeStyles({
+  content: {
+    overflowX: 'hidden',
+  },
   codeBlock: {
     '& code': {
       whiteSpace: 'pre-wrap',
@@ -86,7 +89,7 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle id="badges-dialog-title">Entity Badges</DialogTitle>
 
-      <DialogContent>
+      <DialogContent className={classes.content}>
         {loading ? <Progress /> : null}
 
         {error ? (
