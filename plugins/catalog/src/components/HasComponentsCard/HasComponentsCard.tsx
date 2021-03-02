@@ -75,7 +75,7 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
-          <Typography variant="h6">
+          <Typography variant="body1">
             No component is part of this system.
           </Typography>
           <Typography variant="body2">
