@@ -11,7 +11,6 @@ Sometimes, Kubernetes is not showing up on service entities, we should test your
 k8s cluster are already connected to Backstage or not.
 
 ```curl
-# curl request
 curl --location --request POST '{{backstage-backend-url}}:{{backstage-backend-port}}/api/kubernetes/services/:service-entity-name' \
 --header 'Content-Type: application/json' \
 --data-raw '{
