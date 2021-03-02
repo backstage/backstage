@@ -43,12 +43,13 @@ export type DbTaskEventRow = {
 };
 
 export type TaskSpec = {
+  baseUrl?: string;
   values: JsonObject;
   steps: Array<{
     id: string;
     name: string;
     action: string;
-    parameters?: JsonObject;
+    input?: JsonObject;
   }>;
   output: { [name: string]: string };
 };
@@ -90,6 +91,7 @@ export type TaskStoreGetEventsOptions = {
   taskId: string;
   after?: number | undefined;
 };
+
 export interface TaskStore {
   createTask(task: TaskSpec): Promise<{ taskId: string }>;
   getTask(taskId: string): Promise<DbTaskRow>;

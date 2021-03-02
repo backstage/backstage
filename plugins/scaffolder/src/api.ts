@@ -20,8 +20,10 @@ import {
   createApiRef,
   DiscoveryApi,
   Observable,
+  ConfigApi,
   IdentityApi,
 } from '@backstage/core';
+import { ScmIntegrations } from '@backstage/integration';
 import ObservableImpl from 'zen-observable';
 import { ScaffolderTask, Status } from './types';
 
@@ -66,6 +68,10 @@ export interface ScaffolderApi {
 
   getTask(taskId: string): Promise<ScaffolderTask>;
 
+  getIntegrationsList(options: {
+    allowedHosts: string[];
+  }): Promise<{ type: string; title: string; host: string }[]>;
+
   streamLogs({
     taskId,
     after,
@@ -77,13 +83,31 @@ export interface ScaffolderApi {
 export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.configApi = options.configApi;
+  }
+
+  async getIntegrationsList(options: { allowedHosts: string[] }) {
+    const integrations = ScmIntegrations.fromConfig(
+      this.configApi.getConfig('integrations'),
+    );
+
+    return [
+      ...integrations.azure.list(),
+      ...integrations.bitbucket.list(),
+      ...integrations.github.list(),
+      ...integrations.gitlab.list(),
+    ]
+      .map(c => ({ type: c.type, title: c.title, host: c.config.host }))
+      .filter(c => options.allowedHosts.includes(c.host));
   }
 
   async getTemplateParameterSchema(

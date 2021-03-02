@@ -9,3 +9,4 @@ spec:
     - ./docs-template/template.yaml
     - ./react-ssr-template/template.yaml
     - ./springboot-grpc-template/template.yaml
+    - ./v1beta2-demo/template.yaml

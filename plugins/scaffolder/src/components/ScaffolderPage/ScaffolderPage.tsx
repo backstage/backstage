@@ -30,7 +30,7 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import { useStarredEntities } from '@backstage/plugin-catalog-react';
-import { Button, Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Button, Link, makeStyles, Typography } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
 import { TemplateCard, TemplateCardProps } from '../TemplateCard';
@@ -45,6 +45,12 @@ const useStyles = makeStyles(theme => ({
     gridTemplateAreas: "'filters' 'grid'",
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
+  },
+  templateGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
+    gridAutoRows: '1fr',
+    gridGap: theme.spacing(2),
   },
 }));
 
@@ -177,23 +183,13 @@ export const ScaffolderPageContents = () => {
                 </Typography>
               )}
 
-            <Grid container>
+            <Box className={styles.templateGrid}>
               {matchingEntities &&
                 matchingEntities?.length > 0 &&
-                matchingEntities.map(template => {
-                  return (
-                    <Grid
-                      key={template.metadata.uid}
-                      item
-                      xs={12}
-                      sm={6}
-                      md={3}
-                    >
-                      <TemplateCard {...getTemplateCardProps(template)} />
-                    </Grid>
-                  );
-                })}
-            </Grid>
+                matchingEntities.map(template => (
+                  <TemplateCard {...getTemplateCardProps(template)} />
+                ))}
+            </Box>
           </div>
         </div>
       </Content>

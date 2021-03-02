@@ -69,10 +69,10 @@
           "features/software-templates/software-templates-index",
           "features/software-templates/installation",
           "features/software-templates/adding-templates",
-          "features/software-templates/extending/extending-index",
-          "features/software-templates/extending/extending-templater",
-          "features/software-templates/extending/extending-publisher",
-          "features/software-templates/extending/extending-preparer"
+          "features/software-templates/writing-templates",
+          "features/software-templates/builtin-actions",
+          "features/software-templates/writing-custom-actions",
+          "features/software-templates/template-legacy"
         ]
       },
       {

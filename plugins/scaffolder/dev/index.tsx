@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { discoveryApiRef, identityApiRef } from '@backstage/core';
+import { configApiRef, discoveryApiRef, identityApiRef } from '@backstage/core';
 import { CatalogClient } from '@backstage/catalog-client';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { ScaffolderPage } from '../src/plugin';
@@ -30,9 +30,13 @@ createDevApp()
   })
   .registerApi({
     api: scaffolderApiRef,
-    deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-    factory: ({ discoveryApi, identityApi }) =>
-      new ScaffolderClient({ discoveryApi, identityApi }),
+    deps: {
+      discoveryApi: discoveryApiRef,
+      identityApi: identityApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, identityApi, configApi }) =>
+      new ScaffolderClient({ discoveryApi, identityApi, configApi }),
   })
   .addPage({
     path: '/create',

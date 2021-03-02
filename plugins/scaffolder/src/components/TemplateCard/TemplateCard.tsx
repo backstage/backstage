@@ -37,9 +37,18 @@ const useStyles = makeStyles(theme => ({
     backgroundPosition: 0,
   },
   description: {
-    height: 175,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    '-webkit-line-clamp': 10,
+    '-webkit-box-orient': 'vertical',
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cardContent: {
+    flexGrow: 1,
   },
 }));
 
@@ -69,12 +78,12 @@ export const TemplateCard = ({
   });
 
   return (
-    <Card>
+    <Card className={classes.card}>
       <div className={classes.header}>
         <Typography variant="subtitle2">{type}</Typography>
         <Typography variant="h6">{title}</Typography>
       </div>
-      <CardContent>
+      <CardContent className={classes.cardContent}>
         {tags?.map(tag => (
           <Chip label={tag} key={tag} />
         ))}

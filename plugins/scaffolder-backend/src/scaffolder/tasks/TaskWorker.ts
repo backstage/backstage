@@ -18,11 +18,13 @@ import { PassThrough } from 'stream';
 import { Logger } from 'winston';
 import * as winston from 'winston';
 import { JsonValue, JsonObject } from '@backstage/config';
+import { validate as validateJsonSchema } from 'jsonschema';
 import { TaskBroker, Task } from './types';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplateActionRegistry } from './TemplateConverter';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import * as handlebars from 'handlebars';
+import { InputError } from '@backstage/backend-common';
 
 type Options = {
   logger: Logger;
@@ -44,10 +46,11 @@ export class TaskWorker {
   }
 
   async runOneTask(task: Task) {
+    let workspacePath: string | undefined = undefined;
     try {
       const { actionRegistry } = this.options;
 
-      const workspacePath = path.join(
+      workspacePath = path.join(
         this.options.workingDirectory,
         await task.getWorkspaceName(),
       );
@@ -95,8 +98,8 @@ export class TaskWorker {
             throw new Error(`Action '${step.action}' does not exist`);
           }
 
-          const parameters = JSON.parse(
-            JSON.stringify(step.parameters),
+          const input = JSON.parse(
+            JSON.stringify(step.input),
             (_key, value) => {
               if (typeof value === 'string') {
                 return handlebars.compile(value, {
@@ -110,17 +113,45 @@ export class TaskWorker {
             },
           );
 
+          if (action.schema?.input) {
+            const validateResult = validateJsonSchema(input, action.schema, {
+              propertyName: 'input',
+            });
+            if (!validateResult.valid) {
+              const errors = validateResult.errors.join(', ');
+              throw new InputError(
+                `Invalid input passed to action ${action.id}, ${errors}`,
+              );
+            }
+          }
+
           const stepOutputs: { [name: string]: JsonValue } = {};
 
+          // Keep track of all tmp dirs that are created by the action so we can remove them after
+          const tmpDirs = new Array<string>();
+
           await action.handler({
+            baseUrl: task.spec.baseUrl,
             logger: taskLogger,
             logStream: stream,
-            parameters,
+            input,
             workspacePath,
+            async createTemporaryDirectory() {
+              const tmpDir = await fs.mkdtemp(
+                `${workspacePath}_step-${step.id}-`,
+              );
+              tmpDirs.push(tmpDir);
+              return tmpDir;
+            },
             output(name: string, value: JsonValue) {
               stepOutputs[name] = value;
             },
           });
+
+          // Remove all temporary directories that were created when executing the action
+          for (const tmpDir of tmpDirs) {
+            await fs.remove(tmpDir);
+          }
 
           templateCtx.steps[step.id] = { output: stepOutputs };
 
@@ -157,6 +188,10 @@ export class TaskWorker {
       await task.complete('failed', {
         error: { name: error.name, message: error.message },
       });
+    } finally {
+      if (workspacePath) {
+        await fs.remove(workspacePath);
+      }
     }
   }
 }
