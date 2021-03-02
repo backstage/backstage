@@ -67,9 +67,9 @@ The curl response should have resources from Kubernetes:
 
 ```
 
-Kubernetes will not be showing anything if annotations not match with
-annotations on k8s service.yaml / deployment.yaml / k8s related yaml. We
-recommend you for using label selector with adding two labels:
+Kubernetes will not be showing anything when catalog info annotations unmatch with
+k8s related yaml label (service.yaml, deployment.yaml, etc). We recommend you for
+using label selector with adding two labels:
 
 `backstage: <selector>` and `backstage.io/kubernetes-id: <entity-service-name>`.
 
