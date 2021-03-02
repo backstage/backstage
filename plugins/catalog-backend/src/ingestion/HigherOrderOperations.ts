@@ -22,7 +22,9 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
+import { Database } from '../database';
 import { durationText } from '../util';
+import { CatalogProcessingEngine } from './CatalogProcessingEngine';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -41,6 +43,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly entitiesCatalog: EntitiesCatalog,
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
+    private readonly catalogProcessingEngine: CatalogProcessingEngine,
+    private readonly database: Database,
     private readonly logger: Logger,
   ) {}
 
@@ -153,6 +157,60 @@ export class HigherOrderOperations implements HigherOrderOperation {
         startTimestamp,
       )}`,
     );
+  }
+
+  async processAllLocations(): Promise<void> {
+    const startTimestamp = process.hrtime();
+    const logger = this.logger.child({
+      component: 'catalog-all-locations-refresh',
+    });
+
+    logger.info('Locations Refresh: Beginning locations refresh');
+
+    const locations = await this.locationsCatalog.locations();
+    logger.info(`Locations Refresh: Visiting ${locations.length} locations`);
+
+    for (const { data: location } of locations) {
+      logger.info(
+        `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
+      );
+      try {
+        await this.processSingleLocation(location, logger);
+        await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
+      } catch (e) {
+        logger.warn(
+          `Locations Refresh: Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
+        );
+        await this.locationsCatalog.logUpdateFailure(location.id, e);
+      }
+    }
+
+    logger.info(
+      `Locations Refresh: Completed locations refresh in ${durationText(
+        startTimestamp,
+      )}`,
+    );
+  }
+
+  // TODO
+  // - [] Rewrite location reader to be catalogprocessor or entity processor
+  // - [] Write locations to refresh_staten with nextTimestamp as now
+  // - [] Implement refresh loop with refresh_state table
+
+  // Performs a full refresh of a single location
+  private async processSingleLocation(
+    location: Location,
+    optionalLogger?: Logger,
+  ) {
+    const logger = optionalLogger || this.logger;
+
+    const { locations } = await this.catalogProcessingEngine.read({
+      type: location.type,
+      target: location.target,
+    });
+    logger.info(`Detected ${locations.length} locations`);
+
+    // STORE HERE.
   }
 
   // Performs a full refresh of a single location

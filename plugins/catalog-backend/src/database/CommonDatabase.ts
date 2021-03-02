@@ -94,6 +94,14 @@ export class CommonDatabase implements Database {
     }
   }
 
+  async addEntityRefreshState(
+    txOpaque: Transaction,
+    request: {
+      entity: Entity;
+      nextRefresh: string; // TODO dateTime/ Date?
+    },
+  ) {}
+
   async addEntities(
     txOpaque: Transaction,
     request: DbEntityRequest[],

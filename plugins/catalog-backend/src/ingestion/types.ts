@@ -70,6 +70,27 @@ export type ReadLocationError = {
   error: Error;
 };
 
+export type CatalogRefreshResult = {
+  entities: CatalogRefreshEntityResult[];
+  locations: CatalogRefreshLocationResult[];
+  errors: CatalogRefreshErrorResult[];
+};
+
+export type CatalogRefreshEntityResult = {
+  location: LocationSpec;
+  entity: Entity;
+  relations: EntityRelationSpec[];
+};
+
+export type CatalogRefreshLocationResult = {
+  location: LocationSpec;
+};
+
+export type CatalogRefreshErrorResult = {
+  location: LocationSpec;
+  error: Error;
+};
+
 //
 // LocationAnalyzer
 //
