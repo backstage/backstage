@@ -73,7 +73,7 @@ export const ConsumedApisCard = ({ variant = 'gridItem' }: Props) => {
       variant={variant}
       emptyContent={
         <div style={{ textAlign: 'center' }}>
-          <Typography variant="h6">
+          <Typography variant="body1">
             This {entity.kind.toLowerCase()} does not consume any APIs.
           </Typography>
           <Typography variant="body2">
