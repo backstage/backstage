@@ -19,6 +19,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardMedia,
   Chip,
   makeStyles,
   Typography,
@@ -31,7 +32,7 @@ import { rootRouteRef } from '../../routes';
 const useStyles = makeStyles(theme => ({
   header: {
     color: theme.palette.common.white,
-    padding: theme.spacing(2, 2, 6),
+    padding: theme.spacing(2, 2, 3),
     backgroundImage: (props: { backgroundImage: string }) =>
       props.backgroundImage,
     backgroundPosition: 0,
@@ -79,15 +80,15 @@ export const TemplateCard = ({
 
   return (
     <Card className={classes.card}>
-      <div className={classes.header}>
+      <CardMedia className={classes.header}>
         <Typography variant="subtitle2">{type}</Typography>
         <Typography variant="h6">{title}</Typography>
-      </div>
+      </CardMedia>
       <CardContent className={classes.cardContent}>
         {tags?.map(tag => (
-          <Chip label={tag} key={tag} />
+          <Chip size="small" label={tag} key={tag} />
         ))}
-        <Typography variant="body2" paragraph className={classes.description}>
+        <Typography variant="body2" className={classes.description}>
           {description}
         </Typography>
       </CardContent>
