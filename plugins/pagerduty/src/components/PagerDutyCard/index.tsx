@@ -14,43 +14,50 @@
  * limitations under the License.
  */
 import React, { useState, useCallback } from 'react';
-import { useApi, Progress, HeaderIconLinkRow } from '@backstage/core';
+import {
+  useApi,
+  Progress,
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+} from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { Card, CardHeader, Divider, CardContent } from '@material-ui/core';
-import { Incidents } from './Incident';
-import { EscalationPolicy } from './Escalation';
+import { Incidents } from '../Incident';
+import { EscalationPolicy } from '../Escalation';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { pagerDutyApiRef, UnauthorizedError } from '../api';
+import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
-import { MissingTokenError } from './Errors/MissingTokenError';
+import { MissingTokenError } from '../Errors/MissingTokenError';
 import WebIcon from '@material-ui/icons/Web';
-import { PAGERDUTY_INTEGRATION_KEY } from './constants';
-import { TriggerButton, useShowDialog } from './TriggerButton';
+import { usePagerdutyEntity } from '../../hooks';
+import { PAGERDUTY_INTEGRATION_KEY } from '../constants';
+import { TriggerDialog } from '../TriggerDialog';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY]);
 
 export const PagerDutyCard = () => {
-  const { entity } = useEntity();
+  const { integrationKey } = usePagerdutyEntity();
   const api = useApi(pagerDutyApiRef);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
-  const integrationKey = entity.metadata.annotations![
-    PAGERDUTY_INTEGRATION_KEY
-  ];
-  const setShowDialog = useShowDialog()[1];
+  const [dialogShown, setDialogShown] = useState<boolean>(false);
 
   const showDialog = useCallback(() => {
-    setShowDialog(true);
-  }, [setShowDialog]);
+    setDialogShown(true);
+  }, [setDialogShown]);
+  const hideDialog = useCallback(() => {
+    setDialogShown(false);
+  }, [setDialogShown]);
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
   }, []);
 
   const { value: service, loading, error } = useAsync(async () => {
-    const services = await api.getServiceByIntegrationKey(integrationKey);
+    const services = await api.getServiceByIntegrationKey(
+      integrationKey as string,
+    );
 
     return {
       id: services[0].id,
@@ -76,32 +83,41 @@ export const PagerDutyCard = () => {
     return <Progress />;
   }
 
-  const serviceLink = {
+  const serviceLink: IconLinkVerticalProps = {
     label: 'Service Directory',
     href: service!.url,
     icon: <WebIcon />,
   };
 
-  const triggerLink = {
+  const triggerLink: IconLinkVerticalProps = {
     label: 'Create Incident',
-    action: <TriggerButton design="link" onIncidentCreated={handleRefresh} />,
-    icon: <AlarmAddIcon onClick={showDialog} />,
+    onClick: showDialog,
+    icon: <AlarmAddIcon />,
+    color: 'secondary',
   };
 
   return (
-    <Card>
-      <CardHeader
-        title="PagerDuty"
-        subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
-      />
-      <Divider />
-      <CardContent>
-        <Incidents
-          serviceId={service!.id}
-          refreshIncidents={refreshIncidents}
+    <>
+      <Card data-testid="pagerduty-card">
+        <CardHeader
+          title="PagerDuty"
+          subheader={<HeaderIconLinkRow links={[serviceLink, triggerLink]} />}
         />
-        <EscalationPolicy policyId={service!.policyId} />
-      </CardContent>
-    </Card>
+        <Divider />
+        <CardContent>
+          <Incidents
+            serviceId={service!.id}
+            refreshIncidents={refreshIncidents}
+          />
+          <EscalationPolicy policyId={service!.policyId} />
+        </CardContent>
+      </Card>
+      <TriggerDialog
+        data-testid="trigger-dialog"
+        showDialog={dialogShown}
+        handleDialog={hideDialog}
+        onIncidentCreated={handleRefresh}
+      />
+    </>
   );
 };

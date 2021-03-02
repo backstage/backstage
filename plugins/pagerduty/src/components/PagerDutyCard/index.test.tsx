@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { render, waitFor, fireEvent, act } from '@testing-library/react';
-import { PagerDutyCard } from './PagerDutyCard';
+import { PagerDutyCard } from '../PagerDutyCard';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
@@ -25,8 +25,8 @@ import {
   ApiRegistry,
   createApiRef,
 } from '@backstage/core';
-import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../api';
-import { Service } from './types';
+import { pagerDutyApiRef, UnauthorizedError, PagerDutyClient } from '../../api';
+import { Service } from '../types';
 
 const mockPagerDutyApi: Partial<PagerDutyClient> = {
   getServiceByIntegrationKey: async () => [],
@@ -138,7 +138,7 @@ describe('PageDutyCard', () => {
       .fn()
       .mockImplementationOnce(async () => [service]);
 
-    const { getByText, queryByTestId, getByTestId, getByRole } = render(
+    const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <EntityProvider entity={entity}>
@@ -149,10 +149,10 @@ describe('PageDutyCard', () => {
     );
     await waitFor(() => !queryByTestId('progress'));
     expect(getByText('Service Directory')).toBeInTheDocument();
-    expect(getByText('Create Incident')).toBeInTheDocument();
-    const triggerButton = getByTestId('trigger-button');
+
+    const triggerLink = getByText('Create Incident');
     await act(async () => {
-      fireEvent.click(triggerButton);
+      fireEvent.click(triggerLink);
     });
     expect(getByRole('dialog')).toBeInTheDocument();
   });

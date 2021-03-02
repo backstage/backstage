@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { fireEvent, act } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import {
   ApiRegistry,
@@ -27,9 +27,9 @@ import {
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
-import { TriggerDialog } from './TriggerDialog';
+import { TriggerButton } from './';
 
-describe('TriggerDialog', () => {
+describe('TriggerButton', () => {
   const mockIdentityApi: Partial<IdentityApi> = {
     getUserId: () => 'guest@example.com',
   };
@@ -51,7 +51,7 @@ describe('TriggerDialog', () => {
     [pagerDutyApiRef, mockPagerDutyApi],
   ]);
 
-  it('open the dialog and trigger an alarm', async () => {
+  it('renders the trigger button, opens and closes dialog', async () => {
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
@@ -63,41 +63,80 @@ describe('TriggerDialog', () => {
       },
     };
 
-    const { getByText, getByRole, getByTestId } = await renderInTestApp(
+    await renderInTestApp(
       <ApiProvider apis={apis}>
         <EntityProvider entity={entity}>
-          <TriggerDialog
-            showDialog
-            handleDialog={() => {}}
-            onIncidentCreated={() => {}}
-          />
+          <TriggerButton />
         </EntityProvider>
       </ApiProvider>,
     );
 
-    expect(getByRole('dialog')).toBeInTheDocument();
-    expect(
-      getByText('This action will trigger an incident for ', {
-        exact: false,
-      }),
-    ).toBeInTheDocument();
-    const input = getByTestId('trigger-input');
-    const description = 'Test Trigger Alarm';
-    await act(async () => {
-      fireEvent.change(input, { target: { value: description } });
-    });
-    const triggerButton = getByTestId('trigger-button');
+    const triggerButton = screen.getByText('Create Incident');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
     await act(async () => {
       fireEvent.click(triggerButton);
     });
-    expect(mockTriggerAlarmFn).toHaveBeenCalled();
-    expect(mockTriggerAlarmFn).toHaveBeenCalledWith({
-      integrationKey: entity!.metadata!.annotations![
-        'pagerduty.com/integration-key'
-      ],
-      source: window.location.toString(),
-      description,
-      userName: 'guest@example.com',
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
+    const closeButton = screen.getByText('Close');
+    await act(async () => {
+      fireEvent.click(closeButton);
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders the trigger button with children', async () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'pagerduty-test',
+        annotations: {
+          'pagerduty.com/integration-key': 'abc123',
+        },
+      },
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <TriggerButton>Send an alert</TriggerButton>
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(screen.getByText('Send an alert')).toBeInTheDocument();
+  });
+
+  it('renders a disabled trigger button if entity does not include key', async () => {
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'pagerduty-test',
+      },
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <TriggerButton />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    const triggerButton = screen.getByText('Missing integration key');
+
+    await act(async () => {
+      fireEvent.click(triggerButton);
+    });
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });

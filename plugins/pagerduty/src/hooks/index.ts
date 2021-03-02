@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export { HeaderIconLinkRow } from './HeaderIconLinkRow';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
-export type { IconLinkVerticalProps } from './IconLinkVertical';
+import { PAGERDUTY_INTEGRATION_KEY } from '../components/constants';
+
+export function usePagerdutyEntity() {
+  const { entity } = useEntity();
+  const integrationKey =
+    entity.metadata.annotations?.[PAGERDUTY_INTEGRATION_KEY];
+  const name = entity.metadata.name;
+
+  return { integrationKey, name };
+}
