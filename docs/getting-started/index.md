@@ -4,20 +4,20 @@ title: Getting Started
 description: Documentation on How to get started with Backstage
 ---
 
-There are two different ways to get started with Backstage, either by creating a
-standalone app, or by cloning this repo. Which method you use depends on what
-you're planning to do.
+There are two different ways to get started with Backstage:
 
-Creating a standalone instance makes it simpler to customize the application for
-your needs whilst staying up to date with the project. You will also depend on
-`@backstage` packages from npm, making the project much smaller. This is the
-recommended approach if you want to kick the tyres of Backstage or setup your
-own instance.
+- **Recommended:** Create a standalone app
+- **Contributors:** Clone the Backstage repository
 
-On the other hand, if you want to contribute plugins or to the project in
-general, it's easier to fork and clone this project. That will let you stay up
-to date with the latest changes, and gives you an easier path to make Pull
-Requests towards this repo.
+Creating a standalone app makes it simpler to customize the application for your
+needs and stay up to date with the project. You will depend on `@backstage`
+packages from npm, making your app much smaller. This is the recommended
+approach for most installations.
+
+If you want to contribute plugins or to the project in general, it's easier to
+fork and clone the repository. The `@backstage` packages will be included in the
+clone. That will let you stay up to date with the latest changes, and give you
+an easier path to make Pull Requests.
 
 ### Create your Backstage App
 
@@ -37,9 +37,8 @@ subdirectory of your current working directory:
 npx @backstage/create-app
 ```
 
-You will be taken through a wizard to create your app, and the output should
-look something like this. You can read more about this process in
-[Create an app](https://backstage.io/docs/getting-started/create-an-app).
+You will be taken through a wizard to create your app. You can read more about
+this process in [Create an app](./create-an-app.md).
 
 ### Contributing to Backstage
 
