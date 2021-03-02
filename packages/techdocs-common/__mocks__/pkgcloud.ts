@@ -54,7 +54,7 @@ class PkgCloudStorageClient {
     callback: (err: string, container: string) => any,
   ) {
     if (containerName !== 'mock') {
-      callback("Container doesn't exist", containerName);
+      callback('Container does not exist', containerName);
       throw new Error('Container does not exist');
     } else {
       callback('Container does not exist', 'success');

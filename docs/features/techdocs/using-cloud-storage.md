@@ -315,7 +315,7 @@ the logs.
 
 Follow the
 [official OpenStack Api documentation](https://docs.openstack.org/api-ref/identity/v3/)
-for the latest instructions on the following steps involving Open Stack Storage.
+for the latest instructions on the following steps involving OpenStack Storage.
 
 **1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
 
@@ -349,7 +349,7 @@ techdocs:
 
 **3. Authentication using app-config.yaml**
 
-Set the configs in your `app-config.yaml` to the your container name.
+Set the configs in your `app-config.yaml` to point to your container name.
 
 https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
 for more details.
