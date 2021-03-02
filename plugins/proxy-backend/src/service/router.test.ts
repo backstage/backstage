@@ -268,4 +268,13 @@ describe('buildMiddleware', () => {
 
     expect(Object.keys(testClientResponse.headers!)).toEqual(['set-cookie']);
   });
+
+  it('rejects malformed target URLs', async () => {
+    expect(() =>
+      buildMiddleware('/api/', logger, 'test', 'backstage.io'),
+    ).toThrowError(/Proxy target is not a valid URL/);
+    expect(() =>
+      buildMiddleware('/api/', logger, 'test', { target: 'backstage.io' }),
+    ).toThrowError(/Proxy target is not a valid URL/);
+  });
 });

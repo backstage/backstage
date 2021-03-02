@@ -68,6 +68,15 @@ export function buildMiddleware(
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
 
+  // Validate that target is a valid URL.
+  try {
+    // eslint-disable-next-line no-new
+    new URL(fullConfig.target!);
+  } catch {
+    throw new Error(
+      `Proxy target is not a valid URL: ${fullConfig.target ?? ''}`,
+    );
+  }
   // Default is to do a path rewrite that strips out the proxy's path prefix
   // and the rest of the route.
   if (fullConfig.pathRewrite === undefined) {
