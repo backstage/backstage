@@ -132,7 +132,8 @@
         "ids": [
           "plugins/proxying",
           "plugins/backend-plugin",
-          "plugins/call-existing-api"
+          "plugins/call-existing-api",
+          "plugins/github-apps"
         ]
       },
       {
@@ -165,7 +166,6 @@
       "auth/glossary",
       "auth/auth-backend-classes"
     ],
-
     "Designing for Backstage": [
       "dls/design",
       "dls/contributing-to-storybook",
