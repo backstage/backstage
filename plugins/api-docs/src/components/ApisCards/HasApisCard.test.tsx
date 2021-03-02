@@ -74,7 +74,7 @@ describe('<HasApisCard />', () => {
     );
 
     expect(getByText('APIs')).toBeInTheDocument();
-    expect(getByText(/No API is part of this system/i)).toBeInTheDocument();
+    expect(getByText(/does not contain any APIs/i)).toBeInTheDocument();
   });
 
   it('shows related APIs', async () => {

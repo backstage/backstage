@@ -26,6 +26,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 import {
   EntityTable,
   useEntity,
@@ -71,11 +72,15 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
       title="Provided APIs"
       variant={variant}
       emptyContent={
-        <div>
-          No component provides this API.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
-            Learn how to provide APIs.
-          </Link>
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            This {entity.kind.toLowerCase()} does not provide any APIs.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
+              Learn how to change this.
+            </Link>
+          </Typography>
         </div>
       }
       columns={apiEntityColumns}

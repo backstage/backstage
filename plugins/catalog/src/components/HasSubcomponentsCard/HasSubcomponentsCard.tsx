@@ -22,6 +22,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 import {
   EntityTable,
   useEntity,
@@ -73,11 +74,15 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
       title="Subcomponents"
       variant={variant}
       emptyContent={
-        <div>
-          No subcomponent is part of this component.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">
-            Learn how to add subcomponents.
-          </Link>
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            No subcomponent is part of this component.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional">
+              Learn how to change this.
+            </Link>
+          </Typography>
         </div>
       }
       columns={columns}

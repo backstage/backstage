@@ -22,6 +22,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core';
+import { Typography } from '@material-ui/core';
 import {
   EntityTable,
   useEntity,
@@ -70,11 +71,15 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
       title="Systems"
       variant={variant}
       emptyContent={
-        <div>
-          No system is part of this domain.{' '}
-          <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system">
-            Learn how to add systems.
-          </Link>
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            No system is part of this domain.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system">
+              Learn how to change this.
+            </Link>
+          </Typography>
         </div>
       }
       columns={columns}
