@@ -14,9 +14,9 @@
 
     ```ts
     const myLink : IconLinkVerticalProps = {
-    label: 'Click me',	
-    action: <Button onClick={myAction} />,
-    icon: <MyIcon onClick={myAction} />,  
+      label: 'Click me',	
+      action: <Button onClick={myAction} />,
+      icon: <MyIcon onClick={myAction} />,  
     }
     ```
 
