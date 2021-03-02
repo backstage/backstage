@@ -16,6 +16,7 @@
 jest.mock('./helpers');
 
 import os from 'os';
+import { resolve as resolvePath } from 'path';
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -76,7 +77,7 @@ describe('fetch:plain', () => {
     });
     expect(fetchContents).toBeCalledWith(
       expect.objectContaining({
-        outputPath: `${mockContext.workspacePath}/lol`,
+        outputPath: resolvePath(mockContext.workspacePath, 'lol'),
         fetchUrl:
           'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets',
       }),
