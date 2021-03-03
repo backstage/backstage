@@ -16,7 +16,16 @@
 
 import React from 'react';
 import { ProjectGrowthAlertCard } from '../components/ProjectGrowthAlertCard';
-import { Alert, ProjectGrowthData } from '../types';
+import { Alert, ChangeStatistic, AlertCost } from '../types';
+
+export interface ProjectGrowthData {
+  project: string;
+  periodStart: string;
+  periodEnd: string;
+  aggregation: [number, number];
+  change: ChangeStatistic;
+  products: Array<AlertCost>;
+}
 
 /**
  * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning

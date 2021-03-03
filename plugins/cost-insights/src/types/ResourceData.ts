@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { DateAggregation } from './DateAggregation';
-import { ChangeStatistic } from './ChangeStatistic';
+import { Maybe } from './Maybe';
 
-export interface MetricData {
-  id: string;
-  format: 'number' | 'currency';
-  aggregation: DateAggregation[];
-  change: ChangeStatistic;
+export interface ResourceData {
+  previous: number;
+  current: number;
+  name: Maybe<string>;
+}
+
+export enum ResourceDataKey {
+  Previous = 'previous',
+  Current = 'current',
+  Name = 'name',
 }

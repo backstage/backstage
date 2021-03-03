@@ -18,10 +18,11 @@ import React from 'react';
 import classnames from 'classnames';
 import { Table, TableColumn } from '@backstage/core';
 import { Typography } from '@material-ui/core';
+import { BarChartOptions } from '../BarChart';
 import { costFormatter, formatPercent } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';
-import { BarChartOptions, Entity } from '../../types';
+import { Entity } from '../../types';
 
 export type ProductEntityTableOptions = Partial<
   Pick<BarChartOptions, 'previousName' | 'currentName'>

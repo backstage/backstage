@@ -18,9 +18,10 @@ import React from 'react';
 import moment from 'moment';
 import { Box } from '@material-ui/core';
 import { BarChart, BarChartLegend, BarChartLegendOptions } from '../BarChart';
+import { ProjectGrowthData } from '../../alerts/ProjectGrowthAlert';
 import { LegendItem } from '../LegendItem';
 import { CostGrowth } from '../CostGrowth';
-import { Duration, ProjectGrowthData } from '../../types';
+import { Duration } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 import { resourceOf } from '../../utils/graphs';
 

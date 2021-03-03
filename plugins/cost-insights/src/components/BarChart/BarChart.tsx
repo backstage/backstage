@@ -33,16 +33,28 @@ import { BarChartStepper } from './BarChartStepper';
 import { BarChartTooltip } from './BarChartTooltip';
 import { BarChartTooltipItem } from './BarChartTooltipItem';
 import { currencyFormatter } from '../../utils/formatters';
-import {
-  BarChartData,
-  ResourceData,
-  DataKey,
-  CostInsightsTheme,
-} from '../../types';
+import { ResourceData, ResourceDataKey, CostInsightsTheme } from '../../types';
 import { notEmpty } from '../../utils/assert';
 import { useBarChartStyles } from '../../utils/styles';
 import { resourceSort } from '../../utils/sort';
 import { isInvalid, titleOf, tooltipItemOf } from '../../utils/graphs';
+
+export interface BarChartOptions {
+  previousFill: string;
+  currentFill: string;
+  previousName: string;
+  currentName: string;
+}
+
+export type BarChartProps = {
+  resources: ResourceData[];
+  responsive?: boolean;
+  displayAmount?: number;
+  options?: Partial<BarChartOptions>;
+  tooltip?: ContentRenderer<RechartsTooltipProps>;
+  onClick?: RechartsFunction;
+  onMouseMove?: RechartsFunction;
+};
 
 export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
   label,
@@ -59,16 +71,6 @@ export const defaultTooltip: ContentRenderer<RechartsTooltipProps> = ({
       ))}
     </BarChartTooltip>
   );
-};
-
-export type BarChartProps = {
-  resources: ResourceData[];
-  responsive?: boolean;
-  displayAmount?: number;
-  options?: Partial<BarChartData>;
-  tooltip?: ContentRenderer<RechartsTooltipProps>;
-  onClick?: RechartsFunction;
-  onMouseMove?: RechartsFunction;
 };
 
 export const BarChart = ({
@@ -158,7 +160,7 @@ export const BarChart = ({
             stroke={styles.cartesianGrid.stroke}
           />
           <XAxis
-            dataKey={DataKey.Name}
+            dataKey={ResourceDataKey.Name}
             tickLine={false}
             interval={0}
             height={styles.xAxis.height}
@@ -170,13 +172,13 @@ export const BarChart = ({
             tick={styles.axis}
           />
           <Bar
-            dataKey={DataKey.Previous}
+            dataKey={ResourceDataKey.Previous}
             name={data.previousName}
             fill={data.previousFill}
             isAnimationActive={false}
           />
           <Bar
-            dataKey={DataKey.Current}
+            dataKey={ResourceDataKey.Current}
             name={data.currentName}
             fill={data.currentFill}
             isAnimationActive={false}

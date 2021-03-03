@@ -13,18 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { BarChart } from './BarChart';
-export type { BarChartProps } from './BarChart';
-export { BarChartLegend } from './BarChartLegend';
-export type {
-  BarChartLegendProps,
-  BarChartLegendOptions,
-} from './BarChartLegend';
-export { BarChartTooltip } from './BarChartTooltip';
-export type { BarChartTooltipProps } from './BarChartTooltip';
-export { BarChartTooltipItem } from './BarChartTooltipItem';
-export type {
-  TooltipItem,
-  BarChartTooltipItemProps,
-} from './BarChartTooltipItem';
+export * from './BarChart';
+export * from './BarChartLegend';
+export * from './BarChartTooltip';
+export * from './BarChartTooltipItem';

@@ -25,11 +25,14 @@ import {
   Group,
   MetricData,
   Project,
-  ProjectGrowthData,
-  UnlabeledDataflowData,
 } from '../types';
 import { KubernetesMigrationAlert } from './alerts';
-import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../alerts';
+import {
+  ProjectGrowthAlert,
+  ProjectGrowthData,
+  UnlabeledDataflowAlert,
+  UnlabeledDataflowData,
+} from '../alerts';
 import {
   aggregationFor,
   changeOf,

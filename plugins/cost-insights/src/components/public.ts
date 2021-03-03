@@ -14,17 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  costInsightsPlugin,
-  costInsightsPlugin as plugin,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-  CostInsightsLabelDataflowInstructionsPage,
-} from './plugin';
-export { ExampleCostInsightsClient } from './example';
-
-export * from './alerts';
-export * from './api';
-export * from './components/public';
-export * from './testUtils/public';
-export * from './types/public';
+export * from './BarChart';
+export * from './CostGrowth';
+export * from './LegendItem';

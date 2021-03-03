@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
+import { DateAggregation } from './DateAggregation';
+import { ChangeStatistic } from './ChangeStatistic';
+
 export type Metric = {
   kind: string;
   name: string;
   default: boolean;
 };
+
+export interface MetricData {
+  id: string;
+  format: 'number' | 'currency';
+  aggregation: DateAggregation[];
+  change: ChangeStatistic;
+}

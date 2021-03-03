@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { ChangeStatistic } from './ChangeStatistic';
 import { Duration } from './Duration';
 import { Maybe } from './Maybe';
 
@@ -157,49 +157,4 @@ export const AlertSnoozeOptions: AlertSnoozeOption[] = [
 export interface AlertCost {
   id: string;
   aggregation: [number, number];
-}
-
-export interface ResourceData {
-  previous: number;
-  current: number;
-  name: Maybe<string>;
-}
-
-export interface BarChartOptions {
-  previousFill: string;
-  currentFill: string;
-  previousName: string;
-  currentName: string;
-}
-
-/** deprecated use BarChartOptions instead */
-export interface BarChartData extends BarChartOptions {}
-
-export enum DataKey {
-  Previous = 'previous',
-  Current = 'current',
-  Name = 'name',
-}
-
-export interface ProjectGrowthData {
-  project: string;
-  periodStart: string;
-  periodEnd: string;
-  aggregation: [number, number];
-  change: ChangeStatistic;
-  products: Array<AlertCost>;
-}
-
-export interface UnlabeledDataflowData {
-  periodStart: string;
-  periodEnd: string;
-  projects: Array<UnlabeledDataflowAlertProject>;
-  unlabeledCost: number;
-  labeledCost: number;
-}
-
-export interface UnlabeledDataflowAlertProject {
-  id: string;
-  unlabeledCost: number;
-  labeledCost: number;
 }

@@ -15,13 +15,8 @@
  */
 
 import React from 'react';
-import { BarChart } from '../../../components';
-import {
-  BarChartOptions,
-  CostInsightsTheme,
-  Entity,
-  ResourceData,
-} from '../../../types';
+import { BarChart, BarChartOptions } from '../../../components';
+import { CostInsightsTheme, Entity, ResourceData } from '../../../types';
 import { useTheme } from '@material-ui/core';
 
 type MigrationBarChartProps = {

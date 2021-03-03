@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { ProjectGrowthAlert } from './ProjectGrowthAlert';
-export { UnlabeledDataflowAlert } from './UnlabeledDataflowAlert';
+export * from './ProjectGrowthAlert';
+export * from './UnlabeledDataflowAlert';

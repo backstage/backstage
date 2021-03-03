@@ -26,9 +26,11 @@ import {
   Duration,
   Entity,
   Product,
-  ProjectGrowthData,
 } from '../../types';
-import { ProjectGrowthAlert } from '../../alerts';
+import {
+  ProjectGrowthAlert,
+  ProjectGrowthData,
+} from '../../alerts/ProjectGrowthAlert';
 
 const today = moment().format(DEFAULT_DATE_FORMAT);
 

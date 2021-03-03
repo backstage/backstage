@@ -17,8 +17,7 @@
 import React from 'react';
 import pluralize from 'pluralize';
 import { renderInTestApp } from '@backstage/test-utils';
-import { ProjectGrowthAlert } from './ProjectGrowthAlert';
-import { ProjectGrowthData } from '../types';
+import { ProjectGrowthAlert, ProjectGrowthData } from './ProjectGrowthAlert';
 import {
   MockCurrencyProvider,
   MockConfigProvider,

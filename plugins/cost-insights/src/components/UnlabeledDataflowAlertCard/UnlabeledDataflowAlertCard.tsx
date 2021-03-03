@@ -19,7 +19,8 @@ import pluralize from 'pluralize';
 import { InfoCard } from '@backstage/core';
 import { Box } from '@material-ui/core';
 import { BarChart, BarChartLegend } from '../BarChart';
-import { UnlabeledDataflowData, ResourceData } from '../../types';
+import { UnlabeledDataflowData } from '../../alerts/UnlabeledDataflowAlert';
+import { ResourceData } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';
 
 type UnlabeledDataflowAlertProps = {

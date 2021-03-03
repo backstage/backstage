@@ -18,7 +18,7 @@ import {
   ProjectGrowthData,
   UnlabeledDataflowAlertProject,
   UnlabeledDataflowData,
-} from '../types';
+} from '../alerts';
 
 type mockAlertRenderer<T> = (alert: T) => T;
 type mockEntityRenderer<T> = (entity: T) => T;

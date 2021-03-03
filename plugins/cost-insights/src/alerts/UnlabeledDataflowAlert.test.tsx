@@ -17,8 +17,10 @@
 import React from 'react';
 import pluralize from 'pluralize';
 import { renderInTestApp } from '@backstage/test-utils';
-import { UnlabeledDataflowAlert } from './UnlabeledDataflowAlert';
-import { UnlabeledDataflowData } from '../types';
+import {
+  UnlabeledDataflowAlert,
+  UnlabeledDataflowData,
+} from './UnlabeledDataflowAlert';
 import {
   MockCurrencyProvider,
   MockConfigProvider,

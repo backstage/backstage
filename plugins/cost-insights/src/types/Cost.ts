@@ -16,7 +16,6 @@
 
 import { DateAggregation } from './DateAggregation';
 import { ChangeStatistic } from './ChangeStatistic';
-import { Trendline } from './Trendline';
 
 export interface Cost {
   id: string;
@@ -25,3 +24,8 @@ export interface Cost {
   trendline?: Trendline;
   groupedCosts?: Record<string, Cost[]>;
 }
+
+export type Trendline = {
+  slope: number;
+  intercept: number;
+};

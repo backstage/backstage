@@ -15,8 +15,22 @@
  */
 
 import React from 'react';
-import { UnlabeledDataflowAlertCard } from '../components/UnlabeledDataflowAlertCard';
-import { Alert, AlertStatus, UnlabeledDataflowData } from '../types';
+import { UnlabeledDataflowAlertCard } from '../components';
+import { Alert, AlertStatus } from '../types';
+
+export interface UnlabeledDataflowData {
+  periodStart: string;
+  periodEnd: string;
+  projects: Array<UnlabeledDataflowAlertProject>;
+  unlabeledCost: number;
+  labeledCost: number;
+}
+
+export interface UnlabeledDataflowAlertProject {
+  id: string;
+  unlabeledCost: number;
+  labeledCost: number;
+}
 
 /**
  * The alert below is an example of an Alert implementation; the CostInsightsApi permits returning
