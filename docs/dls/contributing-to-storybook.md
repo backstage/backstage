@@ -4,8 +4,8 @@ title: Contributing to Storybook
 description: Documentation on How to Contribute to Storybook
 ---
 
-Storybook is an open source tool to provide users a way to explore the Backstage
-UI elements and how to use them in developing the Backstage core and its
+The Backstage Storybook provides you a way to explore reusable Backstage User
+Interface elements and how to use them in developing the Backstage core and its
 plugins. These UI elements are commonly called "components", and include things
 such as buttons, tables, specialized widgets with specific formatting, and so
 on.
