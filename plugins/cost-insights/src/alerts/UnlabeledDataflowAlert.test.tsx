@@ -40,7 +40,7 @@ const mockData: UnlabeledDataflowData = {
 };
 
 // suppress recharts componentDidUpdate deprecation warnings
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => { });
 
 async function renderInContext(children: JSX.Element) {
   return renderInTestApp(
