@@ -24,8 +24,6 @@ import {
   getGroupedProjects,
   MockAggregatedDailyCosts,
   trendlineOf,
-} from '../../utils/mockData';
-import {
   MockBillingDateProvider,
   MockConfigProvider,
   MockFilterProvider,

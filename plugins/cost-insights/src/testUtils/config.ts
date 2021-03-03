@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-export {
-  costInsightsPlugin,
-  costInsightsPlugin as plugin,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-  CostInsightsLabelDataflowInstructionsPage,
-} from './plugin';
-export { ExampleCostInsightsClient } from './example';
-export { BarChart, LegendItem, CostGrowth } from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
-export * from './api';
-export * from './alerts';
-export * from './types';
+import { Config } from '@backstage/config';
+import { ConfigApi } from '@backstage/core';
+import { MockProductTypes } from './products';
+
+export const MockProductsConfig: Partial<ConfigApi> = {
+  keys: () => Object.keys(MockProductTypes),
+};
+
+export const MockMetricsConfig: Partial<ConfigApi> = {
+  getOptionalString: () => 'daily-cost',
+  keys: () => ['daily-cost'],
+};
+
+export const MockCostInsightsConfig: Partial<Config> = {
+  getConfig: () => MockProductsConfig as Config,
+  getOptionalConfig: () => MockMetricsConfig as Config,
+};

@@ -18,8 +18,8 @@ import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ProductInsights } from './ProductInsights';
 import { ProductInsightsOptions } from '../../api';
-import { mockDefaultLoadingState } from '../../utils/mockData';
 import {
+  mockDefaultLoadingState,
   MockConfigProvider,
   MockCostInsightsApiProvider,
   MockCurrencyProvider,

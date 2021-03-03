@@ -22,8 +22,6 @@ import {
   createMockEntity,
   mockDefaultLoadingState,
   MockComputeEngine,
-} from '../../utils/mockData';
-import {
   MockConfigProvider,
   MockCostInsightsApiProvider,
   MockCurrencyProvider,

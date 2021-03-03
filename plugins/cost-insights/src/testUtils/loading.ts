@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { MockProducts } from './products';
+import {
+  DefaultLoadingAction,
+  getDefaultState as getDefaultLoadingState,
+} from '../utils/loading';
 
-export {
-  costInsightsPlugin,
-  costInsightsPlugin as plugin,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-  CostInsightsLabelDataflowInstructionsPage,
-} from './plugin';
-export { ExampleCostInsightsClient } from './example';
-export { BarChart, LegendItem, CostGrowth } from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
-export * from './api';
-export * from './alerts';
-export * from './types';
+export const MockDefaultLoadingActions = ([
+  DefaultLoadingAction.UserGroups,
+  DefaultLoadingAction.CostInsightsInitial,
+  DefaultLoadingAction.CostInsightsPage,
+] as string[]).concat(MockProducts.map(product => product.kind));
+
+export const mockDefaultLoadingState = getDefaultLoadingState(
+  MockDefaultLoadingActions,
+);
