@@ -16,8 +16,8 @@
 
 import React from 'react';
 import pluralize from 'pluralize';
-import { MigrationAlertCard } from '../components/MigrationAlertCard';
-import { CostInsightsApi } from '../api';
+import { KubernetesMigrationAlertCard } from '../components';
+import { CostInsightsApi } from '../../api';
 import {
   Alert,
   AlertForm,
@@ -26,19 +26,22 @@ import {
   AlertSnoozeFormData,
   ChangeStatistic,
   Entity,
-} from '../types';
-import { MigrationDismissForm, MigrationDismissFormData } from '../forms';
+} from '../../types';
+import {
+  KubernetesMigrationDismissForm,
+  KubernetesMigrationDismissFormData,
+} from '../forms';
 
-export interface MigrationData {
+export interface KubernetesMigrationData {
   startDate: string;
   endDate: string;
   change: ChangeStatistic;
   services: Array<Entity>;
 }
 
-export interface MigrationAlert extends Alert {
+export interface KubernetesMigrationApi extends Alert {
   api: CostInsightsApi;
-  data: MigrationData;
+  data: KubernetesMigrationData;
 }
 
 /**
@@ -63,9 +66,9 @@ export interface MigrationAlert extends Alert {
  * Custom forms must implement the corresponding event hook. See /forms for example implementations.
  */
 
-export class KubernetesMigrationAlert implements MigrationAlert {
+export class KubernetesMigrationAlert implements KubernetesMigrationApi {
   api: CostInsightsApi;
-  data: MigrationData;
+  data: KubernetesMigrationData;
 
   subtitle =
     'Services running on Kubernetes are estimated to save 50% or more compared to Compute Engine.';
@@ -74,11 +77,11 @@ export class KubernetesMigrationAlert implements MigrationAlert {
   AcceptForm = null;
   // Overrides default Dismiss form with a custom form component.
   DismissForm: AlertForm<
-    MigrationAlert,
-    MigrationDismissFormData
-  > = MigrationDismissForm;
+    KubernetesMigrationAlert,
+    KubernetesMigrationDismissFormData
+  > = KubernetesMigrationDismissForm;
 
-  constructor(api: CostInsightsApi, data: MigrationData) {
+  constructor(api: CostInsightsApi, data: KubernetesMigrationData) {
     this.api = api;
     this.data = data;
   }
@@ -98,7 +101,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
       true,
     )}, sorted by cost`;
     return (
-      <MigrationAlertCard
+      <KubernetesMigrationAlertCard
         data={this.data}
         title="Migrate to Kubernetes"
         subheader={subheader}
@@ -110,7 +113,7 @@ export class KubernetesMigrationAlert implements MigrationAlert {
 
   /* Fires when the onSubmit event is raised on a Dismiss form. Displays custom dismiss form. */
   async onDismissed(
-    options: AlertOptions<MigrationDismissFormData>,
+    options: AlertOptions<KubernetesMigrationDismissFormData>,
   ): Promise<Alert[]> {
     const alerts = await this.api.getAlerts(options.group);
     return new Promise(resolve =>

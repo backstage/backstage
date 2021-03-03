@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  costInsightsPlugin,
-  costInsightsPlugin as plugin,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-  CostInsightsLabelDataflowInstructionsPage,
-} from './plugin';
-export { ExampleCostInsightsClient } from './example';
-export { BarChart, LegendItem, CostGrowth } from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
-export * from './api';
-export * from './alerts';
-export * from './types';
+export * from './KubernetesMigrationAlertCard';

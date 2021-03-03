@@ -34,18 +34,6 @@ import {
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
 
-/* 
-  Mock Providers and types are exposed publicly to allow users to test custom implementations
-  such as alerts, which may require context. 
-  
-  Utility functions such as getDefaultPageFilters, etc. are intentionally
-  omitted as we do not want to expose explictly or implicitly internal implementations 
-  that may be subject to change.
-
-  Each Mock Provider provides minimal defaults which can be overridden, allowing users to define
-  context props only when necessary.
-*/
-
 type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];

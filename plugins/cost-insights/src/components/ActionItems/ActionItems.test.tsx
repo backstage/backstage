@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { ActionItems } from './ActionItems';
-import { MockScrollProvider } from '../../utils/tests';
+import { MockScrollProvider } from '../../testUtils';
 
 function renderInContext(children: JSX.Element) {
   return render(<MockScrollProvider>{children}</MockScrollProvider>);

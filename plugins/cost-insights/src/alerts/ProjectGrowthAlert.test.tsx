@@ -23,7 +23,7 @@ import {
   MockCurrencyProvider,
   MockConfigProvider,
   MockBillingDateProvider,
-} from '../utils/tests';
+} from '../testUtils';
 
 const mockData: ProjectGrowthData = {
   project: 'test-project',

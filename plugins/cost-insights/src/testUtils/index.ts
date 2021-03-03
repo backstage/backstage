@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export {
-  costInsightsPlugin,
-  costInsightsPlugin as plugin,
-  CostInsightsPage,
-  CostInsightsProjectGrowthInstructionsPage,
-  CostInsightsLabelDataflowInstructionsPage,
-} from './plugin';
-export { ExampleCostInsightsClient } from './example';
-export { BarChart, LegendItem, CostGrowth } from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
-export * from './api';
 export * from './alerts';
-export * from './types';
+export * from './config';
+export * from './filters';
+export * from './loading';
+export * from './mockData';
+export * from './products';
+export * from './providers';
+export * from './testUtils';
