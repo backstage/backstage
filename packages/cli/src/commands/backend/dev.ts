@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import { Command } from 'commander';
+import { paths } from '../../lib/paths';
 import { serveBackend } from '../../lib/bundler/backend';
 
 export default async (cmd: Command) => {
+  // Cleaning dist/ before we start the dev process helps work around an issue
+  // where we end up with the entrypoint executing multiple times, causing
+  // a port bind conflict among other things.
+  await fs.remove(paths.resolveTarget('dist'));
+
   const waitForExit = await serveBackend({
     entry: 'src/index',
     checksEnabled: cmd.check,
