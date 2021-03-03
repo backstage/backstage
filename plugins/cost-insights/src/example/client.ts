@@ -29,7 +29,10 @@ import {
   UnlabeledDataflowData,
 } from '../types';
 import { KubernetesMigrationAlert } from './alerts';
-import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../alerts';
+import {
+  ProjectGrowthAlert,
+  UnlabeledDataflowAlert,
+} from '../alerts';
 import {
   aggregationFor,
   changeOf,
@@ -37,7 +40,7 @@ import {
   getGroupedProducts,
   getGroupedProjects,
   trendlineOf,
-} from '../testUtils';
+} from '../utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {

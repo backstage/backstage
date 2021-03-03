@@ -27,10 +27,7 @@ import {
   ChangeStatistic,
   Entity,
 } from '../../types';
-import {
-  KubernetesMigrationDismissForm,
-  KubernetesMigrationDismissFormData,
-} from '../forms';
+import { KubernetesMigrationDismissForm, KubernetesMigrationDismissFormData } from '../forms';
 
 export interface KubernetesMigrationData {
   startDate: string;
