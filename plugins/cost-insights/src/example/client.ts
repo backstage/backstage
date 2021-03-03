@@ -29,10 +29,7 @@ import {
   UnlabeledDataflowData,
 } from '../types';
 import { KubernetesMigrationAlert } from './alerts';
-import {
-  ProjectGrowthAlert,
-  UnlabeledDataflowAlert,
-} from '../alerts';
+import { ProjectGrowthAlert, UnlabeledDataflowAlert } from '../alerts';
 import {
   aggregationFor,
   changeOf,
