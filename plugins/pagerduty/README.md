@@ -45,18 +45,6 @@ import {
 }
 ```
 
-Add the proxy configuration in `app-config.yaml`
-
-```yaml
-proxy:
-  ...
-  '/pagerduty':
-    target: https://api.pagerduty.com
-    headers:
-      Authorization:
-        $env: PAGERDUTY_TOKEN
-```
-
 ## Client configuration
 
 If you want to override the default URL for events, you can add it to `app-config.yaml`.
@@ -71,6 +59,18 @@ pagerduty:
 ## Providing the API Token
 
 In order for the client to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/) it needs an [API Token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key).
+
+
+Add the proxy configuration in `app-config.yaml`
+
+```yaml
+proxy:
+  ...
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization: Token token=${PAGERDUTY_TOKEN}
+```
 
 Then start the backend passing the token as an environment variable:
 
