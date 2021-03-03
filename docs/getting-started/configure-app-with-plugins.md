@@ -4,17 +4,22 @@ title: Configuring App with plugins
 description: Documentation on How Configuring App with plugins
 ---
 
+Backstage plugins customize the app for your needs. There is a
+[plugin marketplace](https://backstage.io/plugins) with plugins for many common
+infrastructure needs - CI/CD, monitoring, auditing, and more.
+
 ## Adding existing plugins to your app
 
-The following steps assume that you have created a new Backstage app and want to
-add an existing plugin to it. We are using the
+The following steps assume that you have
+[created a Backstage app](./create-an-app.md) and want to add an existing plugin
+to it. We are using the
 [CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
 plugin in this example.
 
 1. Add the plugin's npm package to the repo:
 
 ```bash
-yarn add @backstage/plugin-circleci
+yarn workspace app add @backstage/plugin-circleci
 ```
 
 2. Add the plugin itself:
