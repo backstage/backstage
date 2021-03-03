@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
       overflow: 'auto',
     },
     subheader: {
-      backgroundColor: 'white',
+      backgroundColor: theme.palette.background.paper,
     },
     progress: {
       margin: `0 ${theme.spacing(2)}px`,
