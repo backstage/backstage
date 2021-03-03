@@ -172,6 +172,7 @@ export function parseEntityRef(
  * special/reserved characters, it outputs the string form, otherwise it
  * outputs the compound form.
  *
+ * @deprecated Use `stringifyEntityRef` instead
  * @param ref The reference to serialize
  * @returns The same reference on either string or compound form
  */
@@ -207,6 +208,33 @@ export function serializeEntityRef(
     name.includes('/')
   ) {
     return { kind, namespace, name };
+  }
+
+  return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+}
+
+/**
+ * Takes an entity or entity name/reference, and returns the string form of an
+ * entity ref.
+ *
+ * @param ref The reference to serialize
+ * @returns The same reference on either string or compound form
+ */
+export function stringifyEntityRef(
+  ref: Entity | { kind?: string; namespace?: string; name: string },
+): string {
+  let kind;
+  let namespace;
+  let name;
+
+  if ('metadata' in ref) {
+    kind = ref.kind;
+    namespace = ref.metadata.namespace;
+    name = ref.metadata.name;
+  } else {
+    kind = ref.kind;
+    namespace = ref.namespace;
+    name = ref.name;
   }
 
   return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
