@@ -23,7 +23,7 @@ export {
 } from './plugin';
 export { ProjectGrowthAlert, UnlabeledDataflowAlert } from './alerts';
 export { ExampleCostInsightsClient } from './example';
+export { BarChart, LegendItem, CostGrowth } from './components';
 export * from './api';
-export * from './components';
 export * from './types';
 export * from './testUtils';
