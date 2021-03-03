@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:packages/cli/src/lib/codeowners/index.ts
 export * from './codeowners';
+=======
+export * from './KubernetesMigrationAlertCard';
+>>>>>>> move example data to separate dir:plugins/cost-insights/src/example/components/KubernetesMigrationAlertCard/index.ts
