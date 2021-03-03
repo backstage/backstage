@@ -82,8 +82,7 @@ provider. You could get the service account token with:
 kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOUNT_NAME> -o=json \
 | jq -r '.secrets[0].name') -o=json \
 | jq -r '.data["token"]' \
-| base64 --decode \
-| pbcopy
+| base64 --decode
 ```
 
 ### Role Based Access Control
