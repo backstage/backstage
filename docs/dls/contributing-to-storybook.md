@@ -10,7 +10,7 @@ plugins. These UI elements are commonly called "components", and include things
 such as buttons, tables, specialized widgets with specific formatting, and so
 on.
 
-You find our storybook at
+You'll find our storybook at
 [http://backstage.io/storybook](http://backstage.io/storybook).
 
 As noted in the [design introduction](design.md), Backstage's design is based
