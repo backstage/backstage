@@ -30,7 +30,7 @@ import {
   MockConfigProvider,
   MockFilterProvider,
   MockScrollProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 
 const mockGroupDailyCost: Cost = {

@@ -30,11 +30,11 @@ import {
   MockBillingDateProvider,
   MockScrollProvider,
   MockLoadingProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { Duration, Entity, Product } from '../../types';
 
 // suppress recharts componentDidUpdate warnings
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => { });
 
 const costInsightsApi = (entity: Entity): Partial<CostInsightsApi> => ({
   getProductInsights: () => Promise.resolve(entity),

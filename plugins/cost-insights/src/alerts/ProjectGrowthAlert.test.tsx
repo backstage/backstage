@@ -23,7 +23,7 @@ import {
   MockCurrencyProvider,
   MockConfigProvider,
   MockBillingDateProvider,
-} from '../utils/tests';
+} from '../testUtils';
 
 const mockData: ProjectGrowthData = {
   project: 'test-project',
@@ -43,7 +43,7 @@ const mockData: ProjectGrowthData = {
 };
 
 // suppress recharts componentDidUpdate deprecation warnings
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => { });
 
 async function renderInContext(children: JSX.Element) {
   return renderInTestApp(

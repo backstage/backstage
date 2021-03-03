@@ -27,11 +27,11 @@ import {
   MockBillingDateProvider,
   MockScrollProvider,
   MockLoadingProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { Entity, Product } from '../../types';
 
 // suppress recharts componentDidUpdate warnings
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => { });
 
 const MockComputeEngine: Product = {
   kind: 'compute-engine',
