@@ -50,6 +50,7 @@ import {
 } from '../extensions/traversal';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
+import { AnyRoutes } from '../plugin/types';
 import { RouteRef, ExternalRouteRef } from '../routing';
 import {
   routeObjectCollector,
@@ -77,7 +78,7 @@ export function generateBoundRoutes(
   const result = new Map<ExternalRouteRef, RouteRef>();
 
   if (bindRoutes) {
-    const bind: AppRouteBinder = (externalRoutes, targetRoutes) => {
+    const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {
       for (const [key, value] of Object.entries(targetRoutes)) {
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
