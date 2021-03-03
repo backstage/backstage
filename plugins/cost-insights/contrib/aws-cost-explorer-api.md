@@ -290,7 +290,7 @@ Sample response:
 
 There are a couple of options for breaking down costs for a resource.
 
-1. We can use `USAGE_TYPE` (units used to measure usage for each service) supported by the `GroupBy` field. This requires the lowest amount of effort as we can easily add it to the existing resource request. Examples usage types for EC2: BoxUsage:c1.medium(Hrs), BoxUsage:m3.xlarge(Hrs), and BoxUsage:t1.micro(Hrs)
+1. We can use `USAGE_TYPE` (units used to measure usage for each service) supported by the `GroupBy` field. This requires the lowest amount of effort as we can easily add it to the existing resource request. Examples usage types for EC2: `BoxUsage:c1.medium(Hrs)`, `BoxUsage:m3.xlarge(Hrs)`, and `BoxUsage:t1.micro(Hrs)`
 
 2. Similar to resources, we can use custom tags to group the data. For example, you’re able to tag objects within a bucket so that would be one way to get more granularity within a resource. More info on object tagging [here](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-tagging.html).
 
