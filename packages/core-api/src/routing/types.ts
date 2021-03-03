@@ -49,6 +49,8 @@ export type ExternalRouteRef<
 
   params: ParamKeys<Params>;
 
+  params: ParamKeys<Params>;
+
   optional?: Optional;
 };
 
