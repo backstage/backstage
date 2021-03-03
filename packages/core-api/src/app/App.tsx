@@ -50,6 +50,7 @@ import {
 } from '../extensions/traversal';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
+import { AnyRoutes } from '../plugin/types';
 import { RouteRef, ExternalRouteRef } from '../routing';
 import {
   routeObjectCollector,

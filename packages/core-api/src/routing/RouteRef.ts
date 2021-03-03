@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import { RouteRef, ExternalRouteRef, routeRefType } from './types';
+import {
+  RouteRef,
+  ExternalRouteRef,
+  routeRefType,
+  AnyParams,
+  ParamKeys,
+} from './types';
 import { IconComponent } from '../icons';
 
 // TODO(Rugvip): Remove this once we get rid of the deprecated fields, it's not exported
-export type RouteRefConfig<Params extends { [param in string]: string }> = {
-  params?: Array<keyof Params>;
+export type RouteRefConfig<Params extends AnyParams> = {
+  params?: ParamKeys<Params>;
   path?: string;
   icon?: IconComponent;
   title: string;
@@ -31,13 +37,15 @@ class RouteRefBaseBase {
   }
 }
 
-export class RouteRefImpl<
-  Params extends { [param in string]: string }
-> extends RouteRefBaseBase {
+export class RouteRefImpl<Params extends AnyParams> extends RouteRefBaseBase {
   readonly [routeRefType] = 'absolute';
 
   constructor(private readonly config: RouteRefConfig<Params>) {
     super('absolute', config.title);
+  }
+
+  get params(): ParamKeys<Params> {
+    return this.config.params as any;
   }
 
   get icon() {
@@ -74,22 +82,32 @@ export function createRouteRef<
   icon?: IconComponent;
   /** @deprecated Route refs no longer decide their own title */
   title: string;
-}): RouteRef<Params> {
-  return new RouteRefImpl<Params>(config);
+}): RouteRef<OptionalParams<Params>> {
+  return new RouteRefImpl<OptionalParams<Params>>({
+    ...config,
+    params: (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
+  });
 }
 
 export class ExternalRouteRefImpl<
+  Params extends AnyParams,
   Optional extends boolean
 > extends RouteRefBaseBase {
   readonly [routeRefType] = 'external';
 
-  constructor(id: string, readonly optional: Optional) {
+  constructor(
+    id: string,
+    readonly params: ParamKeys<Params>,
+    readonly optional: Optional,
+  ) {
     super('external', id);
   }
 }
 
 export function createExternalRouteRef<
-  Optional extends boolean = false
+  Params extends { [param in ParamKey]: string },
+  Optional extends boolean = false,
+  ParamKey extends string = never
 >(options: {
   /**
    * An identifier for this route, used to identify it in error messages
@@ -108,9 +126,10 @@ export function createExternalRouteRef<
    * if they aren't, `useRouteRef` will return `undefined`.
    */
   optional?: Optional;
-}): ExternalRouteRef<Optional> {
-  return new ExternalRouteRefImpl<Optional>(
+}): ExternalRouteRef<OptionalParams<Params>, Optional> {
+  return new ExternalRouteRefImpl<OptionalParams<Params>, Optional>(
     options.id,
+    (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
     Boolean(options.optional) as Optional,
   );
 }
