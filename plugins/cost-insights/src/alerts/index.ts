@@ -16,6 +16,3 @@
 
 export { ProjectGrowthAlert } from './ProjectGrowthAlert';
 export { UnlabeledDataflowAlert } from './UnlabeledDataflowAlert';
-export { KubernetesMigrationAlert } from './KubernetesMigrationAlert';
-export type { MigrationAlert } from './KubernetesMigrationAlert';
-export type { MigrationData } from './KubernetesMigrationAlert';

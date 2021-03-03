@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { AlertAcceptForm } from './AlertAcceptForm';
-export { AlertSnoozeForm } from './AlertSnoozeForm';
-export { AlertDismissForm } from './AlertDismissForm';
+export * from './KubernetesMigrationAlertCard';

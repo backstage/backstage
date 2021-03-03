@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { BarChart } from '../BarChart';
+import { BarChart } from '../../../components';
 import {
   BarChartOptions,
   CostInsightsTheme,
   Entity,
   ResourceData,
-} from '../../types';
+} from '../../../types';
 import { useTheme } from '@material-ui/core';
 
 type MigrationBarChartProps = {
@@ -30,7 +30,7 @@ type MigrationBarChartProps = {
   services: Array<Entity>;
 };
 
-export const MigrationBarChart = ({
+export const KubernetesMigrationBarChart = ({
   currentProduct,
   comparedProduct,
   services,

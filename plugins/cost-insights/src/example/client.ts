@@ -16,7 +16,7 @@
 /* eslint-disable no-restricted-imports */
 
 import dayjs from 'dayjs';
-import { CostInsightsApi, ProductInsightsOptions } from '../src/api';
+import { CostInsightsApi, ProductInsightsOptions } from '../api';
 import {
   Alert,
   Cost,
@@ -27,12 +27,12 @@ import {
   Project,
   ProjectGrowthData,
   UnlabeledDataflowData,
-} from '../src/types';
+} from '../types';
+import { KubernetesMigrationAlert } from './alerts';
 import {
   ProjectGrowthAlert,
   UnlabeledDataflowAlert,
-  KubernetesMigrationAlert,
-} from '../src/alerts';
+} from '../alerts';
 import {
   aggregationFor,
   changeOf,
@@ -40,7 +40,7 @@ import {
   getGroupedProducts,
   getGroupedProjects,
   trendlineOf,
-} from './utils/mockData';
+} from '../utils/mockData';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
