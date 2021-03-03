@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:packages/app/src/components/Root/index.ts
 export { default } from './Root';
+=======
+export * from './KubernetesMigrationAlertCard';
+>>>>>>> move example data to separate dir:plugins/cost-insights/src/example/components/KubernetesMigrationAlertCard/index.ts

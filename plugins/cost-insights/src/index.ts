@@ -21,9 +21,9 @@ export {
   CostInsightsProjectGrowthInstructionsPage,
   CostInsightsLabelDataflowInstructionsPage,
 } from './plugin';
+export { ProjectGrowthAlert, UnlabeledDataflowAlert } from './alerts';
 export { ExampleCostInsightsClient } from './example';
-export { BarChart, LegendItem, CostGrowth } from './components';
-export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
 export * from './api';
-export * from './alerts';
+export * from './components';
+export { useCurrency } from './hooks';
 export * from './types';
