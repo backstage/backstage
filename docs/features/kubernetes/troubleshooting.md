@@ -94,5 +94,5 @@ and the catalog info annotations would use label selector:
 ```yaml
 # catalog-info.yaml (backstage)
 annotations:
-  backstage.io/kubernetes-label-selector: 'backstage=<selectors'
+  backstage.io/kubernetes-label-selector: 'backstage=<selector>'
 ```
