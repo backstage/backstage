@@ -20,6 +20,7 @@ import {
   BackstageRouteObject,
   RouteRef,
   ExternalRouteRef,
+  AnyParams,
 } from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
 
