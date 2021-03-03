@@ -22,7 +22,7 @@ import {
   Control,
   Controller,
   FieldErrors,
-  ValidationRules,
+  UseControllerOptions,
 } from 'react-hook-form';
 
 type Props<TFieldValue extends string> = {
@@ -32,7 +32,7 @@ type Props<TFieldValue extends string> = {
 
   control?: Control<Record<string, any>>;
   errors?: FieldErrors<Record<TFieldValue, string>>;
-  rules?: ValidationRules;
+  rules?: UseControllerOptions<Record<TFieldValue, any>>['rules'];
 
   loading?: boolean;
   loadingText?: string;
