@@ -34,11 +34,7 @@ export default async function createPlugin(
     locationAnalyzer,
   } = await builder.build();
 
-  useHotCleanup(
-    module,
-    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
-  );
-
+  higherOrderOperation.processAllLocations();
   return await createRouter({
     entitiesCatalog,
     locationsCatalog,

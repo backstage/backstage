@@ -213,51 +213,28 @@ export function serializeEntityRef(
 }
 
 /**
- * Compares an entity to either a string reference or a compound reference.
+ * Takes an entity or entity name/reference, and returns the string form of an
+ * entity ref.
  *
- * The comparison is case insensitive, and all of kind, namespace, and name
- * must match (after applying the optional context to the ref).
- *
- * @param entity The entity to match
- * @param ref A string or compound entity ref
- * @param context An optional context of default kind and namespace, that apply
- *                to the ref if given
- * @returns True if matching, false otherwise
+ * @param ref The reference to serialize
+ * @returns The same reference on either string or compound form
  */
-export function compareEntityToRef(
-  entity: Entity,
-  ref: EntityRef | EntityName,
-  context?: EntityRefContext,
-): boolean {
-  const entityKind = entity.kind;
-  const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
-  const entityName = entity.metadata.name;
+export function stringifyEntityRef(
+  ref: Entity | { kind?: string; namespace?: string; name: string },
+): string {
+  let kind;
+  let namespace;
+  let name;
 
-  let refKind: string | undefined;
-  let refNamespace: string | undefined;
-  let refName: string;
-  if (typeof ref === 'string') {
-    const parsed = parseRefString(ref);
-    refKind = parsed.kind || context?.defaultKind;
-    refNamespace =
-      parsed.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
-    refName = parsed.name;
+  if ('metadata' in ref) {
+    kind = ref.kind;
+    namespace = ref.metadata.namespace;
+    name = ref.metadata.name;
   } else {
-    refKind = ref.kind || context?.defaultKind;
-    refNamespace =
-      ref.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
-    refName = ref.name;
+    kind = ref.kind;
+    namespace = ref.namespace;
+    name = ref.name;
   }
 
-  if (!refKind || !refNamespace) {
-    throw new Error(
-      `Entity reference or context did not contain kind and namespace`,
-    );
-  }
-
-  return (
-    entityKind.toLowerCase() === refKind.toLowerCase() &&
-    entityNamespace.toLowerCase() === refNamespace.toLowerCase() &&
-    entityName.toLowerCase() === refName.toLowerCase()
-  );
+  return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
 }

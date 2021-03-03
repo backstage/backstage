@@ -55,7 +55,11 @@ import {
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
+  RootLocationsProviders,
+  UserRegisteredLocationsProvider,
+  ConfigLocationsProvider,
 } from '../ingestion';
+import { CatalogProcessingEngine } from '../ingestion/CatalogProcessingEngine';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
@@ -248,10 +252,25 @@ export class CatalogBuilder {
 
     const entitiesCatalog = new DatabaseEntitiesCatalog(db, this.env.logger);
     const locationsCatalog = new DatabaseLocationsCatalog(db);
+    const processingEngine = new CatalogProcessingEngine({
+      ...this.env,
+      parser,
+      processors,
+      rulesEnforcer,
+      policy,
+    });
+    const rootLocationsProvider = new RootLocationsProviders([
+      new UserRegisteredLocationsProvider(locationsCatalog),
+      new ConfigLocationsProvider(config),
+    ]);
+
     const higherOrderOperation = new HigherOrderOperations(
       entitiesCatalog,
       locationsCatalog,
       locationReader,
+      processingEngine,
+      rootLocationsProvider,
+      db,
       logger,
     );
     const locationAnalyzer = new RepoLocationAnalyzer(logger);

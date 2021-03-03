@@ -23,12 +23,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { Database } from '../database';
+import { DbRefreshStateRequest } from '../database/types';
 import { durationText } from '../util';
 import { CatalogProcessingEngine } from './CatalogProcessingEngine';
 import {
   AddLocationResult,
   HigherOrderOperation,
   LocationReader,
+  RootLocationsProvider,
 } from './types';
 
 /**
@@ -44,6 +46,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     private readonly locationsCatalog: LocationsCatalog,
     private readonly locationReader: LocationReader,
     private readonly catalogProcessingEngine: CatalogProcessingEngine,
+    private readonly rootLocationsProvider: RootLocationsProvider,
     private readonly database: Database,
     private readonly logger: Logger,
   ) {}
@@ -162,33 +165,35 @@ export class HigherOrderOperations implements HigherOrderOperation {
   async processAllLocations(): Promise<void> {
     const startTimestamp = process.hrtime();
     const logger = this.logger.child({
-      component: 'catalog-all-locations-refresh',
+      component: 'catalog-process-locations',
     });
 
-    logger.info('Locations Refresh: Beginning locations refresh');
+    logger.info('Locations Processing: Starting');
 
-    const locations = await this.locationsCatalog.locations();
-    logger.info(`Locations Refresh: Visiting ${locations.length} locations`);
+    const locations = await this.rootLocationsProvider.getLocations();
+    logger.info(
+      `Locations Processing: Considering ${locations.length} root locations`,
+    );
 
-    for (const { data: location } of locations) {
-      logger.info(
-        `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
-      );
+    for (const location of locations) {
+      const label = `${location.type}:${location.target}`;
+      logger.info(`Locations Processing: Considering location ${label}`);
       try {
-        await this.processSingleLocation(location, logger);
-        await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
+        await this.processSingleLocation(
+          location,
+          logger.child({ location: label }),
+        );
+        // await this.locationsCatalog.logUpdateSuccess(label, undefined);
       } catch (e) {
         logger.warn(
-          `Locations Refresh: Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
+          `Locations Processing: Failed to refresh location ${label}, ${e.stack}`,
         );
-        await this.locationsCatalog.logUpdateFailure(location.id, e);
+        // await this.locationsCatalog.logUpdateFailure(location.target, e);
       }
     }
 
     logger.info(
-      `Locations Refresh: Completed locations refresh in ${durationText(
-        startTimestamp,
-      )}`,
+      `Locations Processing: Completed in ${durationText(startTimestamp)}`,
     );
   }
 
@@ -199,7 +204,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
   // Performs a full refresh of a single location
   private async processSingleLocation(
-    location: Location,
+    location: LocationSpec,
     optionalLogger?: Logger,
   ) {
     const logger = optionalLogger || this.logger;
@@ -208,9 +213,43 @@ export class HigherOrderOperations implements HigherOrderOperation {
       type: location.type,
       target: location.target,
     });
-    logger.info(`Detected ${locations.length} locations`);
 
-    // STORE HERE.
+    logger.info(`Detected ${locations.length} locations`);
+    // TODO - Store Location Entities in the catalog later
+
+    // Add next refresh state
+    const refreshStates: DbRefreshStateRequest[] = locations.map(
+      ({ location: { type, target } }) => ({
+        nextRefresh: 'now',
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            name: `${type}:${target}`,
+            namespace: 'default',
+          },
+          spec: {
+            location: { type, target },
+          },
+        },
+      }),
+    );
+
+    this.database.transaction(async tx => {
+      await this.database.addEntityRefreshState(tx, refreshStates);
+    });
+
+    // Log any errors
+    // Store any entities that have been found in the reader response
+  }
+
+  private async processRefreshState() {
+    this.database.transaction(async tx => {
+      await this.database.getProcessableEntities(tx, { processBatchSize: 5 });
+      // Fetch X items with next_update older than Y
+      // Process and update next_update
+      // Update state with etags, etc.
+    });
   }
 
   // Performs a full refresh of a single location

@@ -18,3 +18,8 @@ export { HigherOrderOperations } from './HigherOrderOperations';
 export { LocationReaders } from './LocationReaders';
 export * from './types';
 export * from './processors';
+export {
+  RootLocationsProviders,
+  ConfigLocationsProvider,
+  UserRegisteredLocationsProvider,
+} from './RootLocationsProviders';

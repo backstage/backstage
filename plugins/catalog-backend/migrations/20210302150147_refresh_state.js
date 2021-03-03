@@ -21,14 +21,20 @@
  */
 exports.up = async function up(knex) {
   await knex.schema.createTable('refresh_state', table => {
-    table.comment('Entity Refresh states');
+    table.comment('Location Refresh states');
     table
-      .string('entity_ref')
+      .text('entity_ref')
+      .primary()
       .notNullable()
+      // .references('full_name')
+      // .inTable('entities')
+      // .onDelete('CASCADE')
       .comment('A reference to the entity that the refresh state is tied to');
-    table.string('entity').notNullable().comment('The entity spec');
+    // TODO: This should probably be removed, just using it to make it easy to implement
+    //       refreshes without having to remodel locations
+    table.text('entity').notNullable().comment('The entity spec');
     table
-      .string('refresh_state')
+      .text('refresh_state')
       .notNullable()
       .comment('State information tied to refreshing of this entity such etag');
     table

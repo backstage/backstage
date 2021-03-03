@@ -21,6 +21,19 @@ import type {
   Location,
 } from '@backstage/catalog-model';
 
+export type DbRefreshStateRequest = {
+  entity: Entity;
+  nextRefresh: string; // TODO dateTime/ Date?
+};
+
+export type DbRefreshStateRow = {
+  entity_ref: string;
+  entity: string;
+  refresh_state: string;
+  next_update_at: string;
+  last_discovery_at: string;
+};
+
 export type DbEntitiesRow = {
   id: string;
   location_id: string | null;
@@ -238,6 +251,16 @@ export type Database = {
   locations(): Promise<DbLocationsRowWithStatus[]>;
 
   locationHistory(id: string): Promise<DatabaseLocationUpdateLogEvent[]>;
+
+  addEntityRefreshState(
+    tx: Transaction,
+    request: DbRefreshStateRequest[],
+  ): Promise<void>;
+
+  getProcessableEntities(
+    txOpaque: Transaction,
+    request: { processBatchSize: number },
+  ): Promise<DbRefreshStateRow[]>;
 
   addLocationUpdateLogEvent(
     locationId: string,

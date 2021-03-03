@@ -31,7 +31,8 @@ export type HigherOrderOperation = {
     spec: LocationSpec,
     options?: { dryRun?: boolean },
   ): Promise<AddLocationResult>;
-  refreshAllLocations(): Promise<void>;
+  //  refreshAllLocations(): Promise<void>;
+  processAllLocations(): Promise<void>;
 };
 
 export type AddLocationResult = {
@@ -69,6 +70,15 @@ export type ReadLocationError = {
   location: LocationSpec;
   error: Error;
 };
+
+//
+// CatalogProcessingEngine
+//
+
+export interface RootLocationsProvider {
+  // TODO(freben): Switch to locations$: Observable<LocationSpec[]>?
+  getLocations(): Promise<LocationSpec[]>;
+}
 
 export type CatalogRefreshResult = {
   entities: CatalogRefreshEntityResult[];

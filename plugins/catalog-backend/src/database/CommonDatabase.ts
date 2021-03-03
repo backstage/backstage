@@ -25,6 +25,7 @@ import {
   generateEntityUid,
   Location,
   parseEntityName,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import lodash from 'lodash';
@@ -45,6 +46,8 @@ import {
   DbLocationsRowWithStatus,
   DbPageInfo,
   EntityPagination,
+  DbRefreshStateRequest,
+  DbRefreshStateRow,
   Transaction,
 } from './types';
 
@@ -96,11 +99,39 @@ export class CommonDatabase implements Database {
 
   async addEntityRefreshState(
     txOpaque: Transaction,
-    request: {
-      entity: Entity;
-      nextRefresh: string; // TODO dateTime/ Date?
-    },
-  ) {}
+    request: DbRefreshStateRequest[],
+  ) {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+    for (const { entity, nextRefresh } of request) {
+      if (!entity.spec) {
+        throw new InputError('Entity spec is missing');
+      }
+      await tx<DbRefreshStateRow>('refresh_state')
+        .insert({
+          entity_ref: stringifyEntityRef(entity),
+          entity: JSON.stringify(entity.spec),
+          refresh_state: '',
+          next_update_at: nextRefresh,
+          last_discovery_at: 'now()',
+        })
+        .onConflict('entity_ref')
+        .merge();
+    }
+  }
+
+  async getProcessableEntities(
+    txOpaque: Transaction,
+    request: { processBatchSize: number },
+  ): Promise<DbRefreshStateRow[]> {
+    const tx = txOpaque as Knex.Transaction<any, any>;
+
+    return tx
+      .select('refresh_state')
+      .where('next_update_at', '<=', 'now()')
+      .select()
+      .limit(request.processBatchSize)
+      .orderBy('next_update_at', 'desc');
+  }
 
   async addEntities(
     txOpaque: Transaction,
