@@ -37,7 +37,7 @@ import {
   getGroupedProducts,
   getGroupedProjects,
   trendlineOf,
-} from '../utils/mockData';
+} from '../testUtils';
 
 export class ExampleCostInsightsClient implements CostInsightsApi {
   private request(_: any, res: any): Promise<any> {
