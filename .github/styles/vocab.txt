@@ -208,7 +208,6 @@ onboarding
 pagerduty
 pageview
 parallelization
-params
 plantuml
 postgres
 postpack
@@ -217,7 +216,6 @@ prebaked
 preconfigured
 prepack
 productional
-programatically
 proxying
 pygments
 pymdownx
@@ -280,7 +278,6 @@ validators
 varchar
 winston
 www
-xlarge
 xyz
 yaml
 zoomable
