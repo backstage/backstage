@@ -42,33 +42,44 @@ const templatePackagePaths = [
 ];
 
 export async function run() {
-  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
-  print(`CLI E2E test root: ${rootDir}\n`);
+  try {
+    const rootDir = await fs.mkdtemp(
+      resolvePath(os.tmpdir(), 'backstage-e2e-'),
+    );
+    print(`CLI E2E test root: ${rootDir}\n`);
 
-  print('Building dist workspace');
-  const workspaceDir = await buildDistWorkspace('workspace', rootDir);
+    print('Building dist workspace');
+    const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
-  const isPostgres = Boolean(process.env.POSTGRES_USER);
-  print('Creating a Backstage App');
-  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
+    const isPostgres = Boolean(process.env.POSTGRES_USER);
+    print('Creating a Backstage App');
+    const appDir = await createApp(
+      'test-app',
+      isPostgres,
+      workspaceDir,
+      rootDir,
+    );
 
-  print('Creating a Backstage Plugin');
-  const pluginName = await createPlugin('test-plugin', appDir);
+    print('Creating a Backstage Plugin');
+    const pluginName = await createPlugin('test-plugin', appDir);
 
-  print('Creating a Backstage Backend Plugin');
-  await createPlugin('test-plugin', appDir, ['--backend']);
+    print('Creating a Backstage Backend Plugin');
+    await createPlugin('test-plugin', appDir, ['--backend']);
 
-  print('Starting the app');
-  await testAppServe(pluginName, appDir);
+    print('Starting the app');
+    await testAppServe(pluginName, appDir);
 
-  print('Testing the backend startup');
-  await testBackendStart(appDir, isPostgres);
+    print('Testing the backend startup');
+    await testBackendStart(appDir, isPostgres);
 
-  print('All tests successful, removing test dir');
-  await fs.remove(rootDir);
+    print('All tests successful, removing test dir');
+    await fs.remove(rootDir);
 
-  // Just in case some child process was left hanging
-  process.exit(0);
+    // Just in case some child process was left hanging
+    process.exit(0);
+  } catch {
+    process.exit(1);
+  }
 }
 
 /**
