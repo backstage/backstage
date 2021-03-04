@@ -1,5 +1,25 @@
 # @backstage/plugin-jenkins
 
+## 0.3.12
+
+### Patch Changes
+
+- 0452ba238: - Add Jenkins logo to project page.
+  - Move to new Backstage breadcrumb component.
+  - Change references of deprecated "Job" terminology to "Project" per [Jenkins Glossary](https://www.jenkins.io/doc/book/glossary/).
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.3.11
 
 ### Patch Changes

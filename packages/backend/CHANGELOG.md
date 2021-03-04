@@ -1,5 +1,37 @@
 # example-backend
 
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [52b5bc3e2]
+- Updated dependencies [ecdd407b1]
+- Updated dependencies [4fbc9df79]
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [1987c9341]
+- Updated dependencies [f31b76b44]
+- Updated dependencies [15eee03bc]
+- Updated dependencies [f43192207]
+- Updated dependencies [8adb48df4]
+- Updated dependencies [e3adec2bd]
+- Updated dependencies [9ce68b677]
+- Updated dependencies [8106c9528]
+- Updated dependencies [d0ed25196]
+- Updated dependencies [96ccc8f69]
+- Updated dependencies [3af994c81]
+  - @backstage/plugin-scaffolder-backend@0.9.0
+  - @backstage/plugin-techdocs-backend@0.6.3
+  - @backstage/plugin-catalog-backend@0.6.4
+  - @backstage/plugin-kafka-backend@0.2.1
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+  - @backstage/plugin-proxy-backend@0.2.5
+  - @backstage/plugin-auth-backend@0.3.3
+  - @backstage/plugin-kubernetes-backend@0.2.8
+  - example-app@0.2.18
+
 ## 0.2.17
 
 ### Patch Changes
