@@ -24,7 +24,7 @@ describe('TechDocs Overview Content', () => {
     const { findByText } = render(
       wrapInTestApp(
         <OverviewContent
-          value={[
+          entities={[
             {
               apiVersion: 'version',
               kind: 'TestKind',

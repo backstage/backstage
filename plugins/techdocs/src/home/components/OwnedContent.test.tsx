@@ -18,44 +18,81 @@ import { render } from '@testing-library/react';
 
 import { ApiProvider, ApiRegistry, identityApiRef } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
-
+import { useOwnUser } from '@backstage/plugin-catalog';
 import { OwnedContent } from './OwnedContent';
+
+jest.mock('@backstage/plugin-catalog', () => ({
+  useOwnUser: () => {
+    return {
+      value: {
+        apiVersion: 'version',
+        kind: 'User',
+        metadata: {
+          name: 'owned',
+          namespace: 'default',
+        },
+        relations: [
+          {
+            target: {
+              kind: 'TestKind',
+              name: 'testName',
+            },
+            type: 'ownerOf',
+          },
+        ],
+      },
+    };
+  },
+}));
 
 describe('TechDocs Owned Content', () => {
   it('should render TechDocs Owned Documents', async () => {
-    const identityApi = {
-      getUserId: () => 'techdocs@example.com',
-    };
-
     const { findByText, queryByText } = render(
       wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[identityApiRef, identityApi]])}>
-          <OwnedContent
-            value={[
-              {
-                apiVersion: 'version',
-                kind: 'TestKind',
-                metadata: {
-                  name: 'testName',
-                },
-                spec: {
-                  owner: 'techdocs@example.com',
-                },
+        <OwnedContent
+          entities={[
+            {
+              apiVersion: 'version',
+              kind: 'TestKind',
+              metadata: {
+                name: 'testName',
               },
-              {
-                apiVersion: 'version',
-                kind: 'TestKind2',
-                metadata: {
-                  name: 'testName2',
-                },
-                spec: {
-                  owner: 'not-owned@example.com',
-                },
+              spec: {
+                owner: 'user:owned',
               },
-            ]}
-          />
-          ,
-        </ApiProvider>,
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'owned',
+                  },
+                  type: 'ownedBy',
+                },
+              ],
+            },
+            {
+              apiVersion: 'version',
+              kind: 'TestKind2',
+              metadata: {
+                name: 'testName2',
+              },
+              spec: {
+                owner: 'not-owned@example.com',
+              },
+              relations: [
+                {
+                  target: {
+                    kind: 'user',
+                    namespace: 'default',
+                    name: 'not-owned',
+                  },
+                  type: 'ownedBy',
+                },
+              ],
+            },
+          ]}
+        />,
       ),
     );
 
@@ -66,16 +103,8 @@ describe('TechDocs Owned Content', () => {
   });
 
   it('should render empty state if no owned documents exist', async () => {
-    const identityApi = {
-      getUserId: () => 'techdocs@example.com',
-    };
-
     const { findByText } = render(
-      wrapInTestApp(
-        <ApiProvider apis={ApiRegistry.from([[identityApiRef, identityApi]])}>
-          <OwnedContent value={[]} />,
-        </ApiProvider>,
-      ),
+      wrapInTestApp(<OwnedContent entities={[]} />),
     );
 
     expect(await findByText('No documents to show')).toBeInTheDocument();
