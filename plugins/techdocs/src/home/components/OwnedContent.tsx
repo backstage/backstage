@@ -25,8 +25,6 @@ import {
   ContentHeader,
   SupportButton,
   Table,
-  identityApiRef,
-  useApi,
   EmptyState,
   Button,
   SubvalueCell,

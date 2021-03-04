@@ -15,10 +15,7 @@
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-
-import { ApiProvider, ApiRegistry, identityApiRef } from '@backstage/core';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { useOwnUser } from '@backstage/plugin-catalog';
 import { OwnedContent } from './OwnedContent';
 
 jest.mock('@backstage/plugin-catalog', () => ({
