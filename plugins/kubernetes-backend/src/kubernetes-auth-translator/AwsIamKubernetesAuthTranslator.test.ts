@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const mockCredentialProvider = jest.fn();
-jest.mock('@aws-sdk/credential-provider-node', () => {
-  return {
-    defaultProvider: () => mockCredentialProvider,
-  };
-});
-
+import AWS from 'aws-sdk';
 import { AwsIamKubernetesAuthTranslator } from './AwsIamKubernetesAuthTranslator';
 
 describe('AwsIamKubernetesAuthTranslator tests', () => {
@@ -29,14 +23,12 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   it('returns a signed url for aws credentials', async () => {
     const authTranslator = new AwsIamKubernetesAuthTranslator();
 
-    mockCredentialProvider.mockImplementation(async () => {
-      // These credentials are not real.
-      // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
-      return {
-        accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
-        secretKeyId: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-      };
-    });
+    // These credentials are not real.
+    // Pulled from example in docs: https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html
+    AWS.config.credentials = new AWS.Credentials(
+      'AKIAIOSFODNN7EXAMPLE',
+      'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    );
 
     const clusterDetails = await authTranslator.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
@@ -47,17 +39,13 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
   });
 
   it('throws when unable to get aws credentials', async () => {
+    AWS.config.credentials = undefined;
     const authTranslator = new AwsIamKubernetesAuthTranslator();
-
-    mockCredentialProvider.mockImplementation(async () => {
-      throw new Error('not implemented');
-    });
-
     const promise = authTranslator.decorateClusterDetailsWithAuth({
       name: 'test-cluster',
       url: '',
       authProvider: 'aws',
     });
-    await expect(promise).rejects.toThrow('not implemented');
+    await expect(promise).rejects.toThrow('no credentials found');
   });
 });
