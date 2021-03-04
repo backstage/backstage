@@ -75,6 +75,11 @@ labels to your resources and use the label selector annotation as follows:
 objects.
 [See the plugin code](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
 
+`backstage: <selector>` for matching with catalog-info.yaml
+
+`backstage.io/kubernetes-id: <entity-service-name>`for get k8s service-related 
+objects. [link](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
+
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
 metadata:
@@ -86,6 +91,8 @@ metadata:
   name: <k8s-app-name>
   namespace: <namespace>
 ```
+k8s-app-name and service-entity-name could be different, but if you would like
+to have consistent names between k8s and backstage, we recommend use same name.
 
 k8s-app-name and service-entity-name could be different, but if you would like
 to have consistent names between k8s and backstage, we recommend use same name.
