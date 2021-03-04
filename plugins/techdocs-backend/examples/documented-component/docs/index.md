@@ -6,12 +6,12 @@ Here is a bulleted list:
 
 - Item one
 - Item two
-- Item Three
+- Item three
 
 Check out the [Markdown Guide](https://www.markdownguide.org/) to learn more about how to simply create documentation.
 
-You can also learn more about how to configure and setup this documentation in Backstage,
-[read up on the TechDocs Overview](https://backstage.io/docs/features/techdocs/techdocs-overview).
+You can also learn more about how to configure and setup this documentation in Backstage by
+[reading up on the TechDocs Overview](https://backstage.io/docs/features/techdocs/techdocs-overview).
 
 ## Image Example
 
