@@ -77,7 +77,7 @@ recommend you for adding two labels and using label selector annotations:
 
 `backstage.io/kubernetes-id: <entity-service-name>`for get k8s service-related
 objects.
-[See on Github](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
+[See the plugin code](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
 
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
