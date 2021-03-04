@@ -18,7 +18,7 @@ import React from 'react';
 import { getByRole, waitFor } from '@testing-library/react';
 import UserEvent from '@testing-library/user-event';
 import { ProjectSelect } from './ProjectSelect';
-import { MockFilterProvider } from '../../utils/tests';
+import { MockFilterProvider } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
 const mockProjects = [

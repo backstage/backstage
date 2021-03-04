@@ -22,15 +22,13 @@ import {
   createMockEntity,
   mockDefaultLoadingState,
   MockComputeEngine,
-} from '../../utils/mockData';
-import {
   MockConfigProvider,
   MockCostInsightsApiProvider,
   MockCurrencyProvider,
   MockBillingDateProvider,
   MockScrollProvider,
   MockLoadingProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { Duration, Entity, Product } from '../../types';
 
 // suppress recharts componentDidUpdate warnings

@@ -17,7 +17,7 @@ import React from 'react';
 import { AlertStatusSummary } from './AlertStatusSummary';
 import { render } from '@testing-library/react';
 import { Alert, AlertStatus } from '../../types';
-import { MockScrollProvider } from '../../utils/tests';
+import { MockScrollProvider } from '../../testUtils';
 
 const mockSnoozed: Alert = {
   title: 'snoozed-title',

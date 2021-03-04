@@ -14,264 +14,7 @@
  * limitations under the License.
  */
 
-import dayjs from 'dayjs';
-import regression, { DataPoint } from 'regression';
-import { Config } from '@backstage/config';
-import { ConfigApi } from '@backstage/core';
-import {
-  ChangeStatistic,
-  Duration,
-  Entity,
-  Product,
-  ProductFilters,
-  ProjectGrowthData,
-  Trendline,
-  UnlabeledDataflowAlertProject,
-  UnlabeledDataflowData,
-  DateAggregation,
-  DEFAULT_DATE_FORMAT,
-} from '../types';
-import {
-  DefaultLoadingAction,
-  getDefaultState as getDefaultLoadingState,
-} from '../utils/loading';
-import { findAlways } from '../utils/assert';
-import { inclusiveEndDateOf, inclusiveStartDateOf } from './duration';
-
-type mockAlertRenderer<T> = (alert: T) => T;
-type mockEntityRenderer<T> = (entity: T) => T;
-
-type IntervalFields = {
-  duration: Duration;
-  endDate: string;
-};
-
-export const createMockEntity = (
-  callback?: mockEntityRenderer<Entity>,
-): Entity => {
-  const defaultEntity: Entity = {
-    id: 'test-entity',
-    aggregation: [100, 200],
-    entities: {},
-    change: {
-      ratio: 0,
-      amount: 0,
-    },
-  };
-
-  if (typeof callback === 'function') {
-    return callback({ ...defaultEntity });
-  }
-  return { ...defaultEntity };
-};
-
-export const createMockProduct = (
-  callback?: mockEntityRenderer<Product>,
-): Product => {
-  const defaultProduct: Product = {
-    kind: 'compute-engine',
-    name: 'Compute Engine',
-  };
-  if (typeof callback === 'function') {
-    return callback({ ...defaultProduct });
-  }
-  return { ...defaultProduct };
-};
-
-export const createMockProjectGrowthData = (
-  callback?: mockAlertRenderer<ProjectGrowthData>,
-): ProjectGrowthData => {
-  const data: ProjectGrowthData = {
-    project: 'test-project-growth-alert',
-    periodStart: '2019-Q4',
-    periodEnd: '2020-Q1',
-    aggregation: [670532.1, 970502.8],
-    change: {
-      ratio: 0.5,
-      amount: 180000,
-    },
-    products: [],
-  };
-
-  if (typeof callback === 'function') {
-    return callback({ ...data });
-  }
-
-  return { ...data };
-};
-
-export const createMockUnlabeledDataflowData = (
-  callback?: mockAlertRenderer<UnlabeledDataflowData>,
-): UnlabeledDataflowData => {
-  const data: UnlabeledDataflowData = {
-    periodStart: '2020-05-01',
-    periodEnd: '2020-06-1',
-    projects: [],
-    unlabeledCost: 0,
-    labeledCost: 0,
-  };
-
-  if (typeof callback === 'function') {
-    return callback({ ...data });
-  }
-
-  return { ...data };
-};
-
-export const createMockUnlabeledDataflowAlertProject = (
-  callback?: mockEntityRenderer<UnlabeledDataflowAlertProject>,
-): UnlabeledDataflowAlertProject => {
-  const defaultProject: UnlabeledDataflowAlertProject = {
-    id: 'test-alert-project',
-    unlabeledCost: 2000.0,
-    labeledCost: 3200.0,
-  };
-  if (typeof callback === 'function') {
-    return callback({ ...defaultProject });
-  }
-  return { ...defaultProject };
-};
-
-export const MockProductTypes: Record<string, string> = {
-  'compute-engine': 'Compute Engine',
-  'cloud-dataflow': 'Cloud Dataflow',
-  'cloud-storage': 'Cloud Storage',
-  'big-query': 'Big Query',
-  'big-table': 'BigTable',
-  'cloud-pub-sub': 'Cloud Pub/Sub',
-};
-
-export const MockProductFilters: ProductFilters = Object.keys(
-  MockProductTypes,
-).map(productType => ({ duration: Duration.P30D, productType }));
-
-export const MockProducts: Product[] = Object.keys(MockProductTypes).map(
-  productType =>
-    createMockProduct(() => ({
-      kind: productType,
-      name: MockProductTypes[productType],
-    })),
-);
-
-export const MockDefaultLoadingActions = ([
-  DefaultLoadingAction.UserGroups,
-  DefaultLoadingAction.CostInsightsInitial,
-  DefaultLoadingAction.CostInsightsPage,
-] as string[]).concat(MockProducts.map(product => product.kind));
-
-export const mockDefaultLoadingState = getDefaultLoadingState(
-  MockDefaultLoadingActions,
-);
-
-export const MockComputeEngine = findAlways(
-  MockProducts,
-  p => p.kind === 'compute-engine',
-);
-export const MockCloudDataflow = findAlways(
-  MockProducts,
-  p => p.kind === 'cloud-dataflow',
-);
-export const MockCloudStorage = findAlways(
-  MockProducts,
-  p => p.kind === 'cloud-storage',
-);
-export const MockBigQuery = findAlways(
-  MockProducts,
-  p => p.kind === 'big-query',
-);
-export const MockBigtable = findAlways(
-  MockProducts,
-  p => p.kind === 'big-table',
-);
-
-export const MockProductsConfig: Partial<ConfigApi> = {
-  keys: () => Object.keys(MockProductTypes),
-};
-
-export const MockMetricsConfig: Partial<ConfigApi> = {
-  getOptionalString: () => 'daily-cost',
-  keys: () => ['daily-cost'],
-};
-
-export const MockCostInsightsConfig: Partial<Config> = {
-  getConfig: () => MockProductsConfig as Config,
-  getOptionalConfig: () => MockMetricsConfig as Config,
-};
-
-export function trendlineOf(aggregation: DateAggregation[]): Trendline {
-  const data: ReadonlyArray<DataPoint> = aggregation.map(a => [
-    Date.parse(a.date) / 1000,
-    a.amount,
-  ]);
-  const result = regression.linear(data, { precision: 5 });
-  return {
-    slope: result.equation[0],
-    intercept: result.equation[1],
-  };
-}
-
-export function changeOf(aggregation: DateAggregation[]): ChangeStatistic {
-  const firstAmount = aggregation.length ? aggregation[0].amount : 0;
-  const lastAmount = aggregation.length
-    ? aggregation[aggregation.length - 1].amount
-    : 0;
-  const ratio =
-    firstAmount !== 0 ? (lastAmount - firstAmount) / firstAmount : 0;
-  return {
-    ratio: ratio,
-    amount: lastAmount - firstAmount,
-  };
-}
-
-export function aggregationFor(
-  intervals: string,
-  baseline: number,
-): DateAggregation[] {
-  const { duration, endDate } = parseIntervals(intervals);
-  const inclusiveEndDate = inclusiveEndDateOf(duration, endDate);
-  const days = dayjs(endDate).diff(
-    inclusiveStartDateOf(duration, inclusiveEndDate),
-    'day',
-  );
-
-  function nextDelta(): number {
-    const varianceFromBaseline = 0.15;
-    // Let's give positive vibes in trendlines - higher change for positive delta with >0.5 value
-    const positiveTrendChance = 0.55;
-    const normalization = positiveTrendChance - 1;
-    return baseline * (Math.random() + normalization) * varianceFromBaseline;
-  }
-
-  return [...Array(days).keys()].reduce(
-    (values: DateAggregation[], i: number): DateAggregation[] => {
-      const last = values.length ? values[values.length - 1].amount : baseline;
-      const date = dayjs(inclusiveStartDateOf(duration, inclusiveEndDate))
-        .add(i, 'day')
-        .format(DEFAULT_DATE_FORMAT);
-      const amount = Math.max(0, last + nextDelta());
-      values.push({
-        date: date,
-        amount: amount,
-      });
-      return values;
-    },
-    [],
-  );
-}
-
-function parseIntervals(intervals: string): IntervalFields {
-  const match = intervals.match(
-    /\/(?<duration>P\d+[DM])\/(?<date>\d{4}-\d{2}-\d{2})/,
-  );
-  if (Object.keys(match?.groups || {}).length !== 2) {
-    throw new Error(`Invalid intervals: ${intervals}`);
-  }
-  const { duration, date } = match!.groups!;
-  return {
-    duration: duration as Duration,
-    endDate: date,
-  };
-}
+import { DateAggregation, Entity } from '../types';
 
 export const MockAggregatedDailyCosts: DateAggregation[] = [
   {
@@ -520,7 +263,7 @@ export const MockAggregatedDailyCosts: DateAggregation[] = [
   },
 ];
 
-export const SampleBigQueryInsights: Entity = {
+export const MockBigQueryInsights: Entity = {
   id: 'bigQuery',
   aggregation: [10_000, 30_000],
   change: {
@@ -560,7 +303,7 @@ export const SampleBigQueryInsights: Entity = {
   },
 };
 
-export const SampleCloudDataflowInsights: Entity = {
+export const MockCloudDataflowInsights: Entity = {
   id: 'cloudDataflow',
   aggregation: [100_000, 158_000],
   change: {
@@ -579,7 +322,7 @@ export const SampleCloudDataflowInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [3_000, 4_000],
               change: {
                 ratio: 0.333333,
@@ -588,7 +331,7 @@ export const SampleCloudDataflowInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [7_000, 8_000],
               change: {
                 ratio: 0.14285714,
@@ -609,7 +352,7 @@ export const SampleCloudDataflowInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [20_000, 15_000],
               change: {
                 ratio: -0.25,
@@ -618,7 +361,7 @@ export const SampleCloudDataflowInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [30_000, 35_000],
               change: {
                 ratio: -0.16666666666666666,
@@ -627,7 +370,7 @@ export const SampleCloudDataflowInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU C',
+              id: 'Mock SKU C',
               aggregation: [10_000, 20_000],
               change: {
                 ratio: 1,
@@ -648,7 +391,7 @@ export const SampleCloudDataflowInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [4_000, 4_000],
               change: {
                 ratio: 0,
@@ -657,7 +400,7 @@ export const SampleCloudDataflowInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [8_000, 4_000],
               change: {
                 ratio: -0.5,
@@ -681,7 +424,7 @@ export const SampleCloudDataflowInsights: Entity = {
   },
 };
 
-export const SampleCloudStorageInsights: Entity = {
+export const MockCloudStorageInsights: Entity = {
   id: 'cloudStorage',
   aggregation: [45_000, 45_000],
   change: {
@@ -700,7 +443,7 @@ export const SampleCloudStorageInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [10_000, 11_000],
               change: {
                 ratio: 0.1,
@@ -709,7 +452,7 @@ export const SampleCloudStorageInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [2_000, 5_000],
               change: {
                 ratio: 1.5,
@@ -718,7 +461,7 @@ export const SampleCloudStorageInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU C',
+              id: 'Mock SKU C',
               aggregation: [3_000, 4_000],
               change: {
                 ratio: 0.3333,
@@ -739,7 +482,7 @@ export const SampleCloudStorageInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [12_000, 13_000],
               change: {
                 ratio: 0.08333333333333333,
@@ -748,7 +491,7 @@ export const SampleCloudStorageInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [16_000, 12_000],
               change: {
                 ratio: -0.25,
@@ -757,7 +500,7 @@ export const SampleCloudStorageInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU C',
+              id: 'Mock SKU C',
               aggregation: [2_000, 0],
               change: {
                 ratio: -1,
@@ -781,7 +524,7 @@ export const SampleCloudStorageInsights: Entity = {
   },
 };
 
-export const SampleComputeEngineInsights: Entity = {
+export const MockComputeEngineInsights: Entity = {
   id: 'computeEngine',
   aggregation: [80_000, 90_000],
   change: {
@@ -800,7 +543,7 @@ export const SampleComputeEngineInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [4_000, 2_000],
               change: {
                 ratio: -0.5,
@@ -809,7 +552,7 @@ export const SampleComputeEngineInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [7_000, 6_000],
               change: {
                 ratio: -0.14285714285714285,
@@ -818,7 +561,7 @@ export const SampleComputeEngineInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU C',
+              id: 'Mock SKU C',
               aggregation: [9_000, 2_000],
               change: {
                 ratio: -0.7777777777777778,
@@ -859,7 +602,7 @@ export const SampleComputeEngineInsights: Entity = {
         entities: {
           SKU: [
             {
-              id: 'Sample SKU A',
+              id: 'Mock SKU A',
               aggregation: [1_000, 2_000],
               change: {
                 ratio: 1,
@@ -868,7 +611,7 @@ export const SampleComputeEngineInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU B',
+              id: 'Mock SKU B',
               aggregation: [4_000, 8_000],
               change: {
                 ratio: 1,
@@ -877,7 +620,7 @@ export const SampleComputeEngineInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample SKU C',
+              id: 'Mock SKU C',
               aggregation: [5_000, 10_000],
               change: {
                 ratio: 1,
@@ -921,7 +664,7 @@ export const SampleComputeEngineInsights: Entity = {
   },
 };
 
-export const SampleEventsInsights: Entity = {
+export const MockEventsInsights: Entity = {
   id: 'events',
   aggregation: [20_000, 10_000],
   change: {
@@ -940,7 +683,7 @@ export const SampleEventsInsights: Entity = {
         entities: {
           product: [
             {
-              id: 'Sample Product A',
+              id: 'Mock Product A',
               aggregation: [5_000, 2_000],
               change: {
                 ratio: -0.6,
@@ -949,7 +692,7 @@ export const SampleEventsInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample Product B',
+              id: 'Mock Product B',
               aggregation: [7_000, 2_500],
               change: {
                 ratio: -0.64285714285,
@@ -958,7 +701,7 @@ export const SampleEventsInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample Product C',
+              id: 'Mock Product C',
               aggregation: [3_000, 2_500],
               change: {
                 ratio: -0.16666666666,
@@ -979,7 +722,7 @@ export const SampleEventsInsights: Entity = {
         entities: {
           product: [
             {
-              id: 'Sample Product A',
+              id: 'Mock Product A',
               aggregation: [2_000, 1_000],
               change: {
                 ratio: -0.5,
@@ -988,7 +731,7 @@ export const SampleEventsInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample Product B',
+              id: 'Mock Product B',
               aggregation: [1_000, 1_500],
               change: {
                 ratio: 0.5,
@@ -997,7 +740,7 @@ export const SampleEventsInsights: Entity = {
               entities: {},
             },
             {
-              id: 'Sample Product C',
+              id: 'Mock Product C',
               aggregation: [2_000, 500],
               change: {
                 ratio: -0.75,
@@ -1011,72 +754,3 @@ export const SampleEventsInsights: Entity = {
     ],
   },
 };
-
-export function entityOf(product: string): Entity {
-  switch (product) {
-    case 'computeEngine':
-      return SampleComputeEngineInsights;
-    case 'cloudDataflow':
-      return SampleCloudDataflowInsights;
-    case 'cloudStorage':
-      return SampleCloudStorageInsights;
-    case 'bigQuery':
-      return SampleBigQueryInsights;
-    case 'events':
-      return SampleEventsInsights;
-    default:
-      throw new Error(
-        `Cannot get insights for ${product}. Make sure product matches product property in app-info.yaml`,
-      );
-  }
-}
-
-export const getGroupedProducts = (intervals: string) => [
-  {
-    id: 'Cloud Dataflow',
-    aggregation: aggregationFor(intervals, 1_700),
-  },
-  {
-    id: 'Compute Engine',
-    aggregation: aggregationFor(intervals, 350),
-  },
-  {
-    id: 'Cloud Storage',
-    aggregation: aggregationFor(intervals, 1_300),
-  },
-  {
-    id: 'BigQuery',
-    aggregation: aggregationFor(intervals, 2_000),
-  },
-  {
-    id: 'Cloud SQL',
-    aggregation: aggregationFor(intervals, 750),
-  },
-  {
-    id: 'Cloud Spanner',
-    aggregation: aggregationFor(intervals, 50),
-  },
-  {
-    id: 'Cloud Pub/Sub',
-    aggregation: aggregationFor(intervals, 1_000),
-  },
-  {
-    id: 'Cloud Bigtable',
-    aggregation: aggregationFor(intervals, 250),
-  },
-];
-
-export const getGroupedProjects = (intervals: string) => [
-  {
-    id: 'project-a',
-    aggregation: aggregationFor(intervals, 1_700),
-  },
-  {
-    id: 'project-b',
-    aggregation: aggregationFor(intervals, 350),
-  },
-  {
-    id: 'project-c',
-    aggregation: aggregationFor(intervals, 1_300),
-  },
-];

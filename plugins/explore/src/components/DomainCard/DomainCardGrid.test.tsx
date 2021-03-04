@@ -15,13 +15,13 @@
  */
 
 import { DomainEntity } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { catalogEntityRouteRef } from '../../routes';
 import { DomainCardGrid } from './DomainCardGrid';
 
 describe('<DomainCardGrid />', () => {
-  it('renders a grid of domain cards', () => {
+  it('renders a grid of domain cards', async () => {
     const entities: DomainEntity[] = [
       {
         apiVersion: 'backstage.io/v1alpha1',
@@ -44,9 +44,14 @@ describe('<DomainCardGrid />', () => {
         },
       },
     ];
-    const { getByText } = render(<DomainCardGrid entities={entities} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <DomainCardGrid entities={entities} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
+    );
 
     expect(getByText('artists')).toBeInTheDocument();
     expect(getByText('playback')).toBeInTheDocument();

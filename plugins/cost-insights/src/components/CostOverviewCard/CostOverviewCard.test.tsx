@@ -24,13 +24,11 @@ import {
   getGroupedProjects,
   MockAggregatedDailyCosts,
   trendlineOf,
-} from '../../utils/mockData';
-import {
   MockBillingDateProvider,
   MockConfigProvider,
   MockFilterProvider,
   MockScrollProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { CostInsightsThemeProvider } from '../CostInsightsPage/CostInsightsThemeProvider';
 
 const mockGroupDailyCost: Cost = {

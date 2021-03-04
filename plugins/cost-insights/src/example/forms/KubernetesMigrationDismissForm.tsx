@@ -28,22 +28,22 @@ import {
   FormGroup,
   Typography,
 } from '@material-ui/core';
-import { AlertFormProps, Entity } from '../types';
-import { MigrationAlert } from '../alerts';
-import { findAlways } from '../utils/assert';
+import { AlertFormProps, Entity } from '../../types';
+import { KubernetesMigrationAlert } from '../alerts';
+import { findAlways } from '../../utils/assert';
 
-export type MigrationDismissFormData = {
+export type KubernetesMigrationDismissFormData = {
   services: Entity[];
 };
 
-export type MigrationDismissFormProps = AlertFormProps<
-  MigrationAlert,
-  MigrationDismissFormData
+export type KubernetesMigrationDismissFormProps = AlertFormProps<
+  KubernetesMigrationAlert,
+  KubernetesMigrationDismissFormData
 >;
 
-export const MigrationDismissForm = forwardRef<
+export const KubernetesMigrationDismissForm = forwardRef<
   HTMLFormElement,
-  MigrationDismissFormProps
+  KubernetesMigrationDismissFormProps
 >(({ onSubmit, disableSubmit, alert }, ref) => {
   const [services, setServices] = useState<Entity[]>(alert.data.services);
 
