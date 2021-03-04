@@ -37,5 +37,6 @@ export type { Entity } from './Entity';
 export type { Group } from './Group';
 export type { Metric, MetricData } from './Metric';
 export type { Product } from './Product';
+export type { Project } from './Project';
 export type { ResourceData, ResourceDataKey } from './ResourceData';
 export type { CostInsightsTheme } from './Theme';
