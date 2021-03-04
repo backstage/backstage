@@ -4365,25 +4365,24 @@
     react-router "6.0.0-beta.0"
     react-use "^15.3.6"
 
-"@roadiehq/backstage-plugin-travis-ci@^0.2.8":
-  version "0.2.8"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.2.8.tgz#c730531519bf3e3dba35522d5e6c822176ddb9c8"
-  integrity sha512-8R8waHoviT5chHGybAMVVRHHmeytn+8Po7sU08WCYIt4Vkw2/gwu36fd90y+lW4x6T0s3ZiaJrsQ3KlA7LmRnQ==
+"@roadiehq/backstage-plugin-travis-ci@^0.4.5":
+  version "0.4.5"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.4.5.tgz#c80eb972951badd110173f5521aae65b8a5cfc53"
+  integrity sha512-+y5kFtVaPjXgf6naGVU2E3C33nvoXuaBbfYEmCeByg2t0b5jHMHzsTv2tV5/8zeAcus/5+yIkRCq+F1Tcbwutw==
   dependencies:
-    "@backstage/catalog-model" "^0.2.0"
-    "@backstage/core" "^0.3.0"
-    "@backstage/core-api" "^0.2.1"
-    "@backstage/plugin-catalog" "^0.2.1"
+    "@backstage/catalog-model" "^0.7.0"
+    "@backstage/core" "^0.6.0"
+    "@backstage/plugin-catalog" "^0.3.1"
     "@backstage/theme" "^0.2.1"
     "@material-ui/core" "^4.9.1"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
-    date-fns "^2.15.0"
+    cross-fetch "^3.0.6"
+    date-fns "^2.16.1"
     history "^5.0.0"
-    moment "^2.27.0"
+    moment "^2.29.1"
     react "^16.13.1"
     react-dom "^16.13.1"
-    react-lazylog "^4.5.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
@@ -10942,10 +10941,10 @@ date-fns@^1.27.2:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-fns@^2.0.0-alpha.27, date-fns@^2.0.1, date-fns@^2.15.0:
-  version "2.15.0"
-  resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.15.0.tgz#424de6b3778e4e69d3ff27046ec136af58ae5d5f"
-  integrity sha512-ZCPzAMJZn3rNUvvQIMlXhDr4A+Ar07eLeGsGREoWU19a3Pqf5oYa+ccd+B3F6XVtQY6HANMFdOQ8A+ipFnvJdQ==
+date-fns@^2.0.0-alpha.27, date-fns@^2.0.1, date-fns@^2.16.1:
+  version "2.18.0"
+  resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.18.0.tgz#08e50aee300ad0d2c5e054e3f0d10d8f9cdfe09e"
+  integrity sha512-NYyAg4wRmGVU4miKq5ivRACOODdZRY3q5WLmOJSq8djyzftYphU7dTHLcEtLqEvfqMKQ0jVv91P4BAwIjsXIcw==
 
 dateformat@^3.0.0:
   version "3.0.3"
@@ -18208,7 +18207,7 @@ modify-values@^1.0.0:
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-moment@^2.19.3, moment@^2.25.3, moment@^2.27.0:
+moment@^2.19.3, moment@^2.25.3, moment@^2.27.0, moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
