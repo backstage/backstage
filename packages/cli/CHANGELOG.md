@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.6.3
+
+### Patch Changes
+
+- 507513fed: Bump `@svgr/webpack` from `5.4.x` to `5.5.x`.
+- e37d2de99: Bump `@testing-library/react` in the plugin template from `^10.4.1` to `^11.2.5`. To apply this to an existing plugin, update the dependency in your `package.json`.
+- 11c6208fe: Fixed an issue where the `backend:dev` command would get stuck executing the backend process multiple times, causing port conflict issues.
+- d4f0a1406: New config command to export the configuration schema. When running backstage-cli with yarn, consider using `yarn --silent backstage-cli config:schema` to get a clean output on `stdout`.
+- b93538acc: Fix for type declaration input being required for build even if types aren't being built.
+- 8871e7523: Bump `ts-loader` dependency range from `^7.0.4` to `^8.0.17`.
+
 ## 0.6.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/techdocs-common
 
+## 0.4.3
+
+### Patch Changes
+
+- f43192207: remove usage of res.send() for res.json() and res.end() to ensure content types are more consistently application/json on backend responses and error cases
+- 61299519f: Remove read-store-upload loop when uploading S3 objects for TechDocs
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
 ## 0.4.2
 
 ### Patch Changes
