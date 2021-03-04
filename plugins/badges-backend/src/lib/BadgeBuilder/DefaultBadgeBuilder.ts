@@ -14,83 +14,56 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { makeBadge } from 'badge-maker';
+import { makeBadge, Format } from 'badge-maker';
 import { BadgeBuilder, BadgeOptions } from './types';
-import { Badge, BadgeConfig, BadgeStyle, BADGE_STYLES } from '../../types';
-import { interpolate } from '../../utils';
+import { Badge, BadgeFactories } from '../../types';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
-  private readonly badges: BadgeConfig = {};
+  constructor(private readonly factories: BadgeFactories) {}
 
-  constructor(private readonly logger: Logger, initBadges: Badge[]) {
-    for (const badge of initBadges) {
-      if (!badge.id) {
-        logger.warning(`badge without "id": ${JSON.stringify(badge, null, 2)}`);
-      } else {
-        this.badges[badge.id] = badge;
-        logger.info(`register ${badge.kind || 'entity'} badge: "${badge.id}"`);
-      }
-    }
-  }
-
-  public async getAllBadgeConfigs(): Promise<Badge[]> {
-    return Object.values(this.badges);
-  }
-
-  public async getBadgeConfig(badgeId: string): Promise<Badge> {
-    return (
-      this.badges[badgeId] ||
-      this.badges.default ||
-      ({
-        label: 'Unknown badge ID',
-        message: badgeId,
-        color: 'red',
-      } as Badge)
-    );
+  public async getBadgeIds(): Promise<string[]> {
+    return Object.keys(this.factories);
   }
 
   public async createBadge(options: BadgeOptions): Promise<string> {
-    const { context, config: badge } = options;
-    const params = {
-      label: this.render(badge.label, context),
-      message: this.render(badge.message, context),
-      color: badge.color || '#36BAA2',
-    } as Badge;
+    const factory = this.factories[options.badgeId];
+    const badge = factory
+      ? factory.createBadge(options.context)
+      : ({
+          label: 'unknown badge',
+          message: options.badgeId,
+          color: 'red',
+        } as Badge);
 
-    if (badge.labelColor) {
-      params.labelColor = badge.labelColor;
-    }
-
-    if (BADGE_STYLES.includes(badge.style as BadgeStyle)) {
-      params.style = badge.style as BadgeStyle;
+    if (!badge) {
+      return '';
     }
 
     switch (options.format) {
       case 'json':
-        if (badge.link) {
-          params.link = this.render(badge.link, context);
-        }
-
-        params.description = badge.description
-          ? this.render(badge.description, context)
-          : badge.id;
-        params.markdown = this.getMarkdownCode(params, context.badge_url!);
-
         return JSON.stringify(
           {
-            badge: params,
-            ...options,
+            badge,
+            id: options.badgeId,
+            url: options.context.badgeUrl,
+            markdown: this.getMarkdownCode(badge, options.context.badgeUrl),
           },
           null,
           2,
         );
       case 'svg':
         try {
-          return makeBadge(params);
+          const format = {
+            message: badge.message,
+            color: badge.color || '#36BAA2',
+            label: badge.label || '',
+            labelColor: badge.labelColor || '',
+            style: badge.style || 'flat-square',
+          } as Format;
+          return makeBadge(format);
         } catch (err) {
           return makeBadge({
-            label: 'Invalid badge parameters',
+            label: 'invalid badge',
             message: `${err}`,
             color: 'red',
           });
@@ -100,20 +73,9 @@ export class DefaultBadgeBuilder implements BadgeBuilder {
     }
   }
 
-  private render(template: string, context: object): string {
-    try {
-      return interpolate(template.replace(/_{/g, '${'), context).toLowerCase();
-    } catch (err) {
-      this.logger.info(
-        `badge template error: ${err}. In template: "${template}"`,
-      );
-      return `${err} [${template}]`;
-    }
-  }
-
   private getMarkdownCode(params: Badge, badge_url: string): string {
     let alt_text = `${params.label}: ${params.message}`;
-    if (params.description !== params.label) {
+    if (params.description && params.description !== params.label) {
       alt_text = `${params.description}, ${alt_text}`;
     }
     const tooltip = params.description ? ` "${params.description}"` : '';

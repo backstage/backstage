@@ -14,39 +14,85 @@
  * limitations under the License.
  */
 
-import { Badge } from './types';
+import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Badge, BadgeContext, BadgeFactories } from './types';
 
-export const createDefaultBadges = (): Badge[] => [
-  {
-    id: 'pingback',
-    kind: 'entity',
-    description: 'Link to _{entity.metadata.name} in _{app.title}',
-    label: '_{entity.kind}',
-    message: '_{entity.metadata.name}',
-    style: 'flat-square',
+function appTitle(context: BadgeContext): string {
+  return context.config.getString('app.title') || 'Backstage';
+}
+
+function entityUrl(context: BadgeContext): string {
+  const e = context.entity!;
+  const entityUri = `${e.kind}/${
+    e.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+  }/${e.metadata.name}`;
+  const catalogUrl = `${context.config.getString('app.baseUrl')}/catalog`;
+  return `${catalogUrl}/${entityUri}`;
+}
+
+export const createDefaultBadgeFactories = (): BadgeFactories => ({
+  pingback: {
+    createBadge: (context: BadgeContext): Badge | null => {
+      if (!context.entity) {
+        return null;
+      }
+      return {
+        description: `Link to ${context.entity.metadata.name} in ${appTitle(
+          context,
+        )}`,
+        kind: 'entity',
+        label: context.entity.kind,
+        link: entityUrl(context),
+        message: context.entity.metadata.name,
+        style: 'flat-square',
+      };
+    },
   },
-  {
-    id: 'lifecycle',
-    kind: 'entity',
-    description: 'Entity lifecycle badge',
-    label: 'lifecycle',
-    message: '_{entity.spec.lifecycle}',
-    style: 'flat-square',
+
+  lifecycle: {
+    createBadge: (context: BadgeContext): Badge | null => {
+      if (!context.entity) {
+        return null;
+      }
+      return {
+        description: 'Entity lifecycle badge',
+        kind: 'entity',
+        label: 'lifecycle',
+        link: entityUrl(context),
+        message: `${context.entity.spec?.lifecycle || 'unknown'}`,
+        style: 'flat-square',
+      };
+    },
   },
-  {
-    id: 'owner',
-    kind: 'entity',
-    description: 'Entity owner badge',
-    label: 'owner',
-    message: '_{entity.spec.owner}',
-    style: 'flat-square',
+
+  owner: {
+    createBadge: (context: BadgeContext): Badge | null => {
+      if (!context.entity) {
+        return null;
+      }
+      return {
+        description: 'Entity owner badge',
+        kind: 'entity',
+        label: 'owner',
+        link: entityUrl(context),
+        message: `${context.entity.spec?.owner || 'unknown'}`,
+        style: 'flat-square',
+      };
+    },
   },
-  {
-    id: 'docs',
-    kind: 'entity',
-    link: '_{entity_url}/docs',
-    label: 'docs',
-    message: '_{entity.metadata.name}',
-    style: 'flat-square',
+
+  docs: {
+    createBadge: (context: BadgeContext): Badge | null => {
+      if (!context.entity) {
+        return null;
+      }
+      return {
+        kind: 'entity',
+        label: 'docs',
+        link: `${entityUrl(context)}/docs`,
+        message: context.entity.metadata.name,
+        style: 'flat-square',
+      };
+    },
   },
-];
+});

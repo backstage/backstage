@@ -16,19 +16,17 @@
 
 import {
   createRouter,
-  createDefaultBadges,
+  createDefaultBadgeFactories,
 } from '@backstage/plugin-badges-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
-  logger,
   config,
   discovery,
 }: PluginEnvironment) {
   return await createRouter({
-    logger,
     config,
     discovery,
-    badges: createDefaultBadges(),
+    badgeFactories: createDefaultBadgeFactories(),
   });
 }

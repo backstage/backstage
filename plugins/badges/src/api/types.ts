@@ -29,7 +29,7 @@ export type BadgeStyle =
   | 'for-the-badge'
   | 'social';
 
-interface BadgeParams {
+interface Badge {
   color?: string;
   description?: string;
   kind?: 'entity';
@@ -40,29 +40,18 @@ interface BadgeParams {
   style?: BadgeStyle;
 }
 
-interface Badge extends BadgeParams {
-  markdown: string;
-}
-
-interface BadgeConfig extends BadgeParams {
-  id: string;
-}
-
 export interface BadgeSpec {
-  /** The rendered fields, markdown code */
+  /** Badge id */
+  id: string;
+
+  /** Badge data */
   badge: Badge;
 
-  /** The configuration data, with placeholders and all */
-  config: BadgeConfig;
+  /** The URL to the badge image */
+  url: string;
 
-  /** The context used when rendering config -> badge */
-  context: {
-    // here is more, but only badge_url we care about
-    badge_url: string;
-  };
-
-  format: 'json'; // or 'svg', but we'll never see that as structured
-  // data, only as an svg element
+  /** The markdown code to use the badge */
+  markdown: string;
 }
 
 export interface BadgesApi {

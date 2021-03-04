@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { Badge } from '../../types';
+import { BadgeContext } from '../../types';
 
 export type BadgeOptions = {
-  context: {
-    app?: {
-      title: string;
-    };
-    entity?: Entity;
-    entity_url?: string;
-    badge_url?: string;
-  };
-  config: Badge;
+  badgeId: string;
+  context: BadgeContext;
   format: 'svg' | 'json';
 };
 
 export type BadgeBuilder = {
   createBadge(options: BadgeOptions): Promise<string>;
-  getBadgeConfig(badgeId: string): Promise<Badge>;
-  getAllBadgeConfigs(): Promise<Badge[]>;
+  getBadgeIds(): Promise<string[]>;
 };

@@ -65,16 +65,12 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
   }, [badgesApi, entity, open]);
 
   const content = (badges || []).map(
-    ({
-      badge: { description, markdown },
-      config: { id },
-      context: { badge_url },
-    }) => (
+    ({ badge: { description }, id, url, markdown }) => (
       <div key={id}>
         <DialogContentText>
-          {description}
+          {description || `${id} badge`}
           <br />
-          <img alt={description} src={badge_url} />
+          <img alt={description || id} src={url} />
         </DialogContentText>
         <Typography component="div" className={classes.codeBlock}>
           Copy the following snippet of markdown code for the badge:

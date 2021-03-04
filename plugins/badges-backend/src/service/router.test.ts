@@ -26,11 +26,7 @@ describe('createRouter', () => {
     const logger = winston.createLogger();
     const config = await loadBackendConfig({ logger, argv: [] });
     const discovery = SingleHostDiscovery.fromConfig(config);
-    const router = await createRouter({
-      config,
-      logger,
-      discovery,
-    });
+    const router = await createRouter({ config, discovery });
     expect(router).toBeDefined();
   });
 });

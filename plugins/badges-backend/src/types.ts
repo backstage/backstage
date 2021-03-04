@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
+import { Entity } from '@backstage/catalog-model';
+
 export const BADGE_STYLES = [
   'plastic',
   'flat',
@@ -24,13 +27,11 @@ export const BADGE_STYLES = [
 export type BadgeStyle = typeof BADGE_STYLES[number];
 
 export interface Badge {
-  /** Unique name for the badge. */
-  id?: string;
   /** Badge message background color. */
   color?: string;
   /** Badge description (tooltip text) */
   description?: string;
-  /** Kind of badge (in what context may it be used) */
+  /** Kind of badge */
   kind?: 'entity';
   /**
    * Badge label (should be a rather static value)
@@ -45,10 +46,18 @@ export interface Badge {
   message: string;
   /** Badge style (apperance). One of "plastic", "flat", "flat-square", "for-the-badge" and "social" */
   style?: BadgeStyle;
-  /** (generated) markdown code */
-  markdown?: string;
 }
 
-export interface BadgeConfig {
-  [id: string]: Badge;
+export interface BadgeContext {
+  badgeUrl: string;
+  config: Config;
+  entity?: Entity; // for entity badges
+}
+
+export interface BadgeFactory {
+  createBadge(context: BadgeContext): Badge | null;
+}
+
+export interface BadgeFactories {
+  [id: string]: BadgeFactory;
 }
