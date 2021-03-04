@@ -17,7 +17,7 @@ import React from 'react';
 import { AlertInsightsSection } from './AlertInsightsSection';
 import { render } from '@testing-library/react';
 import { Alert } from '../../types';
-import { MockScrollProvider } from '../../utils/tests';
+import { MockScrollProvider } from '../../testUtils';
 
 const mockAlert: Alert = {
   subtitle:

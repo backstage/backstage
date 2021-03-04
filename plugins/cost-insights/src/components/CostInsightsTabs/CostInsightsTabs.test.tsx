@@ -18,7 +18,7 @@ import React from 'react';
 import { CostInsightsTabs } from './CostInsightsTabs';
 import UserEvent from '@testing-library/user-event';
 import { Group } from '../../types';
-import { MockFilterProvider, MockLoadingProvider } from '../../utils/tests';
+import { MockFilterProvider, MockLoadingProvider } from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
 const mockSetPageFilters = jest.fn();

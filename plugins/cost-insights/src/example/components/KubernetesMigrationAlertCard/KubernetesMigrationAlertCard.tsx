@@ -17,30 +17,30 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 import { InfoCard } from '@backstage/core';
-import { MigrationBarChartLegend } from './MigrationBarChartLegend';
-import { MigrationBarChart } from './MigrationBarChart';
-import { MigrationData } from '../../alerts';
+import { KubernetesMigrationBarChartLegend } from './KubernetesMigrationBarChartLegend';
+import { KubernetesMigrationBarChart } from './KubernetesMigrationBarChart';
+import { KubernetesMigrationData } from '../../alerts';
 
-type MigrationAlertProps = {
-  data: MigrationData;
+type KubernetesMigrationAlertProps = {
+  data: KubernetesMigrationData;
   title: string;
   subheader: string;
   currentProduct: string;
   comparedProduct: string;
 };
 
-export const MigrationAlertCard = ({
+export const KubernetesMigrationAlertCard = ({
   data,
   title,
   subheader,
   currentProduct,
   comparedProduct,
-}: MigrationAlertProps) => {
+}: KubernetesMigrationAlertProps) => {
   return (
     <InfoCard title={title} subheader={subheader}>
       <Box display="flex" flexDirection="column">
         <Box paddingY={1}>
-          <MigrationBarChartLegend
+          <KubernetesMigrationBarChartLegend
             startDate={data.startDate}
             change={data.change}
             currentProduct={currentProduct}
@@ -48,7 +48,7 @@ export const MigrationAlertCard = ({
           />
         </Box>
         <Box paddingY={1}>
-          <MigrationBarChart
+          <KubernetesMigrationBarChart
             services={data.services}
             currentProduct={currentProduct}
             comparedProduct={comparedProduct}
