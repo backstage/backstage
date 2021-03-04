@@ -15,7 +15,13 @@
  */
 
 import React, { useEffect } from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import {
+  createStyles,
+  List,
+  ListSubheader,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
 import { useAsyncFn } from 'react-use';
@@ -23,16 +29,36 @@ import { splunkOnCallApiRef } from '../../api';
 import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      maxHeight: '400px',
+      overflow: 'auto',
+    },
+    subheader: {
+      backgroundColor: theme.palette.background.paper,
+    },
+    progress: {
+      margin: `0 ${theme.spacing(2)}px`,
+    },
+  }),
+);
+
 type Props = {
   refreshIncidents: boolean;
   team: string;
 };
 
 export const Incidents = ({ refreshIncidents, team }: Props) => {
+  const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
 
   const [{ value: incidents, loading, error }, getIncidents] = useAsyncFn(
     async () => {
+      // For some reason the changes applied to incidents (trigger-resolve-acknowledge)
+      // may take some time to actually be applied after receiving the response from the server.
+      // The timeout compensates for this latency.
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const allIncidents = await api.getIncidents();
       const teams = await api.getTeams();
       const teamSlug = teams.find(teamValue => teamValue.name === team)?.slug;
@@ -57,23 +83,32 @@ export const Incidents = ({ refreshIncidents, team }: Props) => {
     );
   }
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (!incidents?.length) {
+  if (!loading && !incidents?.length) {
     return <IncidentsEmptyState />;
   }
 
   return (
-    <List dense subheader={<ListSubheader>INCIDENTS</ListSubheader>}>
-      {incidents!.map((incident, index) => (
-        <IncidentListItem
-          onIncidentAction={() => getIncidents()}
-          key={index}
-          incident={incident}
-        />
-      ))}
+    <List
+      className={classes.root}
+      dense
+      subheader={
+        <ListSubheader className={classes.subheader}>
+          CRITICAL INCIDENTS
+        </ListSubheader>
+      }
+    >
+      {loading ? (
+        <Progress className={classes.progress} />
+      ) : (
+        incidents!.map((incident, index) => (
+          <IncidentListItem
+            onIncidentAction={() => getIncidents()}
+            key={index}
+            team={team}
+            incident={incident}
+          />
+        ))
+      )}
     </List>
   );
 };

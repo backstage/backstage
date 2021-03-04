@@ -33,6 +33,7 @@ import {
 } from '@material-ui/core';
 import { Incidents } from './Incident';
 import { EscalationPolicy } from './Escalation';
+import WebIcon from '@material-ui/icons/Web';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { splunkOnCallApiRef, UnauthorizedError } from '../api';
@@ -47,12 +48,12 @@ export const MissingTeamAnnotation = () => (
   <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
 );
 
-export const MissingUsername = () => (
+export const MissingEventsRestEndpoint = () => (
   <CardContent>
     <EmptyState
-      title="No Splunk On-Call user available."
+      title="No Splunk On-Call REST endpoint available."
       missing="info"
-      description="You need to add a valid username to your 'app-config.yaml' if you want to enable Splunk On-Call. Make sure that the user is a member of your organization."
+      description="You need to add a valid REST endpoint to your 'app-config.yaml' if you want to enable Splunk On-Call."
     />
   </CardContent>
 );
@@ -71,7 +72,8 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
 
-  const username = config.getOptionalString('splunkOnCall.username');
+  const eventsRestEndpoint =
+    config.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
 
   const handleRefresh = useCallback(() => {
     setRefreshIncidents(x => !x);
@@ -95,9 +97,6 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     return { usersHashMap, userList: allUsers };
   });
 
-  const incidentCreator =
-    username && users?.userList.find(user => user.username === username);
-
   if (error instanceof UnauthorizedError) {
     return <MissingApiKeyOrApiIdError />;
   }
@@ -118,8 +117,9 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     if (!team) {
       return <MissingTeamAnnotation />;
     }
-    if (!username || !incidentCreator) {
-      return <MissingUsername />;
+
+    if (!eventsRestEndpoint) {
+      return <MissingEventsRestEndpoint />;
     }
 
     return (
@@ -128,15 +128,12 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
         {users?.usersHashMap && team && (
           <EscalationPolicy team={team} users={users.usersHashMap} />
         )}
-        {users && incidentCreator && (
-          <TriggerDialog
-            users={users.userList}
-            incidentCreator={incidentCreator}
-            showDialog={showDialog}
-            handleDialog={handleDialog}
-            onIncidentCreated={handleRefresh}
-          />
-        )}
+        <TriggerDialog
+          team={team}
+          showDialog={showDialog}
+          handleDialog={handleDialog}
+          onIncidentCreated={handleRefresh}
+        />
       </>
     );
   };
@@ -148,15 +145,22 @@ export const SplunkOnCallCard = ({ entity }: Props) => {
     icon: <AlarmAddIcon />,
   };
 
+  const serviceLink = {
+    label: 'Portal',
+    href: 'https://portal.victorops.com/',
+    icon: <WebIcon />,
+  };
+
   return (
     <Card>
       <CardHeader
         title="Splunk On-Call"
         subheader={[
           <Typography key="team_name">Team: {team}</Typography>,
-          username && (
-            <HeaderIconLinkRow key="incident_trigger" links={[triggerLink]} />
-          ),
+          <HeaderIconLinkRow
+            key="incident_trigger"
+            links={[serviceLink, triggerLink]}
+          />,
         ]}
       />
       <Divider />

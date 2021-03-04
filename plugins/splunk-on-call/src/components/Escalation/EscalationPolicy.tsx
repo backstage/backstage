@@ -15,7 +15,13 @@
  */
 
 import React from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import {
+  createStyles,
+  List,
+  ListSubheader,
+  makeStyles,
+  Theme,
+} from '@material-ui/core';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
 import { useAsync } from 'react-use';
@@ -24,12 +30,28 @@ import { useApi, Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { User } from '../types';
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      maxHeight: '400px',
+      overflow: 'auto',
+    },
+    subheader: {
+      backgroundColor: theme.palette.background.paper,
+    },
+    progress: {
+      margin: `0 ${theme.spacing(2)}px`,
+    },
+  }),
+);
+
 type Props = {
   users: { [key: string]: User };
   team: string;
 };
 
 export const EscalationPolicy = ({ users, team }: Props) => {
+  const classes = useStyles();
   const api = useApi(splunkOnCallApiRef);
 
   const { value: userNames, loading, error } = useAsync(async () => {
@@ -54,24 +76,30 @@ export const EscalationPolicy = ({ users, team }: Props) => {
     );
   }
 
-  if (loading) {
-    return <Progress />;
-  }
-
-  if (!userNames?.length) {
+  if (!loading && !userNames?.length) {
     return <EscalationUsersEmptyState />;
   }
 
   return (
-    <List dense subheader={<ListSubheader>ON CALL</ListSubheader>}>
-      {userNames &&
+    <List
+      className={classes.root}
+      dense
+      subheader={
+        <ListSubheader className={classes.subheader}>ON CALL</ListSubheader>
+      }
+    >
+      {loading ? (
+        <Progress className={classes.progress} />
+      ) : (
+        userNames &&
         userNames.map(
           (userName, index) =>
             userName &&
             userName in users && (
               <EscalationUser key={index} user={users[userName]} />
             ),
-        )}
+        )
+      )}
     </List>
   );
 };
