@@ -33,7 +33,7 @@ import {
   CostInsightsPage,
   CostInsightsProjectGrowthInstructionsPage,
 } from '@backstage/plugin-cost-insights';
-import { ExplorePage } from '@backstage/plugin-explore';
+import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
 import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
@@ -78,6 +78,9 @@ const app = createApp({
     });
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(explorePlugin.externalRoutes, {
+      catalogEntity: catalogPlugin.routes.catalogEntity,
     });
   },
 });
