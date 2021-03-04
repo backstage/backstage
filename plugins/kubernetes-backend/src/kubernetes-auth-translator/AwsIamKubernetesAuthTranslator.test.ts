@@ -46,6 +46,6 @@ describe('AwsIamKubernetesAuthTranslator tests', () => {
       url: '',
       authProvider: 'aws',
     });
-    await expect(promise).rejects.toThrow('no credentials found');
+    await expect(promise).rejects.toThrow('no AWS credentials found.');
   });
 });

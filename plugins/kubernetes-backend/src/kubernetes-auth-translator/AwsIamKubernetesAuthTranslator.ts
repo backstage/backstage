@@ -34,7 +34,7 @@ export class AwsIamKubernetesAuthTranslator
   async getBearerToken(clusterName: string): Promise<string> {
     const credentials = AWS.config.credentials;
     if (!(credentials instanceof Credentials)) {
-      throw new Error('no credentials found');
+      throw new Error('no AWS credentials found.');
     }
     await credentials.getPromise();
     const request = {
