@@ -40,9 +40,9 @@ export class CommonGitPreparer implements PreparerBase {
     options?: { etag?: string },
   ): Promise<PreparerResponse> {
     this.logger.warn(
-      'You are using the legacy git preparer in TechDocs which will be removed in near future (March 2021). ' +
-        'Migrate to URL reader by updating `backstage.io/techdocs-ref` annotation in `catalog-info.yaml` ' +
-        'to be prefixed with `url:`. Read the migration guide and benefits at https://github.com/backstage/backstage/issues/4409 ',
+      `You are using the legacy git preparer in TechDocs for \`${entity.metadata.name}\` which will be removed in near future (March 2021). ` +
+        `Migrate to URL reader by updating \`backstage.io/techdocs-ref\` annotation in \`catalog-info.yaml\` ` +
+        `to be prefixed with \`url:\`. Read the migration guide and benefits at https://github.com/backstage/backstage/issues/4409 `,
     );
 
     const { target } = parseReferenceAnnotation(
