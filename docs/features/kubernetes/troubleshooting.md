@@ -79,7 +79,7 @@ objects.
 
 `backstage.io/kubernetes-id: <entity-service-name>`for get k8s service-related
 objects.
-[link](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
+[See on github](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
 
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
