@@ -5,6 +5,11 @@ app:
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
+      - title: TechDocs Support
+        icon: docs
+        links:
+          - url: https://discord.gg/MUpMjP2
+            title: '#docs-like-code'
       - title: Issues
         icon: github
         links:
