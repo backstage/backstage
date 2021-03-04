@@ -18,6 +18,7 @@ export type {
   Alert,
   AlertCost,
   AlertForm,
+  AlertFormProps,
   AlertOptions,
   AlertSnoozeFormData,
   AlertDismissFormData,
