@@ -41,11 +41,11 @@ The curl response should have resources from Kubernetes:
               "metadata": {
                 "creationTimestamp": "2022-03-13T13:52:46.000Z",
                 "labels": {
-                  "app": <service-entity-name>,
+                  "app": <k8s-app-name>,
                   "backstage": <selector>,
                   "backstage.io/kubernetes-id": <service-entity-name>
                 },
-                "name": <service-entity-name>,
+                "name": <k8s-app-name>,
                 "namespace": <namespace>
               },
               ....
@@ -73,21 +73,24 @@ recommend you for adding two labels and using label selector annotations:
 
 `backstage: <selector>` and `backstage.io/kubernetes-id: <entity-service-name>`.
 
+`backstage: <selector>` for matching with catalog-info.yaml
+
+`backstage.io/kubernetes-id: <entity-service-name>`for get k8s service-related 
+objects. [link](https://github.com/backstage/backstage/blob/a1f587c/plugins/kubernetes-backend/src/service/KubernetesFetcher.ts#L119)
+
 ```yaml
 # k8s related yaml (service.yaml, deployment.yaml, ingress.yaml)
 metadata:
-  {
-    creationTimestamp: '2022-03-13T13:52:46.000Z',
+    creationTimestamp: '2022-03-13T13:52:46.000Z'
     labels:
-      {
-        'app': <service-entity-name>,
-        'backstage': <selector>,
-        'backstage.io/kubernetes-id': <service-entity-name>,
-      },
-    'name': <service-entity-name>,
-    'namespace': <namespace>,
-  }
+        app: <k8s-app-name>
+        backstage: <selector>
+        backstage.io/kubernetes-id: <service-entity-name>
+    name: <k8s-app-name>
+    namespace: <namespace>
 ```
+k8s-app-name and service-entity-name could be different, but if you would like
+to have consistent names between k8s and backstage, we recommend use same name.
 
 and the catalog info annotations would use label selector:
 
