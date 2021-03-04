@@ -25,6 +25,6 @@ While this documentation isn't comprehensive, in the future it should cover the 
 
 | Topic   | Description                                                  |
 | ------- | ------------------------------------------------------------ |
-| Topic 1 | An introductory topic to help you learn about the topic.     |
+| Topic 1 | An introductory topic to help you learn about the component. |
 | Topic 2 | A more detailed topic that explains more information.        |
 | Topic 3 | A final topic that provides conclusions and lessons learned. |
