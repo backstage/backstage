@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   configApiRef,
   Content,
   ContentHeader,
   Header,
+  ItemCardGrid,
   Lifecycle,
   Page,
   Progress,
@@ -30,14 +29,16 @@ import {
   WarningPanel,
 } from '@backstage/core';
 import { useStarredEntities } from '@backstage/plugin-catalog-react';
-import { Box, Button, Link, makeStyles, Typography } from '@material-ui/core';
+import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { ScaffolderFilter } from '../ScaffolderFilter';
 import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
+import { TemplateCard, TemplateCardProps } from '../TemplateCard';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -45,12 +46,6 @@ const useStyles = makeStyles(theme => ({
     gridTemplateAreas: "'filters' 'grid'",
     gridTemplateColumns: '250px 1fr',
     gridColumnGap: theme.spacing(2),
-  },
-  templateGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
-    gridAutoRows: '1fr',
-    gridGap: theme.spacing(2),
   },
 }));
 
@@ -183,13 +178,13 @@ export const ScaffolderPageContents = () => {
                 </Typography>
               )}
 
-            <Box className={styles.templateGrid}>
+            <ItemCardGrid>
               {matchingEntities &&
                 matchingEntities?.length > 0 &&
                 matchingEntities.map(template => (
                   <TemplateCard {...getTemplateCardProps(template)} />
                 ))}
-            </Box>
+            </ItemCardGrid>
           </div>
         </div>
       </Content>

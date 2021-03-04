@@ -87,8 +87,8 @@ export const Breadcrumbs = ({ children, ...props }: Props) => {
         }}
       >
         <List>
-          {expandablePages.map(pageLink => (
-            <ListItem button>
+          {expandablePages.map((pageLink, index) => (
+            <ListItem key={index} button>
               <StyledBox clone>{pageLink}</StyledBox>
             </ListItem>
           ))}

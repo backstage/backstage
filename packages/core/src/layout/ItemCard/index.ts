@@ -15,3 +15,7 @@
  */
 
 export { ItemCard } from './ItemCard';
+export { ItemCardGrid } from './ItemCardGrid';
+export type { ItemCardGridProps } from './ItemCardGrid';
+export { ItemCardHeader } from './ItemCardHeader';
+export type { ItemCardHeaderProps } from './ItemCardHeader';
