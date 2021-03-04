@@ -115,78 +115,6 @@
   resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.6.tgz#d04ad015a148cd222f7939b9561360ab903de632"
   integrity sha512-2IYlLA02beYQKVJVCAqV+G5tXRI4s8yeKYiszuoxS178psdAMKxgXtng8hUYPOqSvU6X4lc+Jabk1zSQFHifVg==
 
-"@aws-sdk/credential-provider-env@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-env/-/credential-provider-env-3.3.0.tgz#7930e504a7a79ab98a9fd34befc5c84b8c4df679"
-  integrity sha512-kyqZMlGdH/05IhuXLBUXtj5+hhRfYiHFcJLc3ts/uiwCixswVHPAYHgyWm9ajFkmWtpz6ih+0LoYryhPbYu01A==
-  dependencies:
-    "@aws-sdk/property-provider" "3.3.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-imds@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-imds/-/credential-provider-imds-3.3.0.tgz#ff0cf5489853c16d23fc99d7bae425587e836c40"
-  integrity sha512-Cx0YMnO/ScGQVDns006bLbqOxNURGN2Xm21bCY0l0ZUJCdJ2va1/9q1rljDyw2KvdzZNQVRQII3uUgj/Oq/K+g==
-  dependencies:
-    "@aws-sdk/property-provider" "3.3.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-ini@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.3.0.tgz#55fe8f391b72d30e650ba8bc680e82bbeacbbfe5"
-  integrity sha512-zawNFJoasXiaV5n0H3/KNOi7mAZ7mHpG1+nBEkoWhZ31lIUM9+heGPcxKCbf/pMQjiOebUqL1OpWe4uSWxIVMw==
-  dependencies:
-    "@aws-sdk/property-provider" "3.3.0"
-    "@aws-sdk/shared-ini-file-loader" "3.1.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-node@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.3.0.tgz#5c97323fa7b23590070d06aa7b1be8d93b2bf4be"
-  integrity sha512-PPBNzPq8fHk9dEQTTE4iJi6ZWtmo057Lc+I8Rlzmvz6NthK9iKiU819tfaxVBb6ZR7bLP0BuDiCi4G1lD+rQnQ==
-  dependencies:
-    "@aws-sdk/credential-provider-env" "3.3.0"
-    "@aws-sdk/credential-provider-imds" "3.3.0"
-    "@aws-sdk/credential-provider-ini" "3.3.0"
-    "@aws-sdk/credential-provider-process" "3.3.0"
-    "@aws-sdk/property-provider" "3.3.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/credential-provider-process@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-process/-/credential-provider-process-3.3.0.tgz#9de0984bd6dd0f5e40cff3672d7dd19e8cd43074"
-  integrity sha512-7oOF1j6ydUq43P3SsasiIpbxMKCmT0C+XwggHTGiVxNtX+QZiH1vdMf8otA7puLEey0iY5wTAIEcZhC6HenojA==
-  dependencies:
-    "@aws-sdk/credential-provider-ini" "3.3.0"
-    "@aws-sdk/property-provider" "3.3.0"
-    "@aws-sdk/shared-ini-file-loader" "3.1.0"
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/property-provider@3.3.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/property-provider/-/property-provider-3.3.0.tgz#49979cb1a3e5562d51807c7403c5fd48cb9f2cdc"
-  integrity sha512-JTyjtXVNhFczL9IfgwXD55F6DqXL50PhfZxFW92t5dDj5VtWpOL74BbuxHQxHBgnQv1FKLr6N9cr7gfXWexDug==
-  dependencies:
-    "@aws-sdk/types" "3.1.0"
-    tslib "^1.8.0"
-
-"@aws-sdk/shared-ini-file-loader@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/shared-ini-file-loader/-/shared-ini-file-loader-3.1.0.tgz#b1bc7ed4e16535f20c788915060a121e457efdfb"
-  integrity sha512-5MxZ/CnSaWvecwtLWmcskMe41zBnAkckQRl+xKygl8wLD/q0goWcmMkA4Sx9fyFnGQtGN/+nNvu0dlG2Arxmvw==
-  dependencies:
-    tslib "^1.8.0"
-
-"@aws-sdk/types@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/types/-/types-3.1.0.tgz#04d77c37a80b422e8123f296338d129e51f3e1fc"
-  integrity sha512-4Az7cemXCN4Qp8EheNkZTJJqIG0dvCT2KAreJLoclcVTcEFw2rzlATUnSeia1YTRsVd6aNxD001Ug7f3vYcQkw==
-
 "@azure/abort-controller@^1.0.0":
   version "1.0.2"
   resolved "https://registry.npmjs.org/@azure/abort-controller/-/abort-controller-1.0.2.tgz#822405c966b2aec16fb62c1b19d37eaccf231995"
@@ -25465,7 +25393,12 @@ tslib@2.0.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.0.0.tgz#18d13fc2dce04051e20f074cc8387fd8089ce4f3"
   integrity sha512-lTqkx847PI7xEDYJntxZH89L2/aXInsyF2luSafe/+0fHOMjlBNXdH6th7f70qxLDhul7KZK0zC8V5ZIyHl0/g==
 
-tslib@^1.10.0, tslib@^1.11.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.0.1.tgz#410eb0d113e5b6356490eec749603725b021b43e"
+  integrity sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==
+
+tslib@^1.10.0, tslib@^1.11.1, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
