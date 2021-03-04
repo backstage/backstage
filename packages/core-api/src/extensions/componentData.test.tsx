@@ -100,19 +100,16 @@ describe('elementData', () => {
       const element = <Component />;
       const container = (global as any)[
         '__@backstage/component-data-store__'
-      ].store.get(element.type);
+      ].get(element.type);
       expect(container.map.get('my-data')).toBe(data);
     });
 
     it('should should be able to attach data for newer versions', () => {
       const data = { foo: 'bar' };
       const Component = () => null;
-      (global as any)['__@backstage/component-data-store__'].store.set(
-        Component,
-        {
-          map: new Map([['my-data', data]]),
-        },
-      );
+      (global as any)['__@backstage/component-data-store__'].set(Component, {
+        map: new Map([['my-data', data]]),
+      });
 
       const element = <Component />;
       expect(getComponentData(element, 'my-data')).toBe(data);

@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.7.3
+
+### Patch Changes
+
+- 12d8f27a6: Add version `backstage.io/v1beta2` schema for Template entities.
+
 ## 0.7.2
 
 ### Patch Changes

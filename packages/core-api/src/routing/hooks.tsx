@@ -15,19 +15,22 @@
  */
 
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { AnyRouteRef, BackstageRouteObject, RouteRef } from './types';
+import {
+  AnyRouteRef,
+  BackstageRouteObject,
+  RouteRef,
+  ExternalRouteRef,
+  AnyParams,
+} from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
-import { ExternalRouteRef } from './RouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
 // Without this we'd have to pass in empty object to all parameter-less RouteRefs
 // just to make TypeScript happy, or we would have to make the argument optional in
 // which case you might forget to pass it in when it is actually required.
-export type RouteFunc<Params extends { [param in string]: string }> = (
-  ...[params]: Params[keyof Params] extends never
-    ? readonly []
-    : readonly [Params]
+export type RouteFunc<Params extends AnyParams> = (
+  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
 class RouteResolver {
@@ -38,8 +41,8 @@ class RouteResolver {
     private readonly routeBindings: Map<RouteRef | ExternalRouteRef, RouteRef>,
   ) {}
 
-  resolve<Params extends { [param in string]: string }>(
-    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef,
+  resolve<Params extends AnyParams>(
+    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef<Params>,
     sourceLocation: ReturnType<typeof useLocation>,
   ): RouteFunc<Params> | undefined {
     const routeRef =
@@ -112,14 +115,14 @@ class RouteResolver {
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
-export function useRouteRef<Optional extends boolean>(
-  routeRef: ExternalRouteRef<Optional>,
-): Optional extends true ? RouteFunc<{}> | undefined : RouteFunc<{}>;
-export function useRouteRef<Params extends { [param in string]: string } = {}>(
+export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
+  routeRef: ExternalRouteRef<Params, Optional>,
+): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
+export function useRouteRef<Params extends AnyParams>(
   routeRef: RouteRef<Params>,
 ): RouteFunc<Params>;
-export function useRouteRef<Params extends { [param in string]: string } = {}>(
-  routeRef: RouteRef<Params> | ExternalRouteRef,
+export function useRouteRef<Params extends AnyParams>(
+  routeRef: RouteRef<Params> | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);

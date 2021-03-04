@@ -1,5 +1,48 @@
 # @backstage/core
 
+## 0.7.0
+
+### Minor Changes
+
+- 4c049a1a1: - Adds onClick and other props to IconLinkVertical;
+
+  - Allows TriggerButton component to render when pager duty key is missing;
+  - Refactors TriggerButton and PagerDutyCard not to have shared state;
+  - Removes the `action` prop of the IconLinkVertical component while adding `onClick`.
+
+    Instead of having an action including a button with onClick, now the whole component can be clickable making it easier to implement and having a better UX.
+
+    Before:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      action: <Button onClick={myAction} />,
+      icon: <MyIcon onClick={myAction} />,
+    };
+    ```
+
+    After:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      onClick: myAction,
+      icon: <MyIcon />,
+    };
+    ```
+
+### Patch Changes
+
+- 40c0fdbaa: Added support for optional external route references. By setting `optional: true` when creating an `ExternalRouteRef` it is no longer a requirement to bind the route in the app. If the app isn't bound `useRouteRef` will return `undefined`.
+- 2a271d89e: Internal refactor of how component data is access to avoid polluting components and make it possible to bridge across versions.
+- bece09057: Improve rendering of multiple support item links in the `SupportButton`
+- 169f48deb: Added the color prop to TrendLine from the Sparklines props types to be able to have custom colors.
+- 8a1566719: Added a new useSupportConfig hook that reads a new `app.support` config key. Also updated the SupportButton and ErrorPage components to use the new config.
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+  - @backstage/core-api@0.2.12
+
 ## 0.6.3
 
 ### Patch Changes

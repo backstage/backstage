@@ -1,5 +1,74 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.0
+
+### Minor Changes
+
+- 8106c9528: The scaffolder has been updated to support the new `v1beta2` template schema which allows for custom template actions!
+
+  See documentation for more information how to create and register new template actions.
+
+  **Breaking changes**
+
+  The backend scaffolder plugin now needs a `UrlReader` which can be pulled from the PluginEnvironment.
+
+  The following change is required in `backend/src/plugins/scaffolder.ts`
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+     database,
+  +  reader,
+   }: PluginEnvironment): Promise<Router> {
+
+    // omitted code
+
+    return await createRouter({
+      preparers,
+      templaters,
+      publishers,
+      logger,
+      config,
+      dockerClient,
+      database,
+      catalogClient,
+  +   reader,
+    });
+  ```
+
+- 96ccc8f69: Removed support for deprecated publisher auth configuration within the `scaffolder` configuration block, such as `scaffolder.github.token`. Access should instead be configured through `integrations` configuration.
+
+  For example, replace the following configuration in `app-config.yaml`
+
+  ```yaml
+  scaffolder:
+    github:
+      token: my-token
+  ```
+
+  with
+
+  ```yaml
+  integrations:
+    github:
+      - host: github.com
+        token: my-token
+  ```
+
+### Patch Changes
+
+- 12d8f27a6: Move logic for constructing the template form to the backend, using a new `./parameter-schema` endpoint that returns the form schema for a given template.
+- 12d8f27a6: Add version `backstage.io/v1beta2` schema for Template entities.
+- f31b76b44: Consider both authentication methods for both `onprem` and `cloud` BitBucket
+- f43192207: remove usage of res.send() for res.json() and res.end() to ensure content types are more consistently application/json on backend responses and error cases
+- d0ed25196: Fixed file path resolution for templates with a file location
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
 ## 0.8.0
 
 ### Minor Changes

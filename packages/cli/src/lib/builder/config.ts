@@ -36,22 +36,6 @@ import { svgrTemplate } from '../svgrTemplate';
 export const makeConfigs = async (
   options: BuildOptions,
 ): Promise<RollupOptions[]> => {
-  const typesInput = paths.resolveTargetRoot(
-    'dist-types',
-    relativePath(paths.targetRoot, paths.targetDir),
-    'src/index.d.ts',
-  );
-
-  const declarationsExist = await fs.pathExists(typesInput);
-  if (!declarationsExist) {
-    const path = relativePath(paths.targetDir, typesInput);
-    throw new Error(
-      `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
-        'yarn tsc',
-      )} to generate .d.ts files before packaging`,
-    );
-  }
-
   const configs = new Array<RollupOptions>();
 
   if (options.outputs.has(Output.cjs) || options.outputs.has(Output.esm)) {
@@ -112,6 +96,22 @@ export const makeConfigs = async (
   }
 
   if (options.outputs.has(Output.types)) {
+    const typesInput = paths.resolveTargetRoot(
+      'dist-types',
+      relativePath(paths.targetRoot, paths.targetDir),
+      'src/index.d.ts',
+    );
+
+    const declarationsExist = await fs.pathExists(typesInput);
+    if (!declarationsExist) {
+      const path = relativePath(paths.targetDir, typesInput);
+      throw new Error(
+        `No declaration files found at ${path}, be sure to run ${chalk.bgRed.white(
+          'yarn tsc',
+        )} to generate .d.ts files before packaging`,
+      );
+    }
+
     configs.push({
       input: typesInput,
       output: {
