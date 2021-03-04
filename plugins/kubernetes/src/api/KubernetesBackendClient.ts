@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
+import { ConfigApi, DiscoveryApi, IdentityApi } from '@backstage/core';
 import { KubernetesApi } from './types';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
+import { Config } from '@backstage/config';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
+  private readonly configApi: ConfigApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
+    configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
+    this.configApi = options.configApi;
   }
 
   private async getRequired(
@@ -72,5 +76,9 @@ export class KubernetesBackendClient implements KubernetesApi {
       `/services/${requestBody.entity.metadata.name}`,
       requestBody,
     );
+  }
+
+  getClusters(): Config[] {
+    return this.configApi.getConfigArray('kubernetes.clusters');
   }
 }
