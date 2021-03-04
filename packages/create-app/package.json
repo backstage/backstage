@@ -56,7 +56,6 @@
     "@backstage/plugin-catalog": "*",
     "@backstage/plugin-catalog-backend": "*",
     "@backstage/plugin-catalog-import": "*",
-    "@backstage/plugin-circleci": "*",
     "@backstage/plugin-explore": "*",
     "@backstage/plugin-github-actions": "*",
     "@backstage/plugin-lighthouse": "*",
