@@ -28,7 +28,7 @@ export const routeRefType: unique symbol = getGlobalSingleton<any>(
 );
 
 export type RouteRef<Params extends AnyParams = any> = {
-  [routeRefType]: 'absolute';
+  readonly [routeRefType]: 'absolute';
 
   params: ParamKeys<Params>;
 
@@ -45,7 +45,7 @@ export type ExternalRouteRef<
   Params extends AnyParams = any,
   Optional extends boolean = any
 > = {
-  [routeRefType]: 'external';
+  readonly [routeRefType]: 'external';
 
   params: ParamKeys<Params>;
 
