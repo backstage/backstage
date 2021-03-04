@@ -1,0 +1,60 @@
+{
+  "name": "experiments",
+  "version": "0.1.0",
+  "private": true,
+  "bundled": true,
+  "dependencies": {
+    "history": "^5.0.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-hot-loader": "^4.12.21",
+    "react-router": "6.0.0-beta.0",
+    "react-router-dom": "6.0.0-beta.0",
+    "react-use": "^15.3.3",
+    "zen-observable": "^0.8.15"
+  },
+  "devDependencies": {
+    "@backstage/test-utils": "^0.1.8",
+    "@testing-library/cypress": "^7.0.1",
+    "@testing-library/jest-dom": "^5.10.1",
+    "@testing-library/react": "^11.2.5",
+    "@testing-library/user-event": "^12.0.7",
+    "@types/jest": "^26.0.7",
+    "@types/jquery": "^3.3.34",
+    "@types/node": "^12.0.0",
+    "@types/react-dom": "^16.9.8",
+    "@types/zen-observable": "^0.8.0",
+    "cross-env": "^7.0.0",
+    "cypress": "^4.2.0",
+    "eslint-plugin-cypress": "^2.10.3",
+    "start-server-and-test": "^1.10.11"
+  },
+  "scripts": {
+    "start": "backstage-cli app:serve",
+    "build": "backstage-cli app:build",
+    "clean": "backstage-cli clean",
+    "test": "backstage-cli test",
+    "test:e2e": "start-server-and-test start http://localhost:3000 cy:dev",
+    "test:e2e:ci": "start-server-and-test start http://localhost:3000 cy:run",
+    "lint": "backstage-cli lint",
+    "cy:dev": "cypress open",
+    "cy:run": "cypress run"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "Apache-2.0"
+}
