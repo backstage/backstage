@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { MigrationAlertCard } from './MigrationAlertCard';
+export * from './KubernetesMigrationDismissForm';

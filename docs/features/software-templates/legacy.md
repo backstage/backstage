@@ -1,9 +1,8 @@
 ---
 id: template-legacy
 title: Writing Templates (Legacy)
-description:
-  Old documentation describing the backstage.io/v1alpha1 format of the Template
-  Schema
+# prettier-ignore
+description: Old documentation describing the backstage.io/v1alpha1 format of the Template Schema
 ---
 
 ## Kind: Template

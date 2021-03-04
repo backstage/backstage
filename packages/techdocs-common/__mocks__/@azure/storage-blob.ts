@@ -17,11 +17,13 @@ import type {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
 } from '@azure/storage-blob';
+import { EventEmitter } from 'events';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+
 /**
  * @param sourceFile Relative path to entity root dir. Contains either / or \ as file separator
  * depending upon the OS.
@@ -48,6 +50,9 @@ export class BlockBlobClient {
   }
 
   uploadFile(source: string): Promise<BlobUploadCommonResponse> {
+    if (!fs.existsSync(source)) {
+      return Promise.reject(new Error(`The file ${source} does not exist`));
+    }
     return Promise.resolve({
       _response: {
         request: {
@@ -61,6 +66,25 @@ export class BlockBlobClient {
 
   exists() {
     return checkFileExists(this.blobName);
+  }
+
+  download() {
+    const filePath = path.join(rootDir, this.blobName);
+    const emitter = new EventEmitter();
+    process.nextTick(() => {
+      if (fs.existsSync(filePath)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(filePath)));
+        emitter.emit('end');
+      } else {
+        emitter.emit(
+          'error',
+          new Error(`The file ${filePath} does not exist !`),
+        );
+      }
+    });
+    return Promise.resolve({
+      readableStreamBody: emitter,
+    });
   }
 }
 

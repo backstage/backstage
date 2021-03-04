@@ -19,7 +19,7 @@ import { UnlabeledDataflowAlertCard } from './UnlabeledDataflowAlertCard';
 import {
   createMockUnlabeledDataflowData,
   createMockUnlabeledDataflowAlertProject,
-} from '../../utils/mockData';
+} from '../../testUtils';
 import { renderInTestApp } from '@backstage/test-utils';
 
 const MockUnlabeledDataflowAlertMultipleProjects = createMockUnlabeledDataflowData(

@@ -16,7 +16,7 @@
 
 import { ComponentType } from 'react';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
-import { BackstagePlugin } from '../plugin/types';
+import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
 import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
@@ -80,48 +80,38 @@ export type AppComponents = {
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
 /**
- * Extracts the Optional type of a map of ExternalRouteRefs, leaving only the boolean in place as value
- */
-type ExternalRouteRefsToOptionalMap<
-  T extends { [name in string]: ExternalRouteRef<boolean> }
-> = {
-  [name in keyof T]: T[name] extends ExternalRouteRef<infer U> ? U : never;
-};
-
-/**
  * Extracts a union of the keys in a map whose value extends the given type
  */
-type ExtractKeysWithType<Obj extends { [key in string]: any }, Type> = {
+type KeysWithType<Obj extends { [key in string]: any }, Type> = {
   [key in keyof Obj]: Obj[key] extends Type ? key : never;
 }[keyof Obj];
 
 /**
- * Given a map of boolean values denoting whether a route is optional, create a
- * map of needed RouteRefs.
- *
- * For example { foo: false, bar: true } gives { foo: RouteRef<any>, bar?: RouteRef<any> }
+ * Takes a map Map required values and makes all keys matching Keys optional
  */
-type CombineOptionalAndRequiredRoutes<
-  OptionalMap extends { [key in string]: boolean }
-> = {
-  [name in ExtractKeysWithType<OptionalMap, false>]: RouteRef<any>;
-} &
-  { [name in keyof OptionalMap]?: RouteRef<any> };
+type PartialKeys<
+  Map extends { [name in string]: any },
+  Keys extends keyof Map
+> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
 
 /**
- * Creates a map of required target routes based on whether the input external
- * routes are optional or not. The external routes that are marked as optional
- * will also be optional in the target routes map.
+ * Creates a map of target routes with matching parameters based on a map of external routes.
  */
-type TargetRoutesMap<
-  T extends { [name in string]: ExternalRouteRef<boolean> }
-> = CombineOptionalAndRequiredRoutes<ExternalRouteRefsToOptionalMap<T>>;
+type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
+  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
+    infer Params,
+    any
+  >
+    ? RouteRef<Params>
+    : never;
+};
 
-export type AppRouteBinder = <
-  ExternalRoutes extends { [name in string]: ExternalRouteRef<boolean> }
->(
+export type AppRouteBinder = <ExternalRoutes extends AnyExternalRoutes>(
   externalRoutes: ExternalRoutes,
-  targetRoutes: TargetRoutesMap<ExternalRoutes>,
+  targetRoutes: PartialKeys<
+    TargetRouteMap<ExternalRoutes>,
+    KeysWithType<ExternalRoutes, ExternalRouteRef<any, true>>
+  >,
 ) => void;
 
 export type AppOptions = {

@@ -19,12 +19,9 @@ export type {
   AbsoluteRouteRef,
   ConcreteRoute,
   MutableRouteRef,
+  ExternalRouteRef,
 } from './types';
 export { FlatRoutes } from './FlatRoutes';
-export {
-  createRouteRef,
-  createExternalRouteRef,
-  ExternalRouteRef,
-} from './RouteRef';
+export { createRouteRef, createExternalRouteRef } from './RouteRef';
 export type { RouteRefConfig } from './RouteRef';
 export { useRouteRef } from './hooks';

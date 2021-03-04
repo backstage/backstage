@@ -16,10 +16,9 @@
 
 import React from 'react';
 import { Box, useTheme } from '@material-ui/core';
-import { CostGrowth } from '../CostGrowth';
-import { LegendItem } from '../LegendItem';
-import { ChangeStatistic, CostInsightsTheme, Duration } from '../../types';
-import { monthOf } from '../../utils/formatters';
+import { CostGrowth, LegendItem } from '../../../components';
+import { ChangeStatistic, CostInsightsTheme, Duration } from '../../../types';
+import { monthOf } from '../../../utils/formatters';
 
 export type MigrationBarChartLegendProps = {
   change: ChangeStatistic;
@@ -28,7 +27,7 @@ export type MigrationBarChartLegendProps = {
   comparedProduct: string;
 };
 
-export const MigrationBarChartLegend = ({
+export const KubernetesMigrationBarChartLegend = ({
   currentProduct,
   comparedProduct,
   change,
