@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.1
+
+### Patch Changes
+
+- 9d455f69a: Introduce parameters for namespace, kind, and name to `entityRouteRef`.
+- 02816ecd7: Fixed EntityProvider setting 'loading' bool erroneously to true
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [4c049a1a1]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+
 ## 0.1.0
 
 ### Minor Changes
