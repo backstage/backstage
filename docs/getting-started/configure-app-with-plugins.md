@@ -22,7 +22,12 @@ plugin in this example.
 yarn workspace app add @backstage/plugin-circleci
 ```
 
-2. Add the plugin itself:
+Note the plugin is added to the `app` package, rather than the root
+package.json. Backstage Apps are set up as monorepos with
+[yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
+CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
+
+2. Add the plugin itself to the App:
 
 ```js
 // packages/app/src/plugins.ts
