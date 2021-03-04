@@ -1,5 +1,17 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- 4fbc9df79: Fixed `config.d.ts` not being included in the published package.
+- f43192207: remove usage of res.send() for res.json() and res.end() to ensure content types are more consistently application/json on backend responses and error cases
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
 ## 0.2.0
 
 ### Minor Changes

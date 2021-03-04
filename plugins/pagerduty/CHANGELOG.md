@@ -1,5 +1,50 @@
 # @backstage/plugin-pagerduty
 
+## 0.3.2
+
+### Patch Changes
+
+- 4c049a1a1: - Adds onClick and other props to IconLinkVertical;
+
+  - Allows TriggerButton component to render when pager duty key is missing;
+  - Refactors TriggerButton and PagerDutyCard not to have shared state;
+  - Removes the `action` prop of the IconLinkVertical component while adding `onClick`.
+
+    Instead of having an action including a button with onClick, now the whole component can be clickable making it easier to implement and having a better UX.
+
+    Before:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      action: <Button onClick={myAction} />,
+      icon: <MyIcon onClick={myAction} />,
+    };
+    ```
+
+    After:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      onClick: myAction,
+      icon: <MyIcon />,
+    };
+    ```
+
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.3.1
 
 ### Patch Changes

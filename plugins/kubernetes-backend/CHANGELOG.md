@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.2.8
+
+### Patch Changes
+
+- f43192207: remove usage of res.send() for res.json() and res.end() to ensure content types are more consistently application/json on backend responses and error cases
+- e3adec2bd: Allow apps to pass in a KubernetesClustersSupplier
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
 ## 0.2.7
 
 ### Patch Changes
