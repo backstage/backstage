@@ -106,7 +106,7 @@ export const OwnedContent = ({ value }: { value: Entity[] | undefined }) => {
       </ContentHeader>
       {ownedDocuments && ownedDocuments.length > 0 ? (
         <Table
-          options={{ paging: true, pageSize: 20, search: false }}
+          options={{ paging: true, pageSize: 20, search: true }}
           data={ownedDocuments}
           columns={columns}
           title={`Owned (${ownedDocuments.length})`}
