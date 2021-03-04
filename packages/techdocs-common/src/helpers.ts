@@ -107,7 +107,7 @@ export const getGitRepositoryTempFolder = async (
     // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
     fs.realpathSync(os.tmpdir()),
     'backstage-repo',
-    parsedGitLocation.source,
+    parsedGitLocation.resource,
     parsedGitLocation.owner,
     parsedGitLocation.name,
     parsedGitLocation.ref,
