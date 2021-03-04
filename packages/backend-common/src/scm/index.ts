@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:packages/backend-common/src/scm/index.ts
 export { Git } from './git';
+=======
+export * from './KubernetesMigrationAlertCard';
+>>>>>>> Sync fork (#1):plugins/cost-insights/src/example/components/KubernetesMigrationAlertCard/index.ts
