@@ -191,6 +191,8 @@ export const WorkflowRunsTable = ({
     branch,
   });
 
+  const githubHost = hostname || 'github.com';
+
   return !runs ? (
     <EmptyState
       missing="data"
@@ -200,7 +202,7 @@ export const WorkflowRunsTable = ({
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${projectName}/actions/new`}
+          href={`https://${githubHost}/${projectName}/actions/new`}
         >
           Create new Workflow
         </Button>
