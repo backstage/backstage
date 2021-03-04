@@ -15,7 +15,7 @@
  */
 
 import { TooltipPayload, TooltipProps } from 'recharts';
-import { AlertCost, DataKey, Entity, ResourceData } from '../types';
+import { AlertCost, ResourceDataKey, Entity, ResourceData } from '../types';
 import {
   currencyFormatter,
   dateFormatter,
@@ -45,8 +45,8 @@ export const tooltipItemOf = (payload: TooltipPayload) => {
   const fill = payload.fill as string;
 
   switch (payload.dataKey) {
-    case DataKey.Current:
-    case DataKey.Previous:
+    case ResourceDataKey.Current:
+    case ResourceDataKey.Previous:
       return {
         label: payload.name,
         value: value,
