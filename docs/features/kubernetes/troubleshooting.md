@@ -7,8 +7,8 @@ description: Troubleshooting for Kubernetes
 
 ## Kubernetes is not showing up on Service Entities
 
-This can be debugged by checking whether your Kubernetes cluster are
-connected to Backstage as follows:
+This can be debugged by checking whether your Kubernetes cluster are connected
+to Backstage as follows:
 
 ```curl
 curl --location --request POST '{{backstage-backend-url}}:{{backstage-backend-port}}/api/kubernetes/services/:service-entity-name' \
@@ -67,9 +67,9 @@ The curl response should have resources from Kubernetes:
 
 ```
 
-The Kubernetes tab will not show anything when the catalog info annotation does not
-match the related Kubernetes resource. We recommend you add the following labels to
-your resources and use the label selector annotation as follows:
+The Kubernetes tab will not show anything when the catalog info annotation does
+not match the related Kubernetes resource. We recommend you add the following
+labels to your resources and use the label selector annotation as follows:
 
 `backstage: <selector>` and `backstage.io/kubernetes-id: <entity-service-name>`.
 
