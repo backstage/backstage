@@ -16,20 +16,27 @@
 
 import React from 'react';
 import { generatePath } from 'react-router-dom';
-import { Grid } from '@material-ui/core';
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  Button,
   Content,
   ContentHeader,
   SupportButton,
-  ItemCard,
+  ItemCardGrid,
+  ItemCardHeader,
+
 } from '@backstage/core';
+import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 
 import { rootDocsRouteRef } from '../../plugin';
 
-export const OverviewContent = ({ value }: { value: Entity[] | undefined }) => {
-  if (!value) return null;
+export const OverviewContent = ({
+  entities,
+}: {
+  entities: Entity[] | undefined;
+}) => {
+  if (!entities) return null;
   return (
     <Content>
       <ContentHeader
@@ -38,24 +45,30 @@ export const OverviewContent = ({ value }: { value: Entity[] | undefined }) => {
       >
         <SupportButton>Discover documentation in your ecosystem.</SupportButton>
       </ContentHeader>
-      <Grid container data-testid="docs-explore">
-        {value?.length
-          ? value.map((entity: Entity, index: number) => (
-              <Grid key={index} item xs={12} sm={6} md={3}>
-                <ItemCard
-                  href={generatePath(rootDocsRouteRef.path, {
-                    namespace: entity.metadata.namespace ?? 'default',
-                    kind: entity.kind,
-                    name: entity.metadata.name,
-                  })}
-                  title={entity.metadata.name}
-                  label="Read Docs"
-                  description={entity.metadata.description ?? ''}
-                />
-              </Grid>
-            ))
-          : null}
-      </Grid>
+      <ItemCardGrid data-testid="docs-explore">
+          {!entities?.length
+            ? null
+            : entities.map((entity, index: number) => (
+                <Card key={index}>
+                  <CardMedia>
+                    <ItemCardHeader title={entity.metadata.name} />
+                  </CardMedia>
+                  <CardContent>{entity.metadata.description}</CardContent>
+                  <CardActions>
+                    <Button
+                      to={generatePath(rootDocsRouteRef.path, {
+                        namespace: entity.metadata.namespace ?? 'default',
+                        kind: entity.kind,
+                        name: entity.metadata.name,
+                      })}
+                      color="primary"
+                    >
+                      Read Docs
+                    </Button>
+                  </CardActions>
+                </Card>
+              ))}
+        </ItemCardGrid>
     </Content>
   );
 };

@@ -97,9 +97,9 @@ export const TechDocsHome = () => {
         }))}
       />
       {selectedTab === 0 ? (
-        <OverviewContent value={value} />
+        <OverviewContent entities={value} />
       ) : (
-        <OwnedContent value={value} />
+        <OwnedContent entities={value} />
       )}
     </Page>
   );

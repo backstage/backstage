@@ -30,3 +30,5 @@ export {
   EntityHasSystemsCard,
   EntityLinksCard,
 } from './plugin';
+
+export { useOwnUser } from './components/useOwnUser';

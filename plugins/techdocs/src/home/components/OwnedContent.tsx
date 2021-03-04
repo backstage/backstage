@@ -33,18 +33,22 @@ import {
   Link,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-
+import { useOwnUser } from '@backstage/plugin-catalog';
+import { isOwnerOf } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../plugin';
 
-export const OwnedContent = ({ value }: { value: Entity[] | undefined }) => {
+export const OwnedContent = ({
+  entities,
+}: {
+  entities: Entity[] | undefined;
+}) => {
   const [, copyToClipboard] = useCopyToClipboard();
-  const identityApi = useApi(identityApiRef);
-  const userId = identityApi.getUserId();
+  const { value: user } = useOwnUser();
 
-  if (!value || !userId) return null;
+  if (!entities || !user) return null;
 
-  const ownedDocuments = value
-    .filter((entity: Entity) => entity?.spec?.owner === userId)
+  const ownedDocuments = entities
+    .filter((entity: Entity) => isOwnerOf(user, entity))
     .map(entity => {
       return {
         name: entity.metadata.name,
