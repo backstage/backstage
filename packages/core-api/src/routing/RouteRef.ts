@@ -31,13 +31,14 @@ export type RouteRefConfig<Params extends AnyParams> = {
   title: string;
 };
 
-class RouteRefBaseBase {
+class RouteRefBase {
   constructor(type: string, id: string) {
     this.toString = () => `routeRef{type=${type},id=${id}}`;
   }
 }
 
-export class RouteRefImpl<Params extends AnyParams> extends RouteRefBaseBase {
+export class RouteRefImpl<Params extends AnyParams> extends RouteRefBase
+  implements RouteRef<Params> {
   readonly [routeRefType] = 'absolute';
 
   constructor(private readonly config: RouteRefConfig<Params>) {
@@ -92,7 +93,7 @@ export function createRouteRef<
 export class ExternalRouteRefImpl<
   Params extends AnyParams,
   Optional extends boolean
-> extends RouteRefBaseBase {
+> extends RouteRefBase implements ExternalRouteRef<Params, Optional> {
   readonly [routeRefType] = 'external';
 
   constructor(
