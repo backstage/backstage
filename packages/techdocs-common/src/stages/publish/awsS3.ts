@@ -15,7 +15,8 @@
  */
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { storage } from 'pkgcloud';
+import aws, { Credentials } from 'aws-sdk';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
@@ -47,8 +48,8 @@ export class AwsS3Publish implements PublisherBase {
       bucketName = config.getString('techdocs.publisher.awsS3.bucketName');
     } catch (error) {
       throw new Error(
-        "Since techdocs.publisher.type is set to 'openStackSwift' in your app config, " +
-          'techdocs.publisher.openStackSwift.containerName is required.',
+        "Since techdocs.publisher.type is set to 'awsS3' in your app config, " +
+          'techdocs.publisher.awsS3.bucketName is required.',
       );
     }
 
@@ -62,36 +63,30 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-
-    const storageClient = storage.createClient({
-      provider: 'openstack',
-      username: openStackSwiftConfig.getString('credentials.username'),
-      password: openStackSwiftConfig.getString('credentials.password'),
-      authUrl: openStackSwiftConfig.getString('authUrl'),
-      keystoneAuthVersion:
-        openStackSwiftConfig.getOptionalString('keystoneAuthVersion') || 'v3',
-      domainId: openStackSwiftConfig.getOptionalString('domainId') || 'default',
-      domainName:
-        openStackSwiftConfig.getOptionalString('domainName') || 'Default',
-      region: openStackSwiftConfig.getString('region'),
-    });
-
-    // Check if the defined container exists. Being able to connect means the configuration is good
-    // and the storage client will work.
-    storageClient.getContainer(containerName, (err, container) => {
-      if (container) {
-        logger.info(
-          `Successfully connected to the OpenStack Swift container ${containerName}.`,
-        );
+    let accessKeyId = undefined;
+    let secretAccessKey = undefined;
+    let credentials: Credentials | CredentialsOptions | undefined = undefined;
+    if (credentialsConfig) {
+      const roleArn = credentialsConfig.getOptionalString('roleArn');
+      if (roleArn && aws.config.credentials instanceof Credentials) {
+        credentials = new aws.ChainableTemporaryCredentials({
+          masterCredentials: aws.config.credentials as Credentials,
+          params: {
+            RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
+            RoleArn: roleArn,
+          },
+        });
       } else {
-        logger.error(
-          `Could not retrieve metadata about the OpenStack Swift container ${containerName}. ` +
-            'Make sure the container exists. Also make sure that authentication is setup either by ' +
-            'explicitly defining credentials and region in techdocs.publisher.openStackSwift in app config or ' +
-            'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+        accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
+        secretAccessKey = credentialsConfig.getOptionalString(
+          'secretAccessKey',
         );
-
-        logger.error(`from OpenStack client library: ${err.message}`);
+        if (accessKeyId && secretAccessKey) {
+          credentials = {
+            accessKeyId,
+            secretAccessKey,
+          };
+        }
       }
     }
 
@@ -134,8 +129,8 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   constructor(
-    private readonly storageClient: storage.Client,
-    private readonly containerName: string,
+    private readonly storageClient: aws.S3,
+    private readonly bucketName: string,
     private readonly logger: Logger,
   ) {
     this.storageClient = storageClient;
@@ -144,14 +139,15 @@ export class AwsS3Publish implements PublisherBase {
   }
 
   /**
-   * Upload all the files from the generated `directory` to the OpenStack Swift container.
+   * Upload all the files from the generated `directory` to the S3 bucket.
    * Directory structure used in the bucket is - entityNamespace/entityKind/entityName/index.html
    */
   async publish({ entity, directory }: PublishRequest): Promise<void> {
     try {
-      // Note: OpenStack Swift manages creation of parent directories if they do not exist.
+      // Note: S3 manages creation of parent directories if they do not exist.
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
+
       const limiter = createLimiter(10);
       const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
       for (const filePath of allFilesToUpload) {
@@ -169,27 +165,21 @@ export class AwsS3Publish implements PublisherBase {
 
         // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // Swift container file relative path
-
-        const params = {
-          container: this.containerName,
-          remote: destination,
-        };
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
 
         // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
         const uploadFile = limiter(() =>
             new Promise((res, rej) => {
               const readStream = fs.createReadStream(filePath, 'utf8');
 
-              const writeStream = this.storageClient.upload(params);
+          const params = {
+            Bucket: this.bucketName,
+            Key: destination,
+            Body: fileStream,
+          };
 
-              writeStream.on('error', rej);
-
-              writeStream.on('success', res);
-
-              readStream.pipe(writeStream);
-            }),
-        );
+          return this.storageClient.upload(params).promise();
+        });
         uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
@@ -248,7 +238,6 @@ export class AwsS3Publish implements PublisherBase {
     return async (req, res) => {
       // Trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
-
       const filePath = req.path.replace(/^\//, '');
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
@@ -281,21 +270,13 @@ export class AwsS3Publish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-
-      return new Promise(res => {
-        this.storageClient.getFile(
-          this.containerName,
-          `${entityRootDir}/index.html`,
-          (err, file) => {
-            if (!err && file) {
-              res(true);
-            } else {
-              res(false);
-              this.logger.warn(err.message);
-            }
-          },
-        );
-      });
+      await this.storageClient
+        .headObject({
+          Bucket: this.bucketName,
+          Key: `${entityRootDir}/index.html`,
+        })
+        .promise();
+      return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);
     }
