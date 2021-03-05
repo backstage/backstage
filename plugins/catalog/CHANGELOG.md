@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog
 
+## 0.4.1
+
+### Patch Changes
+
+- 32a003973: Update messaging when no entities are in a table.
+- 40c0fdbaa: Make the external `createComponent` route optional, hiding the "Create Component" button if it isn't bound.
+- 10362e9eb: Use entity relation for the owner of an entity in the catalog entity page header.
+- b33e553b2: Removed fullScreen property from UnregisterEntity Dialog modal.
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.4.0
 
 ### Minor Changes

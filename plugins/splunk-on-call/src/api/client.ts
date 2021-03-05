@@ -31,7 +31,6 @@ import {
   RequestOptions,
   ListUserResponse,
   EscalationPolicyResponse,
-  PatchIncidentRequest,
 } from './types';
 
 export class UnauthorizedError extends Error {}
@@ -43,10 +42,10 @@ export const splunkOnCallApiRef = createApiRef<SplunkOnCallApi>({
 
 export class SplunkOnCallClient implements SplunkOnCallApi {
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
-    const usernameFromConfig: string | null =
-      configApi.getOptionalString('splunkOnCall.username') || null;
+    const eventsRestEndpoint: string | null =
+      configApi.getOptionalString('splunkOnCall.eventsRestEndpoint') || null;
     return new SplunkOnCallClient({
-      username: usernameFromConfig,
+      eventsRestEndpoint,
       discoveryApi,
     });
   }
@@ -80,50 +79,6 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     return teams;
   }
 
-  async acknowledgeIncident({
-    incidentNames,
-  }: PatchIncidentRequest): Promise<Response> {
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userName: this.config.username,
-        incidentNames,
-      }),
-    };
-
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/splunk-on-call/v1/incidents/ack`;
-
-    return this.request(url, options);
-  }
-
-  async resolveIncident({
-    incidentNames,
-  }: PatchIncidentRequest): Promise<Response> {
-    const options = {
-      method: 'PATCH',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userName: this.config.username,
-        incidentNames,
-      }),
-    };
-
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/splunk-on-call/v1/incidents/resolve`;
-
-    return this.request(url, options);
-  }
-
   async getUsers(): Promise<User[]> {
     const url = `${await this.config.discoveryApi.getBaseUrl(
       'proxy',
@@ -142,19 +97,22 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
     return policies;
   }
 
-  async triggerAlarm({
-    summary,
-    details,
-    userName,
-    targets,
-    isMultiResponder,
+  async incidentAction({
+    routingKey,
+    incidentType,
+    incidentId,
+    incidentDisplayName,
+    incidentMessage,
+    incidentStartTime,
   }: TriggerAlarmRequest): Promise<Response> {
     const body = JSON.stringify({
-      summary,
-      details,
-      userName: this.config.username || userName,
-      targets,
-      isMultiResponder,
+      message_type: incidentType,
+      ...(incidentId ? { entity_id: incidentId } : {}),
+      ...(incidentDisplayName
+        ? { entity_display_name: incidentDisplayName }
+        : {}),
+      ...(incidentMessage ? { state_message: incidentMessage } : {}),
+      ...(incidentStartTime ? { state_start_time: incidentStartTime } : {}),
     });
 
     const options = {
@@ -166,9 +124,7 @@ export class SplunkOnCallClient implements SplunkOnCallApi {
       body,
     };
 
-    const url = `${await this.config.discoveryApi.getBaseUrl(
-      'proxy',
-    )}/splunk-on-call/v1/incidents`;
+    const url = `${this.config.eventsRestEndpoint}/${routingKey}`;
 
     return this.request(url, options);
   }

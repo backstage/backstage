@@ -23,22 +23,20 @@ import {
 } from '../components/types';
 import { DiscoveryApi } from '@backstage/core';
 
-export enum TargetType {
-  UserValue = 'User',
-  EscalationPolicyValue = 'EscalationPolicy',
-}
-
-export type IncidentTarget = {
-  type: TargetType;
-  slug: string;
-};
+export type MessageType =
+  | 'CRITICAL'
+  | 'WARNING'
+  | 'ACKNOWLEDGEMENT'
+  | 'INFO'
+  | 'RECOVERY';
 
 export type TriggerAlarmRequest = {
-  targets: IncidentTarget[];
-  details: string;
-  summary: string;
-  userName: string;
-  isMultiResponder?: boolean;
+  routingKey?: string;
+  incidentType: MessageType;
+  incidentId?: string;
+  incidentDisplayName?: string;
+  incidentMessage?: string;
+  incidentStartTime?: number;
 };
 
 export interface SplunkOnCallApi {
@@ -53,19 +51,9 @@ export interface SplunkOnCallApi {
   getOnCallUsers(): Promise<OnCall[]>;
 
   /**
-   * Triggers an incident to specific users and/or specific teams.
+   * Triggers-Resolves-Acknowledge an incident.
    */
-  triggerAlarm(request: TriggerAlarmRequest): Promise<Response>;
-
-  /**
-   * Resolves an incident.
-   */
-  resolveIncident(request: PatchIncidentRequest): Promise<Response>;
-
-  /**
-   * Acknowledge an incident.
-   */
-  acknowledgeIncident(request: PatchIncidentRequest): Promise<Response>;
+  incidentAction(request: TriggerAlarmRequest): Promise<Response>;
 
   /**
    * Get a list of users for your organization.
@@ -82,11 +70,6 @@ export interface SplunkOnCallApi {
    */
   getEscalationPolicies(): Promise<EscalationPolicyInfo[]>;
 }
-
-export type PatchIncidentRequest = {
-  incidentNames: string[];
-  message?: string;
-};
 
 export type EscalationPolicyResponse = {
   policies: EscalationPolicyInfo[];
@@ -106,7 +89,7 @@ export type OnCallsResponse = {
 };
 
 export type ClientApiConfig = {
-  username: string | null;
+  eventsRestEndpoint: string | null;
   discoveryApi: DiscoveryApi;
 };
 

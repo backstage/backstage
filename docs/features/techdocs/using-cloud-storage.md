@@ -257,7 +257,8 @@ techdocs:
 
 **3a. (Recommended) Authentication using environment variable**
 
-Set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
+If you do not prefer (3a) and optionally like to use a service account, you can
+set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
 your `app-config.yaml` to the your account name.
 
 The storage blob client will automatically use the environment variable
@@ -309,3 +310,77 @@ and read the static generated documentation files. When you start the backend of
 the app, you should be able to see
 `techdocs info Successfully connected to the Azure Blob Storage container` in
 the logs.
+
+## Configuring OpenStack Swift Container with TechDocs
+
+Follow the
+[official OpenStack Api documentation](https://docs.openstack.org/api-ref/identity/v3/)
+for the latest instructions on the following steps involving OpenStack Storage.
+
+**1. Set `techdocs.publisher.type` config in your `app-config.yaml`**
+
+Set `techdocs.publisher.type` to `'openStackSwift'`.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'openStackSwift'
+```
+
+**2. Create an OpenStack Swift Storage Container**
+
+Create a dedicated container for TechDocs sites.
+[Refer to the official documentation](https://docs.openstack.org/mitaka/user-guide/dashboard_manage_containers.html).
+
+TechDocs will publish documentation to this container and will fetch files from
+here to serve documentation in Backstage. Note that the container names are
+globally unique.
+
+Set the config `techdocs.publisher.openStackSwift.containerName` in your
+`app-config.yaml` to the name of the container you just created.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'openStackSwift'
+    openStackSwift:
+      containerName: 'name-of-techdocs-storage-container'
+```
+
+**3. Authentication using app-config.yaml**
+
+Set the configs in your `app-config.yaml` to point to your container name.
+
+https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
+for more details.
+
+```yaml
+techdocs:
+  publisher:
+    type: 'openStackSwift'
+    openStackSwift:
+      containerName: 'name-of-techdocs-storage-bucket'
+      credentials:
+        userName:
+          $env: OPENSTACK_SWIFT_STORAGE_USERNAME
+        password:
+          $env: OPENSTACK_SWIFT_STORAGE_PASSWORD
+      authUrl:
+        $env: OPENSTACK_SWIFT_STORAGE_AUTH_URL
+      keystoneAuthVersion:
+        $env: OPENSTACK_SWIFT_STORAGE_AUTH_VERSION
+      domainId:
+        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_ID
+      domainName:
+        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME
+      region:
+        $env: OPENSTACK_SWIFT_STORAGE_REGION
+```
+
+**4. That's it!**
+
+Your Backstage app is now ready to use OpenStack Swift Storage for TechDocs, to
+store and read the static generated documentation files. When you start the
+backend of the app, you should be able to see
+`techdocs info Successfully connected to the OpenStack Swift Storage container`
+in the logs.

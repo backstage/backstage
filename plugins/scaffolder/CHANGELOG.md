@@ -1,5 +1,59 @@
 # @backstage/plugin-scaffolder
 
+## 0.7.0
+
+### Minor Changes
+
+- 8106c9528: The scaffolder has been updated to support the new `v1beta2` template schema which allows for custom template actions!
+
+  See documentation for more information how to create and register new template actions.
+
+  **Breaking changes**
+
+  The backend scaffolder plugin now needs a `UrlReader` which can be pulled from the PluginEnvironment.
+
+  The following change is required in `backend/src/plugins/scaffolder.ts`
+
+  ```diff
+   export default async function createPlugin({
+     logger,
+     config,
+     database,
+  +  reader,
+   }: PluginEnvironment): Promise<Router> {
+
+    // omitted code
+
+    return await createRouter({
+      preparers,
+      templaters,
+      publishers,
+      logger,
+      config,
+      dockerClient,
+      database,
+      catalogClient,
+  +   reader,
+    });
+  ```
+
+### Patch Changes
+
+- 12d8f27a6: Move logic for constructing the template form to the backend, using a new `./parameter-schema` endpoint that returns the form schema for a given template.
+- bc327dc42: Tweak the template cards to be even more compliant with MUI examples, and a little bit more dense.
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.6.0
 
 ### Minor Changes

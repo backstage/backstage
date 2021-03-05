@@ -117,3 +117,8 @@ Start the frontend and the backend app by
 
 After installing the plugins in the code, you'll need to then
 [configure them](configuration.md).
+
+## Troubleshooting
+
+After installing the plugins in the code, if the Kubernetes information is not
+showing up, you'll need to [troubleshoot it](troubleshooting.md).

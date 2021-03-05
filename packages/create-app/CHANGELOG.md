@@ -1,5 +1,167 @@
 # @backstage/create-app
 
+## 0.3.12
+
+### Patch Changes
+
+- f71589800: The api-docs plugin has been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page.
+
+  If you want to have a button that links to the scaffolder plugin from the API explorer, apply the following changes to `packages/app/src/App.tsx`:
+
+  ```diff
+  + import { apiDocsPlugin } from '@backstage/plugin-api-docs';
+    import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+    const app = createApp({
+      // ...
+      bindRoutes({ bind }) {
+  +     bind(apiDocsPlugin.externalRoutes, {
+  +       createComponent: scaffolderPlugin.routes.root,
+  +     });
+      },
+    });
+  ```
+
+  If you choose to not bind the routes, the button to create new APIs is not displayed.
+
+- 7a1b2ba0e: Migrated away from using deprecated routes and router components at top-level in the app, and instead use routable extension pages.
+
+  To apply this change to an existing app, make the following changes to `packages/app/src/App.tsx`:
+
+  Update imports and remove the usage of the deprecated `app.getRoutes()`.
+
+  ```diff
+  -import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+  +import { TechdocsPage } from '@backstage/plugin-techdocs';
+   import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+  -import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+  -import { SearchPage as SearchRouter } from '@backstage/plugin-search';
+  -import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
+  +import { TechRadarPage } from '@backstage/plugin-tech-radar';
+  +import { SearchPage } from '@backstage/plugin-search';
+  +import { UserSettingsPage } from '@backstage/plugin-user-settings';
+  +import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+   import { EntityPage } from './components/catalog/EntityPage';
+   import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
+  ```
+
+const AppProvider = app.getProvider();
+const AppRouter = app.getRouter();
+-const deprecatedAppRoutes = app.getRoutes();
+
+````
+
+As well as update or add the following routes:
+
+```diff
+   <Route path="/create" element={<ScaffolderPage />} />
+-  <Route path="/docs" element={<DocsRouter />} />
++  <Route path="/docs" element={<TechdocsPage />} />
++  <Route path="/api-docs" element={<ApiExplorerPage />} />
+   <Route
+     path="/tech-radar"
+-    element={<TechRadarRouter width={1500} height={800} />}
++    element={<TechRadarPage width={1500} height={800} />}
+   />
+   <Route path="/catalog-import" element={<CatalogImportPage />} />
+-  <Route
+-    path="/search"
+-    element={<SearchRouter/>}
+-  />
+-  <Route path="/settings" element={<SettingsRouter />} />
+-  {deprecatedAppRoutes}
++  <Route path="/search" element={<SearchPage />} />
++  <Route path="/settings" element={<UserSettingsPage />} />
+````
+
+If you have added additional plugins with registered routes or are using `Router` components from other plugins, these should be migrated to use the `*Page` components as well. See [this commit](https://github.com/backstage/backstage/commit/abd655e42d4ed416b70848ffdb1c4b99d189f13b) for more examples of how to migrate.
+
+For more information and the background to this change, see the [composability system migration docs](https://backstage.io/docs/plugins/composability).
+
+- 415a3a42d: Updated the default `App` test to work better on Windows.
+
+  To apply this change to an existing app, replace the `process.env.APP_CONFIG` definition in `packages/app/src/App.test.tsx` with the following:
+
+  ```ts
+  process.env = {
+    NODE_ENV: 'test',
+    APP_CONFIG: [
+      {
+        data: {
+          app: { title: 'Test' },
+          backend: { baseUrl: 'http://localhost:7000' },
+          techdocs: {
+            storageUrl: 'http://localhost:7000/api/techdocs/static/docs',
+          },
+        },
+        context: 'test',
+      },
+    ] as any,
+  };
+  ```
+
+- Updated dependencies [b2a5320a4]
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [507513fed]
+- Updated dependencies [52b5bc3e2]
+- Updated dependencies [ecdd407b1]
+- Updated dependencies [32a003973]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [1987c9341]
+- Updated dependencies [f31b76b44]
+- Updated dependencies [15eee03bc]
+- Updated dependencies [f43192207]
+- Updated dependencies [cfc83cac1]
+- Updated dependencies [8adb48df4]
+- Updated dependencies [bc327dc42]
+- Updated dependencies [2386de1d3]
+- Updated dependencies [9ce68b677]
+- Updated dependencies [10362e9eb]
+- Updated dependencies [e37d2de99]
+- Updated dependencies [813c6a4f2]
+- Updated dependencies [11c6208fe]
+- Updated dependencies [8106c9528]
+- Updated dependencies [05183f202]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [f71589800]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [d4f0a1406]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [d0ed25196]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [96ccc8f69]
+- Updated dependencies [3af994c81]
+- Updated dependencies [b33e553b2]
+- Updated dependencies [04667f571]
+- Updated dependencies [b93538acc]
+- Updated dependencies [8871e7523]
+- Updated dependencies [dbea11072]
+  - @backstage/plugin-circleci@0.2.11
+  - @backstage/plugin-github-actions@0.3.5
+  - @backstage/plugin-scaffolder@0.7.0
+  - @backstage/plugin-scaffolder-backend@0.9.0
+  - @backstage/cli@0.6.3
+  - @backstage/plugin-techdocs-backend@0.6.3
+  - @backstage/plugin-catalog-backend@0.6.4
+  - @backstage/plugin-api-docs@0.4.8
+  - @backstage/plugin-catalog@0.4.1
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+  - @backstage/plugin-proxy-backend@0.2.5
+  - @backstage/plugin-auth-backend@0.3.3
+  - @backstage/plugin-explore@0.3.0
+  - @backstage/plugin-techdocs@0.6.0
+  - @backstage/plugin-catalog-import@0.4.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-lighthouse@0.2.13
+  - @backstage/plugin-search@0.3.3
+  - @backstage/plugin-tech-radar@0.3.7
+  - @backstage/plugin-user-settings@0.2.7
+
 ## 0.3.11
 
 ### Patch Changes
