@@ -70,6 +70,7 @@ const generatedColumns: TableColumn[] = [
   },
 ];
 
+
 type Props = {
   loading: boolean;
   retry: () => void;
