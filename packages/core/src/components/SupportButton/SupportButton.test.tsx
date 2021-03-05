@@ -28,6 +28,29 @@ import { SupportButton } from './SupportButton';
 const SUPPORT_BUTTON_ID = 'support-button';
 const POPOVER_ID = 'support-button-popover';
 
+const minProp = [
+  {
+    title: 'Backstage 2.0',
+    icon: 'group',
+    links: [
+      {
+        title: 'Backstage',
+        url: 'https://material-ui.com/es/api/menu/',
+      },
+    ],
+  },
+  {
+    title: 'Personal Email',
+    icon: 'email',
+    links: [
+      {
+        title: 'My Mail',
+        url: 'https://demo.roadie.so/catalog',
+      },
+    ],
+  },
+];
+
 describe('<SupportButton />', () => {
   it('renders without exploding', async () => {
     let renderResult: RenderResult;
@@ -46,6 +69,31 @@ describe('<SupportButton />', () => {
 
     await act(async () => {
       renderResult = render(wrapInTestApp(<SupportButton />));
+    });
+
+    let button: HTMLElement;
+
+    await waitFor(() => {
+      expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument();
+      button = renderResult.getByTestId(SUPPORT_BUTTON_ID);
+    });
+
+    await act(async () => {
+      fireEvent.click(button);
+    });
+
+    await waitFor(() => {
+      expect(renderResult.getByTestId(POPOVER_ID)).toBeInTheDocument();
+    });
+  });
+
+  it('render popover with custom link', async () => {
+    let renderResult: RenderResult;
+
+    await act(async () => {
+      renderResult = render(
+        wrapInTestApp(<SupportButton supporters={minProp} />),
+      );
     });
 
     let button: HTMLElement;
