@@ -22,20 +22,14 @@ import {
   Header,
   Page,
   ErrorPage,
-  Button,
-  ItemCardGrid,
-  ItemCardHeader,
 } from '@backstage/core';
 import { scaffolderApiRef } from '../../api';
 import {
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
   Typography,
   Paper,
   Table,
   TableBody,
+  Box,
   TableCell,
   TableContainer,
   TableHead,
@@ -44,11 +38,35 @@ import {
 } from '@material-ui/core';
 import { JSONSchema } from '@backstage/catalog-model';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   table: {
     // minWidth: 650,
   },
-});
+
+  code: {
+    fontFamily: 'Menlo, monospaced',
+    padding: theme.spacing(1),
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? theme.palette.grey[700]
+        : theme.palette.grey[300],
+    display: 'inline-block',
+    borderRadius: 5,
+    border: `1px solid ${theme.palette.grey[500]}`,
+    position: 'relative',
+  },
+
+  codeRequired: {
+    '&::after': {
+      position: 'absolute',
+      content: '"*"',
+      top: 0,
+      right: theme.spacing(0.5),
+      fontWeight: 'bolder',
+      color: theme.palette.error.light,
+    },
+  },
+}));
 
 export const ActionsPage = () => {
   const api = useApi(scaffolderApiRef);
@@ -80,18 +98,41 @@ export const ActionsPage = () => {
     return Object.entries(properties).map(entry => {
       const [key, props] = entry;
       const isRequired = required.includes(key);
+
+      const codeClassname = `${classes.code} ${
+        isRequired ? classes.codeRequired : ''
+      }`;
       return (
         <TableRow key={key}>
           <TableCell>
-            {key}
-            {isRequired && <strong>*</strong>}
+            <div className={codeClassname}>{key}</div>
           </TableCell>
           <TableCell>{props.title}</TableCell>
           <TableCell>{props.description}</TableCell>
-          <TableCell>{props.type}</TableCell>
+          <TableCell>
+            <span className={classes.code}>{props.type}</span>
+          </TableCell>
         </TableRow>
       );
     });
+  };
+
+  const renderTable = (input: JSONSchema) => {
+    return (
+      <TableContainer component={Paper}>
+        <Table size="small" className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Title</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Type</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{formatRows(input)}</TableBody>
+        </Table>
+      </TableContainer>
+    );
   };
 
   const items = value?.map(action => {
@@ -99,45 +140,23 @@ export const ActionsPage = () => {
       return undefined;
     }
     return (
-      <>
-        <Typography variant="h4">{action.id}</Typography>
+      <Box pb={4}>
+        <Typography variant="h4" className={classes.code}>
+          {action.id}
+        </Typography>
         {action.schema?.input && (
-          <>
+          <Box pb={2}>
             <Typography variant="h6">Input</Typography>
-            <TableContainer component={Paper}>
-              <Table size="small" className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Type</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{formatRows(action.schema?.input)}</TableBody>
-              </Table>
-            </TableContainer>
-          </>
+            {renderTable(action.schema.input)}
+          </Box>
         )}
         {action.schema?.output && (
-          <>
+          <Box pb={2}>
             <Typography variant="h6">Output</Typography>
-            <TableContainer component={Paper}>
-              <Table size="small" className={classes.table}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Title</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Type</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{formatRows(action.schema?.output)}</TableBody>
-              </Table>
-            </TableContainer>
-          </>
+            {renderTable(action.schema.output)}
+          </Box>
         )}
-      </>
+      </Box>
     );
   });
 
