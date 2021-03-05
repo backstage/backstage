@@ -17,7 +17,7 @@
 // @ts-check
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
   // Adds a single 'bootstrap' location that can be used to trigger work in processors.
@@ -30,7 +30,7 @@ exports.up = async function up(knex) {
 };
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
   await knex('locations')
