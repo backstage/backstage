@@ -73,7 +73,7 @@ describe('createRouter', () => {
     'returns %s with no-store Cache-Control header',
     async file => {
       const response = await request(app).get(file);
-      expect(response.header['cache-control']).toBe('no-store');
+      expect(response.header['cache-control']).toBe('no-store, max-age=0');
     },
   );
 
