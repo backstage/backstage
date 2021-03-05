@@ -55,7 +55,6 @@ export class GitLabIntegration implements ScmIntegration {
   }
 }
 
-
 export function replaceUrlType(
   url: string,
   type: 'blob' | 'tree' | 'edit',
