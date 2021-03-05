@@ -25,7 +25,6 @@ import {
   KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  ClusterLocatorMethod,
   ClusterDetails,
   KubernetesClustersSupplier,
 } from '..';
@@ -96,20 +95,17 @@ export async function createRouter(
     logger,
   });
 
-  const clusterLocatorMethods = options.config.getStringArray(
-    'kubernetes.clusterLocatorMethods',
-  ) as ClusterLocatorMethod[];
-
   let clusterDetails: ClusterDetails[];
 
   if (options.clusterSupplier) {
     clusterDetails = await options.clusterSupplier.getClusters();
   } else {
-    clusterDetails = await getCombinedClusterDetails(
-      clusterLocatorMethods,
-      options.config,
-    );
+    clusterDetails = await getCombinedClusterDetails(options.config);
   }
+
+  logger.info(
+    `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
+  );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
 

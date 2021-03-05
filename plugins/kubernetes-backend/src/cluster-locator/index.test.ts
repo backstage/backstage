@@ -22,17 +22,22 @@ describe('getCombinedClusterDetails', () => {
     const config: Config = new ConfigReader(
       {
         kubernetes: {
-          clusters: [
+          clusterLocatorMethods: [
             {
-              name: 'cluster1',
-              serviceAccountToken: 'token',
-              url: 'http://localhost:8080',
-              authProvider: 'serviceAccount',
-            },
-            {
-              name: 'cluster2',
-              url: 'http://localhost:8081',
-              authProvider: 'google',
+              type: 'config',
+              clusters: [
+                {
+                  name: 'cluster1',
+                  serviceAccountToken: 'token',
+                  url: 'http://localhost:8080',
+                  authProvider: 'serviceAccount',
+                },
+                {
+                  name: 'cluster2',
+                  url: 'http://localhost:8081',
+                  authProvider: 'google',
+                },
+              ],
             },
           ],
         },
@@ -40,7 +45,7 @@ describe('getCombinedClusterDetails', () => {
       'ctx',
     );
 
-    const result = await getCombinedClusterDetails(['config'], config);
+    const result = await getCombinedClusterDetails(config);
 
     expect(result).toStrictEqual([
       {
@@ -59,9 +64,36 @@ describe('getCombinedClusterDetails', () => {
   });
 
   it('throws an error when using an unsupported cluster locator', async () => {
-    await expect(
-      getCombinedClusterDetails(['magic' as any], new ConfigReader({})),
-    ).rejects.toStrictEqual(
+    const config: Config = new ConfigReader(
+      {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'config',
+              clusters: [
+                {
+                  name: 'cluster1',
+                  serviceAccountToken: 'token',
+                  url: 'http://localhost:8080',
+                  authProvider: 'serviceAccount',
+                },
+                {
+                  name: 'cluster2',
+                  url: 'http://localhost:8081',
+                  authProvider: 'google',
+                },
+              ],
+            },
+            {
+              type: 'magic',
+            },
+          ],
+        },
+      },
+      'ctx',
+    );
+
+    await expect(getCombinedClusterDetails(config)).rejects.toStrictEqual(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
   });

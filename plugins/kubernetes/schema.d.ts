@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ClusterLocatorMethod } from '@backstage/plugin-kubernetes-backend';
+
 export interface Config {
   kubernetes?: {
     /**
@@ -22,7 +25,7 @@ export interface Config {
     /**
      * @visibility frontend
      */
-    clusterLocatorMethods: 'config'[];
+    clusterLocatorMethods: ClusterLocatorMethod[];
     clusters: {
       /**
        * @visibility frontend
