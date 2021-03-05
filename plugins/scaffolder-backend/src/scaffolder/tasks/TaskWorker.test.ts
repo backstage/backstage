@@ -20,10 +20,10 @@ import {
 } from '@backstage/backend-common';
 import { TaskWorker } from './TaskWorker';
 import os from 'os';
-import { ActionContext, TemplateActionRegistry } from './TemplateConverter';
 import { ConfigReader, JsonObject } from '@backstage/config';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
+import { TemplateActionRegistry } from '../actions';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = SingleConnectionDatabaseManager.fromConfig(
@@ -50,7 +50,7 @@ describe('TaskWorker', () => {
   const actionRegistry = new TemplateActionRegistry();
   actionRegistry.register({
     id: 'test-action',
-    handler: async (ctx: ActionContext) => {
+    handler: async ctx => {
       ctx.output('testOutput', 'winning');
     },
   });
@@ -68,6 +68,7 @@ describe('TaskWorker', () => {
       output: {
         result: '{{ steps.test.output.testOutput }}',
       },
+      values: {},
     });
     const task = await broker.claim();
     await taskWorker.runOneTask(task);
@@ -93,6 +94,7 @@ describe('TaskWorker', () => {
       output: {
         result: '{{ steps.test.output.testOutput }}',
       },
+      values: {},
     });
 
     const task = await broker.claim();
