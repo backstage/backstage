@@ -78,9 +78,15 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
   );
 };
 
-export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
-  const { items } = useSupportConfig();
+declare type SupportButtonProps = {
+  supporters: Set<SupportItem>[];
+};
 
+export const SupportButton = ({
+  supporters,
+  children,
+}: PropsWithChildren<SupportButtonProps>) => {
+  const { items } = useSupportConfig();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
@@ -124,8 +130,11 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
               {child}
             </ListItem>
           ))}
-          {items &&
-            items.map((item, i) => <SupportListItem item={item} key={i} />)}
+          {supporters
+            ? supporters.map((item, i) => (
+                <SupportListItem item={item} key={i} />
+              ))
+            : items.map((item, i) => <SupportListItem item={item} key={i} />)}
         </List>
       </Popover>
     </Fragment>
