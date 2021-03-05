@@ -30,12 +30,12 @@ const POPOVER_ID = 'support-button-popover';
 
 const minProp = [
   {
-    title: 'Backstage 2.0',
+    title: 'Backstage Main Page',
     icon: 'group',
     links: [
       {
         title: 'Backstage',
-        url: 'https://material-ui.com/es/api/menu/',
+        url: 'https://backstage.io/docs/overview/what-is-backstage',
       },
     ],
   },
