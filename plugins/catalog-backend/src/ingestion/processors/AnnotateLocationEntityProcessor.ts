@@ -51,10 +51,18 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
 
       viewUrl = location.target;
       editUrl = scmIntegration?.resolveEditUrl(location.target);
-      sourceLocation = scmIntegration?.resolveUrl({
+
+      const sourceUrl = scmIntegration?.resolveUrl({
         url: './',
         base: location.target,
       });
+
+      if (sourceUrl) {
+        sourceLocation = stringifyLocationReference({
+          type: 'url',
+          target: sourceUrl,
+        });
+      }
     }
 
     return merge(

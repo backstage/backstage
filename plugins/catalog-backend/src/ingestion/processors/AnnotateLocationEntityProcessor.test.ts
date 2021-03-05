@@ -66,7 +66,7 @@ describe('AnnotateLocationEntityProcessor', () => {
             'backstage.io/edit-url':
               'https://github.com/backstage/backstage/edit/master/packages/app/catalog-info.yaml',
             'backstage.io/source-location':
-              'https://github.com/backstage/backstage/tree/master/packages/app/',
+              'url:https://github.com/backstage/backstage/tree/master/packages/app/',
           },
         },
       });
@@ -81,7 +81,7 @@ describe('AnnotateLocationEntityProcessor', () => {
           annotations: {
             'backstage.io/view-url': 'https://example.com/view',
             'backstage.io/edit-url': 'https://example.com/edit',
-            'backstage.io/source-location': 'https://example.com/source',
+            'backstage.io/source-location': 'url:https://example.com/source',
           },
         },
       };
@@ -119,7 +119,7 @@ describe('AnnotateLocationEntityProcessor', () => {
               'url:https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
             'backstage.io/view-url': 'https://example.com/view',
             'backstage.io/edit-url': 'https://example.com/edit',
-            'backstage.io/source-location': 'https://example.com/source',
+            'backstage.io/source-location': 'url:https://example.com/source',
           },
         },
       });

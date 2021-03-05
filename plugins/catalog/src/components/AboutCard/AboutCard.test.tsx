@@ -81,7 +81,7 @@ describe('<AboutCard />', () => {
         name: 'software',
         annotations: {
           'backstage.io/source-location':
-            'https://github.com/backstage/backstage/blob/master/software.yaml',
+            'url:https://github.com/backstage/backstage/blob/master/software.yaml',
         },
       },
       spec: {

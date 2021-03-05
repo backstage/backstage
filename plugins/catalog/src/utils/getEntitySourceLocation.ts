@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, SOURCE_LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseLocationReference,
+  SOURCE_LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import { ConfigApi } from '@backstage/core';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -34,11 +38,16 @@ export function getEntitySourceLocation(
     return undefined;
   }
 
-  const scmIntegrations = ScmIntegrations.fromConfig(config);
-  const integration = scmIntegrations.byUrl(sourceLocation);
+  try {
+    const sourceLocationRef = parseLocationReference(sourceLocation);
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    const integration = scmIntegrations.byUrl(sourceLocationRef.target);
 
-  return {
-    url: sourceLocation,
-    type: integration?.type,
-  };
+    return {
+      url: sourceLocationRef.target,
+      type: integration?.type,
+    };
+  } catch {
+    return undefined;
+  }
 }
