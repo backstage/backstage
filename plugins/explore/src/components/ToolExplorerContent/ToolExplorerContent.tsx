@@ -17,36 +17,55 @@ import {
   Content,
   ContentHeader,
   EmptyState,
+  ItemCardGrid,
   Progress,
   SupportButton,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import { exploreToolsConfigRef } from '@backstage/plugin-explore-react';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { ToolCardGrid } from '../ToolCard';
+import { ToolCard } from '../ToolCard';
 
-export const ToolExplorerContent = () => {
+const Body = () => {
   const exploreToolsConfigApi = useApi(exploreToolsConfigRef);
-  const { value: tools, loading } = useAsync(async () => {
+  const { value: tools, loading, error } = useAsync(async () => {
     return await exploreToolsConfigApi.getTools();
   }, [exploreToolsConfigApi]);
 
-  return (
-    <Content noPadding>
-      <ContentHeader title="Tools">
-        <SupportButton title="Discover the tools in your ecosystem." />
-      </ContentHeader>
+  if (loading) {
+    return <Progress />;
+  }
 
-      {loading && <Progress />}
-      {!loading && (!tools || tools.length === 0) && (
-        <EmptyState
-          missing="info"
-          title="No tools to display"
-          description={`You haven't added any tools yet.`}
-        />
-      )}
-      {!loading && tools && <ToolCardGrid tools={tools} />}
-    </Content>
+  if (error) {
+    return <WarningPanel title="Failed to load tools" />;
+  }
+
+  if (!tools?.length) {
+    return (
+      <EmptyState
+        missing="info"
+        title="No tools to display"
+        description="You haven't added any tools yet."
+      />
+    );
+  }
+
+  return (
+    <ItemCardGrid>
+      {tools.map((tool, index) => (
+        <ToolCard key={index} card={tool} />
+      ))}
+    </ItemCardGrid>
   );
 };
+
+export const ToolExplorerContent = () => (
+  <Content noPadding>
+    <ContentHeader title="Tools">
+    <SupportButton title="Discover the tools in your ecosystem." />
+    </ContentHeader>
+    <Body />
+  </Content>
+);
