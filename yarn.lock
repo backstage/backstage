@@ -6054,9 +6054,9 @@
     "@types/uglify-js" "*"
 
 "@types/html-webpack-plugin@*", "@types/html-webpack-plugin@^3.2.2":
-  version "3.2.3"
-  resolved "https://registry.npmjs.org/@types/html-webpack-plugin/-/html-webpack-plugin-3.2.3.tgz#865323e30e82560c0ca898dbf9f6f9d1c541cd7f"
-  integrity sha512-Y7dsVhTn75IaD4lMIY02UP1L8e0ou8KQu8DKPJAegEFKdJR28/8ejayDG8ykfR0DtYCx3dCEHIkdpN8AOB6txQ==
+  version "3.2.4"
+  resolved "https://registry.npmjs.org/@types/html-webpack-plugin/-/html-webpack-plugin-3.2.4.tgz#ed770ddfec53ed2aa6b5f4523acca291192235c6"
+  integrity sha512-WM0s78bfCIXnTlICf+8nWP0IvP+fn4YfiI3uxAX1K1PSRpzs0iysp03j4zR0xTgxSqF67TbOsHs49YXonRAkeQ==
   dependencies:
     "@types/html-minifier" "*"
     "@types/tapable" "*"
