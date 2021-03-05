@@ -22,6 +22,7 @@ import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
+import { OpenStackSwiftPublish } from './openStackSwift';
 
 type factoryOptions = {
   logger: Logger;
@@ -53,6 +54,11 @@ export class Publisher {
           'Creating Azure Blob Storage Container publisher for TechDocs',
         );
         return AzureBlobStoragePublish.fromConfig(config, logger);
+      case 'openStackSwift':
+        logger.info(
+          'Creating OpenStack Swift Container publisher for TechDocs',
+        );
+        return OpenStackSwiftPublish.fromConfig(config, logger);
       case 'local':
         logger.info('Creating Local publisher for TechDocs');
         return new LocalPublish(config, logger, discovery);

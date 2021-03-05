@@ -23,6 +23,7 @@ import { LocalPublish } from './local';
 import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
+import { OpenStackSwiftPublish } from './openStackSwift';
 
 const logger = getVoidLogger();
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
@@ -160,5 +161,31 @@ describe('Publisher', () => {
       discovery,
     });
     expect(publisher).toBeInstanceOf(AzureBlobStoragePublish);
+  });
+
+  it('should create Open Stack Swift publisher from config', async () => {
+    const mockConfig = new ConfigReader({
+      techdocs: {
+        requestUrl: 'http://localhost:7000',
+        publisher: {
+          type: 'openStackSwift',
+          openStackSwift: {
+            credentials: {
+              username: 'mockuser',
+              password: 'verystrongpass',
+            },
+            authUrl: 'mockauthurl',
+            region: 'mockregion',
+            containerName: 'mock',
+          },
+        },
+      },
+    });
+
+    const publisher = await Publisher.fromConfig(mockConfig, {
+      logger,
+      discovery,
+    });
+    expect(publisher).toBeInstanceOf(OpenStackSwiftPublish);
   });
 });
