@@ -79,7 +79,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 };
 
 declare type SupportButtonProps = {
-  supporters: Set<SupportItem>[];
+  supporters?: Set<SupportItem>[];
 };
 
 export const SupportButton = ({
