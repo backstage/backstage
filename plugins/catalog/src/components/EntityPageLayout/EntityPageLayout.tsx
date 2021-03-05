@@ -18,7 +18,15 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
-import { Content, Header, HeaderLabel, Page, Progress } from '@backstage/core';
+import {
+  Content,
+  Header,
+  HeaderLabel,
+  Link,
+  Page,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
 import {
   EntityContext,
   EntityRefLinks,
@@ -125,7 +133,11 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         )}
       </Header>
 
-      {loading && <Progress />}
+      {loading && (
+        <Content>
+          <Progress />
+        </Content>
+      )}
 
       {entity && <Tabbed.Layout>{children}</Tabbed.Layout>}
 
@@ -134,6 +146,19 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
           <Alert severity="error">{error.toString()}</Alert>
         </Content>
       )}
+
+      {!loading && !error && !entity && (
+        <Content>
+          <WarningPanel title="Entity not found">
+            There is no {kind} with the requested{' '}
+            <Link to="https://backstage.io/docs/features/software-catalog/references">
+              kind, namespace, and name
+            </Link>
+            .
+          </WarningPanel>
+        </Content>
+      )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}
@@ -143,4 +168,5 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
     </Page>
   );
 };
+
 EntityPageLayout.Content = Tabbed.Content;
