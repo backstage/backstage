@@ -1,15 +1,7 @@
-Second evoltion.
+Third evoltion.
 
-This one removes the method `getPlugins`.
+This one adds metadata to components.
 
-Again, the real impl is in v3, so it follows the process as before:
+So now v3 is responsible to _remove_ the metadata.
 
-- copy v2 to v3.
-- implement the changes in v3.
-- reimplement v2 based on v3.
-
-So this process is always about adding the new version and changing the previous version
-to have the same interface it always had, but to be based on the last one.
-
-Notice v1 is unchanged.
-
+Still need to figure how to override the method with a diff type (TS complains).
