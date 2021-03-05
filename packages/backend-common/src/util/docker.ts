@@ -71,7 +71,6 @@ export const runDockerContainer = async ({
   });
 
   const userOptions: UserOptions = {};
-  // @ts-ignore
   if (process.getuid && process.getgid) {
     // Files that are created inside the Docker container will be owned by
     // root on the host system on non Mac systems, because of reasons. Mainly the fact that
