@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import fs from 'fs-extra';
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
 import {
   Entity,
   LOCATION_ANNOTATION,
+  parseLocationReference,
   SOURCE_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import fs from 'fs-extra';
+import os from 'os';
+import { Logger } from 'winston';
 
 export async function getWorkingDirectory(
   config: Config,
@@ -64,16 +65,13 @@ export function getEntityBaseUrl(entity: Entity): string | undefined {
     return undefined;
   }
 
-  const [type, url] = location.split(/:(.+)/);
-  if (!url) {
-    return undefined;
+  const { type, target } = parseLocationReference(location);
+  if (type === 'url') {
+    return target;
+  } else if (type === 'file') {
+    return `file://${target}`;
   }
 
-  if (type === 'url') {
-    return url;
-  } else if (type === 'file') {
-    return `file://${url}`;
-  }
   // Only url and file location are handled, as we otherwise don't know if
   // what the url is pointing to makes sense to use as a baseUrl
   return undefined;

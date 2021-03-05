@@ -16,9 +16,10 @@
 
 import {
   Entity,
-  LOCATION_ANNOTATION,
   LocationSpec,
+  LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  stringifyLocationReference,
 } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -34,8 +35,10 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
       {
         metadata: {
           annotations: {
-            [LOCATION_ANNOTATION]: `${location.type}:${location.target}`,
-            [ORIGIN_LOCATION_ANNOTATION]: `${originLocation.type}:${originLocation.target}`,
+            [LOCATION_ANNOTATION]: stringifyLocationReference(location),
+            [ORIGIN_LOCATION_ANNOTATION]: stringifyLocationReference(
+              originLocation,
+            ),
           },
         },
       },
