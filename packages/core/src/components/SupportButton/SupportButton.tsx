@@ -33,8 +33,6 @@ import React, {
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { Link } from '../Link';
 
-type Props = {};
-
 const useStyles = makeStyles(theme => ({
   leftIcon: {
     marginRight: theme.spacing(1),
@@ -79,7 +77,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 };
 
 declare type SupportButtonProps = {
-  supporters?: Set<SupportItem>[];
+  supporters?: SupportItem[];
 };
 
 export const SupportButton = ({
