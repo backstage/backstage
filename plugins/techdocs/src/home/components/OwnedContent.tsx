@@ -31,9 +31,9 @@ import {
   Link,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { useOwnUser } from '@backstage/plugin-catalog';
 import { isOwnerOf } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../plugin';
+import { useOwnUser } from '../hooks';
 
 export const OwnedContent = ({
   entities,

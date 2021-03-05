@@ -18,7 +18,7 @@ import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { OwnedContent } from './OwnedContent';
 
-jest.mock('@backstage/plugin-catalog', () => ({
+jest.mock('../hooks', () => ({
   useOwnUser: () => {
     return {
       value: {

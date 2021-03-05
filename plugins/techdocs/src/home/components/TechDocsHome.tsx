@@ -20,12 +20,9 @@ import { useAsync } from 'react-use';
 import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
-  Button,
   CodeSnippet,
   Content,
   Header,
-  ItemCardGrid,
-  ItemCardHeader,
   HeaderTabs,
   Page,
   Progress,
