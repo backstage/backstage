@@ -20,7 +20,7 @@ import {
   NotFoundError,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
   DbTaskEventRow,

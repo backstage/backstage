@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = function up(knex) {
   return knex.schema.raw(`DROP VIEW location_update_log_latest;`).raw(`
   CREATE VIEW location_update_log_latest AS
   SELECT t1.* FROM location_update_log t1
-  JOIN 
+  JOIN
   (
      SELECT location_id, MAX(created_at) AS MAXDATE
      FROM location_update_log
@@ -30,6 +36,9 @@ exports.up = function up(knex) {
 `);
 };
 
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.down = function down(knex) {
   knex.schema.raw(`DROP VIEW location_update_log_latest;`);
 };

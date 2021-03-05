@@ -17,7 +17,7 @@
 import { getVoidLogger, UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import yaml from 'yaml';
 import { DatabaseManager } from '../database';
 import { CatalogProcessorParser } from '../ingestion';
