@@ -26,8 +26,6 @@ import {
   CircularProgress,
   Select,
   MenuItem,
-  Input,
-  Chip,
   createStyles,
   makeStyles,
   Theme,
@@ -35,23 +33,13 @@ import {
   InputLabel,
 } from '@material-ui/core';
 import { useApi, alertApiRef } from '@backstage/core';
-import { useAsync, useAsyncFn } from 'react-use';
+import { useAsyncFn } from 'react-use';
 import { splunkOnCallApiRef } from '../../api';
 import { Alert } from '@material-ui/lab';
-import { User } from '../types';
-import { IncidentTarget, TargetType } from '../../api/types';
-
-const MenuProps = {
-  PaperProps: {
-    style: {
-      width: 250,
-    },
-  },
-};
+import { TriggerAlarmRequest } from '../../api/types';
 
 type Props = {
-  users: User[];
-  incidentCreator: User;
+  team: string;
   showDialog: boolean;
   handleDialog: () => void;
   onIncidentCreated: () => void;
@@ -68,7 +56,16 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     formControl: {
       margin: theme.spacing(1),
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
       minWidth: `calc(100% - ${theme.spacing(2)}px)`,
+    },
+    formHeader: {
+      width: '50%',
+    },
+    incidentType: {
+      width: '90%',
     },
     targets: {
       display: 'flex',
@@ -79,8 +76,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const TriggerDialog = ({
-  users,
-  incidentCreator,
+  team,
   showDialog,
   handleDialog,
   onIncidentCreated: onIncidentCreated,
@@ -89,72 +85,46 @@ export const TriggerDialog = ({
   const api = useApi(splunkOnCallApiRef);
   const classes = useStyles();
 
-  const [userTargets, setUserTargets] = useState<string[]>([]);
-  const [policyTargets, setPolicyTargets] = useState<string[]>([]);
-  const [detailsValue, setDetails] = useState<string>('');
-  const [summaryValue, setSummary] = useState<string>('');
-  const [isMultiResponderValue, setIsMultiResponder] = useState<string>('1');
+  const [incidentType, setIncidentType] = useState<string>('');
+  const [incidentId, setIncidentId] = useState<string>();
+  const [incidentDisplayName, setIncidentDisplayName] = useState<string>('');
+  const [incidentMessage, setIncidentMessage] = useState<string>('');
+  const [incidentStartTime, setIncidentStartTime] = useState<number>();
 
   const [
     { value, loading: triggerLoading, error: triggerError },
     handleTriggerAlarm,
   ] = useAsyncFn(
-    async (
-      summary: string,
-      details: string,
-      userName: string,
-      targets: IncidentTarget[],
-      isMultiResponder: boolean,
-    ) =>
-      await api.triggerAlarm({
-        summary,
-        details,
-        userName,
-        targets,
-        isMultiResponder,
-      }),
+    async (params: TriggerAlarmRequest) => await api.incidentAction(params),
   );
 
-  const {
-    value: policies,
-    loading: policiesLoaading,
-    error: policiesError,
-  } = useAsync(async () => {
-    const allPolicies = await api.getEscalationPolicies();
-    return allPolicies;
-  });
-
-  const handleUserTargets = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setUserTargets(event.target.value as string[]);
+  const handleIncidentType = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setIncidentType(event.target.value as string);
   };
 
-  const handlePolicyTargets = (
-    event: React.ChangeEvent<{ value: unknown }>,
+  const handleIncidentId = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setIncidentId(event.target.value as string);
+  };
+
+  const handleIncidentDisplayName = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setPolicyTargets(event.target.value as string[]);
+    setIncidentDisplayName(event.target.value);
   };
 
-  const detailsChanged = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDetails(event.target.value);
-  };
-
-  const summaryChanged = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setSummary(event.target.value);
-  };
-
-  const isMultiResponderChanged = (
-    event: React.ChangeEvent<{ value: unknown }>,
+  const handleIncidentMessage = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setIsMultiResponder(event.target.value as string);
+    setIncidentMessage(event.target.value);
   };
 
-  const targets = (): IncidentTarget[] => [
-    ...userTargets.map(user => ({ slug: user, type: TargetType.UserValue })),
-    ...policyTargets.map(user => ({
-      slug: user,
-      type: TargetType.EscalationPolicyValue,
-    })),
-  ];
+  const handleIncidentStartTime = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const dateTime = new Date(event.target.value).getTime();
+    const dateTimeInSeconds = Math.floor(dateTime / 1000);
+    setIncidentStartTime(dateTimeInSeconds);
+  };
 
   useEffect(() => {
     if (value) {
@@ -178,10 +148,7 @@ export const TriggerDialog = ({
       <DialogTitle>This action will trigger an incident</DialogTitle>
       <DialogContent>
         <Typography variant="subtitle1" gutterBottom align="justify">
-          Created by:{' '}
-          <b>
-            {incidentCreator?.firstName} {incidentCreator?.lastName}
-          </b>
+          Created by: <b>{`{ REST } Endpoint`}</b>
         </Typography>
         <Alert severity="info">
           <Typography variant="body1" align="justify">
@@ -199,136 +166,66 @@ export const TriggerDialog = ({
           align="justify"
         >
           Please describe the problem you want to report. Be as descriptive as
-          possible. Your signed in user and a reference to the current page will
-          automatically be amended to the alarm so that the receiver can reach
-          out to you if necessary.
-        </Typography>
-        <div style={{ marginTop: '1em' }}>
-          <Typography color="textSecondary" gutterBottom>
-            Select the targets
-          </Typography>
-          <div className={classes.targets}>
-            <FormControl className={classes.formControl}>
-              <InputLabel>Select Users</InputLabel>
-              <Select
-                id="user-targets"
-                multiple
-                value={userTargets}
-                onChange={handleUserTargets}
-                input={<Input />}
-                renderValue={selected => (
-                  <div className={classes.chips}>
-                    {(selected as string[]).map(selectedUser => {
-                      const element = users.find(
-                        user => user.username === selectedUser,
-                      );
-                      return (
-                        <Chip
-                          key={selectedUser}
-                          label={`${element?.firstName} ${element?.lastName}`}
-                          className={classes.chip}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-                MenuProps={MenuProps}
-              >
-                {users.map(user => (
-                  <MenuItem key={user.email} value={user.username}>
-                    {user.firstName} {user.lastName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabel>Select Teams / Policies</InputLabel>
-              <Select
-                id="policy-targets"
-                multiple
-                value={policyTargets}
-                onChange={handlePolicyTargets}
-                input={<Input />}
-                renderValue={selected => (
-                  <div className={classes.chips}>
-                    {(selected as string[]).map(selectedPolicy => {
-                      const element = policies?.find(
-                        policy => policy.policy.slug === selectedPolicy,
-                      );
-                      return (
-                        <Chip
-                          key={selectedPolicy}
-                          label={element?.policy.name}
-                          className={classes.chip}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-                MenuProps={MenuProps}
-              >
-                {!policiesError &&
-                  !policiesLoaading &&
-                  policies &&
-                  policies.map(policy => (
-                    <MenuItem
-                      key={policy.policy.slug}
-                      value={policy.policy.slug}
-                    >
-                      {policy.policy.name}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </div>
-        </div>
-        <Typography
-          style={{ marginTop: '1em' }}
-          color="textSecondary"
-          gutterBottom
-        >
-          Acknowledge Behavior
+          possible. <br />
+          Note that only the <b>Incident type</b>, <b>Incident display name</b>{' '}
+          and the <b>Incident message</b> fields are <b>required</b>.
         </Typography>
         <FormControl className={classes.formControl}>
-          <Select
-            id="multi-responder"
-            value={isMultiResponderValue}
-            onChange={isMultiResponderChanged}
-            inputProps={{ 'data-testid': 'trigger-select-behavior' }}
-          >
-            <MenuItem value="1">
-              Stop paging after a single escalation policy or user has
-              acknowledged
-            </MenuItem>
-            <MenuItem value="0">
-              Continue paging until each escalation policy or user above has
-              acknowledged
-            </MenuItem>
-          </Select>
+          <div className={classes.formHeader}>
+            <InputLabel id="demo-simple-select-label">Incident type</InputLabel>
+            <Select
+              id="incident-type"
+              className={classes.incidentType}
+              value={incidentType}
+              onChange={handleIncidentType}
+              inputProps={{ 'data-testid': 'trigger-incident-type' }}
+            >
+              <MenuItem value="CRITICAL">Critical</MenuItem>
+              <MenuItem value="WARNING">Warning</MenuItem>
+              <MenuItem value="INFO">Info</MenuItem>
+            </Select>
+          </div>
+          <TextField
+            className={classes.formHeader}
+            id="datetime-local"
+            label="Incident start time"
+            type="datetime-local"
+            onChange={handleIncidentStartTime}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
         </FormControl>
         <TextField
-          required
-          inputProps={{ 'data-testid': 'trigger-summary-input' }}
+          inputProps={{ 'data-testid': 'trigger-incident-id' }}
           id="summary"
-          multiline
           fullWidth
-          rows="4"
           margin="normal"
-          label="Incident summary"
+          label="Incident id"
           variant="outlined"
-          onChange={summaryChanged}
+          onChange={handleIncidentId}
         />
         <TextField
           required
-          inputProps={{ 'data-testid': 'trigger-body-input' }}
+          inputProps={{ 'data-testid': 'trigger-incident-displayName' }}
+          id="summary"
+          fullWidth
+          margin="normal"
+          label="Incident display name"
+          variant="outlined"
+          onChange={handleIncidentDisplayName}
+        />
+        <TextField
+          required
+          inputProps={{ 'data-testid': 'trigger-incident-message' }}
           id="details"
           multiline
           fullWidth
           rows="2"
           margin="normal"
-          label="Incident body"
+          label="Incident message"
           variant="outlined"
-          onChange={detailsChanged}
+          onChange={handleIncidentMessage}
         />
       </DialogContent>
       <DialogActions>
@@ -337,20 +234,21 @@ export const TriggerDialog = ({
           id="trigger"
           color="secondary"
           disabled={
-            !detailsValue ||
-            !summaryValue ||
-            (!userTargets.length && !policyTargets.length) ||
+            !incidentType.length ||
+            !incidentDisplayName ||
+            !incidentMessage ||
             triggerLoading
           }
           variant="contained"
           onClick={() =>
-            handleTriggerAlarm(
-              summaryValue,
-              detailsValue,
-              incidentCreator.username!,
-              targets(),
-              !!Number(isMultiResponderValue),
-            )
+            handleTriggerAlarm({
+              routingKey: team,
+              incidentType,
+              incidentDisplayName,
+              incidentMessage,
+              ...(incidentId ? { incidentId } : {}),
+              ...(incidentStartTime ? { incidentStartTime } : {}),
+            } as TriggerAlarmRequest)
           }
           endIcon={triggerLoading && <CircularProgress size={16} />}
         >

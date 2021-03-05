@@ -33,9 +33,10 @@ type MaybeComponentNode = ReactNode & {
 };
 
 // The store is bridged across versions using the global object
-const { store } = getGlobalSingleton('component-data-store', () => ({
-  store: new WeakMap<ComponentType<any>, DataContainer>(),
-}));
+const store = getGlobalSingleton(
+  'component-data-store',
+  () => new WeakMap<ComponentType<any>, DataContainer>(),
+);
 
 export function attachComponentData<P>(
   component: ComponentType<P>,

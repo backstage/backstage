@@ -33,7 +33,7 @@ export interface Config {
      * Techdocs publisher information
      */
     publisher: {
-      type: 'local' | 'googleGcs' | 'awsS3';
+      type: 'local' | 'googleGcs' | 'awsS3' | 'openStackSwift';
     };
 
     /**

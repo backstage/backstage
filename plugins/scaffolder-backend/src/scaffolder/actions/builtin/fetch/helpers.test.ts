@@ -15,8 +15,9 @@
  */
 
 jest.mock('fs-extra');
-import fs from 'fs-extra';
 
+import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -77,7 +78,7 @@ describe('fetchContent helper', () => {
       fetchUrl: 'foo',
       outputPath: 'somepath',
     });
-    expect(fs.copy).toBeCalledWith('/some/foo', 'somepath');
+    expect(fs.copy).toBeCalledWith(resolvePath('/some/foo'), 'somepath');
   });
 
   it('should reject if no integration matches location', async () => {

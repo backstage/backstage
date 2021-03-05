@@ -252,7 +252,7 @@ export const patchMkdocsYmlPreBuild = async (
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     logger.warn(
-      `Could not read file ${mkdocsYmlPath} before running the generator. ${error.message}`,
+      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${error.message}`,
     );
     return;
   }

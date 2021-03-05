@@ -23,7 +23,7 @@ import {
   MockCurrencyProvider,
   MockConfigProvider,
   MockBillingDateProvider,
-} from '../utils/tests';
+} from '../testUtils';
 
 const mockData: UnlabeledDataflowData = {
   periodStart: '2021-02-01',

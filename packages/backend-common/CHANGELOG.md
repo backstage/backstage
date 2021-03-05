@@ -1,5 +1,12 @@
 # @backstage/backend-common
 
+## 0.5.5
+
+### Patch Changes
+
+- 497859088: Add optional `logClientErrors` to errorHandler to log 4XX errors
+- 8adb48df4: Change debug log format to print as color grey
+
 ## 0.5.4
 
 ### Patch Changes

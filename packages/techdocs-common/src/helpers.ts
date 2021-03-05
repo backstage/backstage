@@ -107,7 +107,7 @@ export const getGitRepositoryTempFolder = async (
     // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
     fs.realpathSync(os.tmpdir()),
     'backstage-repo',
-    parsedGitLocation.source,
+    parsedGitLocation.resource,
     parsedGitLocation.owner,
     parsedGitLocation.name,
     parsedGitLocation.ref,
@@ -216,12 +216,12 @@ export const getDocFilesFromRepository = async (
     entity,
   );
 
-  opts?.logger?.info(`Reading files from ${target}`);
+  opts?.logger?.debug(`Reading files from ${target}`);
   // readTree will throw NotModifiedError if etag has not changed.
   const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
   const preparedDir = await readTreeResponse.dir();
 
-  opts?.logger?.info(`Tree downloaded and stored at ${preparedDir}`);
+  opts?.logger?.debug(`Tree downloaded and stored at ${preparedDir}`);
 
   return {
     preparedDir,

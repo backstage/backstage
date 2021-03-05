@@ -1,5 +1,74 @@
 # example-app
 
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies [ba21797ca]
+- Updated dependencies [b2a5320a4]
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [507513fed]
+- Updated dependencies [32a003973]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [cfc83cac1]
+- Updated dependencies [bc327dc42]
+- Updated dependencies [2386de1d3]
+- Updated dependencies [42c8ebb79]
+- Updated dependencies [10362e9eb]
+- Updated dependencies [e37d2de99]
+- Updated dependencies [813c6a4f2]
+- Updated dependencies [11c6208fe]
+- Updated dependencies [8106c9528]
+- Updated dependencies [05183f202]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [f71589800]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [d4f0a1406]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [d21058c34]
+- Updated dependencies [b33e553b2]
+- Updated dependencies [04667f571]
+- Updated dependencies [b93538acc]
+- Updated dependencies [0452ba238]
+- Updated dependencies [8871e7523]
+- Updated dependencies [02816ecd7]
+- Updated dependencies [dbea11072]
+  - @backstage/plugin-kubernetes@0.3.12
+  - @backstage/plugin-circleci@0.2.11
+  - @backstage/plugin-cloudbuild@0.2.12
+  - @backstage/plugin-github-actions@0.3.5
+  - @backstage/plugin-scaffolder@0.7.0
+  - @backstage/cli@0.6.3
+  - @backstage/plugin-api-docs@0.4.8
+  - @backstage/plugin-catalog@0.4.1
+  - @backstage/catalog-model@0.7.3
+  - @backstage/plugin-explore@0.3.0
+  - @backstage/plugin-techdocs@0.6.0
+  - @backstage/plugin-catalog-import@0.4.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+  - @backstage/plugin-pagerduty@0.3.2
+  - @backstage/plugin-jenkins@0.3.12
+  - @backstage/plugin-lighthouse@0.2.13
+  - @backstage/plugin-cost-insights@0.8.3
+  - @backstage/plugin-gcp-projects@0.2.5
+  - @backstage/plugin-gitops-profiles@0.2.6
+  - @backstage/plugin-graphiql@0.2.8
+  - @backstage/plugin-kafka@0.2.5
+  - @backstage/plugin-newrelic@0.2.6
+  - @backstage/plugin-org@0.3.9
+  - @backstage/plugin-register-component@0.2.12
+  - @backstage/plugin-rollbar@0.3.3
+  - @backstage/plugin-search@0.3.3
+  - @backstage/plugin-sentry@0.3.8
+  - @backstage/plugin-tech-radar@0.3.7
+  - @backstage/plugin-user-settings@0.2.7
+
 ## 0.2.17
 
 ### Patch Changes

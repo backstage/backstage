@@ -25,7 +25,7 @@ describe('<PreparePullRequestForm />', () => {
     const onSubmitFn = jest.fn();
 
     const { getByRole } = render(
-      <PreparePullRequestForm
+      <PreparePullRequestForm<{ main: string }>
         defaultValues={{ main: 'default' }}
         render={({ register }) => (
           <>
@@ -49,7 +49,7 @@ describe('<PreparePullRequestForm />', () => {
     const onSubmitFn = jest.fn();
 
     const { getByRole, getByLabelText } = render(
-      <PreparePullRequestForm
+      <PreparePullRequestForm<{ main: string }>
         defaultValues={{ main: 'default' }}
         render={({ register }) => (
           <>
@@ -80,7 +80,7 @@ describe('<PreparePullRequestForm />', () => {
     const onSubmitFn = jest.fn();
 
     const { queryByText, getByRole } = render(
-      <PreparePullRequestForm
+      <PreparePullRequestForm<{ main: string }>
         defaultValues={{}}
         render={({ errors, register }) => (
           <>

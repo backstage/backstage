@@ -18,6 +18,7 @@ import {
   Content,
   ContentHeader,
   EmptyState,
+  ItemCardGrid,
   Progress,
   SupportButton,
   useApi,
@@ -27,47 +28,64 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { useAsync } from 'react-use';
-import { DomainCardGrid } from '../DomainCard';
+import { DomainCard } from '../DomainCard';
 
-export const DomainExplorerContent = () => {
+const Body = () => {
   const catalogApi = useApi(catalogApiRef);
   const { value: entities, loading, error } = useAsync(async () => {
     const response = await catalogApi.getEntities({
       filter: { kind: 'domain' },
     });
-
     return response.items as DomainEntity[];
   }, [catalogApi]);
 
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (error) {
+    return (
+      <WarningPanel severity="error" title="Could not load domains.">
+        {error.message}
+      </WarningPanel>
+    );
+  }
+
+  if (!entities?.length) {
+    return (
+      <EmptyState
+        missing="info"
+        title="No domains to display"
+        description="You haven't added any domains yet."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain"
+          >
+            Read more
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <ItemCardGrid>
+      {entities.map((entity, index) => (
+        <DomainCard key={index} entity={entity} />
+      ))}
+    </ItemCardGrid>
+  );
+};
+
+export const DomainExplorerContent = () => {
   return (
     <Content noPadding>
       <ContentHeader title="Domains">
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
-
-      {loading && <Progress />}
-      {error && (
-        <WarningPanel severity="error" title="Could not load domains.">
-          {error.message}
-        </WarningPanel>
-      )}
-      {!loading && !error && (!entities || entities.length === 0) && (
-        <EmptyState
-          missing="info"
-          title="No domains to display"
-          description={`You haven't added any domains yet.`}
-          action={
-            <Button
-              variant="contained"
-              color="primary"
-              href="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-domain"
-            >
-              Read more
-            </Button>
-          }
-        />
-      )}
-      {!loading && entities && <DomainCardGrid entities={entities} />}
+      <Body />
     </Content>
   );
 };

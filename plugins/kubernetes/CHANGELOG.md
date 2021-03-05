@@ -1,5 +1,29 @@
 # @backstage/plugin-kubernetes
 
+## 0.3.12
+
+### Patch Changes
+
+- ba21797ca: k8s plugin now surfaces k8s components with only label selector query annotation.
+  Previously backstage.io/kubernetes-label-selector catalog entity annotation would only work if you also included backstage.io/kubernetes-id.
+  But backstage.io/kubernetes-id value was ignored
+- 42c8ebb79: Support AWS auth provider on kubernetes FE plugin
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [f43192207]
+- Updated dependencies [e3adec2bd]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/plugin-kubernetes-backend@0.2.8
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.3.11
 
 ### Patch Changes

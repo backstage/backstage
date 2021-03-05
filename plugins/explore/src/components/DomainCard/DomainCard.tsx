@@ -14,41 +14,61 @@
  * limitations under the License.
  */
 import { DomainEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { ItemCard } from '@backstage/core';
+import { Button, ItemCardHeader, useRouteRef } from '@backstage/core';
 import {
   EntityRefLinks,
-  entityRoute,
   entityRouteParams,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Chip,
+} from '@material-ui/core';
 import React from 'react';
-import { generatePath } from 'react-router-dom';
+import { catalogEntityRouteRef } from '../../routes';
 
 type DomainCardProps = {
   entity: DomainEntity;
 };
 
 export const DomainCard = ({ entity }: DomainCardProps) => {
+  const catalogEntityRoute = useRouteRef(catalogEntityRouteRef);
+
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  const url = catalogEntityRoute(entityRouteParams(entity));
+
+  const owner = (
+    <EntityRefLinks
+      entityRefs={ownedByRelations}
+      defaultKind="group"
+      color="inherit"
+    />
+  );
 
   return (
-    <ItemCard
-      title={entity.metadata.name}
-      description={entity.metadata.description}
-      tags={entity.metadata.tags}
-      subtitle={
-        <EntityRefLinks
-          entityRefs={ownedByRelations}
-          defaultKind="group"
-          color="inherit"
-        />
-      }
-      label="Explore"
-      // TODO: Use useRouteRef here to generate the path
-      href={generatePath(
-        `/catalog/${entityRoute.path}`,
-        entityRouteParams(entity),
-      )}
-    />
+    <Card>
+      <CardMedia>
+        <ItemCardHeader title={entity.metadata.name} subtitle={owner} />
+      </CardMedia>
+      <CardContent>
+        {entity.metadata.tags?.length ? (
+          <Box>
+            {entity.metadata.tags.map(tag => (
+              <Chip size="small" label={tag} key={tag} />
+            ))}
+          </Box>
+        ) : null}
+        {entity.metadata.description}
+      </CardContent>
+      <CardActions>
+        <Button to={url} color="primary">
+          Explore
+        </Button>
+      </CardActions>
+    </Card>
   );
 };

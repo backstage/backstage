@@ -15,13 +15,13 @@
  */
 
 import { DomainEntity } from '@backstage/catalog-model';
-import { render } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { catalogEntityRouteRef } from '../../routes';
 import { DomainCard } from './DomainCard';
 
 describe('<DomainCard />', () => {
-  it('renders a domain card', () => {
+  it('renders a domain card', async () => {
     const entity: DomainEntity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Domain',
@@ -34,9 +34,14 @@ describe('<DomainCard />', () => {
         owner: 'guest',
       },
     };
-    const { getByText } = render(<DomainCard entity={entity} />, {
-      wrapper: MemoryRouter,
-    });
+    const { getByText } = await renderInTestApp(
+      <DomainCard entity={entity} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': catalogEntityRouteRef,
+        },
+      },
+    );
 
     expect(getByText('artists')).toBeInTheDocument();
     expect(getByText('Everything about artists')).toBeInTheDocument();
