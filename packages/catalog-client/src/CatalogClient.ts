@@ -19,15 +19,16 @@ import {
   EntityName,
   Location,
   LOCATION_ANNOTATION,
+  stringifyLocationReference,
 } from '@backstage/catalog-model';
 import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
   AddLocationResponse,
-  CatalogRequestOptions,
   CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
+  CatalogRequestOptions,
   DiscoveryApi,
 } from './types';
 
@@ -135,7 +136,7 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === `${l.type}:${l.target}`);
+      .find(l => locationCompound === stringifyLocationReference(l));
   }
 
   async removeEntityByUid(
