@@ -22875,7 +22875,6 @@ resolve@^1.1.6, resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.16
     is-core-module "^2.1.0"
     path-parse "^1.0.6"
 
-
 resolve@^1.9.0:
   version "1.20.0"
   resolved "https://registry.npmjs.org/resolve/-/resolve-1.20.0.tgz#629a013fb3f70755d6f0b7935cc1c2c5378b1975"
