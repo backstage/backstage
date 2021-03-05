@@ -24,6 +24,7 @@ import {
 } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { SupportButton } from './SupportButton';
+// import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 
 const SUPPORT_BUTTON_ID = 'support-button';
 const POPOVER_ID = 'support-button-popover';
