@@ -51,6 +51,13 @@ export class GitLabIntegration implements ScmIntegration {
   }
 
   resolveEditUrl(url: string): string {
-    return url.replace('/blob/', '/edit/');
+    return replaceUrlType(url, 'edit');
   }
+}
+
+export function replaceUrlType(
+  url: string,
+  type: 'blob' | 'tree' | 'edit',
+): string {
+  return url.replace(/\/\-\/(blob|tree|edit)\//, `/-/${type}/`);
 }

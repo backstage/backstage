@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GitHubIntegration } from './GitHubIntegration';
+import { GitHubIntegration, replaceUrlType } from './GitHubIntegration';
 
 describe('GitHubIntegration', () => {
   it('has a working factory', () => {
@@ -78,5 +78,31 @@ describe('GitHubIntegration', () => {
         'https://github.com/backstage/backstage/blob/master/README.md',
       ),
     ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+  });
+});
+
+describe('replaceUrlType', () => {
+  it('should replace with expected type', () => {
+    expect(
+      replaceUrlType(
+        'https://github.com/backstage/backstage/blob/master/README.md',
+        'edit',
+      ),
+    ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+    expect(
+      replaceUrlType(
+        'https://github.com/webmodules/blob/blob/master/test',
+        'tree',
+      ),
+    ).toBe('https://github.com/webmodules/blob/tree/master/test');
+    expect(
+      replaceUrlType('https://github.com/blob/blob/blob/master/test', 'tree'),
+    ).toBe('https://github.com/blob/blob/tree/master/test');
+    expect(
+      replaceUrlType(
+        'https://github.com/backstage/backstage/edit/tree/README.md',
+        'blob',
+      ),
+    ).toBe('https://github.com/backstage/backstage/blob/tree/README.md');
   });
 });
