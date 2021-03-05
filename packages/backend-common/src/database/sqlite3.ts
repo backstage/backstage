@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import knex from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
@@ -26,10 +26,10 @@ import { mergeDatabaseConfig } from './config';
  */
 export function createSqliteDatabaseClient(
   dbConfig: Config,
-  overrides?: knex.Config,
+  overrides?: Knex.Config,
 ) {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
-  const database = knex(knexConfig);
+  const database = knexFactory(knexConfig);
 
   database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});
@@ -46,7 +46,7 @@ export function createSqliteDatabaseClient(
  */
 export function buildSqliteDatabaseConfig(
   dbConfig: Config,
-  overrides?: knex.Config,
+  overrides?: Knex.Config,
 ) {
   return mergeDatabaseConfig(
     dbConfig.get(),

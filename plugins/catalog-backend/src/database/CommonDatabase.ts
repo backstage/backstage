@@ -30,7 +30,7 @@ import {
   Location,
   parseEntityName,
 } from '@backstage/catalog-model';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
@@ -99,7 +99,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
@@ -149,7 +149,7 @@ export class CommonDatabase implements Database {
     matchingEtag?: string,
     matchingGeneration?: number,
   ): Promise<DbEntityResponse> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const { uid } = request.entity.metadata;
     if (!uid) {
@@ -213,7 +213,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     filter?: EntityFilter,
   ): Promise<DbEntityResponse[]> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
@@ -256,7 +256,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const rows = await tx<DbEntitiesRow>('entities')
       .where({
@@ -275,7 +275,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const rows = await tx<DbEntitiesRow>('entities')
       .where({ id: uid })
@@ -289,7 +289,7 @@ export class CommonDatabase implements Database {
   }
 
   async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
 
@@ -303,7 +303,7 @@ export class CommonDatabase implements Database {
     originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
     const relationRows = this.toRelationRows(originatingEntityId, relations);
 
     await tx<DbEntitiesRelationsRow>('entities_relations')
@@ -316,7 +316,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     location: Location,
   ): Promise<DbLocationsRow> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const row: DbLocationsRow = {
       id: location.id,
@@ -328,7 +328,7 @@ export class CommonDatabase implements Database {
   }
 
   async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const locations = await tx<DbLocationsRow>('locations')
       .where({ id })
@@ -467,7 +467,7 @@ export class CommonDatabase implements Database {
   }
 
   private async toEntityResponses(
-    tx: Knex.Transaction<any, any>,
+    tx: Knex.Transaction,
     rows: DbEntitiesRow[],
   ): Promise<DbEntityResponse[]> {
     // TODO(Rugvip): This is here because it's simple for now, but we likely
@@ -501,7 +501,7 @@ export class CommonDatabase implements Database {
   // Returns a mapping from e.g. component:default/foo to the relations whose
   // source_full_name matches that.
   private async getRelationsPerFullName(
-    tx: Knex.Transaction<any, any>,
+    tx: Knex.Transaction,
     sourceFullNames: string[],
   ): Promise<Record<string, DbEntitiesRelationsRow[]>> {
     const batches = lodash.chunk(lodash.uniq(sourceFullNames), 500);

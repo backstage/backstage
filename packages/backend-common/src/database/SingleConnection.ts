@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
+import { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { createDatabaseClient, ensureDatabaseExists } from './connection';
 import { PluginDatabaseManager } from './types';

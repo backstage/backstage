@@ -115,7 +115,7 @@ export type EntityFilter = {
  * An abstraction for transactions of the underlying database technology.
  */
 export type Transaction = {
-  rollback(): Promise<void>;
+  rollback(): Promise<unknown>;
 };
 
 /**
