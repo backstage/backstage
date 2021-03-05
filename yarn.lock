@@ -1998,31 +1998,6 @@
     "@types/react" "^16.9"
     classnames "^2.2.6"
     git-url-parse "^11.4.4"
-    moment "^2.26.0"
-    react "^16.13.1"
-    react-dom "^16.13.1"
-    react-helmet "6.1.0"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.3"
-    swr "^0.3.0"
-
-"@backstage/plugin-scaffolder@^0.4.1":
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/@backstage/plugin-scaffolder/-/plugin-scaffolder-0.4.2.tgz#58159227997f7e248ce52535bc32f19fcd0990dc"
-  integrity sha512-YuyHM587Rqg6KufxfFqQdI7dsZniBM/11Aj8Q0m5ZszOpCuNmDDkR1VX8MKHTBJ709mnLAqRgArdla7FOrOAXQ==
-  dependencies:
-    "@backstage/catalog-client" "^0.3.6"
-    "@backstage/catalog-model" "^0.7.1"
-    "@backstage/core" "^0.6.2"
-    "@backstage/plugin-catalog-react" "^0.0.4"
-    "@backstage/theme" "^0.2.3"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@types/react" "^16.9"
-    classnames "^2.2.6"
-    git-url-parse "^11.4.4"
     react "^16.13.1"
     react-dom "^16.13.1"
     react-helmet "6.1.0"
@@ -21471,7 +21446,7 @@ qs@6.7.0:
   resolved "https://registry.npmjs.org/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.5.1, qs@^6.6.0, qs@^6.7.0, qs@^6.9.1, qs@^6.9.4:
+qs@^6.5.1, qs@^6.5.2, qs@^6.6.0, qs@^6.7.0, qs@^6.9.1, qs@^6.9.4:
   version "6.9.6"
   resolved "https://registry.npmjs.org/qs/-/qs-6.9.6.tgz#26ed3c8243a431b2924aca84cc90471f35d5a0ee"
   integrity sha512-TIRk4aqYLNoJUbd+g2lEdz5kLWIuTMRagAXxl78Q0RiVjAOugHmeKNGdd3cwo/ktpf9aL9epCfFqWDEKysUlLQ==
