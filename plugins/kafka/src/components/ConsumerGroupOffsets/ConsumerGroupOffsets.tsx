@@ -25,6 +25,7 @@ export type TopicPartitionInfo = {
   partitionId: number;
   topicOffset: string;
   groupOffset: string;
+  lag: string;
 };
 
 const generatedColumns: TableColumn[] = [
