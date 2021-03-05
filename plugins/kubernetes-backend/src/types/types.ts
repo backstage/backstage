@@ -146,6 +146,31 @@ export interface KubernetesFetchError {
   resourcePath?: string;
 }
 
+export interface ConfigClusterLocatorMethod {
+  /**
+   * @visibility frontend
+   */
+  type: 'config';
+}
+
+export interface GKEClusterLocatorMethod {
+  /**
+   * @visibility frontend
+   */
+  type: 'gke';
+  /**
+   * @visibility frontend
+   */
+  projectId: string;
+  /**
+   * @visibility frontend
+   */
+  region?: string;
+}
+
+export type ClusterLocatorMethod =
+  | ConfigClusterLocatorMethod
+  | GKEClusterLocatorMethod;
+
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
-export type ClusterLocatorMethod = 'config';
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
