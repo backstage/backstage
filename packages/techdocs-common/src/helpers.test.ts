@@ -105,7 +105,7 @@ describe('parseReferenceAnnotation', () => {
         'backstage.io/techdocs-ref',
         mockEntityWithBadAnnotation,
       );
-    }).toThrow(/Failure to parse/);
+    }).toThrow(/Unable to parse/);
   });
 });
 
