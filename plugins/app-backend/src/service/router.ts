@@ -103,7 +103,7 @@ export async function createRouter(
         // staticFallbackHandler is configured.
         // use `as any` since express uses mime v1 while we only have types for mime v2
         if ((express.static.mime as any).lookup(path) === 'text/html') {
-          res.setHeader('Cache-Control', 'no-store');
+          res.setHeader('Cache-Control', 'no-store, max-age=0');
         }
       },
     }),
@@ -114,7 +114,7 @@ export async function createRouter(
         // The Cache-Control header instructs the browser to not cache the index.html since it might
         // link to static assets from recently deployed versions. This is a workaround when no
         // staticFallbackHandler is configured.
-        'cache-control': 'no-store',
+        'cache-control': 'no-store, max-age=0',
       },
     });
   });
