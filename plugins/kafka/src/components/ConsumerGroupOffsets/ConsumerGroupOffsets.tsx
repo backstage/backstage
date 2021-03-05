@@ -57,6 +57,17 @@ const generatedColumns: TableColumn[] = [
       return <>{row.groupOffset ?? ''}</>;
     },
   },
+  {
+    title: 'Lag',
+    field: 'lag',
+    render: (row: Partial<TopicPartitionInfo>) => {
+      let lag = undefined;
+      if (row.topicOffset && row.groupOffset) {
+        lag = +topicOffset - +groupOffset;
+      }
+      return <>{lag ?? ''}</>;
+    },
+  },
 ];
 
 type Props = {
