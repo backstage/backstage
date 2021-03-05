@@ -25,7 +25,6 @@ import {
 } from '@material-ui/core';
 import { Config } from '@backstage/config';
 import {
-  configApiRef,
   Content,
   Page,
   Progress,
@@ -169,8 +168,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const configApi = useApi(configApiRef);
-  const clusters: Config[] = configApi.getConfigArray('kubernetes.clusters');
+  const clusters: Config[] = kubernetesApi.getClusters();
   const allAuthProviders: string[] = clusters.map(c =>
     c.getString('authProvider'),
   );

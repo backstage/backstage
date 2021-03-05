@@ -21,6 +21,7 @@ import {
   identityApiRef,
   googleAuthApiRef,
   createRoutableExtension,
+  configApiRef,
 } from '@backstage/core';
 import { KubernetesBackendClient } from './api/KubernetesBackendClient';
 import { kubernetesApiRef } from './api/types';
@@ -37,9 +38,13 @@ export const kubernetesPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: kubernetesApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) =>
-        new KubernetesBackendClient({ discoveryApi, identityApi }),
+      deps: {
+        discoveryApi: discoveryApiRef,
+        identityApi: identityApiRef,
+        configApi: configApiRef,
+      },
+      factory: ({ discoveryApi, identityApi, configApi }) =>
+        new KubernetesBackendClient({ discoveryApi, identityApi, configApi }),
     }),
     createApiFactory({
       api: kubernetesAuthProvidersApiRef,

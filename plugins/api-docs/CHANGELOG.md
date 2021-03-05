@@ -1,5 +1,44 @@
 # @backstage/plugin-api-docs
 
+## 0.4.8
+
+### Patch Changes
+
+- 32a003973: Update messaging when no entities are in a table.
+- 2386de1d3: Add organization name to the API Explorer page title
+- f71589800: The api-docs plugin has been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the api docs plugin to use the new extension components, as well as bind the external route.
+
+  To bind the external route from the api docs plugin to the scaffolder template index page, make sure you have the appropriate imports and add the following to the `createApp` call:
+
+  ```ts
+  import { apiDocsPlugin } from '@backstage/plugin-api-docs';
+  import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(apiDocsPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+    },
+  });
+  ```
+
+  If you choose to not bind the routes, the button to create new APIs is not displayed.
+
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
 ## 0.4.7
 
 ### Patch Changes

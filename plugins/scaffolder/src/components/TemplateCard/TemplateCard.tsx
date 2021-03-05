@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, useRouteRef } from '@backstage/core';
+import { Button, ItemCardHeader, useRouteRef } from '@backstage/core';
 import { BackstageTheme, pageTheme } from '@backstage/theme';
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
   CardMedia,
   Chip,
   makeStyles,
-  Typography,
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
 
-const useStyles = makeStyles(theme => ({
-  header: {
-    color: theme.palette.common.white,
-    padding: theme.spacing(2, 2, 3),
-    backgroundImage: (props: { backgroundImage: string }) =>
-      props.backgroundImage,
-    backgroundPosition: 0,
+const useStyles = makeStyles({
+  title: {
+    backgroundImage: ({ backgroundImage }: any) => backgroundImage,
   },
   description: {
     overflow: 'hidden',
@@ -44,14 +40,7 @@ const useStyles = makeStyles(theme => ({
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
   },
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  cardContent: {
-    flexGrow: 1,
-  },
-}));
+});
 
 export type TemplateCardProps = {
   description: string;
@@ -79,18 +68,21 @@ export const TemplateCard = ({
   });
 
   return (
-    <Card className={classes.card}>
-      <CardMedia className={classes.header}>
-        <Typography variant="subtitle2">{type}</Typography>
-        <Typography variant="h6">{title}</Typography>
+    <Card>
+      <CardMedia>
+        <ItemCardHeader
+          title={title}
+          subtitle={type}
+          classes={{ root: classes.title }}
+        />
       </CardMedia>
-      <CardContent className={classes.cardContent}>
-        {tags?.map(tag => (
-          <Chip size="small" label={tag} key={tag} />
-        ))}
-        <Typography variant="body2" className={classes.description}>
-          {description}
-        </Typography>
+      <CardContent>
+        <Box>
+          {tags?.map(tag => (
+            <Chip size="small" label={tag} key={tag} />
+          ))}
+        </Box>
+        <Box className={classes.description}>{description}</Box>
       </CardContent>
       <CardActions>
         <Button color="primary" to={href}>

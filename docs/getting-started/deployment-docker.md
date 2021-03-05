@@ -27,9 +27,9 @@ The required steps in the host build are to install dependencies with
 `yarn install`, generate type definitions using `yarn tsc`, and build all
 packages with `yarn build`.
 
-> NOTE: Using `yarn build` to build packages and bundle the backend assumes that
-> you have migrated to using `backstage-cli backend:bundle` as your build script
-> in the backend package.
+> NOTE: If you created your app prior to 2021-02-18, follow the
+> [migration step](https://github.com/backstage/backstage/releases/tag/release-2021-02-18)
+> to move from `backend:build` to `backend:bundle`.
 
 In a CI workflow it might look something like this:
 
@@ -43,22 +43,10 @@ yarn tsc
 yarn build
 ```
 
-Once the host build is complete, we are ready to build our image. We use the
-following `Dockerfile`, which is also included when creating a new app with
-`@backstage/create-app`:
+Once the host build is complete, we are ready to build our image. The following
+`Dockerfile` is included when creating a new app with `@backstage/create-app`:
 
 ```Dockerfile
-# This dockerfile builds an image for the backend package.
-# It should be executed with the root of the repo as docker context.
-#
-# Before building this image, be sure to have run the following commands in the repo root:
-#
-# yarn install
-# yarn tsc
-# yarn build
-#
-# Once the commands have been run, you can build the image using `yarn build-image`
-
 FROM node:14-buster-slim
 
 WORKDIR /app
@@ -78,15 +66,15 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../cli/commands.md#backendbundle)
+[`backend:bundle` command docs](../cli/commands.md#backendbundle).
 
-The `Dockerfile` is typically placed at `packages/backend/Dockerfile`, but needs
-to be executed with the root of the repo as the build context, in order to get
-access to the root `yarn.lock` and `package.json`, along with any other files
-that might be needed, such as `.npmrc`.
+The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
+executed with the root of the repo as the build context, in order to get access
+to the root `yarn.lock` and `package.json`, along with any other files that
+might be needed, such as `.npmrc`.
 
-In order to speed up the build we can significantly reduce the build context
-size using the following `.dockerignore` in the root of the repo:
+The `@backstage/create-app` command adds the following `.dockerignore` in the
+root of the repo to speed up the build by reducing build context size:
 
 ```text
 .git
@@ -96,9 +84,9 @@ packages
 plugins
 ```
 
-With the project build and the `.dockerignore` and `Dockerfile` in place, we are
-now ready to build the final image. Assuming we're at the root of the repo, we
-execute the build like this:
+With the project built and the `.dockerignore` and `Dockerfile` in place, we are
+now ready to build the final image. From the root of the repo, execute the
+build:
 
 ```bash
 docker image build . -f packages/backend/Dockerfile --tag backstage

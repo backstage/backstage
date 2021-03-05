@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -56,7 +56,6 @@
     "@backstage/plugin-catalog": "*",
     "@backstage/plugin-catalog-backend": "*",
     "@backstage/plugin-catalog-import": "*",
-    "@backstage/plugin-circleci": "*",
     "@backstage/plugin-explore": "*",
     "@backstage/plugin-github-actions": "*",
     "@backstage/plugin-lighthouse": "*",

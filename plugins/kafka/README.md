@@ -12,7 +12,7 @@ yarn add @backstage/plugin-kafka @backstage/plugin-kafka-backend
 
 2. Add the plugin backend:
 
-In a new file named `kafka.js` under `backend/src/plugins`:
+In a new file named `kafka.ts` under `backend/src/plugins`:
 
 ```js
 import { createRouter } from '@backstage/plugin-kafka-backend';
@@ -29,6 +29,9 @@ export default async function createPlugin({
 And then add to `packages/backend/src/index.ts`:
 
 ```js
+// ...
+import kafka from './plugins/kafka';
+// ...
 async function main() {
   // ...
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));

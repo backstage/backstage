@@ -1,5 +1,12 @@
 # @backstage/core-api
 
+## 0.2.12
+
+### Patch Changes
+
+- 40c0fdbaa: Added support for optional external route references. By setting `optional: true` when creating an `ExternalRouteRef` it is no longer a requirement to bind the route in the app. If the app isn't bound `useRouteRef` will return `undefined`.
+- 2a271d89e: Internal refactor of how component data is access to avoid polluting components and make it possible to bridge across versions.
+
 ## 0.2.11
 
 ### Patch Changes
