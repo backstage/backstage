@@ -18,9 +18,14 @@ import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
   RELATION_CONSUMES_API,
-  RELATION_PROVIDES_API
+  RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
-import { configApiRef, HeaderIconLinkRow, IconLinkVerticalProps, useApi } from '@backstage/core';
+import {
+  configApiRef,
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+  useApi,
+} from '@backstage/core';
 import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -28,7 +33,7 @@ import {
   CardHeader,
   Divider,
   IconButton,
-  makeStyles
+  makeStyles,
 } from '@material-ui/core';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
@@ -73,7 +78,7 @@ export function AboutCard({ variant }: AboutCardProps) {
   const hasApis =
     providesApiRelations.length > 0 || consumesApiRelations.length > 0;
 
-  const viewInSource: IconLinkVerticalProps  = {
+  const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
     disabled: !entitySourceLocation,
     icon: <ScmIntegrationIcon type={entitySourceLocation?.type} />,
