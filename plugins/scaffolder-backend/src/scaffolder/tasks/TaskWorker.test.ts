@@ -23,7 +23,7 @@ import os from 'os';
 import { ConfigReader, JsonObject } from '@backstage/config';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
-import { TemplateActionRegistry } from '../actions';
+import { createTemplateAction, TemplateActionRegistry } from '../actions';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = SingleConnectionDatabaseManager.fromConfig(
@@ -91,6 +91,68 @@ describe('TaskWorker', () => {
 
     const { taskId } = await broker.dispatch({
       steps: [{ id: 'test', name: 'test', action: 'test-action' }],
+      output: {
+        result: '{{ steps.test.output.testOutput }}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+    expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should template input', async () => {
+    const inputAction = createTemplateAction<{
+      name: string;
+    }>({
+      id: 'test-input',
+      schema: {
+        input: {
+          type: 'object',
+          required: ['name'],
+          properties: {
+            name: {
+              title: 'name',
+              description: 'Enter name',
+              type: 'string',
+            },
+          },
+        },
+      },
+      async handler(ctx) {
+        if (ctx.input.name !== 'winning') {
+          throw new Error(
+            `expected name to be "winning" got ${ctx.input.name}`,
+          );
+        }
+      },
+    });
+    actionRegistry.register(inputAction);
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        { id: 'test', name: 'test', action: 'test-action' },
+        {
+          id: 'test-input',
+          name: 'test-input',
+          action: 'test-input',
+          input: {
+            name: '{{ steps.test.output.testOutput }}',
+          },
+        },
+      ],
       output: {
         result: '{{ steps.test.output.testOutput }}',
       },
