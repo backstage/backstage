@@ -35,13 +35,16 @@ import {
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
   DbEntitiesRelationsRow,
+  DbEntitiesRequest,
+  DbEntitiesResponse,
   DbEntitiesRow,
   DbEntitiesSearchRow,
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  EntityFilter,
+  DbPageInfo,
+  EntityPagination,
   Transaction,
 } from './types';
 
@@ -207,13 +210,13 @@ export class CommonDatabase implements Database {
 
   async entities(
     txOpaque: Transaction,
-    filter?: EntityFilter,
-  ): Promise<DbEntityResponse[]> {
+    request?: DbEntitiesRequest,
+  ): Promise<DbEntitiesResponse> {
     const tx = txOpaque as Knex.Transaction;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of filter?.anyOf ?? []) {
+    for (const singleFilter of request?.filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
         for (const { key, matchValueIn } of singleFilter.allOf) {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
@@ -235,17 +238,43 @@ export class CommonDatabase implements Database {
                 }
               }
             });
-
           this.andWhere('id', 'in', matchQuery);
         }
       });
     }
 
-    const rows = await entitiesQuery
+    entitiesQuery = entitiesQuery
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return this.toEntityResponses(tx, rows);
+    const { limit, offset } = parsePagination(request?.pagination);
+    if (limit !== undefined) {
+      entitiesQuery = entitiesQuery.limit(limit + 1);
+    }
+    if (offset !== undefined) {
+      entitiesQuery = entitiesQuery.offset(offset);
+    }
+
+    let rows = await entitiesQuery;
+
+    let pageInfo: DbPageInfo;
+    if (limit === undefined || rows.length <= limit) {
+      pageInfo = { hasNext: false };
+    } else {
+      rows = rows.slice(0, -1);
+      pageInfo = {
+        hasNext: true,
+        endCursor: stringifyPagination({
+          limit,
+          offset: (offset ?? 0) + limit,
+        }),
+      };
+    }
+
+    return {
+      entities: await this.toEntityResponses(tx, rows),
+      pageInfo,
+    };
   }
 
   async entityByName(
@@ -517,6 +546,46 @@ export class CommonDatabase implements Database {
       r => r.source_full_name,
     );
   }
+}
+
+function parsePagination(
+  input?: EntityPagination,
+): { limit?: number; offset?: number } {
+  if (!input) {
+    return {};
+  }
+
+  let { limit, offset } = input;
+
+  if (input.after !== undefined) {
+    let cursor;
+    try {
+      const json = Buffer.from(input.after, 'base64').toString('utf8');
+      cursor = JSON.parse(json);
+    } catch {
+      throw new InputError('Malformed after cursor');
+    }
+    if (cursor.limit !== undefined) {
+      if (!Number.isInteger(cursor.limit)) {
+        throw new InputError('Malformed after cursor');
+      }
+      limit = cursor.limit;
+    }
+    if (cursor.offset !== undefined) {
+      if (!Number.isInteger(cursor.offset)) {
+        throw new InputError('Malformed after cursor');
+      }
+      offset = cursor.offset;
+    }
+  }
+
+  return { limit, offset };
+}
+
+function stringifyPagination(input: { limit: number; offset: number }) {
+  const json = JSON.stringify({ limit: input.limit, offset: input.offset });
+  const base64 = Buffer.from(json, 'utf8').toString('base64');
+  return base64;
 }
 
 function deduplicateRelations(

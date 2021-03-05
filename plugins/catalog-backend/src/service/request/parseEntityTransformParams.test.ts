@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { translateQueryToFieldMapper } from './filterQuery';
+import { parseEntityTransformParams } from './parseEntityTransformParams';
 
-describe('translateQueryToFieldMapper', () => {
+describe('parseEntityTransformParams', () => {
   const entity: Entity = {
     apiVersion: 'av',
     kind: 'k',
@@ -30,37 +30,38 @@ describe('translateQueryToFieldMapper', () => {
     },
   };
 
-  it('passes through when no fields given', () => {
-    expect(translateQueryToFieldMapper({})(entity)).toBe(entity);
-    expect(translateQueryToFieldMapper({ fields: [] })(entity)).toBe(entity);
-    expect(translateQueryToFieldMapper({ fields: [''] })(entity)).toBe(entity);
-    expect(translateQueryToFieldMapper({ fields: [','] })(entity)).toBe(entity);
+  it('returns undefined when no fields given', () => {
+    expect(parseEntityTransformParams({})).toBeUndefined();
+    expect(parseEntityTransformParams({ fields: '' })).toBeUndefined();
+    expect(parseEntityTransformParams({ fields: [] })).toBeUndefined();
+    expect(parseEntityTransformParams({ fields: [''] })).toBeUndefined();
+    expect(parseEntityTransformParams({ fields: [','] })).toBeUndefined();
   });
 
   it('rejects attempts at array filtering', () => {
     expect(() =>
-      translateQueryToFieldMapper({ fields: 'metadata.tags[0]' })(entity),
-    ).toThrow(/array/i);
+      parseEntityTransformParams({ fields: 'metadata.tags[0]' })!(entity),
+    ).toThrow(/invalid fields, array type fields are not supported/i);
   });
 
   it('accepts both strings and arrays of strings as input', () => {
-    expect(translateQueryToFieldMapper({ fields: 'kind' })(entity)).toEqual({
+    expect(parseEntityTransformParams({ fields: 'kind' })!(entity)).toEqual({
       kind: 'k',
     });
-    expect(translateQueryToFieldMapper({ fields: ['kind'] })(entity)).toEqual({
+    expect(parseEntityTransformParams({ fields: ['kind'] })!(entity)).toEqual({
       kind: 'k',
     });
     expect(
-      translateQueryToFieldMapper({ fields: ['kind', 'apiVersion'] })(entity),
+      parseEntityTransformParams({ fields: ['kind', 'apiVersion'] })!(entity),
     ).toEqual({ apiVersion: 'av', kind: 'k' });
   });
 
   it('supports sub-selection properly', () => {
     expect(
-      translateQueryToFieldMapper({ fields: 'kind,metadata.name' })(entity),
+      parseEntityTransformParams({ fields: 'kind,metadata.name' })!(entity),
     ).toEqual({ kind: 'k', metadata: { name: 'n' } });
     expect(
-      translateQueryToFieldMapper({ fields: 'metadata' })(entity),
+      parseEntityTransformParams({ fields: 'metadata' })!(entity),
     ).toEqual({ metadata: { name: 'n', tags: ['t1', 't2'] } });
   });
 });
