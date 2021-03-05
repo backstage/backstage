@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from './KubernetesMigrationAlertCard';
+export { default } from './Root';
