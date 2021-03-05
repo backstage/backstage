@@ -25,6 +25,7 @@ export type TopicPartitionInfo = {
   partitionId: number;
   topicOffset: string;
   groupOffset: string;
+  lag: string;
 };
 
 const generatedColumns: TableColumn[] = [
@@ -55,6 +56,14 @@ const generatedColumns: TableColumn[] = [
     field: 'groupOffset',
     render: (row: Partial<TopicPartitionInfo>) => {
       return <>{row.groupOffset ?? ''}</>;
+    },
+  },
+  {
+    title: 'Lag',
+    field: 'lag',
+    render: (row: Partial<TopicPartitionInfo>) => {
+      row.lag = (+row.topicOffset - +row.groupOffset).toString();
+      return <>{row.lag ?? ''}</>;
     },
   },
 ];
