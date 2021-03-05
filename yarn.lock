@@ -7727,7 +7727,7 @@ apollo-server-caching@^0.5.3:
   dependencies:
     lru-cache "^6.0.0"
 
-apollo-server-core@^2.16.1, apollo-server-core@^2.21.0:
+apollo-server-core@^2.21.0:
   version "2.21.0"
   resolved "https://registry.npmjs.org/apollo-server-core/-/apollo-server-core-2.21.0.tgz#12ee11aee61fa124f11b1d73cae2e068112a3a53"
   integrity sha512-GtIiq2F0dVDLzzIuO5+dK/pGq/sGxYlKCqAuQQqzYg0fvZ7fukyluXtcTe0tMI+FJZjU0j0WnKgiLsboCoAlPQ==
@@ -7771,7 +7771,7 @@ apollo-server-errors@^2.4.2:
   resolved "https://registry.npmjs.org/apollo-server-errors/-/apollo-server-errors-2.4.2.tgz#1128738a1d14da989f58420896d70524784eabe5"
   integrity sha512-FeGxW3Batn6sUtX3OVVUm7o56EgjxDlmgpTLNyWcLb0j6P8mw9oLNyAm3B+deHA4KNdNHO5BmHS2g1SJYjqPCQ==
 
-apollo-server-express@^2.16.1:
+apollo-server-express@^2.16.1, apollo-server-express@^2.21.0:
   version "2.21.0"
   resolved "https://registry.npmjs.org/apollo-server-express/-/apollo-server-express-2.21.0.tgz#29bd4ec728e1992da240c5956c3ce6d95c1d252e"
   integrity sha512-zbOSNGuxUjlOFZnRrbMpga3pKDEroitF4NAqoVxgBivx7v2hGsE7rljct3PucTx2cMN90AyYe3cU4oA8jBxZIQ==
@@ -7811,15 +7811,16 @@ apollo-server-types@^0.6.3:
     apollo-server-env "^3.0.0"
 
 apollo-server@^2.16.1:
-  version "2.16.1"
-  resolved "https://registry.npmjs.org/apollo-server/-/apollo-server-2.16.1.tgz#edc319606eb29f73132239bdc005dd88ac40a142"
-  integrity sha512-oy9NVRzGwlpQ+W1DwLKRH+KASmodSYpvYIRY5DMAZtGqNmT2zOCpbIZVjBt23SuPB5NhIhhE4ROzoObRv3zy5w==
+  version "2.21.0"
+  resolved "https://registry.npmjs.org/apollo-server/-/apollo-server-2.21.0.tgz#4e62131885b4a8a26bb8b5e77177bd0d4d210852"
+  integrity sha512-OqngjOSB0MEH6VKGWHcrqt4y39HlhYh9CrMvn4PhadTt53IPYRmBglk5qSRA8xMorGqy60iKrOReqj5YfCjTOg==
   dependencies:
-    apollo-server-core "^2.16.1"
-    apollo-server-express "^2.16.1"
+    apollo-server-core "^2.21.0"
+    apollo-server-express "^2.21.0"
     express "^4.0.0"
     graphql-subscriptions "^1.0.0"
-    graphql-tools "^4.0.0"
+    graphql-tools "^4.0.8"
+    stoppable "^1.1.0"
 
 apollo-tracing@^0.12.2:
   version "0.12.2"
@@ -14219,7 +14220,7 @@ graphql-tools@5.0.0:
     tslib "^1.11.1"
     uuid "^7.0.3"
 
-graphql-tools@^4.0.0, graphql-tools@^4.0.8:
+graphql-tools@^4.0.8:
   version "4.0.8"
   resolved "https://registry.npmjs.org/graphql-tools/-/graphql-tools-4.0.8.tgz#e7fb9f0d43408fb0878ba66b522ce871bafe9d30"
   integrity sha512-MW+ioleBrwhRjalKjYaLQbr+920pHBgy9vM/n47sswtns8+96sRn5M/G+J1eu7IMeKWiN/9p6tmwCHU7552VJg==
