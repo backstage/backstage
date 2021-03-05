@@ -10230,20 +10230,20 @@ concat-with-sourcemaps@^1.1.0:
   dependencies:
     source-map "^0.6.1"
 
-concurrently@^5.2.0:
-  version "5.3.0"
-  resolved "https://registry.npmjs.org/concurrently/-/concurrently-5.3.0.tgz#7500de6410d043c912b2da27de3202cb489b1e7b"
-  integrity sha512-8MhqOB6PWlBfA2vJ8a0bSFKATOdWlHiQlk11IfmQBPaHVP8oP2gsh2MObE6UR3hqDHqvaIvLTyceNW6obVuFHQ==
+concurrently@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.npmjs.org/concurrently/-/concurrently-6.0.0.tgz#c1a876dd99390979c71f8c6fe6796882f3a13199"
+  integrity sha512-Ik9Igqnef2ONLjN2o/OVx1Ow5tymVvvEwQeYCQdD/oV+CN9oWhxLk7ibcBdOtv0UzBqHCEKRwbKceYoTK8t3fQ==
   dependencies:
-    chalk "^2.4.2"
-    date-fns "^2.0.1"
-    lodash "^4.17.15"
-    read-pkg "^4.0.1"
-    rxjs "^6.5.2"
+    chalk "^4.1.0"
+    date-fns "^2.16.1"
+    lodash "^4.17.20"
+    read-pkg "^5.2.0"
+    rxjs "^6.6.3"
     spawn-command "^0.0.2-1"
-    supports-color "^6.1.0"
+    supports-color "^8.1.0"
     tree-kill "^1.2.2"
-    yargs "^13.3.0"
+    yargs "^16.2.0"
 
 config-chain@^1.1.12:
   version "1.1.12"
@@ -11281,7 +11281,7 @@ date-fns@^1.27.2:
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-fns@^2.0.0-alpha.27, date-fns@^2.0.1, date-fns@^2.16.1:
+date-fns@^2.0.0-alpha.27, date-fns@^2.16.1:
   version "2.18.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.18.0.tgz#08e50aee300ad0d2c5e054e3f0d10d8f9cdfe09e"
   integrity sha512-NYyAg4wRmGVU4miKq5ivRACOODdZRY3q5WLmOJSq8djyzftYphU7dTHLcEtLqEvfqMKQ0jVv91P4BAwIjsXIcw==
@@ -22301,15 +22301,6 @@ read-pkg@^3.0.0:
     normalize-package-data "^2.3.2"
     path-type "^3.0.0"
 
-read-pkg@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/read-pkg/-/read-pkg-4.0.1.tgz#963625378f3e1c4d48c85872b5a6ec7d5d093237"
-  integrity sha1-ljYlN48+HE1IyFhytabsfV0JMjc=
-  dependencies:
-    normalize-package-data "^2.3.2"
-    parse-json "^4.0.0"
-    pify "^3.0.0"
-
 read-pkg@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/read-pkg/-/read-pkg-5.2.0.tgz#7bf295438ca5a33e56cd30e053b34ee7250c93cc"
@@ -23101,7 +23092,7 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.2, rxjs@^6.5.3, rxjs@^6.5.5, rxjs@^6.6.0:
+rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.3, rxjs@^6.5.5, rxjs@^6.6.0:
   version "6.6.2"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.2.tgz#8096a7ac03f2cc4fe5860ef6e572810d9e01c0d2"
   integrity sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg==
@@ -24498,6 +24489,13 @@ supports-color@^7.0.0, supports-color@^7.1.0:
   version "7.1.0"
   resolved "https://registry.npmjs.org/supports-color/-/supports-color-7.1.0.tgz#68e32591df73e25ad1c4b49108a2ec507962bfd1"
   integrity sha512-oRSIpR8pxT1Wr2FquTNnGet79b3BWljqOuoW/h4oBhxJ/HUbX5nX6JSruTkvXDCFMwDPvsaTTbvMLKZWSy0R5g==
+  dependencies:
+    has-flag "^4.0.0"
+
+supports-color@^8.1.0:
+  version "8.1.1"
+  resolved "https://registry.npmjs.org/supports-color/-/supports-color-8.1.1.tgz#cd6fc17e28500cff56c1b86c0a7fd4a54a73005c"
+  integrity sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==
   dependencies:
     has-flag "^4.0.0"
 
@@ -26768,7 +26766,7 @@ yargs-parser@^3.2.0:
     camelcase "^3.0.0"
     lodash.assign "^4.1.0"
 
-yargs@^13.3.0, yargs@^13.3.2:
+yargs@^13.3.2:
   version "13.3.2"
   resolved "https://registry.npmjs.org/yargs/-/yargs-13.3.2.tgz#ad7ffefec1aa59565ac915f82dccb38a9c31a2dd"
   integrity sha512-AX3Zw5iPruN5ie6xGRIDgqkT+ZhnRlZMLMHAs8tg7nRruy2Nb+i5o9bwghAogtM08q1dpr2LVoS8KSTMYpWXUw==
