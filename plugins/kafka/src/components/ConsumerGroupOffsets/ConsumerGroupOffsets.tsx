@@ -63,7 +63,9 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<TopicPartitionInfo>) => {
       let lag = undefined;
       if (row.topicOffset && row.groupOffset) {
-        lag = +row.topicOffset - +row.groupOffset;
+        const topicOffset = +row.topicOffset;
+        const groupOffset = +row.groupOffset;
+        lag = topicOffset - groupOffset;
       }
       return <>{lag ?? ''}</>;
     },
