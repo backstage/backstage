@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import knex from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 import { createPgDatabaseClient, ensurePgDatabaseExists } from './postgres';
@@ -30,7 +30,7 @@ type DatabaseClient = 'pg' | 'sqlite3' | string;
  */
 export function createDatabaseClient(
   dbConfig: Config,
-  overrides?: Partial<knex.Config>,
+  overrides?: Partial<Knex.Config>,
 ) {
   const client: DatabaseClient = dbConfig.getString('client');
 
@@ -40,7 +40,7 @@ export function createDatabaseClient(
     return createSqliteDatabaseClient(dbConfig);
   }
 
-  return knex(mergeDatabaseConfig(dbConfig.get(), overrides));
+  return knexFactory(mergeDatabaseConfig(dbConfig.get(), overrides));
 }
 
 /**

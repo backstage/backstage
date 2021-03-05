@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import knex, { PgConnectionConfig } from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
 
@@ -26,10 +26,10 @@ import { mergeDatabaseConfig } from './config';
  */
 export function createPgDatabaseClient(
   dbConfig: Config,
-  overrides?: knex.Config,
+  overrides?: Knex.Config,
 ) {
   const knexConfig = buildPgDatabaseConfig(dbConfig, overrides);
-  const database = knex(knexConfig);
+  const database = knexFactory(knexConfig);
   return database;
 }
 
@@ -41,7 +41,7 @@ export function createPgDatabaseClient(
  */
 export function buildPgDatabaseConfig(
   dbConfig: Config,
-  overrides?: knex.Config,
+  overrides?: Knex.Config,
 ) {
   return mergeDatabaseConfig(
     dbConfig.get(),
@@ -62,7 +62,7 @@ export function buildPgDatabaseConfig(
 export function getPgConnectionConfig(
   dbConfig: Config,
   parseConnectionString?: boolean,
-): PgConnectionConfig | string {
+): Knex.PgConnectionConfig | string {
   const connection = dbConfig.get('connection') as any;
   const isConnectionString =
     typeof connection === 'string' || connection instanceof String;
