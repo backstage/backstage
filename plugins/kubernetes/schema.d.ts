@@ -21,28 +21,15 @@ export interface Config {
     /**
      * @visibility frontend
      */
-    serviceLocatorMethod: 'multiTenant';
+    serviceLocatorMethod: {
+      /**
+       * @visibility frontend
+       */
+      type: 'multiTenant';
+    };
     /**
      * @visibility frontend
      */
     clusterLocatorMethods: ClusterLocatorMethod[];
-    clusters: {
-      /**
-       * @visibility frontend
-       */
-      url: string;
-      /**
-       * @visibility frontend
-       */
-      name: string;
-      /**
-       * @visibility secret
-       */
-      serviceAccountToken: string | undefined;
-      /**
-       * @visibility frontend
-       */
-      authProvider: 'aws' | 'google' | 'serviceAccount';
-    }[];
   };
 }
