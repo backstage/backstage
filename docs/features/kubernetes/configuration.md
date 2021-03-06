@@ -32,7 +32,7 @@ kubernetes:
           authProvider: 'aws'
     - type: 'gke'
       projectId: 'gke-clusters'
-      region: 'eu-west1'
+      region: 'europe-west1'
 ```
 
 ### `serviceLocatorMethod`
@@ -104,11 +104,11 @@ For example:
 ```yaml
 - type: 'gke'
   projectId: 'gke-clusters'
-  region: 'eu-west1'
+  region: 'europe-west1'
 ```
 
 Will configure the Kubernetes plugin to connect to all GKE clusters in the
-project `gke-clusters` in the region `eu-west1`.
+project `gke-clusters` in the region `europe-west1`.
 
 ##### `projectId`
 
