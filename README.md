@@ -46,7 +46,7 @@ Check out [the documentation](https://backstage.io/docs/getting-started) on how 
 ## Community
 
 - [Discord chatroom](https://discord.gg/MUpMjP2) - Get support or discuss the project
-- [Good First Issues](https://github.com/backstage/backstage/contribute) - Start here if you want to contribute
+- [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Start here if you want to contribute
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Help shape the technical direction
 - [FAQ](https://backstage.io/docs/FAQ) - Frequently Asked Questions
 - [Code of Conduct](CODE_OF_CONDUCT.md) - This is how we roll
