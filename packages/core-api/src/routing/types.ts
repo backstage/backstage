@@ -41,6 +41,16 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
+export type SubRouteRef<Params extends AnyParams = any> = {
+  readonly [routeRefType]: 'sub';
+
+  parent: RouteRef;
+
+  path: string;
+
+  params: ParamKeys<Params>;
+};
+
 export type ExternalRouteRef<
   Params extends AnyParams = any,
   Optional extends boolean = any
@@ -52,7 +62,10 @@ export type ExternalRouteRef<
   optional?: Optional;
 };
 
-export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any, any>;
+export type AnyRouteRef =
+  | RouteRef<any>
+  | SubRouteRef<any>
+  | ExternalRouteRef<any, any>;
 
 // TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
 /** @deprecated */
