@@ -25,9 +25,9 @@ import {
   Page,
   Progress,
   SupportButton,
-  useApi,
   WarningPanel,
 } from '@backstage/core';
+import { useApi } from '@backstage/derp';
 import { useStarredEntities } from '@backstage/plugin-catalog-react';
 import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import StarIcon from '@material-ui/icons/Star';

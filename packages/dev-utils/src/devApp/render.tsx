@@ -168,7 +168,7 @@ class DevAppBuilder {
               <FlatRoutes>
                 {this.routes}
                 {deprecatedAppRoutes}
-                <Route path="/_external_route" element={<DummyPage />} />
+                <Route path="/_external_route/:name" element={<DummyPage />} />
               </FlatRoutes>
             </SidebarPage>
           </AppRouter>

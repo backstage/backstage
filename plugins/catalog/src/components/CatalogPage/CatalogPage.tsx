@@ -21,8 +21,9 @@ import {
   errorApiRef,
   SupportButton,
   useApi,
-  useRouteRef,
+  useRouteRef as useRouteRefV1,
 } from '@backstage/core';
+import { useRouteRef } from '@backstage/derp';
 import {
   catalogApiRef,
   isOwnerOf,
@@ -79,6 +80,7 @@ const CatalogPageContents = () => {
   >();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const createComponentLink = useRouteRef(createComponentRouteRef);
+  const createComponentLinkV1 = useRouteRefV1(createComponentRouteRef);
   const addMockData = useCallback(async () => {
     try {
       const promises: Promise<unknown>[] = [];
@@ -167,16 +169,30 @@ const CatalogPageContents = () => {
       />
       <Content>
         <ContentHeader title={selectedTab ?? ''}>
-          {createComponentLink && (
-            <Button
-              component={RouterLink}
+          <div>
+            <div>V1 link: {createComponentLinkV1!({ name: 'i-am-v1' })}</div>
+            <div>
+              V2 link:{' '}
+              {createComponentLink!({
+                params: { name: 'i-am-v2' },
+                query: { foo: 'bar' },
+              })}
+            </div>
+          </div>
+          {/* {createComponentLink && (
+            <a
+              // component={RouterLink}
               variant="contained"
               color="primary"
-              to={createComponentLink()}
+              href={createComponentLink({
+                query: { foo: 'bar' },
+              })}
             >
-              Create Component
-            </Button>
-          )}
+              {createComponentLink({
+                query: { foo: 'bar' },
+              })}
+            </a>
+          )} */}
           {showAddExampleEntities && (
             <Button
               className={styles.buttonSpacing}

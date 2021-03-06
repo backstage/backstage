@@ -30,6 +30,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
+    "@backstage/derp": "^0.1.0",
     "@backstage/catalog-client": "^0.3.6",
     "@backstage/catalog-model": "^0.7.3",
     "@backstage/core": "^0.7.0",
