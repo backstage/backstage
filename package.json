@@ -52,7 +52,7 @@
     "husky": "^4.2.3",
     "lerna": "^4.0.0",
     "lint-staged": "^10.1.0",
-    "prettier": "^2.0.5",
+    "prettier": "^2.2.1",
     "recursive-readdir": "^2.2.2",
     "shx": "^0.3.2"
   },
