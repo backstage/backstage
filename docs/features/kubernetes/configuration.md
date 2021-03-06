@@ -17,7 +17,8 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
+  serviceLocatorMethod:
+    type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
       clusters:

@@ -18,13 +18,9 @@ import { ClusterLocatorMethod } from './src/types';
 
 export interface Config {
   kubernetes?: {
-    serviceLocatorMethod: 'multiTenant';
+    serviceLocatorMethod: {
+      type: 'multiTenant';
+    };
     clusterLocatorMethods: ClusterLocatorMethod[];
-    clusters: {
-      url: string;
-      name: string;
-      serviceAccountToken: string | undefined;
-      authProvider: 'aws' | 'google' | 'serviceAccount';
-    }[];
   };
 }

@@ -42,7 +42,7 @@ const getServiceLocator = (
   clusterDetails: ClusterDetails[],
 ): KubernetesServiceLocator => {
   const serviceLocatorMethod = config.getString(
-    'kubernetes.serviceLocatorMethod',
+    'kubernetes.serviceLocatorMethod.type',
   ) as ServiceLocatorMethod;
 
   switch (serviceLocatorMethod) {

@@ -151,6 +151,24 @@ export interface ConfigClusterLocatorMethod {
    * @visibility frontend
    */
   type: 'config';
+  clusters: {
+    /**
+     * @visibility frontend
+     */
+    url: string;
+    /**
+     * @visibility frontend
+     */
+    name: string;
+    /**
+     * @visibility secret
+     */
+    serviceAccountToken: string | undefined;
+    /**
+     * @visibility frontend
+     */
+    authProvider: 'aws' | 'google' | 'serviceAccount';
+  }[];
 }
 
 export interface GKEClusterLocatorMethod {
