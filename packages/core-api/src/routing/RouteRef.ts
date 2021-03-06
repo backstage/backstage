@@ -217,3 +217,33 @@ export function createExternalRouteRef<
     Boolean(options.optional) as Optional,
   );
 }
+
+export function isRouteRef<Params extends AnyParams>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, any>,
+): routeRef is RouteRef<Params> {
+  return routeRef[routeRefType] === 'absolute';
+}
+
+export function isSubRouteRef<Params extends AnyParams>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, any>,
+): routeRef is SubRouteRef<Params> {
+  return routeRef[routeRefType] === 'sub';
+}
+
+export function isExternalRouteRef<
+  Params extends AnyParams,
+  Optional extends boolean
+>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, Optional>,
+): routeRef is ExternalRouteRef<Params, Optional> {
+  return routeRef[routeRefType] === 'external';
+}
