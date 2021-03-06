@@ -1,4 +1,4 @@
-Second evoltion.
+Second evolution.
 
 This one removes the method `getPlugins`.
 
@@ -12,4 +12,3 @@ So this process is always about adding the new version and changing the previous
 to have the same interface it always had, but to be based on the last one.
 
 Notice v1 is unchanged.
-

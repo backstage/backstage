@@ -84,6 +84,14 @@ const NameContext_2 = createVersionedContext(2, { name: '<name>' });
 
 // useName_1 and useName_2 are the same function from two different versions of a package
 
+interface Context<N extends number, S extends any> {
+  version: N
+  value: S
+}
+
+type V1 = Context<1, string>
+type V2 = Context<2, {name:string, fullName:string}>
+
 // @namestage/use-name@1.0.0 peer dep @namestage/provide-name@^1.0.0
 function useName_1(): string {
   // This version breaks when NameContext v2 is introduced, which is why we need the major bump of @namestage/provide-name
@@ -117,6 +125,24 @@ const NameContext_2 = createMultiVersionContext([
   { version: 1, value: '<name>' },
   { version: 2, value: { name: '<name>', fullName: '<fullName>' } },
 ]);
+
+// provided by @namestage/provide-name@1.1.0
+const NameContext_2 = createMultiVersionTransformedContext({
+  rootValue: { name: '<name>', fullName: '<fullName>' },
+  transforms: [{
+
+    up(in) {
+      return in.name
+    },
+    down(in) {
+      return in.name
+    }
+  }]
+});
+
+interface Context<T> {
+  getVersion(version: number): T
+}
 
 // @namestage/use-name@1.0.0 peer dep @namestage/provide-name@^1.0.0
 function useName_1() {
