@@ -15,14 +15,17 @@
  */
 
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
 import {
   AnyRouteRef,
   BackstageRouteObject,
   RouteRef,
   ExternalRouteRef,
   AnyParams,
+  SubRouteRef,
+  routeRefType,
 } from './types';
-import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
+import { isRouteRef, isSubRouteRef, isExternalRouteRef } from './RouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
@@ -38,29 +41,64 @@ class RouteResolver {
     private readonly routePaths: Map<AnyRouteRef, string>,
     private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<RouteRef | ExternalRouteRef, RouteRef>,
+    private readonly routeBindings: Map<
+      ExternalRouteRef,
+      RouteRef | SubRouteRef
+    >,
   ) {}
 
   resolve<Params extends AnyParams>(
-    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef<Params>,
+    anyRouteRef:
+      | RouteRef<Params>
+      | SubRouteRef<Params>
+      | ExternalRouteRef<Params, any>,
     sourceLocation: ReturnType<typeof useLocation>,
   ): RouteFunc<Params> | undefined {
-    const routeRef =
-      this.routeBindings.get(routeRefOrExternalRouteRef) ??
-      (routeRefOrExternalRouteRef as RouteRef<Params>);
+    let resolvedRef: AnyRouteRef;
+    let subRoutePath = '';
+    if (isRouteRef(anyRouteRef)) {
+      resolvedRef = anyRouteRef;
+    } else if (isSubRouteRef(anyRouteRef)) {
+      resolvedRef = anyRouteRef.parent;
+      subRoutePath = anyRouteRef.path;
+    } else if (isExternalRouteRef(anyRouteRef)) {
+      const resolvedRoute = this.routeBindings.get(anyRouteRef);
+      if (!resolvedRoute) {
+        return undefined;
+      }
+      if (isSubRouteRef(resolvedRoute)) {
+        subRoutePath = resolvedRoute.path;
+        resolvedRef = resolvedRoute.parent;
+      } else {
+        resolvedRef = resolvedRoute;
+      }
+    } else if (anyRouteRef[routeRefType]) {
+      throw new Error(
+        `Unknown or invalid route ref type, ${anyRouteRef[routeRefType]}`,
+      );
+    } else {
+      throw new Error(
+        `Unknown object passed to useRouteRef, got ${anyRouteRef}`,
+      );
+    }
 
     const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
 
     // If our route isn't bound to a path we fail the resolution and let the caller decide the failure mode
-    const lastPath = this.routePaths.get(routeRef);
-    if (!lastPath) {
+    const resolvedPath = this.routePaths.get(resolvedRef);
+    if (!resolvedPath) {
       return undefined;
     }
+    // SubRouteRefs join the path from the parent route with its own path
+    const lastPath =
+      resolvedPath +
+      (resolvedPath.endsWith('/') ? subRoutePath.slice(1) : subRoutePath);
+
     const targetRefStack = Array<AnyRouteRef>();
     let matchIndex = -1;
 
     for (
-      let currentRouteRef: AnyRouteRef | undefined = routeRef;
+      let currentRouteRef: AnyRouteRef | undefined = resolvedRef;
       currentRouteRef;
       currentRouteRef = this.routeParents.get(currentRouteRef)
     ) {
@@ -98,7 +136,7 @@ class RouteResolver {
         }
         if (path.includes(':')) {
           throw new Error(
-            `Cannot route to ${routeRef} with parent ${ref} as it has parameters`,
+            `Cannot route to ${resolvedRef} with parent ${ref} as it has parameters`,
           );
         }
         return path;
@@ -119,10 +157,13 @@ export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
 ): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
 export function useRouteRef<Params extends AnyParams>(
-  routeRef: RouteRef<Params>,
+  routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): RouteFunc<Params>;
 export function useRouteRef<Params extends AnyParams>(
-  routeRef: RouteRef<Params> | ExternalRouteRef<Params, any>,
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);
@@ -147,7 +188,7 @@ type ProviderProps = {
   routePaths: Map<AnyRouteRef, string>;
   routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
-  routeBindings: Map<ExternalRouteRef, RouteRef>;
+  routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   children: ReactNode;
 };
 
