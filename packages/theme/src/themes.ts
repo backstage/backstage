@@ -102,7 +102,7 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: '#2E77D0',
+      main: '#90caf9',
     },
     banner: {
       info: '#2E77D0',
