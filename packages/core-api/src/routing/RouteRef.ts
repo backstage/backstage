@@ -21,6 +21,7 @@ import {
   routeRefType,
   AnyParams,
   ParamKeys,
+  OptionalParams,
 } from './types';
 import { IconComponent } from '../icons';
 
@@ -32,20 +33,11 @@ export type RouteRefConfig<Params extends AnyParams> = {
   title: string;
 };
 
-class RouteRefBase {
-  constructor(type: string, id: string) {
-    this.toString = () => `routeRef{type=${type},id=${id}}`;
-  }
-}
-
 export class RouteRefImpl<Params extends AnyParams>
-  extends RouteRefBase
   implements RouteRef<Params> {
   readonly [routeRefType] = 'absolute';
 
-  constructor(private readonly config: RouteRefConfig<Params>) {
-    super('absolute', config.title);
-  }
+  constructor(private readonly config: RouteRefConfig<Params>) {}
 
   get params(): ParamKeys<Params> {
     return this.config.params as any;
@@ -63,11 +55,11 @@ export class RouteRefImpl<Params extends AnyParams>
   get title() {
     return this.config.title;
   }
-}
 
-type OptionalParams<
-  Params extends { [param in string]: string }
-> = Params[keyof Params] extends never ? undefined : Params;
+  toString() {
+    return `routeRef{type=absolute,id=${this.config.title}}`;
+  }
+}
 
 export function createRouteRef<
   // Params is the type that we care about and the one to be embedded in the route ref.
@@ -92,132 +84,6 @@ export function createRouteRef<
   });
 }
 
-export class SubRouteRefImpl<Params extends AnyParams>
-  extends RouteRefBase
-  implements SubRouteRef<Params> {
-  readonly [routeRefType] = 'sub';
-
-  constructor(
-    id: string,
-    readonly path: string,
-    readonly parent: RouteRef,
-    readonly params: ParamKeys<Params>,
-  ) {
-    super('sub', id);
-  }
-}
-
-// These utility types help us infer a Param object type from a string path
-// For example, `/foo/:bar/:baz` inferred to `{ bar: string, baz: string }`
-type ParamPart<S extends string> = S extends `:${infer Param}` ? Param : never;
-type ParamNames<S extends string> = S extends `${infer Part}/${infer Rest}`
-  ? ParamPart<Part> | ParamNames<Rest>
-  : ParamPart<S>;
-type PathParams<S extends string> = { [name in ParamNames<S>]: string };
-
-/**
- * Merges a param object type with with an optional params type into a params object
- */
-type MergeParams<
-  P1 extends { [param in string]: string },
-  P2 extends AnyParams
-> = (P1[keyof P1] extends never ? {} : P1) & (P2 extends undefined ? {} : P2);
-
-/**
- * Creates a SubRouteRef type given the desired parameters and parent route parameters.
- * The parameters types are merged together while ensuring that there is no overlap between the two.
- */
-type MakeSubRouteRef<
-  Params extends { [param in string]: string },
-  ParentParams extends AnyParams
-> = keyof Params & keyof ParentParams extends never
-  ? SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>
-  : never;
-
-export function createSubRouteRef<
-  Path extends string,
-  ParentParams extends AnyParams = never
->(config: {
-  id: string;
-  path: Path;
-  parent: RouteRef<ParentParams>;
-}): MakeSubRouteRef<PathParams<Path>, ParentParams> {
-  const { id, path, parent } = config;
-  type Params = PathParams<Path>;
-
-  // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
-  const pathParams = path.split(/:([^/]+)/).filter((_, i) => i % 2 === 1);
-  const params = [...parent.params, ...pathParams];
-
-  if (parent.params.some(p => pathParams.includes(p as string))) {
-    throw new Error(
-      'SubRouteRef may not have params that overlap with its parent params',
-    );
-  }
-  if (!path.startsWith('/')) {
-    throw new Error(`SubRouteRef path sub starts with '/', got '${path}'`);
-  }
-
-  // We ensure that the type of the return type is sane here
-  const subRouteRef = new SubRouteRefImpl(
-    id,
-    path,
-    parent,
-    params as ParamKeys<MergeParams<Params, ParentParams>>,
-  ) as SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>;
-
-  // But skip type checking of the return value itself, because the conditional
-  // type checking of the parent parameter overlap is tricky to express.
-  return subRouteRef as any;
-}
-
-export class ExternalRouteRefImpl<
-    Params extends AnyParams,
-    Optional extends boolean
-  >
-  extends RouteRefBase
-  implements ExternalRouteRef<Params, Optional> {
-  readonly [routeRefType] = 'external';
-
-  constructor(
-    id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-  ) {
-    super('external', id);
-  }
-}
-
-export function createExternalRouteRef<
-  Params extends { [param in ParamKey]: string },
-  Optional extends boolean = false,
-  ParamKey extends string = never
->(options: {
-  /**
-   * An identifier for this route, used to identify it in error messages
-   */
-  id: string;
-
-  /**
-   * The parameters that will be provided to the external route reference.
-   */
-  params?: ParamKey[];
-
-  /**
-   * Whether or not this route is optional, defaults to false.
-   *
-   * Optional external routes are not required to be bound in the app, and
-   * if they aren't, `useRouteRef` will return `undefined`.
-   */
-  optional?: Optional;
-}): ExternalRouteRef<OptionalParams<Params>, Optional> {
-  return new ExternalRouteRefImpl(
-    options.id,
-    (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
-    Boolean(options.optional) as Optional,
-  );
-}
-
 export function isRouteRef<Params extends AnyParams>(
   routeRef:
     | RouteRef<Params>
@@ -225,25 +91,4 @@ export function isRouteRef<Params extends AnyParams>(
     | ExternalRouteRef<Params, any>,
 ): routeRef is RouteRef<Params> {
   return routeRef[routeRefType] === 'absolute';
-}
-
-export function isSubRouteRef<Params extends AnyParams>(
-  routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, any>,
-): routeRef is SubRouteRef<Params> {
-  return routeRef[routeRefType] === 'sub';
-}
-
-export function isExternalRouteRef<
-  Params extends AnyParams,
-  Optional extends boolean
->(
-  routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, Optional>,
-): routeRef is ExternalRouteRef<Params, Optional> {
-  return routeRef[routeRefType] === 'external';
 }

@@ -25,7 +25,9 @@ import {
   SubRouteRef,
   routeRefType,
 } from './types';
-import { isRouteRef, isSubRouteRef, isExternalRouteRef } from './RouteRef';
+import { isRouteRef } from './RouteRef';
+import { isSubRouteRef } from './SubRouteRef';
+import { isExternalRouteRef } from './ExternalRouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.

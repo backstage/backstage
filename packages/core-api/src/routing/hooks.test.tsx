@@ -35,11 +35,8 @@ import {
   validateRoutes,
   RouteFunc,
 } from './hooks';
-import {
-  createRouteRef,
-  createExternalRouteRef,
-  RouteRefConfig,
-} from './RouteRef';
+import { createRouteRef, RouteRefConfig } from './RouteRef';
+import { createExternalRouteRef } from './ExternalRouteRef';
 import { AnyRouteRef, RouteRef, ExternalRouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({

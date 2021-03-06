@@ -27,7 +27,7 @@ import {
   createExternalRouteRef,
   createRouteRef,
   createSubRouteRef,
-} from '../routing/RouteRef';
+} from '../routing';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 
 describe('generateBoundRoutes', () => {

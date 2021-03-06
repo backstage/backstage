@@ -21,6 +21,9 @@ export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
   ? []
   : (keyof Params)[];
+export type OptionalParams<
+  Params extends { [param in string]: string }
+> = Params[keyof Params] extends never ? undefined : Params;
 
 export const routeRefType: unique symbol = getGlobalSingleton<any>(
   'route-ref-type',
