@@ -16,6 +16,7 @@
 
 import { runDockerContainer } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
+import fs from 'fs-extra';
 import path from 'path';
 import { PassThrough } from 'stream';
 import { Logger } from 'winston';
@@ -78,6 +79,14 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
+    // Directories to bind on container
+    const mountDirs = new Map([
+      // Need to use realpath here as Docker mounting does not like
+      // symlinks for binding volumes
+      [await fs.realpath(inputDir), '/input'],
+      [await fs.realpath(outputDir), '/output'],
+    ]);
+
     try {
       switch (this.options.runGeneratorIn) {
         case 'local':
@@ -98,8 +107,11 @@ export class TechdocsGenerator implements GeneratorBase {
             imageName: 'spotify/techdocs',
             args: ['build', '-d', '/output'],
             logStream,
-            inputDir,
-            outputDir,
+            mountDirs,
+            workingDir: '/input',
+            // Set the home directory inside the container as something that applications can
+            // write to, otherwise they will just fail trying to write to /
+            envVars: ['HOME=/tmp'],
             dockerClient,
           });
           this.logger.info(
