@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 import Docker from 'dockerode';
-import fs from 'fs';
+import mockFs from 'mock-fs';
 import os from 'os';
+import path from 'path';
 import Stream, { PassThrough } from 'stream';
 import { runDockerContainer, UserOptions } from './docker';
 
 const mockDocker = new Docker() as jest.Mocked<Docker>;
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 describe('runDockerContainer', () => {
   beforeEach(() => {
+    mockFs({
+      [rootDir]: {
+        input: mockFs.directory(),
+        output: mockFs.directory(),
+      },
+    });
+
     jest.spyOn(mockDocker, 'pull').mockImplementation((async (
       _image: string,
       _something: any,
@@ -42,17 +51,23 @@ describe('runDockerContainer', () => {
       .mockResolvedValue(Buffer.from('OK', 'utf-8'));
   });
 
+  afterEach(() => {
+    mockFs.restore();
+  });
+
   const imageName = 'dockerOrg/image';
   const args = ['bash', '-c', 'echo test'];
-  const inputDir = os.tmpdir();
-  const outputDir = os.tmpdir();
+  const mountDirs = new Map([
+    [path.join(rootDir, 'input'), '/input'],
+    [path.join(rootDir, 'output'), '/output'],
+  ]);
+  const workingDir = path.join(rootDir, 'input');
+  const envVars = ['HOME=/tmp', 'LOG_LEVEL=debug'];
 
   it('should pull the docker container', async () => {
     await runDockerContainer({
       imageName,
       args,
-      inputDir,
-      outputDir,
       dockerClient: mockDocker,
     });
 
@@ -61,14 +76,17 @@ describe('runDockerContainer', () => {
       {},
       expect.any(Function),
     );
+
+    expect(mockDocker.run).toHaveBeenCalled();
   });
 
   it('should call the dockerClient run command with the correct arguments passed through', async () => {
     await runDockerContainer({
       imageName,
       args,
-      inputDir,
-      outputDir,
+      mountDirs,
+      envVars,
+      workingDir,
       dockerClient: mockDocker,
     });
 
@@ -77,10 +95,12 @@ describe('runDockerContainer', () => {
       args,
       expect.any(Stream),
       expect.objectContaining({
+        Env: envVars,
+        WorkingDir: workingDir,
         HostConfig: {
           Binds: expect.arrayContaining([
-            `${await fs.promises.realpath(inputDir)}:/input`,
-            `${await fs.promises.realpath(outputDir)}:/output`,
+            `${path.join(rootDir, 'input')}:/input`,
+            `${path.join(rootDir, 'output')}:/output`,
           ]),
         },
         Volumes: {
@@ -95,8 +115,6 @@ describe('runDockerContainer', () => {
     await runDockerContainer({
       imageName,
       args,
-      inputDir,
-      outputDir,
       dockerClient: mockDocker,
     });
 
@@ -107,8 +125,6 @@ describe('runDockerContainer', () => {
     await runDockerContainer({
       imageName,
       args,
-      inputDir,
-      outputDir,
       dockerClient: mockDocker,
     });
 
@@ -139,8 +155,6 @@ describe('runDockerContainer', () => {
       runDockerContainer({
         imageName,
         args,
-        inputDir,
-        outputDir,
         dockerClient: mockDocker,
       }),
     ).rejects.toThrow(/Something went wrong with docker/);
@@ -160,8 +174,6 @@ describe('runDockerContainer', () => {
         runDockerContainer({
           imageName,
           args,
-          inputDir,
-          outputDir,
           dockerClient: mockDocker,
         }),
       ).rejects.toThrow(new RegExp(`.+: ${dockerError}`));
@@ -173,8 +185,6 @@ describe('runDockerContainer', () => {
     await runDockerContainer({
       imageName,
       args,
-      inputDir,
-      outputDir,
       logStream,
       dockerClient: mockDocker,
     });
@@ -185,15 +195,9 @@ describe('runDockerContainer', () => {
       logStream,
       expect.objectContaining({
         HostConfig: {
-          Binds: expect.arrayContaining([
-            `${await fs.promises.realpath(inputDir)}:/input`,
-            `${await fs.promises.realpath(outputDir)}:/output`,
-          ]),
+          Binds: [],
         },
-        Volumes: {
-          '/input': {},
-          '/output': {},
-        },
+        Volumes: {},
       }),
     );
   });

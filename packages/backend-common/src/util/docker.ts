@@ -15,7 +15,6 @@
  */
 
 import Docker from 'dockerode';
-import fs from 'fs';
 import { PassThrough, Writable } from 'stream';
 
 export type UserOptions = {
@@ -26,9 +25,10 @@ export type RunDockerContainerOptions = {
   imageName: string;
   args: string[];
   logStream?: Writable;
-  inputDir: string;
-  outputDir: string;
   dockerClient: Docker;
+  mountDirs?: Map<string, string>;
+  workingDir?: string;
+  envVars?: string[];
   createOptions?: Docker.ContainerCreateOptions;
 };
 
@@ -38,17 +38,20 @@ export type RunDockerContainerOptions = {
  * @param options.imageName the image to run
  * @param options.args the arguments to pass the container
  * @param options.logStream the log streamer to capture log messages
- * @param options.inputDir the /input path inside the container
- * @param options.outputDir the /output path inside the container
  * @param options.dockerClient the dockerClient to use
+ * @param options.mountDirs A map of host directories to mount on the container.
+ *        Map Key: Path on host machine, Value: Path on Docker container
+ * @param options.workingDir Working dir in the container
+ * @param options.envVars Environment variables to set in the container. e.g. ['HOME=/tmp']
  */
 export const runDockerContainer = async ({
   imageName,
   args,
   logStream = new PassThrough(),
-  inputDir,
-  outputDir,
   dockerClient,
+  mountDirs = new Map(),
+  workingDir,
+  envVars = [],
   createOptions = {},
 }: RunDockerContainerOptions) => {
   // Show a better error message when Docker is unavailable.
@@ -80,25 +83,30 @@ export const runDockerContainer = async ({
     userOptions.User = `${process.getuid()}:${process.getgid()}`;
   }
 
+  // Initialize volumes to mount based on mountDirs map
+  const Volumes: { [T: string]: object } = {};
+  for (const containerDir of mountDirs.values()) {
+    Volumes[containerDir] = {};
+  }
+
+  // Create bind volumes
+  const Binds: string[] = [];
+  for (const [hostDir, containerDir] of mountDirs.entries()) {
+    Binds.push(`${hostDir}:${containerDir}`);
+  }
+
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
     logStream,
     {
-      Volumes: { '/output': {}, '/input': {} },
-      WorkingDir: '/input',
+      Volumes,
       HostConfig: {
-        Binds: [
-          // Need to use realpath here as Docker mounting does not like
-          // symlinks for binding volumes
-          `${await fs.promises.realpath(outputDir)}:/output`,
-          `${await fs.promises.realpath(inputDir)}:/input`,
-        ],
+        Binds,
       },
+      ...(workingDir ? { WorkingDir: workingDir } : {}),
+      Env: envVars,
       ...userOptions,
-      // Set the home directory inside the container as something that applications can
-      // write to, otherwise they will just flop and fail trying to write to /
-      Env: ['HOME=/tmp'],
       ...createOptions,
     },
   );
