@@ -136,6 +136,11 @@ describe('CookieCutter Templater', () => {
     };
 
     jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest
+      .spyOn(fs, 'realpath')
+      .mockImplementation((filePath: string | Buffer) =>
+        Promise.resolve(filePath as string),
+      );
 
     const templater = new CookieCutter();
     await templater.run({
@@ -154,8 +159,12 @@ describe('CookieCutter Templater', () => {
         '/input',
         '--verbose',
       ],
-      inputDir: path.join('tempdir', 'template'),
-      outputDir: path.join('tempdir', 'intermediate'),
+      envVars: ['HOME=/tmp'],
+      mountDirs: new Map([
+        [path.join('tempdir', 'template'), '/input'],
+        [path.join('tempdir', 'intermediate'), '/output'],
+      ]),
+      workingDir: '/input',
       logStream: undefined,
       dockerClient: mockDocker,
     });
@@ -193,8 +202,12 @@ describe('CookieCutter Templater', () => {
         '/input',
         '--verbose',
       ],
-      inputDir: path.join('tempdir', 'template'),
-      outputDir: path.join('tempdir', 'intermediate'),
+      envVars: ['HOME=/tmp'],
+      mountDirs: new Map([
+        [path.join('tempdir', 'template'), '/input'],
+        [path.join('tempdir', 'intermediate'), '/output'],
+      ]),
+      workingDir: '/input',
       logStream: stream,
       dockerClient: mockDocker,
     });

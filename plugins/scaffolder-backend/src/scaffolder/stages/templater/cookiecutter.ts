@@ -58,6 +58,14 @@ export class CookieCutter implements TemplaterBase {
 
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
 
+    // Directories to bind on container
+    const mountDirs = new Map([
+      // Need to use realpath here as Docker mounting does not like
+      // symlinks for binding volumes
+      [await fs.realpath(templateDir), '/input'],
+      [await fs.realpath(intermediateDir), '/output'],
+    ]);
+
     const cookieCutterInstalled = await commandExists('cookiecutter');
     if (cookieCutterInstalled) {
       await runCommand({
@@ -76,8 +84,11 @@ export class CookieCutter implements TemplaterBase {
           '/input',
           '--verbose',
         ],
-        inputDir: templateDir,
-        outputDir: intermediateDir,
+        mountDirs,
+        workingDir: '/input',
+        // Set the home directory inside the container as something that applications can
+        // write to, otherwise they will just fail trying to write to /
+        envVars: ['HOME=/tmp'],
         logStream,
         dockerClient,
       });
