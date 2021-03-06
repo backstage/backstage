@@ -18,6 +18,7 @@ import {
   EntityMeta,
   LocationSpec,
   LOCATION_ANNOTATION,
+  parseLocationReference,
 } from '@backstage/catalog-model';
 
 export function findLocationForEntityMeta(
@@ -36,13 +37,9 @@ export function findLocationForEntityMeta(
 }
 
 export function parseLocation(reference: string): LocationSpec | undefined {
-  const separatorIndex = reference.indexOf(':');
-  if (separatorIndex === -1) {
+  try {
+    return parseLocationReference(reference);
+  } catch {
     return undefined;
   }
-
-  return {
-    type: reference.substring(0, separatorIndex),
-    target: reference.substring(separatorIndex + 1),
-  };
 }

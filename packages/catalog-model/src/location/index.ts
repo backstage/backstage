@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-export type { Location, LocationSpec } from './types';
-export {
-  locationSchema,
-  locationSpecSchema,
-  analyzeLocationSchema,
-} from './validation';
 export {
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   SOURCE_LOCATION_ANNOTATION,
 } from './annotation';
+export { parseLocationReference, stringifyLocationReference } from './helpers';
+export type { Location, LocationSpec } from './types';
+export {
+  analyzeLocationSchema,
+  locationSchema,
+  locationSpecSchema,
+} from './validation';
