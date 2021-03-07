@@ -60,6 +60,7 @@ const getServiceLocator = (
 export const makeRouter = (
   logger: Logger,
   kubernetesFanOutHandler: KubernetesFanOutHandler,
+  clusterDetails: ClusterDetails[],
 ): express.Router => {
   const router = Router();
   router.use(express.json());
@@ -80,6 +81,14 @@ export const makeRouter = (
     }
   });
 
+  router.get('/clusters', async (_, res) => {
+    res.json({
+      items: clusterDetails.map(cd => ({
+        name: cd.name,
+        authProvider: cd.authProvider,
+      })),
+    });
+  });
   return router;
 };
 
@@ -115,5 +124,5 @@ export async function createRouter(
     serviceLocator,
   );
 
-  return makeRouter(logger, kubernetesFanOutHandler);
+  return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
 }
