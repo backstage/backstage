@@ -23,7 +23,6 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { Config } from '@backstage/config';
 import {
   Content,
   Page,
@@ -168,16 +167,14 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const clusters: Config[] = kubernetesApi.getClusters();
-  const allAuthProviders: string[] = clusters.map(c =>
-    c.getString('authProvider'),
-  );
-  const authProviders: string[] = [...new Set(allAuthProviders)];
-
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
 
   useEffect(() => {
     (async () => {
+      const clusters = await kubernetesApi.getClusters();
+      const authProviders: string[] = [
+        ...new Set(clusters.map(c => c.authProvider)),
+      ];
       // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
       let requestBody: KubernetesRequestBody = {
         entity,
