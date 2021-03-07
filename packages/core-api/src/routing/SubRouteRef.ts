@@ -24,6 +24,9 @@ import {
   SubRouteRef,
 } from './types';
 
+// Should match the pattern in react-router
+const PARAM_PATTERN = /^\w+$/;
+
 export class SubRouteRefImpl<Params extends AnyParams>
   implements SubRouteRef<Params> {
   readonly [routeRefType] = 'sub';
@@ -79,16 +82,27 @@ export function createSubRouteRef<
   type Params = PathParams<Path>;
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
-  const pathParams = path.split(/:([^/]+)/).filter((_, i) => i % 2 === 1);
+  const pathParams = path
+    .split('/')
+    .filter(p => p.startsWith(':'))
+    .map(p => p.substring(1));
   const params = [...parent.params, ...pathParams];
 
   if (parent.params.some(p => pathParams.includes(p as string))) {
     throw new Error(
-      'SubRouteRef may not have params that overlap with its parent params',
+      'SubRouteRef may not have params that overlap with its parent',
     );
   }
   if (!path.startsWith('/')) {
-    throw new Error(`SubRouteRef path sub starts with '/', got '${path}'`);
+    throw new Error(`SubRouteRef path must start with '/', got '${path}'`);
+  }
+  if (path.endsWith('/')) {
+    throw new Error(`SubRouteRef path must not end with '/', got '${path}'`);
+  }
+  for (const param of pathParams) {
+    if (!PARAM_PATTERN.test(param)) {
+      throw new Error(`SubRouteRef path has invalid param, got '${param}'`);
+    }
   }
 
   // We ensure that the type of the return type is sane here
