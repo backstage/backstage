@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
+import { generatePath, matchRoutes } from 'react-router-dom';
 import {
   AnyRouteRef,
   BackstageRouteObject,
@@ -45,7 +45,7 @@ export class RouteResolver {
       | RouteRef<Params>
       | SubRouteRef<Params>
       | ExternalRouteRef<Params, any>,
-    sourceLocation: ReturnType<typeof useLocation>,
+    sourceLocation: Parameters<typeof matchRoutes>[1],
   ): RouteFunc<Params> | undefined {
     let resolvedRef: AnyRouteRef;
     let subRoutePath = '';
