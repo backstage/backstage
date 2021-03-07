@@ -31,23 +31,11 @@ import { isExternalRouteRef } from './ExternalRouteRef';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 function joinPaths(...paths: string[]): string {
-  const joined = paths
-    .map(path => {
-      let ret = path;
-      if (path.endsWith('/')) {
-        ret = path.slice(0, -1);
-      }
-      if (!path.startsWith('/')) {
-        ret = `/${ret}`;
-      }
-      return ret;
-    })
-    .join('');
-
-  if (joined !== '/' && joined.endsWith('/')) {
-    return joined.slice(0, -1);
+  const normalized = paths.join('/').replace(/\/\/+/g, '/');
+  if (normalized !== '/' && normalized.endsWith('/')) {
+    return normalized.slice(0, -1);
   }
-  return joined;
+  return normalized;
 }
 
 /**
