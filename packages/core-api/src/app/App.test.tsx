@@ -33,7 +33,7 @@ import { generateBoundRoutes, PrivateAppImpl } from './App';
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
     const external = { myRoute: createExternalRouteRef({ id: '1' }) };
-    const ref = createRouteRef({ path: '', title: '' });
+    const ref = createRouteRef({ id: 'ref-1' });
     const result = generateBoundRoutes(({ bind }) => {
       bind(external, { myRoute: ref });
     });
@@ -43,7 +43,7 @@ describe('generateBoundRoutes', () => {
 
   it('throws on unknown keys', () => {
     const external = { myRoute: createExternalRouteRef({ id: '2' }) };
-    const ref = createRouteRef({ path: '', title: '' });
+    const ref = createRouteRef({ id: 'ref-2' });
     expect(() =>
       generateBoundRoutes(({ bind }) => {
         bind(external, { someOtherRoute: ref } as any);
@@ -53,12 +53,8 @@ describe('generateBoundRoutes', () => {
 });
 
 describe('Integration Test', () => {
-  const plugin1RouteRef = createRouteRef({ path: '/blah1', title: '' });
-  const plugin2RouteRef = createRouteRef({
-    path: '/blah2',
-    title: '',
-    params: ['x'],
-  });
+  const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
+  const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
   const subRouteRef1 = createSubRouteRef({
     id: 'sub1',
     path: '/sub1',
