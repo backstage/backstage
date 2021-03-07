@@ -41,8 +41,7 @@ export async function serveBundle(options: ServeOptions) {
     baseUrl: url,
   });
   const compiler = webpack(config);
-
-  const server = new WebpackDevServer(compiler, {
+  const webpackOptions: WebpackDevServer.Configuration = {
     hot: true,
     contentBase: paths.targetPublic,
     contentBasePublicPath: config.output?.publicPath,
@@ -60,7 +59,10 @@ export async function serveBundle(options: ServeOptions) {
     proxy: pkg.proxy,
     // When the dev server is behind a proxy, the host and public hostname differ
     allowedHosts: [url.hostname],
-  });
+  };
+
+  WebpackDevServer.addDevServerEntrypoints(config, webpackOptions);
+  const server = new WebpackDevServer(compiler, webpackOptions);
 
   await new Promise<void>((resolve, reject) => {
     server.listen(port, host, (err?: Error) => {
