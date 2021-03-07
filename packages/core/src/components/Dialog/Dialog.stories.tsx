@@ -21,9 +21,23 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Grid,
 } from '@material-ui/core';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    leftAlignButtonsDialog: {
+      justifyContent: 'flex-start',
+      paddingLeft: 24,
+    },
+    contentBoxExample: {
+      height: 200,
+      width: 500,
+      backgroundColor: '#E1E1E1',
+    },
+  }),
+);
 
 export default {
   title: 'Layout/Dialog',
@@ -32,6 +46,7 @@ export default {
 
 export const Default = () => {
   const [open, setOpen] = useState(false);
+  const classes = useStyles();
 
   const openDialog = () => {
     setOpen(true);
@@ -42,8 +57,8 @@ export const Default = () => {
   };
 
   return (
-    <Grid container spacing={4}>
-      <Button variant="outlined" color="primary" onClick={openDialog}>
+    <>
+      <Button color="primary" variant="contained" onClick={openDialog}>
         Open dialog
       </Button>
       <Dialog
@@ -54,20 +69,19 @@ export const Default = () => {
       >
         <DialogTitle id="dialog-title">Dialog Box Title</DialogTitle>
         <DialogContent>
-          <DialogContentText id="dialog-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
+          <DialogContentText id="dialog-content">
+            <div className={classes.contentBoxExample} />
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog} color="primary">
-            Disagree
+        <DialogActions classes={{ root: classes.leftAlignButtonsDialog }}>
+          <Button color="primary" variant="contained" onClick={closeDialog}>
+            Primary action
           </Button>
-          <Button onClick={closeDialog} color="primary">
-            Agree
+          <Button color="primary" variant="outlined" onClick={closeDialog}>
+            Secondary action
           </Button>
         </DialogActions>
       </Dialog>
-    </Grid>
+    </>
   );
 };
