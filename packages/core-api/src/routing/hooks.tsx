@@ -17,7 +17,6 @@
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  AnyRouteRef,
   BackstageRouteObject,
   RouteRef,
   ExternalRouteRef,
@@ -61,8 +60,8 @@ export function useRouteRef<Params extends AnyParams>(
 }
 
 type ProviderProps = {
-  routePaths: Map<AnyRouteRef, string>;
-  routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>;
+  routePaths: Map<RouteRef, string>;
+  routeParents: Map<RouteRef, RouteRef | undefined>;
   routeObjects: BackstageRouteObject[];
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   children: ReactNode;

@@ -18,7 +18,7 @@ import { createRouteRef } from './RouteRef';
 import { createSubRouteRef } from './SubRouteRef';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { RouteResolver } from './RouteResolver';
-import { AnyRouteRef, ExternalRouteRef, RouteRef, SubRouteRef } from './types';
+import { ExternalRouteRef, RouteRef, SubRouteRef } from './types';
 
 const element = () => null;
 const rest = { element, caseSensitive: false };
@@ -96,7 +96,7 @@ describe('RouteResolver', () => {
 
   it('should resolve an absolute route with a param and with a parent', () => {
     const r = new RouteResolver(
-      new Map<AnyRouteRef, string>([
+      new Map<RouteRef, string>([
         [ref1, '/my-route'],
         [ref2, '/my-parent/:x'],
       ]),
@@ -140,12 +140,12 @@ describe('RouteResolver', () => {
 
   it('should resolve an absolute route with multiple parents', () => {
     const r = new RouteResolver(
-      new Map<AnyRouteRef, string>([
+      new Map<RouteRef, string>([
         [ref1, '/my-route'],
         [ref2, '/my-parent/:x'],
         [ref3, '/my-grandparent/:y'],
       ]),
-      new Map<AnyRouteRef, AnyRouteRef>([
+      new Map<RouteRef, RouteRef>([
         [ref1, ref2],
         [ref2, ref3],
       ]),

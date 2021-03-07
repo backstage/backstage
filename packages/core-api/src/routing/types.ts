@@ -93,5 +93,5 @@ export interface BackstageRouteObject {
   children?: BackstageRouteObject[];
   element: React.ReactNode;
   path: string;
-  routeRefs: Set<AnyRouteRef>;
+  routeRefs: Set<RouteRef>;
 }

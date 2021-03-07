@@ -29,10 +29,169 @@ import { isRouteRef } from './RouteRef';
 import { isSubRouteRef } from './SubRouteRef';
 import { isExternalRouteRef } from './ExternalRouteRef';
 
+// Joins a list of paths together, avoiding trailing and duplicate slashes
+function joinPaths(...paths: string[]): string {
+  const joined = paths
+    .map(path => {
+      let ret = path;
+      if (path.endsWith('/')) {
+        ret = path.slice(0, -1);
+      }
+      if (!path.startsWith('/')) {
+        ret = `/${ret}`;
+      }
+      return ret;
+    })
+    .join('');
+
+  if (joined !== '/' && joined.endsWith('/')) {
+    return joined.slice(0, -1);
+  }
+  return joined;
+}
+
+/**
+ * Resolves the absolute route ref that our target route ref is pointing pointing to, as well
+ * as the relative target path.
+ *
+ * Returns an undefined target ref if one could not be fully resolved.
+ */
+function resolveTargetRef(
+  anyRouteRef: AnyRouteRef,
+  routePaths: Map<RouteRef, string>,
+  routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
+): readonly [RouteRef | undefined, string] {
+  // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
+  // For sub routes it will be the parent path, while for external routes it will be the bound route.
+  let targetRef: RouteRef;
+  let subRoutePath = '';
+  if (isRouteRef(anyRouteRef)) {
+    targetRef = anyRouteRef;
+  } else if (isSubRouteRef(anyRouteRef)) {
+    targetRef = anyRouteRef.parent;
+    subRoutePath = anyRouteRef.path;
+  } else if (isExternalRouteRef(anyRouteRef)) {
+    const resolvedRoute = routeBindings.get(anyRouteRef);
+    if (!resolvedRoute) {
+      return [undefined, ''];
+    }
+    if (isRouteRef(resolvedRoute)) {
+      targetRef = resolvedRoute;
+    } else if (isSubRouteRef(resolvedRoute)) {
+      targetRef = resolvedRoute.parent;
+      subRoutePath = resolvedRoute.path;
+    } else {
+      throw new Error(
+        `ExternalRouteRef was bound to invalid target, ${resolvedRoute}`,
+      );
+    }
+  } else if (anyRouteRef[routeRefType]) {
+    throw new Error(
+      `Unknown or invalid route ref type, ${anyRouteRef[routeRefType]}`,
+    );
+  } else {
+    throw new Error(`Unknown object passed to useRouteRef, got ${anyRouteRef}`);
+  }
+
+  // Bail if no absolute path could be resolved
+  if (!targetRef) {
+    return [undefined, ''];
+  }
+
+  // Find the path that our target route is bound to
+  const resolvedPath = routePaths.get(targetRef);
+  if (!resolvedPath) {
+    return [undefined, ''];
+  }
+
+  // SubRouteRefs join the path from the parent route with its own path
+  const targetPath = joinPaths(resolvedPath, subRoutePath);
+  return [targetRef, targetPath];
+}
+
+/**
+ * Resolves the complete base path for navigating to the target RouteRef.
+ */
+function resolveBasePath(
+  targetRef: RouteRef,
+  sourceLocation: Parameters<typeof matchRoutes>[1],
+  routePaths: Map<RouteRef, string>,
+  routeParents: Map<RouteRef, RouteRef | undefined>,
+  routeObjects: BackstageRouteObject[],
+) {
+  // While traversing the app element tree we build up the routeObjects structure
+  // used here. It is the same kind of structure that react-router creates, with the
+  // addition that associated route refs are stored throughout the tree. This lets
+  // us look up all route refs that can be reached from our source location.
+  // Because of the similar route object structure, we can use `matchRoutes` from
+  // react-router to do the lookup of our current location.
+  const match = matchRoutes(routeObjects, sourceLocation) ?? [];
+
+  // While we search for a common routing root between our current location and
+  // the target route, we build a list of all route refs we find that we need
+  // to traverse to reach the target.
+  const refDiffList = Array<RouteRef>();
+
+  let matchIndex = -1;
+  for (
+    let targetSearchRef: RouteRef | undefined = targetRef;
+    targetSearchRef;
+    targetSearchRef = routeParents.get(targetSearchRef)
+  ) {
+    // The match contains a list of all ancestral route refs present at our current location
+    // Starting at the desired target ref and traversing back through its parents, we search
+    // for a target ref that is present in the match for our current location. When a match
+    // is found it means we have found a common base to resolve the route from.
+    matchIndex = match.findIndex(m =>
+      (m.route as BackstageRouteObject).routeRefs.has(targetSearchRef!),
+    );
+    if (matchIndex !== -1) {
+      break;
+    }
+
+    // Every time we move a step up in the ancestry of the target ref, we add the current ref
+    // to the diff list, which ends up being the list of route refs to traverse form the common base
+    // in order to reach our target.
+    refDiffList.unshift(targetSearchRef);
+  }
+
+  // If our target route is present in the initial match we need to construct the final path
+  // from the parent of the matched route segment. That's to allow the caller of the route
+  // function to supply their own params.
+  if (refDiffList.length === 0) {
+    matchIndex -= 1;
+  }
+
+  // This is the part of the route tree that the target and source locations have in common.
+  // We re-use the existing pathname directly along with all params.
+  const parentPath = matchIndex === -1 ? '' : match[matchIndex].pathname;
+
+  // This constructs the mid section of the path using paths resolved from all route refs
+  // we need to traverse to reach our target except for the very last one. None of these
+  // paths are allowed to require any parameters, as the caller would have no way of knowing
+  // what parameters those are.
+  const diffPath = joinPaths(
+    ...refDiffList.slice(0, -1).map(ref => {
+      const path = routePaths.get(ref);
+      if (!path) {
+        throw new Error(`No path for ${ref}`);
+      }
+      if (path.includes(':')) {
+        throw new Error(
+          `Cannot route to ${targetRef} with parent ${ref} as it has parameters`,
+        );
+      }
+      return path;
+    }),
+  );
+
+  return parentPath + diffPath;
+}
+
 export class RouteResolver {
   constructor(
-    private readonly routePaths: Map<AnyRouteRef, string>,
-    private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
+    private readonly routePaths: Map<RouteRef, string>,
+    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
     private readonly routeBindings: Map<
       ExternalRouteRef,
@@ -47,98 +206,29 @@ export class RouteResolver {
       | ExternalRouteRef<Params, any>,
     sourceLocation: Parameters<typeof matchRoutes>[1],
   ): RouteFunc<Params> | undefined {
-    let resolvedRef: AnyRouteRef;
-    let subRoutePath = '';
-    if (isRouteRef(anyRouteRef)) {
-      resolvedRef = anyRouteRef;
-    } else if (isSubRouteRef(anyRouteRef)) {
-      resolvedRef = anyRouteRef.parent;
-      subRoutePath = anyRouteRef.path;
-    } else if (isExternalRouteRef(anyRouteRef)) {
-      const resolvedRoute = this.routeBindings.get(anyRouteRef);
-      if (!resolvedRoute) {
-        return undefined;
-      }
-      if (isSubRouteRef(resolvedRoute)) {
-        subRoutePath = resolvedRoute.path;
-        resolvedRef = resolvedRoute.parent;
-      } else {
-        resolvedRef = resolvedRoute;
-      }
-    } else if (anyRouteRef[routeRefType]) {
-      throw new Error(
-        `Unknown or invalid route ref type, ${anyRouteRef[routeRefType]}`,
-      );
-    } else {
-      throw new Error(
-        `Unknown object passed to useRouteRef, got ${anyRouteRef}`,
-      );
-    }
-
-    const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
-
-    // If our route isn't bound to a path we fail the resolution and let the caller decide the failure mode
-    const resolvedPath = this.routePaths.get(resolvedRef);
-    if (!resolvedPath) {
+    // First figure out what our target absolute ref is, as well as our target path.
+    const [targetRef, targetPath] = resolveTargetRef(
+      anyRouteRef,
+      this.routePaths,
+      this.routeBindings,
+    );
+    if (!targetRef) {
       return undefined;
     }
-    // SubRouteRefs join the path from the parent route with its own path
-    const lastPath =
-      resolvedPath +
-      (resolvedPath.endsWith('/') ? subRoutePath.slice(1) : subRoutePath);
 
-    const targetRefStack = Array<AnyRouteRef>();
-    let matchIndex = -1;
-
-    for (
-      let currentRouteRef: AnyRouteRef | undefined = resolvedRef;
-      currentRouteRef;
-      currentRouteRef = this.routeParents.get(currentRouteRef)
-    ) {
-      matchIndex = match.findIndex(m =>
-        (m.route as BackstageRouteObject).routeRefs.has(currentRouteRef!),
-      );
-      if (matchIndex !== -1) {
-        break;
-      }
-
-      targetRefStack.unshift(currentRouteRef);
-    }
-
-    // If our target route is present in the initial match we need to construct the final path
-    // from the parent of the matched route segment. That's to allow the caller of the route
-    // function to supply their own params.
-    if (targetRefStack.length === 0) {
-      matchIndex -= 1;
-    }
-
-    // This is the part of the route tree that the target and source locations have in common.
-    // We re-use the existing pathname directly along with all params.
-    const parentPath = matchIndex === -1 ? '' : match[matchIndex].pathname;
-
-    // This constructs the mid section of the path using paths resolved from all route refs
-    // we need to traverse to reach our target except for the very last one. None of these
-    // paths are allowed to require any parameters, as the called would have no way of knowing
-    // what parameters those are.
-    const prefixPath = targetRefStack
-      .slice(0, -1)
-      .map(ref => {
-        const path = this.routePaths.get(ref);
-        if (!path) {
-          throw new Error(`No path for ${ref}`);
-        }
-        if (path.includes(':')) {
-          throw new Error(
-            `Cannot route to ${resolvedRef} with parent ${ref} as it has parameters`,
-          );
-        }
-        return path;
-      })
-      .join('/')
-      .replace(/\/\/+/g, '/'); // Normalize path to not contain repeated /'s
+    // Next we figure out the base path, which is the combination of the common parent path
+    // between our current location and our target location, as well as the additional path
+    // that is the difference between the parent path and the base of our target location.
+    const basePath = resolveBasePath(
+      targetRef,
+      sourceLocation,
+      this.routePaths,
+      this.routeParents,
+      this.routeObjects,
+    );
 
     const routeFunc: RouteFunc<Params> = (...[params]) => {
-      return `${parentPath}${prefixPath}${generatePath(lastPath, params)}`;
+      return basePath + generatePath(targetPath, params);
     };
     return routeFunc;
   }
