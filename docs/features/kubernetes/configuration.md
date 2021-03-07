@@ -97,7 +97,11 @@ This cluster locator is designed to work with Kubernetes clusters running in
 [GKE][1]. It will configure the Kubernetes backend plugin to make requests to
 clusters running within a Google Cloud project.
 
-This plugin will use the `google` authentication mechanism.
+This cluster locator method will use the `google` authentication mechanism.
+
+The Google Cloud service account to use can be configured through the
+`GOOGLE_APPLICATION_CREDENTIALS` environment variable. Consult the [Google Cloud
+docs][2] for more information.
 
 For example:
 
@@ -171,3 +175,4 @@ for more info.
 ```
 
 [1]: https://cloud.google.com/kubernetes-engine
+[2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
