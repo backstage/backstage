@@ -25,6 +25,15 @@ export type OptionalParams<
   Params extends { [param in string]: string }
 > = Params[keyof Params] extends never ? undefined : Params;
 
+// The extra TS magic here is to require a single params argument if the RouteRef
+// had at least one param defined, but require 0 arguments if there are no params defined.
+// Without this we'd have to pass in empty object to all parameter-less RouteRefs
+// just to make TypeScript happy, or we would have to make the argument optional in
+// which case you might forget to pass it in when it is actually required.
+export type RouteFunc<Params extends AnyParams> = (
+  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
+) => string;
+
 export const routeRefType: unique symbol = getGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
