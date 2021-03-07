@@ -127,9 +127,9 @@ describe('buildMiddleware', () => {
       'user-agent': 'mocked',
       cookie: 'mocked',
     } as Partial<http.IncomingHttpHeaders>;
-    const expectedHeaders = { ...testHeaders } as Partial<
-      http.IncomingHttpHeaders
-    >;
+    const expectedHeaders = {
+      ...testHeaders,
+    } as Partial<http.IncomingHttpHeaders>;
     delete expectedHeaders.cookie;
 
     expect(testHeaders).toBeDefined();
@@ -160,9 +160,9 @@ describe('buildMiddleware', () => {
       authorization: 'mocked',
       cookie: 'mocked',
     } as Partial<http.IncomingHttpHeaders>;
-    const expectedHeaders = { ...testHeaders } as Partial<
-      http.IncomingHttpHeaders
-    >;
+    const expectedHeaders = {
+      ...testHeaders,
+    } as Partial<http.IncomingHttpHeaders>;
     delete expectedHeaders.cookie;
 
     expect(testHeaders).toBeDefined();
@@ -192,9 +192,9 @@ describe('buildMiddleware', () => {
       cookie: 'mocked',
       'x-auth-request-user': 'mocked',
     } as Partial<http.IncomingHttpHeaders>;
-    const expectedHeaders = { ...testHeaders } as Partial<
-      http.IncomingHttpHeaders
-    >;
+    const expectedHeaders = {
+      ...testHeaders,
+    } as Partial<http.IncomingHttpHeaders>;
     delete expectedHeaders['x-auth-request-user'];
 
     expect(testHeaders).toBeDefined();

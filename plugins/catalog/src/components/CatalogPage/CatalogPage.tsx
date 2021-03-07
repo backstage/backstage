@@ -74,9 +74,10 @@ const CatalogPageContents = () => {
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
   const [selectedTab, setSelectedTab] = useState<string>();
-  const [selectedSidebarItem, setSelectedSidebarItem] = useState<
-    CatalogFilterType
-  >();
+  const [
+    selectedSidebarItem,
+    setSelectedSidebarItem,
+  ] = useState<CatalogFilterType>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const addMockData = useCallback(async () => {

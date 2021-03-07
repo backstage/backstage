@@ -37,7 +37,8 @@ class RouteRefBase {
   }
 }
 
-export class RouteRefImpl<Params extends AnyParams> extends RouteRefBase
+export class RouteRefImpl<Params extends AnyParams>
+  extends RouteRefBase
   implements RouteRef<Params> {
   readonly [routeRefType] = 'absolute';
 
@@ -91,9 +92,11 @@ export function createRouteRef<
 }
 
 export class ExternalRouteRefImpl<
-  Params extends AnyParams,
-  Optional extends boolean
-> extends RouteRefBase implements ExternalRouteRef<Params, Optional> {
+    Params extends AnyParams,
+    Optional extends boolean
+  >
+  extends RouteRefBase
+  implements ExternalRouteRef<Params, Optional> {
   readonly [routeRefType] = 'external';
 
   constructor(
