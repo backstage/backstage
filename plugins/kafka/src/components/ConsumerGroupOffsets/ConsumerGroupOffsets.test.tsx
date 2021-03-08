@@ -37,5 +37,10 @@ describe('ConsumerGroupOffsets', () => {
     expect(rendered.getByText(/consumer/)).toBeInTheDocument();
     expect(rendered.getByText('topic1')).toBeInTheDocument();
     expect(rendered.getByText('topic2')).toBeInTheDocument();
+
+    const lag = (
+      +data.offsets[1].topicOffset - +data.offsets[1].groupOffset
+    ).toString();
+    expect(rendered.getByText(lag)).toBeInTheDocument();
   });
 });
