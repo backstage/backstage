@@ -55,7 +55,9 @@ catalog:
             map:
               description: l
             set:
-              metadata.customField: 'hello'
+              - metadata.customField: 'hello'
+                path: 'hello'
+                value: 'hello'              
           groups:
             dn: ou=access,ou=groups,ou=example,dc=example,dc=net
             options:
@@ -63,7 +65,9 @@ catalog:
             map:
               description: l
             set:
-              metadata.customField: 'hello'
+              - metadata.customField: 'hello'
+                path: 'hello'
+                value: 'hello'
 ```
 
 Locations point out the specific org(s) you want to import. The `type` of these
