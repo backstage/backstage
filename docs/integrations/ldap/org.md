@@ -57,7 +57,7 @@ catalog:
             set:
               - metadata.customField: 'hello'
                 path: 'hello'
-                value: 'hello'              
+                value: 'hello'
           groups:
             dn: ou=access,ou=groups,ou=example,dc=example,dc=net
             options:
