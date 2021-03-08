@@ -94,7 +94,7 @@ export const ActionsPage = () => {
 
     return Object.entries(properties).map(entry => {
       const [key] = entry;
-      const props = (entry[0] as unknown) as JSONSchema;
+      const props = (entry[1] as unknown) as JSONSchema;
       const isRequired = required.includes(key);
 
       const codeClassname = `${classes.code} ${
