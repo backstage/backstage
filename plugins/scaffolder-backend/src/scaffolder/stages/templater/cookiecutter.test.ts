@@ -159,7 +159,7 @@ describe('CookieCutter Templater', () => {
         '/input',
         '--verbose',
       ],
-      envVars: ['HOME=/tmp'],
+      envVars: { HOME: '/tmp' },
       mountDirs: {
         [path.join('tempdir', 'template')]: '/input',
         [path.join('tempdir', 'intermediate')]: '/output',
@@ -202,7 +202,7 @@ describe('CookieCutter Templater', () => {
         '/input',
         '--verbose',
       ],
-      envVars: ['HOME=/tmp'],
+      envVars: { HOME: '/tmp' },
       mountDirs: {
         [path.join('tempdir', 'template')]: '/input',
         [path.join('tempdir', 'intermediate')]: '/output',
