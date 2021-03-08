@@ -16,7 +16,6 @@
 
 import { runDockerContainer } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import fs from 'fs-extra';
 import path from 'path';
 import { PassThrough } from 'stream';
 import { Logger } from 'winston';
@@ -80,12 +79,10 @@ export class TechdocsGenerator implements GeneratorBase {
     }
 
     // Directories to bind on container
-    const mountDirs = new Map([
-      // Need to use realpath here as Docker mounting does not like
-      // symlinks for binding volumes
-      [await fs.realpath(inputDir), '/input'],
-      [await fs.realpath(outputDir), '/output'],
-    ]);
+    const mountDirs = {
+      [inputDir]: '/input',
+      [outputDir]: '/output',
+    };
 
     try {
       switch (this.options.runGeneratorIn) {

@@ -15,6 +15,7 @@
  */
 
 import Docker from 'dockerode';
+import fs from 'fs-extra';
 import { PassThrough, Writable } from 'stream';
 
 export type UserOptions = {
@@ -26,7 +27,7 @@ export type RunDockerContainerOptions = {
   args: string[];
   logStream?: Writable;
   dockerClient: Docker;
-  mountDirs?: Map<string, string>;
+  mountDirs?: Record<string, string>;
   workingDir?: string;
   envVars?: string[];
   createOptions?: Docker.ContainerCreateOptions;
@@ -40,7 +41,7 @@ export type RunDockerContainerOptions = {
  * @param options.logStream the log streamer to capture log messages
  * @param options.dockerClient the dockerClient to use
  * @param options.mountDirs A map of host directories to mount on the container.
- *        Map Key: Path on host machine, Value: Path on Docker container
+ *        Object Key: Path on host machine, Value: Path on Docker container
  * @param options.workingDir Working dir in the container
  * @param options.envVars Environment variables to set in the container. e.g. ['HOME=/tmp']
  */
@@ -49,7 +50,7 @@ export const runDockerContainer = async ({
   args,
   logStream = new PassThrough(),
   dockerClient,
-  mountDirs = new Map(),
+  mountDirs = {},
   workingDir,
   envVars = [],
   createOptions = {},
@@ -85,14 +86,17 @@ export const runDockerContainer = async ({
 
   // Initialize volumes to mount based on mountDirs map
   const Volumes: { [T: string]: object } = {};
-  for (const containerDir of mountDirs.values()) {
+  for (const containerDir of Object.values(mountDirs)) {
     Volumes[containerDir] = {};
   }
 
   // Create bind volumes
   const Binds: string[] = [];
-  for (const [hostDir, containerDir] of mountDirs.entries()) {
-    Binds.push(`${hostDir}:${containerDir}`);
+  for (const [hostDir, containerDir] of Object.entries(mountDirs)) {
+    // Need to use realpath here as Docker mounting does not like
+    // symlinks for binding volumes
+    const realHostDir = await fs.realpath(hostDir);
+    Binds.push(`${realHostDir}:${containerDir}`);
   }
 
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
