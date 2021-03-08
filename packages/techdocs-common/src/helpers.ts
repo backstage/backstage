@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Git, InputError, UrlReader } from '@backstage/backend-common';
+import { Git, UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { Entity, parseLocationReference } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';

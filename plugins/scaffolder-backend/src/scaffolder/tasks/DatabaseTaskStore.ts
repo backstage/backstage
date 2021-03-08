@@ -15,11 +15,8 @@
  */
 
 import { JsonObject } from '@backstage/config';
-import {
-  ConflictError,
-  NotFoundError,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import * as errors from './errors';
+import * as errors from './common';
 
-describe('errors', () => {
+describe('common', () => {
   it('extends Error properly', () => {
     for (const [name, E] of Object.entries(errors)) {
       const error = new E('abcdef');
@@ -30,7 +30,7 @@ describe('errors', () => {
 
   it('supports causes', () => {
     const cause = new Error('hello');
-    for (const [, E] of Object.entries(errors)) {
+    for (const [name, E] of Object.entries(errors)) {
       const error = new E('abcdef', cause);
       expect(error.cause).toBe(cause);
       expect(error.toString()).toContain(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 
 export const parseRepoUrl = (repoUrl: string) => {
   let parsed;

@@ -42,12 +42,8 @@ import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 import { createLegacyActions } from '../scaffolder/stages/legacy';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import {
-  InputError,
-  NotFoundError,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   TemplateEntityV1alpha1,

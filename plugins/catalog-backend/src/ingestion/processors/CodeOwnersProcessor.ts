@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { NotFoundError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { NotFoundError } from '@backstage/errors';
 import {
   Entity,
   LocationSpec,

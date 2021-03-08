@@ -22,7 +22,7 @@ import {
   BackstageIdentity,
   AuthProviderConfig,
 } from '../../providers/types';
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { TokenIssuer } from '../../identity';
 import { verifyNonce } from './helpers';
 import { postMessageResponse, ensuresXRequestedWith } from '../flow';

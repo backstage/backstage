@@ -25,7 +25,7 @@ import path from 'path';
 import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { ReadTreeResponseFactory } from './tree';
-import { NotModifiedError, NotFoundError } from '../errors';
+import { NotModifiedError, NotFoundError } from '@backstage/errors';
 import {
   GitLabIntegration,
   readGitLabIntegrationConfig,

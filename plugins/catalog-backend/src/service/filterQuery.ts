@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import { RecursivePartial } from '../util';

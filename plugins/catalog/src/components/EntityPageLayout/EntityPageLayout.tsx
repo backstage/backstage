@@ -20,6 +20,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   Content,
+  ErrorResponsePanel,
   Header,
   HeaderLabel,
   Link,
@@ -34,7 +35,6 @@ import {
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import React, { PropsWithChildren, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
@@ -143,7 +143,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
 
       {error && (
         <Content>
-          <Alert severity="error">{error.toString()}</Alert>
+          <ErrorResponsePanel error={error} />
         </Content>
       )}
 
