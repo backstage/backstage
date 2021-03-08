@@ -35,7 +35,6 @@
     "@backstage/catalog-model": "^0.7.4",
     "@backstage/core": "^0.7.1",
     "@backstage/plugin-catalog-react": "^0.1.1",
-    "@backstage/plugin-catalog": "^0.4.0",
     "@backstage/test-utils": "^0.1.8",
     "@backstage/theme": "^0.2.4",
     "@backstage/techdocs-common": "^0.4.4",
