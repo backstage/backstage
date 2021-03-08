@@ -37,12 +37,9 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { JSONSchema } from '@backstage/catalog-model';
+import { JSONSchema7Definition } from 'json-schema';
 
 const useStyles = makeStyles(theme => ({
-  table: {
-    // minWidth: 650,
-  },
-
   code: {
     fontFamily: 'Menlo, monospaced',
     padding: theme.spacing(1),
@@ -96,7 +93,8 @@ export const ActionsPage = () => {
     const required = input.required ? input.required : [];
 
     return Object.entries(properties).map(entry => {
-      const [key, props] = entry;
+      const [key] = entry;
+      const props = (entry[0] as unknown) as JSONSchema;
       const isRequired = required.includes(key);
 
       const codeClassname = `${classes.code} ${
@@ -118,9 +116,12 @@ export const ActionsPage = () => {
   };
 
   const renderTable = (input: JSONSchema) => {
+    if (!input.properties) {
+      return undefined;
+    }
     return (
       <TableContainer component={Paper}>
-        <Table size="small" className={classes.table}>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -135,24 +136,43 @@ export const ActionsPage = () => {
     );
   };
 
+  const renderTables = (name: string, input?: JSONSchema7Definition[]) => {
+    if (!input) {
+      return undefined;
+    }
+
+    return (
+      <>
+        <Typography variant="h6">{name}</Typography>
+        {input.map((i, index) => (
+          <div key={index}>{renderTable((i as unknown) as JSONSchema)}</div>
+        ))}
+      </>
+    );
+  };
+
   const items = value?.map(action => {
     if (action.id.startsWith('legacy:')) {
       return undefined;
     }
+
+    const oneOf = renderTables('oneOf', action.schema?.input?.oneOf);
     return (
-      <Box pb={4}>
+      <Box pb={4} key={action.id}>
         <Typography variant="h4" className={classes.code}>
           {action.id}
         </Typography>
+        <Typography>{action.description}</Typography>
         {action.schema?.input && (
           <Box pb={2}>
-            <Typography variant="h6">Input</Typography>
+            <Typography variant="h5">Input</Typography>
             {renderTable(action.schema.input)}
+            {oneOf}
           </Box>
         )}
         {action.schema?.output && (
           <Box pb={2}>
-            <Typography variant="h6">Output</Typography>
+            <Typography variant="h5">Output</Typography>
             {renderTable(action.schema.output)}
           </Box>
         )}
