@@ -63,7 +63,6 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
 export function transformSchemaToProps(
   inputSchema: JsonObject,
 ): { schema: FormProps<any>['schema']; uiSchema: FormProps<any>['uiSchema'] } {
-  inputSchema.type = inputSchema.type || 'object';
   const schema = JSON.parse(JSON.stringify(inputSchema));
   delete schema.title; // Rendered separately
   const uiSchema = {};
