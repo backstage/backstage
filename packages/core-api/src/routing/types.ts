@@ -15,7 +15,7 @@
  */
 
 import { IconComponent } from '../icons';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
 export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
@@ -34,7 +34,7 @@ export type RouteFunc<Params extends AnyParams> = (
   ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
-export const routeRefType: unique symbol = getGlobalSingleton<any>(
+export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
