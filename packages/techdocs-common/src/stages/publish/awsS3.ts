@@ -94,11 +94,16 @@ export class AwsS3Publish implements PublisherBase {
     // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
+    // AWS endpoint is an optional config. If missing, the default endpoint is built from
+    // the configured region.
+    const endpoint = config.getOptionalString(
+      'techdocs.publisher.awsS3.endpoint',
+    );
+
     const storageClient = new aws.S3({
       credentials,
-      ...(region && {
-        region,
-      }),
+      ...(region && { region }),
+      ...(endpoint && { endpoint }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good

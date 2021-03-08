@@ -83,6 +83,13 @@ export interface Config {
              * @visibility secret
              */
             region?: string;
+            /**
+             * (Optional) AWS Endpoint.
+             * The endpoint URI to send requests to. The default endpoint is built from the configured region.
+             * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+             * @visibility secret
+             */
+            endpoint?: string;
           };
         }
       | {
