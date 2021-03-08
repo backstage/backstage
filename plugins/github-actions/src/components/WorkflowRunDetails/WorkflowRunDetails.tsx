@@ -212,6 +212,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
             </TableRow>
             <TableRow>
               <TableCell>
+                <Typography noWrap>Workflow</Typography>
+              </TableCell>
+              <TableCell>{details.value?.name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
                 <Typography noWrap>Status</Typography>
               </TableCell>
               <TableCell>

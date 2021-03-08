@@ -41,6 +41,7 @@ import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export type WorkflowRun = {
+  workflowName: string;
   id: string;
   message: string;
   url?: string;
@@ -85,6 +86,10 @@ const generatedColumns: TableColumn[] = [
         <p>{row.source?.commit.hash}</p>
       </Typography>
     ),
+  },
+  {
+    title: 'Workflow',
+    field: 'workflowName',
   },
   {
     title: 'Status',
