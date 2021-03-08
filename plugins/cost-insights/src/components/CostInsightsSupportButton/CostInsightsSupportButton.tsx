@@ -19,8 +19,6 @@ import { SupportButton } from '@backstage/core';
 
 export const CostInsightsSupportButton = () => {
   return (
-    <SupportButton>
-      Insights into cloud costs for your organization
-    </SupportButton>
+    <SupportButton title="Insights into cloud costs for your organization" />
   );
 };

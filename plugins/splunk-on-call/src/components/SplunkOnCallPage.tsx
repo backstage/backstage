@@ -51,9 +51,7 @@ export const SplunkOnCallPage = ({
       <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
-          <SupportButton>
-            This is used to help you automate incident management.
-          </SupportButton>
+          <SupportButton title="This is used to help you automate incident management." />
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>

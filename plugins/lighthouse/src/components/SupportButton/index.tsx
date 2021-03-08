@@ -18,8 +18,6 @@ import { SupportButton } from '@backstage/core';
 
 export default function LighthouseSupportButton() {
   return (
-    <SupportButton>
-      Lighthouse audits run for any web domain, stored over time.
-    </SupportButton>
+    <SupportButton title="Lighthouse audits run for any web domain, stored over time." />
   );
 }

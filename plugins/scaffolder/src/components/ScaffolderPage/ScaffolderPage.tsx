@@ -140,11 +140,15 @@ export const ScaffolderPageContents = () => {
           >
             Register Existing Component
           </Button>
-          <SupportButton>
-            Create new software components using standard templates. Different
-            templates create different kinds of components (services, websites,
-            documentation, ...).
-          </SupportButton>
+          <SupportButton
+            title={
+              <p>
+                Create new software components using standard templates.
+                Different templates create different kinds of components
+                (services, websites, documentation, ...).
+              </p>
+            }
+          />
         </ContentHeader>
 
         <div className={styles.contentWrapper}>

@@ -60,10 +60,10 @@ export const ImportComponentPage = (opts: StepperProviderOpts) => {
       <Header title="Register an existing component" />
       <Content>
         <ContentHeader title={`Start tracking your component in ${appTitle}`}>
-          <SupportButton>
-            Start tracking your component in {appTitle} by adding it to the
-            software catalog.
-          </SupportButton>
+          <SupportButton
+            title={`Start tracking your component in ${appTitle} by adding it to the
+            software catalog`}
+          />
         </ContentHeader>
 
         <Grid container spacing={2} direction="row-reverse">

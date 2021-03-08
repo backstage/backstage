@@ -83,7 +83,7 @@ export const DomainExplorerContent = () => {
   return (
     <Content noPadding>
       <ContentHeader title="Domains">
-        <SupportButton>Discover the domains in your ecosystem.</SupportButton>
+        <SupportButton title="Discover the domains in your ecosystem." />
       </ContentHeader>
       <Body />
     </Content>

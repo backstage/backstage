@@ -50,11 +50,15 @@ export const RadarPage = ({
       <Header title={title} subtitle={subtitle} />
       <Content className={classes.overflowXScroll}>
         <ContentHeader title={pageTitle}>
-          <SupportButton>
-            This is used for visualizing the official guidelines of different
-            areas of software development such as languages, frameworks,
-            infrastructure and processes.
-          </SupportButton>
+          <SupportButton
+            title={
+              <p>
+                This is used for visualizing the official guidelines of
+                different areas of software development such as languages,
+                frameworks, infrastructure and processes.
+              </p>
+            }
+          />
         </ContentHeader>
         <Grid container spacing={3} direction="row">
           <Grid item xs={12} sm={6} md={4}>

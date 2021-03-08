@@ -51,7 +51,7 @@ export const ApiExplorerPage = () => {
               Register Existing API
             </Button>
           )}
-          <SupportButton>All your APIs</SupportButton>
+          <SupportButton title="All your APIs" />
         </ContentHeader>
         <ApiExplorerTable
           entities={catalogResponse?.items ?? []}

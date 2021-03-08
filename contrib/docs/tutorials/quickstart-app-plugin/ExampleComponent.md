@@ -34,7 +34,7 @@ const ExampleComponent = () => {
       </Header>
       <Content>
         <ContentHeader title="Plugin title">
-          <SupportButton>A description of your plugin goes here.</SupportButton>
+          <SupportButton title={'A description of your plugin goes here.'} />
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
