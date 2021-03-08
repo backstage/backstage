@@ -261,6 +261,15 @@ describe('createRouter', () => {
     });
   });
 
+  describe('GET /v2/actions', () => {
+    it('lists available actions', async () => {
+      const response = await request(app).get('/v2/actions').send();
+      expect(response.status).toEqual(200);
+      expect(response.body[0].id).toBeDefined();
+      expect(response.body.length).toBeGreaterThan(8);
+    });
+  });
+
   describe('POST /v2/tasks', () => {
     it('rejects template values which do not match the template schema definition', async () => {
       const response = await request(app)
