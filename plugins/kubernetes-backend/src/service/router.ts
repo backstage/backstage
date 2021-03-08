@@ -25,7 +25,6 @@ import {
   KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  ClusterLocatorMethod,
   ClusterDetails,
   KubernetesClustersSupplier,
 } from '..';
@@ -43,7 +42,7 @@ const getServiceLocator = (
   clusterDetails: ClusterDetails[],
 ): KubernetesServiceLocator => {
   const serviceLocatorMethod = config.getString(
-    'kubernetes.serviceLocatorMethod',
+    'kubernetes.serviceLocatorMethod.type',
   ) as ServiceLocatorMethod;
 
   switch (serviceLocatorMethod) {
@@ -61,6 +60,7 @@ const getServiceLocator = (
 export const makeRouter = (
   logger: Logger,
   kubernetesFanOutHandler: KubernetesFanOutHandler,
+  clusterDetails: ClusterDetails[],
 ): express.Router => {
   const router = Router();
   router.use(express.json());
@@ -81,6 +81,14 @@ export const makeRouter = (
     }
   });
 
+  router.get('/clusters', async (_, res) => {
+    res.json({
+      items: clusterDetails.map(cd => ({
+        name: cd.name,
+        authProvider: cd.authProvider,
+      })),
+    });
+  });
   return router;
 };
 
@@ -96,20 +104,17 @@ export async function createRouter(
     logger,
   });
 
-  const clusterLocatorMethods = options.config.getStringArray(
-    'kubernetes.clusterLocatorMethods',
-  ) as ClusterLocatorMethod[];
-
   let clusterDetails: ClusterDetails[];
 
   if (options.clusterSupplier) {
     clusterDetails = await options.clusterSupplier.getClusters();
   } else {
-    clusterDetails = await getCombinedClusterDetails(
-      clusterLocatorMethods,
-      options.config,
-    );
+    clusterDetails = await getCombinedClusterDetails(options.config);
   }
+
+  logger.info(
+    `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
+  );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
 
@@ -119,5 +124,5 @@ export async function createRouter(
     serviceLocator,
   );
 
-  return makeRouter(logger, kubernetesFanOutHandler);
+  return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
 }

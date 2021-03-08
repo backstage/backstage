@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { createApiRef } from '@backstage/core';
 import {
   KubernetesRequestBody,
@@ -31,5 +30,5 @@ export interface KubernetesApi {
   getObjectsByEntity(
     requestBody: KubernetesRequestBody,
   ): Promise<ObjectsByEntityResponse>;
-  getClusters(): Config[];
+  getClusters(): Promise<{ name: string; authProvider: string }[]>;
 }

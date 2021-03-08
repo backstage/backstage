@@ -2450,6 +2450,13 @@
     retry-request "^4.1.1"
     teeny-request "^7.0.0"
 
+"@google-cloud/container@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.npmjs.org/@google-cloud/container/-/container-2.2.0.tgz#e97ae1cee9040b6af09cc8199ed0aa2d4ae6238e"
+  integrity sha512-O9xoAGo2qwBezcpIdKcp/zvSX2jUuTRISwXp26dOS+2jeJKpC8jWYU7aRUC8DGxvkEMK9wWESMe44XEBWnHq2Q==
+  dependencies:
+    google-gax "^2.9.2"
+
 "@google-cloud/paginator@^0.2.0":
   version "0.2.0"
   resolved "https://registry.npmjs.org/@google-cloud/paginator/-/paginator-0.2.0.tgz#eab2e6aa4b81df7418f6c51e2071f64dab2c2fa5"
@@ -2969,6 +2976,23 @@
     "@graphql-tools/utils" "^6.2.4"
     is-promise "4.0.0"
     tslib "~2.0.1"
+
+"@grpc/grpc-js@~1.2.0":
+  version "1.2.10"
+  resolved "https://registry.npmjs.org/@grpc/grpc-js/-/grpc-js-1.2.10.tgz#f316d29a45fcc324e923d593cb849d292b1ed598"
+  integrity sha512-wj6GkNiorWYaPiIZ767xImmw7avMMVUweTvPFg4mJWOxz2180DKwfuxhJJZ7rpc1+7D3mX/v8vJdxTuIo71Ieg==
+  dependencies:
+    "@types/node" ">=12.12.47"
+    google-auth-library "^6.1.1"
+    semver "^6.2.0"
+
+"@grpc/proto-loader@^0.5.1":
+  version "0.5.6"
+  resolved "https://registry.npmjs.org/@grpc/proto-loader/-/proto-loader-0.5.6.tgz#1dea4b8a6412b05e2d58514d507137b63a52a98d"
+  integrity sha512-DT14xgw3PSzPxwS13auTEwxhMMOoz33DPUKNtmYK/QYbBSpLXJy78FGGs5yVoxVobEqPm4iW9MOIoz0A3bLTRQ==
+  dependencies:
+    lodash.camelcase "^4.3.0"
+    protobufjs "^6.8.6"
 
 "@hapi/hoek@^9.0.0":
   version "9.0.4"
@@ -6415,7 +6439,7 @@
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.165.tgz#74d55d947452e2de0742bad65270433b63a8c30f"
   integrity sha512-tjSSOTHhI5mCHTy/OOXYIhi2Wt1qcbHmuXD1Ha7q70CgI/I71afO4XtLb/cVexki1oVYchpul/TOuu3Arcdxrg==
 
-"@types/long@^4.0.0":
+"@types/long@^4.0.0", "@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
@@ -6527,6 +6551,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-14.0.26.tgz#22a3b8a46510da8944b67bfc27df02c34a35331c"
   integrity sha512-W+fpe5s91FBGE0pEa0lnqGLL4USgpLgs4nokw16SrBBco/gQxuua7KnArSEOd5iaMqbbSHV10vUDkJYJJqpXKA==
 
+"@types/node@>=12.12.47":
+  version "14.14.31"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
+  integrity sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
+
 "@types/node@^10.1.0", "@types/node@^10.12.0":
   version "10.17.35"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.35.tgz#58058f29b870e6ae57b20e4f6e928f02b7129f56"
@@ -6536,6 +6565,11 @@
   version "12.12.58"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.12.58.tgz#46dae9b2b9ee5992818c8f7cee01ff4ce03ab44c"
   integrity sha512-Be46CNIHWAagEfINOjmriSxuv7IVcqbGe+sDSg2SYCEz/0CRBy7LRASGfRbD8KZkqoePU73Wsx3UvOSFcq/9hA==
+
+"@types/node@^13.7.0":
+  version "13.13.45"
+  resolved "https://registry.npmjs.org/@types/node/-/node-13.13.45.tgz#e6676bcca092bae5751d015f074a234d5a82eb63"
+  integrity sha512-703YTEp8AwQeapI0PTXDOj+Bs/mtdV/k9VcTP7z/de+lx6XjFMKdB+JhKnK+6PZ5za7omgZ3V6qm/dNkMj/Zow==
 
 "@types/node@^13.7.2":
   version "13.13.15"
@@ -13112,7 +13146,7 @@ fast-shallow-equal@^1.0.0:
   resolved "https://registry.npmjs.org/fast-shallow-equal/-/fast-shallow-equal-1.0.0.tgz#d4dcaf6472440dcefa6f88b98e3251e27f25628b"
   integrity sha512-HPtaa38cPgWvaCFmRNhlc6NG7pv6NUHqjPgVAkWGoB9mQMwYB27/K0CvOM5Czy+qpT3e8XJ6Q4aPAnzpNpzNaw==
 
-fast-text-encoding@^1.0.0:
+fast-text-encoding@^1.0.0, fast-text-encoding@^1.0.3:
   version "1.0.3"
   resolved "https://registry.npmjs.org/fast-text-encoding/-/fast-text-encoding-1.0.3.tgz#ec02ac8e01ab8a319af182dae2681213cfe9ce53"
   integrity sha512-dtm4QZH9nZtcDt8qJiOH9fcQd1NAgi+K1O2DbE6GG1PPCK/BWfOH3idCTRQ4ImXRUOyopDEgDEnVEE7Y/2Wrig==
@@ -14202,6 +14236,38 @@ google-auth-library@^6.0.0, google-auth-library@^6.1.1:
     gtoken "^5.0.4"
     jws "^4.0.0"
     lru-cache "^6.0.0"
+
+google-auth-library@^7.0.2:
+  version "7.0.2"
+  resolved "https://registry.npmjs.org/google-auth-library/-/google-auth-library-7.0.2.tgz#cab6fc7f94ebecc97be6133d6519d9946ccf3e9d"
+  integrity sha512-vjyNZR3pDLC0u7GHLfj+Hw9tGprrJwoMwkYGqURCXYITjCrP9HprOyxVV+KekdLgATtWGuDkQG2MTh0qpUPUgg==
+  dependencies:
+    arrify "^2.0.0"
+    base64-js "^1.3.0"
+    ecdsa-sig-formatter "^1.0.11"
+    fast-text-encoding "^1.0.0"
+    gaxios "^4.0.0"
+    gcp-metadata "^4.2.0"
+    gtoken "^5.0.4"
+    jws "^4.0.0"
+    lru-cache "^6.0.0"
+
+google-gax@^2.9.2:
+  version "2.10.3"
+  resolved "https://registry.npmjs.org/google-gax/-/google-gax-2.10.3.tgz#53278bb5cc4b654876ade774a249f0241fdb15cc"
+  integrity sha512-jESs/ME9WgMzfGQKJDu9ea2mEKjznKByRL+5xb8mKfHlbUfS/LxNLNCg/35RgXwVXcNSCqkEY90z8wHxvgdd/Q==
+  dependencies:
+    "@grpc/grpc-js" "~1.2.0"
+    "@grpc/proto-loader" "^0.5.1"
+    "@types/long" "^4.0.0"
+    abort-controller "^3.0.0"
+    duplexify "^4.0.0"
+    fast-text-encoding "^1.0.3"
+    google-auth-library "^7.0.2"
+    is-stream-ended "^0.1.4"
+    node-fetch "^2.6.1"
+    protobufjs "^6.10.2"
+    retry-request "^4.0.0"
 
 google-p12-pem@^1.0.0:
   version "1.0.4"
@@ -21309,6 +21375,25 @@ proto-list@~1.2.1:
   version "1.2.4"
   resolved "https://registry.npmjs.org/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
+
+protobufjs@^6.10.2, protobufjs@^6.8.6:
+  version "6.10.2"
+  resolved "https://registry.npmjs.org/protobufjs/-/protobufjs-6.10.2.tgz#b9cb6bd8ec8f87514592ba3fdfd28e93f33a469b"
+  integrity sha512-27yj+04uF6ya9l+qfpH187aqEzfCF4+Uit0I9ZBQVqK09hk/SQzKa2MUqUpXaVa7LOFRg1TSSr3lVxGOk6c0SQ==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/long" "^4.0.1"
+    "@types/node" "^13.7.0"
+    long "^4.0.0"
 
 protocols@^1.1.0, protocols@^1.4.0:
   version "1.4.7"

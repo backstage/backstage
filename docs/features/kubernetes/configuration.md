@@ -17,18 +17,22 @@ The following is a full example entry in `app-config.yaml`:
 
 ```yaml
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
+  serviceLocatorMethod:
+    type: 'multiTenant'
   clusterLocatorMethods:
-    - 'config'
-  clusters:
-    - url: http://127.0.0.1:9999
-      name: minikube
-      authProvider: 'serviceAccount'
-      serviceAccountToken:
-        $env: K8S_MINIKUBE_TOKEN
-    - url: http://127.0.0.2:9999
-      name: gke-cluster-1
-      authProvider: 'google'
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: minikube
+          authProvider: 'serviceAccount'
+          serviceAccountToken:
+            $env: K8S_MINIKUBE_TOKEN
+        - url: http://127.0.0.2:9999
+          name: aws-cluster-1
+          authProvider: 'aws'
+    - type: 'gke'
+      projectId: 'gke-clusters'
+      region: 'europe-west1'
 ```
 
 ### `serviceLocatorMethod`
@@ -44,26 +48,28 @@ Currently, the only valid value is:
 
 This is an array used to determine where to retrieve cluster configuration from.
 
-Currently, the only valid cluster locator method is:
+Valid cluster locator methods are:
 
-- `config` - This cluster locator method will read cluster information from your
-  app-config (see below).
+#### `config`
 
-### `clusters`
+This cluster locator method will read cluster information from your app-config
+(see below).
+
+##### `clusters`
 
 Used by the `config` cluster locator method to construct Kubernetes clients.
 
-### `clusters.\*.url`
+##### `clusters.\*.url`
 
 The base URL to the Kubernetes control plane. Can be found by using the
 "Kubernetes master" result from running the `kubectl cluster-info` command.
 
-### `clusters.\*.name`
+##### `clusters.\*.name`
 
 A name to represent this cluster, this must be unique within the `clusters`
 array. Users will see this value in the Service Catalog Kubernetes plugin.
 
-### `clusters.\*.authProvider`
+##### `clusters.\*.authProvider`
 
 This determines how the Kubernetes client authenticates with the Kubernetes
 cluster. Valid values are:
@@ -73,7 +79,7 @@ cluster. Valid values are:
 | `serviceAccount` | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
 | `google`         | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
 
-### `clusters.\*.serviceAccountToken` (optional)
+##### `clusters.\*.serviceAccountToken` (optional)
 
 The service account token to be used when using the `serviceAccount` auth
 provider. You could get the service account token with:
@@ -84,6 +90,38 @@ kubectl -n <NAMESPACE> get secret $(kubectl -n <NAMESPACE> get sa <SERVICE_ACCOU
 | jq -r '.data["token"]' \
 | base64 --decode
 ```
+
+#### `gke`
+
+This cluster locator is designed to work with Kubernetes clusters running in
+[GKE][1]. It will configure the Kubernetes backend plugin to make requests to
+clusters running within a Google Cloud project.
+
+This cluster locator method will use the `google` authentication mechanism.
+
+The Google Cloud service account to use can be configured through the
+`GOOGLE_APPLICATION_CREDENTIALS` environment variable. Consult the [Google Cloud
+docs][2] for more information.
+
+For example:
+
+```yaml
+- type: 'gke'
+  projectId: 'gke-clusters'
+  region: 'europe-west1'
+```
+
+Will configure the Kubernetes plugin to connect to all GKE clusters in the
+project `gke-clusters` in the region `europe-west1`.
+
+##### `projectId`
+
+The Google Cloud project to look for Kubernetes clusters in.
+
+##### `region` (optional)
+
+The Google Cloud region to look for Kubernetes clusters in. Defaults to all
+regions.
 
 ### Role Based Access Control
 
@@ -135,3 +173,6 @@ for more info.
 ```yaml
 'backstage.io/kubernetes-label-selector': 'app=my-app,component=front-end'
 ```
+
+[1]: https://cloud.google.com/kubernetes-engine
+[2]: https://cloud.google.com/docs/authentication/production#linux-or-macos

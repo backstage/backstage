@@ -24,11 +24,11 @@ export class ConfigClusterLocator implements KubernetesClustersSupplier {
     this.clusterDetails = clusterDetails;
   }
 
-  static fromConfig(config: Config[]): ConfigClusterLocator {
+  static fromConfig(config: Config): ConfigClusterLocator {
     // TODO: Add validation that authProvider is required and serviceAccountToken
     // is required if authProvider is serviceAccount
     return new ConfigClusterLocator(
-      config.map(c => {
+      config.getConfigArray('clusters').map(c => {
         return {
           name: c.getString('name'),
           url: c.getString('url'),
