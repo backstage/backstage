@@ -81,8 +81,8 @@ export function AboutCard({ variant }: AboutCardProps) {
   const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
     disabled: !entitySourceLocation,
-    icon: <ScmIntegrationIcon type={entitySourceLocation?.type} />,
-    href: entitySourceLocation?.url,
+    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
+    href: entitySourceLocation?.locationTargetUrl,
   };
   const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
