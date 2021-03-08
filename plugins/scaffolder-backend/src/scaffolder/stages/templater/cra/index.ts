@@ -57,7 +57,7 @@ export class CreateReactAppTemplater implements TemplaterBase {
       dockerClient: dockerClient,
       // Set the home directory inside the container as something that applications can
       // write to, otherwise they will just fail trying to write to /
-      envVars: ['HOME=/tmp'],
+      envVars: { HOME: '/tmp' },
       createOptions: {
         Entrypoint: ['npx'],
         WorkingDir: '/result',
