@@ -24,9 +24,7 @@ describe('ConfigClusterLocator', () => {
       clusters: [],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 
@@ -44,9 +42,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 
@@ -77,9 +73,7 @@ describe('ConfigClusterLocator', () => {
       ],
     });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 
