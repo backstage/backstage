@@ -21,6 +21,7 @@ import {
   CoreV1Api,
   KubeConfig,
   NetworkingV1beta1Api,
+  CustomObjectsApi,
 } from '@kubernetes/client-node';
 
 export class KubernetesClientProvider {
@@ -40,11 +41,16 @@ export class KubernetesClientProvider {
     [key: string]: NetworkingV1beta1Api;
   };
 
+  private readonly customObjectsClientMap: {
+    [key: string]: CustomObjectsApi;
+  };
+
   constructor() {
     this.coreClientMap = {};
     this.appsClientMap = {};
     this.autoscalingClientMap = {};
     this.networkingBeta1ClientMap = {};
+    this.customObjectsClientMap = {};
   }
 
   // visible for testing
@@ -138,6 +144,22 @@ export class KubernetesClientProvider {
     const client = kc.makeApiClient(NetworkingV1beta1Api);
 
     this.networkingBeta1ClientMap[clientMapKey] = client;
+
+    return client;
+  }
+
+  getCustomObjectsClient(clusterDetails: ClusterDetails) {
+    const clientMapKey = clusterDetails.name;
+
+    if (this.customObjectsClientMap.hasOwnProperty(clientMapKey)) {
+      return this.customObjectsClientMap[clientMapKey];
+    }
+
+    const kc = this.getKubeConfig(clusterDetails);
+
+    const client = kc.makeApiClient(CustomObjectsApi);
+
+    this.customObjectsClientMap[clientMapKey] = client;
 
     return client;
   }

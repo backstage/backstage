@@ -192,3 +192,9 @@ export type ClusterLocatorMethod =
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+
+export interface CustomResource {
+  group: string;
+  apiVersion: string;
+  plural: string;
+}
