@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { ToolCard } from './ToolCard';
-export { ToolCardGrid } from './ToolCardGrid';

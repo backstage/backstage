@@ -28,7 +28,6 @@ export type ExploreTool = {
   image: string;
   tags?: string[];
   lifecycle?: string;
-  newsTag?: string;
 };
 
 export interface ExploreToolsConfig {
