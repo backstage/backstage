@@ -64,7 +64,7 @@ const Body = () => {
 export const ToolExplorerContent = () => (
   <Content noPadding>
     <ContentHeader title="Tools">
-    <SupportButton title="Discover the tools in your ecosystem." />
+      <SupportButton title="Discover the tools in your ecosystem." />
     </ContentHeader>
     <Body />
   </Content>
