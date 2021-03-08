@@ -23,8 +23,8 @@ import { ConfigApi } from '@backstage/core';
 import { ScmIntegrations } from '@backstage/integration';
 
 export type EntitySourceLocation = {
-  url: string;
-  type?: string;
+  locationTargetUrl: string;
+  integrationType?: string;
 };
 
 export function getEntitySourceLocation(
@@ -44,8 +44,8 @@ export function getEntitySourceLocation(
     const integration = scmIntegrations.byUrl(sourceLocationRef.target);
 
     return {
-      url: sourceLocationRef.target,
-      type: integration?.type,
+      locationTargetUrl: sourceLocationRef.target,
+      integrationType: integration?.type,
     };
   } catch {
     return undefined;
