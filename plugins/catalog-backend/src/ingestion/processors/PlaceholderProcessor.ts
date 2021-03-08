@@ -203,7 +203,7 @@ function relativeUrl({ key, value, baseUrl }: ResolverParams): string {
       // path traversal attacks and access to any file on the host system. Implementing this
       // would require additional security measures.
       throw new Error(
-        `Placeholder \$${key} could not form an URL out of ${baseUrl} and ${value}`,
+        `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}`,
       );
     }
   }
