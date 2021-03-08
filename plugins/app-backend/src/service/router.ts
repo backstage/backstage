@@ -23,6 +23,9 @@ import { resolve as resolvePath } from 'path';
 import { Logger } from 'winston';
 import { injectConfig, readConfigs } from '../lib/config';
 
+// express uses mime v1 while we only have types for mime v2
+type Mime = { lookup(arg0: string): string };
+
 export interface RouterOptions {
   config: Config;
   logger: Logger;
@@ -101,8 +104,10 @@ export async function createRouter(
         // The Cache-Control header instructs the browser to not cache html files since it might
         // link to static assets from recently deployed versions. This is a workaround when no
         // staticFallbackHandler is configured.
-        // use `as any` since express uses mime v1 while we only have types for mime v2
-        if ((express.static.mime as any).lookup(path) === 'text/html') {
+        if (
+          ((express.static.mime as unknown) as Mime).lookup(path) ===
+          'text/html'
+        ) {
           res.setHeader('Cache-Control', 'no-store, max-age=0');
         }
       },
