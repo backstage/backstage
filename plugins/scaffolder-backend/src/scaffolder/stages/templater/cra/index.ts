@@ -40,10 +40,10 @@ export class CreateReactAppTemplater implements TemplaterBase {
     const intermediateDir = path.join(workspacePath, 'template');
     await fs.ensureDir(intermediateDir);
 
-    const mountDirs = new Map([
-      [await fs.realpath(intermediateDir), '/template'],
-      [await fs.realpath(intermediateDir), '/result'],
-    ]);
+    const mountDirs = {
+      [intermediateDir]: '/template',
+      [intermediateDir]: '/result',
+    };
 
     await runDockerContainer({
       imageName: 'node:lts-alpine',

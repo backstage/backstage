@@ -160,10 +160,10 @@ describe('CookieCutter Templater', () => {
         '--verbose',
       ],
       envVars: ['HOME=/tmp'],
-      mountDirs: new Map([
-        [path.join('tempdir', 'template'), '/input'],
-        [path.join('tempdir', 'intermediate'), '/output'],
-      ]),
+      mountDirs: {
+        [path.join('tempdir', 'template')]: '/input',
+        [path.join('tempdir', 'intermediate')]: '/output',
+      },
       workingDir: '/input',
       logStream: undefined,
       dockerClient: mockDocker,
@@ -203,10 +203,10 @@ describe('CookieCutter Templater', () => {
         '--verbose',
       ],
       envVars: ['HOME=/tmp'],
-      mountDirs: new Map([
-        [path.join('tempdir', 'template'), '/input'],
-        [path.join('tempdir', 'intermediate'), '/output'],
-      ]),
+      mountDirs: {
+        [path.join('tempdir', 'template')]: '/input',
+        [path.join('tempdir', 'intermediate')]: '/output',
+      },
       workingDir: '/input',
       logStream: stream,
       dockerClient: mockDocker,

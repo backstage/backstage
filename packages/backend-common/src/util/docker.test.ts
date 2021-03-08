@@ -57,10 +57,10 @@ describe('runDockerContainer', () => {
 
   const imageName = 'dockerOrg/image';
   const args = ['bash', '-c', 'echo test'];
-  const mountDirs = new Map([
-    [path.join(rootDir, 'input'), '/input'],
-    [path.join(rootDir, 'output'), '/output'],
-  ]);
+  const mountDirs = {
+    [path.join(rootDir, 'input')]: '/input',
+    [path.join(rootDir, 'output')]: '/output',
+  };
   const workingDir = path.join(rootDir, 'input');
   const envVars = ['HOME=/tmp', 'LOG_LEVEL=debug'];
 

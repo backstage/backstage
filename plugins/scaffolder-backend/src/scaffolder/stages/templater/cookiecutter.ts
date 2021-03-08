@@ -59,12 +59,10 @@ export class CookieCutter implements TemplaterBase {
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
 
     // Directories to bind on container
-    const mountDirs = new Map([
-      // Need to use realpath here as Docker mounting does not like
-      // symlinks for binding volumes
-      [await fs.realpath(templateDir), '/input'],
-      [await fs.realpath(intermediateDir), '/output'],
-    ]);
+    const mountDirs = {
+      [templateDir]: '/input',
+      [intermediateDir]: '/output',
+    };
 
     const cookieCutterInstalled = await commandExists('cookiecutter');
     if (cookieCutterInstalled) {
