@@ -86,7 +86,7 @@ export class CookieCutter implements TemplaterBase {
         workingDir: '/input',
         // Set the home directory inside the container as something that applications can
         // write to, otherwise they will just fail trying to write to /
-        envVars: ['HOME=/tmp'],
+        envVars: { HOME: '/tmp' },
         logStream,
         dockerClient,
       });

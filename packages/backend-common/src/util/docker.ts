@@ -29,7 +29,7 @@ export type RunDockerContainerOptions = {
   dockerClient: Docker;
   mountDirs?: Record<string, string>;
   workingDir?: string;
-  envVars?: string[];
+  envVars?: Record<string, string>;
   createOptions?: Docker.ContainerCreateOptions;
 };
 
@@ -43,7 +43,7 @@ export type RunDockerContainerOptions = {
  * @param options.mountDirs A map of host directories to mount on the container.
  *        Object Key: Path on host machine, Value: Path on Docker container
  * @param options.workingDir Working dir in the container
- * @param options.envVars Environment variables to set in the container. e.g. ['HOME=/tmp']
+ * @param options.envVars Environment variables to set in the container. e.g. {'HOME': '/tmp'}
  */
 export const runDockerContainer = async ({
   imageName,
@@ -52,7 +52,7 @@ export const runDockerContainer = async ({
   dockerClient,
   mountDirs = {},
   workingDir,
-  envVars = [],
+  envVars = {},
   createOptions = {},
 }: RunDockerContainerOptions) => {
   // Show a better error message when Docker is unavailable.
@@ -99,6 +99,12 @@ export const runDockerContainer = async ({
     Binds.push(`${realHostDir}:${containerDir}`);
   }
 
+  // Create docker environment variables array
+  const Env = [];
+  for (const [key, value] of Object.entries(envVars)) {
+    Env.push(`${key}=${value}`);
+  }
+
   const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
     imageName,
     args,
@@ -109,7 +115,7 @@ export const runDockerContainer = async ({
         Binds,
       },
       ...(workingDir ? { WorkingDir: workingDir } : {}),
-      Env: envVars,
+      Env,
       ...userOptions,
       ...createOptions,
     },

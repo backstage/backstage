@@ -62,7 +62,8 @@ describe('runDockerContainer', () => {
     [path.join(rootDir, 'output')]: '/output',
   };
   const workingDir = path.join(rootDir, 'input');
-  const envVars = ['HOME=/tmp', 'LOG_LEVEL=debug'];
+  const envVars = { HOME: '/tmp', LOG_LEVEL: 'debug' };
+  const envVarsArray = ['HOME=/tmp', 'LOG_LEVEL=debug'];
 
   it('should pull the docker container', async () => {
     await runDockerContainer({
@@ -95,7 +96,7 @@ describe('runDockerContainer', () => {
       args,
       expect.any(Stream),
       expect.objectContaining({
-        Env: envVars,
+        Env: envVarsArray,
         WorkingDir: workingDir,
         HostConfig: {
           Binds: expect.arrayContaining([
