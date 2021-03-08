@@ -49,7 +49,7 @@
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.0.7",
-    "@types/codemirror": "^0.0.100",
+    "@types/codemirror": "^0.0.108",
     "@types/jest": "^26.0.7",
     "@types/node": "^12.0.0",
     "cross-fetch": "^3.0.6",
