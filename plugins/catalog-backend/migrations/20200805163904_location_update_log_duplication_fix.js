@@ -17,7 +17,7 @@
 // @ts-check
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.up = function up(knex) {
   return knex.schema
@@ -52,7 +52,7 @@ exports.up = function up(knex) {
 };
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.down = function down(knex) {
   return knex.schema

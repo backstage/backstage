@@ -15,7 +15,7 @@
  */
 
 import { Git, InputError, UrlReader } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, parseLocationReference } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
@@ -36,28 +36,15 @@ export const parseReferenceAnnotation = (
   entity: Entity,
 ): ParsedLocationAnnotation => {
   const annotation = entity.metadata.annotations?.[annotationName];
-
   if (!annotation) {
     throw new InputError(
       `No location annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 
-  // split on the first colon for the protocol and the rest after the first split
-  // is the location.
-  const [type, target] = annotation.split(/:(.+)/) as [
-    RemoteProtocol?,
-    string?,
-  ];
-
-  if (!type || !target) {
-    throw new InputError(
-      `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
-    );
-  }
-
+  const { type, target } = parseLocationReference(annotation);
   return {
-    type,
+    type: type as RemoteProtocol,
     target,
   };
 };
@@ -77,8 +64,9 @@ export const getLocationForEntity = (
     case 'url':
       return { type, target };
     case 'dir':
-      if (path.isAbsolute(target)) return { type, target };
-
+      if (path.isAbsolute(target)) {
+        return { type, target };
+      }
       return parseReferenceAnnotation(
         'backstage.io/managed-by-location',
         entity,
@@ -107,7 +95,7 @@ export const getGitRepositoryTempFolder = async (
     // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
     fs.realpathSync(os.tmpdir()),
     'backstage-repo',
-    parsedGitLocation.source,
+    parsedGitLocation.resource,
     parsedGitLocation.owner,
     parsedGitLocation.name,
     parsedGitLocation.ref,
@@ -216,12 +204,12 @@ export const getDocFilesFromRepository = async (
     entity,
   );
 
-  opts?.logger?.info(`Reading files from ${target}`);
+  opts?.logger?.debug(`Reading files from ${target}`);
   // readTree will throw NotModifiedError if etag has not changed.
   const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
   const preparedDir = await readTreeResponse.dir();
 
-  opts?.logger?.info(`Tree downloaded and stored at ${preparedDir}`);
+  opts?.logger?.debug(`Tree downloaded and stored at ${preparedDir}`);
 
   return {
     preparedDir,

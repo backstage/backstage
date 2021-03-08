@@ -94,7 +94,7 @@ techdocs:
   generators:
     techdocs: 'docker' # Alternatives - 'local'
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage'. Read documentation for using alternatives.
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
@@ -108,10 +108,11 @@ lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
+  serviceLocatorMethod:
+    type: 'multiTenant'
   clusterLocatorMethods:
-    - 'config'
-  clusters: []
+    - type: 'config'
+      clusters: []
 
 kafka:
   clientId: backstage
@@ -207,7 +208,7 @@ catalog:
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
-    # Add a location here to ingest it, for example from an URL:
+    # Add a location here to ingest it, for example from a URL:
     #
     #     - type: url
     #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml

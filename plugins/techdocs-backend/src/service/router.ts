@@ -26,7 +26,7 @@ import fetch from 'cross-fetch';
 import Docker from 'dockerode';
 import express from 'express';
 import Router from 'express-promise-router';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DocsBuilder } from '../DocsBuilder';
 import { getEntityNameFromUrlPath } from './helpers';
@@ -155,6 +155,7 @@ export async function createRouter({
           break;
         case 'awsS3':
         case 'azureBlobStorage':
+        case 'openStackSwift':
         case 'googleGcs':
           // This block should be valid for all external storage implementations. So no need to duplicate in future,
           // add the publisher type in the list here.

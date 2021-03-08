@@ -29,7 +29,19 @@ describe('router', () => {
       getKubernetesObjectsByEntity: jest.fn(),
     } as any;
 
-    const router = makeRouter(getVoidLogger(), kubernetesFanOutHandler);
+    const router = makeRouter(getVoidLogger(), kubernetesFanOutHandler, [
+      {
+        name: 'some-cluster',
+        authProvider: 'serviceAccount',
+        url: 'https://localhost:1234',
+        serviceAccountToken: 'someToken',
+      },
+      {
+        name: 'some-other-cluster',
+        url: 'https://localhost:1235',
+        authProvider: 'google',
+      },
+    ]);
     app = express().use(router);
   });
 
@@ -37,6 +49,25 @@ describe('router', () => {
     jest.resetAllMocks();
   });
 
+  describe('get /clusters', () => {
+    it('happy path: lists clusters', async () => {
+      const response = await request(app).get('/clusters');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        items: [
+          {
+            name: 'some-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'some-other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      });
+    });
+  });
   describe('post /services/:serviceId', () => {
     it('happy path: lists kubernetes objects without auth in request body', async () => {
       const result = {

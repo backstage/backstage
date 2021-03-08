@@ -23,7 +23,8 @@ export type PublisherType =
   | 'local'
   | 'googleGcs'
   | 'awsS3'
-  | 'azureBlobStorage';
+  | 'azureBlobStorage'
+  | 'openStackSwift';
 
 export type PublishRequest = {
   entity: Entity;

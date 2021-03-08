@@ -72,6 +72,8 @@ export const RecentWorkflowRunsCard = ({
     }
   }, [error, errorApi]);
 
+  const githubHost = hostname || 'github.com';
+
   return !runs.length ? (
     <EmptyState
       missing="data"
@@ -81,7 +83,7 @@ export const RecentWorkflowRunsCard = ({
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${owner}/${repo}/actions/new`}
+          href={`https://${githubHost}/${owner}/${repo}/actions/new`}
         >
           Create new Workflow
         </Button>

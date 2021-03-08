@@ -19,6 +19,7 @@ Docusaurus
 Dominik
 Ek
 Env
+Erdogan
 Expedia
 Figma
 Firekube
@@ -51,6 +52,7 @@ Namespaces
 Niklas
 OAuth
 Okta
+Oksuz
 Oldsberg
 Olle
 Onboarding
@@ -63,6 +65,7 @@ Protobuf
 Proxying
 Raghunandan
 Readme
+rebase
 Recharts
 Redash
 Repo
@@ -86,6 +89,7 @@ Templaters
 Thauer
 Tolerations
 Tuite
+Trendyol
 Voi
 WWW
 Wealthsimple

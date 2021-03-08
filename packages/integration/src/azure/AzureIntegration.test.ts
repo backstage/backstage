@@ -99,4 +99,18 @@ describe('AzureIntegration', () => {
       ).toBe('https://dev.azure.com/organization/project/test');
     });
   });
+
+  it('resolve edit URL', () => {
+    const integration = new AzureIntegration({ host: 'h.com' } as any);
+
+    // TODO: The Azure integration doesn't support resolving an edit URL yet,
+    // instead we keep the input URL.
+    expect(
+      integration.resolveEditUrl(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+      ),
+    ).toBe(
+      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+  });
 });
