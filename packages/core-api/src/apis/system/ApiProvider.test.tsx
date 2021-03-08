@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { Context, useContext } from 'react';
 import { ApiProvider, useApi, withApis } from './ApiProvider';
 import { createApiRef } from './ApiRef';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils-core';
+import { getGlobalSingleton } from '../../lib/globalObject';
+import { ApiHolder, ApiRef } from './types';
+import { VersionedValue } from '../../lib/versionedValues';
 
 describe('ApiProvider', () => {
   type Api = () => string;
@@ -173,5 +176,37 @@ describe('ApiProvider', () => {
         /^The above error occurred in the <withApis\(Component\)> component/,
       ),
     ]);
+  });
+});
+
+describe('v1 consumer', () => {
+  const ApiContext = getGlobalSingleton<
+    Context<VersionedValue<{ 1: ApiHolder }>>
+  >('api-context');
+
+  function useMockApiV1<T>(apiRef: ApiRef<T>): T {
+    const impl = useContext(ApiContext)?.atVersion(1)?.get(apiRef);
+    if (!impl) {
+      throw new Error('no impl');
+    }
+    return impl;
+  }
+
+  type Api = () => string;
+  const apiRef = createApiRef<Api>({ id: 'x', description: '' });
+  const registry = ApiRegistry.from([[apiRef, () => 'hello']]);
+
+  const MyHookConsumerV1 = () => {
+    const api = useMockApiV1(apiRef);
+    return <p>hook message: {api()}</p>;
+  };
+
+  it('should provide apis', () => {
+    const renderedHook = render(
+      <ApiProvider apis={registry}>
+        <MyHookConsumerV1 />
+      </ApiProvider>,
+    );
+    renderedHook.getByText('hook message: hello');
   });
 });
