@@ -146,6 +146,49 @@ export interface KubernetesFetchError {
   resourcePath?: string;
 }
 
+export interface ConfigClusterLocatorMethod {
+  /**
+   * @visibility frontend
+   */
+  type: 'config';
+  clusters: {
+    /**
+     * @visibility frontend
+     */
+    url: string;
+    /**
+     * @visibility frontend
+     */
+    name: string;
+    /**
+     * @visibility secret
+     */
+    serviceAccountToken: string | undefined;
+    /**
+     * @visibility frontend
+     */
+    authProvider: 'aws' | 'google' | 'serviceAccount';
+  }[];
+}
+
+export interface GKEClusterLocatorMethod {
+  /**
+   * @visibility frontend
+   */
+  type: 'gke';
+  /**
+   * @visibility frontend
+   */
+  projectId: string;
+  /**
+   * @visibility frontend
+   */
+  region?: string;
+}
+
+export type ClusterLocatorMethod =
+  | ConfigClusterLocatorMethod
+  | GKEClusterLocatorMethod;
+
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
-export type ClusterLocatorMethod = 'config';
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';

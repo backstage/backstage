@@ -17,9 +17,9 @@ import { ApiEntity, Entity } from '@backstage/catalog-model';
 import { WarningPanel } from '@backstage/core';
 import {
   ApiDefinitionCard,
-  ConsumedApisCard, 
-  ConsumingComponentsCard, 
-  ProvidedApisCard, 
+  ConsumedApisCard,
+  ConsumingComponentsCard,
+  ProvidedApisCard,
   ProvidingComponentsCard
 } from '@backstage/plugin-api-docs';
 import {
@@ -28,9 +28,6 @@ import {
 import {
   useEntity
 } from '@backstage/plugin-catalog-react';
-import {
-  isPluginApplicableToEntity as isCircleCIAvailable, Router as CircleCIRouter
-} from '@backstage/plugin-circleci';
 import {
   isPluginApplicableToEntity as isGitHubActionsAvailable, Router as GitHubActionsRouter
 } from '@backstage/plugin-github-actions';
@@ -45,8 +42,6 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   switch (true) {
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
-    case isCircleCIAvailable(entity):
-      return <CircleCIRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">

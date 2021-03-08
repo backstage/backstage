@@ -86,6 +86,63 @@ export interface Config {
           };
         }
       | {
+          type: 'openStackSwift';
+
+          /**
+           * Required when 'type' is set to openStackSwift
+           */
+          openStackSwift?: {
+            /**
+             * (Required) Credentials used to access a storage bucket.
+             * @see https://docs.openstack.org/api-ref/identity/v3/?expanded=password-authentication-with-unscoped-authorization-detail#password-authentication-with-unscoped-authorization
+             * @visibility secret
+             */
+            credentials: {
+              /**
+               * (Required) Root user name
+               * @visibility secret
+               */
+              username: string;
+              /**
+               * (Required) Root user password
+               * @visibility secret
+               */
+              password: string; // required
+            };
+            /**
+             * (Required) Cloud Storage Container Name
+             * @visibility backend
+             */
+            containerName: string;
+            /**
+             * (Required) Auth url sometimes OpenStack uses different port check your OpenStack apis.
+             * @visibility backend
+             */
+            authUrl: string;
+            /**
+             * (Optional) Auth version
+             * If not set, 'v2.0' will be used.
+             * @visibility backend
+             */
+            keystoneAuthVersion: string;
+            /**
+             * (Required) Domain Id
+             * @visibility backend
+             */
+            domainId: string;
+            /**
+             * (Required) Domain Name
+             * @visibility backend
+             */
+            domainName: string;
+            /**
+             * (Required) Region
+             * @visibility backend
+             */
+            region: string;
+          };
+        }
+      | {
           type: 'azureBlobStorage';
 
           /**
