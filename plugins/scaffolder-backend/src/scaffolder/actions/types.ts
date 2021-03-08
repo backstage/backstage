@@ -44,6 +44,7 @@ export type ActionContext<Input extends InputBase> = {
 
 export type TemplateAction<Input extends InputBase> = {
   id: string;
+  description?: string;
   schema?: {
     input?: Schema;
     output?: Schema;

@@ -32,6 +32,8 @@ export function createPublishAzureAction(options: {
     description?: string;
   }>({
     id: 'publish:azure',
+    description:
+      'Initializes a git repository of contents in workspacePath and publishes to Azure.',
     schema: {
       input: {
         type: 'object',

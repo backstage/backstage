@@ -38,6 +38,8 @@ export function createFetchCookiecutterAction(options: {
     values: JsonObject;
   }>({
     id: 'fetch:cookiecutter',
+    description:
+      "Downloads template from 'url' and templates with cookiecutter",
     schema: {
       input: {
         type: 'object',

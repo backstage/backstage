@@ -31,6 +31,8 @@ export function createPublishGitlabAction(options: {
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:gitlab',
+    description:
+      'Initializes a git repository of contents in workspacePath and publishes to GitLab.',
     schema: {
       input: {
         type: 'object',

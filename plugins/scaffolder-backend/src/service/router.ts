@@ -351,6 +351,7 @@ export async function createRouter(
       const actionsList = actionRegistry.list().map(action => {
         return {
           id: action.id,
+          description: action.description,
           schema: action.schema,
         };
       });

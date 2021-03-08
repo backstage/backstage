@@ -167,6 +167,8 @@ export function createPublishBitbucketAction(options: {
     repoVisibility: 'private' | 'public';
   }>({
     id: 'publish:bitbucket',
+    description:
+      'Initializes a git repository of contents in workspacePath and publishes to Bitbucket.',
     schema: {
       input: {
         type: 'object',

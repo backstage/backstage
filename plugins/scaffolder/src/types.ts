@@ -58,6 +58,7 @@ export type ScaffolderTask = {
 
 export type ListActionsResponse = Array<{
   id: string;
+  description?: string;
   schema?: {
     input?: JSONSchema;
     output?: JSONSchema;

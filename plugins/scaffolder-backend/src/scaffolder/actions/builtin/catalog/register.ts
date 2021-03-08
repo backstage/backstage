@@ -31,6 +31,7 @@ export function createCatalogRegisterAction(options: {
     | { repoContentsUrl: string; catalogInfoPath?: string }
   >({
     id: 'catalog:register',
+    description: 'Registers entity in the software catalog.',
     schema: {
       input: {
         oneOf: [
