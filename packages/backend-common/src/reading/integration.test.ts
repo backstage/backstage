@@ -78,8 +78,8 @@ function withRetries(count: number, fn: () => Promise<void>) {
     }
   };
 }
-
-describe('UrlReaders', () => {
+/* eslint-disable jest/no-disabled-tests */
+describe.skip('UrlReaders', () => {
   jest.setTimeout(30_000);
 
   it(
