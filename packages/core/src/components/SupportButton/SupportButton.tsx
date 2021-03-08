@@ -27,7 +27,7 @@ import {
 import React, {
   Fragment,
   MouseEventHandler,
-  PropsWithChildren,
+  ReactChild,
   useState,
 } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
@@ -76,18 +76,22 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
   );
 };
 
-declare type SupportButtonProps = {
-  supporters?: SupportItem[];
+type SupportButtonProps = {
+  title?: ReactChild;
+  supportItems?: SupportItem[];
+  displayMode?: 'customOnly' | 'all' | '';
 };
 
 export const SupportButton = ({
-  supporters,
-  children,
-}: PropsWithChildren<SupportButtonProps>) => {
+  supportItems,
+  title,
+  displayMode = '',
+}: SupportButtonProps) => {
   const { items } = useSupportConfig();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
+  const displayedItems = supportItems && [...supportItems, ...items];
 
   const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);
@@ -96,6 +100,39 @@ export const SupportButton = ({
 
   const popoverCloseHandler = () => {
     setPopoverOpen(false);
+  };
+
+  const displayItems = () => {
+    switch (displayMode) {
+      case 'customOnly':
+        return (
+          <>
+            {supportItems &&
+              supportItems.map((item, i) => (
+                <SupportListItem item={item} key={i} />
+              ))}
+          </>
+        );
+
+      case 'all':
+        return (
+          <>
+            {displayedItems &&
+              displayedItems.map((item, i) => (
+                <SupportListItem item={item} key={i} />
+              ))}
+          </>
+        );
+
+      default:
+        return (
+          <>
+            {items.map((item, i) => (
+              <SupportListItem item={item} key={i} />
+            ))}
+          </>
+        );
+    }
   };
 
   return (
@@ -123,16 +160,12 @@ export const SupportButton = ({
         onClose={popoverCloseHandler}
       >
         <List className={classes.popoverList}>
-          {React.Children.map(children, (child, i) => (
+          {React.Children.map(title, (child, i) => (
             <ListItem alignItems="flex-start" key={i}>
               {child}
             </ListItem>
           ))}
-          {supporters
-            ? supporters.map((item, i) => (
-                <SupportListItem item={item} key={i} />
-              ))
-            : items.map((item, i) => <SupportListItem item={item} key={i} />)}
+          {displayItems()}
         </List>
       </Popover>
     </Fragment>
