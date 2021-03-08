@@ -152,7 +152,7 @@ export const ProjectDetailsPage = () => (
     </Header>
     <Content>
       <ContentHeader title="">
-        <SupportButton>Support Button</SupportButton>
+        <SupportButton title="Support Button" />
       </ContentHeader>
       <DetailsPage />
     </Content>

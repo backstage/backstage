@@ -33,9 +33,7 @@ const NewRelicComponent = () => (
     </Header>
     <Content>
       <ContentHeader title="New Relic">
-        <SupportButton>
-          New Relic Application Performance Monitoring
-        </SupportButton>
+        <SupportButton title="New Relic Application Performance Monitoring" />
       </ContentHeader>
       <Grid container spacing={3} direction="column">
         <Grid item>

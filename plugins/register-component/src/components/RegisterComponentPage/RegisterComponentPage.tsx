@@ -108,10 +108,7 @@ export const RegisterComponentPage = ({
       <Header title="Register existing component" />
       <Content>
         <ContentHeader title="Start tracking your component in Backstage">
-          <SupportButton>
-            Start tracking your component in Backstage. TODO: Add more
-            information about what this is.
-          </SupportButton>
+          <SupportButton title="Start tracking your component in Backstage. TODO: Add more information about what this is." />
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>

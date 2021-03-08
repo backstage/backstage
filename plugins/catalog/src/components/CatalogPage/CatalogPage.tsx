@@ -155,7 +155,6 @@ const CatalogPageContents = () => {
     ],
     [isStarredEntity, orgName, user],
   );
-
   const showAddExampleEntities =
     configApi.has('catalog.exampleEntityLocations') && isCatalogEmpty;
 
@@ -187,7 +186,7 @@ const CatalogPageContents = () => {
               Add example components
             </Button>
           )}
-          <SupportButton>All your software catalog entities</SupportButton>
+          <SupportButton title="All your software" />
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <div>

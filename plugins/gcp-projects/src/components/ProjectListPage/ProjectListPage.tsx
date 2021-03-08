@@ -142,7 +142,7 @@ export const ProjectListPage = () => (
         <Button variant="contained" color="primary" href="/gcp-projects/new">
           New Project
         </Button>
-        <SupportButton>All your software catalog entities</SupportButton>
+        <SupportButton title="All your software catalog entities" />
       </ContentHeader>
       <PageContents />
     </Content>

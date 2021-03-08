@@ -117,9 +117,7 @@ export const NewProjectPage = () => (
     </Header>
     <Content>
       <ContentHeader title="">
-        <SupportButton>
-          This plugin allows you to view and interact with your gcp projects.
-        </SupportButton>
+        <SupportButton title="This plugin allows you to view and interact with your gcp projects." />
       </ContentHeader>
       <Project />
     </Content>

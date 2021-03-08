@@ -82,7 +82,7 @@ const ClusterList = () => {
           >
             Create GitOps-managed Cluster
           </Button>
-          <SupportButton>All clusters</SupportButton>
+          <SupportButton title="All clusters" />
         </ContentHeader>
         <ClusterTable components={value!.result} />
       </Content>

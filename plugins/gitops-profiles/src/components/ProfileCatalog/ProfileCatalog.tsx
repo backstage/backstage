@@ -267,7 +267,7 @@ const ProfileCatalog = () => {
       </Header>
       <Content>
         <ContentHeader title="Create Cluster">
-          <SupportButton>A description of your plugin goes here.</SupportButton>
+          <SupportButton title="A description of your plugin goes here." />
         </ContentHeader>
         <SimpleStepper>
           <SimpleStepperStep title="Choose Cluster Template">

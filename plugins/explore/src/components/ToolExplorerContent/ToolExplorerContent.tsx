@@ -35,7 +35,7 @@ export const ToolExplorerContent = () => {
   return (
     <Content noPadding>
       <ContentHeader title="Tools">
-        <SupportButton>Discover the tools in your ecosystem.</SupportButton>
+        <SupportButton title="Discover the tools in your ecosystem." />
       </ContentHeader>
 
       {loading && <Progress />}
