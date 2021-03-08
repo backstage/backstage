@@ -51,7 +51,7 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/codemirror": "^0.0.108",
     "@types/jest": "^26.0.7",
-    "@types/node": "^12.0.0",
+    "@types/node": "^14.14.32",
     "cross-fetch": "^3.0.6",
     "msw": "^0.21.2",
     "react-router-dom": "6.0.0-beta.0"

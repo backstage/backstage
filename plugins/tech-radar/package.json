@@ -52,7 +52,7 @@
     "@types/color": "^3.0.1",
     "@types/d3-force": "^2.1.1",
     "@types/jest": "^26.0.7",
-    "@types/node": "^12.0.0",
+    "@types/node": "^14.14.32",
     "@types/react": "^16.9",
     "cross-fetch": "^3.0.6",
     "msw": "^0.21.2"

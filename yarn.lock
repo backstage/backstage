@@ -1968,6 +1968,7 @@
     "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.3"
     "@backstage/core" "^0.7.0"
+    "@backstage/integration" "^0.5.0"
     "@backstage/plugin-catalog-react" "^0.1.1"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
@@ -1990,6 +1991,7 @@
     "@backstage/catalog-client" "^0.3.6"
     "@backstage/catalog-model" "^0.7.3"
     "@backstage/core" "^0.7.0"
+    "@backstage/integration" "^0.5.0"
     "@backstage/plugin-catalog-react" "^0.1.1"
     "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
@@ -6561,7 +6563,7 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.35.tgz#58058f29b870e6ae57b20e4f6e928f02b7129f56"
   integrity sha512-gXx7jAWpMddu0f7a+L+txMplp3FnHl53OhQIF9puXKq3hDGY/GjH+MF04oWnV/adPSCrbtHumDCFwzq2VhltWA==
 
-"@types/node@^12.0.0", "@types/node@^12.7.1":
+"@types/node@^12.7.1":
   version "12.12.58"
   resolved "https://registry.npmjs.org/@types/node/-/node-12.12.58.tgz#46dae9b2b9ee5992818c8f7cee01ff4ce03ab44c"
   integrity sha512-Be46CNIHWAagEfINOjmriSxuv7IVcqbGe+sDSg2SYCEz/0CRBy7LRASGfRbD8KZkqoePU73Wsx3UvOSFcq/9hA==
@@ -6571,10 +6573,10 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-13.13.45.tgz#e6676bcca092bae5751d015f074a234d5a82eb63"
   integrity sha512-703YTEp8AwQeapI0PTXDOj+Bs/mtdV/k9VcTP7z/de+lx6XjFMKdB+JhKnK+6PZ5za7omgZ3V6qm/dNkMj/Zow==
 
-"@types/node@^13.7.2":
-  version "13.13.15"
-  resolved "https://registry.npmjs.org/@types/node/-/node-13.13.15.tgz#fe1cc3aa465a3ea6858b793fd380b66c39919766"
-  integrity sha512-kwbcs0jySLxzLsa2nWUAGOd/s21WU1jebrEdtzhsj1D4Yps1EOuyI1Qcu+FD56dL7NRNIJtDDjcqIG22NwkgLw==
+"@types/node@^14.14.32":
+  version "14.14.32"
+  resolved "https://registry.npmjs.org/@types/node/-/node-14.14.32.tgz#90c5c4a8d72bbbfe53033f122341343249183448"
+  integrity sha512-/Ctrftx/zp4m8JOujM5ZhwzlWLx22nbQJiVqz8/zE15gOeEW+uly3FSX4fGFpcfEvFzXcMCJwq9lGVWgyARXhg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
