@@ -41,6 +41,7 @@
     "@backstage/plugin-rollbar-backend": "^0.1.7",
     "@backstage/plugin-scaffolder-backend": "^0.9.1",
     "@backstage/plugin-techdocs-backend": "^0.6.4",
+    "@backstage/plugin-todo-backend": "^0.1.0",
     "@gitbeaker/node": "^28.0.2",
     "@octokit/rest": "^18.0.12",
     "azure-devops-node-api": "^10.1.1",
