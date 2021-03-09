@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import React, {
   ComponentType,
   PropsWithChildren,
   ReactElement,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -277,24 +279,6 @@ export class PrivateAppImpl implements BackstageApp {
     const appContext = new AppContextImpl(this);
     const apiHolder = this.getApiHolder();
 
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
-
-    for (const plugin of this.plugins.values()) {
-      for (const output of plugin.output()) {
-        switch (output.type) {
-          case 'feature-flag': {
-            featureFlagsApi.registerFlag({
-              name: output.name,
-              pluginId: plugin.getId(),
-            });
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
@@ -323,12 +307,38 @@ export class PrivateAppImpl implements BackstageApp {
         appThemeApi,
       );
 
+      const hasConfigApi = 'api' in loadedConfig;
+      if (hasConfigApi) {
+        const { api } = loadedConfig as { api: Config };
+        this.configApi = api;
+      }
+
+      useEffect(() => {
+        if (hasConfigApi) {
+          const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+          for (const plugin of this.plugins.values()) {
+            for (const output of plugin.output()) {
+              switch (output.type) {
+                case 'feature-flag': {
+                  featureFlagsApi.registerFlag({
+                    name: output.name,
+                    pluginId: plugin.getId(),
+                  });
+                  break;
+                }
+                default:
+                  break;
+              }
+            }
+          }
+        }
+      }, [hasConfigApi, loadedConfig]);
+
       if ('node' in loadedConfig) {
         // Loading or error
         return loadedConfig.node;
       }
-
-      this.configApi = loadedConfig.api;
 
       return (
         <ApiProvider apis={apiHolder}>
