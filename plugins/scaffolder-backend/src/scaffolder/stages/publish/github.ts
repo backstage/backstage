@@ -141,7 +141,7 @@ export class GithubPublisher implements PublisherBase {
           repo: name,
           permission: 'admin',
         });
-        // no need to add access if it's the person who own's the personal account
+        // no need to add access if it's the person who owns the personal account
       } else if (access && access !== owner) {
         await client.repos.addCollaborator({
           owner,
