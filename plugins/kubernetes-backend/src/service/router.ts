@@ -111,6 +111,8 @@ export async function createRouter(
       } as CustomResource),
   );
 
+  logger.info(`action=LoadingCustomResources numOfCustomResources=${customResources.length}`);
+
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,

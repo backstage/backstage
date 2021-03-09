@@ -97,6 +97,7 @@ export class KubernetesFanOutHandler {
             clusterDetails: clusterDetailsItem,
             objectTypesToFetch,
             labelSelector,
+            customResources: this.customResources
           })
           .then(result => {
             return {

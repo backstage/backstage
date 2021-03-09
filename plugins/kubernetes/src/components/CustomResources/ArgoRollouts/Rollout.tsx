@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { DeploymentResources } from '../../types/types';
 import React from 'react';
+import { GroupedResponses } from '../../../types/types';
 import {
   Accordion,
   AccordionDetails,
@@ -33,42 +33,73 @@ import {
   V1HorizontalPodAutoscaler,
 } from '@kubernetes/client-node';
 import { StatusError, StatusOK } from '@backstage/core';
-import { PodsTable } from '../Pods';
-import { DeploymentDrawer } from './DeploymentDrawer';
-import { HorizontalPodAutoscalerDrawer } from '../HorizontalPodAutoscalers';
+import { PodsTable } from '../../Pods';
+import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
+import { RolloutDrawer } from './RolloutDrawer';
+import PauseIcon from '@material-ui/icons/Pause';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import formatDistance from 'date-fns/formatDistance';
+import {StepsProgress} from "./StepsProgress";
 
-type DeploymentsAccordionsProps = {
-  deploymentResources: DeploymentResources;
+type RolloutAccordionsProps = {
+  rollouts: any[];
+  groupedResponses: GroupedResponses;
   clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
-type DeploymentAccordionProps = {
-  deployment: V1Deployment;
+type RolloutAccordionProps = {
+  rollout: any;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
   clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
-type DeploymentSummaryProps = {
-  deployment: V1Deployment;
+type RolloutSummaryProps = {
+  rollout: any;
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
   hpa?: V1HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
 
-const DeploymentSummary = ({
-  deployment,
+const AbortedTitle = (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+    }}
+  >
+    <ErrorOutlineIcon />
+    <Typography variant="subtitle1">Aborted</Typography>
+  </div>
+);
+
+const findAbortedMessage = (rollout: any): string | undefined =>
+  rollout.status?.conditions?.find(
+    (c: any) =>
+      c.type === 'Progressing' &&
+      c.status === 'False' &&
+      c.reason === 'RolloutAborted',
+  )?.message;
+
+const RolloutSummary = ({
+  rollout,
   numberOfCurrentPods,
   numberOfPodsWithErrors,
   hpa,
-}: DeploymentSummaryProps) => {
+}: RolloutSummaryProps) => {
+  const pauseTime: string | undefined = rollout.status?.pauseConditions?.find(
+    (p: any) => p.reason === 'CanaryPauseStep',
+  )?.startTime;
+  const abortedMessage = findAbortedMessage(rollout);
+
   return (
     <Grid container direction="row" justify="flex-start" alignItems="center">
       <Grid xs={3} item>
-        <DeploymentDrawer deployment={deployment} />
+        <RolloutDrawer rollout={rollout} />
       </Grid>
       <Grid item xs={1}>
         <Divider style={{ height: '5em' }} orientation="vertical" />
@@ -128,41 +159,90 @@ const DeploymentSummary = ({
           )}
         </Grid>
       </Grid>
+      {pauseTime && (
+        <Grid item xs={3}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            <PauseIcon />
+            <Typography variant="subtitle1">
+              Paused (
+              {formatDistance(Date.parse(pauseTime), new Date(), {
+                addSuffix: true,
+              })}
+              )
+            </Typography>
+          </div>
+        </Grid>
+      )}
+      {abortedMessage && (
+        <Grid item xs={3}>
+          {AbortedTitle}
+        </Grid>
+      )}
     </Grid>
   );
 };
 
-const DeploymentAccordion = ({
-  deployment,
+const RolloutAccordion = ({
+  rollout,
   ownedPods,
   matchingHpa,
   clusterPodNamesWithErrors,
-}: DeploymentAccordionProps) => {
+}: RolloutAccordionProps) => {
   const podsWithErrors = ownedPods.filter(p =>
     clusterPodNamesWithErrors.has(p.metadata?.name ?? ''),
   );
 
+  const currentStepIndex = rollout.status?.currentStepIndex ?? 0;
+  const abortedMessage = findAbortedMessage(rollout);
+
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <DeploymentSummary
-          deployment={deployment}
+        <RolloutSummary
+          rollout={rollout}
           numberOfCurrentPods={ownedPods.length}
           numberOfPodsWithErrors={podsWithErrors.length}
           hpa={matchingHpa}
         />
       </AccordionSummary>
       <AccordionDetails>
-        <PodsTable pods={ownedPods} />
+        <div style={{ width: '100%' }}>
+          <div>
+            <Typography variant={'h6'}>Rollout status</Typography>
+          </div>
+          <div style={{ margin: '1rem' }}>
+            {abortedMessage && (
+              <>
+                {AbortedTitle}
+                <Typography variant={'subtitle2'}>{abortedMessage}</Typography>
+              </>
+            )}
+            <StepsProgress
+              aborted={abortedMessage !== undefined}
+              steps={rollout.spec?.strategy?.canary?.steps ?? []}
+              currentStepIndex={currentStepIndex}
+            />
+          </div>
+          <div>
+            <PodsTable pods={ownedPods} />
+          </div>
+        </div>
       </AccordionDetails>
     </Accordion>
   );
 };
 
-export const DeploymentsAccordions = ({
-  deploymentResources,
+export const RolloutAccordions = ({
+  rollouts,
+  groupedResponses,
   clusterPodNamesWithErrors,
-}: DeploymentsAccordionsProps) => {
+}: RolloutAccordionsProps) => {
   const isOwnedBy = (
     ownerReferences: V1OwnerReference[],
     obj: V1Pod | V1ReplicaSet | V1Deployment,
@@ -173,6 +253,33 @@ export const DeploymentsAccordions = ({
         or.name === obj.metadata?.name && or.kind.toLowerCase() === targetKind,
     );
   };
+
+  const getOwnedPods = (rollout: any) =>
+    groupedResponses.replicaSets
+      // Filter out replica sets with no replicas
+      .filter(rs => rs.status && rs.status.replicas > 0)
+      // Find the replica sets this deployment owns
+      .filter(rs =>
+        isOwnedBy(rs.metadata?.ownerReferences ?? [], rollout, 'rollout'),
+      )
+      .reduce((accum, rs) => {
+        const pods = groupedResponses.pods.filter(pod =>
+          isOwnedBy(pod.metadata?.ownerReferences ?? [], rs, 'replicaset'),
+        );
+        return accum.concat(pods);
+      }, [] as V1Pod[]);
+
+  const getMatchingHpa = (rollout: any) =>
+    groupedResponses.horizontalPodAutoscalers.find(
+      (hpa: V1HorizontalPodAutoscaler) => {
+        return (
+          (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() === 'rollout' &&
+          (hpa.spec?.scaleTargetRef?.name ?? '') ===
+            (rollout.metadata?.name ?? 'unknown-rollout')
+        );
+      },
+    );
+
   return (
     <Grid
       container
@@ -180,51 +287,16 @@ export const DeploymentsAccordions = ({
       justify="flex-start"
       alignItems="flex-start"
     >
-      {deploymentResources.deployments.map((deployment, i) => (
+      {rollouts.map((rollout, i) => (
         <Grid container item key={i} xs>
-          {deploymentResources.replicaSets
-            // Filter out replica sets with no replicas
-            .filter(rs => rs.status && rs.status.replicas > 0)
-            // Find the replica sets this deployment owns
-            .filter(rs =>
-              isOwnedBy(
-                rs.metadata?.ownerReferences ?? [],
-                deployment,
-                'deployment',
-              ),
-            )
-            .map((rs, j) => {
-              // Find the pods this replica set owns and render them in the table
-              const ownedPods = deploymentResources.pods.filter(pod =>
-                isOwnedBy(
-                  pod.metadata?.ownerReferences ?? [],
-                  rs,
-                  'replicaset',
-                ),
-              );
-
-              const matchingHpa = deploymentResources.horizontalPodAutoscalers.find(
-                (hpa: V1HorizontalPodAutoscaler) => {
-                  return (
-                    (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() ===
-                      'deployment' &&
-                    (hpa.spec?.scaleTargetRef?.name ?? '') ===
-                      (deployment.metadata?.name ?? 'unknown-deployment')
-                  );
-                },
-              );
-
-              return (
-                <Grid item key={j} xs>
-                  <DeploymentAccordion
-                    deployment={deployment}
-                    ownedPods={ownedPods}
-                    matchingHpa={matchingHpa}
-                    clusterPodNamesWithErrors={clusterPodNamesWithErrors}
-                  />
-                </Grid>
-              );
-            })}
+          <Grid item xs>
+            <RolloutAccordion
+              rollout={rollout}
+              ownedPods={getOwnedPods(rollout)}
+              matchingHpa={getMatchingHpa(rollout)}
+              clusterPodNamesWithErrors={clusterPodNamesWithErrors}
+            />
+          </Grid>
         </Grid>
       ))}
     </Grid>

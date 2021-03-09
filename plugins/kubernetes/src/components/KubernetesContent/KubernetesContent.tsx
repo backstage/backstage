@@ -47,6 +47,7 @@ import { groupResponses } from '../../utils/response';
 import { DetectedError, detectErrors } from '../../error-detection';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
+import { CustomResources } from '../CustomResources';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -136,6 +137,13 @@ const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
         </AccordionSummary>
         <AccordionDetails>
           <Grid container direction="column">
+            <Grid item>
+              <CustomResources
+                groupedResponses={groupedResponses}
+                clusterPodNamesWithErrors={podsWithErrors}
+              />
+            </Grid>
+
             <Grid item>
               <DeploymentsAccordions
                 deploymentResources={groupedResponses}
