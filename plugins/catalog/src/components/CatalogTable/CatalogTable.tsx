@@ -88,6 +88,11 @@ const columns: TableColumn<EntityRow>[] = [
     ),
   },
   {
+    title: 'Type',
+    field: 'entity.spec.type',
+    hidden: true,
+  },
+  {
     title: 'Lifecycle',
     field: 'entity.spec.lifecycle',
   },
@@ -130,6 +135,7 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
+  view?: string;
 };
 
 export const CatalogTable = ({
@@ -137,6 +143,7 @@ export const CatalogTable = ({
   loading,
   error,
   titlePreamble,
+  view,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -216,6 +223,11 @@ export const CatalogTable = ({
       },
     };
   });
+
+  const typeColumn = columns.find(c => c.title === 'Type');
+  if (typeColumn) {
+    typeColumn.hidden = view !== 'Other';
+  }
 
   return (
     <Table<EntityRow>
