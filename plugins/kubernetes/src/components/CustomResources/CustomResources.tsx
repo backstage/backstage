@@ -16,7 +16,7 @@
 
 import React, { useContext } from 'react';
 import lodash, { Dictionary } from 'lodash';
-import { RolloutAccordions } from './ArgoRollouts/Rollout';
+import { RolloutAccordions } from './ArgoRollouts';
 import { GroupedResponsesContext } from '../../hooks';
 
 interface CustomResourcesProps {

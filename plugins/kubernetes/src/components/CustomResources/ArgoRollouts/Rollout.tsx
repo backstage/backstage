@@ -31,7 +31,7 @@ import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
 import { RolloutDrawer } from './RolloutDrawer';
 import PauseIcon from '@material-ui/icons/Pause';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import formatDistance from 'date-fns/formatDistance';
+import { DateTime } from 'luxon';
 import { StepsProgress } from './StepsProgress';
 import {
   PodNamesWithErrorsContext,
@@ -168,10 +168,7 @@ const RolloutSummary = ({
           >
             <PauseIcon />
             <Typography variant="subtitle1">
-              Paused (
-              {formatDistance(Date.parse(pauseTime), new Date(), {
-                addSuffix: true,
-              })}
+              Paused ({DateTime.fromISO(pauseTime).toRelative({ locale: 'en' })}
               )
             </Typography>
           </div>
