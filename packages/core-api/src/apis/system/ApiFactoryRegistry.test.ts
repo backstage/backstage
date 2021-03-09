@@ -67,4 +67,25 @@ describe('ApiFactoryRegistry', () => {
     expect(registry.get(cRef)).toBe(cFactory);
     expect(registry.getAllApis()).toEqual(new Set([aRef, bRef, cRef]));
   });
+
+  it('should identify ApiRefs by id but still return the correct factory ref when listing all apis', () => {
+    const ref1 = createApiRef<number>({ id: 'a', description: 'ref1' });
+    const ref2 = createApiRef<number>({ id: 'a', description: 'ref2' });
+
+    const factory1 = { api: ref1, deps: {}, factory: () => 3 };
+    const factory2 = { api: ref2, deps: {}, factory: () => 3 };
+
+    const registry = new ApiFactoryRegistry();
+    expect(registry.register('default', factory1)).toBe(true);
+    expect(registry.register('default', factory2)).toBe(false);
+    expect(registry.get(ref1)).toEqual(factory1);
+    expect(registry.get(ref2)).toEqual(factory1);
+    expect(registry.getAllApis()).toEqual(new Set([ref1]));
+
+    expect(registry.register('app', factory2)).toBe(true);
+    expect(registry.get(ref1)).toEqual(factory2);
+    expect(registry.get(ref2)).toEqual(factory2);
+    expect(registry.getAllApis()).toEqual(new Set([ref2]));
+    expect(registry.getAllApis()).not.toEqual(new Set([ref1]));
+  });
 });

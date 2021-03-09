@@ -18,8 +18,9 @@ import { ApiRegistry } from './ApiRegistry';
 import { createApiRef } from './ApiRef';
 
 describe('ApiRegistry', () => {
-  const x1Ref = createApiRef<number>({ id: 'x', description: '' });
-  const x2Ref = createApiRef<string>({ id: 'x', description: '' });
+  const x1Ref = createApiRef<number>({ id: 'x1', description: '' });
+  const x1DuplicateRef = createApiRef<number>({ id: 'x1', description: '' });
+  const x2Ref = createApiRef<string>({ id: 'x2', description: '' });
 
   it('should be created', () => {
     const registry = ApiRegistry.from([]);
@@ -32,12 +33,14 @@ describe('ApiRegistry', () => {
       [x2Ref, 'y'],
     ]);
     expect(registry.get(x1Ref)).toBe(3);
+    expect(registry.get(x1DuplicateRef)).toBe(3);
     expect(registry.get(x2Ref)).toBe('y');
   });
 
   it('should be built', () => {
     const registry = ApiRegistry.builder().build();
     expect(registry.get(x1Ref)).toBe(undefined);
+    expect(registry.get(x1DuplicateRef)).toBe(undefined);
   });
 
   it('should be built with APIs', () => {
@@ -47,6 +50,7 @@ describe('ApiRegistry', () => {
 
     const registry = builder.build();
     expect(registry.get(x1Ref)).toBe(3);
+    expect(registry.get(x1DuplicateRef)).toBe(3);
     expect(registry.get(x2Ref)).toBe('y');
   });
 
@@ -55,6 +59,7 @@ describe('ApiRegistry', () => {
     const reg2 = reg1.with(x2Ref, 'y');
     const reg3 = reg2.with(x2Ref, 'z');
     const reg4 = reg3.with(x1Ref, 2);
+    const reg5 = reg3.with(x1DuplicateRef, 4);
 
     expect(reg1.get(x1Ref)).toBe(3);
     expect(reg1.get(x2Ref)).toBe(undefined);
@@ -64,5 +69,7 @@ describe('ApiRegistry', () => {
     expect(reg3.get(x2Ref)).toBe('z');
     expect(reg4.get(x1Ref)).toBe(2);
     expect(reg4.get(x2Ref)).toBe('z');
+    expect(reg5.get(x1Ref)).toBe(4);
+    expect(reg5.get(x2Ref)).toBe('z');
   });
 });
