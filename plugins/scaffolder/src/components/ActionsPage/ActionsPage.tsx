@@ -41,7 +41,7 @@ import { JSONSchema7Definition } from 'json-schema';
 
 const useStyles = makeStyles(theme => ({
   code: {
-    fontFamily: 'Menlo, monospaced',
+    fontFamily: 'Menlo, monospace',
     padding: theme.spacing(1),
     backgroundColor:
       theme.palette.type === 'dark'
