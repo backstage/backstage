@@ -5,6 +5,7 @@ Avro
 Balachandran
 Bigtable
 Billett
+Bitrise
 Blackbox
 Chai
 Changesets
