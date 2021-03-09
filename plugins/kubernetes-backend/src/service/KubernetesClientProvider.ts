@@ -25,34 +25,6 @@ import {
 } from '@kubernetes/client-node';
 
 export class KubernetesClientProvider {
-  private readonly coreClientMap: {
-    [key: string]: CoreV1Api;
-  };
-
-  private readonly appsClientMap: {
-    [key: string]: AppsV1Api;
-  };
-
-  private readonly autoscalingClientMap: {
-    [key: string]: AutoscalingV1Api;
-  };
-
-  private readonly networkingBeta1ClientMap: {
-    [key: string]: NetworkingV1beta1Api;
-  };
-
-  private readonly customObjectsClientMap: {
-    [key: string]: CustomObjectsApi;
-  };
-
-  constructor() {
-    this.coreClientMap = {};
-    this.appsClientMap = {};
-    this.autoscalingClientMap = {};
-    this.networkingBeta1ClientMap = {};
-    this.customObjectsClientMap = {};
-  }
-
   // visible for testing
   getKubeConfig(clusterDetails: ClusterDetails) {
     const cluster = {
@@ -64,7 +36,7 @@ export class KubernetesClientProvider {
 
     // TODO configure
     const user = {
-      name: 'service-account',
+      name: 'backstage',
       token: clusterDetails.serviceAccountToken,
     };
 
@@ -85,82 +57,32 @@ export class KubernetesClientProvider {
   }
 
   getCoreClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const clientMapKey = clusterDetails.name;
-
-    if (this.coreClientMap.hasOwnProperty(clientMapKey)) {
-      return this.coreClientMap[clientMapKey];
-    }
-
     const kc = this.getKubeConfig(clusterDetails);
 
-    const client = kc.makeApiClient(CoreV1Api);
-
-    this.coreClientMap[clientMapKey] = client;
-
-    return client;
+    return kc.makeApiClient(CoreV1Api);
   }
 
   getAppsClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const clientMapKey = clusterDetails.name;
-
-    if (this.appsClientMap.hasOwnProperty(clientMapKey)) {
-      return this.appsClientMap[clientMapKey];
-    }
-
     const kc = this.getKubeConfig(clusterDetails);
 
-    const client = kc.makeApiClient(AppsV1Api);
-
-    this.appsClientMap[clientMapKey] = client;
-
-    return client;
+    return kc.makeApiClient(AppsV1Api);
   }
 
   getAutoscalingClientByClusterDetails(clusterDetails: ClusterDetails) {
-    const clientMapKey = clusterDetails.name;
-
-    if (this.autoscalingClientMap.hasOwnProperty(clientMapKey)) {
-      return this.autoscalingClientMap[clientMapKey];
-    }
-
     const kc = this.getKubeConfig(clusterDetails);
 
-    const client = kc.makeApiClient(AutoscalingV1Api);
-
-    this.autoscalingClientMap[clientMapKey] = client;
-
-    return client;
+    return kc.makeApiClient(AutoscalingV1Api);
   }
 
   getNetworkingBeta1Client(clusterDetails: ClusterDetails) {
-    const clientMapKey = clusterDetails.name;
-
-    if (this.networkingBeta1ClientMap.hasOwnProperty(clientMapKey)) {
-      return this.networkingBeta1ClientMap[clientMapKey];
-    }
-
     const kc = this.getKubeConfig(clusterDetails);
 
-    const client = kc.makeApiClient(NetworkingV1beta1Api);
-
-    this.networkingBeta1ClientMap[clientMapKey] = client;
-
-    return client;
+    return kc.makeApiClient(NetworkingV1beta1Api);
   }
 
   getCustomObjectsClient(clusterDetails: ClusterDetails) {
-    const clientMapKey = clusterDetails.name;
-
-    if (this.customObjectsClientMap.hasOwnProperty(clientMapKey)) {
-      return this.customObjectsClientMap[clientMapKey];
-    }
-
     const kc = this.getKubeConfig(clusterDetails);
 
-    const client = kc.makeApiClient(CustomObjectsApi);
-
-    this.customObjectsClientMap[clientMapKey] = client;
-
-    return client;
+    return kc.makeApiClient(CustomObjectsApi);
   }
 }
