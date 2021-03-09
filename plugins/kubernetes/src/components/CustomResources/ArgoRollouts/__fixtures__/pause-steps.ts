@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { PauseStep } from '../types';
 
-import {
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1HorizontalPodAutoscaler,
-  V1Service,
-  V1ConfigMap,
-  ExtensionsV1beta1Ingress,
-} from '@kubernetes/client-node';
+export const steps: PauseStep[] = [
+  {
+    pause: {
+      duration: '1h',
+    },
+  },
+  {
+    pause: {},
+  },
+];
 
-export interface DeploymentResources {
-  pods: V1Pod[];
-  replicaSets: V1ReplicaSet[];
-  deployments: V1Deployment[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
-}
-
-export interface GroupedResponses extends DeploymentResources {
-  services: V1Service[];
-  configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
-  customResources: any[];
-}
+export default steps;

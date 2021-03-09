@@ -21,6 +21,7 @@ import {
   CoreV1Api,
   KubeConfig,
   NetworkingV1beta1Api,
+  CustomObjectsApi,
 } from '@kubernetes/client-node';
 
 export class KubernetesClientProvider {
@@ -77,5 +78,11 @@ export class KubernetesClientProvider {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(NetworkingV1beta1Api);
+  }
+
+  getCustomObjectsClient(clusterDetails: ClusterDetails) {
+    const kc = this.getKubeConfig(clusterDetails);
+
+    return kc.makeApiClient(CustomObjectsApi);
   }
 }

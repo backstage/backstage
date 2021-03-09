@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1HorizontalPodAutoscaler,
-  V1Service,
-  V1ConfigMap,
-  ExtensionsV1beta1Ingress,
-} from '@kubernetes/client-node';
+import { getOwnedResources } from './owner';
+import * as fixture from './__fixtures__/2-deployments.json';
 
-export interface DeploymentResources {
-  pods: V1Pod[];
-  replicaSets: V1ReplicaSet[];
-  deployments: V1Deployment[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
-}
-
-export interface GroupedResponses extends DeploymentResources {
-  services: V1Service[];
-  configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
-  customResources: any[];
-}
+describe('owner', () => {
+  describe('getOwnedResources', () => {
+    it('should find replicaset ownership from deployment', () => {
+      const result = getOwnedResources(
+        fixture.deployments[0] as any,
+        fixture.replicaSets as any,
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0]?.metadata?.name).toBe('dice-roller-6c8646bfd');
+    });
+  });
+});

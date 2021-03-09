@@ -27,6 +27,7 @@ import {
   ServiceLocatorMethod,
   ClusterDetails,
   KubernetesClustersSupplier,
+  CustomResource,
 } from '..';
 import { getCombinedClusterDetails } from '../cluster-locator';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
@@ -99,6 +100,21 @@ export async function createRouter(
 
   logger.info('Initializing Kubernetes backend');
 
+  const customResources: CustomResource[] = (
+    options.config.getOptionalConfigArray('kubernetes.customResources') ?? []
+  ).map(
+    c =>
+      ({
+        group: c.getString('group'),
+        apiVersion: c.getString('apiVersion'),
+        plural: c.getString('plural'),
+      } as CustomResource),
+  );
+
+  logger.info(
+    `action=LoadingCustomResources numOfCustomResources=${customResources.length}`,
+  );
+
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
@@ -122,6 +138,7 @@ export async function createRouter(
     logger,
     fetcher,
     serviceLocator,
+    customResources,
   );
 
   return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);

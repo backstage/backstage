@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -29,16 +29,9 @@ import {
   Progress,
   StatusError,
   StatusOK,
-  useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { kubernetesApiRef } from '../../api/types';
-import {
-  ClusterObjects,
-  KubernetesRequestBody,
-  ObjectsByEntityResponse,
-} from '@backstage/plugin-kubernetes-backend';
-import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
+import { ClusterObjects } from '@backstage/plugin-kubernetes-backend';
 import { ErrorPanel } from './ErrorPanel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';
@@ -47,6 +40,12 @@ import { groupResponses } from '../../utils/response';
 import { DetectedError, detectErrors } from '../../error-detection';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
+import { CustomResources } from '../CustomResources';
+import {
+  GroupedResponsesContext,
+  PodNamesWithErrorsContext,
+  useKubernetesObjects,
+} from '../../hooks';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -110,96 +109,49 @@ const ClusterSummary = ({
 
 type ClusterProps = {
   clusterObjects: ClusterObjects;
-  detectedErrors?: DetectedError[];
+  podsWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
-const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
+const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
   const groupedResponses = groupResponses(clusterObjects.resources);
-
-  const podsWithErrors = new Set<string>(
-    detectedErrors
-      ?.filter(de => de.kind === 'Pod')
-      .map(de => de.names)
-      .flat() ?? [],
-  );
-
   return (
-    <>
-      <Accordion TransitionProps={{ unmountOnExit: true }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <ClusterSummary
-            clusterName={clusterObjects.cluster.name}
-            totalNumberOfPods={groupedResponses.pods.length}
-            numberOfPodsWithErrors={podsWithErrors.size}
-          />
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container direction="column">
-            <Grid item>
-              <DeploymentsAccordions
-                deploymentResources={groupedResponses}
-                clusterPodNamesWithErrors={podsWithErrors}
-              />
+    <GroupedResponsesContext.Provider value={groupedResponses}>
+      <PodNamesWithErrorsContext.Provider value={podsWithErrors}>
+        <Accordion TransitionProps={{ unmountOnExit: true }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <ClusterSummary
+              clusterName={clusterObjects.cluster.name}
+              totalNumberOfPods={groupedResponses.pods.length}
+              numberOfPodsWithErrors={podsWithErrors.size}
+            />
+          </AccordionSummary>
+          <AccordionDetails>
+            <Grid container direction="column">
+              <Grid item>
+                <CustomResources />
+              </Grid>
+              <Grid item>
+                <DeploymentsAccordions />
+              </Grid>
+              <Grid item>
+                <IngressesAccordions />
+              </Grid>
+              <Grid item>
+                <ServicesAccordions />
+              </Grid>
             </Grid>
-
-            <Grid item>
-              <IngressesAccordions deploymentResources={groupedResponses} />
-            </Grid>
-
-            <Grid item>
-              <ServicesAccordions deploymentResources={groupedResponses} />
-            </Grid>
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-    </>
+          </AccordionDetails>
+        </Accordion>
+      </PodNamesWithErrorsContext.Provider>
+    </GroupedResponsesContext.Provider>
   );
 };
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
 export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
-  const kubernetesApi = useApi(kubernetesApiRef);
-
-  const [kubernetesObjects, setKubernetesObjects] = useState<
-    ObjectsByEntityResponse | undefined
-  >(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
-
-  const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
-
-  useEffect(() => {
-    (async () => {
-      const clusters = await kubernetesApi.getClusters();
-      const authProviders: string[] = [
-        ...new Set(clusters.map(c => c.authProvider)),
-      ];
-      // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
-      let requestBody: KubernetesRequestBody = {
-        entity,
-      };
-      for (const authProviderStr of authProviders) {
-        // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
-        requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-          authProviderStr,
-          requestBody,
-        );
-      }
-
-      // TODO: Add validation on contents/format of requestBody
-      kubernetesApi
-        .getObjectsByEntity(requestBody)
-        .then(result => {
-          setKubernetesObjects(result);
-        })
-        .catch(e => {
-          setError(e.message);
-        });
-    })();
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
-  /* eslint-enable react-hooks/exhaustive-deps */
+  const { kubernetesObjects, error } = useKubernetesObjects(entity);
 
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
@@ -250,14 +202,24 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               <Typography variant="h3">Your Clusters</Typography>
             </Grid>
             <Grid item container>
-              {kubernetesObjects?.items.map((item, i) => (
-                <Grid item key={i} xs={12}>
-                  <Cluster
-                    clusterObjects={item}
-                    detectedErrors={detectedErrors.get(item.cluster.name)}
-                  />
-                </Grid>
-              ))}
+              {kubernetesObjects?.items.map((item, i) => {
+                const podsWithErrors = new Set<string>(
+                  detectedErrors
+                    .get(item.cluster.name)
+                    ?.filter(de => de.kind === 'Pod')
+                    .map(de => de.names)
+                    .flat() ?? [],
+                );
+
+                return (
+                  <Grid item key={i} xs={12}>
+                    <Cluster
+                      clusterObjects={item}
+                      podsWithErrors={podsWithErrors}
+                    />
+                  </Grid>
+                );
+              })}
             </Grid>
           </Grid>
         )}

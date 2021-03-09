@@ -17,6 +17,7 @@
 import { Logger } from 'winston';
 import {
   ClusterDetails,
+  CustomResource,
   KubernetesFetcher,
   KubernetesObjectTypes,
   KubernetesRequestBody,
@@ -39,15 +40,18 @@ export class KubernetesFanOutHandler {
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
+  private readonly customResources: CustomResource[];
 
   constructor(
     logger: Logger,
     fetcher: KubernetesFetcher,
     serviceLocator: KubernetesServiceLocator,
+    customResources: CustomResource[],
   ) {
     this.logger = logger;
     this.fetcher = fetcher;
     this.serviceLocator = serviceLocator;
+    this.customResources = customResources;
   }
 
   async getKubernetesObjectsByEntity(
@@ -93,6 +97,7 @@ export class KubernetesFanOutHandler {
             clusterDetails: clusterDetailsItem,
             objectTypesToFetch,
             labelSelector,
+            customResources: this.customResources,
           })
           .then(result => {
             return {

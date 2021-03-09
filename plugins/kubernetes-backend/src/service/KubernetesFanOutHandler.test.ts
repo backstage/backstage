@@ -87,6 +87,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       {
         getClustersByServiceId,
       },
+      [],
     );
 
     const result = await sut.getKubernetesObjectsByEntity({
@@ -178,6 +179,7 @@ describe('handleGetKubernetesObjectsForService', () => {
       {
         getClustersByServiceId,
       },
+      [],
     );
 
     const result = await sut.getKubernetesObjectsByEntity({

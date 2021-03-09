@@ -22,5 +22,6 @@ export interface Config {
       type: 'multiTenant';
     };
     clusterLocatorMethods: ClusterLocatorMethod[];
+    customResources: CustomResource[];
   };
 }

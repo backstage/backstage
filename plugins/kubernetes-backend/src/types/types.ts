@@ -61,7 +61,8 @@ export type FetchResponse =
   | DeploymentFetchResponse
   | ReplicaSetsFetchResponse
   | HorizontalPodAutoscalersFetchResponse
-  | IngressesFetchResponse;
+  | IngressesFetchResponse
+  | CustomResourceFetchResponse;
 
 // TODO fairly sure there's a easier way to do this
 
@@ -72,7 +73,8 @@ export type KubernetesObjectTypes =
   | 'deployments'
   | 'replicasets'
   | 'horizontalpodautoscalers'
-  | 'ingresses';
+  | 'ingresses'
+  | 'customresources';
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -109,11 +111,17 @@ export interface IngressesFetchResponse {
   resources: Array<ExtensionsV1beta1Ingress>;
 }
 
+export interface CustomResourceFetchResponse {
+  type: 'customresources';
+  resources: Array<any>;
+}
+
 export interface ObjectFetchParams {
   serviceId: string;
   clusterDetails: ClusterDetails;
   objectTypesToFetch: Set<KubernetesObjectTypes>;
   labelSelector: string;
+  customResources: CustomResource[];
 }
 
 // Fetches information from a kubernetes cluster using the cluster details object
@@ -192,3 +200,9 @@ export type ClusterLocatorMethod =
 
 export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
 export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
+
+export interface CustomResource {
+  group: string;
+  apiVersion: string;
+  plural: string;
+}

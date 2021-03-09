@@ -19,13 +19,14 @@ import { render } from '@testing-library/react';
 import * as oneIngressFixture from './__fixtures__/2-ingresses.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { IngressesAccordions } from './IngressesAccordions';
+import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('IngressesAccordions', () => {
   it('should render 1 ingress', async () => {
+    const wrapper = kubernetesProviders(oneIngressFixture, new Set());
+
     const { getByText } = render(
-      wrapInTestApp(
-        <IngressesAccordions deploymentResources={oneIngressFixture as any} />,
-      ),
+      wrapper(wrapInTestApp(<IngressesAccordions />)),
     );
 
     expect(getByText('awesome-service')).toBeInTheDocument();

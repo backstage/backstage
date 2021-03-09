@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1HorizontalPodAutoscaler,
-  V1Service,
-  V1ConfigMap,
-  ExtensionsV1beta1Ingress,
-} from '@kubernetes/client-node';
-
-export interface DeploymentResources {
-  pods: V1Pod[];
-  replicaSets: V1ReplicaSet[];
-  deployments: V1Deployment[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
-}
-
-export interface GroupedResponses extends DeploymentResources {
-  services: V1Service[];
-  configMaps: V1ConfigMap[];
-  ingresses: ExtensionsV1beta1Ingress[];
-  customResources: any[];
-}
+export * from './useKubernetesObjects';
+export * from './PodNamesWithErrors';
+export * from './GroupedResponses';
