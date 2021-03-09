@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+import { TodoService } from './types';
+
+const mockListBody = {
+  items: [{ text: 'my todo' }],
+  totalCount: 1,
+  offset: 0,
+  limit: 10,
+};
 
 describe('createRouter', () => {
   let app: express.Express;
+  const mockService: jest.Mocked<TodoService> = {
+    listTodos: jest.fn(),
+  };
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
+      todoService: mockService,
     });
     app = express().use(router);
   });
@@ -35,11 +45,49 @@ describe('createRouter', () => {
   });
 
   describe('GET /health', () => {
-    it('returns ok', async () => {
-      const response = await request(app).get('/health');
+    it('returns list without query', async () => {
+      mockService.listTodos.mockResolvedValueOnce(mockListBody);
 
+      const response = await request(app).get('/v1/todos');
       expect(response.status).toEqual(200);
-      expect(response.body).toEqual({ status: 'ok' });
+      expect(response.body).toEqual(mockListBody);
+      expect(mockService.listTodos).toHaveBeenCalledWith({
+        entity: undefined,
+        offset: undefined,
+        limit: undefined,
+      });
+    });
+
+    it('forwards pagination query', async () => {
+      mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+      const response = await request(app).get('/v1/todos?offset=5&limit=3');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockListBody);
+      expect(mockService.listTodos).toHaveBeenCalledWith({
+        entity: undefined,
+        offset: 5,
+        limit: 3,
+      });
+    });
+
+    it('forwards entity query', async () => {
+      mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+      const response = await request(app).get(
+        '/v1/todos?entity=component:my-component',
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockListBody);
+      expect(mockService.listTodos).toHaveBeenCalledWith({
+        entity: {
+          name: 'my-component',
+          kind: 'component',
+          namespace: 'default',
+        },
+        offset: undefined,
+        limit: undefined,
+      });
     });
   });
 });
