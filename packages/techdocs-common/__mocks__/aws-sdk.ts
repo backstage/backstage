@@ -19,6 +19,8 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
+export { Credentials } from 'aws-sdk';
+
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
 /**

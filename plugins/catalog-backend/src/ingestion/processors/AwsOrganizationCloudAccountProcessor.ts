@@ -51,25 +51,31 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
     });
   }
 
+  private static buildCredentials(
+    config: AwsOrganizationProviderConfig,
+  ): Credentials | undefined {
+    const roleArn = config.roleArn;
+    if (!roleArn) {
+      return undefined;
+    }
+
+    return new AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleSessionName: 'backstage-aws-organization-processor',
+        RoleArn: roleArn,
+      },
+    });
+  }
+
   constructor(options: {
     provider: AwsOrganizationProviderConfig;
     logger: Logger;
   }) {
     this.provider = options.provider;
     this.logger = options.logger;
-    let credentials = undefined;
-    if (
-      this.provider.roleArn !== undefined &&
-      AWS.config.credentials instanceof Credentials
-    ) {
-      credentials = new AWS.ChainableTemporaryCredentials({
-        masterCredentials: AWS.config.credentials as Credentials,
-        params: {
-          RoleSessionName: 'backstage-aws-organization-processor',
-          RoleArn: this.provider.roleArn,
-        },
-      });
-    }
+    const credentials = AwsOrganizationCloudAccountProcessor.buildCredentials(
+      this.provider,
+    );
     this.organizations = new AWS.Organizations({
       credentials,
       region: AWS_ORGANIZATION_REGION,
