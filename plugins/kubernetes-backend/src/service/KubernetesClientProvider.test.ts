@@ -45,42 +45,6 @@ describe('KubernetesClientProvider', () => {
     expect(mockGetKubeConfig.mock.calls.length).toBe(1);
   });
 
-  it('can get cached core client by cluster details', async () => {
-    const sut = new KubernetesClientProvider();
-
-    const mockGetKubeConfig = jest.fn(sut.getKubeConfig.bind({}));
-
-    sut.getKubeConfig = mockGetKubeConfig;
-
-    const result1 = sut.getCoreClientByClusterDetails({
-      name: 'cluster-name',
-      url: 'http://localhost:9999',
-      serviceAccountToken: 'TOKEN',
-      authProvider: 'serviceAccount',
-    });
-
-    const result2 = sut.getCoreClientByClusterDetails({
-      name: 'cluster-name',
-      url: 'http://localhost:9999',
-      serviceAccountToken: 'TOKEN',
-      authProvider: 'serviceAccount',
-    });
-
-    expect(result1.basePath).toBe('http://localhost:9999');
-    // These fields aren't on the type but are there
-    const auth1 = (result1 as any).authentications.default;
-    expect(auth1.users[0].token).toBe('TOKEN');
-    expect(auth1.clusters[0].name).toBe('cluster-name');
-
-    expect(result2.basePath).toBe('http://localhost:9999');
-    // These fields aren't on the type but are there
-    const auth2 = (result2 as any).authentications.default;
-    expect(auth2.users[0].token).toBe('TOKEN');
-    expect(auth2.clusters[0].name).toBe('cluster-name');
-
-    expect(mockGetKubeConfig.mock.calls.length).toBe(1);
-  });
-
   it('can get apps client by cluster details', async () => {
     const sut = new KubernetesClientProvider();
 
@@ -100,42 +64,6 @@ describe('KubernetesClientProvider', () => {
     const auth = (result as any).authentications.default;
     expect(auth.users[0].token).toBe('TOKEN');
     expect(auth.clusters[0].name).toBe('cluster-name');
-
-    expect(mockGetKubeConfig.mock.calls.length).toBe(1);
-  });
-
-  it('can get cached apps client by cluster details', async () => {
-    const sut = new KubernetesClientProvider();
-
-    const mockGetKubeConfig = jest.fn(sut.getKubeConfig.bind({}));
-
-    sut.getKubeConfig = mockGetKubeConfig;
-
-    const result1 = sut.getAppsClientByClusterDetails({
-      name: 'cluster-name',
-      url: 'http://localhost:9999',
-      serviceAccountToken: 'TOKEN',
-      authProvider: 'serviceAccount',
-    });
-
-    const result2 = sut.getAppsClientByClusterDetails({
-      name: 'cluster-name',
-      url: 'http://localhost:9999',
-      serviceAccountToken: 'TOKEN',
-      authProvider: 'serviceAccount',
-    });
-
-    expect(result1.basePath).toBe('http://localhost:9999');
-    // These fields aren't on the type but are there
-    const auth1 = (result1 as any).authentications.default;
-    expect(auth1.users[0].token).toBe('TOKEN');
-    expect(auth1.clusters[0].name).toBe('cluster-name');
-
-    expect(result2.basePath).toBe('http://localhost:9999');
-    // These fields aren't on the type but are there
-    const auth2 = (result2 as any).authentications.default;
-    expect(auth2.users[0].token).toBe('TOKEN');
-    expect(auth2.clusters[0].name).toBe('cluster-name');
 
     expect(mockGetKubeConfig.mock.calls.length).toBe(1);
   });
