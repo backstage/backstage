@@ -132,7 +132,8 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
             <EntityLabels entity={entity} />
             <EntityContextMenu
               onShowBadgesDialog={() => setBadgesDialogOpen(true)}
-              onUnregisterEntity={showRemovalDialog} />
+              onUnregisterEntity={showRemovalDialog}
+            />
           </>
         )}
       </Header>
@@ -170,6 +171,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
           onClose={() => setBadgesDialogOpen(false)}
         />
       )}
+
       <UnregisterEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}
