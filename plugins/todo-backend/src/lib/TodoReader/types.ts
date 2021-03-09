@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,30 @@
  * limitations under the License.
  */
 
-export * from './lib';
-export * from './service';
+export type TodoItem = {
+  text: string;
+  author?: string;
+  viewUrl?: string;
+  editUrl?: string;
+};
+
+export type ReadTodosOptions = {
+  /**
+   * Base URLs defining the root at which to search for TODOs
+   */
+  url: string;
+};
+
+export type ReadTodosResult = {
+  /**
+   * TODO items found at the given locations
+   */
+  items: TodoItem[];
+};
+
+export interface TodoReader {
+  /**
+   * Searches for TODO items in code at a given location
+   */
+  readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
+}

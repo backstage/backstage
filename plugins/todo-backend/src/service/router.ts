@@ -14,31 +14,45 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
-import { CatalogClient } from '@backstage/catalog-client';
-import { Config } from '@backstage/config';
+import { InputError } from '@backstage/backend-common';
+import { EntityName, parseEntityName } from '@backstage/catalog-model';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
+import { TodoService } from './types';
 
 export interface RouterOptions {
-  logger: Logger;
-  config: Config;
-  reader: UrlReader;
-  catalogClient: CatalogClient;
+  todoService: TodoService;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { todoService } = options;
 
   const router = Router();
   router.use(express.json());
 
-  router.get('/v1/todos', (req, res) => {
-    logger.debug('got todo request', req.query);
-    res.json({ items: [{ text: 'Test TODO' }], totalCount: 1 });
+  router.get('/v1/todos', async (req, res) => {
+    const { entity: entityRef, cursor } = req.query;
+
+    if (entityRef && typeof entityRef !== 'string') {
+      throw new InputError(`entity query must be a string`);
+    }
+    if (cursor && typeof cursor !== 'string') {
+      throw new InputError(`cursor query must be a string`);
+    }
+
+    let entity: EntityName | undefined = undefined;
+    if (entityRef) {
+      try {
+        entity = parseEntityName(entityRef);
+      } catch (error) {
+        throw new InputError(`Invalid entity ref, ${error}`);
+      }
+    }
+
+    const todos = await todoService.listTodos({ entity, cursor });
+    res.json(todos);
   });
 
   return router;

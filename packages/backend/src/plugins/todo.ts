@@ -13,12 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  createRouter,
+  TodoReaderService,
+  TodoScmReader,
+} from '@backstage/plugin-todo-backend';
 import { Router } from 'express';
-import { createRouter } from '@backstage/plugin-todo-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
+  reader,
+  discovery,
 }: PluginEnvironment): Promise<Router> {
-  return await createRouter({ logger });
+  const todoReader = new TodoScmReader({
+    logger,
+    reader,
+  });
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const todoService = new TodoReaderService({
+    logger,
+    todoReader,
+    catalogClient,
+  });
+
+  return await createRouter({ todoService });
 }
