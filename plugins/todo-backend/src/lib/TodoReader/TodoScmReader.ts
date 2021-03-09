@@ -32,9 +32,9 @@ export class TodoScmReader implements TodoReader {
     this.reader = options.reader;
   }
 
-  async readTodos(_options: ReadTodosOptions): Promise<ReadTodosResult> {
+  async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
     return {
-      items: [{ text: 'My mock todo' }],
+      items: [{ text: 'My mock todo', viewUrl: url }],
     };
   }
 }

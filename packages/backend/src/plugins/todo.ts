@@ -33,7 +33,6 @@ export default async function createPlugin({
   });
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const todoService = new TodoReaderService({
-    logger,
     todoReader,
     catalogClient,
   });
