@@ -4,8 +4,6 @@ title: Builtin actions
 description: Documentation describing the built-in template actions.
 ---
 
-# Built-in Actions
-
 The scaffolder comes with several built-in actions for fetching content,
 registering in the catalog and of course actions for creating and publishing a
 git repository.
