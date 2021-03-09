@@ -13,4 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { todoPlugin, TodoPage } from './plugin';
+
+export { todoApiRef } from './api';
+export { todoPlugin, EntityTodoContent } from './plugin';

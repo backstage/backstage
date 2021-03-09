@@ -15,12 +15,35 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { todoPlugin, TodoPage } from '../src/plugin';
+import { todoApiRef, todoPlugin, EntityTodoContent } from '../src';
 
 createDevApp()
   .registerPlugin(todoPlugin)
+  .registerApi({
+    api: todoApiRef,
+    deps: {},
+    factory() {
+      return {
+        listTodos: async () => ({
+          items: [
+            {
+              text: 'Make sure this works',
+              author: 'Rugvip',
+              viewUrl: 'https://github.com/backstage/backstage',
+            },
+          ],
+          totalCount: 15,
+          cursors: {
+            prev: 'prev',
+            self: 'self',
+            next: 'next',
+          },
+        }),
+      };
+    },
+  })
   .addPage({
-    element: <TodoPage />,
-    title: 'Root Page',
+    element: <EntityTodoContent />,
+    title: 'Entity Todo Content',
   })
   .render();

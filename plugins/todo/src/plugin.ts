@@ -13,18 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRoutableExtension } from '@backstage/core';
+import {
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+} from '@backstage/core';
+import { todoApiRef, TodoClient } from './api';
 
 import { rootRouteRef } from './routes';
 
 export const todoPlugin = createPlugin({
   id: 'todo',
+  apis: [
+    createApiFactory({
+      api: todoApiRef,
+      deps: {},
+      factory() {
+        return new TodoClient();
+      },
+    }),
+  ],
   routes: {
     root: rootRouteRef,
   },
 });
 
-export const TodoPage = todoPlugin.provide(
+export const EntityTodoContent = todoPlugin.provide(
   createRoutableExtension({
     component: () =>
       import('./components/ExampleComponent').then(m => m.ExampleComponent),
