@@ -72,9 +72,11 @@ entries.push({
       moved: 1,
       ringId: 'use',
       date: new Date('2020-08-06'),
+      description:
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
     },
   ],
-  url: '#',
+  url: 'https://webpack.js.org/',
   key: 'webpack',
   id: 'webpack',
   title: 'Webpack',
