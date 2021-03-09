@@ -19,10 +19,10 @@ import { ApiRef, ApiHolder } from './types';
 type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
 
 class ApiRegistryBuilder {
-  private apis: ApiImpl[] = [];
+  private apis: [string, unknown][] = [];
 
   add<T, I extends T>(api: ApiRef<T>, impl: I): I {
-    this.apis.push([api, impl]);
+    this.apis.push([api.id, impl]);
     return impl;
   }
 
@@ -38,7 +38,7 @@ export class ApiRegistry implements ApiHolder {
   }
 
   static from(apis: ApiImpl[]) {
-    return new ApiRegistry(new Map(apis));
+    return new ApiRegistry(new Map(apis.map(([api, impl]) => [api.id, impl])));
   }
 
   /**
@@ -48,10 +48,10 @@ export class ApiRegistry implements ApiHolder {
    * @param impl Implementation of the API to add
    */
   static with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
-    return new ApiRegistry(new Map([[api, impl]]));
+    return new ApiRegistry(new Map([[api.id, impl]]));
   }
 
-  constructor(private readonly apis: Map<ApiRef<unknown>, unknown>) {}
+  constructor(private readonly apis: Map<string, unknown>) {}
 
   /**
    * Returns a new ApiRegistry with the provided API added to the existing ones.
@@ -60,10 +60,10 @@ export class ApiRegistry implements ApiHolder {
    * @param impl Implementation of the API to add
    */
   with<T>(api: ApiRef<T>, impl: T): ApiRegistry {
-    return new ApiRegistry(new Map([...this.apis, [api, impl]]));
+    return new ApiRegistry(new Map([...this.apis, [api.id, impl]]));
   }
 
   get<T>(api: ApiRef<T>): T | undefined {
-    return this.apis.get(api) as T | undefined;
+    return this.apis.get(api.id) as T | undefined;
   }
 }
