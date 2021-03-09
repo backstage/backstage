@@ -29,6 +29,8 @@ import { filter, get, head, pipe, reverse } from 'lodash/fp';
 import { Logger } from 'winston';
 import { CatalogProcessor } from './types';
 
+const ALLOWED_KINDS = ['API', 'Component', 'Resource', 'System'];
+
 const ALLOWED_LOCATION_TYPES = [
   'url',
   'azure/api',
@@ -59,7 +61,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     // Only continue if the owner is not set
     if (
       !entity ||
-      !['Component', 'API'].includes(entity.kind) ||
+      !ALLOWED_KINDS.includes(entity.kind) ||
       !ALLOWED_LOCATION_TYPES.includes(location.type) ||
       (entity.spec && entity.spec.owner)
     ) {
