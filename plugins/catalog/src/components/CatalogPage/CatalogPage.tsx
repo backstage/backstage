@@ -59,11 +59,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export type CatalogPageOpts = {
+export type CatalogPageProps = {
   initiallySelectedFilter?: string;
 };
 
-const CatalogPageContents = (opt: CatalogPageOpts) => {
+const CatalogPageContents = (props: CatalogPageProps) => {
   const styles = useStyles();
   const {
     loading,
@@ -84,7 +84,7 @@ const CatalogPageContents = (opt: CatalogPageOpts) => {
   ] = useState<CatalogFilterType>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const initiallySelectedFilter =
-    selectedSidebarItem?.id ?? opt.initiallySelectedFilter ?? 'owned';
+    selectedSidebarItem?.id ?? props.initiallySelectedFilter ?? 'owned';
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const addMockData = useCallback(async () => {
     try {
@@ -219,8 +219,8 @@ const CatalogPageContents = (opt: CatalogPageOpts) => {
   );
 };
 
-export const CatalogPage = (opt: CatalogPageOpts) => (
+export const CatalogPage = (props: CatalogPageProps) => (
   <EntityFilterGroupsProvider>
-    <CatalogPageContents {...opt} />
+    <CatalogPageContents {...props} />
   </EntityFilterGroupsProvider>
 );
