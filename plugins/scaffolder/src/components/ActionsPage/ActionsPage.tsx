@@ -38,6 +38,7 @@ import {
 } from '@material-ui/core';
 import { JSONSchema } from '@backstage/catalog-model';
 import { JSONSchema7Definition } from 'json-schema';
+import classNames from 'classnames';
 
 const useStyles = makeStyles(theme => ({
   code: {
@@ -90,16 +91,14 @@ export const ActionsPage = () => {
     if (!properties) {
       return undefined;
     }
-    const required = input.required ? input.required : [];
 
     return Object.entries(properties).map(entry => {
       const [key] = entry;
       const props = (entry[1] as unknown) as JSONSchema;
-      const isRequired = required.includes(key);
+      const codeClassname = classNames(classes.code, {
+        [classes.codeRequired]: input.required?.includes(key),
+      });
 
-      const codeClassname = `${classes.code} ${
-        isRequired ? classes.codeRequired : ''
-      }`;
       return (
         <TableRow key={key}>
           <TableCell>
