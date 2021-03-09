@@ -38,6 +38,11 @@ type Options = {
   parser?: TodoParser;
 };
 
+type CacheItem = {
+  etag: string;
+  result: ReadTodosResult;
+};
+
 const defaultTodoParser: TodoParser = ({ content, path }) => {
   try {
     const comments = parse(content, {
@@ -60,6 +65,8 @@ export class TodoScmReader implements TodoReader {
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
 
+  private readonly cache = new Map<string, CacheItem>();
+
   static fromConfig(config: Config, options: Options) {
     return new TodoScmReader(options, ScmIntegrations.fromConfig(config));
   }
@@ -72,7 +79,25 @@ export class TodoScmReader implements TodoReader {
   }
 
   async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
+    const cacheItem = this.cache.get(url);
+    try {
+      const newCacheItem = await this.doReadTodos({ url }, cacheItem?.etag);
+      this.cache.set(url, newCacheItem);
+      return newCacheItem.result;
+    } catch (error) {
+      if (cacheItem && error.name === 'NotModifiedError') {
+        return cacheItem.result;
+      }
+      throw error;
+    }
+  }
+
+  private async doReadTodos(
+    { url }: ReadTodosOptions,
+    etag?: string,
+  ): Promise<CacheItem> {
     const tree = await this.reader.readTree(url, {
+      etag,
       filter(path) {
         return !path.startsWith('.yarn');
       },
@@ -113,6 +138,6 @@ export class TodoScmReader implements TodoReader {
       }
     }
 
-    return { items: todos };
+    return { result: { items: todos }, etag: tree.etag };
   }
 }
