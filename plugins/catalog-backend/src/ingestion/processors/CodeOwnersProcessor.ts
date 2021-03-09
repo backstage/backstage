@@ -29,7 +29,7 @@ import { filter, get, head, pipe, reverse } from 'lodash/fp';
 import { Logger } from 'winston';
 import { CatalogProcessor } from './types';
 
-const ALLOWED_KINDS = ['API', 'Component', 'Resource', 'System'];
+const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
 const ALLOWED_LOCATION_TYPES = [
   'url',
