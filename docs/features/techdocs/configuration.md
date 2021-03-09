@@ -76,6 +76,12 @@ techdocs:
       region:
         $env: AWS_REGION
 
+      # (Optional) Endpoint URI to send requests to.
+      # If not set, the default endpoint is built from the configured region.
+      # https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+      endpoint:
+        $env: AWS_ENDPOINT
+
     # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
 
     azureBlobStorage:

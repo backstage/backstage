@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { GitLabIntegration } from './GitLabIntegration';
+import { GitLabIntegration, replaceUrlType } from './GitLabIntegration';
 
 describe('GitLabIntegration', () => {
   it('has a working factory', () => {
@@ -42,5 +42,44 @@ describe('GitLabIntegration', () => {
     const integration = new GitLabIntegration({ host: 'h.com' } as any);
     expect(integration.type).toBe('gitlab');
     expect(integration.title).toBe('h.com');
+  });
+
+  it('resolve edit URL', () => {
+    const integration = new GitLabIntegration({ host: 'h.com' } as any);
+
+    expect(
+      integration.resolveEditUrl(
+        'https://gitlab.com/my-org/my-project/-/blob/develop/README.md',
+      ),
+    ).toBe('https://gitlab.com/my-org/my-project/-/edit/develop/README.md');
+  });
+});
+
+describe('replaceUrlType', () => {
+  it('should replace with expected type', () => {
+    expect(
+      replaceUrlType(
+        'https://gitlab.com/my-org/my-project/-/blob/develop/README.md',
+        'edit',
+      ),
+    ).toBe('https://gitlab.com/my-org/my-project/-/edit/develop/README.md');
+    expect(
+      replaceUrlType(
+        'https://gitlab.com/webmodules/blob/-/blob/develop/test',
+        'tree',
+      ),
+    ).toBe('https://gitlab.com/webmodules/blob/-/tree/develop/test');
+    expect(
+      replaceUrlType(
+        'https://gitlab.com/blob/blob/-/blob/develop/test',
+        'tree',
+      ),
+    ).toBe('https://gitlab.com/blob/blob/-/tree/develop/test');
+    expect(
+      replaceUrlType(
+        'https://gitlab.com/blob/blob/-/edit/develop/README.md',
+        'tree',
+      ),
+    ).toBe('https://gitlab.com/blob/blob/-/tree/develop/README.md');
   });
 });

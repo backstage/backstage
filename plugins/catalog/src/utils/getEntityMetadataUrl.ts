@@ -15,31 +15,15 @@
  */
 
 import {
-  EntityMeta,
-  LocationSpec,
-  LOCATION_ANNOTATION,
-  parseLocationReference,
+  EDIT_URL_ANNOTATION,
+  Entity,
+  VIEW_URL_ANNOTATION,
 } from '@backstage/catalog-model';
 
-export function findLocationForEntityMeta(
-  meta: EntityMeta,
-): LocationSpec | undefined {
-  if (!meta) {
-    return undefined;
-  }
-
-  const annotation = meta.annotations?.[LOCATION_ANNOTATION];
-  if (!annotation) {
-    return undefined;
-  }
-
-  return parseLocation(annotation);
+export function getEntityMetadataViewUrl(entity: Entity): string | undefined {
+  return entity.metadata.annotations?.[VIEW_URL_ANNOTATION];
 }
 
-export function parseLocation(reference: string): LocationSpec | undefined {
-  try {
-    return parseLocationReference(reference);
-  } catch {
-    return undefined;
-  }
+export function getEntityMetadataEditUrl(entity: Entity): string | undefined {
+  return entity.metadata.annotations?.[EDIT_URL_ANNOTATION];
 }

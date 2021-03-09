@@ -25,31 +25,28 @@ const GITLAB_API_BASE_URL = 'https://gitlab.com/api/v4';
  */
 export type GitLabIntegrationConfig = {
   /**
-   * The host of the target that this matches on, e.g. "gitlab.com"
+   * The host of the target that this matches on, e.g. "gitlab.com".
    */
   host: string;
 
   /**
-   * The base URL of the API of this provider, e.g. "https://gitlab.com/api/v4",
-   * with no trailing slash.
+   * The base URL of the API of this provider, e.g.
+   * "https://gitlab.com/api/v4", with no trailing slash.
    *
-   * May be omitted specifically for GitLab; then it will be deduced.
-   *
-   * The API will always be preferred if both its base URL and a token are
-   * present.
+   * May be omitted specifically for public GitLab; then it will be deduced.
    */
   apiBaseUrl: string;
 
   /**
-   * The authorization token to use for requests this provider.
+   * The authorization token to use for requests to this provider.
    *
    * If no token is specified, anonymous access is used.
    */
   token?: string;
 
   /**
-   * The baseUrl of this provider, e.g "https://gitlab.com",
-   * which is passed into the gitlab client.
+   * The baseUrl of this provider, e.g. "https://gitlab.com", which is passed
+   * into the GitLab client.
    *
    * If no baseUrl is provided, it will default to https://${host}
    */
