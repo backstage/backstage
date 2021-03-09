@@ -232,7 +232,7 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   /**
-   * @Returns ListActionsResponse containg all registered actions.
+   * @returns ListActionsResponse containing all registered actions.
    */
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
