@@ -27,7 +27,7 @@ import {
 import React, {
   Fragment,
   MouseEventHandler,
-  ReactChild,
+  PropsWithChildren,
   useState,
 } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
@@ -76,22 +76,41 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
   );
 };
 
+const createDisplayedItems = (
+  showCondition: Boolean | undefined,
+  generalItems: SupportItem[],
+  supportItems: SupportItem[] | undefined,
+) => {
+  if (showCondition === undefined) return generalItems;
+  else if (showCondition)
+    return supportItems && [...supportItems, ...generalItems];
+  return supportItems;
+};
+
+type Props = {};
+
 type SupportButtonProps = {
-  title?: ReactChild;
+  title?: string;
   supportItems?: SupportItem[];
-  displayMode?: 'customOnly' | 'all' | '';
+  showBothLists?: Boolean | undefined;
 };
 
 export const SupportButton = ({
   supportItems,
   title,
-  displayMode = '',
-}: SupportButtonProps) => {
+  showBothLists = undefined,
+  children,
+}: SupportButtonProps & PropsWithChildren<Props>) => {
   const { items } = useSupportConfig();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
-  const displayedItems = supportItems && [...supportItems, ...items];
+
+  const displayedItems = createDisplayedItems(
+    showBothLists,
+    items,
+    supportItems,
+  );
 
   const onClickHandler: MouseEventHandler = event => {
     setAnchorEl(event.currentTarget);
@@ -100,39 +119,6 @@ export const SupportButton = ({
 
   const popoverCloseHandler = () => {
     setPopoverOpen(false);
-  };
-
-  const displayItems = () => {
-    switch (displayMode) {
-      case 'customOnly':
-        return (
-          <>
-            {supportItems &&
-              supportItems.map((item, i) => (
-                <SupportListItem item={item} key={i} />
-              ))}
-          </>
-        );
-
-      case 'all':
-        return (
-          <>
-            {displayedItems &&
-              displayedItems.map((item, i) => (
-                <SupportListItem item={item} key={i} />
-              ))}
-          </>
-        );
-
-      default:
-        return (
-          <>
-            {items.map((item, i) => (
-              <SupportListItem item={item} key={i} />
-            ))}
-          </>
-        );
-    }
   };
 
   return (
@@ -160,12 +146,16 @@ export const SupportButton = ({
         onClose={popoverCloseHandler}
       >
         <List className={classes.popoverList}>
-          {React.Children.map(title, (child, i) => (
+          {title && <ListItem alignItems="flex-start">{title}</ListItem>}
+          {React.Children.map(children, (child, i) => (
             <ListItem alignItems="flex-start" key={i}>
               {child}
             </ListItem>
           ))}
-          {displayItems()}
+          {displayedItems &&
+            displayedItems.map((item, i) => (
+              <SupportListItem item={item} key={i} />
+            ))}
         </List>
       </Popover>
     </Fragment>
