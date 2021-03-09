@@ -69,7 +69,7 @@ export class TodoClient implements TodoApi {
     error.status = res.status;
 
     try {
-      const json = await res.json();
+      const json = await res.clone().json();
       if (typeof json?.error?.message !== 'string') {
         throw new Error('invalid error');
       }
@@ -83,6 +83,9 @@ export class TodoClient implements TodoApi {
         error.message = `Failed to ${action}, ${text}`;
       } catch {
         error.message = `Failed to ${action}, status ${res.status}`;
+      }
+      if (res.status === 404) {
+        error.name = 'NotFoundError';
       }
     }
 
