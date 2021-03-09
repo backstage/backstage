@@ -203,6 +203,7 @@ const CatalogPageContents = () => {
           </div>
           <CatalogTable
             titlePreamble={selectedSidebarItem?.label ?? ''}
+            view={selectedTab}
             entities={matchingEntities}
             loading={loading}
             error={error}
