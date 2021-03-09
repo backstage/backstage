@@ -40,8 +40,7 @@ export const todoPlugin = createPlugin({
 
 export const EntityTodoContent = todoPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+    component: () => import('./components/TodoList').then(m => m.TodoList),
     mountPoint: rootRouteRef,
   }),
 );
