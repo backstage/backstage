@@ -16,7 +16,6 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { spawn } from 'child_process';
-import Docker from 'dockerode';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { PassThrough, Writable } from 'stream';
@@ -34,99 +33,12 @@ export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
   return 'techdocs';
 }
 
-type RunDockerContainerOptions = {
-  imageName: string;
-  args: string[];
-  logStream?: Writable;
-  docsDir: string;
-  outputDir: string;
-  dockerClient: Docker;
-  createOptions?: Docker.ContainerCreateOptions;
-};
-
 export type RunCommandOptions = {
   command: string;
   args: string[];
   options: object;
   logStream?: Writable;
 };
-
-export type UserOptions = {
-  User?: string;
-};
-
-// To be replaced by a runDockerContainer from backend-common
-// shared between Scaffolder and TechDocs and any other plugin.
-export async function runDockerContainer({
-  imageName,
-  args,
-  logStream = new PassThrough(),
-  docsDir,
-  outputDir,
-  dockerClient,
-  createOptions,
-}: RunDockerContainerOptions) {
-  try {
-    await dockerClient.ping();
-  } catch (e) {
-    throw new Error(
-      `This operation requires Docker. Docker does not appear to be available. Docker.ping() failed with: ${e.message}`,
-    );
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    dockerClient.pull(imageName, {}, (err, stream) => {
-      if (err) return reject(err);
-      stream.pipe(logStream, { end: false });
-      stream.on('end', () => resolve());
-      stream.on('error', (error: Error) => reject(error));
-      return undefined;
-    });
-  });
-
-  const userOptions: UserOptions = {};
-  // @ts-ignore
-  if (process.getuid && process.getgid) {
-    // Files that are created inside the Docker container will be owned by
-    // root on the host system on non Mac systems, because of reasons. Mainly the fact that
-    // volume sharing is done using NFS on Mac and actual mounts in Linux world.
-    // So we set the user in the container as the same user and group id as the host.
-    // On Windows we don't have process.getuid nor process.getgid
-    userOptions.User = `${process.getuid()}:${process.getgid()}`;
-  }
-
-  const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
-    imageName,
-    args,
-    logStream,
-    {
-      Volumes: {
-        '/content': {},
-        '/result': {},
-      },
-      WorkingDir: '/content',
-      HostConfig: {
-        Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
-      },
-      ...userOptions,
-      ...createOptions,
-    },
-  );
-
-  if (error) {
-    throw new Error(
-      `Docker failed to run with the following error message: ${error}`,
-    );
-  }
-
-  if (statusCode !== 0) {
-    throw new Error(
-      `Docker container returned a non-zero exit code (${statusCode})`,
-    );
-  }
-
-  return { error, statusCode };
-}
 
 /**
  *

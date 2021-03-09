@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { runDockerContainer } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { PassThrough } from 'stream';
@@ -22,7 +23,6 @@ import {
   addBuildTimestampMetadata,
   patchMkdocsYmlPreBuild,
   runCommand,
-  runDockerContainer,
   storeEtagMetadata,
 } from './helpers';
 import { GeneratorBase, GeneratorRunOptions } from './types';
@@ -78,6 +78,12 @@ export class TechdocsGenerator implements GeneratorBase {
       );
     }
 
+    // Directories to bind on container
+    const mountDirs = {
+      [inputDir]: '/input',
+      [outputDir]: '/output',
+    };
+
     try {
       switch (this.options.runGeneratorIn) {
         case 'local':
@@ -96,10 +102,13 @@ export class TechdocsGenerator implements GeneratorBase {
         case 'docker':
           await runDockerContainer({
             imageName: 'spotify/techdocs',
-            args: ['build', '-d', '/result'],
+            args: ['build', '-d', '/output'],
             logStream,
-            docsDir: inputDir,
-            outputDir,
+            mountDirs,
+            workingDir: '/input',
+            // Set the home directory inside the container as something that applications can
+            // write to, otherwise they will just fail trying to write to /
+            envVars: { HOME: '/tmp' },
             dockerClient,
           });
           this.logger.info(
@@ -115,7 +124,7 @@ export class TechdocsGenerator implements GeneratorBase {
       this.logger.debug(
         `Failed to generate docs from ${inputDir} into ${outputDir}`,
       );
-      this.logger.debug(`Build failed with error: ${log}`);
+      this.logger.error(`Build failed with error: ${log}`);
       throw new Error(
         `Failed to generate docs from ${inputDir} into ${outputDir} with error ${error.message}`,
       );

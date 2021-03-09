@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 import { getVoidLogger } from '@backstage/backend-common';
-import Docker from 'dockerode';
 import fs from 'fs-extra';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path, { resolve as resolvePath } from 'path';
-import Stream, { PassThrough } from 'stream';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { RemoteProtocol } from '../prepare/types';
 import {
@@ -28,9 +26,7 @@ import {
   getRepoUrlFromLocationAnnotation,
   isValidRepoUrlForMkdocs,
   patchMkdocsYmlPreBuild,
-  runDockerContainer,
   storeEtagMetadata,
-  UserOptions,
 } from './helpers';
 
 const mockEntity = {
@@ -40,8 +36,6 @@ const mockEntity = {
     name: 'testName',
   },
 };
-
-const mockDocker = new Docker() as jest.Mocked<Docker>;
 
 const mkdocsYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
@@ -57,133 +51,6 @@ describe('helpers', () => {
     it('should return techdocs as the only generator key', () => {
       const key = getGeneratorKey(mockEntity);
       expect(key).toBe('techdocs');
-    });
-  });
-
-  describe('runDockerContainer', () => {
-    beforeEach(() => {
-      jest.spyOn(mockDocker, 'pull').mockImplementation((async (
-        _image: string,
-        _something: any,
-        handler: (err: Error | undefined, stream: PassThrough) => void,
-      ) => {
-        const mockStream = new PassThrough();
-        handler(undefined, mockStream);
-        mockStream.end();
-      }) as any);
-
-      jest
-        .spyOn(mockDocker, 'run')
-        .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
-
-      jest
-        .spyOn(mockDocker, 'ping')
-        .mockResolvedValue(Buffer.from('OK', 'utf-8'));
-    });
-
-    const imageName = 'spotify/techdocs';
-    const args = ['build', '-d', '/result'];
-    const docsDir = os.tmpdir();
-    const outputDir = os.tmpdir();
-
-    it('should pull the techdocs docker container', async () => {
-      await runDockerContainer({
-        imageName,
-        args,
-        docsDir,
-        outputDir,
-        dockerClient: mockDocker,
-      });
-
-      expect(mockDocker.pull).toHaveBeenCalledWith(
-        imageName,
-        {},
-        expect.any(Function),
-      );
-    });
-
-    it('should run the techdocs docker container', async () => {
-      await runDockerContainer({
-        imageName,
-        args,
-        docsDir,
-        outputDir,
-        dockerClient: mockDocker,
-      });
-
-      expect(mockDocker.run).toHaveBeenCalledWith(
-        imageName,
-        args,
-        expect.any(Stream),
-        expect.objectContaining({
-          Volumes: {
-            '/content': {},
-            '/result': {},
-          },
-          WorkingDir: '/content',
-          HostConfig: {
-            Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
-          },
-        }),
-      );
-    });
-
-    it('should ping docker to test availability', async () => {
-      await runDockerContainer({
-        imageName,
-        args,
-        docsDir,
-        outputDir,
-        dockerClient: mockDocker,
-      });
-
-      expect(mockDocker.ping).toHaveBeenCalled();
-    });
-
-    it('should pass through the user and group id from the host machine and set the home dir', async () => {
-      await runDockerContainer({
-        imageName,
-        args,
-        docsDir,
-        outputDir,
-        dockerClient: mockDocker,
-      });
-
-      const userOptions: UserOptions = {};
-      if (process.getuid && process.getgid) {
-        userOptions.User = `${process.getuid()}:${process.getgid()}`;
-      }
-
-      expect(mockDocker.run).toHaveBeenCalledWith(
-        imageName,
-        args,
-        expect.any(Stream),
-        expect.objectContaining({
-          ...userOptions,
-        }),
-      );
-    });
-
-    describe('where docker is unavailable', () => {
-      const dockerError = 'a docker error';
-
-      beforeEach(() => {
-        jest.spyOn(mockDocker, 'ping').mockImplementationOnce(() => {
-          throw new Error(dockerError);
-        });
-      });
-
-      it('should throw with a descriptive error message including the docker error message', async () => {
-        await expect(
-          runDockerContainer({
-            imageName,
-            args,
-            docsDir,
-            outputDir,
-            dockerClient: mockDocker,
-          }),
-        ).rejects.toThrow(new RegExp(`.+: ${dockerError}`));
-      });
     });
   });
 
