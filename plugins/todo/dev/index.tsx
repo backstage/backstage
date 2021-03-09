@@ -13,9 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
+import { Content, Header, HeaderLabel, Page } from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
-import { todoApiRef, todoPlugin, EntityTodoContent } from '../src';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { EntityTodoContent, todoApiRef, todoPlugin } from '../src';
+
+const entity: Entity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'Component',
+  metadata: {
+    name: 'backstage',
+    annotations: {
+      [LOCATION_ANNOTATION]:
+        'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
+    },
+  },
+  spec: {
+    type: 'library',
+  },
+};
 
 createDevApp()
   .registerPlugin(todoPlugin)
@@ -43,7 +61,18 @@ createDevApp()
     },
   })
   .addPage({
-    element: <EntityTodoContent />,
+    element: (
+      <EntityProvider entity={entity}>
+        <Page themeId="service">
+          <Header title="Some Entity">
+            <HeaderLabel label="Mode" value="Development" />
+          </Header>
+          <Content>
+            <EntityTodoContent />
+          </Content>
+        </Page>
+      </EntityProvider>
+    ),
     title: 'Entity Todo Content',
   })
   .render();
