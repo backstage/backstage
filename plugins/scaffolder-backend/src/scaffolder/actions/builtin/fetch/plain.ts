@@ -29,7 +29,7 @@ export function createFetchPlainAction(options: {
   return createTemplateAction<{ url: string; targetPath?: string }>({
     id: 'fetch:plain',
     description:
-      "Downloads content and places it in the workspacePath or optionally in a subdirectory specified by the 'targetPath' input option.",
+      "Downloads content and places it in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
     schema: {
       input: {
         type: 'object',
