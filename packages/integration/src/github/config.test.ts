@@ -15,6 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   GitHubIntegrationConfig,
   readGitHubIntegrationConfig,
@@ -24,6 +25,19 @@ import {
 describe('readGitHubIntegrationConfig', () => {
   function buildConfig(provider: Partial<GitHubIntegrationConfig>) {
     return new ConfigReader(provider);
+  }
+
+  async function buildFrontendConfig(
+    data: Partial<GitHubIntegrationConfig>,
+  ): Promise<Config> {
+    const schema = await loadConfigSchema({
+      dependencies: [require('../../package.json').name],
+    });
+    const processed = schema.process(
+      [{ data: { integrations: { github: [data] } }, context: 'app' }],
+      { visibility: ['frontend'] },
+    );
+    return new ConfigReader((processed[0].data as any).integrations.github[0]);
   }
 
   it('reads all values', () => {
@@ -73,6 +87,23 @@ describe('readGitHubIntegrationConfig', () => {
     expect(() =>
       readGitHubIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
+  });
+
+  it('works on the frontend', async () => {
+    expect(
+      readGitHubIntegrationConfig(
+        await buildFrontendConfig({
+          host: 'a.com',
+          apiBaseUrl: 'https://a.com/api',
+          rawBaseUrl: 'https://a.com/raw',
+          token: 't',
+        }),
+      ),
+    ).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+      rawBaseUrl: 'https://a.com/raw',
+    });
   });
 });
 

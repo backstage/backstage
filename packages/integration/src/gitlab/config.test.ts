@@ -15,6 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   GitLabIntegrationConfig,
   readGitLabIntegrationConfig,
@@ -24,6 +25,19 @@ import {
 describe('readGitLabIntegrationConfig', () => {
   function buildConfig(data: Partial<GitLabIntegrationConfig>): Config {
     return new ConfigReader(data);
+  }
+
+  async function buildFrontendConfig(
+    data: Partial<GitLabIntegrationConfig>,
+  ): Promise<Config> {
+    const schema = await loadConfigSchema({
+      dependencies: [require('../../package.json').name],
+    });
+    const processed = schema.process(
+      [{ data: { integrations: { gitlab: [data] } }, context: 'app' }],
+      { visibility: ['frontend'] },
+    );
+    return new ConfigReader((processed[0].data as any).integrations.gitlab[0]);
   }
 
   it('reads all values', () => {
@@ -78,6 +92,23 @@ describe('readGitLabIntegrationConfig', () => {
     expect(() =>
       readGitLabIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
+  });
+
+  it('works on the frontend', async () => {
+    expect(
+      readGitLabIntegrationConfig(
+        await buildFrontendConfig({
+          host: 'a.com',
+          apiBaseUrl: 'https://a.com/api',
+          token: 't',
+          baseUrl: 'https://a.com',
+        }),
+      ),
+    ).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+    });
   });
 });
 
