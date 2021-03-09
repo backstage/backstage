@@ -15,6 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   AzureIntegrationConfig,
   readAzureIntegrationConfig,
@@ -24,6 +25,19 @@ import {
 describe('readAzureIntegrationConfig', () => {
   function buildConfig(data: Partial<AzureIntegrationConfig>): Config {
     return new ConfigReader(data);
+  }
+
+  async function buildFrontendConfig(
+    data: Partial<AzureIntegrationConfig>,
+  ): Promise<Config> {
+    const schema = await loadConfigSchema({
+      dependencies: [require('../../package.json').name],
+    });
+    const processed = schema.process(
+      [{ data: { integrations: { azure: [data] } }, context: 'app' }],
+      { visibility: ['frontend'] },
+    );
+    return new ConfigReader((processed[0].data as any).integrations.azure[0]);
   }
 
   it('reads all values', () => {
@@ -55,6 +69,19 @@ describe('readAzureIntegrationConfig', () => {
     expect(() =>
       readAzureIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
+  });
+
+  it('works on the frontend', async () => {
+    expect(
+      readAzureIntegrationConfig(
+        await buildFrontendConfig({
+          host: 'a.com',
+          token: 't',
+        }),
+      ),
+    ).toEqual({
+      host: 'a.com',
+    });
   });
 });
 
