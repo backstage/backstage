@@ -106,7 +106,7 @@ export const AuditListTable = ({ items }: { items: Website[] }) => {
       lastReport: (
         <>
           <AuditStatusIcon audit={website.lastAudit} />{' '}
-          <span>{website.lastAudit.status.toUpperCase()}</span>
+          <span>{website.lastAudit.status.toLocaleUpperCase('en-US')}</span>
         </>
       ),
       lastAuditTriggered: formatTime(website.lastAudit.timeCreated),

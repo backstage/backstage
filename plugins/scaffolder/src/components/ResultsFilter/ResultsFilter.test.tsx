@@ -100,7 +100,9 @@ describe('Results Filter', () => {
     );
     for (const category of categories) {
       expect(
-        await findByText(category.charAt(0).toUpperCase() + category.slice(1)),
+        await findByText(
+          category.charAt(0).toLocaleUpperCase('en-US') + category.slice(1),
+        ),
       ).toBeInTheDocument();
     }
   });

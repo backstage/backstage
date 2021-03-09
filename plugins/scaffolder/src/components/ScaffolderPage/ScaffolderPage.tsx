@@ -105,8 +105,8 @@ export const ScaffolderPageContents = () => {
   );
 
   const matchesQuery = (metadata: EntityMeta, query: string) =>
-    `${metadata.title}`.toUpperCase().includes(query) ||
-    metadata.tags?.join('').toUpperCase().indexOf(query) !== -1;
+    `${metadata.title}`.toLocaleUpperCase('en-US').includes(query) ||
+    metadata.tags?.join('').toLocaleUpperCase('en-US').indexOf(query) !== -1;
 
   useEffect(() => {
     if (search.length === 0) {
@@ -114,7 +114,7 @@ export const ScaffolderPageContents = () => {
     }
     return setMatchingEntities(
       filteredEntities.filter(template =>
-        matchesQuery(template.metadata, search.toUpperCase()),
+        matchesQuery(template.metadata, search.toLocaleUpperCase('en-US')),
       ),
     );
   }, [search, filteredEntities]);

@@ -79,7 +79,7 @@ export type CITableBuildInfo = {
 
 // retried, canceled, infrastructure_fail, timedout, not_run, running, failed, queued, scheduled, not_running, no_tests, fixed, success
 const getStatusComponent = (status: string | undefined = '') => {
-  switch (status.toLowerCase()) {
+  switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':
     case 'scheduled':
       return <StatusPending />;

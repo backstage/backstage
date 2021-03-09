@@ -74,7 +74,8 @@ export const ProvidedApisCard = ({ variant = 'gridItem' }: Props) => {
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">
-            This {entity.kind.toLowerCase()} does not provide any APIs.
+            This {entity.kind.toLocaleLowerCase('en-US')} does not provide any
+            APIs.
           </Typography>
           <Typography variant="body2">
             <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">

@@ -76,13 +76,13 @@ export const ToolCard = ({ card, objectFit }: Props) => {
       <CardContent>
         <Typography paragraph variant="h5">
           {title}{' '}
-          {lifecycle && lifecycle.toLowerCase() !== 'ga' && (
+          {lifecycle && lifecycle.toLocaleLowerCase('en-US') !== 'ga' && (
             <Chip
               size="small"
               label={lifecycle}
               className={classNames(
                 classes.lifecycle,
-                classes[lifecycle.toLowerCase()],
+                classes[lifecycle.toLocaleLowerCase('en-US')],
               )}
             />
           )}

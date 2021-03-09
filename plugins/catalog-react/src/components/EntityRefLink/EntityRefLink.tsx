@@ -48,11 +48,12 @@ export const EntityRefLink = forwardRef<any, EntityRefLinkProps>(
       name = entityRef.name;
     }
 
-    kind = kind.toLowerCase();
+    kind = kind.toLocaleLowerCase('en-US');
 
     const routeParams = {
       kind,
-      namespace: namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE,
+      namespace:
+        namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE,
       name,
     };
 

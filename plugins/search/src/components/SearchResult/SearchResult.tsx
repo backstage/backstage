@@ -158,11 +158,13 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       if (searchQuery) {
         withFilters = withFilters.filter(
           (result: Result) =>
-            result.name?.toLowerCase().includes(searchQuery) ||
+            result.name?.toLocaleLowerCase('en-US').includes(searchQuery) ||
             result.name
-              ?.toLowerCase()
+              ?.toLocaleLowerCase('en-US')
               .includes(searchQuery.split(' ').join('-')) ||
-            result.description?.toLowerCase().includes(searchQuery),
+            result.description
+              ?.toLocaleLowerCase('en-US')
+              .includes(searchQuery),
         );
       }
 

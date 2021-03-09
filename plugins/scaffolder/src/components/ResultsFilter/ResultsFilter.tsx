@@ -107,7 +107,10 @@ export const ResultsFilter = ({ availableCategories }: Props) => {
               />
               <ListItemText
                 id={labelId}
-                primary={category.charAt(0).toUpperCase() + category.slice(1)}
+                primary={
+                  category.charAt(0).toLocaleUpperCase('en-US') +
+                  category.slice(1)
+                }
               />
             </ListItem>
           );

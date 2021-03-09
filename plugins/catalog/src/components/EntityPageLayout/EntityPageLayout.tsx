@@ -88,10 +88,10 @@ const headerProps = (
         : ''
     }`,
     headerType: (() => {
-      let t = kind.toLowerCase();
+      let t = kind.toLocaleLowerCase('en-US');
       if (entity && entity.spec && 'type' in entity.spec) {
         t += ' — ';
-        t += (entity.spec as { type: string }).type.toLowerCase();
+        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
       }
       return t;
     })(),

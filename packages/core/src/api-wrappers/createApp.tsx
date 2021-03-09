@@ -58,7 +58,10 @@ export const defaultConfigLoader: AppConfigLoader = async (
   const configs = (appConfig.slice() as unknown) as AppConfig[];
 
   // Avoiding this string also being replaced at runtime
-  if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
+  if (
+    runtimeConfigJson !==
+    '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
+  ) {
     try {
       const data = JSON.parse(runtimeConfigJson) as JsonObject;
       if (Array.isArray(data)) {

@@ -32,7 +32,7 @@ export const WorkflowRunStatus = ({
   conclusion: string | undefined;
 }) => {
   if (status === undefined) return null;
-  switch (status.toLowerCase()) {
+  switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':
       return (
         <>
@@ -46,7 +46,7 @@ export const WorkflowRunStatus = ({
         </>
       );
     case 'completed':
-      switch (conclusion?.toLowerCase()) {
+      switch (conclusion?.toLocaleLowerCase('en-US')) {
         case 'skipped' || 'canceled':
           return (
             <>

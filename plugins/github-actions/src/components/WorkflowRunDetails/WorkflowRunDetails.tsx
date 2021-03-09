@@ -88,8 +88,8 @@ const StepView = ({ step }: { step: Step }) => {
       </TableCell>
       <TableCell>
         <WorkflowRunStatus
-          status={step.status.toUpperCase()}
-          conclusion={step.conclusion?.toUpperCase()}
+          status={step.status.toLocaleUpperCase('en-US')}
+          conclusion={step.conclusion?.toLocaleUpperCase('en-US')}
         />
       </TableCell>
     </TableRow>

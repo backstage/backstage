@@ -59,7 +59,7 @@ const LighthouseCategoryScoreStatus = ({ score }: { score: number }) => {
 const LighthouseAuditStatus = ({ audit }: { audit: Audit }) => (
   <>
     <AuditStatusIcon audit={audit} />
-    {audit.status.toUpperCase()}
+    {audit.status.toLocaleUpperCase('en-US')}
   </>
 );
 

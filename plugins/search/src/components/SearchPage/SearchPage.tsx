@@ -56,7 +56,9 @@ export const SearchPage = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <SearchResult searchQuery={(queryString ?? '').toLowerCase()} />
+            <SearchResult
+              searchQuery={(queryString ?? '').toLocaleLowerCase('en-US')}
+            />
           </Grid>
         </Grid>
       </Content>

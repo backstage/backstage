@@ -195,8 +195,9 @@ export const DeploymentsAccordions = ({
               const matchingHpa = deploymentResources.horizontalPodAutoscalers.find(
                 (hpa: V1HorizontalPodAutoscaler) => {
                   return (
-                    (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() ===
-                      'deployment' &&
+                    (hpa.spec?.scaleTargetRef?.kind ?? '').toLocaleLowerCase(
+                      'en-US',
+                    ) === 'deployment' &&
                     (hpa.spec?.scaleTargetRef?.name ?? '') ===
                       (deployment.metadata?.name ?? 'unknown-deployment')
                   );
