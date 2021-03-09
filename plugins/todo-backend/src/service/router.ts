@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
+  reader: UrlReader;
+  catalogClient: CatalogClient;
 }
 
 export async function createRouter(
@@ -31,10 +36,10 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.send({ status: 'ok' });
+  router.get('/v1/todos', (req, res) => {
+    logger.debug('got todo request', req.query);
+    res.json({ items: [{ text: 'Test TODO' }], totalCount: 1 });
   });
-  router.use(errorHandler());
+
   return router;
 }
