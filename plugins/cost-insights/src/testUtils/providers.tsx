@@ -38,7 +38,9 @@ type PartialPropsWithChildren<T> = PropsWithChildren<Partial<T>>;
 
 export const MockGroups: Group[] = [{ id: 'tech' }, { id: 'mock-group' }];
 
-export type MockFilterProviderProps = PartialPropsWithChildren<FilterContextProps>;
+export type MockFilterProviderProps = PartialPropsWithChildren<
+  FilterContextProps
+>;
 
 export const MockFilterProvider = ({
   children,
@@ -62,7 +64,9 @@ export const MockFilterProvider = ({
   );
 };
 
-export type MockLoadingProviderProps = PartialPropsWithChildren<LoadingContextProps>;
+export type MockLoadingProviderProps = PartialPropsWithChildren<
+  LoadingContextProps
+>;
 
 export const MockLoadingProvider = ({
   children,
@@ -80,7 +84,9 @@ export const MockLoadingProvider = ({
   );
 };
 
-export type MockConfigProviderProps = PartialPropsWithChildren<ConfigContextProps>;
+export type MockConfigProviderProps = PartialPropsWithChildren<
+  ConfigContextProps
+>;
 
 export const MockConfigProvider = ({
   children,
@@ -100,7 +106,9 @@ export const MockConfigProvider = ({
   );
 };
 
-export type MockCurrencyProviderProps = PartialPropsWithChildren<CurrencyContextProps>;
+export type MockCurrencyProviderProps = PartialPropsWithChildren<
+  CurrencyContextProps
+>;
 
 export const MockCurrencyProvider = ({
   children,
@@ -121,7 +129,9 @@ export const MockCurrencyProvider = ({
   );
 };
 
-export type MockBillingDateProviderProps = PartialPropsWithChildren<BillingDateContextProps>;
+export type MockBillingDateProviderProps = PartialPropsWithChildren<
+  BillingDateContextProps
+>;
 
 export const MockBillingDateProvider = ({
   children,
@@ -151,7 +161,9 @@ export const MockScrollProvider = ({ children }: MockScrollProviderProps) => {
   );
 };
 
-export type MockGroupsProviderProps = PartialPropsWithChildren<GroupsContextProps>;
+export type MockGroupsProviderProps = PartialPropsWithChildren<
+  GroupsContextProps
+>;
 
 export const MockGroupsProvider = ({
   children,
