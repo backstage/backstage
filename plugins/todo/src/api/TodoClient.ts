@@ -14,10 +14,78 @@
  * limitations under the License.
  */
 
+import { serializeEntityRef } from '@backstage/catalog-model';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { TodoApi, TodoListOptions, TodoListResult } from './types';
 
+interface Options {
+  discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
+}
+
 export class TodoClient implements TodoApi {
-  listTodos(_options: TodoListOptions): Promise<TodoListResult> {
-    throw new Error('Method not implemented.');
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
+
+  constructor(options: Options) {
+    this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
+  }
+
+  async listTodos({
+    entity,
+    cursor,
+  }: TodoListOptions): Promise<TodoListResult> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('todo');
+    const token = await this.identityApi.getIdToken();
+
+    const query = new URLSearchParams();
+    if (entity) {
+      query.set('entity', serializeEntityRef(entity) as string);
+    }
+    if (cursor) {
+      query.set('cursor', cursor);
+    }
+
+    const res = await fetch(`${baseUrl}/v1/todos?${query}`, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : undefined,
+    });
+
+    if (!res.ok) {
+      const error = await this.readResponseError(res, 'list todos');
+      throw error;
+    }
+
+    const data: TodoListResult = await res.json();
+    return data;
+  }
+
+  private async readResponseError(res: Response, action: string) {
+    const error = new Error() as Error & { status: number };
+    error.status = res.status;
+
+    try {
+      const json = await res.json();
+      if (typeof json?.error?.message !== 'string') {
+        throw new Error('invalid error');
+      }
+      error.message = json.error.message;
+      if (json.error.name) {
+        error.name = json.error.name;
+      }
+    } catch {
+      try {
+        const text = await res.text();
+        error.message = `Failed to ${action}, ${text}`;
+      } catch {
+        error.message = `Failed to ${action}, status ${res.status}`;
+      }
+    }
+
+    throw error;
   }
 }

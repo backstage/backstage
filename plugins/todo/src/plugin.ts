@@ -17,6 +17,8 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core';
 import { todoApiRef, TodoClient } from './api';
 
@@ -27,9 +29,12 @@ export const todoPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: todoApiRef,
-      deps: {},
-      factory() {
-        return new TodoClient();
+      deps: {
+        identityApi: identityApiRef,
+        discoveryApi: discoveryApiRef,
+      },
+      factory({ identityApi, discoveryApi }) {
+        return new TodoClient({ identityApi, discoveryApi });
       },
     }),
   ],
