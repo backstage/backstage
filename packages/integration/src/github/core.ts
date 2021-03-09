@@ -39,7 +39,11 @@ export function getGitHubFileFetchUrl(
       !owner ||
       !name ||
       !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw')
+      // GitHub is automatically redirecting tree urls to blob urls so it's
+      // fine to pass a tree url.
+      (filepathtype !== 'blob' &&
+        filepathtype !== 'raw' &&
+        filepathtype !== 'tree')
     ) {
       throw new Error('Invalid GitHub URL or file path');
     }
