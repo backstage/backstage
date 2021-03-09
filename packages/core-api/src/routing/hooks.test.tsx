@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import { render } from '@testing-library/react';
-import React, { PropsWithChildren, ReactElement } from 'react';
+import React, {
+  PropsWithChildren,
+  ReactElement,
+  useContext,
+  Context,
+} from 'react';
 import { MemoryRouter, Routes } from 'react-router-dom';
+import { render } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
+import { VersionedValue } from '../lib/versionedValues';
+import { getGlobalSingleton } from '../lib/globalObject';
 import { createRoutableExtension } from '../extensions';
 import {
   childDiscoverer,
@@ -32,6 +40,7 @@ import {
 import { validateRoutes } from './validation';
 import { useRouteRef, RoutingProvider } from './hooks';
 import { createRouteRef, RouteRefConfig } from './RouteRef';
+import { RouteResolver } from './RouteResolver';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { AnyRouteRef, RouteFunc, RouteRef, ExternalRouteRef } from './types';
 
@@ -307,5 +316,57 @@ describe('discovery', () => {
     expect(() => validateRoutes(routePaths, routeParents)).toThrow(
       'Parameter :id is duplicated in path /foo/:id/bar/:id',
     );
+  });
+});
+
+describe('v1 consumer', () => {
+  const RoutingContext = getGlobalSingleton<
+    Context<VersionedValue<{ 1: RouteResolver }>>
+  >('routing-context');
+
+  function useMockRouteRefV1(
+    routeRef: AnyRouteRef,
+    location: string,
+  ): RouteFunc<any> | undefined {
+    const resolver = useContext(RoutingContext)?.atVersion(1);
+    if (!resolver) {
+      throw new Error('no impl');
+    }
+    return resolver.resolve(routeRef, location);
+  }
+
+  it('should resolve routes', () => {
+    const routeRef1 = createRouteRef({ id: 'ref1' });
+    const routeRef2 = createRouteRef({ id: 'ref2' });
+    const routeRef3 = createRouteRef({ id: 'ref3', params: ['x'] });
+
+    const renderedHook = renderHook(
+      ({ routeRef }) => useMockRouteRefV1(routeRef, '/'),
+      {
+        initialProps: {
+          routeRef: routeRef1 as AnyRouteRef,
+        },
+        wrapper: ({ children }) => (
+          <RoutingProvider
+            routePaths={
+              new Map<RouteRef<any>, string>([
+                [routeRef2, '/foo'],
+                [routeRef3, '/bar/:x'],
+              ])
+            }
+            routeParents={new Map()}
+            routeObjects={[]}
+            routeBindings={new Map()}
+            children={children}
+          />
+        ),
+      },
+    );
+
+    expect(renderedHook.result.current).toBe(undefined);
+    renderedHook.rerender({ routeRef: routeRef2 });
+    expect(renderedHook.result.current?.()).toBe('/foo');
+    renderedHook.rerender({ routeRef: routeRef3 });
+    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/bar/my-x');
   });
 });
