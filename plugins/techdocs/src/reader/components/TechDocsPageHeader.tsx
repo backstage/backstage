@@ -112,8 +112,8 @@ export const TechDocsPageHeader = ({
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
-      type={name}
-      typeLink={componentLink(entityId)}
+      type="Docs"
+      typeLink="/docs"
     >
       {labels}
     </Header>
