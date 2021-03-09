@@ -64,7 +64,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/zen-observable": "^0.8.0",
     "cross-env": "^7.0.0",
-    "cypress": "^4.2.0",
+    "cypress": "^6.6.0",
     "eslint-plugin-cypress": "^2.10.3",
     "start-server-and-test": "^1.10.11"
   },
