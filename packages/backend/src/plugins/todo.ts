@@ -25,9 +25,10 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin({
   logger,
   reader,
+  config,
   discovery,
 }: PluginEnvironment): Promise<Router> {
-  const todoReader = new TodoScmReader({
+  const todoReader = TodoScmReader.fromConfig(config, {
     logger,
     reader,
   });

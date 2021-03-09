@@ -14,27 +14,105 @@
  * limitations under the License.
  */
 
+import { extname } from 'path';
 import { UrlReader } from '@backstage/backend-common';
+import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
-import { ReadTodosOptions, ReadTodosResult, TodoReader } from './types';
+import { parse } from 'leasot';
+import {
+  ReadTodosOptions,
+  ReadTodosResult,
+  TodoItem,
+  TodoReader,
+} from './types';
+import { Config } from '@backstage/config';
+
+type TodoParser = (ctx: {
+  content: string;
+  path: string;
+}) => (TodoItem & { line: number })[];
 
 type Options = {
   logger: Logger;
   reader: UrlReader;
+  parser?: TodoParser;
+};
+
+const defaultTodoParser: TodoParser = ({ content, path }) => {
+  try {
+    const comments = parse(content, {
+      extension: extname(path),
+    });
+
+    return comments.map(comment => ({
+      text: comment.text,
+      author: comment.ref,
+      line: comment.line,
+    }));
+  } catch /* ignore unsupported extensions */ {
+    return [];
+  }
 };
 
 export class TodoScmReader implements TodoReader {
   private readonly logger: Logger;
   private readonly reader: UrlReader;
+  private readonly parser: TodoParser;
+  private readonly integrations: ScmIntegrations;
 
-  constructor(options: Options) {
+  static fromConfig(config: Config, options: Options) {
+    return new TodoScmReader(options, ScmIntegrations.fromConfig(config));
+  }
+
+  private constructor(options: Options, integrations: ScmIntegrations) {
     this.logger = options.logger;
     this.reader = options.reader;
+    this.parser = options.parser ?? defaultTodoParser;
+    this.integrations = integrations;
   }
 
   async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
-    return {
-      items: [{ text: 'My mock todo', viewUrl: url }],
-    };
+    const tree = await this.reader.readTree(url, {
+      filter(path) {
+        return !path.startsWith('.yarn');
+      },
+    });
+
+    const files = await tree.files();
+    this.logger.info(`Read ${files.length} files from ${url}`);
+
+    const todos = new Array<TodoItem>();
+    for (const file of files) {
+      const content = await file.content();
+      try {
+        const items = this.parser({
+          path: file.path,
+          content: content.toString('utf8'),
+        });
+        const viewUrl = this.integrations.resolveUrl({
+          url: file.path,
+          base: url,
+        });
+
+        let editUrl: string | undefined = this.integrations.resolveEditUrl(
+          viewUrl,
+        );
+        if (editUrl === viewUrl) {
+          editUrl = undefined;
+        }
+
+        todos.push(
+          ...items.map(item => ({
+            ...item,
+            editUrl,
+            viewUrl: item.line ? `${viewUrl}#L${item.line}` : viewUrl,
+          })),
+        );
+      } catch (error) {
+        this.logger.error(`Failed to parse TODO in ${url}, ${error}`);
+      }
+    }
+
+    return { items: todos };
   }
 }
