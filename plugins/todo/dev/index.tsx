@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import { Content, Header, HeaderLabel, Page } from '@backstage/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+} from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
+import OnlineIcon from '@material-ui/icons/Cloud';
+import OfflineIcon from '@material-ui/icons/Storage';
 import React from 'react';
 import { EntityTodoContent, todoApiRef, todoPlugin } from '../src';
 
@@ -35,36 +45,49 @@ const entity: Entity = {
   },
 };
 
+const mockedApi = {
+  listTodos: async () => ({
+    items: [
+      {
+        text: 'Make sure this works',
+        author: 'Rugvip',
+        viewUrl: 'https://github.com/backstage/backstage',
+      },
+    ],
+    totalCount: 15,
+    cursors: {
+      prev: 'prev',
+      self: 'self',
+      next: 'next',
+    },
+  }),
+};
+
 createDevApp()
   .registerPlugin(todoPlugin)
-  .registerApi({
-    api: todoApiRef,
-    deps: {},
-    factory() {
-      return {
-        listTodos: async () => ({
-          items: [
-            {
-              text: 'Make sure this works',
-              author: 'Rugvip',
-              viewUrl: 'https://github.com/backstage/backstage',
-            },
-          ],
-          totalCount: 15,
-          cursors: {
-            prev: 'prev',
-            self: 'self',
-            next: 'next',
-          },
-        }),
-      };
-    },
+  .addPage({
+    element: (
+      <ApiProvider apis={ApiRegistry.with(todoApiRef, mockedApi)}>
+        <EntityProvider entity={entity}>
+          <Page themeId="service">
+            <Header title="Mocked TODO Data">
+              <HeaderLabel label="Mode" value="Development" />
+            </Header>
+            <Content>
+              <EntityTodoContent />
+            </Content>
+          </Page>
+        </EntityProvider>
+      </ApiProvider>
+    ),
+    title: 'Entity Todo Content',
+    icon: OfflineIcon,
   })
   .addPage({
     element: (
       <EntityProvider entity={entity}>
         <Page themeId="service">
-          <Header title="Some Entity">
+          <Header title="Live TODO Data">
             <HeaderLabel label="Mode" value="Development" />
           </Header>
           <Content>
@@ -73,6 +96,7 @@ createDevApp()
         </Page>
       </EntityProvider>
     ),
-    title: 'Entity Todo Content',
+    title: 'Backend Connected',
+    icon: OnlineIcon,
   })
   .render();
