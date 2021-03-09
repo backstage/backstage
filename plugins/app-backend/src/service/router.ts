@@ -102,8 +102,7 @@ export async function createRouter(
     express.static(appDistDir, {
       setHeaders: (res, path) => {
         // The Cache-Control header instructs the browser to not cache html files since it might
-        // link to static assets from recently deployed versions. This is a workaround when no
-        // staticFallbackHandler is configured.
+        // link to static assets from recently deployed versions.
         if (
           ((express.static.mime as unknown) as Mime).lookup(path) ===
           'text/html'
@@ -117,8 +116,7 @@ export async function createRouter(
     res.sendFile(resolvePath(appDistDir, 'index.html'), {
       headers: {
         // The Cache-Control header instructs the browser to not cache the index.html since it might
-        // link to static assets from recently deployed versions. This is a workaround when no
-        // staticFallbackHandler is configured.
+        // link to static assets from recently deployed versions.
         'cache-control': 'no-store, max-age=0',
       },
     });
