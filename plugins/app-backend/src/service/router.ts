@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
-import express from 'express';
-import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { notFoundHandler, resolvePackagePath } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
-import { injectConfig, readConfigs } from '../lib/config';
+import express from 'express';
+import Router from 'express-promise-router';
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
+import { Logger } from 'winston';
+import { injectConfig, readConfigs } from '../lib/config';
+
+// express uses mime v1 while we only have types for mime v2
+type Mime = { lookup(arg0: string): string };
 
 export interface RouterOptions {
   config: Config;
@@ -95,9 +98,28 @@ export async function createRouter(
   staticRouter.use(notFoundHandler());
 
   router.use('/static', staticRouter);
-  router.use(express.static(appDistDir));
+  router.use(
+    express.static(appDistDir, {
+      setHeaders: (res, path) => {
+        // The Cache-Control header instructs the browser to not cache html files since it might
+        // link to static assets from recently deployed versions.
+        if (
+          ((express.static.mime as unknown) as Mime).lookup(path) ===
+          'text/html'
+        ) {
+          res.setHeader('Cache-Control', 'no-store, max-age=0');
+        }
+      },
+    }),
+  );
   router.get('/*', (_req, res) => {
-    res.sendFile(resolvePath(appDistDir, 'index.html'));
+    res.sendFile(resolvePath(appDistDir, 'index.html'), {
+      headers: {
+        // The Cache-Control header instructs the browser to not cache the index.html since it might
+        // link to static assets from recently deployed versions.
+        'cache-control': 'no-store, max-age=0',
+      },
+    });
   });
 
   return router;
