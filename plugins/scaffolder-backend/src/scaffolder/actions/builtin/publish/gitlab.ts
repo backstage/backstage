@@ -32,7 +32,7 @@ export function createPublishGitlabAction(options: {
   }>({
     id: 'publish:gitlab',
     description:
-      'Initializes a git repository of contents in workspacePath and publishes to GitLab.',
+      'Initializes a git repository of the content in the workspace, and publishes to GitLab.',
     schema: {
       input: {
         type: 'object',
