@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupedResponses } from '../../types/types';
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -28,6 +27,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { V1Service } from '@kubernetes/client-node';
 import { StructuredMetadataTable } from '@backstage/core';
 import { ServiceDrawer } from './ServiceDrawer';
+import { GroupedResponsesContext } from '../../hooks';
 
 type ServiceSummaryProps = {
   service: V1Service;
@@ -82,9 +82,7 @@ const ServiceCard = ({ service }: ServiceCardProps) => {
   );
 };
 
-type ServicesAccordionsProps = {
-  deploymentResources: GroupedResponses;
-};
+type ServicesAccordionsProps = {};
 
 type ServiceAccordionProps = {
   service: V1Service;
@@ -103,9 +101,8 @@ const ServiceAccordion = ({ service }: ServiceAccordionProps) => {
   );
 };
 
-export const ServicesAccordions = ({
-  deploymentResources,
-}: ServicesAccordionsProps) => {
+export const ServicesAccordions = ({}: ServicesAccordionsProps) => {
+  const groupedResponses = useContext(GroupedResponsesContext);
   return (
     <Grid
       container
@@ -113,7 +110,7 @@ export const ServicesAccordions = ({
       justify="flex-start"
       alignItems="flex-start"
     >
-      {deploymentResources.services.map((service, i) => (
+      {groupedResponses.services.map((service, i) => (
         <Grid item key={i} xs>
           <ServiceAccordion service={service} />
         </Grid>

@@ -19,18 +19,17 @@ import { render } from '@testing-library/react';
 import { DeploymentsAccordions } from './DeploymentsAccordions';
 import * as twoDeployFixture from './__fixtures__/2-deployments.json';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('DeploymentsAccordions', () => {
   it('should render 2 deployments', async () => {
+    const wrapper = kubernetesProviders(
+      twoDeployFixture,
+      new Set(['dice-roller-canary-7d64cd756c-vtbdx']),
+    );
+
     const { getByText } = render(
-      wrapInTestApp(
-        <DeploymentsAccordions
-          deploymentResources={twoDeployFixture as any}
-          clusterPodNamesWithErrors={
-            new Set(['dice-roller-canary-7d64cd756c-vtbdx'])
-          }
-        />,
-      ),
+      wrapper(wrapInTestApp(<DeploymentsAccordions />)),
     );
 
     expect(getByText('dice-roller')).toBeInTheDocument();

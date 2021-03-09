@@ -15,8 +15,13 @@
  */
 
 import React from 'react';
-import {Step, StepLabel, Stepper} from "@material-ui/core";
-import {ArgoRolloutCanaryStep, SetWeightStep, PauseStep, AnalysisStep} from "./types";
+import { Step, StepLabel, Stepper } from '@material-ui/core';
+import {
+  ArgoRolloutCanaryStep,
+  SetWeightStep,
+  PauseStep,
+  AnalysisStep,
+} from './types';
 
 interface StepsProgressProps {
   currentStepIndex: number;
@@ -25,52 +30,67 @@ interface StepsProgressProps {
   children?: React.ReactNode;
 }
 
-const isSetWeightStep = (step: ArgoRolloutCanaryStep): step is SetWeightStep => step.hasOwnProperty('setWeight')
+const isSetWeightStep = (step: ArgoRolloutCanaryStep): step is SetWeightStep =>
+  step.hasOwnProperty('setWeight');
 
-const isPauseStep = (step: ArgoRolloutCanaryStep): step is PauseStep => step.hasOwnProperty('pause')
+const isPauseStep = (step: ArgoRolloutCanaryStep): step is PauseStep =>
+  step.hasOwnProperty('pause');
 
-const isAnalysisStep = (step: ArgoRolloutCanaryStep): step is AnalysisStep => step.hasOwnProperty('analysis')
+const isAnalysisStep = (step: ArgoRolloutCanaryStep): step is AnalysisStep =>
+  step.hasOwnProperty('analysis');
 
-const createLabelForStep = (step: ArgoRolloutCanaryStep):string => {
+const createLabelForStep = (step: ArgoRolloutCanaryStep): React.ReactNode => {
   if (isSetWeightStep(step)) {
     return `setWeight ${step.setWeight}%`;
   } else if (isPauseStep(step)) {
-    return step.pause.duration === undefined ? "infinite pause" : `pause for ${step.pause.duration}`;
+    return step.pause.duration === undefined
+      ? 'infinite pause'
+      : `pause for ${step.pause.duration}`;
   } else if (isAnalysisStep(step)) {
-
-    return `analysis templates: \n${step.analysis.templates
-      .map((t) => `${t.templateName}${t.clusterScope ? " (cluster scoped)" : ''}`)
-      .join(',\n')}`;
-  } else {
-    return 'unknown step'
+    return (
+      <div>
+        <p>analysis templates:</p>
+        {step.analysis.templates.map((t, i) => (
+          <p key={i}>{`${t.templateName}${
+            t.clusterScope ? ' (cluster scoped)' : ''
+          }`}</p>
+        ))}
+      </div>
+    );
   }
-}
+  return 'unknown step';
+};
 
 export const StepsProgress = ({
-                                currentStepIndex,
+  currentStepIndex,
   aborted,
-                                steps
-                              }: StepsProgressProps) => {
+  steps,
+}: StepsProgressProps) => {
+  // If the activeStep is greater/equal to the number of steps
+  // Then the canary is being promoted
+  // Increase the step index to mark the 'canary promoted' step as done also
+  const activeStepIndex =
+    currentStepIndex >= steps.length ? currentStepIndex + 1 : currentStepIndex;
 
   /*
-    *  When the Rollout is aborted set the active step to -1
-    *  otherwise it appears to always be on the first step
-  */
+   *  When the Rollout is aborted set the active step to -1
+   *  otherwise it appears to always be on the first step
+   */
   return (
-  <Stepper
-    activeStep={aborted ? -1 : currentStepIndex}
-    alternativeLabel
-  >
-    {steps
-      .map((step, i) =>
-        <Step key={i}>
-          <StepLabel>{createLabelForStep(step)}</StepLabel>
-        </Step>)
-      .concat(
-        <Step key={'-1'}>
-          <StepLabel>Canary promoted</StepLabel>
-        </Step>,
-      )}
-  </Stepper>
-);
+    <Stepper activeStep={aborted ? -1 : activeStepIndex} alternativeLabel>
+      {steps
+        .map((step, i) => (
+          <Step key={i}>
+            <StepLabel data-testid={`step-${i}`}>
+              {createLabelForStep(step)}
+            </StepLabel>
+          </Step>
+        ))
+        .concat(
+          <Step key="-1">
+            <StepLabel data-testid="step--1">Canary promoted</StepLabel>
+          </Step>,
+        )}
+    </Stepper>
+  );
 };

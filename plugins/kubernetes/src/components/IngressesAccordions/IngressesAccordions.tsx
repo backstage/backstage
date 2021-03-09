@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupedResponses } from '../../types/types';
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -27,10 +26,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { ExtensionsV1beta1Ingress } from '@kubernetes/client-node';
 import { StructuredMetadataTable } from '@backstage/core';
 import { IngressDrawer } from './IngressDrawer';
+import { GroupedResponsesContext } from '../../hooks';
 
-type IngressesAccordionsProps = {
-  deploymentResources: GroupedResponses;
-};
+type IngressesAccordionsProps = {};
 
 type IngressAccordionProps = {
   ingress: ExtensionsV1beta1Ingress;
@@ -80,9 +78,8 @@ const IngressAccordion = ({ ingress }: IngressAccordionProps) => {
     </Accordion>
   );
 };
-export const IngressesAccordions = ({
-  deploymentResources,
-}: IngressesAccordionsProps) => {
+export const IngressesAccordions = ({}: IngressesAccordionsProps) => {
+  const groupedResponses = useContext(GroupedResponsesContext);
   return (
     <Grid
       container
@@ -90,7 +87,7 @@ export const IngressesAccordions = ({
       justify="flex-start"
       alignItems="flex-start"
     >
-      {deploymentResources.ingresses.map((ingress, i) => (
+      {groupedResponses.ingresses.map((ingress, i) => (
         <Grid item key={i} xs>
           <IngressAccordion ingress={ingress} />
         </Grid>

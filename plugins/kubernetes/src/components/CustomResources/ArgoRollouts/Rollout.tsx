@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { GroupedResponses } from '../../../types/types';
+import React, { useContext } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -25,13 +24,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1OwnerReference } from '@kubernetes/client-node/dist/gen/model/v1OwnerReference';
-import {
-  V1Deployment,
-  V1Pod,
-  V1ReplicaSet,
-  V1HorizontalPodAutoscaler,
-} from '@kubernetes/client-node';
+import { V1Pod, V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { StatusError, StatusOK } from '@backstage/core';
 import { PodsTable } from '../../Pods';
 import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
@@ -39,12 +32,18 @@ import { RolloutDrawer } from './RolloutDrawer';
 import PauseIcon from '@material-ui/icons/Pause';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import formatDistance from 'date-fns/formatDistance';
-import {StepsProgress} from "./StepsProgress";
+import { StepsProgress } from './StepsProgress';
+import {
+  PodNamesWithErrorsContext,
+  GroupedResponsesContext,
+} from '../../../hooks';
+import {
+  getMatchingHpa,
+  getOwnedPodsThroughReplicaSets,
+} from '../../../utils/owner';
 
 type RolloutAccordionsProps = {
   rollouts: any[];
-  groupedResponses: GroupedResponses;
-  clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
@@ -52,7 +51,6 @@ type RolloutAccordionProps = {
   rollout: any;
   ownedPods: V1Pod[];
   matchingHpa?: V1HorizontalPodAutoscaler;
-  clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 };
 
@@ -192,10 +190,11 @@ const RolloutAccordion = ({
   rollout,
   ownedPods,
   matchingHpa,
-  clusterPodNamesWithErrors,
 }: RolloutAccordionProps) => {
+  const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
+
   const podsWithErrors = ownedPods.filter(p =>
-    clusterPodNamesWithErrors.has(p.metadata?.name ?? ''),
+    podNamesWithErrors.has(p.metadata?.name ?? ''),
   );
 
   const currentStepIndex = rollout.status?.currentStepIndex ?? 0;
@@ -214,13 +213,13 @@ const RolloutAccordion = ({
       <AccordionDetails>
         <div style={{ width: '100%' }}>
           <div>
-            <Typography variant={'h6'}>Rollout status</Typography>
+            <Typography variant="h6">Rollout status</Typography>
           </div>
           <div style={{ margin: '1rem' }}>
             {abortedMessage && (
               <>
                 {AbortedTitle}
-                <Typography variant={'subtitle2'}>{abortedMessage}</Typography>
+                <Typography variant="subtitle2">{abortedMessage}</Typography>
               </>
             )}
             <StepsProgress
@@ -238,47 +237,8 @@ const RolloutAccordion = ({
   );
 };
 
-export const RolloutAccordions = ({
-  rollouts,
-  groupedResponses,
-  clusterPodNamesWithErrors,
-}: RolloutAccordionsProps) => {
-  const isOwnedBy = (
-    ownerReferences: V1OwnerReference[],
-    obj: V1Pod | V1ReplicaSet | V1Deployment,
-    targetKind: string,
-  ): boolean => {
-    return ownerReferences?.some(
-      or =>
-        or.name === obj.metadata?.name && or.kind.toLowerCase() === targetKind,
-    );
-  };
-
-  const getOwnedPods = (rollout: any) =>
-    groupedResponses.replicaSets
-      // Filter out replica sets with no replicas
-      .filter(rs => rs.status && rs.status.replicas > 0)
-      // Find the replica sets this deployment owns
-      .filter(rs =>
-        isOwnedBy(rs.metadata?.ownerReferences ?? [], rollout, 'rollout'),
-      )
-      .reduce((accum, rs) => {
-        const pods = groupedResponses.pods.filter(pod =>
-          isOwnedBy(pod.metadata?.ownerReferences ?? [], rs, 'replicaset'),
-        );
-        return accum.concat(pods);
-      }, [] as V1Pod[]);
-
-  const getMatchingHpa = (rollout: any) =>
-    groupedResponses.horizontalPodAutoscalers.find(
-      (hpa: V1HorizontalPodAutoscaler) => {
-        return (
-          (hpa.spec?.scaleTargetRef?.kind ?? '').toLowerCase() === 'rollout' &&
-          (hpa.spec?.scaleTargetRef?.name ?? '') ===
-            (rollout.metadata?.name ?? 'unknown-rollout')
-        );
-      },
-    );
+export const RolloutAccordions = ({ rollouts }: RolloutAccordionsProps) => {
+  const groupedResponses = useContext(GroupedResponsesContext);
 
   return (
     <Grid
@@ -291,10 +251,17 @@ export const RolloutAccordions = ({
         <Grid container item key={i} xs>
           <Grid item xs>
             <RolloutAccordion
+              matchingHpa={getMatchingHpa(
+                rollout.metadata?.name,
+                'rollout',
+                groupedResponses.horizontalPodAutoscalers,
+              )}
+              ownedPods={getOwnedPodsThroughReplicaSets(
+                rollout,
+                groupedResponses.replicaSets,
+                groupedResponses.pods,
+              )}
               rollout={rollout}
-              ownedPods={getOwnedPods(rollout)}
-              matchingHpa={getMatchingHpa(rollout)}
-              clusterPodNamesWithErrors={clusterPodNamesWithErrors}
             />
           </Grid>
         </Grid>

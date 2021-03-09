@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { GroupedResponses } from '../../types/types';
+import React, { useContext } from 'react';
 import lodash, { Dictionary } from 'lodash';
 import { RolloutAccordions } from './ArgoRollouts/Rollout';
+import { GroupedResponsesContext } from '../../hooks';
 
 interface CustomResourcesProps {
-  groupedResponses: GroupedResponses;
-  clusterPodNamesWithErrors: Set<string>;
   children?: React.ReactNode;
 }
 
@@ -31,10 +29,8 @@ const kindToResource = (customResources: any[]): Dictionary<any[]> => {
   });
 };
 
-export const CustomResources = ({
-  groupedResponses,
-  clusterPodNamesWithErrors,
-}: CustomResourcesProps) => {
+export const CustomResources = ({}: CustomResourcesProps) => {
+  const groupedResponses = useContext(GroupedResponsesContext);
   const kindToResourceMap = kindToResource(groupedResponses.customResources);
 
   return (
@@ -42,14 +38,7 @@ export const CustomResources = ({
       {Object.entries(kindToResourceMap).map(([kind, resources], i) => {
         switch (kind) {
           case 'Rollout':
-            return (
-              <RolloutAccordions
-                key={i}
-                clusterPodNamesWithErrors={clusterPodNamesWithErrors}
-                groupedResponses={groupedResponses}
-                rollouts={resources}
-              />
-            );
+            return <RolloutAccordions key={i} rollouts={resources} />;
           default:
             // TODO default implementation
             return null;

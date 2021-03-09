@@ -19,13 +19,14 @@ import { render } from '@testing-library/react';
 import * as twoDeployFixture from './__fixtures__/2-services.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ServicesAccordions } from './ServicesAccordions';
+import { kubernetesProviders } from '../../hooks/test-utils';
 
 describe('ServicesAccordions', () => {
   it('should render 2 services', async () => {
+    const wrapper = kubernetesProviders(twoDeployFixture, new Set());
+
     const { getByText } = render(
-      wrapInTestApp(
-        <ServicesAccordions deploymentResources={twoDeployFixture as any} />,
-      ),
+      wrapper(wrapInTestApp(<ServicesAccordions />)),
     );
 
     expect(getByText('awesome-service-grpc')).toBeInTheDocument();
