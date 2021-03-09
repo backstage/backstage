@@ -52,7 +52,10 @@ jest.mock('./GitHub', () => ({
 }));
 
 import { ConfigReader, OAuthApi, UrlPatternDiscovery } from '@backstage/core';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import {
+  GitHubIntegrationConfig,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
@@ -87,7 +90,7 @@ describe('CatalogImportClient', () => {
     },
   };
 
-  const configApi = new ConfigReader({});
+  const scmIntegrationsApi = ScmIntegrations.fromConfig(new ConfigReader({}));
 
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
@@ -105,7 +108,7 @@ describe('CatalogImportClient', () => {
     catalogImportClient = new CatalogImportClient({
       discoveryApi,
       githubAuthApi,
-      configApi,
+      scmIntegrationsApi,
       identityApi,
       catalogApi,
     });

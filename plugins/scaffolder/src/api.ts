@@ -19,11 +19,10 @@ import { JsonObject } from '@backstage/config';
 import {
   createApiRef,
   DiscoveryApi,
-  Observable,
-  ConfigApi,
   IdentityApi,
+  Observable,
 } from '@backstage/core';
-import { ScmIntegrations } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import ObservableImpl from 'zen-observable';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
@@ -83,29 +82,28 @@ export interface ScaffolderApi {
     after?: number;
   }): Observable<LogEvent>;
 }
+
 export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
-  private readonly configApi: ConfigApi;
+  private readonly scmIntegrationsApi: ScmIntegrationRegistry;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     identityApi: IdentityApi;
-    configApi: ConfigApi;
+    scmIntegrationsApi: ScmIntegrationRegistry;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.identityApi = options.identityApi;
-    this.configApi = options.configApi;
+    this.scmIntegrationsApi = options.scmIntegrationsApi;
   }
 
   async getIntegrationsList(options: { allowedHosts: string[] }) {
-    const integrations = ScmIntegrations.fromConfig(this.configApi);
-
     return [
-      ...integrations.azure.list(),
-      ...integrations.bitbucket.list(),
-      ...integrations.github.list(),
-      ...integrations.gitlab.list(),
+      ...this.scmIntegrationsApi.azure.list(),
+      ...this.scmIntegrationsApi.bitbucket.list(),
+      ...this.scmIntegrationsApi.github.list(),
+      ...this.scmIntegrationsApi.gitlab.list(),
     ]
       .map(c => ({ type: c.type, title: c.title, host: c.config.host }))
       .filter(c => options.allowedHosts.includes(c.host));

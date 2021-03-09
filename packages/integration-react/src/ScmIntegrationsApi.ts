@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import parseGitUrl from 'git-url-parse';
+import { Config } from '@backstage/config';
+import { ApiRef, createApiRef } from '@backstage/core';
+import { ScmIntegrations } from '@backstage/integration';
 
-export const getGithubIntegrationConfig = (
-  scmIntegrationsApi: ScmIntegrationRegistry,
-  location: string,
-) => {
-  const integration = scmIntegrationsApi.github.byUrl(location);
-  if (!integration) {
-    return undefined;
+export class ScmIntegrationsApi extends ScmIntegrations {
+  static fromConfig(config: Config): ScmIntegrationsApi {
+    return ScmIntegrations.fromConfig(config);
   }
+}
 
-  const { name: repo, owner } = parseGitUrl(location);
-  return {
-    repo,
-    owner,
-    githubIntegrationConfig: integration.config,
-  };
-};
+export const scmIntegrationsApiRef: ApiRef<ScmIntegrationsApi> = createApiRef({
+  id: 'integration.scmintegrations',
+  description: 'All of the registered SCM integrations of your config',
+});
