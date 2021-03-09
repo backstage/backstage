@@ -26,17 +26,15 @@ export type TodoItem = {
 
 export type TodoListOptions = {
   entity?: Entity;
-  cursor?: string;
+  offset?: number;
+  limit?: number;
 };
 
 export type TodoListResult = {
   items: TodoItem[];
   totalCount: number;
-  cursors: {
-    prev: string;
-    self: string;
-    next: string;
-  };
+  offset: number;
+  limit: number;
 };
 
 export interface TodoApi {

@@ -19,17 +19,15 @@ import { TodoItem } from '../lib';
 
 export type ListTodosRequest = {
   entity?: EntityName;
-  cursor?: string;
+  offset?: number;
+  limit?: number;
 };
 
 export type ListTodosResponse = {
   items: TodoItem[];
   totalCount: number;
-  cursors: {
-    prev: string;
-    self: string;
-    next: string;
-  };
+  offset: number;
+  limit: number;
 };
 
 export interface TodoService {

@@ -55,11 +55,8 @@ const mockedApi = {
       },
     ],
     totalCount: 15,
-    cursors: {
-      prev: 'prev',
-      self: 'self',
-      next: 'next',
-    },
+    offset: 0,
+    limit: 10,
   }),
 };
 

@@ -17,7 +17,7 @@
 import { Progress, Table, TableColumn, useApi } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Alert from '@material-ui/lab/Alert';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAsync } from 'react-use';
 import { todoApiRef } from '../../api';
 import { TodoItem } from '../../api/types';
@@ -52,10 +52,17 @@ const columns: TableColumn<TodoItem>[] = [
 export const TodoList = () => {
   const { entity } = useEntity();
   const todoApi = useApi(todoApiRef);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
 
   const { value, loading, error } = useAsync(
-    async () => todoApi.listTodos({ entity }),
-    [todoApi, entity],
+    async () =>
+      todoApi.listTodos({
+        entity,
+        offset: page * pageSize,
+        limit: pageSize,
+      }),
+    [todoApi, entity, page, pageSize],
   );
 
   if (loading) {
@@ -67,9 +74,15 @@ export const TodoList = () => {
   return (
     <Table
       title="TODOs"
-      options={{ search: false }}
-      page={3}
+      options={{
+        search: false,
+        pageSize,
+      }}
+      page={page}
       columns={columns}
+      totalCount={value!.totalCount}
+      onChangePage={setPage}
+      onChangeRowsPerPage={setPageSize}
       data={value!.items}
     />
   );

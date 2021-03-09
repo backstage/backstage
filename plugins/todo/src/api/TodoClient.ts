@@ -34,7 +34,8 @@ export class TodoClient implements TodoApi {
 
   async listTodos({
     entity,
-    cursor,
+    offset,
+    limit,
   }: TodoListOptions): Promise<TodoListResult> {
     const baseUrl = await this.discoveryApi.getBaseUrl('todo');
     const token = await this.identityApi.getIdToken();
@@ -43,8 +44,11 @@ export class TodoClient implements TodoApi {
     if (entity) {
       query.set('entity', serializeEntityRef(entity) as string);
     }
-    if (cursor) {
-      query.set('cursor', cursor);
+    if (typeof offset === 'number') {
+      query.set('offset', String(offset));
+    }
+    if (typeof limit === 'number') {
+      query.set('limit', String(limit));
     }
 
     const res = await fetch(`${baseUrl}/v1/todos?${query}`, {

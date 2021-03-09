@@ -33,15 +33,13 @@ export async function createRouter(
   router.use(express.json());
 
   router.get('/v1/todos', async (req, res) => {
-    const { entity: entityRef, cursor } = req.query;
+    const offset = parseIntegerParam(req.query.offset, 'offset query');
+    const limit = parseIntegerParam(req.query.limit, 'limit query');
 
+    const entityRef = req.query.entity;
     if (entityRef && typeof entityRef !== 'string') {
       throw new InputError(`entity query must be a string`);
     }
-    if (cursor && typeof cursor !== 'string') {
-      throw new InputError(`cursor query must be a string`);
-    }
-
     let entity: EntityName | undefined = undefined;
     if (entityRef) {
       try {
@@ -51,9 +49,23 @@ export async function createRouter(
       }
     }
 
-    const todos = await todoService.listTodos({ entity, cursor });
+    const todos = await todoService.listTodos({ entity, offset, limit });
     res.json(todos);
   });
 
   return router;
+}
+
+function parseIntegerParam(str: unknown, ctx: string): number | undefined {
+  if (str === undefined) {
+    return undefined;
+  }
+  if (typeof str !== 'string') {
+    throw new InputError(`invalid ${ctx}, must be a string`);
+  }
+  const parsed = parseInt(str, 10);
+  if (!Number.isInteger(parsed)) {
+    throw new InputError(`invalid ${ctx}, not an integer`);
+  }
+  return parsed;
 }

@@ -49,28 +49,40 @@ export class TodoReaderService implements TodoService {
     this.defaultPageSize = options.defaultPageSize ?? DEFAULT_DEFAULT_PAGE_SIZE;
   }
 
-  async listTodos({
-    entity: entityName,
-    cursor,
-  }: ListTodosRequest): Promise<ListTodosResponse> {
-    if (!entityName) {
+  async listTodos(req: ListTodosRequest): Promise<ListTodosResponse> {
+    if (!req.entity) {
       throw new InputError('entity filter is required to list todos');
     }
-    const entity = await this.catalogClient.getEntityByName(entityName);
+    const entity = await this.catalogClient.getEntityByName(req.entity);
     if (!entity) {
       throw new NotFoundError(
-        `Entity not found, ${serializeEntityRef(entityName)}`,
+        `Entity not found, ${serializeEntityRef(req.entity)}`,
       );
     }
 
     const url = this.getEntitySourceUrl(entity);
     const todos = await this.todoReader.readTodos({ url });
+    const totalCount = todos.items.length;
 
-    const { offset, limit } = this.parseCursor(cursor);
+    let limit = req.limit ?? this.defaultPageSize;
+    if (limit < 0) {
+      limit = 0;
+    } else if (limit > this.maxPageSize) {
+      limit = this.maxPageSize;
+    }
+
+    let offset = req.offset ?? 0;
+    if (offset < 0) {
+      offset = 0;
+    } else if (offset - limit > totalCount) {
+      offset = totalCount - limit;
+    }
+
     return {
       items: todos.items.slice(offset, offset + limit),
-      totalCount: todos.items.length,
-      cursors: this.calculateCursors(offset, limit, todos.items.length),
+      totalCount,
+      offset,
+      limit,
     };
   }
 
@@ -104,45 +116,5 @@ export class TodoReaderService implements TodoService {
     throw new InputError(
       `No entity location annotation found for ${serializeEntityRef(entity)}`,
     );
-  }
-
-  private parseCursor(
-    cursor: string | undefined,
-  ): { offset: number; limit: number } {
-    if (!cursor) {
-      return { offset: 0, limit: this.defaultPageSize };
-    }
-
-    const [offsetStr, limitStr] = cursor.split(',');
-
-    const offset = parseInt(offsetStr, 10);
-    if (!Number.isInteger(offset) || offset < 0) {
-      throw new InputError(`Invalid cursor, ${cursor}`);
-    }
-
-    let limit = parseInt(limitStr, 10);
-    if (!Number.isInteger(limit) || limit < 0) {
-      throw new InputError(`Invalid cursor, ${cursor}`);
-    }
-    if (limit > this.maxPageSize) {
-      limit = this.maxPageSize;
-    }
-
-    return { offset, limit };
-  }
-
-  private calculateCursors(
-    offset: number,
-    limit: number,
-    total: number,
-  ): ListTodosResponse['cursors'] {
-    const prevOffset = Math.max(offset - limit, 0);
-    const nextOffset = Math.min(offset + limit, total - limit);
-
-    return {
-      prev: `${prevOffset},${limit}`,
-      self: `${offset},${limit}`,
-      next: `${nextOffset},${limit}`,
-    };
   }
 }
