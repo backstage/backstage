@@ -24,13 +24,16 @@ import {
   VersionedValue,
   createVersionedValueMap,
 } from '../lib/versionedValues';
-import { getGlobalSingleton, setGlobalSingleton } from '../lib/globalObject';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+} from '../lib/globalObject';
 import { AppContext as AppContextV1 } from './types';
 
 type AppContextType = VersionedValue<{ 1: AppContextV1 }> | undefined;
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-setGlobalSingleton('app-context', AppContext);
+const AppContext = getOrCreateGlobalSingleton('app-context', () =>
+  createContext<AppContextType | undefined>(undefined),
+);
 
 type Props = {
   appContext: AppContextV1;
