@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export * from './public';
-import * as privateExports from './private';
-
-export default privateExports;
+export * from './apis';
+export * from './app';
+export * from './extensions';
+export * from './plugin';
+export * from './routing';
+export * from './types';

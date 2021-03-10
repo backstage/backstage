@@ -15,13 +15,14 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
 import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
+import { IconComponent } from '@backstage/plugin-api';
 import { SubRouteRef } from '../routing/types';
+import { AppIcons } from './icons';
 
 export type BootErrorPageProps = {
   step: 'load-config';
@@ -125,7 +126,7 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: IconComponentMap;
+  icons?: AppIcons & { [key in string]: IconComponent };
 
   /**
    * A list of all plugins to include in the app.
@@ -202,7 +203,7 @@ export type BackstageApp = {
   /**
    * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: IconKey): IconComponent | undefined;
+  getSystemIcon(key: string): IconComponent | undefined;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -233,7 +234,7 @@ export type AppContext = {
   /**
    * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: IconKey): IconComponent | undefined;
+  getSystemIcon(key: string): IconComponent | undefined;
 
   /**
    * Get the components registered for various purposes in the app.

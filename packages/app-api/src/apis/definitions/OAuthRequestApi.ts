@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../../icons';
+import { IconComponent } from '@backstage/plugin-api';
 import { Observable } from '../../types';
 import { ApiRef, createApiRef } from '../system';
 
