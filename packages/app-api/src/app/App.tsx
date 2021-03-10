@@ -23,6 +23,7 @@ import React, {
 } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAsync } from 'react-use';
+import { IconComponent } from '@backstage/plugin-api';
 import {
   AnyApiFactory,
   ApiHolder,
@@ -48,7 +49,6 @@ import {
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
-import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { AnyRoutes } from '../plugin/types';
 import { RouteRef, ExternalRouteRef } from '../routing';
@@ -103,7 +103,7 @@ export function generateBoundRoutes(
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
-  icons: IconComponentMap;
+  icons: NonNullable<AppOptions['icons']>;
   plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
   themes: AppTheme[];
@@ -156,7 +156,7 @@ class AppContextImpl implements AppContext {
     return this.app.getPlugins();
   }
 
-  getSystemIcon(key: IconKey): IconComponent | undefined {
+  getSystemIcon(key: string): IconComponent | undefined {
     return this.app.getSystemIcon(key);
   }
 
@@ -188,7 +188,7 @@ export class PrivateAppImpl implements BackstageApp {
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
-  private readonly icons: IconComponentMap;
+  private readonly icons: NonNullable<AppOptions['icons']>;
   private readonly plugins: BackstagePlugin<any, any>[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
@@ -213,7 +213,7 @@ export class PrivateAppImpl implements BackstageApp {
     return this.plugins;
   }
 
-  getSystemIcon(key: IconKey): IconComponent | undefined {
+  getSystemIcon(key: string): IconComponent | undefined {
     return this.icons[key];
   }
 

@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { SvgIconProps } from '@material-ui/core';
+import {
+  BrokenImageIcon,
+  ChatIcon,
+  DashboardIcon,
+  EmailIcon,
+  GitHubIcon,
+  GroupIcon,
+  HelpIcon,
+  UserIcon,
+  WarningIcon,
+} from '@backstage/components';
+import { IconComponent } from '@backstage/plugin-api';
 
-export type SystemIconKey =
+type AppIconsKey =
   | 'brokenImage'
   | 'chat'
   | 'dashboard'
@@ -28,6 +38,16 @@ export type SystemIconKey =
   | 'user'
   | 'warning';
 
-export type IconComponent = ComponentType<SvgIconProps>;
-export type IconKey = SystemIconKey | string;
-export type IconComponentMap = { [key in IconKey]: IconComponent };
+export type AppIcons = { [key in AppIconsKey]: IconComponent };
+
+export const defaultAppIcons: AppIcons = {
+  brokenImage: BrokenImageIcon,
+  chat: ChatIcon,
+  dashboard: DashboardIcon,
+  email: EmailIcon,
+  github: GitHubIcon,
+  group: GroupIcon,
+  help: HelpIcon,
+  user: UserIcon,
+  warning: WarningIcon,
+};

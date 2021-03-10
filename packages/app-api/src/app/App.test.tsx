@@ -20,7 +20,7 @@ import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
-import { defaultSystemIcons } from '../icons';
+import { defaultAppIcons } from './icons';
 import { createPlugin } from '../plugin';
 import { useRouteRef } from '../routing/hooks';
 import {
@@ -163,7 +163,7 @@ describe('Integration Test', () => {
           theme: lightTheme,
         },
       ],
-      icons: defaultSystemIcons,
+      icons: defaultAppIcons,
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
@@ -214,7 +214,7 @@ describe('Integration Test', () => {
           theme: lightTheme,
         },
       ],
-      icons: defaultSystemIcons,
+      icons: defaultAppIcons,
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
@@ -257,7 +257,7 @@ describe('Integration Test', () => {
           theme: lightTheme,
         },
       ],
-      icons: defaultSystemIcons,
+      icons: defaultAppIcons,
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
