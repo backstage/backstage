@@ -43,6 +43,8 @@ export function createPublishGithubAction(options: {
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:github',
+    description:
+      'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     schema: {
       input: {
         type: 'object',

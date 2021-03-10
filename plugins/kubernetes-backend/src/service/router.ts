@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
+import { getCombinedClusterDetails } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
-import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
   KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  ClusterDetails,
-  KubernetesClustersSupplier,
   CustomResource,
-} from '..';
-import { getCombinedClusterDetails } from '../cluster-locator';
+} from '../types/types';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 export interface RouterOptions {
   logger: Logger;

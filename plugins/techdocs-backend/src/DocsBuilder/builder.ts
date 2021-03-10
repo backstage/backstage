@@ -29,7 +29,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { Logger } from 'winston';
-import { BuildMetadataStorage } from '.';
+import { BuildMetadataStorage } from './BuildMetadataStorage';
 
 type DocsBuilderArguments = {
   preparers: PreparerBuilder;

@@ -15,7 +15,8 @@
  */
 
 import { createTestShadowDom, FIXTURES } from '../../../test-utils';
-import { Transformer, sanitizeDOM } from '..';
+import { Transformer } from '../index';
+import { sanitizeDOM } from '../sanitizeDOM';
 
 const injectMaliciousLink = (): Transformer => dom => {
   const link = document.createElement('a');

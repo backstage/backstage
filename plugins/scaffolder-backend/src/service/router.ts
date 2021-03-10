@@ -347,6 +347,16 @@ export async function createRouter(
         }
       },
     )
+    .get('/v2/actions', async (_req, res) => {
+      const actionsList = actionRegistry.list().map(action => {
+        return {
+          id: action.id,
+          description: action.description,
+          schema: action.schema,
+        };
+      });
+      res.json(actionsList);
+    })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = req.body.values;

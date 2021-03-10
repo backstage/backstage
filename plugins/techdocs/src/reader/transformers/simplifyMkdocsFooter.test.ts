@@ -15,7 +15,7 @@
  */
 
 import { createTestShadowDom, FIXTURES } from '../../test-utils';
-import { simplifyMkdocsFooter } from '.';
+import { simplifyMkdocsFooter } from './simplifyMkdocsFooter';
 
 describe('simplifyMkdocsFooter', () => {
   it('does not remove mkdocs copyright', () => {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '..';
 import { Config } from '@backstage/config';
+import { ClusterDetails } from '../types/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 

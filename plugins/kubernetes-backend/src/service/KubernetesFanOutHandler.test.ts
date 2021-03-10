@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { ObjectFetchParams } from '..';
+import { ObjectFetchParams } from '../types/types';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 const fetchObjectsForService = jest.fn();

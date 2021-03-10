@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { StatusPending, StatusError, StatusOK } from '@backstage/core';
 
+import { StatusError, StatusOK, StatusPending } from '@backstage/core';
+import React from 'react';
 import { Audit } from '../../api';
+
+// TODO(freben): move all of this out of index
 
 const AuditStatusIcon = ({ audit }: { audit: Audit }) => {
   if (audit.status === 'FAILED') return <StatusError />;

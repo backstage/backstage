@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DirectoryPreparer, CommonGitPreparer, UrlPreparer } from '.';
-import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
+import { Logger } from 'winston';
 import { parseReferenceAnnotation } from '../../helpers';
+import { CommonGitPreparer, DirectoryPreparer, UrlPreparer } from '../prepare';
+import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
 
 type factoryOptions = {
   logger: Logger;

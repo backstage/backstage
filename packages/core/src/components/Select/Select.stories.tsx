@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Select } from '.';
+import { SelectComponent as Select } from './Select';
 
 export default {
   title: 'Inputs/Select',

@@ -128,9 +128,7 @@ regions.
 Configures which [custom resources][3] to look for when returning an entity's
 Kubernetes resources.
 
-Defaults to empty array.
-
-Example:
+Defaults to empty array. router.ts Example:
 
 ```yaml
 ---

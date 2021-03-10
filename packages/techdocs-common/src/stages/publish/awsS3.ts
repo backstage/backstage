@@ -63,32 +63,7 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    let accessKeyId = undefined;
-    let secretAccessKey = undefined;
-    let credentials: Credentials | CredentialsOptions | undefined = undefined;
-    if (credentialsConfig) {
-      const roleArn = credentialsConfig.getOptionalString('roleArn');
-      if (roleArn && aws.config.credentials instanceof Credentials) {
-        credentials = new aws.ChainableTemporaryCredentials({
-          masterCredentials: aws.config.credentials as Credentials,
-          params: {
-            RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
-            RoleArn: roleArn,
-          },
-        });
-      } else {
-        accessKeyId = credentialsConfig.getOptionalString('accessKeyId');
-        secretAccessKey = credentialsConfig.getOptionalString(
-          'secretAccessKey',
-        );
-        if (accessKeyId && secretAccessKey) {
-          credentials = {
-            accessKeyId,
-            secretAccessKey,
-          };
-        }
-      }
-    }
+    const credentials = AwsS3Publish.buildCredentials(credentialsConfig);
 
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
     // or AWS shared credentials file at ~/.aws/credentials will be used.
@@ -131,6 +106,37 @@ export class AwsS3Publish implements PublisherBase {
     );
 
     return new AwsS3Publish(storageClient, bucketName, logger);
+  }
+
+  private static buildCredentials(
+    config?: Config,
+  ): Credentials | CredentialsOptions | undefined {
+    if (!config) {
+      return undefined;
+    }
+
+    const accessKeyId = config.getOptionalString('accessKeyId');
+    const secretAccessKey = config.getOptionalString('secretAccessKey');
+    let explicitCredentials: Credentials | undefined;
+    if (accessKeyId && secretAccessKey) {
+      explicitCredentials = new Credentials({
+        accessKeyId,
+        secretAccessKey,
+      });
+    }
+
+    const roleArn = config.getOptionalString('roleArn');
+    if (roleArn) {
+      return new aws.ChainableTemporaryCredentials({
+        masterCredentials: explicitCredentials,
+        params: {
+          RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
+          RoleArn: roleArn,
+        },
+      });
+    }
+
+    return explicitCredentials;
   }
 
   constructor(

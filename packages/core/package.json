@@ -61,7 +61,7 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-sparklines": "^1.7.0",
-    "react-syntax-highlighter": "^13.5.1",
+    "react-syntax-highlighter": "^15.4.3",
     "react-text-truncate": "^0.16.0",
     "react-use": "^15.3.3",
     "remark-gfm": "^1.0.0",
