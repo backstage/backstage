@@ -131,25 +131,30 @@ export class GithubPublisher implements PublisherBase {
 
     const { data } = await repoCreationPromise;
 
-    if (access?.startsWith(`${owner}/`)) {
-      const [, team] = access.split('/');
-      await client.teams.addOrUpdateRepoPermissionsInOrg({
-        org: owner,
-        team_slug: team,
-        owner,
-        repo: name,
-        permission: 'admin',
-      });
-      // no need to add access if it's the person who own's the personal account
-    } else if (access && access !== owner) {
-      await client.repos.addCollaborator({
-        owner,
-        repo: name,
-        username: access,
-        permission: 'admin',
-      });
+    try {
+      if (access?.startsWith(`${owner}/`)) {
+        const [, team] = access.split('/');
+        await client.teams.addOrUpdateRepoPermissionsInOrg({
+          org: owner,
+          team_slug: team,
+          owner,
+          repo: name,
+          permission: 'admin',
+        });
+        // no need to add access if it's the person who owns the personal account
+      } else if (access && access !== owner) {
+        await client.repos.addCollaborator({
+          owner,
+          repo: name,
+          username: access,
+          permission: 'admin',
+        });
+      }
+    } catch (e) {
+      throw new Error(
+        `Failed to add access to '${access}'. Status ${e.status} ${e.message}`,
+      );
     }
-
     return data?.clone_url;
   }
 }
