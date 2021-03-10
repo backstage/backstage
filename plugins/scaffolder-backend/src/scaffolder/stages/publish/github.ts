@@ -151,8 +151,9 @@ export class GithubPublisher implements PublisherBase {
         });
       }
     } catch (e) {
-      e.message = `Failed to add access to '${access}': ${e.message}`;
-      throw e;
+      throw new Error(
+        `Failed to add access to '${access}'. Status ${e.status} ${e.message}`,
+      );
     }
     return data?.clone_url;
   }
