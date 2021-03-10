@@ -34,7 +34,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('google') && (
       <ProviderSettingsItem
         title="Google"
-        description={googleAuthApiRef.description}
+        description="Provides authentication towards Google APIs and identities"
         apiRef={googleAuthApiRef}
         icon={Star}
       />
@@ -42,7 +42,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('microsoft') && (
       <ProviderSettingsItem
         title="Microsoft"
-        description={microsoftAuthApiRef.description}
+        description="Provides authentication towards Microsoft APIs and identities"
         apiRef={microsoftAuthApiRef}
         icon={Star}
       />
@@ -50,7 +50,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('github') && (
       <ProviderSettingsItem
         title="GitHub"
-        description={githubAuthApiRef.description}
+        description="Provides authentication towards GitHub APIs"
         apiRef={githubAuthApiRef}
         icon={Star}
       />
@@ -58,7 +58,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('gitlab') && (
       <ProviderSettingsItem
         title="GitLab"
-        description={gitlabAuthApiRef.description}
+        description="Provides authentication towards GitLab APIs"
         apiRef={gitlabAuthApiRef}
         icon={Star}
       />
@@ -66,7 +66,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('okta') && (
       <ProviderSettingsItem
         title="Okta"
-        description={oktaAuthApiRef.description}
+        description="Provides authentication towards Okta APIs"
         apiRef={oktaAuthApiRef}
         icon={Star}
       />
@@ -74,7 +74,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     {configuredProviders.includes('oauth2') && (
       <ProviderSettingsItem
         title="YourOrg"
-        description={oauth2ApiRef.description}
+        description="Example of how to use oauth2 custom provider"
         apiRef={oauth2ApiRef}
         icon={Star}
       />
