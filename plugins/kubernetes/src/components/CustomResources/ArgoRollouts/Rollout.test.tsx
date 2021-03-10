@@ -25,9 +25,6 @@ import * as groupedResources from './__fixtures__/grouped-resources.json';
 import { RolloutAccordions } from './Rollout';
 import { DateTime, Duration } from 'luxon';
 
-// TODO pod error messages
-// TODO default CRD implementation
-
 describe('Rollout', () => {
   it('should render RolloutAccordion', async () => {
     const wrapper = kubernetesProviders(groupedResources, new Set([]));
