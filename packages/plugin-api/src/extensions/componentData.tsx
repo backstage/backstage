@@ -17,23 +17,16 @@
 import { ComponentType, ReactNode } from 'react';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
-// TODO(Rugvip): Access via symbol is deprecated, remove once on 0.3.x
-const DATA_KEY = Symbol('backstage-component-data');
-
-type ComponentWithData<P> = ComponentType<P> & {
-  [DATA_KEY]?: DataContainer;
-};
-
 type DataContainer = {
   map: Map<string, unknown>;
 };
 
 type MaybeComponentNode = ReactNode & {
-  type?: ComponentType<any> & { [DATA_KEY]?: DataContainer };
+  type?: ComponentType<any>;
 };
 
 // The store is bridged across versions using the global object
-const store = getOrCreateGlobalSingleton(
+const globalStore = getOrCreateGlobalSingleton(
   'component-data-store',
   () => new WeakMap<ComponentType<any>, DataContainer>(),
 );
@@ -43,13 +36,10 @@ export function attachComponentData<P>(
   type: string,
   data: unknown,
 ) {
-  const dataComponent = component as ComponentWithData<P>;
-
-  let container = store.get(component) || dataComponent[DATA_KEY];
+  let container = globalStore.get(component);
   if (!container) {
     container = { map: new Map() };
-    store.set(component, container);
-    dataComponent[DATA_KEY] = container;
+    globalStore.set(component, container);
   }
 
   if (container.map.has(type)) {
@@ -75,7 +65,7 @@ export function getComponentData<T>(
     return undefined;
   }
 
-  const container = store.get(component) || component[DATA_KEY];
+  const container = globalStore.get(component);
   if (!container) {
     return undefined;
   }
