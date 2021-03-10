@@ -114,10 +114,6 @@ export class TodoScmReader implements TodoReader {
           path: file.path,
           content: content.toString('utf8'),
         });
-        const viewUrl = this.integrations.resolveUrl({
-          url: file.path,
-          base: url,
-        });
 
         todos.push(
           ...items.map(({ lineNumber, text, author }) => ({
@@ -125,8 +121,11 @@ export class TodoScmReader implements TodoReader {
             author,
             lineNumber,
             repoFilePath: file.path,
-            viewUrl:
-              lineNumber === undefined ? viewUrl : `${viewUrl}#L${lineNumber}`,
+            viewUrl: this.integrations.resolveUrl({
+              url: file.path,
+              base: url,
+              lineNumber,
+            }),
           })),
         );
       } catch (error) {
