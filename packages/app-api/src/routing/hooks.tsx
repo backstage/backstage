@@ -35,12 +35,15 @@ import {
   VersionedValue,
   createVersionedValueMap,
 } from '../lib/versionedValues';
-import { setGlobalSingleton, getGlobalSingleton } from '../lib/globalObject';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+} from '../lib/globalObject';
 
 type RoutingContextType = VersionedValue<{ 1: RouteResolver }> | undefined;
-const RoutingContext = createContext<RoutingContextType>(undefined);
-
-setGlobalSingleton('routing-context', RoutingContext);
+const RoutingContext = getOrCreateGlobalSingleton('routing-context', () =>
+  createContext<RoutingContextType>(undefined),
+);
 
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
