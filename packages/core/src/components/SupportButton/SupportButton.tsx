@@ -95,7 +95,7 @@ type Props = {};
 type SupportButtonProps = {
   title?: string;
   supportItems?: SupportItem[];
-  hideDefaultItems?: Boolean;
+  hideDefaultItems?: boolean;
 };
 
 export const SupportButton = ({
