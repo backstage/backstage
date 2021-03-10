@@ -99,7 +99,7 @@ export class TodoScmReader implements TodoReader {
     const tree = await this.reader.readTree(url, {
       etag,
       filter(path) {
-        return !path.startsWith('.yarn');
+        return !path.startsWith('.') && !path.includes('/.');
       },
     });
 
