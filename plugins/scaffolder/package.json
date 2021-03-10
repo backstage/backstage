@@ -43,7 +43,7 @@
     "@rjsf/core": "^2.4.0",
     "@rjsf/material-ui": "^2.4.0",
     "classnames": "^2.2.6",
-    "json-schema": "^0.3.0",
+    "json-schema": "^0.2.5",
     "git-url-parse": "^11.4.4",
     "humanize-duration": "^3.25.1",
     "luxon": "^1.25.0",
