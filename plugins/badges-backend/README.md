@@ -2,7 +2,7 @@
 
 Backend plugin for serving badges. Default implementation uses
 [badge-maker](https://www.npmjs.com/package/badge-maker) for creating
-the badges, in svg.
+the badges, in SVG.
 
 ## Setup
 
