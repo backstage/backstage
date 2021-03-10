@@ -37,6 +37,6 @@ export interface Config {
     /**
      * @visibility frontend
      */
-    customResources: CustomResource[];
+    customResources?: CustomResource[];
   };
 }
