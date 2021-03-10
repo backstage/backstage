@@ -18,9 +18,18 @@ import {
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Avatar, InfoCard } from '@backstage/core';
-import { entityRouteParams } from '@backstage/plugin-catalog';
-import { Box, Grid, Link, Tooltip, Typography } from '@material-ui/core';
+import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core';
+import { entityRouteParams, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  Box,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from '@material-ui/core';
 import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
@@ -60,12 +69,13 @@ const CardTitle = ({ title }: { title?: string }) =>
   ) : null;
 
 export const UserProfileCard = ({
-  entity: user,
   variant,
 }: {
-  entity: UserEntity;
-  variant: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: UserEntity;
+  variant?: InfoCardVariants;
 }) => {
+  const user = useEntity().entity as UserEntity;
   const {
     metadata: { name: metaName },
     spec: { profile },
@@ -80,40 +90,35 @@ export const UserProfileCard = ({
     return <Alert severity="error">User not found</Alert>;
   }
 
+  const emailHref = profile?.email ? `mailto:${profile.email}` : '';
+
   return (
     <InfoCard title={<CardTitle title={displayName} />} variant={variant}>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} alignItems="flex-start">
         <Grid item xs={12} sm={2} xl={1}>
-          <Box
-            display="flex"
-            alignItems="flex-start"
-            justifyContent="center"
-            height="100%"
-            width="100%"
-          >
-            <Avatar displayName={displayName} picture={profile?.picture} />
-          </Box>
+          <Avatar displayName={displayName} picture={profile?.picture} />
         </Grid>
-        <Grid item md={10} xl={11}>
-          {profile?.email && (
-            <Typography variant="subtitle1">
-              <Box display="flex" alignItems="center">
-                <Tooltip title="Email">
-                  <EmailIcon fontSize="inherit" />
-                </Tooltip>
 
-                <Box ml={1} display="inline">
-                  {profile.email}
-                </Box>
-              </Box>
-            </Typography>
-          )}
-          <Typography variant="subtitle1">
-            <Box display="flex" alignItems="center">
-              <Tooltip title="Member of">
-                <GroupIcon />
-              </Tooltip>
-              <Box ml={1} display="inline">
+        <Grid item md={10} xl={11}>
+          <List>
+            {profile?.email && (
+              <ListItem>
+                <ListItemIcon>
+                  <EmailIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  <Link href={emailHref}>{profile.email}</Link>
+                </ListItemText>
+              </ListItem>
+            )}
+
+            <ListItem>
+              <ListItemIcon>
+                <Tooltip title="Member of">
+                  <GroupIcon />
+                </Tooltip>
+              </ListItemIcon>
+              <ListItemText>
                 {groupNames.map((groupName, index) => (
                   <GroupLink
                     groupName={groupName}
@@ -122,9 +127,9 @@ export const UserProfileCard = ({
                     entity={user}
                   />
                 ))}
-              </Box>
-            </Box>
-          </Typography>
+              </ListItemText>
+            </ListItem>
+          </List>
         </Grid>
       </Grid>
     </InfoCard>

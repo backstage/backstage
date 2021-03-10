@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import {
   Sidebar,
+  SidebarDivider,
   SidebarIntro,
   SidebarItem,
-  SidebarDivider,
   SidebarSearchField,
   SidebarSpace,
-} from '.';
-import HomeOutlinedIcon from '@material-ui/icons/HomeOutlined';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { MemoryRouter } from 'react-router-dom';
+} from '../Sidebar';
 
 export default {
   title: 'Layout/Sidebar',

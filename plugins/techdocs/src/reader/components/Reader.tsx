@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { useAsync } from 'react-use';
-import { useTheme } from '@material-ui/core';
-import { useParams, useNavigate } from 'react-router-dom';
 import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
-import { useShadowDom } from '..';
+import { useTheme } from '@material-ui/core';
+import React from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
-import TechDocsProgressBar from './TechDocsProgressBar';
-
+import { useShadowDom } from '../hooks';
 import transformer, {
   addBaseUrl,
-  rewriteDocLinks,
   addLinkClickListener,
-  removeMkdocsHeader,
-  simplifyMkdocsFooter,
-  onCssReady,
-  sanitizeDOM,
   injectCss,
+  onCssReady,
+  removeMkdocsHeader,
+  rewriteDocLinks,
+  sanitizeDOM,
+  simplifyMkdocsFooter,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
+import TechDocsProgressBar from './TechDocsProgressBar';
 
 type Props = {
   entityId: EntityName;
@@ -129,7 +128,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
       }),
       onCssReady({
-        docStorageUrl: techdocsStorageApi.apiOrigin,
+        docStorageUrl: techdocsStorageApi.getApiOrigin(),
         onLoading: (dom: Element) => {
           (dom as HTMLElement).style.setProperty('opacity', '0');
         },
@@ -155,7 +154,9 @@ export const Reader = ({ entityId, onReady }: Props) => {
   ]);
 
   if (error) {
-    return <TechDocsNotFound errorMessage={error.message} />;
+    // TODO Enhance API call to return customize error objects so we can identify which we ran into
+    // For now this defaults to display error code 404
+    return <TechDocsNotFound statusCode={404} errorMessage={error.message} />;
   }
 
   return (

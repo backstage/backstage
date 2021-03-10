@@ -15,17 +15,17 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog';
 import { Content, Header, Page } from '@backstage/core';
 import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import {
+  EntitySentryCard,
+  EntitySentryContent,
   MockSentryApi,
   SentryApi,
   sentryApiRef,
-  EntitySentryCard,
-  EntitySentryContent,
 } from '../src';
 import { SENTRY_PROJECT_SLUG_ANNOTATION } from '../src/components/useProjectSlug';
 

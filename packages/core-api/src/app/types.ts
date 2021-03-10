@@ -15,9 +15,9 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
-import { BackstagePlugin, AnyExternalRoutes } from '../plugin/types';
-import { RouteRef } from '../routing';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
+import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
+import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
@@ -79,9 +79,39 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
-export type AppRouteBinder = <T extends AnyExternalRoutes>(
-  externalRoutes: T,
-  targetRoutes: { [key in keyof T]: RouteRef<any> },
+/**
+ * Extracts a union of the keys in a map whose value extends the given type
+ */
+type KeysWithType<Obj extends { [key in string]: any }, Type> = {
+  [key in keyof Obj]: Obj[key] extends Type ? key : never;
+}[keyof Obj];
+
+/**
+ * Takes a map Map required values and makes all keys matching Keys optional
+ */
+type PartialKeys<
+  Map extends { [name in string]: any },
+  Keys extends keyof Map
+> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
+
+/**
+ * Creates a map of target routes with matching parameters based on a map of external routes.
+ */
+type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
+  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
+    infer Params,
+    any
+  >
+    ? RouteRef<Params>
+    : never;
+};
+
+export type AppRouteBinder = <ExternalRoutes extends AnyExternalRoutes>(
+  externalRoutes: ExternalRoutes,
+  targetRoutes: PartialKeys<
+    TargetRouteMap<ExternalRoutes>,
+    KeysWithType<ExternalRoutes, ExternalRouteRef<any, true>>
+  >,
 ) => void;
 
 export type AppOptions = {
@@ -94,7 +124,7 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<SystemIcons>;
+  icons?: IconComponentMap;
 
   /**
    * A list of all plugins to include in the app.
@@ -169,9 +199,9 @@ export type BackstageApp = {
   getPlugins(): BackstagePlugin<any, any>[];
 
   /**
-   * Get a common icon for this app.
+   * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: SystemIconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent | undefined;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -187,6 +217,40 @@ export type BackstageApp = {
 
   /**
    * Routes component that contains all routes for plugin pages in the app.
+   *
+   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
+   */
+  getRoutes(): JSX.Element[];
+};
+
+export type AppContext = {
+  /**
+   * @deprecated Will be removed
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
+   * Get a common or custom icon for this app.
+   */
+  getSystemIcon(key: IconKey): IconComponent | undefined;
+
+  /**
+   * Get the components registered for various purposes in the app.
+   */
+  getComponents(): AppComponents;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getProvider(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
    */
   getRoutes(): JSX.Element[];
 };

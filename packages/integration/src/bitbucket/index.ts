@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { BitbucketIntegration } from './BitbucketIntegration';
 export {
   readBitbucketIntegrationConfig,
   readBitbucketIntegrationConfigs,

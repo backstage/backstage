@@ -9,9 +9,9 @@ import {
   HeaderLabel,
   SupportButton,
 } from '@backstage/core';
-import ExampleFetchComponent from '../ExampleFetchComponent';
+import { ExampleFetchComponent } from '../ExampleFetchComponent';
 
-const ExampleComponent = () => (
+export const ExampleComponent = () => (
   <Page themeId="tool">
     <Header title="Welcome to {{ id }}!" subtitle="Optional subtitle">
       <HeaderLabel label="Owner" value="Team X" />
@@ -36,5 +36,3 @@ const ExampleComponent = () => (
     </Content>
   </Page>
 );
-  
-export default ExampleComponent;

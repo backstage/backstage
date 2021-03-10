@@ -14,20 +14,74 @@
  * limitations under the License.
  */
 
+import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  ApiProvider,
+  ApiRegistry,
+  configApiRef,
+  ConfigReader,
+} from '@backstage/core';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { act, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { render } from '@testing-library/react';
 import { AboutCard } from './AboutCard';
 
-describe('<AboutCard /> GitHub', () => {
-  it('renders info and "view source" link', () => {
+describe('<AboutCard />', () => {
+  it('renders info', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        description: 'This is the decription',
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+      relations: [
+        {
+          type: RELATION_OWNED_BY,
+          target: {
+            kind: 'user',
+            name: 'guest',
+            namespace: 'default',
+          },
+        },
+      ],
+    };
+    const apis = ApiRegistry.with(
+      configApiRef,
+      new ConfigReader({
+        integrations: {},
+      }),
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    expect(getByText('service')).toBeInTheDocument();
+    expect(getByText('user:guest')).toBeInTheDocument();
+    expect(getByText('production')).toBeInTheDocument();
+    expect(getByText('This is the decription')).toBeInTheDocument();
+  });
+
+  it('renders "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
         name: 'software',
         annotations: {
-          'backstage.io/managed-by-location':
-            'github:https://github.com/backstage/backstage/blob/master/software.yaml',
+          'backstage.io/source-location':
+            'url:https://github.com/backstage/backstage/blob/master/software.yaml',
         },
       },
       spec: {
@@ -36,29 +90,42 @@ describe('<AboutCard /> GitHub', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
-    expect(getByText('service')).toBeInTheDocument();
+    const apis = ApiRegistry.with(
+      configApiRef,
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              token: '...',
+            },
+          ],
+        },
+      }),
+    );
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
     expect(getByText('View Source').closest('a')).toHaveAttribute(
       'href',
       'https://github.com/backstage/backstage/blob/master/software.yaml',
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://github.com/backstage/backstage/edit/master/software.yaml',
-    );
   });
-});
 
-describe('<AboutCard /> GitLab', () => {
-  it('renders info and "view source" link', () => {
+  it('renders "edit metadata" button', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
         name: 'software',
         annotations: {
-          'backstage.io/managed-by-location':
-            'gitlab:https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
+          'backstage.io/edit-url':
+            'https://github.com/backstage/backstage/edit/master/software.yaml',
         },
       },
       spec: {
@@ -67,30 +134,45 @@ describe('<AboutCard /> GitLab', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
-    expect(getByText('service')).toBeInTheDocument();
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'href',
-      'https://gitlab.com/backstage/backstage/-/blob/master/software.yaml',
+    const apis = ApiRegistry.with(
+      configApiRef,
+      new ConfigReader({
+        integrations: {
+          github: [
+            {
+              host: 'github.com',
+              token: '...',
+            },
+          ],
+        },
+      }),
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://gitlab.com/backstage/backstage/-/edit/master/software.yaml',
+
+    const { getByTitle } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
+    );
+
+    const editButton = getByTitle('Edit Metadata');
+    window.open = jest.fn();
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+    expect(window.open).toHaveBeenCalledWith(
+      `https://github.com/backstage/backstage/edit/master/software.yaml`,
+      '_blank',
     );
   });
-});
 
-describe('<AboutCard /> BitBucket', () => {
-  it('renders info and "view source" link', () => {
+  it('renders without "view source" link', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
       metadata: {
         name: 'software',
-        annotations: {
-          'backstage.io/managed-by-location':
-            'bitbucket:https://bitbucket.org/backstage/backstage/src/master/software.yaml',
-        },
       },
       spec: {
         owner: 'guest',
@@ -98,15 +180,15 @@ describe('<AboutCard /> BitBucket', () => {
         lifecycle: 'production',
       },
     };
-    const { getByText } = render(<AboutCard entity={entity} />);
-    expect(getByText('service')).toBeInTheDocument();
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'href',
-      'https://bitbucket.org/backstage/backstage/src/master/software.yaml',
+    const apis = ApiRegistry.with(configApiRef, new ConfigReader({}));
+
+    const { getByText } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </ApiProvider>,
     );
-    expect(getByText('View Source').closest('a')).toHaveAttribute(
-      'edithref',
-      'https://bitbucket.org/backstage/backstage/src/master/software.yaml?mode=edit&spa=0&at=master',
-    );
+    expect(getByText('View Source').closest('a')).not.toHaveAttribute('href');
   });
 });

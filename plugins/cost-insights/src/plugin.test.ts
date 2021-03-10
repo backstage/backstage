@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { costInsightsPlugin } from './plugin';
 
 describe('cost-insights', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(costInsightsPlugin).toBeDefined();
   });
 });

@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { Content, ContentHeader, SupportButton, useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  useApi,
+  useRouteRef,
+} from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
+import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerTable } from '../ApiExplorerTable';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
 export const ApiExplorerPage = () => {
+  const createComponentLink = useRouteRef(createComponentRouteRef);
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: catalogResponse } = useAsync(() => {
     return catalogApi.getEntities({ filter: { kind: 'API' } });
@@ -33,14 +41,16 @@ export const ApiExplorerPage = () => {
     <ApiExplorerLayout>
       <Content>
         <ContentHeader title="">
-          <Button
-            variant="contained"
-            color="primary"
-            component={RouterLink}
-            to="/catalog-import"
-          >
-            Register Existing API
-          </Button>
+          {createComponentLink && (
+            <Button
+              variant="contained"
+              color="primary"
+              component={RouterLink}
+              to={createComponentLink()}
+            >
+              Register Existing API
+            </Button>
+          )}
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <ApiExplorerTable

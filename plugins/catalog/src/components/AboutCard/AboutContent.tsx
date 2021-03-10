@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid, Typography, Chip, makeStyles } from '@material-ui/core';
-import { AboutField } from './AboutField';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   RELATION_OWNED_BY,
-  serializeEntityRef,
+  RELATION_PART_OF,
 } from '@backstage/catalog-model';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+} from '@backstage/plugin-catalog-react';
+import { Chip, Grid, makeStyles, Typography } from '@material-ui/core';
+import React from 'react';
+import { AboutField } from './AboutField';
 
 const useStyles = makeStyles({
   description: {
@@ -36,6 +39,25 @@ type Props = {
 
 export const AboutContent = ({ entity }: Props) => {
   const classes = useStyles();
+  const isSystem = entity.kind.toLowerCase() === 'system';
+  const isDomain = entity.kind.toLowerCase() === 'domain';
+  const isResource = entity.kind.toLowerCase() === 'resource';
+  const isComponent = entity.kind.toLowerCase() === 'component';
+  const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'system',
+  });
+  const partOfComponentRelations = getEntityRelations(
+    entity,
+    RELATION_PART_OF,
+    {
+      kind: 'component',
+    },
+  );
+  const partOfDomainRelations = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'domain',
+  });
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
   return (
     <Grid container>
       <AboutField label="Description" gridSizes={{ xs: 12 }}>
@@ -43,32 +65,59 @@ export const AboutContent = ({ entity }: Props) => {
           {entity?.metadata?.description || 'No description'}
         </Typography>
       </AboutField>
-      <AboutField
-        label="Owner"
-        value={entity?.relations
-          ?.filter(r => r.type === RELATION_OWNED_BY)
-          .map(({ target: { kind, name, namespace } }) =>
-            // TODO(Rugvip): we want to provide some utils for this
-            serializeEntityRef({
-              kind,
-              name,
-              namespace:
-                namespace === ENTITY_DEFAULT_NAMESPACE ? undefined : namespace,
-            }),
-          )
-          .join(', ')}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
-      <AboutField
-        label="Type"
-        value={entity?.spec?.type as string}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
-      <AboutField
-        label="Lifecycle"
-        value={entity?.spec?.lifecycle as string}
-        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-      />
+      <AboutField label="Owner" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
+        <EntityRefLinks entityRefs={ownedByRelations} defaultKind="group" />
+      </AboutField>
+      {isSystem && (
+        <AboutField
+          label="Domain"
+          value="No Domain"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          <EntityRefLinks
+            entityRefs={partOfDomainRelations}
+            defaultKind="domain"
+          />
+        </AboutField>
+      )}
+      {!isSystem && !isDomain && (
+        <AboutField
+          label="System"
+          value="No System"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          <EntityRefLinks
+            entityRefs={partOfSystemRelations}
+            defaultKind="system"
+          />
+        </AboutField>
+      )}
+      {isComponent && partOfComponentRelations.length > 0 && (
+        <AboutField
+          label="Parent Component"
+          value="No Parent Component"
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        >
+          <EntityRefLinks
+            entityRefs={partOfComponentRelations}
+            defaultKind="component"
+          />
+        </AboutField>
+      )}
+      {!isSystem && !isDomain && (
+        <AboutField
+          label="Type"
+          value={entity?.spec?.type as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
+      {!isSystem && !isDomain && !isResource && (
+        <AboutField
+          label="Lifecycle"
+          value={entity?.spec?.lifecycle as string}
+          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+        />
+      )}
       <AboutField
         label="Tags"
         value="No Tags"

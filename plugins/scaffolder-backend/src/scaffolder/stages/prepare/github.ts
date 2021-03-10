@@ -13,63 +13,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
 
 export class GithubPreparer implements PreparerBase {
-  token?: string;
-
-  constructor(params: { token?: string } = {}) {
-    this.token = params.token;
+  static fromConfig(config: GitHubIntegrationConfig) {
+    const credentialsProvider = GithubCredentialsProvider.create(config);
+    return new GithubPreparer({ credentialsProvider });
   }
 
-  async prepare(
-    template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
-  ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
+  constructor(
+    private readonly config: { credentialsProvider: GithubCredentialsProvider },
+  ) {}
 
-    if (!['github', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
-    const templateId = template.metadata.name;
-
-    const parsedGitLocation = GitUriParser(location);
-    const repositoryCheckoutUrl = parsedGitLocation.toString('https');
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(workingDirectory, templateId),
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath ?? '',
     );
 
-    const templateDirectory = path.join(
-      `${path.dirname(parsedGitLocation.filepath)}`,
-      template.spec.path ?? '.',
-    );
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url,
+    });
 
-    const checkoutLocation = path.resolve(tempDir, templateDirectory);
-
-    const git = this.token
+    const git = token
       ? Git.fromAuth({
-          username: this.token,
-          password: 'x-oauth-basic',
+          username: 'x-access-token',
+          password: token,
           logger,
         })
       : Git.fromAuth({ logger });
 
     await git.clone({
-      url: repositoryCheckoutUrl,
-      dir: tempDir,
+      url: parsedGitUrl.toString('https'),
+      dir: checkoutPath,
+      ref: parsedGitUrl.ref,
     });
 
-    return checkoutLocation;
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
+    }
   }
 }

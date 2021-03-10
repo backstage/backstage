@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-templates-remote
+  description: A collection of remotely available Backstage example templates
+spec:
+  type: url
+  targets:
+    - https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml

@@ -17,12 +17,12 @@
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ProjectGrowthAlertCard } from './ProjectGrowthAlertCard';
-import { createMockProjectGrowthData } from '../../utils/mockData';
 import {
+  createMockProjectGrowthData,
   MockCurrencyProvider,
   MockConfigProvider,
   MockBillingDateProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { AlertCost } from '../../types';
 import { defaultCurrencies } from '../../utils/currency';
 import { findAlways } from '../../utils/assert';

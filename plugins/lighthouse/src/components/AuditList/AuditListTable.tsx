@@ -25,7 +25,6 @@ import {
 } from '../../utils';
 import { Link, generatePath } from 'react-router-dom';
 import AuditStatusIcon from '../AuditStatusIcon';
-import { viewAuditRouteRef } from '../../plugin';
 
 const columns: TableColumn[] = [
   {
@@ -99,11 +98,7 @@ export const AuditListTable = ({ items }: { items: Website[] }) => {
 
     return {
       websiteUrl: (
-        <Link
-          to={generatePath(viewAuditRouteRef.path, {
-            id: website.lastAudit.id,
-          })}
-        >
+        <Link to={generatePath('audit/:id', { id: website.lastAudit.id })}>
           {website.url}
         </Link>
       ),

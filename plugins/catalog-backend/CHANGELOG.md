@@ -1,5 +1,146 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.4
+
+### Patch Changes
+
+- ecdd407b1: GithubDiscoveryProcessor outputs locations as optional to avoid outputting errors for missing locations (see https://github.com/backstage/backstage/issues/4730).
+- 12d8f27a6: Add version `backstage.io/v1beta2` schema for Template entities.
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
+## 0.6.3
+
+### Patch Changes
+
+- 2499f6cde: Add support for assuming role in AWS integrations
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+  - @backstage/integration@0.5.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 77ad0003a: Revert AWS SDK version to v2
+- d2441aee3: use child logger, if provided, to log single location refresh
+- fb53eb7cb: Don't respond to a request twice if an entity has not been found.
+- f3fbfb452: add indices on columns referring locations(id)
+- 84364b35c: Added an option to scan GitHub for repositories using a new location type `github-discovery`.
+  Example:
+
+  ```yaml
+  type: 'github-discovery',
+  target:
+     'https://github.com/backstage/techdocs-*/blob/master/catalog.yaml'
+  ```
+
+  You can use wildcards (`*`) as well. This will add `location` entities for each matching repository.
+  Currently though, you must specify the exact path of the `catalog.yaml` file in the repository.
+
+- 82b2c11b6: Refactored route response handling to use more explicit types and throw errors.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [5a5163519]
+  - @backstage/backend-common@0.5.3
+  - @backstage/integration@0.4.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 3149bfe63: Make use of the `resolveUrl` facility of the `integration` package.
+
+  Also rename the `LocationRefProcessor` to `LocationEntityProcessor`, to match the file name. This constitutes an interface change since the class is exported, but it is unlikely to be consumed outside of the package since it sits comfortably with the other default processors inside the catalog builder.
+
+### Patch Changes
+
+- 24e47ef1e: Throw `NotAllowedError` when registering locations with entities of disallowed kinds
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [2430ee7c2]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [064c513e1]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/integration@0.3.2
+  - @backstage/backend-common@0.5.2
+  - @backstage/catalog-model@0.7.1
+
+## 0.5.5
+
+### Patch Changes
+
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- a91aa6bf2: Support supplying a custom catalog descriptor file parser
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.5.4
+
+### Patch Changes
+
+- def2307f3: Adds a `backstage.io/managed-by-origin-location` annotation to all entities. It links to the
+  location that was registered to the catalog and which emitted this entity. It has a different
+  semantic than the existing `backstage.io/managed-by-location` annotation, which tells the direct
+  parent location that created this entity.
+
+  Consider this example: The Backstage operator adds a location of type `github-org` in the
+  `app-config.yaml`. This setting will be added to a `bootstrap:boostrap` location. The processor
+  discovers the entities in the following branch
+  `Location bootstrap:bootstrap -> Location github-org:… -> User xyz`. The user `xyz` will be:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: xyz
+    annotations:
+      # This entity was added by the 'github-org:…' location
+      backstage.io/managed-by-location: github-org:…
+      # The entity was added because the 'bootstrap:boostrap' was added to the catalog
+      backstage.io/managed-by-origin-location: bootstrap:bootstrap
+      # ...
+  spec:
+    # ...
+  ```
+
+- 318a6af9f: Change AWS Account type from Component to Resource
+- ac7be581a: Refuse to remove the bootstrap location
+- ad838c02f: Reduce log noise on locations refresh
+- f9ba00a1c: Update the @azure/msal-node dependency to 1.0.0-beta.3.
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+
 ## 0.5.3
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   GitHubIntegrationConfig,
@@ -45,4 +45,27 @@ export class GitHubIntegration implements ScmIntegration {
   get config(): GitHubIntegrationConfig {
     return this.integrationConfig;
   }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    // GitHub uses blob URLs for files and tree urls for directory listings. But
+    // there is a redirect from tree to blob for files, so we can always return
+    // tree urls here.
+    return replaceUrlType(defaultScmResolveUrl(options), 'tree');
+  }
+
+  resolveEditUrl(url: string): string {
+    return replaceUrlType(url, 'edit');
+  }
+}
+
+export function replaceUrlType(
+  url: string,
+  type: 'blob' | 'tree' | 'edit',
+): string {
+  return url.replace(
+    /\/\/([^/]+)\/([^/]+)\/([^/]+)\/(blob|tree|edit)\//,
+    (_, host, owner, repo) => {
+      return `//${host}/${owner}/${repo}/${type}/`;
+    },
+  );
 }

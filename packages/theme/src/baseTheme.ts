@@ -234,10 +234,29 @@ export function createThemeOverrides(theme: BackstageTheme): Overrides {
         margin: `0 ${theme.spacing(0.5)}px 0 -${theme.spacing(0.5)}px`,
       },
     },
+    MuiCard: {
+      root: {
+        // When cards have a forced size, such as when they are arranged in a
+        // CSS grid, the content needs to flex such that the actions (buttons
+        // etc) end up at the bottom of the card instead of just below the body
+        // contents.
+        display: 'flex',
+        flexDirection: 'column',
+      },
+    },
     MuiCardHeader: {
       root: {
         // Reduce padding between header and content
         paddingBottom: 0,
+      },
+    },
+    MuiCardContent: {
+      root: {
+        // When cards have a forced size, such as when they are arranged in a
+        // CSS grid, the content needs to flex such that the actions (buttons
+        // etc) end up at the bottom of the card instead of just below the body
+        // contents.
+        flexGrow: 1,
       },
     },
     MuiCardActions: {

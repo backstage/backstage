@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createComponentExtension,
   createRoutableExtension,
 } from '@backstage/core';
-import { useEntity } from '@backstage/plugin-catalog';
-import { plugin, rootRouteRef } from './plugin';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { sentryPlugin, rootRouteRef } from './plugin';
 
-export const EntitySentryContent = plugin.provide(
+export const EntitySentryContent = sentryPlugin.provide(
   createRoutableExtension({
     mountPoint: rootRouteRef,
     component: () =>
@@ -38,7 +38,7 @@ export const EntitySentryContent = plugin.provide(
   }),
 );
 
-export const EntitySentryCard = plugin.provide(
+export const EntitySentryCard = sentryPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>

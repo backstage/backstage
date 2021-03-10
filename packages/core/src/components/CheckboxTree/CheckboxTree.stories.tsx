@@ -15,11 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { CheckboxTree } from '.';
+import { CheckboxTree } from './CheckboxTree';
 
 const CHECKBOX_TREE_ITEMS = [
   {
-    label: 'Genereic subcategory name 1',
+    label: 'Generic subcategory name 1',
     options: [
       {
         label: 'Option 1',
@@ -32,7 +32,7 @@ const CHECKBOX_TREE_ITEMS = [
     ],
   },
   {
-    label: 'Genereic subcategory name 2',
+    label: 'Generic subcategory name 2',
     options: [
       {
         label: 'Option 1',
@@ -45,7 +45,7 @@ const CHECKBOX_TREE_ITEMS = [
     ],
   },
   {
-    label: 'Genereic subcategory name 3',
+    label: 'Generic subcategory name 3',
     options: [
       {
         label: 'Option 1',

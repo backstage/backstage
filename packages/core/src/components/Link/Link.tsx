@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import React, { ElementType } from 'react';
 import {
   Link as MaterialLink,
   LinkProps as MaterialLinkProps,
 } from '@material-ui/core';
+import React, { ElementType } from 'react';
 import {
   Link as RouterLink,
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
 
-type Props = MaterialLinkProps &
+export const isExternalUri = (uri: string) => /^([a-z+.-]+):\/\//.test(uri);
+
+export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {
     component?: ElementType<any>;
   };
@@ -33,9 +35,9 @@ type Props = MaterialLinkProps &
  * Thin wrapper on top of material-ui's Link component
  * Makes the Link to utilise react-router
  */
-export const Link = React.forwardRef<any, Props>((props, ref) => {
+export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
   const to = String(props.to);
-  return /^https?:\/\//.test(to) ? (
+  return isExternalUri(to) ? (
     // External links
     <MaterialLink ref={ref} href={to} {...props} />
   ) : (

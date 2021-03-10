@@ -72,8 +72,8 @@ async function readBuildInfo() {
 }
 
 async function loadLernaPackages(): Promise<LernaPackage[]> {
-  const LernaProject = require('@lerna/project');
-  const project = new LernaProject(cliPaths.targetDir);
+  const { Project } = require('@lerna/project');
+  const project = new Project(cliPaths.targetDir);
   return project.getPackages();
 }
 
@@ -219,7 +219,7 @@ export async function createBackendConfig(
         }
       : {}),
     externals: [
-      nodeExternals({
+      nodeExternalsWithResolve({
         modulesDir: paths.rootNodeModules,
         additionalModuleDirs: moduleDirs,
         allowlist: ['webpack/hot/poll?100', ...localPackageNames],
@@ -294,5 +294,34 @@ export async function createBackendConfig(
           ]
         : []),
     ],
+  };
+}
+
+// This makes the module resolution happen from the context of each non-external module, rather
+// than the main entrypoint. This fixes a bug where dependencies would be resolved from the backend
+// package rather than each individual backend package and plugin.
+//
+// TODO(Rugvip): Feature suggestion/contribute this to webpack-externals
+function nodeExternalsWithResolve(
+  options: Parameters<typeof nodeExternals>[0],
+) {
+  let currentContext: string;
+  const externals = nodeExternals({
+    ...options,
+    importType(request) {
+      const resolved = require.resolve(request, {
+        paths: [currentContext],
+      });
+      return `commonjs ${resolved}`;
+    },
+  });
+
+  return (
+    context: string,
+    request: string,
+    callback: webpack.ExternalsFunctionCallback,
+  ) => {
+    currentContext = context;
+    return externals(context, request, callback);
   };
 }

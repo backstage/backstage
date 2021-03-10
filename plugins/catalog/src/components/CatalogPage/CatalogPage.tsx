@@ -21,24 +21,31 @@ import {
   errorApiRef,
   SupportButton,
   useApi,
+  useRouteRef,
 } from '@backstage/core';
-import { rootRoute as scaffolderRootRoute } from '@backstage/plugin-scaffolder';
+import {
+  catalogApiRef,
+  isOwnerOf,
+  useStarredEntities,
+} from '@backstage/plugin-catalog-react';
+
 import { Button, makeStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { useStarredEntities } from '../../hooks/useStarredEntities';
-import { catalogApiRef } from '../../plugin';
-import { ButtonGroup, CatalogFilter } from '../CatalogFilter/CatalogFilter';
+import { createComponentRouteRef } from '../../routes';
+import {
+  ButtonGroup,
+  CatalogFilter,
+  CatalogFilterType,
+} from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
+import { useOwnUser } from '../useOwnUser';
 import CatalogLayout from './CatalogLayout';
 import { CatalogTabs, LabeledComponentType } from './CatalogTabs';
-import { WelcomeBanner } from './WelcomeBanner';
-import { useOwnUser } from '../useOwnUser';
-import { isOwnerOf } from '../isOwnerOf';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -67,9 +74,12 @@ const CatalogPageContents = () => {
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
   const [selectedTab, setSelectedTab] = useState<string>();
-  const [selectedSidebarItem, setSelectedSidebarItem] = useState<string>();
+  const [
+    selectedSidebarItem,
+    setSelectedSidebarItem,
+  ] = useState<CatalogFilterType>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-
+  const createComponentLink = useRouteRef(createComponentRouteRef);
   const addMockData = useCallback(async () => {
     try {
       const promises: Promise<unknown>[] = [];
@@ -157,16 +167,17 @@ const CatalogPageContents = () => {
         onChange={({ label }) => setSelectedTab(label)}
       />
       <Content>
-        <WelcomeBanner />
         <ContentHeader title={selectedTab ?? ''}>
-          <Button
-            component={RouterLink}
-            variant="contained"
-            color="primary"
-            to={scaffolderRootRoute.path}
-          >
-            Create Component
-          </Button>
+          {createComponentLink && (
+            <Button
+              component={RouterLink}
+              variant="contained"
+              color="primary"
+              to={createComponentLink()}
+            >
+              Create Component
+            </Button>
+          )}
           {showAddExampleEntities && (
             <Button
               className={styles.buttonSpacing}
@@ -183,13 +194,16 @@ const CatalogPageContents = () => {
           <div>
             <CatalogFilter
               buttonGroups={filterGroups}
-              onChange={({ label }) => setSelectedSidebarItem(label)}
-              initiallySelected="owned"
+              onChange={({ label, id }) =>
+                setSelectedSidebarItem({ label, id })
+              }
+              initiallySelected={selectedSidebarItem?.id ?? 'owned'}
             />
             <ResultsFilter availableTags={availableTags} />
           </div>
           <CatalogTable
-            titlePreamble={selectedSidebarItem ?? ''}
+            titlePreamble={selectedSidebarItem?.label ?? ''}
+            view={selectedTab}
             entities={matchingEntities}
             loading={loading}
             error={error}

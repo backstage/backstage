@@ -21,5 +21,6 @@ export default async (cmd: Command) => {
   await loadCliConfig({
     args: cmd.config,
     fromPackage: cmd.package,
+    mockEnv: cmd.lax,
   });
 };

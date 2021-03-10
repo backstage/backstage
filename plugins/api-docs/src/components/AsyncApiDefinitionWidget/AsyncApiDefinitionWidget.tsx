@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import AsyncApi from '@kyma-project/asyncapi-react';
+import AsyncApi from '@asyncapi/react-component';
+import '@asyncapi/react-component/lib/styles/fiori.css';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { makeStyles, fade } from '@material-ui/core/styles';
-import '@kyma-project/asyncapi-react/lib/styles/fiori.css';
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -22,23 +22,8 @@ export type BaseOptions = {
   listenHost?: string;
 };
 
-export type CertificateOptions = {
-  key?: CertificateKeyOptions;
-  attributes?: CertificateAttributeOptions;
-};
-
-export type CertificateKeyOptions = {
-  size?: number;
-  algorithm?: string;
-  days?: number;
-};
-
-export type CertificateAttributeOptions = {
-  commonName?: string;
-};
-
 export type HttpsSettings = {
-  certificate: CertificateSigningOptions | CertificateReferenceOptions;
+  certificate: CertificateGenerationOptions | CertificateReferenceOptions;
 };
 
 export type CertificateReferenceOptions = {
@@ -46,11 +31,8 @@ export type CertificateReferenceOptions = {
   cert: string;
 };
 
-export type CertificateSigningOptions = {
-  algorithm?: string;
-  size?: number;
-  days?: number;
-  attributes: CertificateAttributes;
+export type CertificateGenerationOptions = {
+  hostname: string;
 };
 
 export type CertificateAttributes = {
@@ -196,20 +178,14 @@ export function readHttpsSettings(config: Config): HttpsSettings | undefined {
   const https = config.getOptional('https');
   if (https === true) {
     const baseUrl = config.getString('baseUrl');
-    let commonName;
+    let hostname;
     try {
-      commonName = new URL(baseUrl).hostname;
+      hostname = new URL(baseUrl).hostname;
     } catch (error) {
       throw new Error(`Invalid backend.baseUrl "${baseUrl}"`);
     }
 
-    return {
-      certificate: {
-        attributes: {
-          commonName,
-        },
-      },
-    };
+    return { certificate: { hostname } };
   }
 
   const cc = config.getOptionalConfig('https');

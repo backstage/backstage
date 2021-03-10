@@ -13,5 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
-export * from './components';
+export { searchPlugin, searchPlugin as plugin, SearchPage } from './plugin';
+export {
+  Filters,
+  FiltersButton,
+  SearchBar,
+  SearchPage as Router,
+  SearchResult,
+  SidebarSearch,
+} from './components';
+export type { FiltersState } from './components';

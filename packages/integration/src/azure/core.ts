@@ -109,6 +109,62 @@ export function getAzureDownloadUrl(url: string): string {
 }
 
 /**
+ * Given a URL, return the API URL to fetch commits on the branch.
+ *
+ * @param url A URL pointing to a repository or a sub-path
+ */
+export function getAzureCommitsUrl(url: string): string {
+  try {
+    const parsedUrl = new URL(url);
+
+    const [
+      empty,
+      userOrOrg,
+      project,
+      srcKeyword,
+      repoName,
+    ] = parsedUrl.pathname.split('/');
+
+    // Remove the "GB" from "GBmain" for example.
+    const ref = parsedUrl.searchParams.get('version')?.substr(2);
+
+    if (
+      !!empty ||
+      !userOrOrg ||
+      !project ||
+      srcKeyword !== '_git' ||
+      !repoName
+    ) {
+      throw new Error('Wrong Azure Devops URL');
+    }
+
+    // transform to commits api
+    parsedUrl.pathname = [
+      empty,
+      userOrOrg,
+      project,
+      '_apis',
+      'git',
+      'repositories',
+      repoName,
+      'commits',
+    ].join('/');
+
+    const queryParams = [];
+    if (ref) {
+      queryParams.push(`searchCriteria.itemVersion.version=${ref}`);
+    }
+    parsedUrl.search = queryParams.join('&');
+
+    parsedUrl.protocol = 'https';
+
+    return parsedUrl.toString();
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${url}, ${e}`);
+  }
+}
+
+/**
  * Gets the request options necessary to make requests to a given provider.
  *
  * @param config The relevant provider config

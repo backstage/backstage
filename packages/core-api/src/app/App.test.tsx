@@ -28,7 +28,7 @@ import { generateBoundRoutes, PrivateAppImpl } from './App';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
-    const external = { myRoute: createExternalRouteRef() };
+    const external = { myRoute: createExternalRouteRef({ id: '1' }) };
     const ref = createRouteRef({ path: '', title: '' });
     const result = generateBoundRoutes(({ bind }) => {
       bind(external, { myRoute: ref });
@@ -38,7 +38,7 @@ describe('generateBoundRoutes', () => {
   });
 
   it('throws on unknown keys', () => {
-    const external = { myRoute: createExternalRouteRef() };
+    const external = { myRoute: createExternalRouteRef({ id: '2' }) };
     const ref = createRouteRef({ path: '', title: '' });
     expect(() =>
       generateBoundRoutes(({ bind }) => {
@@ -50,13 +50,30 @@ describe('generateBoundRoutes', () => {
 
 describe('Integration Test', () => {
   const plugin1RouteRef = createRouteRef({ path: '/blah1', title: '' });
-  const plugin2RouteRef = createRouteRef({ path: '/blah2', title: '' });
-  const externalRouteRef = createExternalRouteRef();
+  const plugin2RouteRef = createRouteRef({
+    path: '/blah2',
+    title: '',
+    params: ['x'],
+  });
+  const err = createExternalRouteRef({ id: 'err' });
+  const errParams = createExternalRouteRef({ id: 'errParams', params: ['x'] });
+  const errOptional = createExternalRouteRef({
+    id: 'errOptional',
+    optional: true,
+  });
+  const errParamsOptional = createExternalRouteRef({
+    id: 'errParamsOptional',
+    optional: true,
+    params: ['x'],
+  });
 
   const plugin1 = createPlugin({
     id: 'blob',
     externalRoutes: {
-      foo: externalRouteRef,
+      err,
+      errParams,
+      errOptional,
+      errParamsOptional,
     },
   });
 
@@ -75,22 +92,34 @@ describe('Integration Test', () => {
     createRoutableExtension({
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const routeRefFunction = useRouteRef(externalRouteRef);
-          return <div>Our Route Is: {routeRefFunction({})}</div>;
+          const errLink = useRouteRef(err);
+          const errParamsLink = useRouteRef(errParams);
+          const errOptionalLink = useRouteRef(errOptional);
+          const errParamsOptionalLink = useRouteRef(errParamsOptional);
+          return (
+            <div>
+              <span>err: {errLink()}</span>
+              <span>errParams: {errParamsLink({ x: 'a' })}</span>
+              <span>errOptional: {errOptionalLink?.() ?? '<none>'}</span>
+              <span>
+                errParamsOptional:{' '}
+                {errParamsOptionalLink?.({ x: 'b' }) ?? '<none>'}
+              </span>
+            </div>
+          );
         }),
       mountPoint: plugin1RouteRef,
     }),
   );
 
-  it('runs happy path', async () => {
-    const components = {
-      NotFoundErrorPage: () => null,
-      BootErrorPage: () => null,
-      Progress: () => null,
-      Router: BrowserRouter,
-    };
+  const components = {
+    NotFoundErrorPage: () => null,
+    BootErrorPage: () => null,
+    Progress: () => null,
+    Router: BrowserRouter,
+  };
 
+  it('runs happy paths', async () => {
     const app = new PrivateAppImpl({
       apis: [],
       defaultApis: [],
@@ -106,7 +135,12 @@ describe('Integration Test', () => {
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
-        bind(plugin1.externalRoutes, { foo: plugin2RouteRef });
+        bind(plugin1.externalRoutes, {
+          err: plugin1RouteRef,
+          errParams: plugin2RouteRef,
+          errOptional: plugin1RouteRef,
+          errParamsOptional: plugin2RouteRef,
+        });
       },
     });
 
@@ -118,23 +152,19 @@ describe('Integration Test', () => {
         <Router>
           <Routes>
             <ExposedComponent path="/" />
-            <HiddenComponent path="/foo/bar" />
+            <HiddenComponent path="/foo" />
           </Routes>
         </Router>
       </Provider>,
     );
 
-    expect(screen.getByText('Our Route Is: /foo/bar')).toBeInTheDocument();
+    expect(screen.getByText('err: /')).toBeInTheDocument();
+    expect(screen.getByText('errParams: /foo')).toBeInTheDocument();
+    expect(screen.getByText('errOptional: /')).toBeInTheDocument();
+    expect(screen.getByText('errParamsOptional: /foo')).toBeInTheDocument();
   });
 
-  it('should throw some error when the route has duplicate params', () => {
-    const components = {
-      NotFoundErrorPage: () => null,
-      BootErrorPage: () => null,
-      Progress: () => null,
-      Router: BrowserRouter,
-    };
-
+  it('runs happy paths without optional routes', async () => {
     const app = new PrivateAppImpl({
       apis: [],
       defaultApis: [],
@@ -150,7 +180,53 @@ describe('Integration Test', () => {
       plugins: [],
       components,
       bindRoutes: ({ bind }) => {
-        bind(plugin1.externalRoutes, { foo: plugin2RouteRef });
+        bind(plugin1.externalRoutes, {
+          err: plugin1RouteRef,
+          errParams: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <ExposedComponent path="/" />
+            <HiddenComponent path="/foo" />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(screen.getByText('err: /')).toBeInTheDocument();
+    expect(screen.getByText('errParams: /foo')).toBeInTheDocument();
+    expect(screen.getByText('errOptional: <none>')).toBeInTheDocument();
+    expect(screen.getByText('errParamsOptional: <none>')).toBeInTheDocument();
+  });
+
+  it('should throw some error when the route has duplicate params', () => {
+    const app = new PrivateAppImpl({
+      apis: [],
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultSystemIcons,
+      plugins: [],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          err: plugin1RouteRef,
+          errParams: plugin2RouteRef,
+        });
       },
     });
 

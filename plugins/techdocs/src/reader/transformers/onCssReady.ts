@@ -17,7 +17,7 @@
 import type { Transformer } from './index';
 
 type OnCssReadyOptions = {
-  docStorageUrl: string;
+  docStorageUrl: Promise<string>;
   onLoading: (dom: Element) => void;
   onLoaded: (dom: Element) => void;
 };
@@ -30,7 +30,9 @@ export const onCssReady = ({
   return dom => {
     const cssPages = Array.from(
       dom.querySelectorAll('head > link[rel="stylesheet"]'),
-    ).filter(elem => elem.getAttribute('href')?.startsWith(docStorageUrl));
+    ).filter(async elem =>
+      elem.getAttribute('href')?.startsWith(await docStorageUrl),
+    );
 
     let count = cssPages.length;
 

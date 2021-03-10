@@ -23,9 +23,7 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core';
-import { Config } from '@backstage/config';
 import {
-  configApiRef,
   Content,
   Page,
   Progress,
@@ -47,6 +45,117 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { ErrorReporting } from '../ErrorReporting';
 import { groupResponses } from '../../utils/response';
 import { DetectedError, detectErrors } from '../../error-detection';
+import { IngressesAccordions } from '../IngressesAccordions';
+import { ServicesAccordions } from '../ServicesAccordions';
+
+type ClusterSummaryProps = {
+  clusterName: string;
+  totalNumberOfPods: number;
+  numberOfPodsWithErrors: number;
+  children?: React.ReactNode;
+};
+
+const ClusterSummary = ({
+  clusterName,
+  totalNumberOfPods,
+  numberOfPodsWithErrors,
+}: ClusterSummaryProps) => {
+  return (
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      <Grid
+        xs={2}
+        item
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={0}
+      >
+        <Grid item xs>
+          <Typography variant="h3">{clusterName}</Typography>
+          <Typography color="textSecondary" variant="body1">
+            Cluster
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={1}>
+        <Divider style={{ height: '4em' }} orientation="vertical" />
+      </Grid>
+      <Grid
+        item
+        container
+        xs={3}
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <Grid item>
+          <StatusOK>{totalNumberOfPods} pods</StatusOK>
+        </Grid>
+        <Grid item>
+          {numberOfPodsWithErrors > 0 ? (
+            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+          ) : (
+            <StatusOK>No pods with errors</StatusOK>
+          )}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+type ClusterProps = {
+  clusterObjects: ClusterObjects;
+  detectedErrors?: DetectedError[];
+  children?: React.ReactNode;
+};
+
+const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
+  const groupedResponses = groupResponses(clusterObjects.resources);
+
+  const podsWithErrors = new Set<string>(
+    detectedErrors
+      ?.filter(de => de.kind === 'Pod')
+      .map(de => de.names)
+      .flat() ?? [],
+  );
+
+  return (
+    <>
+      <Accordion TransitionProps={{ unmountOnExit: true }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <ClusterSummary
+            clusterName={clusterObjects.cluster.name}
+            totalNumberOfPods={groupedResponses.pods.length}
+            numberOfPodsWithErrors={podsWithErrors.size}
+          />
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container direction="column">
+            <Grid item>
+              <DeploymentsAccordions
+                deploymentResources={groupedResponses}
+                clusterPodNamesWithErrors={podsWithErrors}
+              />
+            </Grid>
+
+            <Grid item>
+              <IngressesAccordions deploymentResources={groupedResponses} />
+            </Grid>
+
+            <Grid item>
+              <ServicesAccordions deploymentResources={groupedResponses} />
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+    </>
+  );
+};
 
 type KubernetesContentProps = { entity: Entity; children?: React.ReactNode };
 
@@ -58,17 +167,14 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
 
-  const configApi = useApi(configApiRef);
-  const clusters: Config[] = configApi.getConfigArray('kubernetes.clusters');
-  const allAuthProviders: string[] = clusters.map(c =>
-    c.getString('authProvider'),
-  );
-  const authProviders: string[] = [...new Set(allAuthProviders)];
-
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
 
   useEffect(() => {
     (async () => {
+      const clusters = await kubernetesApi.getClusters();
+      const authProviders: string[] = [
+        ...new Set(clusters.map(c => c.authProvider)),
+      ];
       // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
       let requestBody: KubernetesRequestBody = {
         entity,
@@ -157,102 +263,5 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
         )}
       </Content>
     </Page>
-  );
-};
-
-type ClusterProps = {
-  clusterObjects: ClusterObjects;
-  detectedErrors?: DetectedError[];
-  children?: React.ReactNode;
-};
-
-const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
-  const groupedResponses = groupResponses(clusterObjects.resources);
-
-  const podsWithErrors = new Set<string>(
-    detectedErrors
-      ?.filter(de => de.kind === 'Pod')
-      .map(de => de.names)
-      .flat() ?? [],
-  );
-
-  return (
-    <>
-      <Accordion TransitionProps={{ unmountOnExit: true }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <ClusterSummary
-            clusterName={clusterObjects.cluster.name}
-            totalNumberOfPods={groupedResponses.pods.length}
-            numberOfPodsWithErrors={podsWithErrors.size}
-          />
-        </AccordionSummary>
-        <AccordionDetails>
-          <DeploymentsAccordions
-            deploymentResources={groupedResponses}
-            clusterPodNamesWithErrors={podsWithErrors}
-          />
-        </AccordionDetails>
-      </Accordion>
-    </>
-  );
-};
-
-type ClusterSummaryProps = {
-  clusterName: string;
-  totalNumberOfPods: number;
-  numberOfPodsWithErrors: number;
-  children?: React.ReactNode;
-};
-
-const ClusterSummary = ({
-  clusterName,
-  totalNumberOfPods,
-  numberOfPodsWithErrors,
-}: ClusterSummaryProps) => {
-  return (
-    <Grid
-      container
-      direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
-    >
-      <Grid
-        xs={2}
-        item
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        spacing={0}
-      >
-        <Grid item xs>
-          <Typography variant="h3">{clusterName}</Typography>
-          <Typography color="textSecondary" variant="body1">
-            Cluster
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid item xs={1}>
-        <Divider style={{ height: '4em' }} orientation="vertical" />
-      </Grid>
-      <Grid
-        item
-        container
-        xs={3}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-      >
-        <Grid item>
-          <StatusOK>{totalNumberOfPods} pods</StatusOK>
-        </Grid>
-        <Grid item>
-          {numberOfPodsWithErrors > 0 ? (
-            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
-          ) : (
-            <StatusOK>No pods with errors</StatusOK>
-          )}
-        </Grid>
-      </Grid>
-    </Grid>
   );
 };

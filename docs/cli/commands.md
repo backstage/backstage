@@ -24,7 +24,6 @@ Below is a cleaned up output of `yarn backstage-cli --help`.
 
 ```text
 app:build                Build an app for a production release
-app:diff                 Diff an existing app with the creation template
 app:serve                Serve an app for local development
 
 backend:build            Build a backend plugin
@@ -47,6 +46,7 @@ remove-plugin            Removes plugin in the current repository
 
 config:print             Print the app configuration for the current package
 config:check             Validate that the given configuration loads and matches schema
+config:schema            Dump the app configuration schema
 
 versions:bump            Bump Backstage packages to the latest versions
 versions:check           Check Backstage package versioning
@@ -110,25 +110,6 @@ Options:
   --stats          Write bundle stats to output directory
   --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
-```
-
-## app:diff
-
-Scope: `app`
-
-Diff an existing app with the template used in `@backstage/create-app`. This
-will verify that your app package has not diverged from the template, and can be
-useful to run after updating the version of `@backstage/cli` in your app.
-
-This command is experimental and may be removed in the future.
-
-```text
-Usage: backstage-cli app:diff
-
-Options:
-  --check     Fail if changes are required
-  --yes       Apply all changes
-  -h, --help  display help for command
 ```
 
 ## app:serve
@@ -206,15 +187,15 @@ The following is an example of a `Dockerfile` that can be used to package the
 output of `backstage-cli backend:bundle` into an image:
 
 ```Dockerfile
-FROM node:14-buster
+FROM node:14-buster-slim
 WORKDIR /app
 
 ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN yarn install --production --network-timeout 600000 && rm -rf "$(yarn cache dir)"
+RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
 
-CMD node packages/backend
+CMD ["node", "packages/backend"]
 ```
 
 ```text
@@ -502,6 +483,27 @@ Options:
   --package &lt;name&gt;  Only load config schema that applies to the given package
   --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
+```
+
+## config:schema
+
+Scope: `root`
+
+Dump the configuration schema that was collected from all local packages in the
+repo.
+
+Note: when run by `yarn`, supply the yarn option `--silent` if you are using the
+output in a command line pipe to avoid non schema output in the pipeline.
+
+```text
+Usage: backstage-cli config:schema [options]
+
+Print configuration schema
+
+Options:
+  --package &lt;name&gt;   Only output config schema that applies to the given package
+  --format &lt;format&gt;  Format to print the schema in, either json or yaml [yaml]
+  -h, --help         display help for command
 ```
 
 ## versions:bump

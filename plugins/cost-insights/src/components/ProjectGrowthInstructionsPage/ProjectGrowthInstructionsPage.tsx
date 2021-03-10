@@ -28,7 +28,7 @@ import {
   Product,
   ProjectGrowthData,
 } from '../../types';
-import { ProjectGrowthAlert } from '../../utils/alerts';
+import { ProjectGrowthAlert } from '../../alerts';
 
 const today = moment().format(DEFAULT_DATE_FORMAT);
 

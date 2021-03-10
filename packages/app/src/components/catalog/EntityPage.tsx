@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ApiEntity,
+  DomainEntity,
   Entity,
   GroupEntity,
+  SystemEntity,
   UserEntity,
 } from '@backstage/catalog-model';
 import { EmptyState } from '@backstage/core';
@@ -24,14 +27,19 @@ import {
   ApiDefinitionCard,
   ConsumedApisCard,
   ConsumingComponentsCard,
+  EntityHasApisCard,
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
   AboutCard,
+  EntityHasComponentsCard,
+  EntityHasSubcomponentsCard,
+  EntityHasSystemsCard,
+  EntityLinksCard,
   EntityPageLayout,
-  useEntity,
 } from '@backstage/plugin-catalog';
+import { EntityProvider, useEntity } from '@backstage/plugin-catalog-react';
 import {
   isPluginApplicableToEntity as isCircleCIAvailable,
   Router as CircleCIRouter,
@@ -50,6 +58,7 @@ import {
   LatestRunCard as JenkinsLatestRunCard,
   Router as JenkinsRouter,
 } from '@backstage/plugin-jenkins';
+import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
 import {
   EmbeddedRouter as LighthouseRouter,
@@ -57,11 +66,19 @@ import {
   LastLighthouseAuditCard,
 } from '@backstage/plugin-lighthouse';
 import {
-  OwnershipCard,
-  MembersListCard,
   GroupProfileCard,
+  MembersListCard,
+  OwnershipCard,
   UserProfileCard,
 } from '@backstage/plugin-org';
+import {
+  isPluginApplicableToEntity as isPagerDutyAvailable,
+  PagerDutyCard,
+} from '@backstage/plugin-pagerduty';
+import {
+  isRollbarAvailable,
+  Router as RollbarRouter,
+} from '@backstage/plugin-rollbar';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
@@ -82,10 +99,6 @@ import {
   Router as PullRequestsRouter,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
 import {
-  isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
-} from '@backstage/plugin-pagerduty';
-import {
   isPluginApplicableToEntity as isTravisCIAvailable,
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,
@@ -102,12 +115,12 @@ export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <BuildkiteRouter entity={entity} />;
     case isCircleCIAvailable(entity):
       return <CircleCIRouter entity={entity} />;
-    case isGitHubActionsAvailable(entity):
-      return <GitHubActionsRouter entity={entity} />;
     case isCloudbuildAvailable(entity):
       return <CloudbuildRouter entity={entity} />;
     case isTravisCIAvailable(entity):
       return <TravisCIRouter entity={entity} />;
+    case isGitHubActionsAvailable(entity):
+      return <GitHubActionsRouter entity={entity} />;
     default:
       return (
         <EmptyState
@@ -134,13 +147,13 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
     case isJenkinsAvailable(entity):
       content = <JenkinsLatestRunCard branch="master" variant="gridItem" />;
       break;
+    case isTravisCIAvailable(entity):
+      content = <RecentTravisCIBuildsWidget entity={entity} />;
+      break;
     case isGitHubActionsAvailable(entity):
       content = (
         <RecentWorkflowRunsCard entity={entity} limit={4} variant="gridItem" />
       );
-      break;
-    case isTravisCIAvailable(entity):
-      content = <RecentTravisCIBuildsWidget entity={entity} />;
       break;
     default:
       content = null;
@@ -155,6 +168,15 @@ const RecentCICDRunsSwitcher = ({ entity }: { entity: Entity }) => {
   );
 };
 
+export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
+  switch (true) {
+    case isRollbarAvailable(entity):
+      return <RollbarRouter entity={entity} />;
+    default:
+      return <SentryRouter entity={entity} />;
+  }
+};
+
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
@@ -162,9 +184,14 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     </Grid>
     {isPagerDutyAvailable(entity) && (
       <Grid item md={6}>
-        <PagerDutyCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <PagerDutyCard />
+        </EntityProvider>
       </Grid>
     )}
+    <Grid item md={4} sm={6}>
+      <EntityLinksCard entity={entity} />
+    </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
@@ -187,6 +214,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
         <PullRequestsStatsCard entity={entity} />
       </Grid>
     )}
+    <Grid item md={6}>
+      <EntityHasSubcomponentsCard variant="gridItem" />
+    </Grid>
   </Grid>
 );
 
@@ -214,9 +244,9 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       element={<CICDSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/api/*"
@@ -243,6 +273,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/kafka/*"
+      title="Kafka"
+      element={<KafkaRouter entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -264,9 +299,9 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       element={<LighthouseRouter entity={entity} />}
     />
     <EntityPageLayout.Content
-      path="/sentry"
-      title="Sentry"
-      element={<SentryRouter entity={entity} />}
+      path="/errors/*"
+      title="Errors"
+      element={<ErrorsSwitcher entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
@@ -401,6 +436,51 @@ const GroupEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
+const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasComponentsCard variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasApisCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const SystemEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<SystemOverviewContent entity={entity as SystemEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const DomainOverviewContent = ({ entity }: { entity: DomainEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasSystemsCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const DomainEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<DomainOverviewContent entity={entity as DomainEntity} />}
+    />
+  </EntityPageLayout>
+);
+
 export const EntityPage = () => {
   const { entity } = useEntity();
 
@@ -413,6 +493,10 @@ export const EntityPage = () => {
       return <GroupEntityPage entity={entity} />;
     case 'user':
       return <UserEntityPage entity={entity} />;
+    case 'system':
+      return <SystemEntityPage entity={entity} />;
+    case 'domain':
+      return <DomainEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

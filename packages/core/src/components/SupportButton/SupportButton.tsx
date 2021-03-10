@@ -14,35 +14,26 @@
  * limitations under the License.
  */
 
-import React, {
-  Fragment,
-  useState,
-  MouseEventHandler,
-  PropsWithChildren,
-} from 'react';
+import { HelpIcon, useApp } from '@backstage/core-api';
 import {
   Button,
-  Link,
   List,
   ListItem,
   ListItemIcon,
-  Popover,
-  Typography,
-  makeStyles,
   ListItemText,
+  makeStyles,
+  Popover,
 } from '@material-ui/core';
-import GroupIcon from '@material-ui/icons/Group';
-import HelpIcon from '@material-ui/icons/Help';
+import React, {
+  Fragment,
+  MouseEventHandler,
+  PropsWithChildren,
+  useState,
+} from 'react';
+import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
+import { Link } from '../Link';
 
-// import { EmailIcon, SlackIcon, SupportIcon } from 'shared/icons';
-// import { Button, Link } from 'shared/components';
-// import { StackOverflow, StackOverflowTag } from 'shared/components/layout';
-
-type Props = {
-  slackChannel?: string | string[];
-  email?: string | string[];
-  plugin?: any;
-};
+type Props = {};
 
 const useStyles = makeStyles(theme => ({
   leftIcon: {
@@ -50,17 +41,45 @@ const useStyles = makeStyles(theme => ({
   },
   popoverList: {
     minWidth: 260,
-    maxWidth: 320,
+    maxWidth: 400,
   },
 }));
 
-export const SupportButton = ({
-  slackChannel = '#backstage',
-  email = [],
-  children,
-}: // plugin,
-PropsWithChildren<Props>) => {
-  // TODO: get plugin manifest with hook
+const SupportIcon = ({ icon }: { icon: string | undefined }) => {
+  const app = useApp();
+  const Icon = icon ? app.getSystemIcon(icon) ?? HelpIcon : HelpIcon;
+  return <Icon />;
+};
+
+const SupportLink = ({ link }: { link: SupportItemLink }) => (
+  <Link to={link.url} target="_blank" rel="noreferrer noopener">
+    {link.title ?? link.url}
+  </Link>
+);
+
+const SupportListItem = ({ item }: { item: SupportItem }) => {
+  return (
+    <ListItem>
+      <ListItemIcon>
+        <SupportIcon icon={item.icon} />
+      </ListItemIcon>
+      <ListItemText
+        primary={item.title}
+        secondary={item.links?.reduce<React.ReactNodeArray>(
+          (prev, link, idx) => [
+            ...prev,
+            idx > 0 && <br key={idx} />,
+            <SupportLink link={link} key={link.url} />,
+          ],
+          [],
+        )}
+      />
+    </ListItem>
+  );
+};
+
+export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
+  const { items } = useSupportConfig();
 
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -74,12 +93,6 @@ PropsWithChildren<Props>) => {
   const popoverCloseHandler = () => {
     setPopoverOpen(false);
   };
-
-  // const tags = plugin ? plugin.stackoverflowTags : undefined;
-  const slackChannels = Array.isArray(slackChannel)
-    ? slackChannel
-    : [slackChannel];
-  const contactEmails = Array.isArray(email) ? email : [email];
 
   return (
     <Fragment>
@@ -111,53 +124,8 @@ PropsWithChildren<Props>) => {
               {child}
             </ListItem>
           ))}
-          {/* {tags && tags.length > 0 && (
-            <ListItem alignItems="flex-start">
-              <StackOverflow>
-                {tags.map((tag, i) => (
-                  <StackOverflowTag key={i} tag={tag} />
-                ))}
-              </StackOverflow>
-            </ListItem>
-          )} */}
-          {slackChannels && (
-            <ListItem>
-              <ListItemIcon>
-                <GroupIcon />
-              </ListItemIcon>
-              <ListItemText
-                disableTypography
-                primary={<Typography>Support</Typography>}
-                secondary={
-                  <div>
-                    {slackChannels.map((channel, i) => (
-                      <Link key={i}>{channel}</Link>
-                    ))}
-                  </div>
-                }
-              />
-            </ListItem>
-          )}
-          {contactEmails.length > 0 && (
-            <ListItem>
-              <ListItemIcon>
-                <GroupIcon />
-              </ListItemIcon>
-              <ListItemText
-                disableTypography
-                primary={<Typography>Contact</Typography>}
-                secondary={
-                  <div>
-                    {contactEmails.map((em, index) => (
-                      <Typography key={index}>
-                        <Link>{em}</Link>
-                      </Typography>
-                    ))}
-                  </div>
-                }
-              />
-            </ListItem>
-          )}
+          {items &&
+            items.map((item, i) => <SupportListItem item={item} key={i} />)}
         </List>
       </Popover>
     </Fragment>

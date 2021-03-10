@@ -49,7 +49,7 @@ export function filterByVisibility(
       const arr = new Array<JsonValue>();
 
       for (const [index, value] of jsonVal.entries()) {
-        const out = transform(value, `${path}.${index}`);
+        const out = transform(value, `${path}/${index}`);
         if (out !== undefined) {
           arr.push(out);
         }
@@ -68,7 +68,7 @@ export function filterByVisibility(
       if (value === undefined) {
         continue;
       }
-      const out = transform(value, `${path}.${key}`);
+      const out = transform(value, `${path}/${key}`);
       if (out !== undefined) {
         outObj[key] = out;
         hasOutput = true;

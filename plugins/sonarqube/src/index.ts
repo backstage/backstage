@@ -15,4 +15,8 @@
  */
 
 export * from './components';
-export { plugin } from './plugin';
+export {
+  sonarQubePlugin,
+  sonarQubePlugin as plugin,
+  EntitySonarQubeCard,
+} from './plugin';

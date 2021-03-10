@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Grid, GridProps, makeStyles } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import { EntityProvider } from '@backstage/plugin-catalog';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { BackstageTheme } from '@backstage/theme';
+import { Grid, GridProps, makeStyles } from '@material-ui/core';
+import React from 'react';
 
 const useStyles = makeStyles<BackstageTheme, { entity: Entity }>(theme => ({
   root: ({ entity }) => ({

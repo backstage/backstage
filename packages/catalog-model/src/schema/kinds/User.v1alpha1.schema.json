@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "UserV1alpha1",
+  "description": "A user describes a person, such as an employee, a contractor, or similar. Users belong to Group entities in the catalog. These catalog user entries are connected to the way that authentication within the Backstage ecosystem works. See the auth section of the docs for a discussion of these concepts.",
+  "examples": [
+    {
+      "apiVersion": "backstage.io/v1alpha1",
+      "kind": "User",
+      "metadata": {
+        "name": "jdoe"
+      },
+      "spec": {
+        "profile": {
+          "displayName": "Jenny Doe",
+          "email": "jenny-doe@example.com",
+          "picture": "https://example.com/staff/jenny-with-party-hat.jpeg"
+        },
+        "memberOf": ["team-b", "employees"]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["backstage.io/v1alpha1", "backstage.io/v1beta1"]
+        },
+        "kind": {
+          "enum": ["User"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["memberOf"],
+          "properties": {
+            "profile": {
+              "type": "object",
+              "description": "Optional profile information about the user, mainly for display purposes. All fields of this structure are also optional. The email would be a primary email of some form, that the user may wish to be used for contacting them. The picture is expected to be a URL pointing to an image that's representative of the user, and that a browser could fetch and render on a profile page or similar.",
+              "properties": {
+                "displayName": {
+                  "type": "string",
+                  "description": "A simple display name to present to users.",
+                  "examples": ["Jenny Doe"],
+                  "minLength": 1
+                },
+                "email": {
+                  "type": "string",
+                  "description": "An email where this user can be reached.",
+                  "examples": ["jenny-doe@example.com"],
+                  "minLength": 1
+                },
+                "picture": {
+                  "type": "string",
+                  "description": "The URL of an image that represents this user.",
+                  "examples": [
+                    "https://example.com/staff/jenny-with-party-hat.jpeg"
+                  ],
+                  "minLength": 1
+                }
+              }
+            },
+            "memberOf": {
+              "type": "array",
+              "description": "The list of groups that the user is a direct member of (i.e., no transitive memberships are listed here). The list must be present, but may be empty if the user is not member of any groups. The items are not guaranteed to be ordered in any particular way. The entries of this array are entity references.",
+              "items": {
+                "type": "string",
+                "examples": ["team-b", "employees"],
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

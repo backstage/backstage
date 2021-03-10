@@ -34,13 +34,39 @@ export class SonarQubeClient implements SonarQubeApi {
     this.baseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   }
 
-  private async callApi<T>(path: string): Promise<T | undefined> {
+  private async callApi<T>(
+    path: string,
+    query: { [key in string]: any },
+  ): Promise<T | undefined> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/sonarqube`;
-    const response = await fetch(`${apiUrl}/${path}`);
+    const response = await fetch(
+      `${apiUrl}/${path}?${new URLSearchParams(query).toString()}`,
+    );
     if (response.status === 200) {
       return (await response.json()) as T;
     }
     return undefined;
+  }
+
+  private async getSupportedMetrics(): Promise<string[]> {
+    const metrics: string[] = [];
+    let nextPage: number = 1;
+
+    for (;;) {
+      const result = await this.callApi<{
+        metrics: Array<{ key: string }>;
+        total: number;
+      }>('metrics/search', { ps: 500, p: nextPage });
+
+      metrics.push(...(result?.metrics?.map(m => m.key) ?? []));
+
+      if (result && metrics.length < result.total) {
+        nextPage++;
+        continue;
+      }
+
+      return metrics;
+    }
   }
 
   async getFindingSummary(
@@ -50,9 +76,9 @@ export class SonarQubeClient implements SonarQubeApi {
       return undefined;
     }
 
-    const component = await this.callApi<ComponentWrapper>(
-      `components/show?component=${componentKey}`,
-    );
+    const component = await this.callApi<ComponentWrapper>('components/show', {
+      component: componentKey,
+    });
     if (!component) {
       return undefined;
     }
@@ -63,17 +89,24 @@ export class SonarQubeClient implements SonarQubeApi {
       reliability_rating: undefined,
       vulnerabilities: undefined,
       security_rating: undefined,
+      security_hotspots_reviewed: undefined,
+      security_review_rating: undefined,
       code_smells: undefined,
       sqale_rating: undefined,
       coverage: undefined,
       duplicated_lines_density: undefined,
     };
 
-    const measures = await this.callApi<MeasuresWrapper>(
-      `measures/search?projectKeys=${componentKey}&metricKeys=${Object.keys(
-        metrics,
-      ).join(',')}`,
+    // select the metrics that are supported by the SonarQube instance
+    const supportedMetrics = await this.getSupportedMetrics();
+    const metricKeys = Object.keys(metrics).filter(m =>
+      supportedMetrics.includes(m),
     );
+
+    const measures = await this.callApi<MeasuresWrapper>('measures/search', {
+      projectKeys: componentKey,
+      metricKeys: metricKeys.join(','),
+    });
     if (!measures) {
       return undefined;
     }
@@ -92,10 +125,12 @@ export class SonarQubeClient implements SonarQubeApi {
         `${
           this.baseUrl
         }project/issues?id=${componentKey}&types=${identifier.toUpperCase()}&resolved=false`,
-      getComponentMeasuresUrl: (identifier: string) =>
+      getComponentMeasuresUrl: identifier =>
         `${
           this.baseUrl
         }component_measures?id=${componentKey}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+      getSecurityHotspotsUrl: () =>
+        `${this.baseUrl}project/security_hotspots?id=${componentKey}`,
     };
   }
 }

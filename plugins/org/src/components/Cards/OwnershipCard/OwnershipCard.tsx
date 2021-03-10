@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { InfoCard, useApi, Progress } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { catalogApiRef } from '@backstage/plugin-catalog';
-import { useAsync } from 'react-use';
-import Alert from '@material-ui/lab/Alert';
+import { InfoCard, InfoCardVariants, Progress, useApi } from '@backstage/core';
+import {
+  catalogApiRef,
+  isOwnerOf,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
+import { BackstageTheme, genPageTheme } from '@backstage/theme';
 import {
   Box,
   createStyles,
   Grid,
   makeStyles,
-  Theme,
   Typography,
 } from '@material-ui/core';
-import { pageTheme } from '@backstage/theme';
-import { isOwnerOf } from '../../isOwnerOf';
+import Alert from '@material-ui/lab/Alert';
+import React from 'react';
+import { useAsync } from 'react-use';
 
 type EntitiesKinds = 'Component' | 'API';
 type EntitiesTypes =
@@ -40,7 +42,17 @@ type EntitiesTypes =
   | 'api'
   | 'tool';
 
-const useStyles = makeStyles((theme: Theme) =>
+const createPageTheme = (
+  theme: BackstageTheme,
+  shapeKey: string,
+  colorsKey: string,
+) => {
+  const { colors } = theme.getPageTheme({ themeId: colorsKey });
+  const { shape } = theme.getPageTheme({ themeId: shapeKey });
+  return genPageTheme(colors, shape).backgroundImage;
+};
+
+const useStyles = makeStyles((theme: BackstageTheme) =>
   createStyles({
     card: {
       border: `1px solid ${theme.palette.divider}`,
@@ -57,22 +69,22 @@ const useStyles = makeStyles((theme: Theme) =>
       fontWeight: theme.typography.fontWeightBold,
     },
     service: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.service.colors})`,
+      background: createPageTheme(theme, 'home', 'service'),
     },
     website: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.website.colors})`,
+      background: createPageTheme(theme, 'home', 'website'),
     },
     library: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.library.colors})`,
+      background: createPageTheme(theme, 'home', 'library'),
     },
     documentation: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.documentation.colors})`,
+      background: createPageTheme(theme, 'home', 'documentation'),
     },
     api: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, #005B4B, #005B4B)`,
+      background: createPageTheme(theme, 'home', 'home'),
     },
     tool: {
-      background: `${pageTheme.home.shape}, linear-gradient(90deg, ${pageTheme.tool.colors})`,
+      background: createPageTheme(theme, 'home', 'tool'),
     },
   }),
 );
@@ -114,12 +126,13 @@ const EntityCountTile = ({
 };
 
 export const OwnershipCard = ({
-  entity,
   variant,
 }: {
-  entity: Entity;
-  variant: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+  variant?: InfoCardVariants;
 }) => {
+  const { entity } = useEntity();
   const catalogApi = useApi(catalogApiRef);
   const {
     loading,

@@ -24,6 +24,7 @@ export default async (cmd: Command) => {
   const { schema, appConfigs } = await loadCliConfig({
     args: cmd.config,
     fromPackage: cmd.package,
+    mockEnv: cmd.lax,
   });
   const visibility = getVisibilityOption(cmd);
   const data = serializeConfigData(appConfigs, schema, visibility);
@@ -62,8 +63,8 @@ function serializeConfigData(
   }
 
   const sanitizedConfigs = schema.process(appConfigs, {
-    valueTransform: (value, { visibility }) =>
-      visibility === 'secret' ? '<secret>' : value,
+    valueTransform: (value, context) =>
+      context.visibility === 'secret' ? '<secret>' : value,
   });
 
   return ConfigReader.fromConfigs(sanitizedConfigs).get();

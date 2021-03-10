@@ -85,7 +85,7 @@ describe('loadConfigSchema', () => {
     expect(() =>
       schema2.process([...configs, { data: { key1: 3 }, context: 'test2' }]),
     ).toThrow(
-      'Config validation failed, Config should be string { type=string } at .key1',
+      'Config validation failed, Config should be string { type=string } at /key1',
     );
 
     await expect(

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src';
+import { kubernetesPlugin } from '../src';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp().registerPlugin(kubernetesPlugin).render();

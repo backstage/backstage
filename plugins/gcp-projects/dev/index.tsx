@@ -15,6 +15,6 @@
  */
 
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { gcpProjectsPlugin } from '../src/plugin';
 
-createDevApp().registerPlugin(plugin).render();
+createDevApp().registerPlugin(gcpProjectsPlugin).render();

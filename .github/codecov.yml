@@ -1,5 +1,8 @@
 comment: false # Ref: https://docs.codecov.io/docs/pull-request-comments
 
+ignore:
+  - '**/*.stories.*'
+
 coverage:
   status:
     project:

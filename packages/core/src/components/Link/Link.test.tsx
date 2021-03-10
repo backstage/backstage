@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Link } from './Link';
+import { isExternalUri, Link } from './Link';
 import { Route, Routes } from 'react-router';
 import { act } from 'react-dom/test-utils';
 
@@ -38,5 +38,32 @@ describe('<Link />', () => {
       fireEvent.click(getByText(linkText));
     });
     expect(getByText(testString)).toBeInTheDocument();
+  });
+
+  describe('isExternalUri', () => {
+    it.each([
+      [true, 'http://'],
+      [true, 'https://'],
+      [true, 'https://some-host'],
+      [true, 'https://some-host/path#fragment'],
+      [true, 'https://some-host/path?param1=value'],
+      [true, 'slack://'],
+      [true, 'mailto://'],
+      [true, 'ms-help://'],
+      [true, 'ms.help://'],
+      [true, 'ms+help://'],
+      [false, '//'],
+      [false, '123://'],
+      [false, 'abc&xzy://'],
+      [false, 'http'],
+      [false, 'https:/a'],
+      [false, 'path/to'],
+      [false, 'path/to/something#fragment'],
+      [false, 'path/to/something?param1=value'],
+      [false, '/path/to/something'],
+      [false, '/path/to/something#fragment'],
+    ])('should be %p when %p', (expected, uri) => {
+      expect(isExternalUri(uri)).toBe(expected);
+    });
   });
 });

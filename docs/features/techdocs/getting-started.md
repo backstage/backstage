@@ -150,38 +150,24 @@ app. Now let us tweak some configurations to suit your needs.
 **See [TechDocs Configuration Options](configuration.md) for complete
 configuration reference.**
 
-### Setting TechDocs URLs
-
-```yaml
-techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
-```
-
-`requestUrl` is used by TechDocs frontend plugin to discover techdocs-backend
-endpoints, and the `storageUrl` is another endpoint in `techdocs-backend` which
-acts as a middleware between TechDocs and the storage (where the static
-generated docs site are stored). These default values should mostly work for
-you. These options will soon be optional to set.
-
 ### Should TechDocs Backend generate docs?
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
   builder: 'local'
 ```
 
-Set `techdocs.builder` to `'local'` if you want your TechDocs Backend to be
-responsible for generating documentation sites. If set to `'external'`,
-Backstage will assume that the sites are being generated on each entity's CI/CD
-pipeline, and are being stored in a storage somewhere.
+Note that we recommend generating docs on CI/CD instead. Read more in the
+"Basic" and "Recommended" sections of the
+[TechDocs Architecture](architecture.md). But if you want to get started quickly
+set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
+generating documentation sites. If set to `'external'`, Backstage will assume
+that the sites are being generated on each entity's CI/CD pipeline, and are
+being stored in a storage somewhere.
 
 When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
 read-only experience where it serves static files from a storage containing all
-the generated documentation. Read more in the "Basic" and "Recommended" setup of
-TechDocs [here](architecture.md)
+the generated documentation.
 
 ### Choosing storage (publisher)
 
@@ -190,14 +176,12 @@ fetch the sites from. This is managed by a
 [Publisher](./concepts.md#techdocs-publisher). Examples: Google Cloud Storage,
 Amazon S3, or local filesystem of Backstage server.
 
-It is okay to use the local filesystem in a "Basic" setup when you are trying
-out Backstage for the first time. Using Cloud Storage is documented
-[here](./using-cloud-storage.md).
+It is okay to use the local filesystem in a "basic" setup when you are trying
+out Backstage for the first time. At a later time, review
+[Using Cloud Storage](./using-cloud-storage.md).
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
   builder: 'local'
   publisher:
     type: 'local'
@@ -219,6 +203,9 @@ no config is provided.
 
 ```yaml
 techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
   generators:
     techdocs: local
 ```
@@ -229,23 +216,23 @@ environment is compatible with techdocs.
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt). See our
-[Dockerfile](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
-for the latest requirements. You should be trying to match your Dockerfile with
-this one.
+[`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
+for the latest requirements. You should be trying to match your `Dockerfile`
+with this one.
 
 Note: We recommend Python version 3.7 or higher.
 
-Caveat: Please install the `mkdocs-techdocs-core` package after all other Python
-packages. The order is important to make sure we get correct version of some of
-the dependencies. For example, we want `Markdown` version to be
-[3.2.2](https://github.com/backstage/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
-You can also explicitly install `Markdown==3.2.2` after installing all other
-Python packages.
+> Caveat: Please install the `mkdocs-techdocs-core` package after all other
+> Python packages. The order is important to make sure we get correct version of
+> some of the dependencies. For example, we want `Markdown` version to be
+> [3.2.2](https://github.com/backstage/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
+> You can also explicitly install `Markdown==3.2.2` after installing all other
+> Python packages.
 
 ## Running Backstage locally
 
 Start the frontend and the backend app by
-[running backstage locally](../../getting-started/running-backstage-locally.md).
+[running Backstage locally](../../getting-started/running-backstage-locally.md).
 
 Open your browser at [http://localhost:3000/docs/](http://localhost:3000/docs/)
 to see all your documentation sites.

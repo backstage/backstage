@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as winston from 'winston';
 import { TransformableInfo } from 'logform';
 
@@ -33,7 +34,7 @@ const coloredTemplate = (info: TransformableInfo) => {
 export const coloredFormat = winston.format.combine(
   winston.format.timestamp(),
   winston.format.colorize({
-    colors: { timestamp: 'dim', prefix: 'blue', field: 'cyan' },
+    colors: { timestamp: 'dim', prefix: 'blue', field: 'cyan', debug: 'grey' },
   }),
   winston.format.printf(coloredTemplate),
 );

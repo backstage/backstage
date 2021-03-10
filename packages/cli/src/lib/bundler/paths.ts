@@ -42,14 +42,14 @@ export type BundlingPathsOptions = {
 export function resolveBundlingPaths(options: BundlingPathsOptions) {
   const { entry } = options;
 
-  const resolveTargetModule = (path: string) => {
+  const resolveTargetModule = (pathString: string) => {
     for (const ext of ['mjs', 'js', 'ts', 'tsx', 'jsx']) {
-      const filePath = paths.resolveTarget(`${path}.${ext}`);
+      const filePath = paths.resolveTarget(`${pathString}.${ext}`);
       if (fs.pathExistsSync(filePath)) {
         return filePath;
       }
     }
-    return paths.resolveTarget(`${path}.js`);
+    return paths.resolveTarget(`${pathString}.js`);
   };
 
   let targetPublic = undefined;

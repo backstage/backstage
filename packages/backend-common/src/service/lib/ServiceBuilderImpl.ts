@@ -161,7 +161,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
       app.use(cors(corsOptions));
     }
     app.use(compression());
-    app.use(requestLoggingHandler());
+    app.use(requestLoggingHandler(logger));
     for (const [root, route] of this.routers) {
       app.use(root, route);
     }

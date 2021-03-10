@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { gitopsProfilesPlugin } from './plugin';
 
 describe('gitops-profiles', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(gitopsProfilesPlugin).toBeDefined();
   });
 });

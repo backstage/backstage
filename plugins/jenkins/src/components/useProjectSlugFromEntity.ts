@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEntity } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { JENKINS_ANNOTATION } from '../constants';
 
 export const useProjectSlugFromEntity = () => {

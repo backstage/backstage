@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { orgPlugin } from './plugin';
 
 describe('groups', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(orgPlugin).toBeDefined();
   });
 });

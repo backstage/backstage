@@ -15,33 +15,51 @@
  */
 
 import {
-  createApp,
   AlertDisplay,
+  createApp,
+  FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
-  createRouteRef,
 } from '@backstage/core';
+import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  catalogPlugin,
+} from '@backstage/plugin-catalog';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {
+  CostInsightsLabelDataflowInstructionsPage,
+  CostInsightsPage,
+  CostInsightsProjectGrowthInstructionsPage,
+} from '@backstage/plugin-cost-insights';
+import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
+import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
+import { GraphiQLPage } from '@backstage/plugin-graphiql';
+import { LighthousePage } from '@backstage/plugin-lighthouse';
+import { NewRelicPage } from '@backstage/plugin-newrelic';
+import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { SearchPage } from '@backstage/plugin-search';
+import { TechRadarPage } from '@backstage/plugin-tech-radar';
+import { TechdocsPage } from '@backstage/plugin-techdocs';
+import { UserSettingsPage } from '@backstage/plugin-user-settings';
+import AlarmIcon from '@material-ui/icons/Alarm';
 import React from 'react';
-import Root from './components/Root';
-import * as plugins from './plugins';
-import { apis } from './apis';
 import { hot } from 'react-hot-loader/root';
-import { providers } from './identityProviders';
-import { Router as CatalogRouter } from '@backstage/plugin-catalog';
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
-import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
-import { Router as LighthouseRouter } from '@backstage/plugin-lighthouse';
-import { Router as RegisterComponentRouter } from '@backstage/plugin-register-component';
-import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-import { Router as ImportComponentRouter } from '@backstage/plugin-catalog-import';
-import { Route, Routes, Navigate } from 'react-router';
-
+import { Navigate, Route } from 'react-router';
+import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
+import Root from './components/Root';
+import { providers } from './identityProviders';
+import * as plugins from './plugins';
 
 const app = createApp({
   apis,
   plugins: Object.values(plugins),
+  icons: {
+    // Custom icon example
+    alert: AlarmIcon,
+  },
   components: {
     SignInPage: props => {
       return (
@@ -54,42 +72,57 @@ const app = createApp({
       );
     },
   },
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(apiDocsPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(explorePlugin.externalRoutes, {
+      catalogEntity: catalogPlugin.routes.catalogEntity,
+    });
+  },
 });
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
-const deprecatedAppRoutes = app.getRoutes();
 
-const catalogRouteRef = createRouteRef({
-  path: '/catalog',
-  title: 'Service Catalog',
-});
-
-const AppRoutes = () => (
-  <Routes>
+const routes = (
+  <FlatRoutes>
     <Navigate key="/" to="/catalog" />
+    <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
-      path="/catalog-import/*"
-      element={<ImportComponentRouter catalogRouteRef={catalogRouteRef} />}
-    />
-    <Route
-      path={`${catalogRouteRef.path}/*`}
-      element={<CatalogRouter EntityPage={EntityPage} />}
-    />
-    <Route path="/docs/*" element={<DocsRouter />} />
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      <EntityPage />
+    </Route>
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <Route path="/docs" element={<TechdocsPage />} />
+    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
-      element={<TechRadarRouter width={1500} height={800} />}
+      element={<TechRadarPage width={1500} height={800} />}
     />
-    <Route path="/graphiql" element={<GraphiQLRouter />} />
-    <Route path="/lighthouse/*" element={<LighthouseRouter />} />
+    <Route path="/graphiql" element={<GraphiQLPage />} />
+    <Route path="/lighthouse" element={<LighthousePage />} />
+    <Route path="/api-docs" element={<ApiExplorerPage />} />
+    <Route path="/gcp-projects" element={<GcpProjectsPage />} />
+    <Route path="/newrelic" element={<NewRelicPage />} />
+    <Route path="/search" element={<SearchPage />} />
+    <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
-      path="/register-component"
-      element={<RegisterComponentRouter catalogRouteRef={catalogRouteRef} />}
+      path="/cost-insights/investigating-growth"
+      element={<CostInsightsProjectGrowthInstructionsPage />}
     />
-    <Route path="/settings" element={<SettingsRouter />} />
-    {...deprecatedAppRoutes}
-  </Routes>
+    <Route
+      path="/cost-insights/labeling-jobs"
+      element={<CostInsightsLabelDataflowInstructionsPage />}
+    />
+    <Route path="/settings" element={<UserSettingsPage />} />
+  </FlatRoutes>
 );
 
 const App = () => (
@@ -97,9 +130,7 @@ const App = () => (
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>
-        <AppRoutes />
-      </Root>
+      <Root>{routes}</Root>
     </AppRouter>
   </AppProvider>
 );

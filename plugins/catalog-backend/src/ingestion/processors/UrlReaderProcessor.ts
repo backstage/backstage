@@ -16,10 +16,15 @@
 
 import { UrlReader } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
+import parseGitUrl from 'git-url-parse';
+import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
-import { parseEntityYaml } from './util/parse';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogProcessorParser,
+} from './types';
 
 // TODO(Rugvip): Added for backwards compatibility when moving to UrlReader, this
 // can be removed in a bit
@@ -43,6 +48,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
     location: LocationSpec,
     optional: boolean,
     emit: CatalogProcessorEmit,
+    parser: CatalogProcessorParser,
   ): Promise<boolean> {
     if (deprecatedTypes.includes(location.type)) {
       // TODO(Rugvip): Remove this warning a month or two into 2021, and remove support for the deprecated types.
@@ -55,10 +61,14 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     try {
-      const data = await this.options.reader.read(location.target);
-
-      for (const parseResult of parseEntityYaml(data, location)) {
-        emit(parseResult);
+      const output = await this.doRead(location.target);
+      for (const item of output) {
+        for await (const parseResult of parser({
+          data: item.data,
+          location: { type: location.type, target: item.url },
+        })) {
+          emit(parseResult);
+        }
       }
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
@@ -73,5 +83,26 @@ export class UrlReaderProcessor implements CatalogProcessor {
     }
 
     return true;
+  }
+
+  private async doRead(
+    location: string,
+  ): Promise<{ data: Buffer; url: string }[]> {
+    // Does it contain globs? I.e. does it contain asterisks or question marks
+    // (no curly braces for now)
+    const { filepath } = parseGitUrl(location);
+    if (filepath?.match(/[*?]/)) {
+      const limiter = limiterFactory(5);
+      const response = await this.options.reader.search(location);
+      const output = response.files.map(async file => ({
+        url: file.url,
+        data: await limiter(file.content),
+      }));
+      return Promise.all(output);
+    }
+
+    // Otherwise do a plain read
+    const data = await this.options.reader.read(location);
+    return [{ url: location, data }];
   }
 }

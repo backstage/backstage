@@ -4,10 +4,6 @@ title: ADR005: Catalog Core Entities
 description: Architecture Decision Record (ADR) log on Catalog Core Entities
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| 2020-05-29 | Open   |
-
 ## Context
 
 We want to standardize on a few core entities that we are tracking in the

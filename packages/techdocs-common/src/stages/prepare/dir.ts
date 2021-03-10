@@ -13,25 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PreparerBase } from './types';
+import {
+  InputError,
+  NotModifiedError,
+  UrlReader,
+} from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import path from 'path';
-import { parseReferenceAnnotation, checkoutGitRepository } from '../../helpers';
-import { InputError } from '@backstage/backend-common';
 import parseGitUrl from 'git-url-parse';
+import path from 'path';
 import { Logger } from 'winston';
+import {
+  checkoutGitRepository,
+  getLastCommitTimestamp,
+  parseReferenceAnnotation,
+} from '../../helpers';
+import { PreparerBase, PreparerResponse } from './types';
 
 export class DirectoryPreparer implements PreparerBase {
-  private readonly config: Config;
-  private readonly logger: Logger;
-
-  constructor(config: Config, logger: Logger) {
+  constructor(
+    private readonly config: Config,
+    private readonly logger: Logger,
+    private readonly reader: UrlReader,
+  ) {
     this.config = config;
     this.logger = logger;
+    this.reader = reader;
   }
 
-  private async resolveManagedByLocationToDir(entity: Entity) {
+  private async resolveManagedByLocationToDir(
+    entity: Entity,
+    options?: { etag?: string },
+  ): Promise<PreparerResponse> {
     const { type, target } = parseReferenceAnnotation(
       'backstage.io/managed-by-location',
       entity,
@@ -41,9 +54,18 @@ export class DirectoryPreparer implements PreparerBase {
       `Building docs for entity with type 'dir' and managed-by-location '${type}'`,
     );
     switch (type) {
+      case 'url': {
+        const response = await this.reader.readTree(target, {
+          etag: options?.etag,
+        });
+        const preparedDir = await response.dir();
+        return {
+          preparedDir,
+          etag: response.etag,
+        };
+      }
       case 'github':
       case 'gitlab':
-      case 'url':
       case 'azure/api': {
         const parsedGitLocation = parseGitUrl(target);
         const repoLocation = await checkoutGitRepository(
@@ -52,30 +74,47 @@ export class DirectoryPreparer implements PreparerBase {
           this.logger,
         );
 
-        return path.dirname(
-          path.join(repoLocation, parsedGitLocation.filepath),
-        );
+        // Check if etag has changed for cache invalidation.
+        const etag = await getLastCommitTimestamp(repoLocation, this.logger);
+        if (options?.etag === etag.toString()) {
+          throw new NotModifiedError();
+        }
+        return {
+          preparedDir: path.dirname(
+            path.join(repoLocation, parsedGitLocation.filepath),
+          ),
+          etag: etag.toString(),
+        };
       }
-
       case 'file':
-        return path.dirname(target);
+        return {
+          preparedDir: path.dirname(target),
+          // Instead of supporting caching on local sources, use techdocs-cli for local development and debugging.
+          etag: '',
+        };
       default:
         throw new InputError(`Unable to resolve location type ${type}`);
     }
   }
 
-  async prepare(entity: Entity): Promise<string> {
+  async prepare(entity: Entity): Promise<PreparerResponse> {
+    this.logger.warn(
+      'You are using the legacy dir preparer in TechDocs which will be removed in near future (March 2021). ' +
+        'Migrate to URL reader by updating `backstage.io/techdocs-ref` annotation in `catalog-info.yaml` ' +
+        'to be prefixed with `url:`. Read the migration guide and benefits at https://github.com/backstage/backstage/issues/4409 ',
+    );
+
     const { target } = parseReferenceAnnotation(
       'backstage.io/techdocs-ref',
       entity,
     );
 
-    const managedByLocationDirectory = await this.resolveManagedByLocationToDir(
-      entity,
-    );
+    // This will throw NotModified error if etag has not changed.
+    const response = await this.resolveManagedByLocationToDir(entity);
 
-    return new Promise(resolve => {
-      resolve(path.resolve(managedByLocationDirectory, target));
-    });
+    return {
+      preparedDir: path.resolve(response.preparedDir, target),
+      etag: response.etag,
+    };
   }
 }

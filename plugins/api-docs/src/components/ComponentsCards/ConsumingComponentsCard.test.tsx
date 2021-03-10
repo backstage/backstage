@@ -16,7 +16,11 @@
 
 import { Entity, RELATION_API_CONSUMED_BY } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -62,12 +66,14 @@ describe('<ConsumingComponentsCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ConsumingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ConsumingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
-    expect(getByText(/Consumers/i)).toBeInTheDocument();
-    expect(getByText(/No APIs consumed by this entity/i)).toBeInTheDocument();
+    expect(getByText('Consumers')).toBeInTheDocument();
+    expect(getByText(/No component consumes this API/i)).toBeInTheDocument();
   });
 
   it('shows consuming components', async () => {
@@ -102,24 +108,20 @@ describe('<ConsumingComponentsCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'service',
-        owner: 'Test',
-        lifecycle: 'production',
-      },
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ConsumingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ConsumingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
-      expect(getByText(/Consumers/i)).toBeInTheDocument();
+      expect(getByText('Consumers')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

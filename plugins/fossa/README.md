@@ -19,21 +19,21 @@ yarn add @backstage/plugin-fossa
 ```js
 // packages/app/src/plugins.ts
 
-export { plugin as Fossa } from '@backstage/plugin-fossa';
+export { fossaPlugin } from '@backstage/plugin-fossa';
 ```
 
-3. Add the `FossaCard` to the EntityPage:
+3. Add the `EntityFossaCard` to the EntityPage:
 
 ```jsx
 // packages/app/src/components/catalog/EntityPage.tsx
 
-import { FossaCard } from '@backstage/plugin-fossa';
+import { EntityFossaCard } from '@backstage/plugin-fossa';
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     // ...
     <Grid item xs={12} sm={6} md={4}>
-      <FossaCard entity={entity} />
+      <EntityFossaCard />
     </Grid>
     // ...
   </Grid>

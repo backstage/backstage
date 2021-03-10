@@ -15,8 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ObjectFetchParams } from '../types/types';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { ObjectFetchParams } from '..';
 
 describe('KubernetesClientProvider', () => {
   let clientMock: any;
@@ -194,6 +194,27 @@ describe('KubernetesClientProvider', () => {
     expect(
       kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
     ).toBe(0);
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
+  it('should return pods, bad request error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 400,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'BAD_REQUEST',
+        resourcePath: '/some/path',
+        statusCode: 400,
+      },
+    );
   });
   // they're in testErrorResponse
   // eslint-disable-next-line jest/expect-expect

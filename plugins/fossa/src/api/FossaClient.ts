@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import fetch from 'cross-fetch';
 import { FindingSummary, FossaApi } from './FossaApi';
 
 export class FossaClient implements FossaApi {
   discoveryApi: DiscoveryApi;
+  identityApi: IdentityApi;
   organizationId?: string;
 
   constructor({
     discoveryApi,
+    identityApi,
     organizationId,
   }: {
     discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
     organizationId?: string;
   }) {
     this.discoveryApi = discoveryApi;
+    this.identityApi = identityApi;
     this.organizationId = organizationId;
   }
 
   private async callApi(path: string): Promise<any> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
-    const response = await fetch(`${apiUrl}/${path}`);
+    const idToken = await this.identityApi.getIdToken();
+    const response = await fetch(`${apiUrl}/${path}`, {
+      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
+    });
     if (response.status === 200) {
       return await response.json();
     }
@@ -46,11 +53,12 @@ export class FossaClient implements FossaApi {
     projectTitle: string,
   ): Promise<FindingSummary | undefined> {
     const project = await this.callApi(
-      `projects?count=1&title=${projectTitle}${
+      `projects?count=1&sort=title+&title=${projectTitle}${
         this.organizationId ? `&organizationId=${this.organizationId}` : ''
       }`,
     );
-    if (!project) {
+
+    if (!project || project.length === 0 || project[0].title !== projectTitle) {
       return undefined;
     }
 

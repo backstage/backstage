@@ -13,66 +13,92 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Button, Card, Chip, Typography, makeStyles } from '@material-ui/core';
-
-const useStyles = makeStyles(theme => ({
-  header: {
-    color: theme.palette.common.white,
-    padding: theme.spacing(2, 2, 6),
-    backgroundImage: 'linear-gradient(-137deg,  #4BB8A5 0%,  #187656 100%)',
-  },
-  content: {
-    padding: theme.spacing(2),
-  },
-  description: {
-    height: 175,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  footer: {
-    display: 'flex',
-    flexDirection: 'row-reverse',
-  },
-}));
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Chip,
+} from '@material-ui/core';
+import React, { ReactNode } from 'react';
+import { Button } from '../../components';
+import { ItemCardHeader } from './ItemCardHeader';
 
 type ItemCardProps = {
   description?: string;
   tags?: string[];
   title: string;
+  /** @deprecated Use subtitle instead */
   type?: string;
+  subtitle?: ReactNode;
   label: string;
   onClick?: () => void;
+  href?: string;
 };
+
+/**
+ * This card type has been deprecated. Instead use plain MUI Card and helpers
+ * where appropriate.
+ *
+ * <code>
+ * <!--
+ *   <Card>
+ *     <CardMedia>
+ *       <ItemCardHeader title="My Card" subtitle="neat!" />
+ *     </CardMedia>
+ *     <CardContent>
+ *        Some text
+ *     </CardContent>
+ *     <CardActions>
+ *       <Button color="primary" to="https://backstage.io">
+ *         Get Started
+ *       </Button>
+ *     </CardActions>
+ *   </Card>
+ * -->
+ * </code>
+ *
+ * @deprecated Use plain MUI <Card> and composable helpers instead.
+ * @see https://material-ui.com/components/cards/
+ */
 export const ItemCard = ({
   description,
   tags,
   title,
   type,
+  subtitle,
   label,
   onClick,
+  href,
 }: ItemCardProps) => {
-  const classes = useStyles();
-
   return (
     <Card>
-      <div className={classes.header}>
-        {type ?? <Typography variant="subtitle2">{type}</Typography>}
-        <Typography variant="h6">{title}</Typography>
-      </div>
-      <div className={classes.content}>
-        {tags?.map((tag, i) => (
-          <Chip label={tag} key={`tag-${i}`} />
-        ))}
-        <Typography variant="body2" paragraph className={classes.description}>
-          {description}
-        </Typography>
-        <div className={classes.footer}>
-          <Button onClick={onClick} color="primary">
+      <CardMedia>
+        <ItemCardHeader title={title} subtitle={subtitle || type} />
+      </CardMedia>
+      <CardContent>
+        {tags?.length ? (
+          <Box>
+            {tags.map((tag, i) => (
+              <Chip size="small" label={tag} key={i} />
+            ))}
+          </Box>
+        ) : null}
+        {description}
+      </CardContent>
+      <CardActions>
+        {!href && (
+          <Button to="#" onClick={onClick} color="primary">
             {label}
           </Button>
-        </div>
-      </div>
+        )}
+        {href && (
+          <Button to={href} color="primary">
+            {label}
+          </Button>
+        )}
+      </CardActions>
     </Card>
   );
 };

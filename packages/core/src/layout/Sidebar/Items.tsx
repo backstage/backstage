@@ -128,6 +128,7 @@ type SidebarItemBaseProps = {
   text?: string;
   hasNotifications?: boolean;
   children?: ReactNode;
+  className?: string;
 };
 
 type SidebarItemButtonProps = SidebarItemBaseProps & {
@@ -154,6 +155,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
     hasNotifications = false,
     onClick,
     children,
+    className,
   } = props;
   const classes = useStyles();
   // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
@@ -193,6 +195,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
   const childProps = {
     onClick,
     className: clsx(
+      className,
       classes.root,
       isOpen ? classes.open : classes.closed,
       isButtonItem(props) && classes.buttonItem,
@@ -212,7 +215,6 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       {...childProps}
       activeClassName={classes.selected}
       to={props.to}
-      end
       ref={ref}
     >
       {content}

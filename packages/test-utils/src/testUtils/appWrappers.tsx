@@ -21,6 +21,9 @@ import { lightTheme } from '@backstage/theme';
 import privateExports, {
   defaultSystemIcons,
   BootErrorPageProps,
+  RouteRef,
+  ExternalRouteRef,
+  attachComponentData,
 } from '@backstage/core-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
@@ -44,6 +47,22 @@ type TestAppOptions = {
    * Initial route entries to pass along as `initialEntries` to the router.
    */
   routeEntries?: string[];
+
+  /**
+   * An object of paths to mount route ref on, with the key being the path and the value
+   * being the RouteRef that the path will be bound to. This allows the route refs to be
+   * used by `useRouteRef` in the rendered elements.
+   *
+   * @example
+   * wrapInTestApp(<MyComponent />, {
+   *   mountedRoutes: {
+   *     '/my-path': myRouteRef,
+   *   }
+   * })
+   * // ...
+   * const link = useRouteRef(myRouteRef)
+   */
+  mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
 };
 
 /**
@@ -90,12 +109,21 @@ export function wrapInTestApp(
     Wrapper = () => Component as React.ReactElement;
   }
 
+  const routeElements = Object.entries(options.mountedRoutes ?? {}).map(
+    ([path, routeRef]) => {
+      const Page = () => <div>Mounted at {path}</div>;
+      attachComponentData(Page, 'core.mountPoint', routeRef);
+      return <Route key={path} path={path} element={<Page />} />;
+    },
+  );
+
   const AppProvider = app.getProvider();
   const AppRouter = app.getRouter();
 
   return (
     <AppProvider>
       <AppRouter>
+        {routeElements}
         {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
          *  and work with nested routes if they exist too */}
         <Route path="*" element={<Wrapper />} />

@@ -2,7 +2,7 @@
 title: Argo CD
 author: roadie.io
 authorUrl: https://roadie.io
-category: CI
+category: CI/CD
 description: View Argo CD status for your projects in Backstage.
 documentation: https://roadie.io/backstage/plugins/argo-cd
 iconUrl: https://roadie.io/images/logos/argo.png

@@ -48,22 +48,23 @@ import {
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
-import { RouteRef } from '../routing';
+import { AnyRoutes } from '../plugin/types';
+import { RouteRef, ExternalRouteRef } from '../routing';
 import {
   routeObjectCollector,
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
 import { RoutingProvider, validateRoutes } from '../routing/hooks';
-import { ExternalRouteRef } from '../routing/RouteRef';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
 import { AppThemeProvider } from './AppThemeProvider';
 import {
   AppComponents,
   AppConfigLoader,
+  AppContext,
   AppOptions,
   AppRouteBinder,
   BackstageApp,
@@ -77,14 +78,20 @@ export function generateBoundRoutes(
   const result = new Map<ExternalRouteRef, RouteRef>();
 
   if (bindRoutes) {
-    const bind: AppRouteBinder = (externalRoutes, targetRoutes) => {
+    const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {
       for (const [key, value] of Object.entries(targetRoutes)) {
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
           throw new Error(`Key ${key} is not an existing external route`);
         }
-
-        result.set(externalRoute, value);
+        if (!value && !externalRoute.optional) {
+          throw new Error(
+            `External route ${key} is required but was undefined`,
+          );
+        }
+        if (value) {
+          result.set(externalRoute, value);
+        }
       }
     };
     bindRoutes({ bind });
@@ -95,7 +102,7 @@ export function generateBoundRoutes(
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
-  icons: SystemIcons;
+  icons: IconComponentMap;
   plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
   themes: AppTheme[];
@@ -139,12 +146,48 @@ function useConfigLoader(
   return { api: configReader };
 }
 
+class AppContextImpl implements AppContext {
+  constructor(private readonly app: PrivateAppImpl) {}
+
+  getPlugins(): BackstagePlugin<any, any>[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getPlugins() is deprecated and will be removed');
+    return this.app.getPlugins();
+  }
+
+  getSystemIcon(key: IconKey): IconComponent | undefined {
+    return this.app.getSystemIcon(key);
+  }
+
+  getComponents(): AppComponents {
+    return this.app.getComponents();
+  }
+
+  getProvider(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getProvider() is deprecated and will be removed');
+    return this.app.getProvider();
+  }
+
+  getRouter(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRouter() is deprecated and will be removed');
+    return this.app.getRouter();
+  }
+
+  getRoutes(): JSX.Element[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRoutes() is deprecated and will be removed');
+    return this.app.getRoutes();
+  }
+}
+
 export class PrivateAppImpl implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
-  private readonly icons: SystemIcons;
+  private readonly icons: IconComponentMap;
   private readonly plugins: BackstagePlugin<any, any>[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
@@ -169,14 +212,16 @@ export class PrivateAppImpl implements BackstageApp {
     return this.plugins;
   }
 
-  getSystemIcon(key: SystemIconKey): IconComponent {
+  getSystemIcon(key: IconKey): IconComponent | undefined {
     return this.icons[key];
+  }
+
+  getComponents(): AppComponents {
+    return this.components;
   }
 
   getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
-
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
     const { NotFoundErrorPage } = this.components;
 
@@ -211,13 +256,6 @@ export class PrivateAppImpl implements BackstageApp {
             routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
-          case 'feature-flag': {
-            featureFlagsApi.registerFlag({
-              name: output.name,
-              pluginId: plugin.getId(),
-            });
-            break;
-          }
           default:
             break;
         }
@@ -236,6 +274,27 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getProvider(): ComponentType<{}> {
+    const appContext = new AppContextImpl(this);
+    const apiHolder = this.getApiHolder();
+
+    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+    for (const plugin of this.plugins.values()) {
+      for (const output of plugin.output()) {
+        switch (output.type) {
+          case 'feature-flag': {
+            featureFlagsApi.registerFlag({
+              name: output.name,
+              pluginId: plugin.getId(),
+            });
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
@@ -272,8 +331,8 @@ export class PrivateAppImpl implements BackstageApp {
       this.configApi = loadedConfig.api;
 
       return (
-        <ApiProvider apis={this.getApiHolder()}>
-          <AppContextProvider app={this}>
+        <ApiProvider apis={apiHolder}>
+          <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider
                 routePaths={routePaths}

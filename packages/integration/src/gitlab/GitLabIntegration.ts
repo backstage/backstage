@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
   GitLabIntegrationConfig,
@@ -45,4 +45,19 @@ export class GitLabIntegration implements ScmIntegration {
   get config(): GitLabIntegrationConfig {
     return this.integrationConfig;
   }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    return defaultScmResolveUrl(options);
+  }
+
+  resolveEditUrl(url: string): string {
+    return replaceUrlType(url, 'edit');
+  }
+}
+
+export function replaceUrlType(
+  url: string,
+  type: 'blob' | 'tree' | 'edit',
+): string {
+  return url.replace(/\/\-\/(blob|tree|edit)\//, `/-/${type}/`);
 }

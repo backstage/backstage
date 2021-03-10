@@ -124,7 +124,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     // produce tens of thousands of entities, and those are too large batch
     // sizes to reasonably send to the database.
     const batches = Object.values(requestsByKindAndNamespace)
-      .map(requests => chunk(requests, BATCH_SIZE))
+      .map(request => chunk(request, BATCH_SIZE))
       .flat();
 
     // Bound the number of concurrent batches. We want a bit of concurrency for

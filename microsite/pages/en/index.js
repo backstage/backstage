@@ -11,6 +11,7 @@ const Block = Components.Block;
 const ActionBlock = Components.ActionBlock;
 const Breakpoint = Components.Breakpoint;
 const BulletLine = Components.BulletLine;
+const Banner = Components.Banner;
 
 class Index extends React.Component {
   render() {
@@ -52,6 +53,15 @@ class Index extends React.Component {
             </Block.Graphics>
           </Block.Container>
         </Block>
+
+        <Banner.Container>
+          <Banner.Dismissable storageKey="k8s-launch">
+            🎉 New feature: Kubernetes for service owners.{' '}
+            <a href="https://backstage.io/blog/2021/01/12/new-backstage-feature-kubernetes-for-service-owners">
+              Learn more.
+            </a>
+          </Banner.Dismissable>
+        </Banner.Container>
 
         <Block small className="stripe-top bg-black">
           <Block.Container wrapped>

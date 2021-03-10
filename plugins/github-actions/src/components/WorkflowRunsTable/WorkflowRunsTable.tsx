@@ -25,15 +25,23 @@ import {
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { EmptyState, Table, TableColumn } from '@backstage/core';
+import {
+  EmptyState,
+  Table,
+  TableColumn,
+  configApiRef,
+  useApi,
+} from '@backstage/core';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../plugin';
 import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export type WorkflowRun = {
+  workflowName: string;
   id: string;
   message: string;
   url?: string;
@@ -78,6 +86,10 @@ const generatedColumns: TableColumn[] = [
         <p>{row.source?.commit.hash}</p>
       </Typography>
     ),
+  },
+  {
+    title: 'Workflow',
+    field: 'workflowName',
   },
   {
     title: 'Status',
@@ -162,16 +174,24 @@ export const WorkflowRunsTable = ({
   entity: Entity;
   branch?: string;
 }) => {
+  const config = useApi(configApiRef);
   const { value: projectName, loading } = useProjectName(entity);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (projectName ?? '/').split('/');
   const [
     { runs, ...tableProps },
     { retry, setPage, setPageSize },
   ] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,
   });
+
+  const githubHost = hostname || 'github.com';
 
   return !runs ? (
     <EmptyState
@@ -182,7 +202,7 @@ export const WorkflowRunsTable = ({
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${projectName}/actions/new`}
+          href={`https://${githubHost}/${projectName}/actions/new`}
         >
           Create new Workflow
         </Button>

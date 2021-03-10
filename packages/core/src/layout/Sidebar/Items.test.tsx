@@ -22,8 +22,18 @@ import HomeIcon from '@material-ui/icons/Home';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import { Sidebar } from './Bar';
 import { SidebarItem } from './Items';
+import { renderHook } from '@testing-library/react-hooks';
+import { hexToRgb, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+  spotlight: {
+    backgroundColor: '#2b2a2a',
+  },
+});
 
 async function renderSidebar() {
+  const { result } = renderHook(() => useStyles());
+
   await renderInTestApp(
     <Sidebar>
       <SidebarItem text="Home" icon={HomeIcon} to="./" />
@@ -31,6 +41,7 @@ async function renderSidebar() {
         icon={CreateComponentIcon}
         onClick={() => {}}
         text="Create..."
+        className={result.current.spotlight}
       />
     </Sidebar>,
   );
@@ -53,6 +64,12 @@ describe('Items', () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
       ).toBeInTheDocument();
+    });
+
+    it('should render a button with custom style', async () => {
+      expect(
+        await screen.findByRole('button', { name: /create/i }),
+      ).toHaveStyle(`background-color: ${hexToRgb('2b2a2a')}`);
     });
   });
 });

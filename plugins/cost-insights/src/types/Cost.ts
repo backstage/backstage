@@ -23,5 +23,5 @@ export interface Cost {
   aggregation: DateAggregation[];
   change?: ChangeStatistic;
   trendline?: Trendline;
-  groupedCosts?: Cost[];
+  groupedCosts?: Record<string, Cost[]>;
 }

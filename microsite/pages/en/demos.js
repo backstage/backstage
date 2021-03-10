@@ -21,6 +21,8 @@ const Background = props => {
             <Block.Paragraph>
               To explore the UI and basic features of Backstage firsthand, go
               to: <a href="https://demo.backstage.io">demo.backstage.io</a>.
+              (Tip: click “All” to view all the example components in the
+              service catalog.)
             </Block.Paragraph>
             <Block.Paragraph>
               Watch the videos below to get an introduction to Backstage and to

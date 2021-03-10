@@ -15,3 +15,5 @@
  */
 
 export { HeaderIconLinkRow } from './HeaderIconLinkRow';
+
+export type { IconLinkVerticalProps } from './IconLinkVertical';

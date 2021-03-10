@@ -23,44 +23,60 @@ browser APIs or by depending on external modules to do the work.
 
 ### Routing
 
-Each plugin is responsible for registering its components to corresponding
-routes in the app.
+Each plugin can export routable extensions, which are then imported into the app
+and mounted at a path.
 
-The app will call the `createPlugin` method on each plugin, passing in a
-`router` object with a set of methods on it.
+First you will need a `RouteRef` instance to serve as the mount point of your
+extensions. This can be used within your own plugin to create a link to the
+extension page using `useRouteRef`, as well as for other plugins to link to your
+extension.
 
-```jsx
-import { createPlugin, createRouteRef } from '@backstage/core';
-import ExampleComponent from './components/ExampleComponent';
+It is best to place these in a separate top-level `src/routes.ts` file, in order
+to avoid import cycles, for example like this:
 
+```tsx
+/* src/routes.ts */
+import { createRouteRef } from '@backstage/core';
+
+// Note: This route ref is for internal use only, don't export it from the plugin
 export const rootRouteRef = createRouteRef({
-  path: '/new-plugin',
-  title: 'New plugin',
-});
-
-export const plugin = createPlugin({
-  id: 'new-plugin',
-  register({ router }) {
-    router.addRoute(rootRouteRef, ExampleComponent);
-  },
+  title: 'Example Page',
 });
 ```
 
-#### `router` API
+Now that we have a `RouteRef`, we import it into `src/plugin.ts`, create our
+plugin instance with `createPlugin`, as well as create and wrap our routable
+extension using `createRoutableExtension` from `@backstage/core`:
 
-```typescript
-addRoute(
-  target: RouteRef,
-  Component: ComponentType<any>,
-  options?: RouteOptions,
-): void;
+```tsx
+/* src/plugin.ts */
+import { createPlugin, createRouteRef } from '@backstage/core';
+import ExampleComponent from './components/ExampleComponent';
 
-/**
- * @deprecated See the `addRoute` method
- */
-registerRoute(
-  path: RoutePath,
-  Component: ComponentType<any>,
-  options?: RouteOptions,
-): void;
+// Create a plugin instance and export this from your plugin package
+export const examplePlugin = createPlugin({
+  id: 'example',
+  routes: {
+    root: rootRouteRef, // This is where the route ref should be exported for usage in the app
+  },
+});
+
+// This creates a routable extension, which are typically full pages of content.
+// Each extension should also be exported from your plugin package.
+export const ExamplePage = examplePlugin.provide(
+  createRoutableExtension({
+    // The component needs to be lazy-loaded. It's what will actually be rendered in the end.
+    component: () =>
+      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+    // This binds the extension to this route ref, which allows for routing within and across plugin extensions
+    mountPoint: rootRouteRef,
+  }),
+);
+```
+
+This extension can then be imported and used in the app as follow, typically
+placed within the top-level `<FlatRoutes>`:
+
+```tsx
+<Route route="/any-path" element={<ExamplePage />} />
 ```

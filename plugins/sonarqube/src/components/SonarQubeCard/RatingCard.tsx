@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => {
   return {
     root: {
       margin: theme.spacing(1, 0),
+      minWidth: '140px',
     },
     upper: {
       display: 'flex',

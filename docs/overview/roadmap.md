@@ -57,8 +57,10 @@ guidelines to get started.
   see and manage their services running in K8s, regardless if that's locally, in
   AWS, GCS, Azure, or elsewhere.
 
-- **Global search** - Extend the basic search functionality currently available
-  in the Backstage Service Catalog to become a global search experience.
+- **[Search platform](../features/search/README.md)** - Evolve the basic search
+  functionality currently available into a platform that **a)** enables search
+  across the software catalog, TechDocs, and any other information exposed by
+  plugins, and **b)** supports a variety of search engine technologies.
 
 - **[Software Templates V2](https://github.com/backstage/backstage/issues/2771)** -
   Expand the templates to make the steps more composable by adding the ability
@@ -97,13 +99,15 @@ Are you missing a plugin for your favorite tool? Please
 [suggest a new one](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
 Chances are that someone will jump in and help build it.
 
-### Community Initiatives 🧑‍🤝‍🧑 (Coming soon)
+### Community Initiatives 🧑‍🤝‍🧑
 
-- **Backstage Monthly Meetup** - A space for the community to come together to
-  share and learn about the latest happenings in Backstage.
+- [**Backstage Community Sessions**](https://github.com/backstage/community#meetups) -
+  A monthly meetup for the community to come together to share and learn about
+  the latest happenings in Backstage.
 
-- **Backstage Hackathons** - Open to everyone in our Backstage community, a
-  celebration of you, the project and building awesome things together
+- **Backstage Hackathons** - (Coming soon) Open to everyone in our Backstage
+  community, a celebration of you, the project and building awesome things
+  together
 
 ### Completed milestones ✅
 

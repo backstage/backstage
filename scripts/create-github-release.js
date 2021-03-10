@@ -53,7 +53,8 @@ if (!BOOL_CREATE_RELEASE) {
 
 const GH_OWNER = 'backstage';
 const GH_REPO = 'backstage';
-const EXPECTED_COMMIT_MESSAGE = /^Merge pull request #(?<prNumber>[0-9]+) from backstage\/changeset-release\/master\n\nVersion Packages$/;
+const EXPECTED_COMMIT_MESSAGE = /^Merge pull request #(?<prNumber>[0-9]+) from/;
+const CHANGESET_RELEASE_BRANCH = 'backstage/changeset-release/master';
 
 // Initialize a GitHub client
 const octokit = new Octokit({
@@ -116,7 +117,7 @@ async function getCommitMessageUsingTagName(tagName) {
 }
 
 // There is a PR number in our expected commit message. Get the description of that PR.
-async function getPrDescriptionFromCommitMessage(commitMessage) {
+async function getReleaseDescriptionFromCommitMessage(commitMessage) {
   // It should exactly match the pattern of changeset commit message, or else will abort.
   const expectedMessage = RegExp(EXPECTED_COMMIT_MESSAGE);
   if (!expectedMessage.test(commitMessage)) {
@@ -131,20 +132,19 @@ async function getPrDescriptionFromCommitMessage(commitMessage) {
     `Identified the changeset Pull request - https://github.com/backstage/backstage/pull/${prNumber}`,
   );
 
-  const prData = await octokit.pulls.get({
+  const { data } = await octokit.pulls.get({
     owner: GH_OWNER,
     repo: GH_REPO,
     pull_number: prNumber,
   });
 
-  return prData.data.body;
-}
+  // Use the PR description to prepare for the release description
+  const isChangesetRelease = commitMessage.includes(CHANGESET_RELEASE_BRANCH);
+  if (isChangesetRelease) {
+    return data.body.split('\n').slice(3).join('\n');
+  }
 
-// Use the PR description to prepare for the release description
-async function prepareReleaseDescription(prDescription) {
-  // TODO: Refine prDescription to remove the lines containing "Update Dependencies"
-  // Remove everything in the beginning until changelogs.
-  return prDescription.split('\n').slice(3).join('\n');
+  return data.body;
 }
 
 // Create Release on GitHub.
@@ -178,8 +178,9 @@ async function createRelease(releaseDescription) {
 
 async function main() {
   const commitMessage = await getCommitMessageUsingTagName(TAG_NAME);
-  const prDescription = await getPrDescriptionFromCommitMessage(commitMessage);
-  const releaseDescription = await prepareReleaseDescription(prDescription);
+  const releaseDescription = await getReleaseDescriptionFromCommitMessage(
+    commitMessage,
+  );
 
   await createRelease(releaseDescription);
 }

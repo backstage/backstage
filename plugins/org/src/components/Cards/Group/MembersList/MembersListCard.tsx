@@ -20,7 +20,11 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
-import { catalogApiRef, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  useEntity,
+  catalogApiRef,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   createStyles,
@@ -43,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: '4px',
       overflow: 'visible',
       position: 'relative',
-      margin: theme.spacing(3, 0, 1),
+      margin: theme.spacing(4, 1, 1),
       flex: '1',
       minWidth: '0px',
     },
@@ -65,7 +69,7 @@ const MemberComponent = ({
   const displayName = profile?.displayName ?? metaName;
 
   return (
-    <Grid item container xs={12} sm={6} md={3} xl={2}>
+    <Grid item container xs={12} sm={6} md={4} xl={2}>
       <Box className={classes.card}>
         <Box
           display="flex"
@@ -102,11 +106,11 @@ const MemberComponent = ({
   );
 };
 
-export const MembersListCard = ({
-  entity: groupEntity,
-}: {
-  entity: GroupEntity;
+export const MembersListCard = (_props: {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: GroupEntity;
 }) => {
+  const groupEntity = useEntity().entity as GroupEntity;
   const {
     metadata: { name: groupName },
     spec: { profile },
@@ -121,14 +125,13 @@ export const MembersListCard = ({
         kind: 'User',
       },
     });
-    const groupMembersList = ((membersList.items as unknown) as Array<
-      UserEntity
-    >).filter(member =>
-      member?.relations?.some(
-        r =>
-          r.type === RELATION_MEMBER_OF &&
-          r.target.name.toLowerCase() === groupName.toLowerCase(),
-      ),
+    const groupMembersList = ((membersList.items as unknown) as Array<UserEntity>).filter(
+      member =>
+        member?.relations?.some(
+          r =>
+            r.type === RELATION_MEMBER_OF &&
+            r.target.name.toLowerCase() === groupName.toLowerCase(),
+        ),
     );
     return groupMembersList;
   }, [catalogApi]);

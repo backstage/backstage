@@ -29,6 +29,7 @@ export enum DefaultLoadingAction {
   CostInsightsInitial = 'cost-insights-initial',
   CostInsightsPage = 'cost-insights-page',
   CostInsightsProducts = 'cost-insights-products',
+  CostInsightsAlerts = 'cost-insights-alerts',
 }
 
 export const INITIAL_LOADING_ACTIONS = [

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { Git, InputError, UrlReader } from '@backstage/backend-common';
+import { Entity, parseLocationReference } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
 import os from 'os';
 import path from 'path';
-import parseGitUrl from 'git-url-parse';
-import fs from 'fs-extra';
-import { InputError, UrlReader, Git } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 import { getDefaultBranch } from './default-branch';
 import { getGitRepoType, getTokenForGitRepo } from './git-auth';
-import { RemoteProtocol } from './stages/prepare/types';
-import { Logger } from 'winston';
+import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
 
 export type ParsedLocationAnnotation = {
   type: RemoteProtocol;
@@ -36,28 +36,15 @@ export const parseReferenceAnnotation = (
   entity: Entity,
 ): ParsedLocationAnnotation => {
   const annotation = entity.metadata.annotations?.[annotationName];
-
   if (!annotation) {
     throw new InputError(
       `No location annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 
-  // split on the first colon for the protocol and the rest after the first split
-  // is the location.
-  const [type, target] = annotation.split(/:(.+)/) as [
-    RemoteProtocol?,
-    string?,
-  ];
-
-  if (!type || !target) {
-    throw new InputError(
-      `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
-    );
-  }
-
+  const { type, target } = parseLocationReference(annotation);
   return {
-    type,
+    type: type as RemoteProtocol,
     target,
   };
 };
@@ -77,8 +64,9 @@ export const getLocationForEntity = (
     case 'url':
       return { type, target };
     case 'dir':
-      if (path.isAbsolute(target)) return { type, target };
-
+      if (path.isAbsolute(target)) {
+        return { type, target };
+      }
       return parseReferenceAnnotation(
         'backstage.io/managed-by-location',
         entity,
@@ -107,7 +95,7 @@ export const getGitRepositoryTempFolder = async (
     // fs.realpathSync fixes a problem with macOS returning a path that is a symlink
     fs.realpathSync(os.tmpdir()),
     'backstage-repo',
-    parsedGitLocation.source,
+    parsedGitLocation.resource,
     parsedGitLocation.owner,
     parsedGitLocation.name,
     parsedGitLocation.ref,
@@ -133,11 +121,11 @@ export const checkoutGitRepository = async (
     switch (type) {
       case 'github':
         git = Git.fromAuth({
-          username: token,
-          password: 'x-oauth-basic',
+          username: 'x-access-token',
+          password: token,
           logger,
         });
-        parsedGitLocation.token = `${token}:x-oauth-basic`;
+        parsedGitLocation.token = `x-access-token:${token}`;
         break;
       case 'gitlab':
         git = Git.fromAuth({
@@ -196,16 +184,9 @@ export const checkoutGitRepository = async (
 };
 
 export const getLastCommitTimestamp = async (
-  repositoryUrl: string,
-  config: Config,
+  repositoryLocation: string,
   logger: Logger,
 ): Promise<number> => {
-  const repositoryLocation = await checkoutGitRepository(
-    repositoryUrl,
-    config,
-    logger,
-  );
-
   const git = Git.fromAuth({ logger });
   const sha = await git.resolveRef({ dir: repositoryLocation, ref: 'HEAD' });
   const commit = await git.readCommit({ dir: repositoryLocation, sha });
@@ -216,13 +197,22 @@ export const getLastCommitTimestamp = async (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-): Promise<any> => {
+  opts?: { etag?: string; logger?: Logger },
+): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',
     entity,
   );
 
-  const response = await reader.readTree(target);
+  opts?.logger?.debug(`Reading files from ${target}`);
+  // readTree will throw NotModifiedError if etag has not changed.
+  const readTreeResponse = await reader.readTree(target, { etag: opts?.etag });
+  const preparedDir = await readTreeResponse.dir();
 
-  return await response.dir();
+  opts?.logger?.debug(`Tree downloaded and stored at ${preparedDir}`);
+
+  return {
+    preparedDir,
+    etag: readTreeResponse.etag,
+  };
 };

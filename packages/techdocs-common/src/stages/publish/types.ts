@@ -19,7 +19,12 @@ import express from 'express';
 /**
  * Key for all the different types of TechDocs publishers that are supported.
  */
-export type PublisherType = 'local' | 'googleGcs' | 'awsS3';
+export type PublisherType =
+  | 'local'
+  | 'googleGcs'
+  | 'awsS3'
+  | 'azureBlobStorage'
+  | 'openStackSwift';
 
 export type PublishRequest = {
   entity: Entity;
@@ -31,6 +36,14 @@ export type PublishRequest = {
 export type PublishResponse = {
   remoteUrl?: string;
 } | void;
+
+/**
+ * Type to hold metadata found in techdocs_metadata.json and associated with each site
+ */
+export type TechDocsMetadata = {
+  site_name: string;
+  site_description: string;
+};
 
 /**
  * Base class for a TechDocs publisher (e.g. Local, Google GCS Bucket, AWS S3, etc.)
@@ -50,7 +63,7 @@ export interface PublisherBase {
    * Retrieve TechDocs Metadata about a site e.g. name, contributors, last updated, etc.
    * This API uses the techdocs_metadata.json file that co-exists along with the generated docs.
    */
-  fetchTechDocsMetadata(entityName: EntityName): Promise<string>;
+  fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
 
   /**
    * Route middleware to serve static documentation files for an entity.

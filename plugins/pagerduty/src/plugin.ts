@@ -19,6 +19,7 @@ import {
   createRouteRef,
   discoveryApiRef,
   configApiRef,
+  createComponentExtension,
 } from '@backstage/core';
 import { pagerDutyApiRef, PagerDutyClient } from './api';
 
@@ -27,7 +28,7 @@ export const rootRouteRef = createRouteRef({
   title: 'pagerduty',
 });
 
-export const plugin = createPlugin({
+export const pagerDutyPlugin = createPlugin({
   id: 'pagerduty',
   apis: [
     createApiFactory({
@@ -38,3 +39,12 @@ export const plugin = createPlugin({
     }),
   ],
 });
+
+export const EntityPagerDutyCard = pagerDutyPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/PagerDutyCard').then(m => m.PagerDutyCard),
+    },
+  }),
+);

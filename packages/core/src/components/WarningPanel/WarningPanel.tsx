@@ -15,8 +15,16 @@
  */
 
 import { BackstageTheme } from '@backstage/theme';
-import { makeStyles, Typography } from '@material-ui/core';
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Grid,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import ErrorOutline from '@material-ui/icons/ErrorOutline';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React from 'react';
 
 const useErrorOutlineStyles = makeStyles<BackstageTheme>(theme => ({
@@ -29,57 +37,100 @@ const ErrorOutlineStyled = () => {
   const classes = useErrorOutlineStyles();
   return <ErrorOutline classes={classes} />;
 };
+const ExpandMoreIconStyled = () => {
+  const classes = useErrorOutlineStyles();
+  return <ExpandMoreIcon classes={classes} />;
+};
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
-  message: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(1.5),
+  panel: {
     backgroundColor: theme.palette.warningBackground,
     color: theme.palette.warningText,
     verticalAlign: 'middle',
   },
-  header: {
+  summary: {
     display: 'flex',
     flexDirection: 'row',
-    marginBottom: theme.spacing(1),
   },
-  headerText: {
+  summaryText: {
     color: theme.palette.warningText,
+    fontWeight: 'bold',
   },
-  messageText: {
+  message: {
+    width: '100%',
+    display: 'block',
     color: theme.palette.warningText,
+    backgroundColor: theme.palette.warningBackground,
+  },
+  details: {
+    width: '100%',
+    display: 'block',
+    color: theme.palette.textContrast,
+    backgroundColor: theme.palette.background.default,
+    border: `1px solid ${theme.palette.border}`,
+    padding: theme.spacing(2.0),
+    fontFamily: 'sans-serif',
   },
 }));
 
-/**
- * WarningPanel. Show a user friendly error message to a user similar to ErrorPanel except that the warning panel
- * only shows the warning message to the user
- */
-
 type Props = {
-  message?: React.ReactNode;
   title?: string;
+  severity?: 'warning' | 'error' | 'info';
+  message?: React.ReactNode;
   children?: React.ReactNode;
 };
 
+const capitalize = (s: string) => {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+/**
+ * WarningPanel. Show a user friendly error message to a user similar to ErrorPanel except that the warning panel
+ * only shows the warning message to the user.
+ *
+ * @param {string} [severity=warning] Ability to change the severity of the alert. Not fully implemented. (error, warning, info)
+ * @param {string} [title] A title for the warning. If not supplied, "Warning" will be used.
+ * @param {Object} [message] Optional more detailed user-friendly message elaborating on the cause of the error.
+ * @param {Object} [children] Objects to provide context, such as a stack trace or detailed error reporting.
+ *  Will be available inside an unfolded accordion.
+ */
 export const WarningPanel = (props: Props) => {
   const classes = useStyles(props);
-  const { title, message, children } = props;
+  const { severity, title, message, children } = props;
+
+  // If no severity or title provided, the heading will read simply "Warning"
+  const subTitle =
+    (severity ? capitalize(severity) : 'Warning') + (title ? `: ${title}` : '');
+
   return (
-    <div className={classes.message}>
-      <div className={classes.header}>
+    <Accordion className={classes.panel}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIconStyled />}
+        className={classes.summary}
+      >
         <ErrorOutlineStyled />
-        <Typography className={classes.headerText} variant="subtitle1">
-          {title}
+        <Typography className={classes.summaryText} variant="subtitle1">
+          {subTitle}
         </Typography>
-      </div>
-      {message && (
-        <Typography className={classes.messageText} variant="body2">
-          {message}
-        </Typography>
+      </AccordionSummary>
+      {(message || children) && (
+        <AccordionDetails>
+          <Grid container>
+            {message && (
+              <Grid item xs={12}>
+                <Typography className={classes.message} variant="body1">
+                  {message}
+                </Typography>
+              </Grid>
+            )}
+            {children && (
+              <Grid item xs={12} className={classes.details}>
+                {children}
+              </Grid>
+            )}
+          </Grid>
+        </AccordionDetails>
       )}
-      {children}
-    </div>
+    </Accordion>
   );
 };

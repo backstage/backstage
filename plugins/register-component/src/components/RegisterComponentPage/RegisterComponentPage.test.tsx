@@ -20,12 +20,11 @@ import {
   createRouteRef,
   errorApiRef,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { render, screen } from '@testing-library/react';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { RegisterComponentPage } from './RegisterComponentPage';
 
 const errorApi: jest.Mocked<typeof errorApiRef.T> = {
@@ -44,30 +43,29 @@ const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
 };
 
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
-  <MemoryRouter>
-    <ApiProvider
-      apis={ApiRegistry.with(errorApiRef, errorApi).with(
-        catalogApiRef,
-        catalogApi,
-      )}
-    >
-      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
-    </ApiProvider>
-  </MemoryRouter>
+  <ApiProvider
+    apis={ApiRegistry.with(errorApiRef, errorApi).with(
+      catalogApiRef,
+      catalogApi,
+    )}
+  >
+    <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+  </ApiProvider>
 );
 
 describe('RegisterComponentPage', () => {
-  it('should render', () => {
-    render(
-      <RegisterComponentPage
-        catalogRouteRef={createRouteRef({
-          path: '/catalog',
-          title: 'Service Catalog',
-        })}
-      />,
-      { wrapper: Wrapper },
+  it('should render', async () => {
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <RegisterComponentPage
+          catalogRouteRef={createRouteRef({
+            path: '/catalog',
+            title: 'Service Catalog',
+          })}
+        />
+      </Wrapper>,
     );
 
-    expect(screen.getByText('Register existing component')).toBeInTheDocument();
+    expect(getByText('Register existing component')).toBeInTheDocument();
   });
 });

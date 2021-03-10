@@ -6,8 +6,8 @@ description: Introduction to files and folders in the Backstage Project reposito
 ---
 
 Backstage is a complex project, and the GitHub repository contains many
-different files and folders. This document aims to clarify what purpose of those
-files and folders are.
+different files and folders. This document aims to clarify the purpose of those
+files and folders.
 
 ## General purpose files and folders
 
@@ -25,19 +25,15 @@ the code.
   Standard GitHub folder. It contains - amongst other things - our workflow
   definitions and templates. Worth noting is the
   [styles](https://github.com/backstage/backstage/tree/master/.github/styles)
-  folder which is used for a markdown spellchecker.
+  sub-folder which is used for a markdown spellchecker.
 
 - [`.yarn/`](https://github.com/backstage/backstage/tree/master/.yarn) -
   Backstage ships with it's own `yarn` implementation. This allows us to have
   better control over our `yarn.lock` file and hopefully avoid problems due to
   yarn versioning differences.
 
-- [`docker/`](https://github.com/backstage/backstage/tree/master/docker) - Files
-  related to our root Dockerfile. We are planning to refactor this, so expect
-  this folder to be moved in the future.
-
 - [`contrib/`](https://github.com/backstage/backstage/tree/master/contrib) -
-  Collection of examples or resources provided by the community. We really
+  Collection of examples or resources contributed by the community. We really
   appreciate contributions in here and encourage them being kept up to date.
 
 - [`docs/`](https://github.com/backstage/backstage/tree/master/docs) - This is
@@ -47,10 +43,11 @@ the code.
   file may be needed as sections are added/removed.
 
 - [`.editorconfig`](https://github.com/backstage/backstage/tree/master/.editorconfig) -
-  A configuration file used by most common code editors.
+  A configuration file used by most common code editors. Learn more at
+  [EditorConfig.org](https://editorconfig.org/).
 
 - [`.imgbotconfig`](https://github.com/backstage/backstage/tree/master/.imgbotconfig) -
-  Configuration for a [bot](https://imgbot.net/)
+  Configuration for a [bot](https://imgbot.net/) which helps reduce image sizes.
 
 ## Monorepo packages
 
@@ -107,16 +104,16 @@ are separated out into their own folder, see further down.
   diff, create-plugins and more. In the early days of this project, we started
   out with calling tools directly - such as `eslint` - through `package.json`.
   But as it was tricky to have a good development experience around that when we
-  change named tooling, we opted for wrapping those in our own cli. That way
+  change named tooling, we opted for wrapping those in our own CLI. That way
   everything looks the same in `package.json`. Much like
   [react-scripts](https://github.com/facebook/create-react-app/tree/master/packages/react-scripts).
 
 - [`cli-common/`](https://github.com/backstage/backstage/tree/master/packages/cli-common) -
   This package mainly handles path resolving. It is a separate package to reduce
   bugs in
-  [cli](https://github.com/backstage/backstage/tree/master/packages/cli). We
+  [CLI](https://github.com/backstage/backstage/tree/master/packages/cli). We
   also want as few dependencies as possible to reduce download time when running
-  the cli which is another reason this is a separate package.
+  the CLI which is another reason this is a separate package.
 
 - [`config/`](https://github.com/backstage/backstage/tree/master/packages/config) -
   The way we read configuration data. This package can take a bunch of config
@@ -143,14 +140,6 @@ are separated out into their own folder, see further down.
   detail that we try to hide from our users, and no one should have to depend on
   it directly.
 
-- [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils) -
-  This package contains specific testing facilities used when testing
-  `core-api`.
-
-- [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core) -
-  This package contains more general purpose testing facilities for testing a
-  Backstage App.
-
 - [`create-app/`](https://github.com/backstage/backstage/tree/master/packages/create-app) -
   An CLI to specifically scaffold a new Backstage App. It does so by using a
   [template](https://github.com/backstage/backstage/tree/master/packages/create-app/templates/default-app).
@@ -165,26 +154,30 @@ are separated out into their own folder, see further down.
   to read out definitions and generate documentation for it.
 
 - [`e2e-test/`](https://github.com/backstage/backstage/tree/master/packages/e2e-test) -
-  Another CLI that can be run to try out what would happen if you built all the
-  packages, publish them, created a new app, and the run it. CI uses this for
+  Another CLI that can be run to try out what would happen if you build all the
+  packages, publish them, create a new app, and then run them. CI uses this for
   e2e-tests.
 
 - [`integration/`](https://github.com/backstage/backstage/tree/master/packages/integration) -
   Common functionalities of integrations like GitHub, GitLab, etc.
 
 - [`storybook/`](https://github.com/backstage/backstage/tree/master/packages/storybook) -
-  This folder contains only the storybook config. Stories are within the core
-  package. The Backstage Storybook is found
-  [here](https://backstage.io/storybook)
+  This folder contains only the Storybook config which helps visualize our
+  reusable React components. Stories are within the core package, and are
+  published in the [Backstage Storybook](https://backstage.io/storybook).
 
 - [`techdocs-common/`](https://github.com/backstage/backstage/tree/master/packages/techdocs-common) -
   Common functionalities for TechDocs, to be shared between
   [techdocs-backend](https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend)
   plugin and [techdocs-cli](https://github.com/backstage/techdocs-cli).
 
-- [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core)
+- [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils) -
+  This package contains specific testing facilities used when testing
+  `core-api`.
 
-- [`test-utils/`](https://github.com/backstage/backstage/tree/master/packages/test-utils)
+- [`test-utils-core/`](https://github.com/backstage/backstage/tree/master/packages/test-utils-core) -
+  This package contains more general purpose testing facilities for testing a
+  Backstage App.
 
 - [`theme/`](https://github.com/backstage/backstage/tree/master/packages/theme) -
   Holds the Backstage Theme.
@@ -200,10 +193,10 @@ We can categorize plugins into three different types; **Frontend**, **Backend**
 and **GraphQL**. We differentiate these types of plugins when we name them, with
 a dash-suffix. `-backend` means it’s a backend plugin and so on.
 
-One reason for splitting a plugin is because of to it's dependencies. Another
-reason is for clear separation of concerns.
+One reason for splitting a plugin is because of its dependencies. Another reason
+is for clear separation of concerns.
 
-Take a look at our [Plugin Gallery](https://backstage.io/plugins) or browse
+Take a look at our [Plugin Marketplace](https://backstage.io/plugins) or browse
 through the
 [`plugins/`](https://github.com/backstage/backstage/tree/master/plugins) folder.
 
@@ -216,7 +209,7 @@ monorepo setup.
   This folder contains the source code for backstage.io. It is built with
   [Docusaurus](https://docusaurus.io/). This folder is not part of the monorepo
   due to dependency reasons. Look at the
-  [README](https://github.com/backstage/backstage/blob/master/microsite/README.md)
+  [microsite README](https://github.com/backstage/backstage/blob/master/microsite/README.md)
   for instructions on how to run it locally.
 
 ## Root files specifically used by the `app`
@@ -226,8 +219,8 @@ Some of these files may be subject to be moved out of the root sometime in the
 future.
 
 - [`.npmrc`](https://github.com/backstage/backstage/tree/master/.npmrc) - It's
-  common for companies to have their own npm registry, this files makes sure
-  that this folder use the public registry.
+  common for companies to have their own npm registry, and this file makes sure
+  that this folder always uses the public registry.
 
 - [`.vale.ini`](https://github.com/backstage/backstage/tree/master/.vale.ini) -
   [Spell checker](https://github.com/errata-ai/vale) for Markdown files.

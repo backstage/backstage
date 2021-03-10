@@ -38,9 +38,9 @@ import {
 import {
   createRouteRef,
   createExternalRouteRef,
-  ExternalRouteRef,
+  RouteRefConfig,
 } from './RouteRef';
-import { RouteRef, RouteRefConfig } from './types';
+import { AnyRouteRef, RouteRef, ExternalRouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
@@ -57,22 +57,33 @@ const ref1 = createRouteRef(mockConfig({ path: '/wat1' }));
 const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
 const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
 const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
-const ref5 = createRouteRef(mockConfig({ path: '/wat5' }));
-const eRefA = createExternalRouteRef();
-const eRefB = createExternalRouteRef();
-const eRefC = createExternalRouteRef();
+const ref5 = createRouteRef({
+  ...mockConfig({ path: '/wat5' }),
+  params: ['x'],
+});
+const eRefA = createExternalRouteRef({ id: '1' });
+const eRefB = createExternalRouteRef({ id: '2' });
+const eRefC = createExternalRouteRef({ id: '3', params: ['y'] });
+const eRefD = createExternalRouteRef({ id: '4', optional: true });
+const eRefE = createExternalRouteRef({
+  id: '5',
+  optional: true,
+  params: ['z'],
+});
 
 const MockRouteSource = <T extends { [name in string]: string }>(props: {
   path?: string;
   name: string;
-  routeRef: RouteRef<T> | ExternalRouteRef;
+  routeRef: AnyRouteRef;
   params?: T;
 }) => {
   try {
-    const routeFunc = useRouteRef(props.routeRef) as RouteFunc<any>;
+    const routeFunc = useRouteRef(props.routeRef as any) as
+      | RouteFunc<any>
+      | undefined;
     return (
       <div>
-        Path at {props.name}: {routeFunc(props.params)}
+        Path at {props.name}: {routeFunc?.(props.params) ?? '<none>'}
       </div>
     );
   } catch (ex) {
@@ -155,6 +166,8 @@ describe('discovery', () => {
         <MockRouteSource name="outside" routeRef={ref2} />
         <MockRouteSource name="outsideExternal1" routeRef={eRefB} />
         <MockRouteSource name="outsideExternal2" routeRef={eRefC} />
+        <MockRouteSource name="outsideExternal3" routeRef={eRefD} />
+        <MockRouteSource name="outsideExternal4" routeRef={eRefE} />
       </MemoryRouter>
     );
 
@@ -163,6 +176,7 @@ describe('discovery', () => {
         [eRefA, ref3],
         [eRefB, ref1],
         [eRefC, ref2],
+        [eRefD, ref1],
       ]),
     );
 
@@ -178,6 +192,12 @@ describe('discovery', () => {
     ).toBeInTheDocument();
     expect(
       rendered.getByText('Path at outsideExternal2: /foo/bar'),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal3: /foo'),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText('Path at outsideExternal4: <none>'),
     ).toBeInTheDocument();
   });
 

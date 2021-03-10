@@ -17,12 +17,13 @@
 import {
   configApiRef,
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   discoveryApiRef,
 } from '@backstage/core';
 import { sonarQubeApiRef, SonarQubeClient } from './api';
 
-export const plugin = createPlugin({
+export const sonarQubePlugin = createPlugin({
   id: 'sonarqube',
   apis: [
     createApiFactory({
@@ -36,3 +37,12 @@ export const plugin = createPlugin({
     }),
   ],
 });
+
+export const EntitySonarQubeCard = sonarQubePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SonarQubeCard').then(m => m.SonarQubeCard),
+    },
+  }),
+);

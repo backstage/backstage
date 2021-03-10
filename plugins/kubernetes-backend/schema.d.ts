@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ClusterLocatorMethod } from './src/types';
+
 export interface Config {
   kubernetes?: {
-    serviceLocatorMethod: 'multiTenant';
-    clusterLocatorMethods: 'config'[];
-    clusters: {
-      url: string;
-      name: string;
-      serviceAccountToken: string;
-      authProvider: 'serviceAccount';
-    }[];
+    serviceLocatorMethod: {
+      type: 'multiTenant';
+    };
+    clusterLocatorMethods: ClusterLocatorMethod[];
   };
 }

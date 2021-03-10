@@ -1,5 +1,44 @@
 # @backstage/core-api
 
+## 0.2.12
+
+### Patch Changes
+
+- 40c0fdbaa: Added support for optional external route references. By setting `optional: true` when creating an `ExternalRouteRef` it is no longer a requirement to bind the route in the app. If the app isn't bound `useRouteRef` will return `undefined`.
+- 2a271d89e: Internal refactor of how component data is access to avoid polluting components and make it possible to bridge across versions.
+
+## 0.2.11
+
+### Patch Changes
+
+- 3a58084b6: The `FlatRoutes` components now renders the not found page of the app if no routes are matched.
+- 1407b34c6: More informative error message for missing ApiContext.
+- b6c4f485d: Fix error when querying Backstage Identity with SAML authentication
+- 3a58084b6: Created separate `AppContext` type to be returned from `useApp` rather than the `BackstageApp` itself. The `AppContext` type includes but deprecates `getPlugins`, `getProvider`, `getRouter`, and `getRoutes`. In addition, the `AppContext` adds a new `getComponents` method which providers access to the app components.
+- Updated dependencies [a1f5e6545]
+  - @backstage/config@0.1.3
+
+## 0.2.10
+
+### Patch Changes
+
+- f10950bd2: Minor refactoring of BackstageApp.getSystemIcons to support custom registered
+  icons. Custom Icons can be added using:
+
+  ```tsx
+  import AlarmIcon from '@material-ui/icons/Alarm';
+  import MyPersonIcon from './MyPerson';
+
+  const app = createApp({
+    icons: {
+      user: MyPersonIcon // override system icon
+      alert: AlarmIcon, // Custom icon
+    },
+  });
+  ```
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+
 ## 0.2.9
 
 ### Patch Changes

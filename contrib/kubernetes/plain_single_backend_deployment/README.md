@@ -6,6 +6,8 @@ This directory contains an example of a simple Kubernetes deployment of Backstag
 
 You can try the deployment out as is. The easiest way is to use [Docker Desktop](https://www.docker.com/products/docker-desktop) with [Kubernetes](https://docs.docker.com/get-started/kube-deploy/).
 
+You can now follow the documentation here to build the Backend Container [Docker Build](https://backstage.io/docs/getting-started/deployment-docker)
+
 From a fresh clone of this repo, run the following in the root:
 
 ```bash

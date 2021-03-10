@@ -15,7 +15,7 @@
  */
 
 import { Logger } from 'winston';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -31,7 +31,7 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
   async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
-    const { owner, name, source } = parseGitUri(request.location.target);
+    const { owner, name, source } = parseGitUrl(request.location.target);
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',

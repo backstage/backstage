@@ -24,6 +24,12 @@ import PropTypes from 'prop-types';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { ApiAggregator } from './ApiAggregator';
 
+const missingHolderMessage =
+  'No ApiProvider available in react context. ' +
+  'A common cause of this error is that multiple versions of @backstage/core-api are installed. ' +
+  `You can check if that is the case using 'yarn backstage-cli versions:check', and can in many cases ` +
+  `fix the issue either with the --fix flag or using 'yarn backstage-cli versions:bump'`;
+
 type ApiProviderProps = {
   apis: ApiHolder;
   children: ReactNode;
@@ -50,7 +56,7 @@ export function useApiHolder(): ApiHolder {
   const apiHolder = useContext(Context);
 
   if (!apiHolder) {
-    throw new Error('No ApiProvider available in react context');
+    throw new Error(missingHolderMessage);
   }
 
   return apiHolder;
@@ -74,7 +80,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
       const apiHolder = useContext(Context);
 
       if (!apiHolder) {
-        throw new Error('No ApiProvider available in react context');
+        throw new Error(missingHolderMessage);
       }
 
       const impls = {} as T;

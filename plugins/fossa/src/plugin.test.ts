@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { fossaPlugin } from './plugin';
 
 describe('fossa', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(fossaPlugin).toBeDefined();
   });
 });

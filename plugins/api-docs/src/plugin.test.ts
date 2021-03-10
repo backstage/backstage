@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { apiDocsPlugin } from './plugin';
 
 describe('api-docs', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(apiDocsPlugin).toBeDefined();
   });
 });

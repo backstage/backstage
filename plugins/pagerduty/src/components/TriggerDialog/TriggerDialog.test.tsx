@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { fireEvent, act } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 import {
   ApiRegistry,
   alertApiRef,
@@ -26,6 +26,7 @@ import {
 } from '@backstage/core';
 import { pagerDutyApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { TriggerDialog } from './TriggerDialog';
 
 describe('TriggerDialog', () => {
@@ -62,18 +63,16 @@ describe('TriggerDialog', () => {
       },
     };
 
-    const { getByText, getByRole, getByTestId } = render(
-      wrapInTestApp(
-        <ApiProvider apis={apis}>
+    const { getByText, getByRole, getByTestId } = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <EntityProvider entity={entity}>
           <TriggerDialog
             showDialog
             handleDialog={() => {}}
-            name={entity.metadata.name}
-            integrationKey="abc123"
             onIncidentCreated={() => {}}
           />
-        </ApiProvider>,
-      ),
+        </EntityProvider>
+      </ApiProvider>,
     );
 
     expect(getByRole('dialog')).toBeInTheDocument();

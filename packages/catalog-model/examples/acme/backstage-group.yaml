@@ -8,6 +8,6 @@ spec:
   profile:
     displayName: Backstage
     email: backstage@example.com
-    picture: https://example.com/groups/backstage.jpeg
+    picture: https://avatars.dicebear.com/api/identicon/backstage@example.com.svg?background=%23fff&margin=25
   parent: infrastructure
   children: [team-a, team-b]

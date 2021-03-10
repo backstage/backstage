@@ -18,6 +18,8 @@ import {
   createRouteRef,
   createApiFactory,
   googleAuthApiRef,
+  createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core';
 import { cloudbuildApiRef, CloudbuildClient } from './api';
 
@@ -31,7 +33,7 @@ export const buildRouteRef = createRouteRef({
   title: 'Cloudbuild Run',
 });
 
-export const plugin = createPlugin({
+export const cloudbuildPlugin = createPlugin({
   id: 'cloudbuild',
   apis: [
     createApiFactory({
@@ -42,4 +44,32 @@ export const plugin = createPlugin({
       },
     }),
   ],
+  routes: {
+    entityContent: rootRouteRef,
+  },
 });
+
+export const EntityCloudbuildContent = cloudbuildPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityLatestCloudbuildRunCard = cloudbuildPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/Cards').then(m => m.LatestWorkflowRunCard),
+    },
+  }),
+);
+
+export const EntityLatestCloudbuildsForBranchCard = cloudbuildPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/Cards').then(m => m.LatestWorkflowsForBranchCard),
+    },
+  }),
+);

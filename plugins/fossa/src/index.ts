@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './components';
+export { fossaPlugin } from './plugin';
+export { EntityFossaCard } from './extensions';

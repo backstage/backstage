@@ -1,12 +1,16 @@
 name: Main Master Build
 
 on:
+  workflow_dispatch:
   push:
     branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    outputs:
+      needs_release: ${{ steps.release_check.outputs.needs_release }}
 
     strategy:
       matrix:
@@ -15,6 +19,10 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -47,8 +55,17 @@ jobs:
         run: yarn install --frozen-lockfile
       # End of yarn setup
 
+      - name: Fetch previous commit for release check
+        run: git fetch origin '${{ github.event.before }}'
+
+      - name: Check if release
+        id: release_check
+        run: node scripts/check-if-release.js
+        env:
+          COMMIT_SHA_BEFORE: '${{ github.event.before }}'
+
       - name: validate config
-        run: yarn backstage-cli config:check
+        run: yarn backstage-cli config:check --lax
 
       - name: lint
         run: yarn lerna -- run lint
@@ -82,8 +99,9 @@ jobs:
   # We can't re-use the output from the above step, but we'll have a guaranteed node_modules cache and
   # only run the build steps that are necessary for publishing
   release:
-    if: contains(github.event.commits.*.author.username, 'github-actions[bot]') && contains(github.event.head_commit.message, 'from backstage/changeset-release/master')
     needs: build
+
+    if: needs.build.outputs.needs_release == 'true'
 
     runs-on: ubuntu-latest
 

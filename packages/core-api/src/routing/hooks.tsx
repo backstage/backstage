@@ -15,19 +15,22 @@
  */
 
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { AnyRouteRef, BackstageRouteObject, RouteRef } from './types';
+import {
+  AnyRouteRef,
+  BackstageRouteObject,
+  RouteRef,
+  ExternalRouteRef,
+  AnyParams,
+} from './types';
 import { generatePath, matchRoutes, useLocation } from 'react-router-dom';
-import { ExternalRouteRef } from './RouteRef';
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
 // Without this we'd have to pass in empty object to all parameter-less RouteRefs
 // just to make TypeScript happy, or we would have to make the argument optional in
 // which case you might forget to pass it in when it is actually required.
-export type RouteFunc<Params extends { [param in string]: string }> = (
-  ...[params]: Params[keyof Params] extends never
-    ? readonly []
-    : readonly [Params]
+export type RouteFunc<Params extends AnyParams> = (
+  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
 
 class RouteResolver {
@@ -35,22 +38,23 @@ class RouteResolver {
     private readonly routePaths: Map<AnyRouteRef, string>,
     private readonly routeParents: Map<AnyRouteRef, AnyRouteRef | undefined>,
     private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<ExternalRouteRef, RouteRef>,
+    private readonly routeBindings: Map<RouteRef | ExternalRouteRef, RouteRef>,
   ) {}
 
-  resolve<Params extends { [param in string]: string }>(
-    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef,
+  resolve<Params extends AnyParams>(
+    routeRefOrExternalRouteRef: RouteRef<Params> | ExternalRouteRef<Params>,
     sourceLocation: ReturnType<typeof useLocation>,
-  ): RouteFunc<Params> {
+  ): RouteFunc<Params> | undefined {
     const routeRef =
       this.routeBindings.get(routeRefOrExternalRouteRef) ??
       (routeRefOrExternalRouteRef as RouteRef<Params>);
 
     const match = matchRoutes(this.routeObjects, sourceLocation) ?? [];
 
+    // If our route isn't bound to a path we fail the resolution and let the caller decide the failure mode
     const lastPath = this.routePaths.get(routeRef);
     if (!lastPath) {
-      throw new Error(`No path for ${routeRef}`);
+      return undefined;
     }
     const targetRefStack = Array<AnyRouteRef>();
     let matchIndex = -1;
@@ -111,9 +115,15 @@ class RouteResolver {
 
 const RoutingContext = createContext<RouteResolver | undefined>(undefined);
 
-export function useRouteRef<Params extends { [param in string]: string }>(
-  routeRef: RouteRef<Params> | ExternalRouteRef,
-): RouteFunc<Params> {
+export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
+  routeRef: ExternalRouteRef<Params, Optional>,
+): Optional extends true ? RouteFunc<Params> | undefined : RouteFunc<Params>;
+export function useRouteRef<Params extends AnyParams>(
+  routeRef: RouteRef<Params>,
+): RouteFunc<Params>;
+export function useRouteRef<Params extends AnyParams>(
+  routeRef: RouteRef<Params> | ExternalRouteRef<Params, any>,
+): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
   const resolver = useContext(RoutingContext);
   const routeFunc = useMemo(
@@ -121,8 +131,13 @@ export function useRouteRef<Params extends { [param in string]: string }>(
     [resolver, routeRef, sourceLocation],
   );
 
-  if (!routeFunc) {
+  if (!routeFunc && !resolver) {
     throw new Error('No route resolver found in context');
+  }
+
+  const isOptional = 'optional' in routeRef && routeRef.optional;
+  if (!routeFunc && !isOptional) {
+    throw new Error(`No path for ${routeRef}`);
   }
 
   return routeFunc;

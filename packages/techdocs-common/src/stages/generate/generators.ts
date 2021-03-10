@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { TechdocsGenerator } from '.';
+import { Logger } from 'winston';
+import { getGeneratorKey } from './helpers';
+import { TechdocsGenerator } from './techdocs';
 import {
   GeneratorBase,
-  SupportedGeneratorKey,
   GeneratorBuilder,
+  SupportedGeneratorKey,
 } from './types';
-import { getGeneratorKey } from './helpers';
 
 export class Generators implements GeneratorBuilder {
   private generatorMap = new Map<SupportedGeneratorKey, GeneratorBase>();

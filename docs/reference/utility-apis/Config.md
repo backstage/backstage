@@ -1,7 +1,7 @@
 # Config
 
 The Config type is defined at
-[packages/config/src/types.ts:32](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/config/src/types.ts#L32).
+[packages/config/src/types.ts:32](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/config/src/types.ts#L32).
 
 The following Utility API implements this type:
 [configApiRef](./README.md#config)
@@ -140,7 +140,7 @@ export type Config = {
 </pre>
 
 Defined at
-[packages/config/src/types.ts:32](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/config/src/types.ts#L32).
+[packages/config/src/types.ts:32](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/config/src/types.ts#L32).
 
 Referenced by: [getConfig](#getconfig), [getOptionalConfig](#getoptionalconfig),
 [getConfigArray](#getconfigarray),
@@ -153,7 +153,7 @@ export type JsonArray = <a href="#jsonvalue">JsonValue</a>[]
 </pre>
 
 Defined at
-[packages/config/src/types.ts:18](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/config/src/types.ts#L18).
+[packages/config/src/types.ts:18](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/config/src/types.ts#L18).
 
 Referenced by: [JsonValue](#jsonvalue).
 
@@ -164,7 +164,7 @@ export type JsonObject = { [key in string]?: <a href="#jsonvalue">JsonValue</a> 
 </pre>
 
 Defined at
-[packages/config/src/types.ts:17](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/config/src/types.ts#L17).
+[packages/config/src/types.ts:17](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/config/src/types.ts#L17).
 
 Referenced by: [JsonValue](#jsonvalue).
 
@@ -181,7 +181,7 @@ export type JsonValue =
 </pre>
 
 Defined at
-[packages/config/src/types.ts:19](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/config/src/types.ts#L19).
+[packages/config/src/types.ts:19](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/config/src/types.ts#L19).
 
 Referenced by: [get](#get), [getOptional](#getoptional),
 [JsonObject](#jsonobject), [JsonArray](#jsonarray), [Config](#config).

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, NotFoundError } from '@backstage/backend-common';
 import {
   locationSpecSchema,
   analyzeLocationSchema,
@@ -57,9 +57,19 @@ export async function createRouter(
         const filter = EntityFilters.ofQuery(req.query);
         const fieldMapper = translateQueryToFieldMapper(req.query);
         const entities = await entitiesCatalog.entities(filter);
-        res.status(200).send(entities.map(fieldMapper));
+        res.status(200).json(entities.map(fieldMapper));
       })
       .post('/entities', async (req, res) => {
+        /*
+         * NOTE: THIS METHOD IS DEPRECATED AND NOT RECOMMENDED TO USE
+         *
+         * Posting entities to this method has unclear semantics and will not
+         * properly subject them to limitations, processing, or resolution of
+         * relations.
+         *
+         * It stays around in the service for the time being, but may be
+         * removed or change semantics at any time without prior notice.
+         */
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
@@ -67,7 +77,7 @@ export async function createRouter(
         const [entity] = await entitiesCatalog.entities(
           EntityFilters.ofMatchers({ 'metadata.uid': result.entityId }),
         );
-        res.status(200).send(entity);
+        res.status(200).json(entity);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
@@ -75,14 +85,14 @@ export async function createRouter(
           EntityFilters.ofMatchers({ 'metadata.uid': uid }),
         );
         if (!entities.length) {
-          res.status(404).send(`No entity with uid ${uid}`);
+          throw new NotFoundError(`No entity with uid ${uid}`);
         }
-        res.status(200).send(entities[0]);
+        res.status(200).json(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid);
-        res.status(204).send();
+        res.status(204).end();
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
@@ -94,13 +104,11 @@ export async function createRouter(
           }),
         );
         if (!entities.length) {
-          res
-            .status(404)
-            .send(
-              `No entity with kind ${kind} namespace ${namespace} name ${name}`,
-            );
+          throw new NotFoundError(
+            `No entity with kind ${kind} namespace ${namespace} name ${name}`,
+          );
         }
-        res.status(200).send(entities[0]);
+        res.status(200).json(entities[0]);
       });
   }
 
@@ -109,7 +117,7 @@ export async function createRouter(
       const input = await validateRequestBody(req, locationSpecSchema);
       const dryRun = yn(req.query.dryRun, { default: false });
       const output = await higherOrderOperation.addLocation(input, { dryRun });
-      res.status(201).send(output);
+      res.status(201).json(output);
     });
   }
 
@@ -117,22 +125,22 @@ export async function createRouter(
     router
       .get('/locations', async (_req, res) => {
         const output = await locationsCatalog.locations();
-        res.status(200).send(output);
+        res.status(200).json(output);
       })
       .get('/locations/:id/history', async (req, res) => {
         const { id } = req.params;
         const output = await locationsCatalog.locationHistory(id);
-        res.status(200).send(output);
+        res.status(200).json(output);
       })
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
         const output = await locationsCatalog.location(id);
-        res.status(200).send(output);
+        res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);
-        res.status(204).send();
+        res.status(204).end();
       });
   }
 
@@ -140,7 +148,7 @@ export async function createRouter(
     router.post('/analyze-location', async (req, res) => {
       const input = await validateRequestBody(req, analyzeLocationSchema);
       const output = await locationAnalyzer.analyzeLocation(input);
-      res.status(200).send(output);
+      res.status(200).json(output);
     });
   }
 

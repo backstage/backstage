@@ -479,8 +479,8 @@ export const useSelectStyles = makeStyles<BackstageTheme>(
     }),
 );
 
-export const useAlertActionCardStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
+export const useActionItemCardStyles = makeStyles<CostInsightsTheme>(
+  (theme: CostInsightsTheme) =>
     createStyles({
       card: {
         boxShadow: 'none',
@@ -489,15 +489,12 @@ export const useAlertActionCardStyles = makeStyles<BackstageTheme>(
         backgroundColor: theme.palette.textVerySubtle,
         color: theme.palette.text.primary,
       },
-    }),
-);
-
-export const useAlertActionCardHeader = makeStyles<CostInsightsTheme>(
-  (theme: CostInsightsTheme) =>
-    createStyles({
       root: {
+        minHeight: 80,
         paddingBottom: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
+      },
+      activeRoot: {
         cursor: 'pointer',
         transition: theme.transitions.create('background', {
           duration: theme.transitions.duration.short,
@@ -599,3 +596,31 @@ export const useEntityDialogStyles = makeStyles<BackstageTheme>(theme =>
     },
   }),
 );
+
+export const useAlertDialogStyles = makeStyles((theme: BackstageTheme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing(0, 5, 2, 5),
+    },
+    actions: {
+      padding: theme.spacing(2, 5),
+    },
+    radio: {
+      margin: theme.spacing(-0.5, 0, -0.5, 0),
+    },
+    icon: {
+      color: theme.palette.primary.dark,
+      margin: theme.spacing(2.5, 2.5, 0, 0),
+      padding: 0,
+    },
+  }),
+);
+
+export const useAlertStatusSummaryButtonStyles = makeStyles(() => ({
+  icon: {
+    transform: 'transform 5s',
+  },
+  clicked: {
+    transform: 'rotate(180deg)',
+  },
+}));

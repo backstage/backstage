@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { rollbarPlugin } from './plugin';
 
 describe('rollbar', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(rollbarPlugin).toBeDefined();
   });
 });

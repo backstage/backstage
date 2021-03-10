@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { plugin } from './plugin';
+import { pagerDutyPlugin } from './plugin';
 
 describe('pagerduty', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(pagerDutyPlugin).toBeDefined();
   });
 });

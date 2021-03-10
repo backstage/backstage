@@ -1,5 +1,175 @@
 # @backstage/backend-common
 
+## 0.5.5
+
+### Patch Changes
+
+- 497859088: Add optional `logClientErrors` to errorHandler to log 4XX errors
+- 8adb48df4: Change debug log format to print as color grey
+
+## 0.5.4
+
+### Patch Changes
+
+- 16fb1d03a: pass registered logger to requestLoggingHandler
+- 491f3a0ec: Implement `UrlReader.search` for the other providers (Azure, Bitbucket, GitLab) as well.
+
+  The `UrlReader` subclasses now are implemented in terms of the respective `Integration` class.
+
+- 434b4e81a: Support globs in `FileReaderProcessor`.
+- fb28da212: Switched to using `'x-access-token'` for authenticating Git over HTTPS towards GitHub.
+- Updated dependencies [491f3a0ec]
+  - @backstage/integration@0.5.0
+
+## 0.5.3
+
+### Patch Changes
+
+- ffffea8e6: Minor updates to reflect the changes in `@backstage/integration` that made the fields `apiBaseUrl` and `apiUrl` mandatory.
+- 82b2c11b6: Set explicit content-type in error handler responses.
+- 965e200c6: Slight refactoring in support of a future search implementation in `UrlReader`. Mostly moving code around.
+- 5a5163519: Implement `UrlReader.search` which implements glob matching.
+- Updated dependencies [ffffea8e6]
+  - @backstage/integration@0.4.0
+
+## 0.5.2
+
+### Patch Changes
+
+- 2430ee7c2: Updated the `rootLogger` in `@backstage/backend-common` to support custom logging options. This is useful when you want to make some changes without re-implementing the entire logger and calling `setRootLogger` or `logger.configure`. For example you can add additional `defaultMeta` tags to each log entry. The following changes are included:
+
+  - Added `createRootLogger` which accepts winston `LoggerOptions`. These options allow overriding the default keys.
+
+  Example Usage:
+
+  ```ts
+  // Create the logger
+  const logger = createRootLogger({
+    defaultMeta: { appName: 'backstage', appEnv: 'prod' },
+  });
+
+  // Add a custom logger transport
+  logger.add(new MyCustomTransport());
+
+  const config = await loadBackendConfig({
+    argv: process.argv,
+    logger: getRootLogger(), // already set to new logger instance
+  });
+  ```
+
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [062df71db]
+- Updated dependencies [064c513e1]
+- Updated dependencies [e9aab60c7]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [2e62aea6f]
+  - @backstage/integration@0.3.2
+  - @backstage/config-loader@0.5.1
+
+## 0.5.1
+
+### Patch Changes
+
+- 26a3a6cf0: Honor the branch ref in the url when cloning.
+
+  This fixes a bug in the scaffolder prepare stage where a non-default branch
+  was specified in the scaffolder URL but the default branch was cloned.
+  For example, even though the `other` branch is specified in this example, the
+  `master` branch was actually cloned:
+
+  ```yaml
+  catalog:
+    locations:
+      - type: url
+        target: https://github.com/backstage/backstage/blob/other/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
+  ```
+
+  This also fixes a 404 in the prepare stage for GitLab URLs.
+
+- 664dd08c9: URL Reader's readTree: Fix bug with github.com URLs.
+- 9dd057662: Upgrade [git-url-parse](https://www.npmjs.com/package/git-url-parse) to [v11.4.4](https://github.com/IonicaBizau/git-url-parse/pull/125) which fixes parsing an Azure DevOps branch ref.
+- Updated dependencies [6800da78d]
+- Updated dependencies [9dd057662]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+- Updated dependencies [ef7957be4]
+  - @backstage/integration@0.3.1
+  - @backstage/config-loader@0.5.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 5345a1f98: Remove fallback option from `UrlReaders.create` and `UrlReaders.default`, as well as the default fallback reader.
+
+  To be able to read data from endpoints outside of the configured integrations, you now need to explicitly allow it by
+  adding an entry in the `backend.reading.allow` list. For example:
+
+  ```yml
+  backend:
+    baseUrl: ...
+    reading:
+      allow:
+        - host: example.com
+        - host: '*.examples.org'
+  ```
+
+  Apart from adding the above configuration, most projects should not need to take any action to migrate existing code. If you do happen to have your own fallback reader configured, this needs to be replaced with a reader factory that selects a specific set of URLs to work with. If you where wrapping the existing fallback reader, the new one that handles the allow list is created using `FetchUrlReader.factory`.
+
+- 09a370426: Remove support for HTTPS certificate generation parameters. Use `backend.https = true` instead.
+
+### Patch Changes
+
+- 0b135e7e0: Add support for GitHub Apps authentication for backend plugins.
+
+  `GithubCredentialsProvider` requests and caches GitHub credentials based on a repository or organization url.
+
+  The `GithubCredentialsProvider` class should be considered stateful since tokens will be cached internally.
+  Consecutive calls to get credentials will return the same token, tokens older than 50 minutes will be considered expired and reissued.
+  `GithubCredentialsProvider` will default to the configured access token if no GitHub Apps are configured.
+
+  More information on how to create and configure a GitHub App to use with backstage can be found in the documentation.
+
+  Usage:
+
+  ```javascript
+  const credentialsProvider = new GithubCredentialsProvider(config);
+  const { token, headers } = await credentialsProvider.getCredentials({
+    url: 'https://github.com/',
+  });
+  ```
+
+  Updates `GithubUrlReader` to use the `GithubCredentialsProvider`.
+
+- 294a70cab: 1. URL Reader's `readTree` method now returns an `etag` in the response along with the blob. The etag is an identifier of the blob and will only change if the blob is modified on the target. Usually it is set to the latest commit SHA on the target.
+
+  `readTree` also takes an optional `etag` in its options and throws a `NotModifiedError` if the etag matches with the etag of the resource.
+
+  So, the `etag` can be used in building a cache when working with URL Reader.
+
+  An example -
+
+  ```ts
+  const response = await reader.readTree(
+    'https://github.com/backstage/backstage',
+  );
+
+  const etag = response.etag;
+
+  // Will throw a new NotModifiedError (exported from @backstage/backstage-common)
+  await reader.readTree('https://github.com/backstage/backstage', {
+    etag,
+  });
+  ```
+
+  2. URL Reader's readTree method can now detect the default branch. So, `url:https://github.com/org/repo/tree/master` can be replaced with `url:https://github.com/org/repo` in places like `backstage.io/techdocs-ref`.
+
+- 0ea032763: URL Reader: Use API response headers for archive filename in readTree. Fixes bug for users with hosted Bitbucket.
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [ed6baab66]
+  - @backstage/integration@0.3.0
+
 ## 0.4.3
 
 ### Patch Changes

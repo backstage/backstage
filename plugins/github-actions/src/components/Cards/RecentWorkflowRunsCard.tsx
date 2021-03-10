@@ -15,12 +15,16 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import {
+  configApiRef,
   EmptyState,
   errorApiRef,
   InfoCard,
+  InfoCardVariants,
   Table,
   useApi,
 } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Button, Link } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
@@ -31,25 +35,32 @@ import { WorkflowRunStatus } from '../WorkflowRunStatus';
 const firstLine = (message: string): string => message.split('\n')[0];
 
 export type Props = {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   branch?: string;
   dense?: boolean;
   limit?: number;
-  variant?: string;
+  variant?: InfoCardVariants;
 };
 
 export const RecentWorkflowRunsCard = ({
-  entity,
   branch,
   dense = false,
   limit = 5,
   variant,
 }: Props) => {
+  const { entity } = useEntity();
+  const config = useApi(configApiRef);
   const errorApi = useApi(errorApiRef);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (
     entity?.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION] ?? '/'
   ).split('/');
   const [{ runs = [], loading, error }] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,
@@ -61,6 +72,8 @@ export const RecentWorkflowRunsCard = ({
     }
   }, [error, errorApi]);
 
+  const githubHost = hostname || 'github.com';
+
   return !runs.length ? (
     <EmptyState
       missing="data"
@@ -70,7 +83,7 @@ export const RecentWorkflowRunsCard = ({
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${owner}/${repo}/actions/new`}
+          href={`https://${githubHost}/${owner}/${repo}/actions/new`}
         >
           Create new Workflow
         </Button>

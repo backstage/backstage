@@ -384,11 +384,3 @@ A frontend plugin that provides a page where the user can tweak various
 settings.
 
 Stability: `1`
-
-### `welcome` [GitHub](https://github.com/backstage/backstage/tree/master/plugins/welcome/)
-
-A plugin that can be used to welcome the user to Backstage.
-
-Stability: `0`. This used to be the start page for the example app, but has been
-replaced by the catalog plugin. It is still viewable at `/welcome` but may be
-removed.

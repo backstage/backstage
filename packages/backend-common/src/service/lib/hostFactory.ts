@@ -20,9 +20,11 @@ import express from 'express';
 import * as http from 'http';
 import * as https from 'https';
 import { Logger } from 'winston';
-import { CertificateSigningOptions, HttpsSettings } from './config';
+import { HttpsSettings } from './config';
 
 const ALMOST_MONTH_IN_MS = 25 * 24 * 60 * 60 * 1000;
+
+const IP_HOSTNAME_REGEX = /:|^\d+\.\d+\.\d+\.\d+$/;
 
 /**
  * Creates a Http server instance based on an Express application.
@@ -59,17 +61,17 @@ export async function createHttpsServer(
 
   let credentials: { key: string | Buffer; cert: string | Buffer };
 
-  const signingOptions: any = httpsSettings?.certificate;
-
-  // TODO(Rugvip): remove support for generated certificate params and make this a more straightforward check
-  if (signingOptions?.attributes) {
-    credentials = await getGeneratedCertificate(signingOptions, logger);
+  if ('hostname' in httpsSettings?.certificate) {
+    credentials = await getGeneratedCertificate(
+      httpsSettings.certificate.hostname,
+      logger,
+    );
   } else {
     logger?.info('Loading certificate from config');
 
     credentials = {
-      key: signingOptions?.key,
-      cert: signingOptions?.cert,
+      key: httpsSettings?.certificate?.key,
+      cert: httpsSettings?.certificate?.cert,
     };
   }
 
@@ -80,16 +82,7 @@ export async function createHttpsServer(
   return https.createServer(credentials, app) as http.Server;
 }
 
-async function getGeneratedCertificate(
-  options: CertificateSigningOptions,
-  logger?: Logger,
-) {
-  if (options?.algorithm) {
-    logger?.warn(
-      'Certificate generation configuration with parameters in backend.https.certificate is deprecated, set backend.https = true instead',
-    );
-  }
-
+async function getGeneratedCertificate(hostname: string, logger?: Logger) {
   const hasModules = await fs.pathExists('node_modules');
   let certPath;
   if (hasModules) {
@@ -119,20 +112,61 @@ async function getGeneratedCertificate(
   }
 
   logger?.info('Generating new self-signed certificate');
-  const newCert = await createCertificate(options);
+  const newCert = await createCertificate(hostname);
   await fs.writeFile(certPath, newCert.cert + newCert.key, 'utf8');
   return newCert;
 }
 
-async function createCertificate(options: CertificateSigningOptions) {
-  const attributes: Array<any> = Object.entries(
-    options.attributes,
-  ).map(([name, value]) => ({ name, value }));
+async function createCertificate(hostname: string) {
+  const attributes = [
+    {
+      name: 'commonName',
+      value: 'dev-cert',
+    },
+  ];
+
+  const sans = [
+    {
+      type: 2, // DNS
+      value: 'localhost',
+    },
+    {
+      type: 2,
+      value: 'localhost.localdomain',
+    },
+    {
+      type: 2,
+      value: '[::1]',
+    },
+    {
+      type: 7, // IP
+      ip: '127.0.0.1',
+    },
+    {
+      type: 7,
+      ip: 'fe80::1',
+    },
+  ];
+
+  // Add hostname from backend.baseUrl if it doesn't already exist in our list of SANs
+  if (!sans.find(({ value, ip }) => value === hostname || ip === hostname)) {
+    sans.push(
+      IP_HOSTNAME_REGEX.test(hostname)
+        ? {
+            type: 7,
+            ip: hostname,
+          }
+        : {
+            type: 2,
+            value: hostname,
+          },
+    );
+  }
 
   const params = {
-    algorithm: options?.algorithm || 'sha256',
-    keySize: options?.size || 2048,
-    days: options?.days || 30,
+    algorithm: 'sha256',
+    keySize: 2048,
+    days: 30,
     extensions: [
       {
         name: 'keyUsage',
@@ -151,36 +185,7 @@ async function createCertificate(options: CertificateSigningOptions) {
       },
       {
         name: 'subjectAltName',
-        altNames: [
-          {
-            type: 2, // DNS
-            value: 'localhost',
-          },
-          {
-            type: 2,
-            value: 'localhost.localdomain',
-          },
-          {
-            type: 2,
-            value: '[::1]',
-          },
-          {
-            type: 7, // IP
-            ip: '127.0.0.1',
-          },
-          {
-            type: 7,
-            ip: 'fe80::1',
-          },
-          ...(options.attributes.commonName
-            ? [
-                {
-                  type: 2, // DNS
-                  value: options.attributes.commonName,
-                },
-              ]
-            : []),
-        ],
+        altNames: sans,
       },
     ],
   };

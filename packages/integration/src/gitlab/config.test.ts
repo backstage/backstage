@@ -15,6 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   GitLabIntegrationConfig,
   readGitLabIntegrationConfig,
@@ -26,24 +27,57 @@ describe('readGitLabIntegrationConfig', () => {
     return new ConfigReader(data);
   }
 
+  async function buildFrontendConfig(
+    data: Partial<GitLabIntegrationConfig>,
+  ): Promise<Config> {
+    const schema = await loadConfigSchema({
+      dependencies: [require('../../package.json').name],
+    });
+    const processed = schema.process(
+      [{ data: { integrations: { gitlab: [data] } }, context: 'app' }],
+      { visibility: ['frontend'] },
+    );
+    return new ConfigReader((processed[0].data as any).integrations.gitlab[0]);
+  }
+
   it('reads all values', () => {
     const output = readGitLabIntegrationConfig(
       buildConfig({
         host: 'a.com',
         token: 't',
+        apiBaseUrl: 'https://a.com',
+        baseUrl: 'https://baseurl.for.me/gitlab',
       }),
     );
+
     expect(output).toEqual({
       host: 'a.com',
       token: 't',
+      apiBaseUrl: 'https://a.com',
+      baseUrl: 'https://baseurl.for.me/gitlab',
     });
   });
 
   it('inserts the defaults if missing', () => {
-    const output = readGitLabIntegrationConfig(buildConfig({}));
+    const output = readGitLabIntegrationConfig(
+      buildConfig({ host: 'gitlab.com' }),
+    );
     expect(output).toEqual({
       host: 'gitlab.com',
-      apiBaseUrl: 'gitlab.com/api/v4',
+      apiBaseUrl: 'https://gitlab.com/api/v4',
+      baseUrl: 'https://gitlab.com',
+    });
+  });
+
+  it('injects the correct GitLab API base URL when missing', () => {
+    const output = readGitLabIntegrationConfig(
+      buildConfig({ host: 'gitlab.com' }),
+    );
+
+    expect(output).toEqual({
+      host: 'gitlab.com',
+      baseUrl: 'https://gitlab.com',
+      apiBaseUrl: 'https://gitlab.com/api/v4',
     });
   });
 
@@ -59,6 +93,23 @@ describe('readGitLabIntegrationConfig', () => {
       readGitLabIntegrationConfig(buildConfig({ ...valid, token: 7 })),
     ).toThrow(/token/);
   });
+
+  it('works on the frontend', async () => {
+    expect(
+      readGitLabIntegrationConfig(
+        await buildFrontendConfig({
+          host: 'a.com',
+          apiBaseUrl: 'https://a.com/api',
+          token: 't',
+          baseUrl: 'https://a.com',
+        }),
+      ),
+    ).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+      baseUrl: 'https://a.com',
+    });
+  });
 });
 
 describe('readGitLabIntegrationConfigs', () => {
@@ -72,12 +123,16 @@ describe('readGitLabIntegrationConfigs', () => {
         {
           host: 'a.com',
           token: 't',
+          apiBaseUrl: 'https://a.com/api/v4',
+          baseUrl: 'https://a.com',
         },
       ]),
     );
     expect(output).toContainEqual({
       host: 'a.com',
       token: 't',
+      apiBaseUrl: 'https://a.com/api/v4',
+      baseUrl: 'https://a.com',
     });
   });
 
@@ -86,6 +141,8 @@ describe('readGitLabIntegrationConfigs', () => {
     expect(output).toEqual([
       {
         host: 'gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
+        baseUrl: 'https://gitlab.com',
       },
     ]);
   });

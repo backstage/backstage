@@ -77,13 +77,6 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./backend/dev').then(m => m.default)));
 
   program
-    .command('app:diff')
-    .option('--check', 'Fail if changes are required')
-    .option('--yes', 'Apply all changes')
-    .description('Diff an existing app with the creation template')
-    .action(lazy(() => import('./app/diff').then(m => m.default)));
-
-  program
     .command('create-plugin')
     .option(
       '--backend',
@@ -153,6 +146,7 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
+    .option('--lax', 'Do not require environment variables to be set')
     .option('--frontend', 'Print only the frontend configuration')
     .option('--with-secrets', 'Include secrets in the printed configuration')
     .option(
@@ -169,11 +163,25 @@ export function registerCommands(program: CommanderStatic) {
       '--package <name>',
       'Only load config schema that applies to the given package',
     )
+    .option('--lax', 'Do not require environment variables to be set')
     .option(...configOption)
     .description(
       'Validate that the given configuration loads and matches schema',
     )
     .action(lazy(() => import('./config/validate').then(m => m.default)));
+
+  program
+    .command('config:schema')
+    .option(
+      '--package <name>',
+      'Only output config schema that applies to the given package',
+    )
+    .option(
+      '--format <format>',
+      'Format to print the schema in, either json or yaml [yaml]',
+    )
+    .description('Print configuration schema')
+    .action(lazy(() => import('./config/schema').then(m => m.default)));
 
   program
     .command('versions:bump')

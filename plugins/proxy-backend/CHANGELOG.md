@@ -1,5 +1,26 @@
 # @backstage/plugin-proxy-backend
 
+## 0.2.5
+
+### Patch Changes
+
+- 1987c9341: Added a verification for well formed URLs when processing proxy targets. Otherwise users gets a cryptic error message thrown from Express which makes it hard to debug.
+- 9ce68b677: Fix for proxy-backend plugin when global-agent is enabled
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/backend-common@0.5.5
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+  - @backstage/backend-common@0.5.0
+
 ## 0.2.3
 
 ### Patch Changes

@@ -13,69 +13,70 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { parseLocationAnnotation } from '../helpers';
-import { InputError, Git } from '@backstage/backend-common';
+import { Git } from '@backstage/backend-common';
 import { PreparerBase, PreparerOptions } from './types';
-import GitUriParser from 'git-url-parse';
-import { Config } from '@backstage/config';
+import { BitbucketIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 
 export class BitbucketPreparer implements PreparerBase {
-  private readonly privateToken: string;
-  private readonly username: string;
-
-  constructor(config: Config) {
-    this.username =
-      config.getOptionalString('scaffolder.bitbucket.api.username') ?? '';
-    this.privateToken =
-      config.getOptionalString('scaffolder.bitbucket.api.token') ?? '';
+  static fromConfig(config: BitbucketIntegrationConfig) {
+    return new BitbucketPreparer({
+      username: config.username,
+      token: config.token,
+      appPassword: config.appPassword,
+    });
   }
 
-  async prepare(
-    template: TemplateEntityV1alpha1,
-    opts: PreparerOptions,
-  ): Promise<string> {
-    const { protocol, location } = parseLocationAnnotation(template);
-    const workingDirectory = opts?.workingDirectory ?? os.tmpdir();
-    const { logger } = opts;
+  constructor(
+    private readonly config: {
+      username?: string;
+      token?: string;
+      appPassword?: string;
+    },
+  ) {}
 
-    if (!['bitbucket', 'url'].includes(protocol)) {
-      throw new InputError(
-        `Wrong location protocol: ${protocol}, should be 'url'`,
-      );
-    }
-    const templateId = template.metadata.name;
-
-    const repo = GitUriParser(location);
-    const repositoryCheckoutUrl = repo.toString('https');
-
-    const tempDir = await fs.promises.mkdtemp(
-      path.join(workingDirectory, templateId),
+  async prepare({ url, workspacePath, logger }: PreparerOptions) {
+    const parsedGitUrl = parseGitUrl(url);
+    const checkoutPath = path.join(workspacePath, 'checkout');
+    const targetPath = path.join(workspacePath, 'template');
+    const fullPathToTemplate = path.resolve(
+      checkoutPath,
+      parsedGitUrl.filepath ?? '',
     );
 
-    const templateDirectory = path.join(
-      `${path.dirname(repo.filepath)}`,
-      template.spec.path ?? '.',
-    );
-
-    const checkoutLocation = path.resolve(tempDir, templateDirectory);
-
-    const git = this.privateToken
-      ? Git.fromAuth({
-          username: this.username,
-          password: this.privateToken,
-          logger,
-        })
-      : Git.fromAuth({ logger });
+    const git = Git.fromAuth({ logger, ...this.getAuth() });
 
     await git.clone({
-      url: repositoryCheckoutUrl,
-      dir: tempDir,
+      url: parsedGitUrl.toString('https'),
+      dir: checkoutPath,
+      ref: parsedGitUrl.ref,
     });
 
-    return checkoutLocation;
+    await fs.move(fullPathToTemplate, targetPath);
+
+    try {
+      await fs.rmdir(path.join(targetPath, '.git'));
+    } catch {
+      // Ignore intentionally
+    }
+  }
+
+  private getAuth(): { username: string; password: string } | undefined {
+    const { username, token, appPassword } = this.config;
+
+    if (username && appPassword) {
+      return { username: username, password: appPassword };
+    }
+
+    if (token) {
+      return {
+        username: 'x-token-auth',
+        password: token! || appPassword!,
+      };
+    }
+
+    return undefined;
   }
 }

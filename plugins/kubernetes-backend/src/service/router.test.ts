@@ -18,35 +18,30 @@ import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { makeRouter } from './router';
-import {
-  KubernetesServiceLocator,
-  KubernetesFetcher,
-  ObjectsByEntityResponse,
-} from '..';
+import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 
 describe('router', () => {
   let app: express.Express;
-  let kubernetesFetcher: jest.Mocked<KubernetesFetcher>;
-  let kubernetesServiceLocator: jest.Mocked<KubernetesServiceLocator>;
-  let handleGetByServiceId: jest.Mock<Promise<ObjectsByEntityResponse>>;
+  let kubernetesFanOutHandler: jest.Mocked<KubernetesFanOutHandler>;
 
   beforeAll(async () => {
-    kubernetesFetcher = {
-      fetchObjectsForService: jest.fn(),
-    };
+    kubernetesFanOutHandler = {
+      getKubernetesObjectsByEntity: jest.fn(),
+    } as any;
 
-    kubernetesServiceLocator = {
-      getClustersByServiceId: jest.fn(),
-    };
-
-    handleGetByServiceId = jest.fn();
-
-    const router = makeRouter(
-      getVoidLogger(),
-      kubernetesFetcher,
-      kubernetesServiceLocator,
-      handleGetByServiceId as any,
-    );
+    const router = makeRouter(getVoidLogger(), kubernetesFanOutHandler, [
+      {
+        name: 'some-cluster',
+        authProvider: 'serviceAccount',
+        url: 'https://localhost:1234',
+        serviceAccountToken: 'someToken',
+      },
+      {
+        name: 'some-other-cluster',
+        url: 'https://localhost:1235',
+        authProvider: 'google',
+      },
+    ]);
     app = express().use(router);
   });
 
@@ -54,6 +49,25 @@ describe('router', () => {
     jest.resetAllMocks();
   });
 
+  describe('get /clusters', () => {
+    it('happy path: lists clusters', async () => {
+      const response = await request(app).get('/clusters');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toStrictEqual({
+        items: [
+          {
+            name: 'some-cluster',
+            authProvider: 'serviceAccount',
+          },
+          {
+            name: 'some-other-cluster',
+            authProvider: 'google',
+          },
+        ],
+      });
+    });
+  });
   describe('post /services/:serviceId', () => {
     it('happy path: lists kubernetes objects without auth in request body', async () => {
       const result = {
@@ -67,7 +81,9 @@ describe('router', () => {
           ],
         },
       } as any;
-      handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
+      kubernetesFanOutHandler.getKubernetesObjectsByEntity.mockReturnValueOnce(
+        Promise.resolve(result),
+      );
 
       const response = await request(app).post('/services/test-service');
 
@@ -87,7 +103,9 @@ describe('router', () => {
           ],
         },
       } as any;
-      handleGetByServiceId.mockReturnValueOnce(Promise.resolve(result));
+      kubernetesFanOutHandler.getKubernetesObjectsByEntity.mockReturnValueOnce(
+        Promise.resolve(result),
+      );
 
       const response = await request(app)
         .post('/services/test-service')
@@ -103,7 +121,9 @@ describe('router', () => {
     });
 
     it('internal error: lists kubernetes objects', async () => {
-      handleGetByServiceId.mockRejectedValue(Error('some internal error'));
+      kubernetesFanOutHandler.getKubernetesObjectsByEntity.mockRejectedValue(
+        Error('some internal error'),
+      );
 
       const response = await request(app).post('/services/test-service');
 

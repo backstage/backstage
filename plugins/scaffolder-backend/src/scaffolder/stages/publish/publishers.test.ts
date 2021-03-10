@@ -14,120 +14,112 @@
  * limitations under the License.
  */
 import { Publishers } from './publishers';
-import {
-  LOCATION_ANNOTATION,
-  TemplateEntityV1alpha1,
-} from '@backstage/catalog-model';
 import { GithubPublisher } from './github';
-import { Octokit } from '@octokit/rest';
+import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { AzurePublisher } from './azure';
+import { GitlabPublisher } from './gitlab';
+import { BitbucketPublisher } from './bitbucket';
 
 jest.mock('@octokit/rest');
+jest.mock('azure-devops-node-api');
 
 describe('Publishers', () => {
-  const mockTemplate: TemplateEntityV1alpha1 = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'Template',
-    metadata: {
-      annotations: {
-        [LOCATION_ANNOTATION]:
-          'github:https://github.com/benjdlambert/backstage-graphql-template/blob/master/template.yaml',
-      },
-      name: 'graphql-starter',
-      title: 'GraphQL Service',
-      description:
-        'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
-      uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
-      etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
-      generation: 1,
-    },
-    spec: {
-      type: 'website',
-      templater: 'cookiecutter',
-      path: './template',
-      schema: {
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        required: ['storePath', 'owner'],
-        properties: {
-          owner: {
-            type: 'string',
-            title: 'Owner',
-            description: 'Who is going to own this component',
-          },
-          storePath: {
-            type: 'string',
-            title: 'Store path',
-            description: 'GitHub store path in org/repo format',
-          },
-        },
-      },
-    },
-  };
+  const logger = getVoidLogger();
 
   it('should throw an error when the publisher for the source location is not registered', () => {
     const publishers = new Publishers();
 
-    expect(() => publishers.get(mockTemplate)).toThrow(
+    expect(() => publishers.get('https://github.com/org/repo')).toThrow(
       expect.objectContaining({
-        message: 'No publisher registered for type: "github"',
+        message:
+          'Unable to find a publisher for URL: https://github.com/org/repo. Please make sure to register this host under an integration in app-config',
       }),
     );
   });
 
-  it('should return the correct preparer when the source matches', () => {
-    const publishers = new Publishers();
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'fake',
-      repoVisibility: 'public',
-    });
-    publishers.register('github', publisher);
-
-    expect(publishers.get(mockTemplate)).toBe(publisher);
-  });
-
-  it('should throw an error if the metadata tag does not exist in the entity', () => {
-    const brokenTemplate: TemplateEntityV1alpha1 = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Template',
-      metadata: {
-        annotations: {},
-        name: 'react-ssr-template',
-        title: 'React SSR Template',
-        description:
-          'Next.js application skeleton for creating isomorphic web applications.',
-        uid: '7357f4c5-aa58-4a1e-9670-18931eef771f',
-        etag: 'YWUxZWQyY2EtZDkxMC00MDM0LWI0ODAtMDgwMWY0YzdlMWIw',
-        generation: 1,
-      },
-      spec: {
-        type: 'website',
-        templater: 'cookiecutter',
-        path: '.',
-        schema: {
-          $schema: 'http://json-schema.org/draft-07/schema#',
-          required: ['storePath', 'owner'],
-          properties: {
-            owner: {
-              type: 'string',
-              title: 'Owner',
-              description: 'Who is going to own this component',
-            },
-            storePath: {
-              type: 'string',
-              title: 'Store path',
-              description: 'GitHub store path in org/repo format',
-            },
-          },
+  it('should return the correct preparer when the source matches for github', async () => {
+    const publishers = await Publishers.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [{ host: 'github.com', token: 'blob' }],
         },
-      },
-    };
-
-    const publishers = new Publishers();
-
-    expect(() => publishers.get(brokenTemplate)).toThrow(
-      expect.objectContaining({
-        message: expect.stringContaining('No location annotation provided'),
       }),
+      {
+        logger,
+      },
     );
+
+    expect(publishers.get('https://github.com/org/repo')).toBeInstanceOf(
+      GithubPublisher,
+    );
+  });
+
+  it('should return the correct preparer when the source matches for azure', async () => {
+    const publishers = await Publishers.fromConfig(
+      new ConfigReader({
+        integrations: {
+          azure: [{ host: 'dev.azure.com', token: 'blob' }],
+        },
+      }),
+      {
+        logger,
+      },
+    );
+
+    expect(
+      publishers.get('https://dev.azure.com/org/project/_git/repo'),
+    ).toBeInstanceOf(AzurePublisher);
+  });
+
+  it('should return the correct preparer when the source matches for bitbucket', async () => {
+    const publishers = await Publishers.fromConfig(
+      new ConfigReader({
+        integrations: {
+          bitbucket: [{ host: 'bitbucket.com', token: 'blob' }],
+        },
+      }),
+      {
+        logger,
+      },
+    );
+    expect(publishers.get('https://bitbucket.org/owner/repo')).toBeInstanceOf(
+      BitbucketPublisher,
+    );
+  });
+
+  it('should return the correct preparer when the source matches for gitlab', async () => {
+    const publishers = await Publishers.fromConfig(
+      new ConfigReader({
+        integrations: {
+          gitlab: [{ host: 'gitlab.com', token: 'blob' }],
+        },
+      }),
+      {
+        logger,
+      },
+    );
+    expect(publishers.get('https://gitlab.com/owner/repo')).toBeInstanceOf(
+      GitlabPublisher,
+    );
+  });
+
+  it('should respect registrations for custom URLs for providers using the integrations config', async () => {
+    const publishers = await Publishers.fromConfig(
+      new ConfigReader({
+        integrations: {
+          github: [
+            { host: 'my.special.github.enterprise.thing', token: 'lolghe' },
+          ],
+        },
+      }),
+      {
+        logger,
+      },
+    );
+
+    expect(
+      publishers.get('https://my.special.github.enterprise.thing/org/repo'),
+    ).toBeInstanceOf(GithubPublisher);
   });
 });

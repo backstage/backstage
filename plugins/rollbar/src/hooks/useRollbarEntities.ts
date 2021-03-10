@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { configApiRef, useApi } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
-import { useApi, configApiRef } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
 import { ROLLBAR_ANNOTATION } from '../constants';
 
 export function useRollbarEntities() {

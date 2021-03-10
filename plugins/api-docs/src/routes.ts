@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { createExternalRouteRef, createRouteRef } from '@backstage/core';
 
 const NoIcon = () => null;
 
@@ -22,4 +22,9 @@ export const rootRoute = createRouteRef({
   icon: NoIcon,
   path: '/api-docs',
   title: 'APIs',
+});
+
+export const createComponentRouteRef = createExternalRouteRef({
+  id: 'create-component',
+  optional: true,
 });

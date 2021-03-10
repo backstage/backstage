@@ -1,5 +1,123 @@
 # @backstage/plugin-github-actions
 
+## 0.3.5
+
+### Patch Changes
+
+- b2a5320a4: Use Breadcrumbs from @backstage/core rather than material-ui
+- 04667f571: Use Breadcrumbs from @backstage/core
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
+## 0.3.3
+
+### Patch Changes
+
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/integration@0.5.0
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.3.2
+
+### Patch Changes
+
+- f5f45744e: Migrate to new composability API, exporting the plugin instance as `githubActionsPlugin`, the entity content as `EntityGithubActionsContent`, entity conditional as `isGithubActionsAvailable`, and entity cards as `EntityLatestGithubActionRunCard`, `EntityLatestGithubActionsForBranchCard`, and `EntityRecentGithubActionsRunsCard`.
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/integration@0.4.0
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.3.1
+
+### Patch Changes
+
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [c4abcdb60]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [064c513e1]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [3149bfe63]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [2e62aea6f]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/integration@0.3.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 46bba09ea: Support GHE
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [fa8ba330a]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [ed6baab66]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/integration@0.3.0
+  - @backstage/plugin-catalog@0.2.12
+
 ## 0.2.7
 
 ### Patch Changes

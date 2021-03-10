@@ -118,7 +118,9 @@ export async function collectConfigSchemas(
     }
 
     await Promise.all(
-      depNames.map(name => processItem({ name, parentPath: pkgPath })),
+      depNames.map(depName =>
+        processItem({ name: depName, parentPath: pkgPath }),
+      ),
     );
   }
 

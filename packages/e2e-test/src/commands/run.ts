@@ -42,33 +42,44 @@ const templatePackagePaths = [
 ];
 
 export async function run() {
-  const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
-  print(`CLI E2E test root: ${rootDir}\n`);
+  try {
+    const rootDir = await fs.mkdtemp(
+      resolvePath(os.tmpdir(), 'backstage-e2e-'),
+    );
+    print(`CLI E2E test root: ${rootDir}\n`);
 
-  print('Building dist workspace');
-  const workspaceDir = await buildDistWorkspace('workspace', rootDir);
+    print('Building dist workspace');
+    const workspaceDir = await buildDistWorkspace('workspace', rootDir);
 
-  const isPostgres = Boolean(process.env.POSTGRES_USER);
-  print('Creating a Backstage App');
-  const appDir = await createApp('test-app', isPostgres, workspaceDir, rootDir);
+    const isPostgres = Boolean(process.env.POSTGRES_USER);
+    print('Creating a Backstage App');
+    const appDir = await createApp(
+      'test-app',
+      isPostgres,
+      workspaceDir,
+      rootDir,
+    );
 
-  print('Creating a Backstage Plugin');
-  const pluginName = await createPlugin('test-plugin', appDir);
+    print('Creating a Backstage Plugin');
+    const pluginName = await createPlugin('test-plugin', appDir);
 
-  print('Creating a Backstage Backend Plugin');
-  await createPlugin('test-plugin', appDir, ['--backend']);
+    print('Creating a Backstage Backend Plugin');
+    await createPlugin('test-plugin', appDir, ['--backend']);
 
-  print('Starting the app');
-  await testAppServe(pluginName, appDir);
+    print('Starting the app');
+    await testAppServe(pluginName, appDir);
 
-  print('Testing the backend startup');
-  await testBackendStart(appDir, isPostgres);
+    print('Testing the backend startup');
+    await testBackendStart(appDir, isPostgres);
 
-  print('All tests successful, removing test dir');
-  await fs.remove(rootDir);
+    print('All tests successful, removing test dir');
+    await fs.remove(rootDir);
 
-  // Just in case some child process was left hanging
-  process.exit(0);
+    // Just in case some child process was left hanging
+    process.exit(0);
+  } catch {
+    process.exit(1);
+  }
 }
 
 /**
@@ -80,10 +91,22 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
 
   // We grab the needed dependencies from the create app template
   const createAppDeps = new Set<string>();
+
+  function appendDeps(pkg: any) {
+    Array<string>()
+      .concat(
+        Object.keys(pkg.dependencies ?? {}),
+        Object.keys(pkg.devDependencies ?? {}),
+        Object.keys(pkg.peerDependencies ?? {}),
+      )
+      .filter(name => name.startsWith('@backstage/'))
+      .forEach(dep => createAppDeps.add(dep));
+  }
+
   for (const pkgJsonPath of templatePackagePaths) {
     const path = paths.resolveOwnRoot(pkgJsonPath);
     const pkgTemplate = await fs.readFile(path, 'utf8');
-    const { dependencies = {}, devDependencies = {} } = JSON.parse(
+    const pkg = JSON.parse(
       handlebars.compile(pkgTemplate)(
         {
           privatePackage: true,
@@ -92,22 +115,21 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
         {
           helpers: {
             version(name: string) {
-              const pkg = require(`${name}/package.json`);
-              if (!pkg) {
+              const pkge = require(`${name}/package.json`);
+              if (!pkge) {
                 throw new Error(`No version available for package ${name}`);
               }
-              return pkg.version;
+              return pkge.version;
             },
           },
         },
       ),
     );
-
-    Array<string>()
-      .concat(Object.keys(dependencies), Object.keys(devDependencies))
-      .filter(name => name.startsWith('@backstage/'))
-      .forEach(dep => createAppDeps.add(dep));
+    appendDeps(pkg);
   }
+
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
   await runPlain([

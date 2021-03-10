@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { registerComponentPlugin } from './plugin';
 
 describe('register-component', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(registerComponentPlugin).toBeDefined();
   });
 });

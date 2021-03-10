@@ -16,7 +16,11 @@
 
 import { Entity, RELATION_PROVIDES_API } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -63,12 +67,14 @@ describe('<ProvidedApisCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     expect(getByText(/Provided APIs/i)).toBeInTheDocument();
-    expect(getByText(/No APIs provided by this entity/i)).toBeInTheDocument();
+    expect(getByText(/does not provide any APIs/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {
@@ -97,31 +103,20 @@ describe('<ProvidedApisCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'openapi',
-        owner: 'Test',
-        lifecycle: 'production',
-        definition: '...',
-      },
-    });
-    apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
-      type: 'openapi',
-      title: 'OpenAPI',
-      component: () => <div />,
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
       expect(getByText(/Provided APIs/i)).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/OpenAPI/)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

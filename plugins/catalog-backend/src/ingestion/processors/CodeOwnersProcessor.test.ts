@@ -160,7 +160,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
       const result = await findRawCodeOwners(mockLocation(), {
         reader,
         logger,
@@ -170,7 +170,7 @@ describe('CodeOwnersProcessor', () => {
 
     it('should return undefined when no codeowner', async () => {
       const read = jest.fn().mockRejectedValue(mockReadResult());
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       await expect(
         findRawCodeOwners(mockLocation(), { reader, logger }),
@@ -184,7 +184,7 @@ describe('CodeOwnersProcessor', () => {
         .mockImplementationOnce(() => mockReadResult({ error: 'foo' }))
         .mockImplementationOnce(() => mockReadResult({ error: 'bar' }))
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       const result = await findRawCodeOwners(mockLocation(), {
         reader,
@@ -206,7 +206,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       const owner = await resolveCodeOwner(mockLocation(), { reader, logger });
       expect(owner).toBe('backstage-core');
@@ -216,7 +216,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockImplementation(() => mockReadResult({ error: 'error: foo' }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       await expect(
         resolveCodeOwner(mockLocation(), { reader, logger }),
@@ -230,7 +230,7 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
       const processor = new CodeOwnersProcessor({ reader, logger });
 
       return { entity, processor, read };

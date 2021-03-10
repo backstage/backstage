@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Link } from '@backstage/core';
+import { configApiRef, Breadcrumbs, Link, useApi } from '@backstage/core';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Box,
-  Breadcrumbs,
   CircularProgress,
   LinearProgress,
   Link as MaterialLink,
@@ -70,26 +70,6 @@ const useStyles = makeStyles<Theme>(theme => ({
     verticalAlign: 'bottom',
   },
 }));
-
-const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
-  const classes = useStyles();
-  return (
-    <Box>
-      {jobs &&
-        jobs.total_count > 0 &&
-        jobs.jobs.map(job => (
-          <JobListItem
-            key={job.id}
-            job={job}
-            className={
-              job.status !== 'success' ? classes.failed : classes.success
-            }
-            entity={entity}
-          />
-        ))}
-    </Box>
-  );
-};
 
 const getElapsedTime = (start: string, end: string) => {
   const diff = moment(moment(end || moment()).diff(moment(start)));
@@ -158,11 +138,36 @@ const JobListItem = ({
   );
 };
 
+const JobsList = ({ jobs, entity }: { jobs?: Jobs; entity: Entity }) => {
+  const classes = useStyles();
+  return (
+    <Box>
+      {jobs &&
+        jobs.total_count > 0 &&
+        jobs.jobs.map(job => (
+          <JobListItem
+            key={job.id}
+            job={job}
+            className={
+              job.status !== 'success' ? classes.failed : classes.success
+            }
+            entity={entity}
+          />
+        ))}
+    </Box>
+  );
+};
+
 export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
+  const config = useApi(configApiRef);
   const projectName = useProjectName(entity);
 
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
-  const details = useWorkflowRunsDetails(repo, owner);
+  const details = useWorkflowRunsDetails({ hostname, owner, repo });
   const jobs = useWorkflowRunJobs(details.value?.jobs_url);
 
   const error = projectName.error || (projectName.value && details.error);
@@ -178,10 +183,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   }
   return (
     <div className={classes.root}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link to="..">Workflow runs</Link>
-        <Typography>Workflow run details</Typography>
-      </Breadcrumbs>
+      <Box mb={3}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to="..">Workflow runs</Link>
+          <Typography>Workflow run details</Typography>
+        </Breadcrumbs>
+      </Box>
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>
@@ -202,6 +209,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Commit ID</Typography>
               </TableCell>
               <TableCell>{details.value?.head_commit.id}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Workflow</Typography>
+              </TableCell>
+              <TableCell>{details.value?.name}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

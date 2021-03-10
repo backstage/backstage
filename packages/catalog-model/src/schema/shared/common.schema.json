@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "common",
+  "type": "object",
+  "description": "Common definitions to import from other schemas",
+  "definitions": {
+    "reference": {
+      "$id": "#reference",
+      "type": "object",
+      "description": "A reference by name to another entity.",
+      "required": ["kind", "namespace", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "The kind field of the entity."
+        },
+        "namespace": {
+          "type": "string",
+          "description": "The metadata.namespace field of the entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The metadata.name field of the entity."
+        }
+      }
+    },
+    "relation": {
+      "$id": "#relation",
+      "type": "object",
+      "description": "A directed relation from one entity to another.",
+      "required": ["type", "source", "target"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^\\w+$",
+          "description": "The type of relation."
+        },
+        "source": {
+          "$ref": "#reference"
+        },
+        "target": {
+          "$ref": "#reference"
+        }
+      }
+    }
+  }
+}

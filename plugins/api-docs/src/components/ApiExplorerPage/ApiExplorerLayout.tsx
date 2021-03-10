@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import { Header, Page } from '@backstage/core';
+import { Header, Page, useApi, configApiRef } from '@backstage/core';
 import React from 'react';
 
 type Props = {
   children?: React.ReactNode;
 };
-
-export const ApiExplorerLayout = ({ children }: Props) => (
-  <Page themeId="home">
-    <Header
-      title="APIs"
-      subtitle="Backstage API Explorer"
-      pageTitleOverride="APIs"
-    />
-    {children}
-  </Page>
-);
+export const ApiExplorerLayout = ({ children }: Props) => {
+  const configApi = useApi(configApiRef);
+  const generatedSubtitle = `${
+    configApi.getOptionalString('organization.name') ?? 'Backstage'
+  } API Explorer`;
+  return (
+    <Page themeId="home">
+      <Header
+        title="APIs"
+        subtitle={generatedSubtitle}
+        pageTitleOverride="APIs"
+      />
+      {children}
+    </Page>
+  );
+};

@@ -1,5 +1,8 @@
 .git
+docs
+cypress
+microsite
 node_modules
-packages/*/node_modules
-plugins/*/node_modules
-plugins/*/dist
+packages
+!packages/backend/dist
+plugins

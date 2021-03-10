@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect } from 'react';
-import { useAsync } from 'react-use';
-
-import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import {
-  Link,
   EmptyState,
+  Link,
   Progress,
   Table,
   TableColumn,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
-
-import { FiltersButton, Filters, FiltersState } from '../Filters';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect, useState } from 'react';
+import { useAsync } from 'react-use';
 import SearchApi, { Result, SearchResults } from '../../apis';
+import { Filters, FiltersButton, FiltersState } from '../Filters';
 
 const useStyles = makeStyles(theme => ({
   searchQuery: {
@@ -57,11 +55,6 @@ type TableHeaderProps = {
   numberOfSelectedFilters: number;
   numberOfResults: number;
   handleToggleFilters: () => void;
-};
-
-type Filters = {
-  selected: string;
-  checked: Array<string | null>;
 };
 
 // TODO: move out column to make the search result component more generic

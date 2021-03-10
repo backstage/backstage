@@ -19,70 +19,71 @@ import {
   Entity,
   RELATION_API_PROVIDED_BY,
 } from '@backstage/catalog-model';
-import { EmptyState, InfoCard, Progress } from '@backstage/core';
-import React, { PropsWithChildren } from 'react';
-import { MissingProvidesApisEmptyState } from '../EmptyState';
-import { useRelatedEntities } from '../useRelatedEntities';
-import { ComponentsTable } from './ComponentsTable';
-
-const ComponentsCard = ({
-  children,
-  variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
-  return (
-    <InfoCard variant={variant} title="Providers">
-      {children}
-    </InfoCard>
-  );
-};
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
+import { Typography } from '@material-ui/core';
+import {
+  EntityTable,
+  useEntity,
+  useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+import React from 'react';
 
 type Props = {
-  entity: Entity;
-  variant?: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+  variant?: 'gridItem';
 };
 
-export const ProvidingComponentsCard = ({
-  entity,
-  variant = 'gridItem',
-}: Props) => {
-  const { entities, loading, error } = useRelatedEntities(
-    entity,
-    RELATION_API_PROVIDED_BY,
-  );
+export const ProvidingComponentsCard = ({ variant = 'gridItem' }: Props) => {
+  const { entity } = useEntity();
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_API_PROVIDED_BY,
+  });
 
   if (loading) {
     return (
-      <ComponentsCard variant={variant}>
+      <InfoCard variant={variant} title="Providers">
         <Progress />
-      </ComponentsCard>
+      </InfoCard>
     );
   }
 
-  if (error) {
+  if (error || !entities) {
     return (
-      <ComponentsCard variant={variant}>
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There was an error while loading the providers."
+      <InfoCard variant={variant} title="Providers">
+        <WarningPanel
+          severity="error"
+          title="Could not load components"
+          message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ComponentsCard>
-    );
-  }
-
-  if (!entities || entities.length === 0) {
-    return (
-      <ComponentsCard variant={variant}>
-        <MissingProvidesApisEmptyState />
-      </ComponentsCard>
+      </InfoCard>
     );
   }
 
   return (
-    <ComponentsTable
+    <EntityTable
       title="Providers"
       variant={variant}
-      entities={entities as (ComponentEntity | undefined)[]}
+      emptyContent={
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            No component provides this API.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specprovidesapis-optional">
+              Learn how to change this.
+            </Link>
+          </Typography>
+        </div>
+      }
+      columns={EntityTable.componentEntityColumns}
+      entities={entities as ComponentEntity[]}
     />
   );
 };

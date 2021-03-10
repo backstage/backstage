@@ -40,6 +40,21 @@ const nestedListStyle = (theme: Theme) =>
     },
   });
 
+interface StyleProps extends WithStyles {
+  children?: React.ReactNode;
+}
+// Sub Components
+const StyledList = withStyles(
+  listStyle,
+)(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
+const StyledNestedList = withStyles(
+  nestedListStyle,
+)(({ classes, children }: StyleProps) => (
+  <MetadataList classes={classes}>{children}</MetadataList>
+));
+
 function renderList(list: Array<any>, nested?: boolean) {
   const values = list.map((item: any, index: number) => (
     <MetadataListItem key={index}>{toValue(item)}</MetadataListItem>
@@ -100,30 +115,10 @@ function toValue(
 
   return <Fragment>{value}</Fragment>;
 }
-
-function mapToItems(info: { [key: string]: string }, options: any) {
-  return Object.keys(info).map(key => (
-    <TableItem key={key} title={key} value={info[key]} options={options} />
-  ));
-}
-
-interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
-}
-// Sub Components
-const StyledList = withStyles(
-  listStyle,
-)(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
-const StyledNestedList = withStyles(
-  nestedListStyle,
-)(({ classes, children }: StyleProps) => (
-  <MetadataList classes={classes}>{children}</MetadataList>
-));
 const ItemValue = ({ value, options }: { value: any; options: any }) => (
   <Fragment>{toValue(value, options)}</Fragment>
 );
+
 const TableItem = ({
   title,
   value,
@@ -145,6 +140,12 @@ const TableItem = ({
     </MetadataTableItem>
   );
 };
+
+function mapToItems(info: { [key: string]: string }, options: any) {
+  return Object.keys(info).map(key => (
+    <TableItem key={key} title={key} value={info[key]} options={options} />
+  ));
+}
 
 type Props = {
   metadata: { [key: string]: any };

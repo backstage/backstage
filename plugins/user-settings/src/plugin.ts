@@ -13,13 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRouteRef } from '@backstage/core';
+
+import {
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
+} from '@backstage/core';
 
 export const settingsRouteRef = createRouteRef({
   path: '/settings',
   title: 'Settings',
 });
 
-export const plugin = createPlugin({
+export const userSettingsPlugin = createPlugin({
   id: 'user-settings',
+  routes: {
+    settingsPage: settingsRouteRef,
+  },
 });
+
+export const UserSettingsPage = userSettingsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/SettingsPage').then(m => m.SettingsPage),
+    mountPoint: settingsRouteRef,
+  }),
+);

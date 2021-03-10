@@ -28,7 +28,7 @@ export const rootRouteRef = createRouteRef({
   title: 'Sentry',
 });
 
-export const plugin = createPlugin({
+export const sentryPlugin = createPlugin({
   id: 'sentry',
   apis: [
     createApiFactory({

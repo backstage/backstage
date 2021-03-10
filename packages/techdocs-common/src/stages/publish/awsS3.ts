@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
-import express from 'express';
-import { PutObjectCommandOutput, S3 } from '@aws-sdk/client-s3';
-import { Logger } from 'winston';
 import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { getHeadersForFileExtension, getFileTreeRecursively } from './helpers';
-import { PublisherBase, PublishRequest } from './types';
+import aws, { Credentials } from 'aws-sdk';
+import { ManagedUpload } from 'aws-sdk/clients/s3';
+import express from 'express';
 import fs from 'fs-extra';
+import JSON5 from 'json5';
+import createLimiter from 'p-limit';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials';
+import path from 'path';
 import { Readable } from 'stream';
+import { Logger } from 'winston';
+import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
+import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -32,7 +36,7 @@ const streamToBuffer = (stream: Readable): Promise<Buffer> => {
       stream.on('error', reject);
       stream.on('end', () => resolve(Buffer.concat(chunks)));
     } catch (e) {
-      throw new Error(`Unable to parse the response data, ${e.message}`);
+      throw new Error(`Unable to parse the response data ${e.message}`);
     }
   });
 };
@@ -49,38 +53,32 @@ export class AwsS3Publish implements PublisherBase {
       );
     }
 
-    // Credentials is an optional config. If missing, default AWS environment variables
-    // or AWS shared credentials file at ~/.aws/credentials will be used to authenticate
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
-    const credentials = config.getOptionalConfig(
+    // Credentials is an optional config. If missing, the default ways of authenticating AWS SDK V2 will be used.
+    // 1. AWS environment variables
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-environment.html
+    // 2. AWS shared credentials file at ~/.aws/credentials
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
+    // 3. IAM Roles for EC2
+    // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-iam.html
+    const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
-    let accessKeyId = undefined;
-    let secretAccessKey = undefined;
-    if (credentials) {
-      accessKeyId = credentials.getOptionalString('accessKeyId');
-      secretAccessKey = credentials.getOptionalString('secretAccessKey');
-    }
+    const credentials = AwsS3Publish.buildCredentials(credentialsConfig);
 
     // AWS Region is an optional config. If missing, default AWS env variable AWS_REGION
-    // or AWS shared credentials file at ~/.aws/credentials will be used. Any way, AWS SDK v3 client needs
-    // to have the AWS Region information for it to work.
-    // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
+    // or AWS shared credentials file at ~/.aws/credentials will be used.
     const region = config.getOptionalString('techdocs.publisher.awsS3.region');
 
-    const storageClient = new S3({
-      ...(credentials &&
-        accessKeyId &&
-        secretAccessKey && {
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        }),
-      ...(region && {
-        region,
-      }),
+    // AWS endpoint is an optional config. If missing, the default endpoint is built from
+    // the configured region.
+    const endpoint = config.getOptionalString(
+      'techdocs.publisher.awsS3.endpoint',
+    );
+
+    const storageClient = new aws.S3({
+      credentials,
+      ...(region && { region }),
+      ...(endpoint && { endpoint }),
     });
 
     // Check if the defined bucket exists. Being able to connect means the configuration is good
@@ -110,8 +108,39 @@ export class AwsS3Publish implements PublisherBase {
     return new AwsS3Publish(storageClient, bucketName, logger);
   }
 
+  private static buildCredentials(
+    config?: Config,
+  ): Credentials | CredentialsOptions | undefined {
+    if (!config) {
+      return undefined;
+    }
+
+    const accessKeyId = config.getOptionalString('accessKeyId');
+    const secretAccessKey = config.getOptionalString('secretAccessKey');
+    let explicitCredentials: Credentials | undefined;
+    if (accessKeyId && secretAccessKey) {
+      explicitCredentials = new Credentials({
+        accessKeyId,
+        secretAccessKey,
+      });
+    }
+
+    const roleArn = config.getOptionalString('roleArn');
+    if (roleArn) {
+      return new aws.ChainableTemporaryCredentials({
+        masterCredentials: explicitCredentials,
+        params: {
+          RoleSessionName: 'backstage-aws-techdocs-s3-publisher',
+          RoleArn: roleArn,
+        },
+      });
+    }
+
+    return explicitCredentials;
+  }
+
   constructor(
-    private readonly storageClient: S3,
+    private readonly storageClient: aws.S3,
     private readonly bucketName: string,
     private readonly logger: Logger,
   ) {
@@ -130,25 +159,38 @@ export class AwsS3Publish implements PublisherBase {
       // So collecting path of only the files is good enough.
       const allFilesToUpload = await getFileTreeRecursively(directory);
 
-      const uploadPromises: Array<Promise<PutObjectCommandOutput>> = [];
-
+      const limiter = createLimiter(10);
+      const uploadPromises: Array<Promise<ManagedUpload.SendData>> = [];
       for (const filePath of allFilesToUpload) {
         // Remove the absolute path prefix of the source directory
         // Path of all files to upload, relative to the root of the source directory
         // e.g. ['index.html', 'sub-page/index.html', 'assets/images/favicon.png']
-        const relativeFilePath = filePath.replace(`${directory}/`, '');
+        const relativeFilePath = path.relative(directory, filePath);
+
+        // Convert destination file path to a POSIX path for uploading.
+        // S3 expects / as path separator and relativeFilePath will contain \\ on Windows.
+        // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html
+        const relativeFilePathPosix = relativeFilePath
+          .split(path.sep)
+          .join(path.posix.sep);
+
+        // The / delimiter is intentional since it represents the cloud storage and not the local file system.
         const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-        const destination = `${entityRootDir}/${relativeFilePath}`; // S3 Bucket file relative path
+        const destination = `${entityRootDir}/${relativeFilePathPosix}`; // S3 Bucket file relative path
 
-        const fileContent = await fs.readFile(filePath, 'utf8');
+        // Rate limit the concurrent execution of file uploads to batches of 10 (per publish)
+        const uploadFile = limiter(() => {
+          const fileStream = fs.createReadStream(filePath);
 
-        const params = {
-          Bucket: this.bucketName,
-          Key: destination,
-          Body: fileContent,
-        };
+          const params = {
+            Bucket: this.bucketName,
+            Key: destination,
+            Body: fileStream,
+          };
 
-        uploadPromises.push(this.storageClient.putObject(params));
+          return this.storageClient.upload(params).promise();
+        });
+        uploadPromises.push(uploadFile);
       }
       await Promise.all(uploadPromises);
       this.logger.info(
@@ -156,39 +198,43 @@ export class AwsS3Publish implements PublisherBase {
       );
       return;
     } catch (e) {
-      const errorMessage = `Unable to upload file(s) to AWS S3. Error ${e.message}`;
+      const errorMessage = `Unable to upload file(s) to AWS S3. ${e}`;
       this.logger.error(errorMessage);
       throw new Error(errorMessage);
     }
   }
 
-  async fetchTechDocsMetadata(entityName: EntityName): Promise<string> {
+  async fetchTechDocsMetadata(
+    entityName: EntityName,
+  ): Promise<TechDocsMetadata> {
     try {
-      return await new Promise<string>((resolve, reject) => {
+      return await new Promise<TechDocsMetadata>(async (resolve, reject) => {
         const entityRootDir = `${entityName.namespace}/${entityName.kind}/${entityName.name}`;
 
-        this.storageClient
+        const stream = this.storageClient
           .getObject({
             Bucket: this.bucketName,
             Key: `${entityRootDir}/techdocs_metadata.json`,
           })
-          .then(async file => {
-            const techdocsMetadataJson = await streamToBuffer(
-              file.Body as Readable,
+          .createReadStream();
+
+        try {
+          const techdocsMetadataJson = await streamToBuffer(stream);
+          if (!techdocsMetadataJson) {
+            throw new Error(
+              `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
             );
+          }
 
-            if (!techdocsMetadataJson) {
-              throw new Error(
-                `Unable to parse the techdocs metadata file ${entityRootDir}/techdocs_metadata.json.`,
-              );
-            }
+          const techdocsMetadata = JSON5.parse(
+            techdocsMetadataJson.toString('utf-8'),
+          );
 
-            resolve(techdocsMetadataJson.toString('utf-8'));
-          })
-          .catch(err => {
-            this.logger.error(err.message);
-            reject(new Error(err.message));
-          });
+          resolve(techdocsMetadata);
+        } catch (err) {
+          this.logger.error(err.message);
+          reject(new Error(err.message));
+        }
       });
     } catch (e) {
       throw new Error(`TechDocs metadata fetch failed, ${e.message}`);
@@ -199,7 +245,7 @@ export class AwsS3Publish implements PublisherBase {
    * Express route middleware to serve static files on a route in techdocs-backend.
    */
   docsRouter(): express.Handler {
-    return (req, res) => {
+    return async (req, res) => {
       // Trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
       const filePath = req.path.replace(/^\//, '');
@@ -208,27 +254,22 @@ export class AwsS3Publish implements PublisherBase {
       const fileExtension = path.extname(filePath);
       const responseHeaders = getHeadersForFileExtension(fileExtension);
 
-      this.storageClient
+      const stream = this.storageClient
         .getObject({ Bucket: this.bucketName, Key: filePath })
-        .then(async object => {
-          const fileContent = await streamToBuffer(object.Body as Readable);
-          if (!fileContent) {
-            throw new Error(`Unable to parse the file ${filePath}.`);
-          }
+        .createReadStream();
+      try {
+        // Inject response headers
+        for (const [headerKey, headerValue] of Object.entries(
+          responseHeaders,
+        )) {
+          res.setHeader(headerKey, headerValue);
+        }
 
-          // Inject response headers
-          for (const [headerKey, headerValue] of Object.entries(
-            responseHeaders,
-          )) {
-            res.setHeader(headerKey, headerValue);
-          }
-
-          res.send(fileContent);
-        })
-        .catch(err => {
-          this.logger.warn(err.message);
-          res.status(404).send(err.message);
-        });
+        res.send(await streamToBuffer(stream));
+      } catch (err) {
+        this.logger.warn(err.message);
+        res.status(404).json(err.message);
+      }
     };
   }
 
@@ -239,10 +280,12 @@ export class AwsS3Publish implements PublisherBase {
   async hasDocsBeenGenerated(entity: Entity): Promise<boolean> {
     try {
       const entityRootDir = `${entity.metadata.namespace}/${entity.kind}/${entity.metadata.name}`;
-      await this.storageClient.headObject({
-        Bucket: this.bucketName,
-        Key: `${entityRootDir}/index.html`,
-      });
+      await this.storageClient
+        .headObject({
+          Bucket: this.bucketName,
+          Key: `${entityRootDir}/index.html`,
+        })
+        .promise();
       return Promise.resolve(true);
     } catch (e) {
       return Promise.resolve(false);

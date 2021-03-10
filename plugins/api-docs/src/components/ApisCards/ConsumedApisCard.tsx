@@ -19,67 +19,72 @@ import {
   Entity,
   RELATION_CONSUMES_API,
 } from '@backstage/catalog-model';
-import { EmptyState, InfoCard, Progress } from '@backstage/core';
-import React, { PropsWithChildren } from 'react';
-import { ApisTable } from './ApisTable';
-import { MissingConsumesApisEmptyState } from '../EmptyState';
-import { useRelatedEntities } from '../useRelatedEntities';
-
-const ApisCard = ({
-  children,
-  variant = 'gridItem',
-}: PropsWithChildren<{ variant?: string }>) => {
-  return (
-    <InfoCard variant={variant} title="Consumed APIs">
-      {children}
-    </InfoCard>
-  );
-};
+import {
+  CodeSnippet,
+  InfoCard,
+  Link,
+  Progress,
+  WarningPanel,
+} from '@backstage/core';
+import { Typography } from '@material-ui/core';
+import {
+  EntityTable,
+  useEntity,
+  useRelatedEntities,
+} from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { apiEntityColumns } from './presets';
 
 type Props = {
-  entity: Entity;
-  variant?: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+  variant?: 'gridItem';
 };
 
-export const ConsumedApisCard = ({ entity, variant = 'gridItem' }: Props) => {
-  const { entities, loading, error } = useRelatedEntities(
-    entity,
-    RELATION_CONSUMES_API,
-  );
+export const ConsumedApisCard = ({ variant = 'gridItem' }: Props) => {
+  const { entity } = useEntity();
+  const { entities, loading, error } = useRelatedEntities(entity, {
+    type: RELATION_CONSUMES_API,
+  });
 
   if (loading) {
     return (
-      <ApisCard variant={variant}>
+      <InfoCard variant={variant} title="Consumed APIs">
         <Progress />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
-  if (error) {
+  if (error || !entities) {
     return (
-      <ApisCard variant={variant}>
-        <EmptyState
-          missing="info"
-          title="No information to display"
-          description="There was an error while loading the consumed APIs."
+      <InfoCard variant={variant} title="Consumed APIs">
+        <WarningPanel
+          severity="error"
+          title="Could not load APIs"
+          message={<CodeSnippet text={`${error}`} language="text" />}
         />
-      </ApisCard>
-    );
-  }
-
-  if (!entities || entities.length === 0) {
-    return (
-      <ApisCard variant={variant}>
-        <MissingConsumesApisEmptyState />
-      </ApisCard>
+      </InfoCard>
     );
   }
 
   return (
-    <ApisTable
+    <EntityTable
       title="Consumed APIs"
       variant={variant}
-      entities={entities as (ApiEntity | undefined)[]}
+      emptyContent={
+        <div style={{ textAlign: 'center' }}>
+          <Typography variant="body1">
+            This {entity.kind.toLowerCase()} does not consume any APIs.
+          </Typography>
+          <Typography variant="body2">
+            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#specconsumesapis-optional">
+              Learn how to change this.
+            </Link>
+          </Typography>
+        </div>
+      }
+      columns={apiEntityColumns}
+      entities={entities as ApiEntity[]}
     />
   );
 };

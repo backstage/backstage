@@ -1,5 +1,152 @@
 # @backstage/plugin-api-docs
 
+## 0.4.8
+
+### Patch Changes
+
+- 32a003973: Update messaging when no entities are in a table.
+- 2386de1d3: Add organization name to the API Explorer page title
+- f71589800: The api-docs plugin has been migrated to use an [external route reference](https://backstage.io/docs/plugins/composability#binding-external-routes-in-the-app) to dynamically link to the create component page. This means you need to migrate the api docs plugin to use the new extension components, as well as bind the external route.
+
+  To bind the external route from the api docs plugin to the scaffolder template index page, make sure you have the appropriate imports and add the following to the `createApp` call:
+
+  ```ts
+  import { apiDocsPlugin } from '@backstage/plugin-api-docs';
+  import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(apiDocsPlugin.externalRoutes, {
+        createComponent: scaffolderPlugin.routes.root,
+      });
+    },
+  });
+  ```
+
+  If you choose to not bind the routes, the button to create new APIs is not displayed.
+
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
+## 0.4.7
+
+### Patch Changes
+
+- d6593abe6: Remove domain column from `HasSystemsCard` and system from `HasComponentsCard`,
+  `HasSubcomponentsCard`, and `HasApisCard`.
+- 437bac549: Make the description column in the catalog table and api-docs table use up as
+  much space as possible before hiding overflowing text.
+- 5469a9761: Changes made in CatalogTable and ApiExplorerTable for using the OverflowTooltip component for truncating large description and showing tooltip on hover-over.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
+## 0.4.6
+
+### Patch Changes
+
+- 0af242b6d: Introduce new cards to `@backstage/plugin-catalog` that can be added to entity pages:
+
+  - `EntityHasSystemsCard` to display systems of a domain.
+  - `EntityHasComponentsCard` to display components of a system.
+  - `EntityHasSubcomponentsCard` to display subcomponents of a subcomponent.
+  - In addition, `EntityHasApisCard` to display APIs of a system is added to `@backstage/plugin-api-docs`.
+
+  `@backstage/plugin-catalog-react` now provides an `EntityTable` to build own cards for entities.
+  The styling of the tables and new cards was also applied to the existing `EntityConsumedApisCard`,
+  `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.4.5
+
+### Patch Changes
+
+- f5e564cd6: Improve display of error messages
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.4.4
+
+### Patch Changes
+
+- 7fc89bae2: Display owner and system as entity page links in the tables of the `api-docs`
+  plugin.
+
+  Move `isOwnerOf` and `getEntityRelations` from `@backstage/plugin-catalog` to
+  `@backstage/plugin-catalog-react` and export it from there to use it by other
+  plugins.
+
+- bc5082a00: Migrate to new composability API, exporting the plugin as `apiDocsPlugin`, index page as `ApiExplorerPage`, and entity page cards as `EntityApiDefinitionCard`, `EntityConsumedApisCard`, `EntityConsumingComponentsCard`, `EntityProvidedApisCard`, and `EntityProvidingComponentsCard`.
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.4.3
+
+### Patch Changes
+
+- 8855f61f6: Update `@asyncapi/react-component` to 0.18.2
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
 ## 0.4.2
 
 ### Patch Changes

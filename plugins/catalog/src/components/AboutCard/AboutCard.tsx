@@ -17,8 +17,16 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
+  RELATION_CONSUMES_API,
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
+import {
+  configApiRef,
+  HeaderIconLinkRow,
+  IconLinkVerticalProps,
+  useApi,
+} from '@backstage/core';
+import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -27,15 +35,13 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core';
-import ExtensionIcon from '@material-ui/icons/Extension';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
-import GitHubIcon from '@material-ui/icons/GitHub';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import React from 'react';
-import { findLocationForEntityMeta } from '../../data/utils';
-import { createEditLink, determineUrlType } from '../createEditLink';
-import { HeaderIconLinkRow } from '@backstage/core';
+import { getEntityMetadataEditUrl, getEntitySourceLocation } from '../../utils';
 import { AboutContent } from './AboutContent';
+import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -49,47 +55,36 @@ const useStyles = makeStyles({
   },
 });
 
-const iconMap: Record<string, React.ReactNode> = {
-  github: <GitHubIcon />,
-};
-
-type CodeLinkInfo = {
-  icon?: React.ReactNode;
-  edithref?: string;
-  href?: string;
-};
-
-function getCodeLinkInfo(entity: Entity): CodeLinkInfo {
-  const location = findLocationForEntityMeta(entity?.metadata);
-  if (location) {
-    const type =
-      location.type === 'url'
-        ? determineUrlType(location.target)
-        : location.type;
-    return {
-      icon: iconMap[type],
-      edithref: createEditLink(location),
-      href: location.target,
-    };
-  }
-  return {};
-}
-
 type AboutCardProps = {
-  entity: Entity;
-  variant?: string;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+  variant?: 'gridItem';
 };
 
-export function AboutCard({ entity, variant }: AboutCardProps) {
+export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
-  const codeLink = getCodeLinkInfo(entity);
-  // TODO: Also support RELATION_CONSUMES_API here
-  const hasApis = entity.relations?.some(r => r.type === RELATION_PROVIDES_API);
-  const viewInSource = {
+  const { entity } = useEntity();
+  const configApi = useApi(configApiRef);
+  const entitySourceLocation = getEntitySourceLocation(entity, configApi);
+  const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
+  const providesApiRelations = getEntityRelations(
+    entity,
+    RELATION_PROVIDES_API,
+  );
+  const consumesApiRelations = getEntityRelations(
+    entity,
+    RELATION_CONSUMES_API,
+  );
+  const hasApis =
+    providesApiRelations.length > 0 || consumesApiRelations.length > 0;
+
+  const viewInSource: IconLinkVerticalProps = {
     label: 'View Source',
-    ...codeLink,
+    disabled: !entitySourceLocation,
+    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
+    href: entitySourceLocation?.locationTargetUrl,
   };
-  const viewInTechDocs = {
+  const viewInTechDocs: IconLinkVerticalProps = {
     label: 'View TechDocs',
     disabled: !entity.metadata.annotations?.['backstage.io/techdocs-ref'],
     icon: <DocsIcon />,
@@ -97,7 +92,7 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
       entity.kind
     }/${entity.metadata.name}`,
   };
-  const viewApi = {
+  const viewApi: IconLinkVerticalProps = {
     title: hasApis ? '' : 'No APIs available',
     label: 'View API',
     disabled: !hasApis,
@@ -112,9 +107,10 @@ export function AboutCard({ entity, variant }: AboutCardProps) {
         action={
           <IconButton
             aria-label="Edit"
+            disabled={!entityMetadataEditUrl}
             title="Edit Metadata"
             onClick={() => {
-              window.open(codeLink.edithref || '#', '_blank');
+              window.open(entityMetadataEditUrl ?? '#', '_blank');
             }}
           >
             <EditIcon />

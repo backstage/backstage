@@ -41,4 +41,76 @@ describe('AzureIntegration', () => {
     expect(integration.type).toBe('azure');
     expect(integration.title).toBe('h.com');
   });
+
+  describe('resolveUrl', () => {
+    it('works for valid urls', () => {
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+      } as any);
+
+      expect(
+        integration.resolveUrl({
+          url: '../a.yaml',
+          base:
+            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+        }),
+      ).toBe(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+      );
+
+      expect(
+        integration.resolveUrl({
+          url: '/a.yaml',
+          base:
+            'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+        }),
+      ).toBe(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+      );
+
+      expect(
+        integration.resolveUrl({
+          url: './a.yaml',
+          base: 'https://dev.azure.com/organization/project/_git/repository',
+        }),
+      ).toBe(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+      );
+
+      expect(
+        integration.resolveUrl({
+          url: 'https://absolute.com/path',
+          base:
+            'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+        }),
+      ).toBe('https://absolute.com/path');
+    });
+
+    it('falls back to regular URL resolution if not in a repo', () => {
+      const integration = new AzureIntegration({
+        host: 'dev.azure.com',
+      } as any);
+
+      expect(
+        integration.resolveUrl({
+          url: './test',
+          base: 'https://dev.azure.com/organization/project/_git',
+        }),
+      ).toBe('https://dev.azure.com/organization/project/test');
+    });
+  });
+
+  it('resolve edit URL', () => {
+    const integration = new AzureIntegration({ host: 'h.com' } as any);
+
+    // TODO: The Azure integration doesn't support resolving an edit URL yet,
+    // instead we keep the input URL.
+    expect(
+      integration.resolveEditUrl(
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+      ),
+    ).toBe(
+      'https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml',
+    );
+  });
 });

@@ -96,6 +96,10 @@ export class MicrosoftGraphClient {
       scopes: ['https://graph.microsoft.com/.default'],
     });
 
+    if (!token) {
+      throw new Error('Error while requesting token for Microsoft Graph');
+    }
+
     return await fetch(url, {
       headers: {
         Authorization: `Bearer ${token.accessToken}`,

@@ -16,7 +16,11 @@
 
 import { Entity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -63,12 +67,14 @@ describe('<ConsumedApisCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ConsumedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ConsumedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
-    expect(getByText(/No APIs consumed by this entity/i)).toBeInTheDocument();
+    expect(getByText(/does not consume any APIs/i)).toBeInTheDocument();
   });
 
   it('shows consumed APIs', async () => {
@@ -97,31 +103,20 @@ describe('<ConsumedApisCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'openapi',
-        owner: 'Test',
-        lifecycle: 'production',
-        definition: '...',
-      },
-    });
-    apiDocsConfig.getApiDefinitionWidget.mockReturnValue({
-      type: 'openapi',
-      title: 'OpenAPI',
-      component: () => <div />,
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ConsumedApisCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ConsumedApisCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
-      expect(getByText(/Consumed APIs/i)).toBeInTheDocument();
+      expect(getByText('Consumed APIs')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/OpenAPI/)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

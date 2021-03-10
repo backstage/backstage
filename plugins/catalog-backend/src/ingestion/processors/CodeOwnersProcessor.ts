@@ -15,15 +15,21 @@
  */
 
 import { NotFoundError, UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  LocationSpec,
+  stringifyLocationReference,
+} from '@backstage/catalog-model';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { filter, get, head, pipe, reverse } from 'lodash/fp';
 import { Logger } from 'winston';
 import { CatalogProcessor } from './types';
+
+const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
 const ALLOWED_LOCATION_TYPES = [
   'url',
@@ -55,7 +61,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     // Only continue if the owner is not set
     if (
       !entity ||
-      !['Component', 'API'].includes(entity.kind) ||
+      !ALLOWED_KINDS.includes(entity.kind) ||
       !ALLOWED_LOCATION_TYPES.includes(location.type) ||
       (entity.spec && entity.spec.owner)
     ) {
@@ -108,11 +114,15 @@ export async function findRawCodeOwners(
     );
     if (hardError) {
       options.logger.warn(
-        `Failed to read codeowners for location ${location.type}:${location.target}, ${hardError}`,
+        `Failed to read codeowners for location ${stringifyLocationReference(
+          location,
+        )}, ${hardError}`,
       );
     } else {
       options.logger.debug(
-        `Failed to find codeowners for location ${location.type}:${location.target}`,
+        `Failed to find codeowners for location ${stringifyLocationReference(
+          location,
+        )}`,
       );
     }
     return undefined;
@@ -123,7 +133,7 @@ export function buildCodeOwnerUrl(
   basePath: string,
   codeOwnersPath: string,
 ): string {
-  return buildUrl({ ...parseGitUri(basePath), codeOwnersPath });
+  return buildUrl({ ...parseGitUrl(basePath), codeOwnersPath });
 }
 
 export function parseCodeOwners(ownersText: string) {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { sentryPlugin } from './plugin';
 
 describe('sentry', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(sentryPlugin).toBeDefined();
   });
 });

@@ -13,37 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
- * techdocs schema below is an abstract of what's used within techdocs-backend and for its visibility
- * to view the complete techdoc schema please refer: plugins/techdocs/config.d.ts
- * */
+ * TechDocs schema below is an abstract of what's used within techdocs-backend and for its visibility
+ * to view the complete TechDocs schema please refer: plugins/techdocs/config.d.ts
+ */
 export interface Config {
-  /** Configuration options for the techdocs-backend plugin */
+  /**
+   * Configuration options for the techdocs-backend plugin
+   * @see http://backstage.io/docs/features/techdocs/configuration
+   */
   techdocs: {
     /**
-     * attr: 'storageUrl' - accepts a string value
-     * e.g. storageUrl: http://localhost:7000/api/techdocs/static/docs
-     */
-    storageUrl: string;
-    /**
-     * documentation building process depends on the builder attr
-     * attr: 'builder' - accepts a string value
-     * e.g. builder: 'local'
-     * alternative: 'external' etc.
-     * @see http://backstage.io/docs/features/techdocs/configuration
+     * Documentation building process depends on the builder attr
      */
     builder: 'local' | 'external';
+
     /**
-     * techdocs publisher information
+     * Techdocs publisher information
      */
     publisher: {
-      /**
-       * attr: 'type' - accepts a string value
-       * e.g. type: 'local'
-       * aleternatives: 'googleGcs' etc.
-       * @see http://backstage.io/docs/features/techdocs/configuration
-       */
-      type: 'local' | 'googleGcs' | 'awsS3';
+      type: 'local' | 'googleGcs' | 'awsS3' | 'openStackSwift';
     };
+
+    /**
+     * @example http://localhost:7000/api/techdocs/static/docs
+     * @deprecated
+     */
+    storageUrl?: string;
   };
 }

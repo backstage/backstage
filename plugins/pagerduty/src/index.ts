@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+export {
+  pagerDutyPlugin,
+  pagerDutyPlugin as plugin,
+  EntityPagerDutyCard,
+} from './plugin';
 export {
   isPluginApplicableToEntity,
+  isPluginApplicableToEntity as isPagerDutyAvailable,
   PagerDutyCard,
 } from './components/PagerDutyCard';
+export { TriggerButton } from './components/TriggerButton';
 export {
   PagerDutyClient,
   pagerDutyApiRef,

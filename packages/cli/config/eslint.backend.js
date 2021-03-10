@@ -34,12 +34,14 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
+    lib: require('./tsconfig.json').compilerOptions.lib,
   },
   ignorePatterns: ['.eslintrc.js', '**/dist/**', '**/dist-types/**'],
   rules: {
-    // TODO(Rugvip): We need to bump @typescript-eslint to v4 to enable these
-    '@typescript-eslint/no-shadow': 0,
-    '@typescript-eslint/no-redeclare': 0,
+    'no-shadow': 'off',
+    'no-redeclare': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    '@typescript-eslint/no-redeclare': 'error',
 
     'no-console': 0, // Permitted in console programs
     'new-cap': ['error', { capIsNew: false }], // Because Express constructs things e.g. like 'const r = express.Router()'
@@ -79,6 +81,13 @@ module.exports = {
     ],
   },
   overrides: [
+    {
+      files: ['**/*.ts?(x)'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
+        'no-undef': 'off',
+      },
+    },
     {
       files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
       rules: {

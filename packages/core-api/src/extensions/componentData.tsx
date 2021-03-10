@@ -15,20 +15,28 @@
  */
 
 import { ComponentType, ReactNode } from 'react';
+import { getGlobalSingleton } from '../lib/globalObject';
 
+// TODO(Rugvip): Access via symbol is deprecated, remove once on 0.3.x
 const DATA_KEY = Symbol('backstage-component-data');
-
-type DataContainer = {
-  map: Map<string, unknown>;
-};
 
 type ComponentWithData<P> = ComponentType<P> & {
   [DATA_KEY]?: DataContainer;
 };
 
-type ReactNodeWithData = ReactNode & {
-  type?: { [DATA_KEY]?: DataContainer };
+type DataContainer = {
+  map: Map<string, unknown>;
 };
+
+type MaybeComponentNode = ReactNode & {
+  type?: ComponentType<any> & { [DATA_KEY]?: DataContainer };
+};
+
+// The store is bridged across versions using the global object
+const store = getGlobalSingleton(
+  'component-data-store',
+  () => new WeakMap<ComponentType<any>, DataContainer>(),
+);
 
 export function attachComponentData<P>(
   component: ComponentType<P>,
@@ -37,9 +45,11 @@ export function attachComponentData<P>(
 ) {
   const dataComponent = component as ComponentWithData<P>;
 
-  let container = dataComponent[DATA_KEY];
+  let container = store.get(component) || dataComponent[DATA_KEY];
   if (!container) {
-    container = dataComponent[DATA_KEY] = { map: new Map() };
+    container = { map: new Map() };
+    store.set(component, container);
+    dataComponent[DATA_KEY] = container;
   }
 
   if (container.map.has(type)) {
@@ -60,7 +70,12 @@ export function getComponentData<T>(
     return undefined;
   }
 
-  const container = (node as ReactNodeWithData).type?.[DATA_KEY];
+  const component = (node as MaybeComponentNode).type;
+  if (!component) {
+    return undefined;
+  }
+
+  const container = store.get(component) || component[DATA_KEY];
   if (!container) {
     return undefined;
   }

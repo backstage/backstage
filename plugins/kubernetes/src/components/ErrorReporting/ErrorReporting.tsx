@@ -17,7 +17,7 @@ import * as React from 'react';
 import { Table, TableColumn, InfoCard } from '@backstage/core';
 import { DetectedError, DetectedErrorsByCluster } from '../../error-detection';
 import { Chip, Typography, Grid } from '@material-ui/core';
-import EmptyStateImage from '../../../assets/emptystate.svg';
+import EmptyStateImage from '../../assets/emptystate.svg';
 
 type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
@@ -86,29 +86,6 @@ const sortBySeverity = (a: DetectedError, b: DetectedError) => {
   return 0;
 };
 
-export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
-  const errors = Array.from(detectedErrors.values())
-    .flat()
-    .sort(sortBySeverity);
-
-  return (
-    <>
-      {errors.length === 0 ? (
-        <InfoCard title="Error Reporting">
-          <ErrorEmptyState />
-        </InfoCard>
-      ) : (
-        <Table
-          title="Error Reporting"
-          data={errors}
-          columns={columns}
-          options={{ paging: true, search: false }}
-        />
-      )}
-    </>
-  );
-};
-
 export const ErrorEmptyState = () => {
   return (
     <Grid
@@ -131,5 +108,28 @@ export const ErrorEmptyState = () => {
         />
       </Grid>
     </Grid>
+  );
+};
+
+export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
+  const errors = Array.from(detectedErrors.values())
+    .flat()
+    .sort(sortBySeverity);
+
+  return (
+    <>
+      {errors.length === 0 ? (
+        <InfoCard title="Error Reporting">
+          <ErrorEmptyState />
+        </InfoCard>
+      ) : (
+        <Table
+          title="Error Reporting"
+          data={errors}
+          columns={columns}
+          options={{ paging: true, search: false }}
+        />
+      )}
+    </>
   );
 };

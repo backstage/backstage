@@ -37,7 +37,10 @@ export class CatalogIdentityClient {
    *
    * Throws a NotFoundError or ConflictError if 0 or multiple users are found.
    */
-  async findUser(query: UserQuery): Promise<UserEntity> {
+  async findUser(
+    query: UserQuery,
+    options?: { token?: string },
+  ): Promise<UserEntity> {
     const filter: Record<string, string> = {
       kind: 'user',
     };
@@ -45,7 +48,7 @@ export class CatalogIdentityClient {
       filter[`metadata.annotations.${key}`] = value;
     }
 
-    const { items } = await this.catalogApi.getEntities({ filter });
+    const { items } = await this.catalogApi.getEntities({ filter }, options);
 
     if (items.length !== 1) {
       if (items.length > 1) {

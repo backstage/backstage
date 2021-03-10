@@ -66,12 +66,23 @@ Update your component's entity description by adding the following lines to its
 ```yaml
 metadata:
   annotations:
-    backstage.io/techdocs-ref: dir:./
+    backstage.io/techdocs-ref: url:https://github.com/org/repo
+    # Or
+    # backstage.io/techdocs-ref: url:https://github.com/org/repo/tree/branchName/subFolder
 ```
+
+The
+[`backstage.io/techdocs-ref` annotation](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+is used by TechDocs to download the documentation source files for generating an
+Entity's TechDocs site.
 
 Create a `/docs` folder in the root of the project with at least an `index.md`
 file. _(If you add more markdown files, make sure to update the nav in the
 mkdocs.yml file to get a proper navigation for your documentation.)_
+
+> Note - Although `docs` is a popular directory name for storing documentation,
+> it can be renamed to something else and can be configured by `mkdocs.yml`. See
+> https://www.mkdocs.org/user-guide/configuration/#docs_dir
 
 The `docs/index.md` can for example have the following content:
 

@@ -109,7 +109,7 @@ export function buildProjectUrl(target: string, projectID: Number): URL {
       '/api/v4/projects',
       projectID,
       'repository/files',
-      encodeURIComponent(filePath.join('/')),
+      encodeURIComponent(decodeURIComponent(filePath.join('/'))),
       'raw',
     ].join('/');
     url.search = `?ref=${branch}`;
@@ -147,10 +147,15 @@ export async function getProjectId(
       repoIDLookup.toString(),
       getGitLabRequestOptions(config),
     );
-    const projectIDJson = await response.json();
-    const projectID = Number(projectIDJson.id);
+    const data = await response.json();
 
-    return projectID;
+    if (!response.ok) {
+      throw new Error(
+        `GitLab Error '${data.error}', ${data.error_description}`,
+      );
+    }
+
+    return Number(data.id);
   } catch (e) {
     throw new Error(`Could not get GitLab project ID for: ${target}, ${e}`);
   }

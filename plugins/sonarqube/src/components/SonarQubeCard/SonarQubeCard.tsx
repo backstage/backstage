@@ -18,14 +18,17 @@ import { Entity } from '@backstage/catalog-model';
 import {
   EmptyState,
   InfoCard,
+  InfoCardVariants,
   MissingAnnotationEmptyState,
   Progress,
   useApi,
 } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Chip, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
 import LockOpen from '@material-ui/icons/LockOpen';
+import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import React, { useMemo } from 'react';
 import { useAsync } from 'react-use';
@@ -68,10 +71,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-interface DuplicationRating {
+type DuplicationRating = {
   greaterThan: number;
   rating: '1.0' | '2.0' | '3.0' | '4.0' | '5.0';
-}
+};
 
 const defaultDuplicationRatings: DuplicationRating[] = [
   { greaterThan: 0, rating: '1.0' },
@@ -82,14 +85,14 @@ const defaultDuplicationRatings: DuplicationRating[] = [
 ];
 
 export const SonarQubeCard = ({
-  entity,
   variant = 'gridItem',
   duplicationRatings = defaultDuplicationRatings,
 }: {
-  entity: Entity;
-  variant?: string;
+  entity?: Entity;
+  variant?: InfoCardVariants;
   duplicationRatings?: DuplicationRating[];
 }) => {
+  const { entity } = useEntity();
   const sonarQubeApi = useApi(sonarQubeApiRef);
 
   const projectTitle = useProjectKey(entity);
@@ -205,12 +208,39 @@ export const SonarQubeCard = ({
                 leftSlot={<Value value={value.metrics.code_smells} />}
                 rightSlot={<Rating rating={value.metrics.sqale_rating} />}
               />
+              {value.metrics.security_review_rating && (
+                <RatingCard
+                  titleIcon={<Security />}
+                  title="Hotspots Reviewed"
+                  link={value.getSecurityHotspotsUrl()}
+                  leftSlot={
+                    <Value
+                      value={
+                        value.metrics.security_hotspots_reviewed
+                          ? `${value.metrics.security_hotspots_reviewed}%`
+                          : '—'
+                      }
+                    />
+                  }
+                  rightSlot={
+                    <Rating rating={value.metrics.security_review_rating} />
+                  }
+                />
+              )}
               <div style={{ width: '100%' }} />
               <RatingCard
                 link={value.getComponentMeasuresUrl('COVERAGE')}
                 title="Coverage"
                 leftSlot={<Percentage value={value.metrics.coverage} />}
-                rightSlot={<Value value={`${value.metrics.coverage}%`} />}
+                rightSlot={
+                  <Value
+                    value={
+                      value.metrics.coverage !== undefined
+                        ? `${value.metrics.coverage}%`
+                        : '—'
+                    }
+                  />
+                }
               />
               <RatingCard
                 title="Duplications"

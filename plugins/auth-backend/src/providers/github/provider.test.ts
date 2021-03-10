@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
+import { Profile as PassportProfile } from 'passport';
 import { GithubAuthProvider } from './provider';
+import * as helpers from '../../lib/passport';
+import { OAuthResult } from '../../lib/oauth';
+
+const mockFrameHandler = (jest.spyOn(
+  helpers,
+  'executeFrameHandlerStrategy',
+) as unknown) as jest.MockedFunction<
+  () => Promise<{
+    result: Omit<OAuthResult, 'params'> & { params: { scope: string } };
+  }>
+>;
 
 describe('GithubAuthProvider', () => {
+  const provider = new GithubAuthProvider({
+    callbackUrl: 'mock',
+    clientId: 'mock',
+    clientSecret: 'mock',
+  });
+
   describe('should transform to type OAuthResponse', () => {
-    it('when all fields are present, it should be able to map them', () => {
+    it('when all fields are present, it should be able to map them', async () => {
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
-      const rawProfile = {
+      const fullProfile = {
         id: 'uid-123',
         username: 'jimmymarkum',
         provider: 'github',
@@ -59,18 +77,17 @@ describe('GithubAuthProvider', () => {
             'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
         },
       };
-      expect(
-        GithubAuthProvider.transformOAuthResponse(
-          accessToken,
-          rawProfile,
-          params,
-        ),
-      ).toEqual(expected);
+
+      mockFrameHandler.mockResolvedValueOnce({
+        result: { fullProfile, accessToken, params },
+      });
+      const { response } = await provider.handler({} as any);
+      expect(response).toEqual(expected);
     });
 
-    it('when "email" is missing, it should be able to create the profile without it', () => {
+    it('when "email" is missing, it should be able to create the profile without it', async () => {
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
-      const rawProfile = {
+      const fullProfile = ({
         id: 'uid-123',
         username: 'jimmymarkum',
         provider: 'github',
@@ -82,7 +99,7 @@ describe('GithubAuthProvider', () => {
               'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
           },
         ],
-      };
+      } as unknown) as PassportProfile;
 
       const params = {
         scope: 'read:scope',
@@ -105,18 +122,16 @@ describe('GithubAuthProvider', () => {
         },
       };
 
-      expect(
-        GithubAuthProvider.transformOAuthResponse(
-          accessToken,
-          rawProfile,
-          params,
-        ),
-      ).toEqual(expected);
+      mockFrameHandler.mockResolvedValueOnce({
+        result: { fullProfile, accessToken, params },
+      });
+      const { response } = await provider.handler({} as any);
+      expect(response).toEqual(expected);
     });
 
-    it('when "displayName" is missing, it should be able to create the profile and map "displayName" with "username"', () => {
+    it('when "displayName" is missing, it should be able to create the profile and map "displayName" with "username"', async () => {
       const accessToken = '19xasczxcm9n7gacn9jdgm19me';
-      const rawProfile = {
+      const fullProfile = ({
         id: 'uid-123',
         username: 'jimmymarkum',
         provider: 'github',
@@ -128,7 +143,7 @@ describe('GithubAuthProvider', () => {
               'https://a1cf74336522e87f135f-2f21ace9a6cf0052456644b80fa06d4f.ssl.cf2.rackcdn.com/images/characters_opt/p-mystic-river-sean-penn.jpg',
           },
         ],
-      };
+      } as unknown) as PassportProfile;
 
       const params = {
         scope: 'read:scope',
@@ -150,19 +165,17 @@ describe('GithubAuthProvider', () => {
         },
       };
 
-      expect(
-        GithubAuthProvider.transformOAuthResponse(
-          accessToken,
-          rawProfile,
-          params,
-        ),
-      ).toEqual(expected);
+      mockFrameHandler.mockResolvedValueOnce({
+        result: { fullProfile, accessToken, params },
+      });
+      const { response } = await provider.handler({} as any);
+      expect(response).toEqual(expected);
     });
 
-    it('when "photos" is missing, it should be able to create the profile without it', () => {
+    it('when "photos" is missing, it should be able to create the profile without it', async () => {
       const accessToken =
         'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe';
-      const rawProfile = {
+      const fullProfile = {
         id: 'ipd12039',
         username: 'daveboyle',
         provider: 'gitlab',
@@ -195,13 +208,11 @@ describe('GithubAuthProvider', () => {
         },
       };
 
-      expect(
-        GithubAuthProvider.transformOAuthResponse(
-          accessToken,
-          rawProfile,
-          params,
-        ),
-      ).toEqual(expected);
+      mockFrameHandler.mockResolvedValueOnce({
+        result: { fullProfile, accessToken, params },
+      });
+      const { response } = await provider.handler({} as any);
+      expect(response).toEqual(expected);
     });
   });
 });

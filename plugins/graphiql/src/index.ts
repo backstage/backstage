@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export { plugin, GraphiQLPage } from './plugin';
+export {
+  graphiqlPlugin,
+  graphiqlPlugin as plugin,
+  GraphiQLPage,
+} from './plugin';
 export { GraphiQLPage as Router } from './components';
 export * from './lib/api';
 export * from './route-refs';

@@ -13,15 +13,6 @@ configuration options for TechDocs.
 # File: app-config.yaml
 
 techdocs:
-  # TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
-
-  requestUrl: http://localhost:7000/api/techdocs
-
-  # Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
-  # to serve files from either a local directory or an External storage provider.
-
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-
   # generators.techdocs can have two values: 'docker' or 'local'. This is to determine how to run the generator - whether to
   # spin up the techdocs-container docker image or to run mkdocs locally (assuming all the dependencies are taken care of).
   # You want to change this to 'local' if you are running Backstage using your own custom Docker setup and want to avoid running
@@ -44,7 +35,7 @@ techdocs:
   # or you want to use External storage providers like Google Cloud Storage, AWS S3, etc.
 
   publisher:
-    # techdocs.publisher.type can be - 'local' or 'googleGcs' or 'awsS3' (azureStorage to be available in future).
+    # techdocs.publisher.type can be - 'local' or 'googleGcs' or 'awsS3' or 'azureBlobStorage'.
     # When set to 'local', techdocs-backend will create a 'static' directory at its root to store generated documentation files.
     # When set to 'googleGcs', techdocs-backend will use a Google Cloud Storage Bucket to store generated documentation files.
     # When set to 'awsS3', techdocs-backend will use an Amazon Web Service (AWS) S3 bucket to store generated documentation files.
@@ -84,4 +75,38 @@ techdocs:
       # https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
       region:
         $env: AWS_REGION
+
+      # (Optional) Endpoint URI to send requests to.
+      # If not set, the default endpoint is built from the configured region.
+      # https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
+      endpoint:
+        $env: AWS_ENDPOINT
+
+    # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
+
+    azureBlobStorage:
+      # (Required) Azure Blob Storage Container Name
+      containerName: 'techdocs-storage'
+
+      # (Required) An account name is required to write to a storage blob container.
+      # https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key
+      credentials:
+        accountName:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
+        # (Optional) An account key is required to write to a storage container.
+        # If missing,AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET environment variable will be used.
+        # https://docs.microsoft.com/en-us/azure/storage/common/storage-auth?toc=/azure/storage/blobs/toc.json
+        accountKey:
+          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
+
+  # (Optional and Legacy) TechDocs makes API calls to techdocs-backend using this URL. e.g. get docs of an entity, get metadata, etc.
+  # You don't have to specify this anymore.
+
+  requestUrl: http://localhost:7000/api/techdocs
+
+  # (Optional and Legacy) Just another route in techdocs-backend where TechDocs requests the static files from. This URL uses an HTTP middleware
+  # to serve files from either a local directory or an External storage provider.
+  # You don't have to specify this anymore.
+
+  storageUrl: http://localhost:7000/api/techdocs/static/docs
 ```

@@ -22,15 +22,13 @@ import {
   createMockEntity,
   mockDefaultLoadingState,
   MockComputeEngine,
-} from '../../utils/mockData';
-import {
   MockConfigProvider,
   MockCostInsightsApiProvider,
   MockCurrencyProvider,
   MockBillingDateProvider,
   MockScrollProvider,
   MockLoadingProvider,
-} from '../../utils/tests';
+} from '../../testUtils';
 import { Duration, Entity, Product } from '../../types';
 
 // suppress recharts componentDidUpdate warnings
@@ -77,17 +75,6 @@ const renderProductInsightsCardInTestApp = async (
   );
 
 describe('<ProductInsightsCard/>', () => {
-  it('Renders the scroll anchors', async () => {
-    const rendered = await renderProductInsightsCardInTestApp(
-      mockProductCost,
-      MockComputeEngine,
-      Duration.P30D,
-    );
-    expect(
-      rendered.queryByTestId(`scroll-test-compute-engine`),
-    ).toBeInTheDocument();
-  });
-
   it('Should render the right subheader for products with cost data', async () => {
     const entity = {
       ...mockProductCost,

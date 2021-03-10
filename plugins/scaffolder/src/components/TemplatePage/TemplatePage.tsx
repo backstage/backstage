@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
   errorApiRef,
@@ -22,169 +21,194 @@ import {
   Lifecycle,
   Page,
   useApi,
+  useRouteRef,
 } from '@backstage/core';
-import {
-  catalogApiRef,
-  entityRoute,
-  entityRouteParams,
-} from '@backstage/plugin-catalog';
 import { LinearProgress } from '@material-ui/core';
-import { IChangeEvent } from '@rjsf/core';
-import React, { useState, useCallback } from 'react';
-import { generatePath, Navigate } from 'react-router';
+import { FormValidation, IChangeEvent } from '@rjsf/core';
+import parseGitUrl from 'git-url-parse';
+import React, { useCallback, useState } from 'react';
+import { generatePath, useNavigate, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
-import { rootRoute } from '../../routes';
-import { JobStatusModal } from '../JobStatusModal';
+import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { useJobPolling } from '../hooks/useJobPolling';
+import { RepoUrlPicker } from '../fields';
+import { JsonObject } from '@backstage/config';
 
-const useTemplate = (
-  templateName: string,
-  catalogApi: typeof catalogApiRef.T,
+const useTemplateParameterSchema = (templateName: string) => {
+  const scaffolderApi = useApi(scaffolderApiRef);
+  const { value, loading, error } = useAsync(
+    () =>
+      scaffolderApi.getTemplateParameterSchema({
+        name: templateName,
+        kind: 'template',
+        namespace: 'default',
+      }),
+    [scaffolderApi, templateName],
+  );
+  return { schema: value, loading, error };
+};
+
+function isObject(obj: unknown): obj is JsonObject {
+  return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+}
+
+export const createValidator = (rootSchema: JsonObject) => {
+  function validate(
+    schema: JsonObject,
+    formData: JsonObject,
+    errors: FormValidation,
+  ) {
+    const schemaProps = schema.properties;
+    if (!isObject(schemaProps)) {
+      return;
+    }
+
+    for (const [key, propData] of Object.entries(formData)) {
+      const propErrors = errors[key];
+
+      if (isObject(propData)) {
+        const propSchemaProps = schemaProps[key];
+        if (isObject(propSchemaProps)) {
+          validate(
+            propSchemaProps,
+            propData as JsonObject,
+            propErrors as FormValidation,
+          );
+        }
+      } else {
+        const propSchema = schemaProps[key];
+        if (
+          isObject(propSchema) &&
+          propSchema['ui:field'] === 'RepoUrlPicker'
+        ) {
+          try {
+            const { host, searchParams } = new URL(`https://${propData}`);
+            if (
+              !host ||
+              !searchParams.get('owner') ||
+              !searchParams.get('repo')
+            ) {
+              propErrors.addError('Incomplete repository location provided');
+            }
+          } catch {
+            propErrors.addError('Unable to parse the Repository URL');
+          }
+        }
+      }
+    }
+  }
+
+  return (formData: JsonObject, errors: FormValidation) => {
+    validate(rootSchema, formData, errors);
+    return errors;
+  };
+};
+
+const storePathValidator = (
+  formData: { storePath?: string },
+  errors: FormValidation,
 ) => {
-  const { value, loading, error } = useAsync(async () => {
-    const response = await catalogApi.getEntities({
-      filter: { kind: 'Template', 'metadata.name': templateName },
-    });
-    return response.items as TemplateEntityV1alpha1[];
-  });
-  return { template: value?.[0], loading, error };
-};
+  const { storePath } = formData;
+  if (!storePath) {
+    errors.storePath.addError('Store path is required and not present');
+    return errors;
+  }
 
-const OWNER_REPO_SCHEMA = {
-  $schema: 'http://json-schema.org/draft-07/schema#' as const,
-  required: ['storePath', 'owner'],
-  properties: {
-    owner: {
-      type: 'string' as const,
-      title: 'Owner',
-      description: 'Who is going to own this component',
-    },
-    storePath: {
-      format: 'GitHub user or org / Repo name',
-      type: 'string' as const,
-      title: 'Store path',
-      description: 'GitHub store path in org/repo format',
-    },
-    access: {
-      type: 'string' as const,
-      title: 'Access',
-      description: 'Who should have access, in org/team or user format',
-    },
-  },
-};
+  try {
+    const parsedUrl = parseGitUrl(storePath);
 
-const REPO_FORMAT = {
-  'GitHub user or org / Repo name': /[^\/]*\/[^\/]*/,
+    if (!parsedUrl.resource || !parsedUrl.owner || !parsedUrl.name) {
+      if (parsedUrl.resource === 'dev.azure.com') {
+        errors.storePath.addError(
+          "The store path should be formatted like https://dev.azure.com/{org}/{project}/_git/{repo} for Azure URL's",
+        );
+      } else {
+        errors.storePath.addError(
+          'The store path should be a complete Git URL to the new repository location. For example: https://github.com/{owner}/{repo}',
+        );
+      }
+    }
+  } catch (ex) {
+    errors.storePath.addError(
+      `Failed validation of the store path with message ${ex.message}`,
+    );
+  }
+
+  return errors;
 };
 
 export const TemplatePage = () => {
   const errorApi = useApi(errorApiRef);
-  const catalogApi = useApi(catalogApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
-  const [catalogLink, setCatalogLink] = useState<string | undefined>();
-  const { template, loading } = useTemplate(templateName, catalogApi);
+  const navigate = useNavigate();
+  const rootLink = useRouteRef(rootRouteRef);
+  const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
-  const [modalOpen, setModalOpen] = useState(false);
   const handleFormReset = () => setFormState({});
+
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
     [setFormState, formState],
   );
 
-  const [jobId, setJobId] = useState<string | null>(null);
-  const job = useJobPolling(jobId, async job => {
-    if (!job.metadata.catalogInfoUrl) {
-      errorApi.post(
-        new Error(`No catalogInfoUrl returned from the scaffolder`),
-      );
-      return;
-    }
-
-    try {
-      const {
-        entities: [createdEntity],
-      } = await catalogApi.addLocation({ target: job.metadata.catalogInfoUrl });
-
-      const resolvedPath = generatePath(
-        `/catalog/${entityRoute.path}`,
-        entityRouteParams(createdEntity),
-      );
-
-      setCatalogLink(resolvedPath);
-    } catch (ex) {
-      errorApi.post(
-        new Error(
-          `Something went wrong trying to add the new 'catalog-info.yaml' to the catalog`,
-        ),
-      );
-    }
-  });
-
   const handleCreate = async () => {
     try {
-      const jobId = await scaffolderApi.scaffold(templateName, formState);
-      setJobId(jobId);
-      setModalOpen(true);
+      const id = await scaffolderApi.scaffold(templateName, formState);
+
+      navigate(generatePath(`${rootLink()}/tasks/:taskId`, { taskId: id }));
     } catch (e) {
       errorApi.post(e);
     }
   };
 
-  if (!loading && !template) {
-    errorApi.post(new Error('Template was not found.'));
-    return <Navigate to={rootRoute.path} />;
+  if (error) {
+    errorApi.post(new Error(`Failed to load template, ${error}`));
+    return <Navigate to={rootLink()} />;
   }
-
-  if (template && !template?.spec?.schema) {
-    errorApi.post(
-      new Error(
-        'Template schema is corrupted, please check the template.yaml file.',
-      ),
-    );
-    return <Navigate to={rootRoute.path} />;
+  if (!loading && !schema) {
+    errorApi.post(new Error('Template was not found.'));
+    return <Navigate to={rootLink()} />;
   }
 
   return (
     <Page themeId="home">
       <Header
-        pageTitleOverride="Create a new component"
+        pageTitleOverride="Create a New Component"
         title={
           <>
-            Create a new component <Lifecycle alpha shorthand />
+            Create a New Component <Lifecycle alpha shorthand />
           </>
         }
         subtitle="Create new software components using standard templates"
       />
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
-        <JobStatusModal
-          job={job}
-          toCatalogLink={catalogLink}
-          open={modalOpen}
-          onModalClose={() => setModalOpen(false)}
-        />
-        {template && (
-          <InfoCard title={template.metadata.title} noPadding>
+        {schema && (
+          <InfoCard title={schema.title} noPadding>
             <MultistepJsonForm
               formData={formState}
+              fields={{ RepoUrlPicker }}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
-              steps={[
-                {
-                  label: 'Fill in template parameters',
-                  schema: template.spec.schema,
-                },
-                {
-                  label: 'Choose owner and repo',
-                  schema: OWNER_REPO_SCHEMA,
-                  customFormats: REPO_FORMAT,
-                },
-              ]}
+              steps={schema.steps.map(step => {
+                // TODO: Can delete this function when the migration from v1 to v2 beta is completed
+                // And just have the default validator for all fields.
+                if ((step.schema as any)?.properties?.storePath) {
+                  return {
+                    ...step,
+                    validate: (a, b) => storePathValidator(a, b),
+                  };
+                }
+
+                return {
+                  ...step,
+                  validate: createValidator(step.schema),
+                };
+              })}
             />
           </InfoCard>
         )}

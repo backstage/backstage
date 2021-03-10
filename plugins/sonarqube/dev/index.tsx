@@ -15,21 +15,61 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Content,
-  createPlugin,
-  createRouteRef,
-  Header,
-  Page,
-} from '@backstage/core';
-import { createDevApp } from '@backstage/dev-utils';
+import { Content, Header, Page } from '@backstage/core';
+import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
 import { Grid } from '@material-ui/core';
 import React from 'react';
-import { SonarQubeCard } from '../src';
+import { EntitySonarQubeCard, sonarQubePlugin } from '../src';
 import { FindingSummary, SonarQubeApi, sonarQubeApiRef } from '../src/api';
 import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '../src/components/useProjectKey';
 
+const entity = (name?: string) =>
+  ({
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      annotations: {
+        [SONARQUBE_PROJECT_KEY_ANNOTATION]: name,
+      },
+      name: name,
+    },
+  } as Entity);
+
 createDevApp()
+  .registerPlugin(sonarQubePlugin)
+  .addPage({
+    title: 'Cards',
+    element: (
+      <Page themeId="home">
+        <Header title="SonarQube" />
+        <Content>
+          <Grid container>
+            <EntityGridItem xs={12} md={6} entity={entity('empty')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} md={6} entity={entity('error')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} md={6} entity={entity('never')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} md={6} entity={entity('not-computed')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} md={6} entity={entity('failed')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} md={6} entity={entity('passed')}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+            <EntityGridItem xs={12} entity={entity(undefined)}>
+              <EntitySonarQubeCard />
+            </EntityGridItem>
+          </Grid>
+        </Content>
+      </Page>
+    ),
+  })
   .registerApi({
     api: sonarQubeApiRef,
     deps: {},
@@ -59,6 +99,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             case 'failed':
@@ -70,6 +112,7 @@ createDevApp()
                   reliability_rating: '2.0',
                   vulnerabilities: '18',
                   security_rating: '3.0',
+                  security_review_rating: '3.0',
                   code_smells: '22',
                   sqale_rating: '5.0',
                   coverage: '15.7',
@@ -78,6 +121,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             case 'passed':
@@ -89,6 +134,8 @@ createDevApp()
                   reliability_rating: '1.0',
                   vulnerabilities: '0',
                   security_rating: '1.0',
+                  security_hotspots_reviewed: '100.0',
+                  security_review_rating: '1.0',
                   code_smells: '0',
                   sqale_rating: '1.0',
                   coverage: '100.0',
@@ -97,6 +144,8 @@ createDevApp()
                 projectUrl: `/#${componentKey}`,
                 getIssuesUrl: i => `/#${componentKey}/issues/${i}`,
                 getComponentMeasuresUrl: i => `/#${componentKey}/measures/${i}`,
+                getSecurityHotspotsUrl: () =>
+                  `#${componentKey}/security_hotspots`,
               } as FindingSummary;
 
             default:
@@ -105,58 +154,4 @@ createDevApp()
         },
       } as SonarQubeApi),
   })
-  .registerPlugin(
-    createPlugin({
-      id: 'defectdojo-demo',
-      register({ router }) {
-        const entity = (name?: string) =>
-          ({
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              annotations: {
-                [SONARQUBE_PROJECT_KEY_ANNOTATION]: name,
-              },
-              name: name,
-            },
-          } as Entity);
-
-        const ExamplePage = () => (
-          <Page themeId="home">
-            <Header title="SonarQube" />
-            <Content>
-              <Grid container>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('empty')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('error')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('never')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('not-computed')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('failed')} />
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <SonarQubeCard entity={entity('passed')} />
-                </Grid>
-                <Grid item xs={12}>
-                  <SonarQubeCard entity={entity(undefined)} />
-                </Grid>
-              </Grid>
-            </Content>
-          </Page>
-        );
-
-        router.addRoute(
-          createRouteRef({ path: '/', title: 'SonarQube' }),
-          ExamplePage,
-        );
-      },
-    }),
-  )
   .render();

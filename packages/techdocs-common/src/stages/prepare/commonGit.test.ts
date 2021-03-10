@@ -16,8 +16,8 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { CommonGitPreparer } from './commonGit';
 import { checkoutGitRepository } from '../../helpers';
+import { CommonGitPreparer } from './commonGit';
 
 function normalizePath(path: string) {
   return path
@@ -29,6 +29,7 @@ function normalizePath(path: string) {
 jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
   checkoutGitRepository: jest.fn(() => '/tmp/backstage-repo/org/name/branch'),
+  getLastCommitTimestamp: jest.fn(() => 12345678),
 }));
 
 const createMockEntity = (annotations = {}) => {
@@ -57,9 +58,9 @@ describe('commonGit preparer', () => {
         'github:https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component',
     });
 
-    const tempDocsPath = await preparer.prepare(mockEntity);
+    const { preparedDir } = await preparer.prepare(mockEntity);
     expect(checkoutGitRepository).toHaveBeenCalledTimes(1);
-    expect(normalizePath(tempDocsPath)).toEqual(
+    expect(normalizePath(preparedDir)).toEqual(
       '/tmp/backstage-repo/org/name/branch/plugins/techdocs-backend/examples/documented-component',
     );
   });
@@ -72,9 +73,9 @@ describe('commonGit preparer', () => {
         'gitlab:https://gitlab.com/xesjkeee/go-logger/blob/master/catalog-info.yaml',
     });
 
-    const tempDocsPath = await preparer.prepare(mockEntity);
+    const { preparedDir } = await preparer.prepare(mockEntity);
     expect(checkoutGitRepository).toHaveBeenCalledTimes(2);
-    expect(normalizePath(tempDocsPath)).toEqual(
+    expect(normalizePath(preparedDir)).toEqual(
       '/tmp/backstage-repo/org/name/branch/catalog-info.yaml',
     );
   });
@@ -87,9 +88,9 @@ describe('commonGit preparer', () => {
         'azure/api:https://dev.azure.com/backstage-org/backstage-project/_git/template-repo?path=%2Ftemplate.yaml',
     });
 
-    const tempDocsPath = await preparer.prepare(mockEntity);
+    const { preparedDir } = await preparer.prepare(mockEntity);
     expect(checkoutGitRepository).toHaveBeenCalledTimes(3);
-    expect(normalizePath(tempDocsPath)).toEqual(
+    expect(normalizePath(preparedDir)).toEqual(
       '/tmp/backstage-repo/org/name/branch/template.yaml',
     );
   });

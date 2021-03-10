@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+export {
+  orgPlugin,
+  orgPlugin as plugin,
+  EntityGroupProfileCard,
+  EntityMembersListCard,
+  EntityOwnershipCard,
+  EntityUserProfileCard,
+} from './plugin';
 export * from './components';

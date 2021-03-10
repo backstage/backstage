@@ -28,11 +28,18 @@ export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
 
   /**
-   * Logger instance to log any 5xx errors.
+   * Logger instance to log errors.
    *
    * If not specified, the root logger will be used.
    */
   logger?: Logger;
+
+  /**
+   * Whether any error < 4XX should be logged or not.
+   *
+   * If not specified, by default log any 5xx errors.
+   */
+  logClientErrors?: boolean;
 };
 
 /**
@@ -59,14 +66,13 @@ export function errorHandler(
     type: 'errorHandler',
   });
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   return (
     error: Error,
     _request: Request,
-    response: Response,
+    res: Response,
     next: NextFunction,
   ) => {
-    if (response.headersSent) {
+    if (res.headersSent) {
       // If the headers have already been sent, do not send the response again
       // as this will throw an error in the backend.
       next(error);
@@ -76,11 +82,13 @@ export function errorHandler(
     const status = getStatusCode(error);
     const message = showStackTraces ? error.stack : error.message;
 
-    if (logger && status >= 500) {
+    if (options.logClientErrors || status >= 500) {
       logger.error(error);
     }
 
-    response.status(status).send(message);
+    res.status(status);
+    res.setHeader('content-type', 'text/plain');
+    res.send(message);
   };
 }
 
@@ -101,6 +109,8 @@ function getStatusCode(error: Error): number {
 
   // Handle well-known error types
   switch (error.name) {
+    case errors.NotModifiedError.name:
+      return 304;
     case errors.InputError.name:
       return 400;
     case errors.AuthenticationError.name:

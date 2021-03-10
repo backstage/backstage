@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { createAuditRouteRef, rootRouteRef, viewAuditRouteRef } from './plugin';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import AuditList from './components/AuditList';
 import AuditView, { AuditViewContent } from './components/AuditView';
 import CreateAudit, { CreateAuditContent } from './components/CreateAudit';
@@ -25,32 +25,38 @@ import { LIGHTHOUSE_WEBSITE_URL_ANNOTATION } from '../constants';
 import { AuditListForEntity } from './components/AuditList/AuditListForEntity';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isLighthouseAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[LIGHTHOUSE_WEBSITE_URL_ANNOTATION]);
 
 export const Router = () => (
   <Routes>
-    <Route path={`/${rootRouteRef.path}`} element={<AuditList />} />
-    <Route path={`/${viewAuditRouteRef.path}`} element={<AuditView />} />
-    <Route path={`/${createAuditRouteRef.path}`} element={<CreateAudit />} />
+    <Route path="/" element={<AuditList />} />
+    <Route path="/audit/:id" element={<AuditView />} />
+    <Route path="/create-audit" element={<CreateAudit />} />
   </Routes>
 );
 
-export const EmbeddedRouter = ({ entity }: { entity: Entity }) =>
-  !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState
-      annotation={LIGHTHOUSE_WEBSITE_URL_ANNOTATION}
-    />
-  ) : (
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const EmbeddedRouter = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isLighthouseAvailable(entity)) {
+    return (
+      <MissingAnnotationEmptyState
+        annotation={LIGHTHOUSE_WEBSITE_URL_ANNOTATION}
+      />
+    );
+  }
+
+  return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<AuditListForEntity />} />
-      <Route
-        path={`/${viewAuditRouteRef.path}`}
-        element={<AuditViewContent />}
-      />
-      <Route
-        path={`/${createAuditRouteRef.path}`}
-        element={<CreateAuditContent />}
-      />
+      <Route path="/" element={<AuditListForEntity />} />
+      <Route path="/audit/:id" element={<AuditViewContent />} />
+      <Route path="/create-audit" element={<CreateAuditContent />} />
     </Routes>
   );
+};

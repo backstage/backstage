@@ -20,3 +20,4 @@ export {
 } from './config';
 export type { GitLabIntegrationConfig } from './config';
 export { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
+export { GitLabIntegration } from './GitLabIntegration';

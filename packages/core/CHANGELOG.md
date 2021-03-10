@@ -1,5 +1,183 @@
 # @backstage/core
 
+## 0.7.0
+
+### Minor Changes
+
+- 4c049a1a1: - Adds onClick and other props to IconLinkVertical;
+
+  - Allows TriggerButton component to render when pager duty key is missing;
+  - Refactors TriggerButton and PagerDutyCard not to have shared state;
+  - Removes the `action` prop of the IconLinkVertical component while adding `onClick`.
+
+    Instead of having an action including a button with onClick, now the whole component can be clickable making it easier to implement and having a better UX.
+
+    Before:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      action: <Button onClick={myAction} />,
+      icon: <MyIcon onClick={myAction} />,
+    };
+    ```
+
+    After:
+
+    ```ts
+    const myLink: IconLinkVerticalProps = {
+      label: 'Click me',
+      onClick: myAction,
+      icon: <MyIcon />,
+    };
+    ```
+
+### Patch Changes
+
+- 40c0fdbaa: Added support for optional external route references. By setting `optional: true` when creating an `ExternalRouteRef` it is no longer a requirement to bind the route in the app. If the app isn't bound `useRouteRef` will return `undefined`.
+- 2a271d89e: Internal refactor of how component data is access to avoid polluting components and make it possible to bridge across versions.
+- bece09057: Improve rendering of multiple support item links in the `SupportButton`
+- 169f48deb: Added the color prop to TrendLine from the Sparklines props types to be able to have custom colors.
+- 8a1566719: Added a new useSupportConfig hook that reads a new `app.support` config key. Also updated the SupportButton and ErrorPage components to use the new config.
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+  - @backstage/core-api@0.2.12
+
+## 0.6.3
+
+### Patch Changes
+
+- 3a58084b6: The `FlatRoutes` components now renders the not found page of the app if no routes are matched.
+- e799e74d4: Fix `OverflowTooltip` cutting off the bottom of letters like "g" and "y".
+- 1407b34c6: More informative error message for missing ApiContext.
+- 9615e68fb: Forward link styling of `EntityRefLink` and `EnriryRefLinks` into the underling
+  `Link`.
+- 49f9b7346: Deprecate `type` of `ItemCard` and introduce new `subtitle` which allows passing
+  react nodes.
+- 3a58084b6: Created separate `AppContext` type to be returned from `useApp` rather than the `BackstageApp` itself. The `AppContext` type includes but deprecates `getPlugins`, `getProvider`, `getRouter`, and `getRoutes`. In addition, the `AppContext` adds a new `getComponents` method which providers access to the app components.
+- 2c1f2a7c2: Introduced generic OverflowTooltip component for cases where longer text needs to be truncated with ellipsis and show hover tooltip with full text. This is particularly useful in the cases where longer description text is rendered in table. e.g. CatalogTable and ApiExplorerTable.
+- Updated dependencies [3a58084b6]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [b6c4f485d]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a1f5e6545]
+  - @backstage/core-api@0.2.11
+  - @backstage/config@0.1.3
+
+## 0.6.2
+
+### Patch Changes
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+- f4c2bcf54: Use a more strict type for `variant` of cards.
+- 07e226872: Export Select component
+- f62e7abe5: Make sure that SidebarItems are also active when on sub route.
+- 96f378d10: Add support for custom empty state of `Table` components.
+
+  You can now optionally pass `emptyContent` to `Table` that is displayed
+  if the table has now rows.
+
+- 688b73110: Add Breadcrumbs component
+- Updated dependencies [f10950bd2]
+- Updated dependencies [fd3f2a8c0]
+  - @backstage/core-api@0.2.10
+
+## 0.6.1
+
+### Patch Changes
+
+- b51ee6ece: Fixed type inference of `createRouteRef`.
+
+## 0.6.0
+
+### Minor Changes
+
+- 21e624ba9: Closes #3556
+  The scroll bar of collapsed sidebar is now hidden without full screen.
+
+  ![image](https://user-images.githubusercontent.com/46953622/105390193-0bfd0080-5c19-11eb-8e86-2161bbe6e8d9.png)
+
+### Patch Changes
+
+- 12ece98cd: Add className to the SidebarItem
+- d82246867: Update `WarningPanel` component to use accordion-style expansion
+- 5fa3bdb55: Add `href` in addition to `onClick` to `ItemCard`. Ensure that the height of a
+  `ItemCard` with and without tags is equal.
+- da9f53c60: Add a `prop` union for `SignInPage` that allows it to be used for just a single provider, with inline errors, and optionally with automatic sign-in.
+- 32c95605f: Fix check that determines whether popup was closed or the messaging was misconfigured.
+- 54c7d02f7: Introduce `TabbedLayout` for creating tabs that are routed.
+
+  ```typescript
+  <TabbedLayout>
+    <TabbedLayout.Route path="/example" title="Example tab">
+      <div>This is rendered under /example/anything-here route</div>
+    </TabbedLayout.Route>
+  </TabbedLayout>
+  ```
+
+- Updated dependencies [c810082ae]
+  - @backstage/theme@0.2.3
+
+## 0.5.0
+
+### Minor Changes
+
+- efd6ef753: Removed `InfoCard` variant `height100`, originally deprecated in [#2826](https://github.com/backstage/backstage/pull/2826).
+
+  If your component still relies on this variant, simply replace it with `gridItem`.
+
+- a187b8ad0: Removed deprecated `router.registerRoute` method in `createPlugin`.
+
+  Deprecated `router.addRoute` method in `createPlugin`.
+
+  Replace usage of the above two components with a routable extension.
+
+  For example, given the following:
+
+  ```ts
+  import { createPlugin } from '@backstage/core';
+  import { MyPage } from './components/MyPage';
+  import { rootRoute } from './routes';
+
+  export const plugin = createPlugin({
+    id: 'my-plugin',
+    register({ router }) {
+      router.addRoute(rootRoute, MyPage);
+    },
+  });
+  ```
+
+  Migrate to
+
+  ```ts
+  import { createPlugin, createRoutableExtension } from '@backstage/core';
+  import { rootRoute } from './routes';
+
+  export const plugin = createPlugin({
+    id: 'my-plugin',
+    routes: {
+      root: rootRoute,
+    },
+  });
+
+  export const MyPage = plugin.provide(
+    createRoutableExtension({
+      component: () => import('./components/MyPage').then(m => m.MyPage),
+      mountPoint: rootRoute,
+    }),
+  );
+  ```
+
+  And then use `MyPage` like this in the app:
+
+  ```tsx
+  <FlatRoutes>
+  ...
+    <Route path='/my-path' element={<MyPage />}>
+  ...
+  </FlatRoutes>
+  ```
+
 ## 0.4.4
 
 ### Patch Changes

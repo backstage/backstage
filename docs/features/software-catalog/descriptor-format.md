@@ -54,6 +54,11 @@ software catalog API.
     "labels": {
       "system": "public-websites"
     },
+    "links": [{
+      "url": "https://admin.example-org.com",
+      "title": "Admin Dashboard",
+      "icon": "dashboard"
+    }],
     "tags": ["java"],
     "name": "artist-web",
     "uid": "2152f463-549d-4d8d-a94d-ce2b7676c6e2"
@@ -81,6 +86,10 @@ metadata:
     circleci.com/project-slug: github/example-org/artist-website
   tags:
     - java
+  links:
+    - url: https://admin.example-org.com
+      title: Admin Dashboard
+      icon: dashboard
 spec:
   type: website
   lifecycle: production
@@ -129,6 +138,19 @@ spec:
   owner: petstore@example.com
   definition:
     $text: https://petstore.swagger.io/v2/swagger.json
+```
+
+Note that to be able to read from targets that are outside of the normal
+integration points such as `github.com`, you'll need to explicitly allow it by
+adding an entry in the `backend.reading.allow` list. For example:
+
+```yml
+backend:
+  baseUrl: ...
+  reading:
+    allow:
+      - host: example.com
+      - host: '*.examples.org'
 ```
 
 ## Common to All Kinds: The Envelope
@@ -183,7 +205,8 @@ described below.
 
 In addition to these, you may add any number of other fields directly under
 `metadata`, but be aware that general plugins and tools may not be able to
-understand their semantics.
+understand their semantics. See [Extending the model](extending-the-model.md)
+for more information.
 
 ### `name` [required]
 
@@ -192,8 +215,8 @@ entity, and for machines and other components to reference the entity (e.g. in
 URLs or from other entity specification files).
 
 Names must be unique per kind, within a given namespace (if specified), at any
-point in time. Names may be reused at a later time, after an entity is deleted
-from the registry.
+point in time. This uniqueness constraint is case insensitive. Names may be
+reused at a later time, after an entity is deleted from the registry.
 
 Names are required to follow a certain format. Entities that do not follow those
 rules will not be accepted for registration in the catalog. The ruleset is
@@ -204,19 +227,7 @@ follows.
 - Must consist of sequences of `[a-z0-9A-Z]` possibly separated by one of
   `[-_.]`
 
-Example: `visits-tracking-service`, `CircleciBuildsDump_avro_gcs`
-
-In addition to this, names are passed through a normalization function and then
-compared to the same normalized form of other entity names and made sure to not
-collide. This rule of uniqueness exists to avoid situations where e.g. both
-`my-component` and `MyComponent` are registered side by side, which leads to
-confusion and risk. The normalization function is also configurable, but the
-default behavior is as follows.
-
-- Strip out all characters outside of the set `[a-zA-Z0-9]`
-- Convert to lowercase
-
-Example: `CircleciBuildsDs_avro_gcs` -> `circlecibuildsdsavrogcs`
+Example: `visits-tracking-service`, `CircleciBuildsDumpV2_avro_gcs`
 
 ### `namespace` [optional]
 
@@ -226,7 +237,8 @@ the same format restrictions as `name` above.
 This field is optional, and currently has no special semantics apart from
 bounding the name uniqueness constraint if specified. It is reserved for future
 use and may get broader semantic implication later. For now, it is recommended
-to not specify a namespace unless you have specific need to do so.
+to not specify a namespace unless you have specific need to do so. This means
+the entity belongs to the `"default"` namespace.
 
 Namespaces may also be part of the catalog, and are `v1` / `Namespace` entities,
 i.e. not Backstage specific but the same as in Kubernetes.
@@ -256,7 +268,6 @@ most 253 characters in total. The name part must be sequences of `[a-zA-Z0-9]`
 separated by any of `[-_.]`, at most 63 characters in total.
 
 The `backstage.io/` prefix is reserved for use by Backstage core components.
-Some keys such as `system` also have predefined semantics.
 
 Values are strings that follow the same restrictions as `name` above.
 
@@ -300,6 +311,34 @@ This field is optional, and currently has no special semantics.
 
 Each tag must be sequences of `[a-z0-9]` separated by `-`, at most 63 characters
 in total.
+
+### `links` [optional]
+
+A list of external hyperlinks related to the entity. Links can provide
+additional contextual information that may be located outside of Backstage
+itself. For example, an admin dashboard or external CMS page.
+
+Users may add links to descriptor YAML files to provide additional reference
+information to external content & resources. Links are not intended to drive any
+additional functionality within Backstage, which is best left to `annotations`
+and `labels`. It is recommended to use links only when an equivalent well-known
+`annotation` does not cover a similar use case.
+
+Fields of a link are:
+
+| Field   | Type   | Description                                                                          |
+| ------- | ------ | ------------------------------------------------------------------------------------ |
+| `url`   | String | [Required] A `url` in a standard `uri` format (e.g. `https://example.com/some/page`) |
+| `title` | String | [Optional] A user friendly display name for the link.                                |
+| `icon`  | String | [Optional] A key representing a visual icon to be displayed in the UI.               |
+
+_NOTE_: The `icon` field value is meant to be a semantic key that will map to a
+specific icon that may be provided by an icon library (e.g. `material-ui`
+icons). These keys should be a sequence of `[a-z0-9A-Z]`, possibly separated by
+one of `[-_.]`. Backstage may support some basic icons out of the box, but the
+Backstage integrator will ultimately be left to provide the appropriate icon
+component mappings. A generic fallback icon would be provided if a mapping
+cannot be resolved.
 
 ## Common to All Kinds: Relations
 
@@ -483,49 +522,90 @@ consumed by the component, e.g. `artist-api`. This field is optional.
 
 ## Kind: Template
 
-Describes the following entity kind:
+The following describes the following entity kind:
 
-| Field        | Value                   |
-| ------------ | ----------------------- |
-| `apiVersion` | `backstage.io/v1alpha1` |
-| `kind`       | `Template`              |
+| Field        | Value                  |
+| ------------ | ---------------------- |
+| `apiVersion` | `backstage.io/v1beta2` |
+| `kind`       | `Template`             |
 
-A Template describes a skeleton for use with the Scaffolder. It is used for
-describing what templating library is supported, and also for documenting the
-variables that the template requires using
-[JSON Forms Schema](https://jsonforms.io/).
+If you're looking for docs on `v1alpha1` you can find them
+[here](../software-templates/legacy.md)
+
+A template definition describes both the parameters that are rendered in the
+frontend part of the scaffolding wizard, and the steps that are executed when
+scaffolding that component.
 
 Descriptor files for this kind may look as follows.
 
 ```yaml
-apiVersion: backstage.io/v1alpha1
+apiVersion: backstage.io/v1beta2
 kind: Template
+# some metadata about the template itself
 metadata:
-  name: react-ssr-template
-  title: React SSR Template
-  description:
-    Next.js application skeleton for creating isomorphic web applications.
-  tags:
-    - recommended
-    - react
+  name: v1beta2-demo
+  title: Test Action template
+  description: scaffolder v1beta2 template demo
 spec:
-  owner: web@example.com
-  templater: cookiecutter
-  type: website
-  path: '.'
-  schema:
-    required:
-      - component_id
-      - description
-    properties:
-      component_id:
-        title: Name
-        type: string
-        description: Unique name of the component
-      description:
-        title: Description
-        type: string
-        description: Description of the component
+  owner: backstage/techdocs-core
+  type: service
+
+  # these are the steps which are rendered in the frontend with the form input
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  # here's the steps that are executed in series in the scaffolder backend
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      input:
+        url: ./template
+        values:
+          name: '{{ parameters.name }}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: 'This is {{ parameters.name }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -533,7 +613,7 @@ shape, this kind has the following structure.
 
 ### `apiVersion` and `kind` [required]
 
-Exactly equal to `backstage.io/v1alpha1` and `Template`, respectively.
+Exactly equal to `backstage.io/v1beta2` and `Template`, respectively.
 
 ### `metadata.title` [required]
 
@@ -566,31 +646,15 @@ The current set of well-known and common values for this field is:
 - `website` - a website
 - `library` - a software library, such as an npm module or a Java library
 
-### `spec.templater` [required]
+### `spec.parameters` [required]
 
-The templating library that is supported by the template skeleton as a string,
-e.g `cookiecutter`.
+You can find out more about the `parameters` key
+[here](../software-templates/writing-templates.md)
 
-Different skeletons will use different templating syntax, so it's common that
-the template will need to be run with a particular piece of software.
+### `spec.steps` [optional]
 
-This key will be used to identify the correct templater which is registered into
-the `TemplatersBuilder`.
-
-The values which are available by default are:
-
-- `cookiecutter` - [cookiecutter](https://github.com/cookiecutter/cookiecutter).
-
-### `spec.path` [optional]
-
-The string location where the templater should be run if it is not on the same
-level as the `template.yaml` definition, e.g. `./cookiecutter/skeleton`.
-
-This will set the `cwd` when running the templater to the folder path that you
-specify relative to the `template.yaml` definition.
-
-This is also particularly useful when you have multiple template definitions in
-the same repository but only a single `template.yaml` registered in backstage.
+You can find out more about the `steps` key
+[here](../software-templates/writing-templates.md)
 
 ## Kind: API
 
@@ -964,8 +1028,6 @@ metadata:
 spec:
   owner: artist-relations-team
   domain: artists
-  providesApis:
-    - artist-api
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)

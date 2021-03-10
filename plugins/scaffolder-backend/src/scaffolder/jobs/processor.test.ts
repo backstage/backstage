@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JobProcessor } from './processor';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { StageInput } from './types';
+import parseGitUrl from 'git-url-parse';
+import mockFs from 'mock-fs';
+import os from 'os';
 import { RequiredTemplateValues } from '../stages/templater';
+import { makeLogStream } from './logger';
+import { JobProcessor } from './processor';
+import { StageInput } from './types';
 
 describe('JobProcessor', () => {
   const mockEntity: TemplateEntityV1alpha1 = {
@@ -30,7 +34,7 @@ describe('JobProcessor', () => {
       name: 'graphql-starter',
       title: 'GraphQL Service',
       description:
-        'A GraphQL starter template for backstage to get you up and running\nthe best pracices with GraphQL\n',
+        'A GraphQL starter template for backstage to get you up and running\nthe best practices with GraphQL\n',
       uid: '9cf16bad-16e0-4213-b314-c4eec773c50b',
       etag: 'ZTkxMjUxMjUtYWY3Yi00MjU2LWFkYWMtZTZjNjU5ZjJhOWM2',
 
@@ -61,12 +65,36 @@ describe('JobProcessor', () => {
 
   const mockValues: RequiredTemplateValues = {
     owner: 'blobby',
-    storePath: 'backstage/mock-repo',
+    storePath: 'https://github.com/backstage/mock-repo',
+    destination: {
+      git: parseGitUrl('https://github.com/backstage/mock-repo'),
+    },
   };
+
+  const workingDirectory = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+
+  // NOTE(freben): Without this line, mock-fs makes winston/logform break.
+  // There are a number of reported issues with logform and its use of dynamic
+  // strings for imports. It confuses webpack. The basic fix is to trigger
+  // those imports before mock-fs runs. I wanted to add a mock dir
+  // 'node_modules': mockFs.passthrough(), but that doesn't seem to be a thing
+  // in mock-fs 4.
+  // Probable REAL fix: https://github.com/winstonjs/logform/pull/117
+  makeLogStream({});
+
+  beforeEach(() => {
+    mockFs({
+      [workingDirectory]: mockFs.directory(),
+    });
+  });
+
+  afterEach(() => {
+    mockFs.restore();
+  });
 
   describe('create', () => {
     it('creates should create a new job with a unique id', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
 
       const job = processor.create({
         entity: mockEntity,
@@ -80,7 +108,7 @@ describe('JobProcessor', () => {
     });
 
     it('should setup the correct context for the job', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
 
       const job = processor.create({
         entity: mockEntity,
@@ -93,7 +121,7 @@ describe('JobProcessor', () => {
     });
 
     it('should set the status as pending', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
 
       const job = processor.create({
         entity: mockEntity,
@@ -116,7 +144,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
 
       const job = processor.create({
         entity: mockEntity,
@@ -135,12 +163,12 @@ describe('JobProcessor', () => {
 
   describe('get', () => {
     it('return undefined for when the job does not exist', () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       expect(processor.get('123')).not.toBeDefined();
     });
 
     it('should return the exact same instance of the job when one is created', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -150,9 +178,10 @@ describe('JobProcessor', () => {
       expect(processor.get(job.id)).toBe(job);
     });
   });
+
   describe('process', () => {
     it('throws an error when the status of the job is not in pending state', async () => {
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -178,7 +207,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -204,7 +233,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -240,7 +269,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,
@@ -279,7 +308,7 @@ describe('JobProcessor', () => {
         },
       ];
 
-      const processor = new JobProcessor();
+      const processor = new JobProcessor(workingDirectory);
       const job = processor.create({
         entity: mockEntity,
         values: mockValues,

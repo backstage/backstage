@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ReactNode, Children, isValidElement, Fragment } from 'react';
+import React, { ReactNode, Children, isValidElement, Fragment } from 'react';
 import { useRoutes } from 'react-router-dom';
+import { useApp } from '../app';
 
 type RouteObject = {
   path: string;
@@ -25,8 +26,8 @@ type RouteObject = {
 
 // Similar to the same function from react-router, this collects routes from the
 // children, but only the first level of routes
-function createRoutesFromChildren(children: ReactNode): RouteObject[] {
-  return Children.toArray(children)
+function createRoutesFromChildren(childrenNode: ReactNode): RouteObject[] {
+  return Children.toArray(childrenNode)
     .flatMap(child => {
       if (!isValidElement(child)) {
         return [];
@@ -71,6 +72,15 @@ type FlatRoutesProps = {
 };
 
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
+  const app = useApp();
+  const { NotFoundErrorPage } = app.getComponents();
   const routes = createRoutesFromChildren(props.children);
+
+  // TODO(Rugvip): Possibly add a way to skip this, like a noNotFoundPage prop
+  routes.push({
+    element: <NotFoundErrorPage />,
+    path: '/*',
+  });
+
   return useRoutes(routes);
 };

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DirectoryPreparer, CommonGitPreparer, UrlPreparer } from '.';
-import { PreparerBase, RemoteProtocol, PreparerBuilder } from './types';
+import { Logger } from 'winston';
 import { parseReferenceAnnotation } from '../../helpers';
+import { CommonGitPreparer, DirectoryPreparer, UrlPreparer } from '../prepare';
+import { PreparerBase, PreparerBuilder, RemoteProtocol } from './types';
 
 type factoryOptions = {
   logger: Logger;
@@ -35,16 +35,21 @@ export class Preparers implements PreparerBuilder {
   ): Promise<PreparerBuilder> {
     const preparers = new Preparers();
 
-    const directoryPreparer = new DirectoryPreparer(config, logger);
+    const urlPreparer = new UrlPreparer(reader, logger);
+    preparers.register('url', urlPreparer);
+
+    /**
+     * Dir preparer is a syntactic sugar for users to define techdocs-ref annotation.
+     * When using dir preparer, the docs will be fetched using URL Reader.
+     */
+    const directoryPreparer = new DirectoryPreparer(config, logger, reader);
     preparers.register('dir', directoryPreparer);
 
+    // Common git preparers will be deprecated soon.
     const commonGitPreparer = new CommonGitPreparer(config, logger);
     preparers.register('github', commonGitPreparer);
     preparers.register('gitlab', commonGitPreparer);
     preparers.register('azure/api', commonGitPreparer);
-
-    const urlPreparer = new UrlPreparer(reader, logger);
-    preparers.register('url', urlPreparer);
 
     return preparers;
   }

@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JSONSchema } from '@backstage/catalog-model';
+import { JsonValue } from '@backstage/config';
 
+export type Status = 'open' | 'processing' | 'failed' | 'completed';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 export type Job = {
   id: string;
@@ -35,3 +38,29 @@ export type Stage = {
   startedAt: string;
   endedAt?: string;
 };
+
+export type ScaffolderStep = {
+  id: string;
+  name: string;
+  action: string;
+  parameters?: { [name: string]: JsonValue };
+};
+
+export type ScaffolderTask = {
+  id: string;
+  spec: {
+    steps: ScaffolderStep[];
+  };
+  status: 'failed' | 'completed' | 'processing' | 'open' | 'cancelled';
+  lastHeartbeatAt: string;
+  createdAt: string;
+};
+
+export type ListActionsResponse = Array<{
+  id: string;
+  description?: string;
+  schema?: {
+    input?: JSONSchema;
+    output?: JSONSchema;
+  };
+}>;

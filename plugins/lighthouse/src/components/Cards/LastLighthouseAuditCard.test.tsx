@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Entity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
 import { render } from '@testing-library/react';
+import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import {
   AuditCompleted,
   LighthouseCategoryId,
   WebsiteListResponse,
 } from '../../api';
-import { EntityContext } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
-import { LastLighthouseAuditCard } from './LastLighthouseAuditCard';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
-import { MemoryRouter } from 'react-router-dom';
 import * as data from '../../__fixtures__/website-list-response.json';
+import { LastLighthouseAuditCard } from './LastLighthouseAuditCard';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),
@@ -38,7 +38,7 @@ const websiteListResponse = data as WebsiteListResponse;
 let entityWebsite = websiteListResponse.items[2];
 
 describe('<LastLighthouseAuditCard />', () => {
-  const asPercentage = (fraction: number) => `${fraction * 100}%`;
+  const asPercentage = (fraction: number) => `${Math.round(fraction * 100)}%`;
 
   beforeEach(() => {
     (useWebsiteForEntity as jest.Mock).mockReturnValue({

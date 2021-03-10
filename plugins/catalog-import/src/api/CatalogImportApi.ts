@@ -14,24 +14,38 @@
  * limitations under the License.
  */
 
+import { EntityName } from '@backstage/catalog-model';
 import { createApiRef } from '@backstage/core';
-import { PartialEntity } from '../util/types';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import { PartialEntity } from '../types';
 
 export const catalogImportApiRef = createApiRef<CatalogImportApi>({
   id: 'plugin.catalog-import.service',
   description: 'Used by the catalog import plugin to make requests',
 });
 
+// result of the analyze state
+export type AnalyzeResult =
+  | {
+      type: 'locations';
+      locations: Array<{
+        target: string;
+        entities: EntityName[];
+      }>;
+    }
+  | {
+      type: 'repository';
+      url: string;
+      integrationType: string;
+      generatedEntities: PartialEntity[];
+    };
+
 export interface CatalogImportApi {
-  submitPrToRepo(options: {
-    owner: string;
-    repo: string;
+  analyzeUrl(url: string): Promise<AnalyzeResult>;
+
+  submitPullRequest(options: {
+    repositoryUrl: string;
     fileContent: string;
-    githubIntegrationConfig: GitHubIntegrationConfig;
+    title: string;
+    body: string;
   }): Promise<{ link: string; location: string }>;
-  createRepositoryLocation(options: { location: string }): Promise<void>;
-  generateEntityDefinitions(options: {
-    repo: string;
-  }): Promise<PartialEntity[]>;
 }

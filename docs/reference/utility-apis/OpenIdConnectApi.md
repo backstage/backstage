@@ -1,7 +1,7 @@
 # OpenIdConnectApi
 
 The OpenIdConnectApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:99](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L99).
+[packages/core-api/src/apis/definitions/auth.ts:99](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L99).
 
 The following Utility APIs implement this type:
 
@@ -13,7 +13,11 @@ The following Utility APIs implement this type:
 
 - [oauth2ApiRef](./README.md#oauth2)
 
+- [oidcAuthApiRef](./README.md#oidcauth)
+
 - [oktaAuthApiRef](./README.md#oktaauth)
+
+- [oneloginAuthApiRef](./README.md#oneloginauth)
 
 ## Members
 
@@ -66,6 +70,6 @@ export type AuthRequestOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L40).
+[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L40).
 
 Referenced by: [getIdToken](#getidtoken).

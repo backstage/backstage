@@ -17,6 +17,7 @@ import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import type { Quadrant, Ring, Entry } from '../../utils/types';
 import { WithLink } from '../../utils/components';
+import { RadarDescription } from '../RadarDescription';
 
 type Segments = {
   [k: number]: { [k: number]: Entry[] };
@@ -71,12 +72,12 @@ const useStyles = makeStyles<Theme>(theme => ({
     'font-feature-settings': 'pnum',
   },
   entry: {
-    pointerEvents: 'none',
+    pointerEvents: 'visiblePainted',
     userSelect: 'none',
     fontSize: '11px',
   },
   entryLink: {
-    pointerEvents: 'none',
+    pointerEvents: 'visiblePainted',
   },
 }));
 
@@ -105,6 +106,62 @@ const RadarLegend = (props: Props): JSX.Element => {
     onEntryMouseLeave?: Props['onEntryMouseEnter'];
   };
 
+  type RadarLegendLinkProps = {
+    url?: string;
+    description?: string;
+    title?: string;
+  };
+
+  const RadarLegendLink = ({
+    url,
+    description,
+    title,
+  }: RadarLegendLinkProps) => {
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+    const toggle = () => {
+      setOpen(!open);
+    };
+
+    if (description) {
+      return (
+        <>
+          <span
+            className={classes.entryLink}
+            onClick={handleClickOpen}
+            role="button"
+            tabIndex={0}
+            onKeyPress={toggle}
+          >
+            <span className={classes.entry}>{title}</span>
+          </span>
+          {open && (
+            <RadarDescription
+              open={open}
+              onClose={handleClose}
+              title={title ? title : 'no title'}
+              url={url}
+              description={description}
+            />
+          )}
+        </>
+      );
+    }
+    return (
+      <WithLink url={url} className={classes.entryLink}>
+        <span className={classes.entry}>{title}</span>
+      </WithLink>
+    );
+  };
+
   const RadarLegendRing = ({
     ring,
     entries,
@@ -129,9 +186,11 @@ const RadarLegend = (props: Props): JSX.Element => {
                   onEntryMouseLeave && (() => onEntryMouseLeave(entry))
                 }
               >
-                <WithLink url={entry.url} className={classes.entryLink}>
-                  <span className={classes.entry}>{entry.title}</span>
-                </WithLink>
+                <RadarLegendLink
+                  url={entry.url}
+                  title={entry.title}
+                  description={entry.description}
+                />
               </li>
             ))}
           </ol>

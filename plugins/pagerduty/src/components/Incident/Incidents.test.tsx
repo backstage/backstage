@@ -84,13 +84,7 @@ describe('Incidents', () => {
           },
         ] as Incident[],
     );
-    const {
-      getByText,
-      getByTitle,
-      getAllByTitle,
-      getByLabelText,
-      queryByTestId,
-    } = render(
+    const { getByText, getAllByTitle, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
           <Incidents serviceId="abc" refreshIncidents={false} />
@@ -102,10 +96,10 @@ describe('Incidents', () => {
     expect(getByText('title2')).toBeInTheDocument();
     expect(getByText('person1')).toBeInTheDocument();
     expect(getByText('person2')).toBeInTheDocument();
-    expect(getByTitle('triggered')).toBeInTheDocument();
-    expect(getByTitle('acknowledged')).toBeInTheDocument();
-    expect(getByLabelText('Status error')).toBeInTheDocument();
-    expect(getByLabelText('Status warning')).toBeInTheDocument();
+    expect(getByText('triggered')).toBeInTheDocument();
+    expect(getByText('acknowledged')).toBeInTheDocument();
+    expect(queryByTestId('chip-triggered')).toBeInTheDocument();
+    expect(queryByTestId('chip-acknowledged')).toBeInTheDocument();
 
     // assert links, mailto and hrefs, date calculation
     expect(getAllByTitle('View in PagerDuty').length).toEqual(2);

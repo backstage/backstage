@@ -8,8 +8,8 @@
     "node": "12 || 14"
   },
   "scripts": {
-    "build": "backstage-cli backend:build",
-    "build-image": "backstage-cli backend:build-image --build --tag backstage",
+    "build": "backstage-cli backend:bundle",
+    "build-image": "docker build ../.. -f Dockerfile --tag backstage",
     "start": "backstage-cli backend:dev",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
@@ -20,6 +20,7 @@
     "app": "0.0.0",
     "@backstage/backend-common": "^{{version '@backstage/backend-common'}}",
     "@backstage/catalog-model": "^{{version '@backstage/catalog-model'}}",
+    "@backstage/catalog-client": "^{{version '@backstage/catalog-client'}}",
     "@backstage/config": "^{{version '@backstage/config'}}",
     "@backstage/plugin-app-backend": "^{{version '@backstage/plugin-app-backend'}}",
     "@backstage/plugin-auth-backend": "^{{version '@backstage/plugin-auth-backend'}}",
@@ -45,8 +46,7 @@
     "@backstage/cli": "^{{version '@backstage/cli'}}",
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
-    "@types/express-serve-static-core": "^4.17.5",
-    "@types/helmet": "^0.0.47"
+    "@types/express-serve-static-core": "^4.17.5"
   },
   "files": [
     "dist"

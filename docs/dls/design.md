@@ -33,15 +33,18 @@ our users.
 ### Transparent
 
 There are a lot of exciting things coming up and we want to keep you in the
-loop! Keep an eye on our Milestones in GitHub to see where we’re headed. We’ll
-also be posting updates in the _#design_ channel on
-[Discord](https://discord.gg/EBHEGzX). Not only that, we want to keep you
-informed on the decisions we’ve made and why we’ve made them.
+loop! Keep an eye on our
+[Milestones in GitHub](https://github.com/backstage/backstage/milestones) to see
+where we're headed and review the
+[open design issues](https://github.com/backstage/backstage/issues?q=is%3Aopen+is%3Aissue+label%3Adesign),
+to see if you can help. We'll also be posting updates in the _#design_ channel
+on [Discord](https://discord.gg/EBHEGzX). Not only that, we want to keep you
+informed on the decisions we've made and why we've made them.
 
 ## 🛠 Our Practice
 
-The chart below details how we work. **_Stay tuned_**: We are currently in the
-process of securing a Figma workspace for Backstage Open Source, and we plan on
+The chart below details how we work. We have a
+[Figma workspace for Backstage Open Source](figma.md), and we plan on
 referencing Figma documents to share specs and prototypes with the community.
 
 ### Creating a New Design Component
@@ -123,6 +126,10 @@ your own plugin for Backstage.
 
 **[Discord](https://discord.gg/EBHEGzX)** - all design questions should be
 directed to the _#design_ channel.
+
+**[Customize Backstage's look and feel](https://backstage.io/docs/getting-started/app-custom-theme)** -
+How to customize the look and feel of your Backstage instance by extending the
+theme.
 
 ## 🔮 Future
 

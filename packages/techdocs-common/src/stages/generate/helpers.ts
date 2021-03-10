@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import fs from 'fs-extra';
-import { spawn } from 'child_process';
-import { Writable, PassThrough } from 'stream';
-import Docker from 'dockerode';
-import yaml from 'js-yaml';
-import { Logger } from 'winston';
 import { Entity } from '@backstage/catalog-model';
-import { SupportedGeneratorKey } from './types';
+import { spawn } from 'child_process';
+import fs from 'fs-extra';
+import yaml from 'js-yaml';
+import { PassThrough, Writable } from 'stream';
+import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { RemoteProtocol } from '../prepare/types';
+import { SupportedGeneratorKey } from './types';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -34,81 +33,12 @@ export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
   return 'techdocs';
 }
 
-type RunDockerContainerOptions = {
-  imageName: string;
-  args: string[];
-  logStream?: Writable;
-  docsDir: string;
-  outputDir: string;
-  dockerClient: Docker;
-  createOptions?: Docker.ContainerCreateOptions;
-};
-
 export type RunCommandOptions = {
   command: string;
   args: string[];
   options: object;
   logStream?: Writable;
 };
-
-export async function runDockerContainer({
-  imageName,
-  args,
-  logStream = new PassThrough(),
-  docsDir,
-  outputDir,
-  dockerClient,
-  createOptions,
-}: RunDockerContainerOptions) {
-  try {
-    await dockerClient.ping();
-  } catch (e) {
-    throw new Error(
-      `This operation requires Docker. Docker does not appear to be available. Docker.ping() failed with: ${e.message}`,
-    );
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    dockerClient.pull(imageName, {}, (err, stream) => {
-      if (err) return reject(err);
-      stream.pipe(logStream, { end: false });
-      stream.on('end', () => resolve());
-      stream.on('error', (error: Error) => reject(error));
-      return undefined;
-    });
-  });
-
-  const [{ Error: error, StatusCode: statusCode }] = await dockerClient.run(
-    imageName,
-    args,
-    logStream,
-    {
-      Volumes: {
-        '/content': {},
-        '/result': {},
-      },
-      WorkingDir: '/content',
-      HostConfig: {
-        Binds: [`${docsDir}:/content`, `${outputDir}:/result`],
-      },
-      ...createOptions,
-    },
-  );
-
-  if (error) {
-    throw new Error(
-      `Docker failed to run with the following error message: ${error}`,
-    );
-  }
-
-  if (statusCode !== 0) {
-    throw new Error(
-      `Docker container returned a non-zero exit code (${statusCode})`,
-    );
-  }
-
-  return { error, statusCode };
-}
 
 /**
  *
@@ -234,7 +164,7 @@ export const patchMkdocsYmlPreBuild = async (
     mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
   } catch (error) {
     logger.warn(
-      `Could not read file ${mkdocsYmlPath} before running the generator. ${error.message}`,
+      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before running the generator: ${error.message}`,
     );
     return;
   }
@@ -274,4 +204,52 @@ export const patchMkdocsYmlPreBuild = async (
     );
     return;
   }
+};
+
+/**
+ * Update the techdocs_metadata.json to add a new build timestamp metadata. Create the .json file if it doesn't exist.
+ *
+ * @param {string} techdocsMetadataPath File path to techdocs_metadata.json
+ */
+export const addBuildTimestampMetadata = async (
+  techdocsMetadataPath: string,
+  logger: Logger,
+): Promise<void> => {
+  // check if file exists, create if it does not.
+  try {
+    await fs.access(techdocsMetadataPath, fs.constants.F_OK);
+  } catch (err) {
+    // Bootstrap file with empty JSON
+    await fs.writeJson(techdocsMetadataPath, JSON.parse('{}'));
+  }
+  // check if valid Json
+  let json;
+  try {
+    json = await fs.readJson(techdocsMetadataPath);
+  } catch (err) {
+    const message = `Invalid JSON at ${techdocsMetadataPath} with error ${err.message}`;
+    logger.error(message);
+    throw new Error(message);
+  }
+
+  json.build_timestamp = Date.now();
+  await fs.writeJson(techdocsMetadataPath, json);
+  return;
+};
+
+/**
+ * Update the techdocs_metadata.json to add etag of the prepared tree (e.g. commit SHA or actual Etag of the resource).
+ * This is helpful to check if a TechDocs site in storage has gone outdated, without maintaining an in-memory build info
+ * per Backstage instance.
+ *
+ * @param {string} techdocsMetadataPath File path to techdocs_metadata.json
+ * @param {string} etag
+ */
+export const storeEtagMetadata = async (
+  techdocsMetadataPath: string,
+  etag: string,
+): Promise<void> => {
+  const json = await fs.readJson(techdocsMetadataPath);
+  json.etag = etag;
+  await fs.writeJson(techdocsMetadataPath, json);
 };

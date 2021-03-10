@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '@backstage/config';
+import { UrlPatternDiscovery } from '@backstage/core';
 import { TechDocsStorageApi } from './api';
-
-const DOC_STORAGE_URL = 'https://example-storage.com';
 
 const mockEntity = {
   kind: 'Component',
@@ -24,19 +24,31 @@ const mockEntity = {
 };
 
 describe('TechDocsStorageApi', () => {
-  it('should return correct base url based on defined storage', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
+  const mockBaseUrl = 'http://backstage:9191/api/techdocs';
+  const configApi = {
+    getOptionalString: () => 'http://backstage:9191/api/techdocs',
+  } as Partial<Config>;
+  const discoveryApi = UrlPatternDiscovery.compile(mockBaseUrl);
 
-    expect(storageApi.getBaseUrl('test.js', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
+  it('should return correct base url based on defined storage', async () => {
+    // @ts-ignore Partial<Config> not assignable to Config.
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
+
+    await expect(
+      storageApi.getBaseUrl('test.js', mockEntity, ''),
+    ).resolves.toEqual(
+      `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test.js`,
     );
   });
 
-  it('should return base url with correct entity structure', () => {
-    const storageApi = new TechDocsStorageApi({ apiOrigin: DOC_STORAGE_URL });
+  it('should return base url with correct entity structure', async () => {
+    // @ts-ignore Partial<Config> not assignable to Config.
+    const storageApi = new TechDocsStorageApi({ configApi, discoveryApi });
 
-    expect(storageApi.getBaseUrl('test/', mockEntity, '')).toEqual(
-      `${DOC_STORAGE_URL}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
+    await expect(
+      storageApi.getBaseUrl('test/', mockEntity, ''),
+    ).resolves.toEqual(
+      `${mockBaseUrl}/docs/${mockEntity.namespace}/${mockEntity.kind}/${mockEntity.name}/test/`,
     );
   });
 });

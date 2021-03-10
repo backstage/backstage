@@ -15,22 +15,24 @@
  */
 
 import {
+  identityApiRef,
+  configApiRef,
   createApiFactory,
   createPlugin,
+  createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
   githubAuthApiRef,
-  configApiRef,
 } from '@backstage/core';
-import { catalogImportApiRef } from './api/CatalogImportApi';
-import { CatalogImportClient } from './api/CatalogImportClient';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { catalogImportApiRef, CatalogImportClient } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
   title: 'catalog-import',
 });
 
-export const plugin = createPlugin({
+export const catalogImportPlugin = createPlugin({
   id: 'catalog-import',
   apis: [
     createApiFactory({
@@ -38,10 +40,34 @@ export const plugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         githubAuthApi: githubAuthApiRef,
+        identityApi: identityApiRef,
         configApi: configApiRef,
+        catalogApi: catalogApiRef,
       },
-      factory: ({ discoveryApi, githubAuthApi, configApi }) =>
-        new CatalogImportClient({ discoveryApi, githubAuthApi, configApi }),
+      factory: ({
+        discoveryApi,
+        githubAuthApi,
+        identityApi,
+        configApi,
+        catalogApi,
+      }) =>
+        new CatalogImportClient({
+          discoveryApi,
+          githubAuthApi,
+          configApi,
+          identityApi,
+          catalogApi,
+        }),
     }),
   ],
+  routes: {
+    importPage: rootRouteRef,
+  },
 });
+
+export const CatalogImportPage = catalogImportPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);

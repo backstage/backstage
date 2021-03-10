@@ -30,6 +30,7 @@ export interface FindingSummary {
   projectUrl: string;
   getIssuesUrl: SonarUrlProcessorFunc;
   getComponentMeasuresUrl: SonarUrlProcessorFunc;
+  getSecurityHotspotsUrl: () => string;
 }
 
 export const sonarQubeApiRef = createApiRef<SonarQubeApi>({

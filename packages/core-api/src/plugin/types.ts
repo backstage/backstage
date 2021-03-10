@@ -15,9 +15,8 @@
  */
 
 import { ComponentType } from 'react';
-import { RouteRef } from '../routing';
+import { RouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
-import { ExternalRouteRef } from '../routing/RouteRef';
 
 export type RouteOptions = {
   // Whether the route path must match exactly, defaults to true.
@@ -99,23 +98,19 @@ export type PluginConfig<
 };
 
 export type PluginHooks = {
+  /**
+   * @deprecated All router hooks have been deprecated
+   */
   router: RouterHooks;
   featureFlags: FeatureFlagsHooks;
 };
 
 export type RouterHooks = {
+  /**
+   * @deprecated Use a routable extension instead, see https://backstage.io/docs/plugins/composability#porting-existing-plugins
+   */
   addRoute(
     target: RouteRef,
-    Component: ComponentType<any>,
-    options?: RouteOptions,
-  ): void;
-
-  /**
-   * @deprecated See the `addRoute` method
-   * @see https://github.com/backstage/backstage/issues/418
-   */
-  registerRoute(
-    path: RoutePath,
     Component: ComponentType<any>,
     options?: RouteOptions,
   ): void;

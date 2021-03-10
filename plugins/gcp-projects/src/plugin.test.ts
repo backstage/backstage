@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { gcpProjectsPlugin } from './plugin';
 
 describe('gcp-projects', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(gcpProjectsPlugin).toBeDefined();
   });
 });

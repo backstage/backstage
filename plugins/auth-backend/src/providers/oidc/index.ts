@@ -15,3 +15,4 @@
  */
 
 export { createOidcProvider } from './provider';
+export type { OidcProviderOptions } from './provider';

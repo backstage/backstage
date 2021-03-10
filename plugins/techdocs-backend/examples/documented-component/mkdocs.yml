@@ -1,8 +1,9 @@
-site_name: 'example-docs'
+site_name: 'Example Documentation'
 
 nav:
   - Home: index.md
-  - SubPage: sub-page.md
+  - Subpage: sub-page.md
+  - 'Code Sample': code/code-sample.md
 
 plugins:
   - techdocs-core

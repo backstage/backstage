@@ -38,11 +38,14 @@ describe('CatalogIdentityClient', () => {
 
     client.findUser({ annotations: { key: 'value' } });
 
-    expect(catalogApi.getEntities).toBeCalledWith({
-      filter: {
-        kind: 'user',
-        'metadata.annotations.key': 'value',
+    expect(catalogApi.getEntities).toBeCalledWith(
+      {
+        filter: {
+          kind: 'user',
+          'metadata.annotations.key': 'value',
+        },
       },
-    });
+      undefined,
+    );
   });
 });

@@ -19,6 +19,7 @@ import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
 import { GitHubIntegration } from './github/GitHubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
+import { defaultScmResolveUrl } from './helpers';
 import {
   ScmIntegration,
   ScmIntegrationRegistry,
@@ -80,5 +81,23 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
     return Object.values(this.byType)
       .map(i => i.byHost(host))
       .find(Boolean);
+  }
+
+  resolveUrl(options: { url: string; base: string }): string {
+    const integration = this.byUrl(options.base);
+    if (!integration) {
+      return defaultScmResolveUrl(options);
+    }
+
+    return integration.resolveUrl(options);
+  }
+
+  resolveEditUrl(url: string): string {
+    const integration = this.byUrl(url);
+    if (!integration) {
+      return url;
+    }
+
+    return integration.resolveEditUrl(url);
   }
 }

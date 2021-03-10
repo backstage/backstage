@@ -1,5 +1,61 @@
 # @backstage/catalog-model
 
+## 0.7.3
+
+### Patch Changes
+
+- 12d8f27a6: Add version `backstage.io/v1beta2` schema for Template entities.
+
+## 0.7.2
+
+### Patch Changes
+
+- bad21a085: Implement annotations for customising Entity URLs in the Catalog pages.
+- Updated dependencies [a1f5e6545]
+  - @backstage/config@0.1.3
+
+## 0.7.1
+
+### Patch Changes
+
+- 6e612ce25: Adds a new optional `links` metadata field to the Entity class within the `catalog-model` package (as discussed in [[RFC] Entity Links](https://github.com/backstage/backstage/issues/3787)). This PR adds support for the entity links only. Follow up PR's will introduce the UI component to display them.
+- 025e122c3: Replace `yup` with `ajv`, for validation of catalog entities.
+- 7881f2117: Introduce json schema variants of the `yup` validation schemas
+- 11cb5ef94: Implement matchEntityWithRef for client side filtering of entities by ref matching
+
+## 0.7.0
+
+### Minor Changes
+
+- a93f42213: The catalog no longer attempts to merge old and new annotations, when updating an entity from a remote location. This was a behavior that was copied from kubernetes, and catered to use cases where you wanted to use HTTP POST to update an entity in-place, outside of what the refresh loop does. This has proved to be a mistake, because as a side effect, the refresh loop effectively is unable to ever delete annotations when they are removed from source YAML. This is obviously a breaking change, but we believe that this is not a behavior that is relied upon in the wild, and it has never been an actually supported use flow of the catalog. We therefore choose to break the behavior outright, and instead just store updated annotations verbatim - just like we already do for example for labels
+
+### Patch Changes
+
+- def2307f3: Adds a `backstage.io/managed-by-origin-location` annotation to all entities. It links to the
+  location that was registered to the catalog and which emitted this entity. It has a different
+  semantic than the existing `backstage.io/managed-by-location` annotation, which tells the direct
+  parent location that created this entity.
+
+  Consider this example: The Backstage operator adds a location of type `github-org` in the
+  `app-config.yaml`. This setting will be added to a `bootstrap:boostrap` location. The processor
+  discovers the entities in the following branch
+  `Location bootstrap:bootstrap -> Location github-org:… -> User xyz`. The user `xyz` will be:
+
+  ```yaml
+  apiVersion: backstage.io/v1alpha1
+  kind: User
+  metadata:
+    name: xyz
+    annotations:
+      # This entity was added by the 'github-org:…' location
+      backstage.io/managed-by-location: github-org:…
+      # The entity was added because the 'bootstrap:boostrap' was added to the catalog
+      backstage.io/managed-by-origin-location: bootstrap:bootstrap
+      # ...
+  spec:
+    # ...
+  ```
+
 ## 0.6.1
 
 ### Patch Changes

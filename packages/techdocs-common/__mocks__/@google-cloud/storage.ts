@@ -13,9 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { EventEmitter } from 'events';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
+
 type storageOptions = {
   keyFilename?: string;
 };
+
+const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
+/**
+ * @param sourceFile Absolute path. Contains either / or \ as file separator depending upon the OS.
+ */
+const checkFileExists = async (sourceFile: string): Promise<boolean> => {
+  // sourceFile will always have / as file separator irrespective of OS since GCS expects /.
+  // Normalize sourceFile to OS specific path before checking if file exists.
+  const filePath = sourceFile.split(path.posix.sep).join(path.sep);
+
+  try {
+    await fs.access(filePath, fs.constants.F_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+class GCSFile {
+  private readonly localFilePath: string;
+
+  constructor(private readonly destinationFilePath: string) {
+    this.destinationFilePath = destinationFilePath;
+    this.localFilePath = path.join(rootDir, this.destinationFilePath);
+  }
+
+  exists() {
+    return new Promise(async (resolve, reject) => {
+      if (await checkFileExists(this.localFilePath)) {
+        resolve([true]);
+      } else {
+        reject();
+      }
+    });
+  }
+
+  createReadStream() {
+    const emitter = new EventEmitter();
+    process.nextTick(() => {
+      if (fs.existsSync(this.localFilePath)) {
+        emitter.emit('data', Buffer.from(fs.readFileSync(this.localFilePath)));
+        emitter.emit('end');
+      } else {
+        emitter.emit(
+          'error',
+          new Error(`The file ${this.localFilePath} does not exist !`),
+        );
+      }
+    });
+    return emitter;
+  }
+}
 
 class Bucket {
   private readonly bucketName;
@@ -31,9 +88,17 @@ class Bucket {
   }
 
   upload(source: string, { destination }) {
-    return new Promise(resolve => {
-      resolve({ source, destination });
+    return new Promise(async (resolve, reject) => {
+      if (await checkFileExists(source)) {
+        resolve({ source, destination });
+      } else {
+        reject(`Source file ${source} does not exist.`);
+      }
     });
+  }
+
+  file(destinationFilePath: string) {
+    return new GCSFile(destinationFilePath);
   }
 }
 

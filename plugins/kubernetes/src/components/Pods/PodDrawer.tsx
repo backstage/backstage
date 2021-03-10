@@ -37,17 +37,17 @@ export const PodDrawer = ({
       object={pod}
       expanded={expanded}
       kind="Pod"
-      renderObject={(pod: V1Pod) => {
-        const phase = pod.status?.phase ?? 'unknown';
+      renderObject={(podObject: V1Pod) => {
+        const phase = podObject.status?.phase ?? 'unknown';
 
         const ports =
-          pod.spec?.containers?.map(c => {
+          podObject.spec?.containers?.map(c => {
             return {
               [c.name]: c.ports,
             };
           }) ?? 'N/A';
 
-        const conditions = (pod.status?.conditions ?? [])
+        const conditions = (podObject.status?.conditions ?? [])
           .map(renderCondition)
           .reduce((accum, next) => {
             accum[next[0]] = next[1];
@@ -55,11 +55,11 @@ export const PodDrawer = ({
           }, {} as { [key: string]: React.ReactNode });
 
         return {
-          images: imageChips(pod),
+          images: imageChips(podObject),
           phase: phase,
-          'Containers Ready': containersReady(pod),
-          'Total Restarts': totalRestarts(pod),
-          'Container Statuses': containerStatuses(pod),
+          'Containers Ready': containersReady(podObject),
+          'Total Restarts': totalRestarts(podObject),
+          'Container Statuses': containerStatuses(podObject),
           ...conditions,
           'Exposed ports': ports,
         };

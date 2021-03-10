@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
 import { TextField } from '@material-ui/core';
-import { SimpleStepper, SimpleStepperStep } from '.';
+import React, { useState } from 'react';
+import { SimpleStepper } from './SimpleStepper';
+import { SimpleStepperStep } from './SimpleStepperStep';
 
 export default {
   title: 'Navigation/SimpleStepper',

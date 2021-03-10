@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import GetBBoxPolyfill from '../../utils/polyfills/getBBox';
@@ -29,6 +30,12 @@ const minProps: Props = {
   color: 'red',
 };
 
+const optionalProps: Props = {
+  ...minProps,
+  title: 'example-title',
+  description: 'example-description',
+};
+
 describe('RadarEntry', () => {
   beforeAll(() => {
     GetBBoxPolyfill.create(0, 0, 1000, 500);
@@ -38,8 +45,8 @@ describe('RadarEntry', () => {
     GetBBoxPolyfill.remove();
   });
 
-  it('should render', () => {
-    const rendered = render(
+  it('should render link only', () => {
+    render(
       <ThemeProvider theme={lightTheme}>
         <svg>
           <RadarEntry {...minProps} />
@@ -47,10 +54,29 @@ describe('RadarEntry', () => {
       </ThemeProvider>,
     );
 
-    const radarEntry = rendered.getByTestId('radar-entry');
+    const radarEntry = screen.getByTestId('radar-entry');
     const { x, y } = minProps;
     expect(radarEntry).toBeInTheDocument();
     expect(radarEntry.getAttribute('transform')).toBe(`translate(${x}, ${y})`);
-    expect(rendered.getByText(String(minProps.value))).toBeInTheDocument();
+    expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
+  });
+
+  it('should render with description', () => {
+    render(
+      <ThemeProvider theme={lightTheme}>
+        <svg>
+          <RadarEntry {...optionalProps} />
+        </svg>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(screen.getByRole('button'));
+
+    const radarEntry = screen.getByTestId('radar-entry');
+    expect(radarEntry).toBeInTheDocument();
+
+    const radarDescription = screen.getByTestId('radar-description');
+    expect(radarDescription).toBeInTheDocument();
+    expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
   });
 });

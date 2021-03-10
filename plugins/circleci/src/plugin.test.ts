@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { circleCIPlugin } from './plugin';
 
 describe('circleci', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(circleCIPlugin).toBeDefined();
   });
 });

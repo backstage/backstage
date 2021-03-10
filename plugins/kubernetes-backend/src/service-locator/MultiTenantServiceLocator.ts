@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ClusterDetails, KubernetesServiceLocator } from '..';
+import { ClusterDetails, KubernetesServiceLocator } from '../types/types';
 
 // This locator assumes that every service is located on every cluster
 // Therefore it will always return all clusters provided

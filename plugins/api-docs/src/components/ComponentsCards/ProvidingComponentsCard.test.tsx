@@ -16,7 +16,11 @@
 
 import { Entity, RELATION_API_PROVIDED_BY } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog';
+import {
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
@@ -62,12 +66,14 @@ describe('<ProvidingComponentsCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
-    expect(getByText(/Providers/i)).toBeInTheDocument();
-    expect(getByText(/No APIs provided by this entity/i)).toBeInTheDocument();
+    expect(getByText('Providers')).toBeInTheDocument();
+    expect(getByText(/No component provides this API/i)).toBeInTheDocument();
   });
 
   it('shows providing components', async () => {
@@ -102,24 +108,20 @@ describe('<ProvidingComponentsCard />', () => {
         name: 'target-name',
         namespace: 'my-namespace',
       },
-      spec: {
-        type: 'service',
-        owner: 'Test',
-        lifecycle: 'production',
-      },
+      spec: {},
     });
 
     const { getByText } = await renderInTestApp(
       <Wrapper>
-        <ProvidingComponentsCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <ProvidingComponentsCard />
+        </EntityProvider>
       </Wrapper>,
     );
 
     await waitFor(() => {
-      expect(getByText(/Providers/i)).toBeInTheDocument();
+      expect(getByText('Providers')).toBeInTheDocument();
       expect(getByText(/target-name/i)).toBeInTheDocument();
-      expect(getByText(/Test/i)).toBeInTheDocument();
-      expect(getByText(/production/i)).toBeInTheDocument();
     });
   });
 });

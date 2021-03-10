@@ -17,6 +17,9 @@
 jest.mock('@octokit/rest');
 jest.mock('./helpers');
 
+import os from 'os';
+import { resolve } from 'path';
+
 import { getVoidLogger } from '@backstage/backend-common';
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 import { GithubPublisher } from './github';
@@ -36,15 +39,20 @@ describe('GitHub Publisher', () => {
     jest.clearAllMocks();
   });
 
-  describe('with public repo visibility', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'public',
-    });
+  const workspacePath = os.platform() === 'win32' ? 'C:\\tmp' : '/tmp';
+  const resultPath = resolve(workspacePath, 'result');
 
+  describe('with public repo visibility', () => {
     describe('publish: createRemoteInGithub', () => {
       it('should use octokit to create a repo in an organisation if the organisation property is set', async () => {
+        const publisher = await GithubPublisher.fromConfig(
+          {
+            token: 'fake-token',
+            host: 'github.com',
+          },
+          { repoVisibility: 'public' },
+        );
+
         mockGithubClient.repos.createInOrg.mockResolvedValue({
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
@@ -56,13 +64,13 @@ describe('GitHub Publisher', () => {
           },
         } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-        const result = await publisher.publish({
+        const result = await publisher!.publish({
           values: {
-            storePath: 'blam/test',
+            storePath: 'https://github.com/blam/test',
             owner: 'bob',
             access: 'blam/team',
           },
-          directory: '/tmp/test',
+          workspacePath,
           logger,
         });
 
@@ -87,14 +95,22 @@ describe('GitHub Publisher', () => {
           permission: 'admin',
         });
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test',
+          dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'abc', password: 'x-oauth-basic' },
+          auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
         });
       });
 
       it('should use octokit to create a repo in the authed user if the organisation property is not set', async () => {
+        const publisher = await GithubPublisher.fromConfig(
+          {
+            token: 'fake-token',
+            host: 'github.com',
+          },
+          { repoVisibility: 'public' },
+        );
+
         mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
           data: {
             clone_url: 'https://github.com/backstage/backstage.git',
@@ -106,13 +122,13 @@ describe('GitHub Publisher', () => {
           },
         } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-        const result = await publisher.publish({
+        const result = await publisher!.publish({
           values: {
-            storePath: 'blam/test',
+            storePath: 'https://github.com/blam/test',
             owner: 'bob',
             access: 'blam',
           },
-          directory: '/tmp/test',
+          workspacePath,
           logger,
         });
 
@@ -130,15 +146,23 @@ describe('GitHub Publisher', () => {
         expect(mockGithubClient.repos.addCollaborator).not.toHaveBeenCalled();
 
         expect(initRepoAndPush).toHaveBeenCalledWith({
-          dir: '/tmp/test',
+          dir: resultPath,
           remoteUrl: 'https://github.com/backstage/backstage.git',
-          auth: { username: 'abc', password: 'x-oauth-basic' },
+          auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
         });
       });
     });
 
     it('should invite other user in the authed user', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'public' },
+      );
+
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -150,14 +174,14 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
           access: 'bob',
           description: 'description',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -180,22 +204,24 @@ describe('GitHub Publisher', () => {
         permission: 'admin',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });
   });
 
   describe('with internal repo visibility', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'internal',
-    });
-
     it('creates a private repository in the organization with visibility set to internal', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'internal' },
+      );
+
       mockGithubClient.repos.createInOrg.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -207,13 +233,13 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
           isOrg: true,
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -229,22 +255,24 @@ describe('GitHub Publisher', () => {
         visibility: 'internal',
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });
   });
 
   describe('private visibility in a user account', () => {
-    const publisher = new GithubPublisher({
-      client: new Octokit(),
-      token: 'abc',
-      repoVisibility: 'private',
-    });
-
     it('creates a private repository', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+        },
+        { repoVisibility: 'private' },
+      );
+
       mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
         data: {
           clone_url: 'https://github.com/backstage/backstage.git',
@@ -256,12 +284,12 @@ describe('GitHub Publisher', () => {
         },
       } as RestEndpointMethodTypes['users']['getByUsername']['response']);
 
-      const result = await publisher.publish({
+      const result = await publisher!.publish({
         values: {
-          storePath: 'blam/test',
+          storePath: 'https://github.com/blam/test',
           owner: 'bob',
         },
-        directory: '/tmp/test',
+        workspacePath,
         logger,
       });
 
@@ -277,9 +305,9 @@ describe('GitHub Publisher', () => {
         private: true,
       });
       expect(initRepoAndPush).toHaveBeenCalledWith({
-        dir: '/tmp/test',
+        dir: resultPath,
         remoteUrl: 'https://github.com/backstage/backstage.git',
-        auth: { username: 'abc', password: 'x-oauth-basic' },
+        auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
       });
     });

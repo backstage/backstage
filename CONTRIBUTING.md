@@ -66,7 +66,7 @@ Have you started using Backstage? Adding your company to [ADOPTERS](ADOPTERS.md)
 
 So...feel ready to jump in? Let's do this. 👏🏻💯
 
-Start by reading our [Getting Started](https://backstage.io/docs/getting-started/) page. If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
+Start by reading our [Getting Started for Contributors](https://backstage.io/docs/getting-started/contributors) page to get yourself setup with a fresh copy of Backstage ready for your contributions. If you need help, just jump into our [Discord chatroom](https://discord.gg/MUpMjP2).
 
 ## Coding Guidelines
 
@@ -76,9 +76,31 @@ A consistent coding style is included via [EditorConfig](https://editorconfig.or
 
 If you're contributing to the backend or CLI tooling, be mindful of cross-platform support. [This](https://shapeshed.com/writing-cross-platform-node/) blog post is a good guide of what to keep in mind when writing cross-platform NodeJS.
 
-Also be sure to skim through our [ADRs](https://github.com/backstage/backstage/tree/master/docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
+Also be sure to skim through our [ADRs](docs/architecture-decisions) to see if they cover what you're working on. In particular [ADR006: Avoid React.FC and React.SFC](docs/architecture-decisions/adr006-avoid-react-fc.md) is one to look out for.
 
 If there are any updates in `markdown` file please make sure to run `yarn run lint:docs`. Though it is checked on `lint-staged`. It is required to install [vale](https://docs.errata.ai/vale/install) separately and make sure it is accessed by global command.
+
+## Developer Certificate of Origin
+
+As with other CNCF projects, Backstage has adopted a [Developers Certificate of Origin (DCO)](https://developercertificate.org/). A DCO is a lightweight way for a developer to certify that they wrote or otherwise have the right to submit code or documentation to a project.
+
+To certify the code you submit to the repository you'll need to add a `Signed-off-by` line to your commits.
+
+`$ git commit -s -m 'Awesome commit message'`
+
+Which will look something like the following in the repo;
+
+```
+Awesome commit message
+
+Signed-off-by: Jane Smith jane.smith@example.com
+```
+
+- In case you forgot to add it to the most recent commit, use `git commit --amend --signoff`
+- In case you forgot to add it to the last N commits in your branch, use `git rebase --signoff HEAD~N` and replace N with the number of new commits you created in your branch.
+- If you have a very deep branch with a lot of commits, run `git rebase -i --signoff $(git merge-base -a master HEAD)`, double check to make sense of the commits (keep all lines as `pick`) and save and close the editor. This should bulk sign all the commits in your PR. Do be careful though. If you have a complex flow with a lot of branching and re-merging of work branches and stuff, merge-base may not be the right solution for you.
+
+Note: If you have already pushed you branch to a remote, you might have to force push: `git push -f` after the rebase.
 
 ## Creating Changesets
 
