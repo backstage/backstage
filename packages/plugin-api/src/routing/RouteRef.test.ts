@@ -61,7 +61,7 @@ describe('RouteRef', () => {
     validateType<undefined>(_2);
     // @ts-expect-error
     validateType<{ x: string; z: string }>(_2);
-    // TODO(Rugvip): Ideally this would fail as well, but settle for validating it at runtime instead
+    // extra z, we validate this at runtime instead
     validateType<{ x: string; y: string; z: string }>(_2);
     validateType<{ x: string; y: string }>(_2);
 

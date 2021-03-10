@@ -36,7 +36,7 @@ const makeKey = (id: string) => `__@backstage/${id}__`;
 export function setGlobalSingleton(id: string, value: unknown): void {
   const key = makeKey(id);
   if (key in globalObject) {
-    throw new Error(`Global ${id} is already set`); // TODO some sort of special build err
+    throw new Error(`Global ${id} is already set`);
   }
   globalObject[key] = value;
 }
@@ -47,7 +47,7 @@ export function setGlobalSingleton(id: string, value: unknown): void {
 export function getGlobalSingleton<T>(id: string): T {
   const key = makeKey(id);
   if (!(key in globalObject)) {
-    throw new Error(`Global ${id} is not set`); // TODO some sort of special build err
+    throw new Error(`Global ${id} is not set`);
   }
 
   return globalObject[key];
