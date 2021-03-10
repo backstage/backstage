@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, PropsWithChildren } from 'react';
-import { TabbedCard, CardTab } from '.';
 import { Grid } from '@material-ui/core';
+import React, { PropsWithChildren, useState } from 'react';
 import { MemoryRouter } from 'react-router';
+import { CardTab, TabbedCard } from './TabbedCard';
 
 const cardContentStyle = { height: 200, width: 500 };
 

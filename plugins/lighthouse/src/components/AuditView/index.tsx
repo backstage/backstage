@@ -13,40 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect, ReactNode } from 'react';
+
 import {
-  Link,
-  useParams,
-  useNavigate,
-  generatePath,
-  resolvePath,
-} from 'react-router-dom';
-import { useAsync } from 'react-use';
+  Content,
+  ContentHeader,
+  Header,
+  HeaderLabel,
+  InfoCard,
+  Page,
+  Progress,
+  useApi,
+} from '@backstage/core';
 import {
-  makeStyles,
+  Button,
   Grid,
   List,
   ListItem,
-  Button,
   ListItemIcon,
   ListItemText,
+  makeStyles,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  useApi,
-  InfoCard,
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  Progress,
-} from '@backstage/core';
-
-import { lighthouseApiRef, Website, Audit } from '../../api';
+  generatePath,
+  Link,
+  resolvePath,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+import { useAsync } from 'react-use';
+import { Audit, lighthouseApiRef, Website } from '../../api';
+import { formatTime } from '../../utils';
 import AuditStatusIcon from '../AuditStatusIcon';
 import LighthouseSupportButton from '../SupportButton';
-import { formatTime } from '../../utils';
+
+// TODO(freben): move all of this out of index
 
 const useStyles = makeStyles({
   contentGrid: {

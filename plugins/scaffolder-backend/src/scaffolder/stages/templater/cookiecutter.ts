@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { runDockerContainer } from '@backstage/backend-common';
 import { JsonValue } from '@backstage/config';
 import fs from 'fs-extra';
 import path from 'path';
-import { TemplaterBase, TemplaterRunOptions } from '.';
 import { runCommand } from './helpers';
+import { TemplaterBase, TemplaterRunOptions } from './types';
 
 const commandExists = require('command-exists-promise');
 

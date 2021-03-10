@@ -16,9 +16,11 @@
 
 // @ts-ignore
 import sanitizeHtml from 'sanitize-html';
-import type { Transformer } from '..';
+import type { Transformer } from '../index';
 import { TECHDOCS_ALLOWED_TAGS } from './tags';
 import { TECHDOCS_ALLOWED_ATTRIBUTES } from './attributes';
+
+// TODO(freben): move all of this out of index
 
 export const sanitizeDOM = (): Transformer => {
   return dom => {

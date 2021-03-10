@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, CSSProperties, PropsWithChildren } from 'react';
-import { Helmet } from 'react-helmet';
-import { Typography, Tooltip, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
-import { Breadcrumbs } from '..';
-import { Link } from '../../components';
+import { makeStyles, Tooltip, Typography } from '@material-ui/core';
+import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+import { Helmet } from 'react-helmet';
+import { Link } from '../../components/Link';
+import { Breadcrumbs } from '../Breadcrumbs';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {

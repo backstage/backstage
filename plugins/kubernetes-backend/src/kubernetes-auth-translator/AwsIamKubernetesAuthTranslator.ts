@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { sign } from 'aws4';
-import { KubernetesAuthTranslator } from './types';
-import { ClusterDetails } from '..';
 import AWS, { Credentials } from 'aws-sdk';
+import { sign } from 'aws4';
+import { ClusterDetails } from '../types/types';
+import { KubernetesAuthTranslator } from './types';
 
 const base64 = (str: string) =>
   Buffer.from(str.toString(), 'binary').toString('base64');

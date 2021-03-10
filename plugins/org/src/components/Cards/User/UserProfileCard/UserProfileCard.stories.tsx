@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { UserEntity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { UserEntity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
-import { UserProfileCard } from '.';
+import { UserProfileCard } from './UserProfileCard';
 
 export default {
   title: 'Plugins/Org/User Profile Card',

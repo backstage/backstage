@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import http from 'http';
 import {
   AppsV1Api,
   AutoscalingV1Api,
@@ -27,20 +26,21 @@ import {
   V1Pod,
   V1ReplicaSet,
 } from '@kubernetes/client-node';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { V1Service } from '@kubernetes/client-node/dist/gen/model/v1Service';
+import http from 'http';
+import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
-  KubernetesFetcher,
   ClusterDetails,
-  KubernetesObjectTypes,
   FetchResponse,
   FetchResponseWrapper,
-  KubernetesFetchError,
   KubernetesErrorTypes,
+  KubernetesFetcher,
+  KubernetesFetchError,
+  KubernetesObjectTypes,
   ObjectFetchParams,
-} from '..';
-import lodash, { Dictionary } from 'lodash';
+} from '../types/types';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 
 export interface Clients {
   core: CoreV1Api;

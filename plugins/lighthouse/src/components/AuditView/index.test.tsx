@@ -26,17 +26,16 @@ jest.mock('react-router-dom', () => {
   };
 });
 
-import React from 'react';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import { msw, wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
-import { wrapInTestApp, msw } from '@backstage/test-utils';
-import { ApiRegistry, ApiProvider } from '@backstage/core';
-import AuditView from '.';
-import { lighthouseApiRef, LighthouseRestApi, Audit, Website } from '../../api';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import React from 'react';
+import { Audit, lighthouseApiRef, LighthouseRestApi, Website } from '../../api';
 import { formatTime } from '../../utils';
 import * as data from '../../__fixtures__/website-response.json';
-
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import AuditView from './index';
 
 const { useParams }: { useParams: jest.Mock } = jest.requireMock(
   'react-router-dom',

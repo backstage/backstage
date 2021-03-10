@@ -16,7 +16,7 @@
 import { Grid, Typography } from '@material-ui/core';
 import React, { PropsWithChildren } from 'react';
 import { MemoryRouter } from 'react-router';
-import { InfoCard } from '.';
+import { InfoCard } from './InfoCard';
 
 const linkInfo = { title: 'Go to XYZ Location', link: '#' };
 

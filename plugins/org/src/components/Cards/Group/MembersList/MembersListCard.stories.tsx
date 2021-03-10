@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { Entity, GroupEntity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { catalogApiRef, EntityContext } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { Entity, GroupEntity } from '@backstage/catalog-model';
-import { EntityContext, catalogApiRef } from '@backstage/plugin-catalog-react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
-
-import { MembersListCard } from '.';
+import { MembersListCard } from './MembersListCard';
 
 export default {
   title: 'Plugins/Org/Group Members List Card',

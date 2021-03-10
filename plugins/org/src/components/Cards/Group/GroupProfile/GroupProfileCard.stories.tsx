@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { GroupEntity } from '@backstage/catalog-model';
+import { EntityContext } from '@backstage/plugin-catalog-react';
 import { Grid } from '@material-ui/core';
 import React from 'react';
 import { MemoryRouter } from 'react-router';
-import { GroupEntity } from '@backstage/catalog-model';
-import { EntityContext } from '@backstage/plugin-catalog-react';
-import { GroupProfileCard } from '.';
+import { GroupProfileCard } from './GroupProfileCard';
 
 export default {
   title: 'Plugins/Org/Group Profile Card',

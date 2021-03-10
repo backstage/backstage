@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ClusterDetails, KubernetesClustersSupplier } from '..';
 import { Config } from '@backstage/config';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];
