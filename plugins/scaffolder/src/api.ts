@@ -25,7 +25,7 @@ import {
 } from '@backstage/core';
 import { ScmIntegrations } from '@backstage/integration';
 import ObservableImpl from 'zen-observable';
-import { ScaffolderTask, Status } from './types';
+import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
   id: 'plugin.scaffolder.service',
@@ -71,6 +71,9 @@ export interface ScaffolderApi {
   getIntegrationsList(options: {
     allowedHosts: string[];
   }): Promise<{ type: string; title: string; host: string }[]>;
+
+  // Returns a list of all installed actions.
+  listActions(): Promise<ListActionsResponse>;
 
   streamLogs({
     taskId,
@@ -226,5 +229,14 @@ export class ScaffolderClient implements ScaffolderApi {
         },
       );
     });
+  }
+
+  /**
+   * @returns ListActionsResponse containing all registered actions.
+   */
+  async listActions(): Promise<ListActionsResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await fetch(`${baseUrl}/v2/actions`);
+    return await response.json();
   }
 }

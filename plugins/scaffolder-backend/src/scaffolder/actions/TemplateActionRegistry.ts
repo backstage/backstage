@@ -38,4 +38,8 @@ export class TemplateActionRegistry {
     }
     return action;
   }
+
+  list(): TemplateAction<any>[] {
+    return [...this.actions.values()];
+  }
 }
