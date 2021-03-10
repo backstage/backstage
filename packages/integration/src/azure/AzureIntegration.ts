@@ -49,7 +49,11 @@ export class AzureIntegration implements ScmIntegration {
    *
    * Example base URL: https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml
    */
-  resolveUrl(options: { url: string; base: string }): string {
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
     const { url, base } = options;
 
     // If we can parse the url, it is absolute - then return it verbatim
@@ -71,6 +75,13 @@ export class AzureIntegration implements ScmIntegration {
 
     const newUrl = new URL(base);
     newUrl.searchParams.set('path', updatedPath);
+
+    if (options.lineNumber) {
+      newUrl.searchParams.set('line', String(options.lineNumber));
+      newUrl.searchParams.set('lineEnd', String(options.lineNumber + 1));
+      newUrl.searchParams.set('lineStartColumn', '1');
+      newUrl.searchParams.set('lineEndColumn', '1');
+    }
 
     return newUrl.toString();
   }

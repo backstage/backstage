@@ -46,7 +46,11 @@ export class GitHubIntegration implements ScmIntegration {
     return this.integrationConfig;
   }
 
-  resolveUrl(options: { url: string; base: string }): string {
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
     // GitHub uses blob URLs for files and tree urls for directory listings. But
     // there is a redirect from tree to blob for files, so we can always return
     // tree urls here.

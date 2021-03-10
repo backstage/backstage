@@ -60,8 +60,9 @@ export function basicIntegrations<T extends ScmIntegration>(
 export function defaultScmResolveUrl(options: {
   url: string;
   base: string;
+  lineNumber?: number;
 }): string {
-  const { url, base } = options;
+  const { url, base, lineNumber } = options;
 
   // If it is a fully qualified URL - then return it verbatim
   try {
@@ -90,5 +91,8 @@ export function defaultScmResolveUrl(options: {
   }
 
   updated.search = new URL(base).search;
+  if (lineNumber) {
+    updated.hash = `L${lineNumber}`;
+  }
   return updated.toString();
 }
