@@ -81,10 +81,13 @@ const createDisplayedItems = (
   generalItems: SupportItem[],
   supportItems: SupportItem[] | undefined,
 ) => {
-  if (showCondition === undefined) return generalItems;
-  else if (showCondition)
-    return supportItems && [...supportItems, ...generalItems];
-  return supportItems;
+  if (showCondition && supportItems) {
+    return supportItems;
+  }
+  if (supportItems) {
+    return [...supportItems, ...generalItems];
+  }
+  return generalItems;
 };
 
 type Props = {};
@@ -92,13 +95,13 @@ type Props = {};
 type SupportButtonProps = {
   title?: string;
   supportItems?: SupportItem[];
-  showBothLists?: Boolean | undefined;
+  hideDefaultItems?: Boolean;
 };
 
 export const SupportButton = ({
   supportItems,
   title,
-  showBothLists = undefined,
+  hideDefaultItems = false,
   children,
 }: SupportButtonProps & PropsWithChildren<Props>) => {
   const { items } = useSupportConfig();
@@ -107,7 +110,7 @@ export const SupportButton = ({
   const classes = useStyles();
 
   const displayedItems = createDisplayedItems(
-    showBothLists,
+    hideDefaultItems,
     items,
     supportItems,
   );
