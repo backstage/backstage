@@ -61,13 +61,23 @@ export class BitriseClientApi implements BitriseApi {
     return data.data;
   }
 
-  async getApps(): Promise<BitriseApp[]> {
+  async getAppsPaginated(from: string): Promise<BitriseApp[]> {
     const baseUrl = await this.discoveryApi.getBaseUrl('proxy');
-    const appsResponse = await fetch(`${baseUrl}/bitrise/apps`);
+    const appsResponse = await fetch(`${baseUrl}/bitrise/apps?next=${from}`);
 
     const appsData = await appsResponse.json();
 
+    if (appsData.paging?.next) {
+      return appsData.data.concat(
+        await this.getAppsPaginated(appsData.paging.next),
+      );
+    }
+
     return appsData.data;
+  }
+
+  async getApps(): Promise<BitriseApp[]> {
+    return await this.getAppsPaginated('');
   }
 
   async getApp(appName: string): Promise<BitriseApp | undefined> {
