@@ -19,12 +19,8 @@ import { fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
-import {
-  ApiRegistry,
-  errorApiRef,
-  ApiProvider,
-  ErrorApi,
-} from '@backstage/core-api';
+import { ApiRegistry, ApiProvider } from '@backstage/core-api';
+import { errorApiRef, ErrorApi } from '@backstage/plugin-api';
 
 jest.mock('popper.js', () => {
   const PopperJS = jest.requireActual('popper.js');

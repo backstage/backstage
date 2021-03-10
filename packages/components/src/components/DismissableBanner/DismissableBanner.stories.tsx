@@ -21,11 +21,9 @@ import {
   ApiProvider,
   ApiRegistry,
   CreateStorageApiOptions,
-  ErrorApi,
-  storageApiRef,
-  StorageApi,
   WebStorage,
 } from '@backstage/core-api';
+import { ErrorApi, storageApiRef, StorageApi } from '@backstage/plugin-api';
 
 export default {
   title: 'Feedback/DismissableBanner',

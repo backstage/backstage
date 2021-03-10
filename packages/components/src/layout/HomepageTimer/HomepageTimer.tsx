@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
-import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
+import { ConfigApi, useApi, configApiRef } from '@backstage/plugin-api';
 
 const timeFormat = { hour: '2-digit', minute: '2-digit' };
 

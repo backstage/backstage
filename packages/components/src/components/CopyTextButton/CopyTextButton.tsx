@@ -19,7 +19,7 @@ import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import { BackstageTheme } from '@backstage/theme';
-import { errorApiRef, useApi } from '@backstage/core-api';
+import { errorApiRef, useApi } from '@backstage/plugin-api';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {

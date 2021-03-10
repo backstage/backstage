@@ -23,7 +23,7 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionApi,
-} from '@backstage/core-api';
+} from '@backstage/plugin-api';
 
 export type SignInConfig = {
   id: string;

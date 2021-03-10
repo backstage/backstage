@@ -23,7 +23,7 @@ import {
   Theme,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import { PendingAuthRequest } from '@backstage/core-api';
+import { PendingAuthRequest } from '@backstage/plugin-api';
 
 const useItemStyles = makeStyles<Theme>(theme => ({
   root: {

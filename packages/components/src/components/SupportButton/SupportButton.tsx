@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { HelpIcon, useApp } from '@backstage/core-api';
+import { HelpIcon } from '../../icons';
+import { useApp } from '@backstage/plugin-api';
 import {
+  Box,
   Button,
   List,
   ListItem,
@@ -35,15 +37,12 @@ import { Link } from '../Link';
 
 type Props = {};
 
-const useStyles = makeStyles(theme => ({
-  leftIcon: {
-    marginRight: theme.spacing(1),
-  },
+const useStyles = makeStyles({
   popoverList: {
     minWidth: 260,
     maxWidth: 400,
   },
-}));
+});
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
   const app = useApp();
@@ -101,7 +100,9 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
         color="primary"
         onClick={onClickHandler}
       >
-        <HelpIcon className={classes.leftIcon} />
+        <Box marginRight={1} display="flex">
+          <HelpIcon />
+        </Box>
         Support
       </Button>
       <Popover

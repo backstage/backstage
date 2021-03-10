@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core-api';
+import { IconComponent } from '@backstage/plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import {
   Badge,
@@ -170,7 +170,7 @@ export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
       overlap="circle"
       invisible={!hasNotifications}
     >
-      <Icon fontSize="small" className={classes.icon} />
+      <Icon />
     </Badge>
   );
 

@@ -21,7 +21,6 @@ import {
   useLocation,
   NavLink as RouterNavLink,
 } from 'react-router-dom';
-import { createRouteRef } from '@backstage/core-api';
 
 const Location = () => {
   const location = useLocation();
@@ -46,32 +45,22 @@ export default {
 };
 
 export const Default = () => {
-  const routeRef = createRouteRef({
-    path: '/hello',
-    title: 'Hi there!',
-  });
-
   return (
     <>
-      <Link to={routeRef.path}>This link</Link>&nbsp;will utilise the
-      react-router MemoryRouter's navigation
-      <Route path={routeRef.path}>
-        <h1>{routeRef.title}</h1>
+      <Link to="/hello">This link</Link>&nbsp;will utilise the react-router
+      MemoryRouter's navigation
+      <Route path="/hello">
+        <h1>Hi there!</h1>
       </Route>
     </>
   );
 };
 
 export const PassProps = () => {
-  const routeRef = createRouteRef({
-    path: '/hello',
-    title: 'Hi there!',
-  });
-
   return (
     <>
       <Link
-        to={routeRef.path}
+        to="/hello"
         /** react-router-dom related prop */
         component={RouterNavLink}
         /** material-ui related prop */
@@ -81,8 +70,8 @@ export const PassProps = () => {
       </Link>
       &nbsp;has props for both material-ui's component as well as for
       react-router-dom's
-      <Route path={routeRef.path}>
-        <h1>{routeRef.title}</h1>
+      <Route path="/hello">
+        <h1>Hi there!</h1>
       </Route>
     </>
   );

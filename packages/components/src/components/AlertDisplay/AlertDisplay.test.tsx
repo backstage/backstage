@@ -19,9 +19,9 @@ import { AlertDisplay } from './AlertDisplay';
 import {
   ApiProvider,
   ApiRegistry,
-  alertApiRef,
   AlertApiForwarder,
-} from '@backstage/core-api';
+} from '@backstage/core-api'; // TODO ok-ish cause it's a test
+import { alertApiRef } from '@backstage/plugin-api';
 import Observable from 'zen-observable';
 import { renderInTestApp } from '@backstage/test-utils';
 
