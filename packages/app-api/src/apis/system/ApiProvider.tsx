@@ -24,7 +24,10 @@ import React, {
 import PropTypes from 'prop-types';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { ApiAggregator } from './ApiAggregator';
-import { getGlobalSingleton, setGlobalSingleton } from '../../lib/globalObject';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+} from '../../lib/globalObject';
 import {
   VersionedValue,
   createVersionedValueMap,
@@ -42,9 +45,9 @@ type ApiProviderProps = {
 };
 
 type ApiContextType = VersionedValue<{ 1: ApiHolder }> | undefined;
-const ApiContext = createContext<ApiContextType>(undefined);
-
-setGlobalSingleton('api-context', ApiContext);
+const ApiContext = getOrCreateGlobalSingleton('api-context', () =>
+  createContext<ApiContextType>(undefined),
+);
 
 export const ApiProvider = ({
   apis,
