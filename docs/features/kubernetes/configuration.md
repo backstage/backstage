@@ -133,7 +133,6 @@ Defaults to empty array.
 Example:
 
 ```yaml
-
 ---
 kubernetes:
   customResources:
