@@ -49,8 +49,13 @@ export interface ScmIntegration {
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens
+   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
-  resolveUrl(options: { url: string; base: string }): string;
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
 
   /**
    * Resolves the edit URL for a file within the SCM system.
@@ -114,8 +119,13 @@ export interface ScmIntegrationRegistry
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens
+   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
-  resolveUrl(options: { url: string; base: string }): string;
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
 
   /**
    * Resolves the edit URL for a file within the SCM system.

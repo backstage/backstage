@@ -83,7 +83,11 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       .find(Boolean);
   }
 
-  resolveUrl(options: { url: string; base: string }): string {
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
     const integration = this.byUrl(options.base);
     if (!integration) {
       return defaultScmResolveUrl(options);
