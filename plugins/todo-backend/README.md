@@ -1,13 +1,37 @@
-# todo
+# @backstage/plugin-todo-backend
 
-Welcome to the todo backend plugin!
+Backend for the `@backstage/plugin-todo` plugin. Assists in scanning for and listing `// TODO` comments in source code repositories.
 
-_This plugin was created through the Backstage CLI_
+## Installation
 
-## Getting started
+Install the `@backstage/plugin-todo-backend` package in your backend packages, and then integrate the plugin using the following default setup for `src/plugins/todo.ts`:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/todo](http://localhost:3000/todo).
+```ts
+import { Router } from 'express';
+import { CatalogClient } from '@backstage/catalog-client';
+import {
+  createRouter,
+  TodoReaderService,
+  TodoScmReader,
+} from '@backstage/plugin-todo-backend';
+import { PluginEnvironment } from '../types';
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+export default async function createPlugin({
+  logger,
+  reader,
+  config,
+  discovery,
+}: PluginEnvironment): Promise<Router> {
+  const todoReader = TodoScmReader.fromConfig(config, {
+    logger,
+    reader,
+  });
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+  const todoService = new TodoReaderService({
+    todoReader,
+    catalogClient,
+  });
+
+  return await createRouter({ todoService });
+}
+```
