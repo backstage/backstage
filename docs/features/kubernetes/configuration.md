@@ -123,6 +123,37 @@ The Google Cloud project to look for Kubernetes clusters in.
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
 
+### `customResources` (optional)
+
+Configures which [custom resources][3] to look for when returning an entity's
+Kubernetes resources.
+
+Defaults to empty array.
+
+Example:
+
+```yaml
+
+---
+kubernetes:
+  customResources:
+    - group: 'argoproj.io'
+      apiVersion: 'v1alpha1'
+      plural: 'rollouts'
+```
+
+#### `customResources.\*.group`
+
+The custom resource's group.
+
+#### `customResources.\*.apiVersion`
+
+The custom resource's apiVersion.
+
+#### `customResources.\*.plural`
+
+The plural representing the custom resource.
+
 ### Role Based Access Control
 
 The current RBAC permissions required are read-only cluster wide, for the
@@ -176,3 +207,5 @@ for more info.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
+[3]:
+  https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
