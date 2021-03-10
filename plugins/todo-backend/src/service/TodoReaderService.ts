@@ -78,8 +78,28 @@ export class TodoReaderService implements TodoService {
       offset = totalCount - limit;
     }
 
+    let items = todos.items;
+    const { orderBy } = req;
+    if (orderBy) {
+      const dir = orderBy.direction === 'asc' ? 1 : -1;
+      const field = orderBy.field;
+      items = items.slice().sort((item1, item2) => {
+        const field1 = item1[field];
+        const field2 = item2[field];
+
+        if (field1 && field2) {
+          return dir * field1?.localeCompare(field2, 'en-US');
+        } else if (field1 && !field2) {
+          return -1;
+        } else if (!field1 && field2) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+
     return {
-      items: todos.items.slice(offset, offset + limit),
+      items: items.slice(offset, offset + limit),
       totalCount,
       offset,
       limit,

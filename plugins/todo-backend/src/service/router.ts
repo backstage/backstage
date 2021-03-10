@@ -20,6 +20,13 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { TodoService } from './types';
 
+const ALLOWED_ORDER_BY_FIELDS = [
+  'text',
+  'author',
+  'viewUrl',
+  'repoFilePath',
+] as const;
+
 export interface RouterOptions {
   todoService: TodoService;
 }
@@ -35,6 +42,11 @@ export async function createRouter(
   router.get('/v1/todos', async (req, res) => {
     const offset = parseIntegerParam(req.query.offset, 'offset query');
     const limit = parseIntegerParam(req.query.limit, 'limit query');
+    const orderBy = parseOrderByParam(
+      req.query.orderBy,
+      'orderBy query',
+      ALLOWED_ORDER_BY_FIELDS,
+    );
 
     const entityRef = req.query.entity;
     if (entityRef && typeof entityRef !== 'string') {
@@ -49,7 +61,12 @@ export async function createRouter(
       }
     }
 
-    const todos = await todoService.listTodos({ entity, offset, limit });
+    const todos = await todoService.listTodos({
+      entity,
+      offset,
+      limit,
+      orderBy,
+    });
     res.json(todos);
   });
 
@@ -68,4 +85,33 @@ function parseIntegerParam(str: unknown, ctx: string): number | undefined {
     throw new InputError(`invalid ${ctx}, not an integer`);
   }
   return parsed;
+}
+
+function parseOrderByParam<T extends readonly string[]>(
+  str: unknown,
+  ctx: string,
+  allowedFields: T,
+): { field: T[number]; direction: 'asc' | 'desc' } | undefined {
+  if (str === undefined) {
+    return undefined;
+  }
+  if (typeof str !== 'string') {
+    throw new InputError(`invalid ${ctx}, must be a string`);
+  }
+  const [field, direction] = str.split('=');
+  if (!field) {
+    throw new InputError(`invalid ${ctx}, field name is empty`);
+  }
+  if (direction !== 'asc' && direction !== 'desc') {
+    throw new InputError(
+      `invalid ${ctx}, order direction must be 'asc' or 'desc'`,
+    );
+  }
+
+  if (field && !allowedFields.includes(field)) {
+    throw new InputError(
+      `invalid orderBy query, must be one of ${allowedFields.join(', ')}`,
+    );
+  }
+  return { field, direction };
 }

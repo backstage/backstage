@@ -21,6 +21,10 @@ export type ListTodosRequest = {
   entity?: EntityName;
   offset?: number;
   limit?: number;
+  orderBy?: {
+    field: 'text' | 'author' | 'viewUrl' | 'repoFilePath';
+    direction: 'asc' | 'desc';
+  };
 };
 
 export type ListTodosResponse = {
