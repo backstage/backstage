@@ -16,11 +16,10 @@
 
 /* eslint-disable jest/no-disabled-tests */
 
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-
-import LighthouseIntro from '.';
+import { fireEvent, render } from '@testing-library/react';
+import React from 'react';
+import LighthouseIntro from './index';
 
 describe('LighthouseIntro', () => {
   it('renders successfully', () => {

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Templaters } from '.';
+
 import { CookieCutter } from './cookiecutter';
+import { Templaters } from './templaters';
 
 describe('Templaters', () => {
   it('should throw an error when the templater is not registered', () => {

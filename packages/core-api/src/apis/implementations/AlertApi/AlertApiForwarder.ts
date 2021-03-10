@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertApi, AlertMessage } from '../..';
 import { PublishSubject } from '../../../lib';
 import { Observable } from '../../../types';
+import { AlertApi, AlertMessage } from '../../definitions';
 
 /**
  * Base implementation for the AlertApi that simply forwards alerts to consumers.

@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Grid, ThemeProvider } from '@material-ui/core';
-import React from 'react';
-import { MemoryRouter } from 'react-router';
+
 import { GroupEntity } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry } from '@backstage/core-api';
 import {
+  CatalogApi,
+  catalogApiRef,
+  EntityContext,
+} from '@backstage/plugin-catalog-react';
+import {
+  BackstageTheme,
   createTheme,
   genPageTheme,
   shapes,
-  BackstageTheme,
 } from '@backstage/theme';
-import {
-  EntityContext,
-  CatalogApi,
-  catalogApiRef,
-} from '@backstage/plugin-catalog-react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
-
-import { OwnershipCard } from '.';
+import { Grid, ThemeProvider } from '@material-ui/core';
+import React from 'react';
+import { MemoryRouter } from 'react-router';
+import { OwnershipCard } from './OwnershipCard';
 
 export default {
   title: 'Plugins/Org/Ownership Card',

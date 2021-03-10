@@ -15,8 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ObjectFetchParams } from '../types/types';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { ObjectFetchParams } from '..';
 
 describe('KubernetesClientProvider', () => {
   let clientMock: any;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import transform, { Transformer } from '.';
+import transform, { Transformer } from './index';
 
 describe('transform', () => {
   it('calls the transformers', () => {

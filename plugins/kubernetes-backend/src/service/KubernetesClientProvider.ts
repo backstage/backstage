@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '..';
 import {
   AppsV1Api,
   AutoscalingV1Api,
@@ -22,6 +21,7 @@ import {
   KubeConfig,
   NetworkingV1beta1Api,
 } from '@kubernetes/client-node';
+import { ClusterDetails } from '../types/types';
 
 export class KubernetesClientProvider {
   // visible for testing
