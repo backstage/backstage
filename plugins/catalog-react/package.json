@@ -31,6 +31,7 @@
     "@backstage/catalog-client": "^0.3.12",
     "@backstage/catalog-model": "^0.8.0",
     "@backstage/core": "^0.7.11",
+    "@backstage/plugin-api": "^0.1.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
