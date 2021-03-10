@@ -15,7 +15,6 @@
  */
 
 import {
-  Progress,
   Table,
   TableColumn,
   useApi,
@@ -25,19 +24,22 @@ import {
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Alert from '@material-ui/lab/Alert';
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 import { todoApiRef } from '../../api';
-import { TodoItem } from '../../api/types';
+import { TodoItem, TodoListOptions } from '../../api/types';
+
+const PAGE_SIZE = 10;
 
 const columns: TableColumn<TodoItem>[] = [
   {
     title: 'Text',
+    field: 'text',
     width: '100%',
     highlight: true,
     render: ({ text }) => <OverflowTooltip text={text} />,
   },
   {
     title: 'File',
+    field: 'repoFilePath',
     width: '80%',
     render: ({ viewUrl, repoFilePath }) =>
       viewUrl ? (
@@ -59,39 +61,50 @@ const columns: TableColumn<TodoItem>[] = [
 export const TodoList = () => {
   const { entity } = useEntity();
   const todoApi = useApi(todoApiRef);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [error, setError] = useState<Error>();
 
-  const { value, loading, error } = useAsync(
-    async () =>
-      todoApi.listTodos({
-        entity,
-        offset: page * pageSize,
-        limit: pageSize,
-      }),
-    [todoApi, entity, page, pageSize],
-  );
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
+  if (error) {
     return <Alert severity="error">{error.message}</Alert>;
   }
 
   return (
-    <Table
+    <Table<TodoItem>
       title="TODOs"
       options={{
         search: false,
-        pageSize,
+        pageSize: PAGE_SIZE,
         padding: 'dense',
+        sorting: true,
+        draggable: false,
+        paging: true,
+        paginationType: 'stepped',
       }}
-      page={page}
       columns={columns}
-      totalCount={value!.totalCount}
-      onChangePage={setPage}
-      onChangeRowsPerPage={setPageSize}
-      data={value!.items}
+      data={async query => {
+        try {
+          const page = query?.page ?? 0;
+          const pageSize = query?.pageSize ?? PAGE_SIZE;
+          const result = await todoApi.listTodos({
+            entity,
+            offset: page * pageSize,
+            limit: pageSize,
+            orderBy:
+              query?.orderBy &&
+              ({
+                field: query.orderBy.field,
+                direction: query.orderDirection,
+              } as TodoListOptions['orderBy']),
+          });
+          return {
+            data: result.items,
+            totalCount: result.totalCount,
+            page: Math.floor(result.offset / result.limit),
+          };
+        } catch (loadingError) {
+          setError(loadingError);
+          return { data: [], totalCount: 0, page: 0 };
+        }
+      }}
     />
   );
 };

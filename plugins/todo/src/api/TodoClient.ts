@@ -36,6 +36,7 @@ export class TodoClient implements TodoApi {
     entity,
     offset,
     limit,
+    orderBy,
   }: TodoListOptions): Promise<TodoListResult> {
     const baseUrl = await this.discoveryApi.getBaseUrl('todo');
     const token = await this.identityApi.getIdToken();
@@ -49,6 +50,9 @@ export class TodoClient implements TodoApi {
     }
     if (typeof limit === 'number') {
       query.set('limit', String(limit));
+    }
+    if (orderBy) {
+      query.set('orderBy', `${orderBy.field}=${orderBy.direction}`);
     }
 
     const res = await fetch(`${baseUrl}/v1/todos?${query}`, {
