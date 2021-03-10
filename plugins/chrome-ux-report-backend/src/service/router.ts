@@ -19,9 +19,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
+import { Config } from '@backstage/config';
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config;
 }
 
 export interface RateInfo {
