@@ -15,7 +15,7 @@
  */
 
 import { getOwnedResources } from './owner';
-import * as fixture from './__fixtures__/2-deployments.json';
+import * as fixture from '../__fixtures__/2-deployments.json';
 
 describe('owner', () => {
   describe('getOwnedResources', () => {

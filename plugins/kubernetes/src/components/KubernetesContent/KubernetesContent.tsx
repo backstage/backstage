@@ -67,8 +67,9 @@ const ClusterSummary = ({
       alignItems="flex-start"
     >
       <Grid
-        xs={2}
+        xs={4}
         item
+        container
         direction="column"
         justify="flex-start"
         alignItems="flex-start"

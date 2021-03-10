@@ -44,12 +44,14 @@ import {
 
 type RolloutAccordionsProps = {
   rollouts: any[];
+  defaultExpanded?: boolean;
   children?: React.ReactNode;
 };
 
 type RolloutAccordionProps = {
   rollout: any;
   ownedPods: V1Pod[];
+  defaultExpanded?: boolean;
   matchingHpa?: V1HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
@@ -187,6 +189,7 @@ const RolloutAccordion = ({
   rollout,
   ownedPods,
   matchingHpa,
+  defaultExpanded,
 }: RolloutAccordionProps) => {
   const podNamesWithErrors = useContext(PodNamesWithErrorsContext);
 
@@ -198,7 +201,10 @@ const RolloutAccordion = ({
   const abortedMessage = findAbortedMessage(rollout);
 
   return (
-    <Accordion TransitionProps={{ unmountOnExit: true }}>
+    <Accordion
+      defaultExpanded={defaultExpanded}
+      TransitionProps={{ unmountOnExit: true }}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <RolloutSummary
           rollout={rollout}
@@ -234,7 +240,10 @@ const RolloutAccordion = ({
   );
 };
 
-export const RolloutAccordions = ({ rollouts }: RolloutAccordionsProps) => {
+export const RolloutAccordions = ({
+  rollouts,
+  defaultExpanded = false,
+}: RolloutAccordionsProps) => {
   const groupedResponses = useContext(GroupedResponsesContext);
 
   return (
@@ -248,6 +257,7 @@ export const RolloutAccordions = ({ rollouts }: RolloutAccordionsProps) => {
         <Grid container item key={i} xs>
           <Grid item xs>
             <RolloutAccordion
+              defaultExpanded={defaultExpanded}
               matchingHpa={getMatchingHpa(
                 rollout.metadata?.name,
                 'rollout',

@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { DeploymentsAccordions } from './DeploymentsAccordions';
-import * as twoDeployFixture from './__fixtures__/2-deployments.json';
+import * as twoDeployFixture from '../../__fixtures__/2-deployments.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
 
