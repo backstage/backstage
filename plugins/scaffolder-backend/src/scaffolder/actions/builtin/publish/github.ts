@@ -44,7 +44,7 @@ export function createPublishGithubAction(options: {
   }>({
     id: 'publish:github',
     description:
-      'Initializes a git repository of contents in workspacePath and publishes to GitHub.',
+      'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     schema: {
       input: {
         type: 'object',
