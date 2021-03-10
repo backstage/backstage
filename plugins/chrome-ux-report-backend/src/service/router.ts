@@ -24,6 +24,11 @@ export interface RouterOptions {
   logger: Logger;
 }
 
+export interface RateInfo {
+  longName: string;
+  shortName: string;
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
@@ -38,56 +43,88 @@ export async function createRouter(
   });
 
   router.post('/fcp', async (request, response) => {
-    const client = new BigQuery();
-
-    const origin = request.body.origin;
-    const month = request.body.month;
-
-    const query = `SELECT
-    SUM(fcp.density) * 100 AS fast_fcp_rate,
-     (
-      SELECT
-        SUM(fcp.density) * 100
-      FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(first_contentful_paint.histogram.bin) AS fcp
-      WHERE
-        origin = '${origin}'
-        AND fcp.start > 1000
-        AND fcp.start <= 2500
-    ) AS avg_fcp_rate, 
-     (
-      SELECT
-        SUM(fcp.density) * 100
-      FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(first_contentful_paint.histogram.bin) AS fcp
-      WHERE
-        origin = '${origin}'
-        AND fcp.start > 2500
-    ) AS slow_fcp_rate 
-    FROM
-    \`chrome-ux-report.all.${month}\`,
-    UNNEST(first_contentful_paint.histogram.bin) AS fcp
-    WHERE
-    origin = '${origin}'
-    AND fcp.start >= 0
-    AND fcp.start <= 1000
-  `;
-
-    const queryOptions = {
-      query: query,
-      // Location must match that of the dataset(s) referenced in the query.
-      location: 'US',
+    const rateInfo: RateInfo = {
+      longName: 'first_contentful_paint',
+      shortName: 'fcp',
     };
+    await bigQueryClient(request, response, options, rateInfo);
+  });
 
-    const [job] = await client.createQueryJob(queryOptions);
-    logger.info(`Job ${job.id} started.`);
+  router.post('/dcl', async (request, response) => {
+    const rateInfo: RateInfo = {
+      longName: 'dom_content_loaded',
+      shortName: 'dcl',
+    };
+    await bigQueryClient(request, response, options, rateInfo);
+  });
 
-    const [rows] = await job.getQueryResults();
-    response.send({ fcp_rates: rows[0] });
+  router.post('/lcp', async (request, response) => {
+    const rateInfo: RateInfo = {
+      longName: 'largest_contentful_paint',
+      shortName: 'lcp',
+    };
+    await bigQueryClient(request, response, options, rateInfo);
   });
 
   router.use(errorHandler());
   return router;
+}
+
+async function bigQueryClient(
+  request: express.Request,
+  response: express.Response,
+  options: RouterOptions,
+  rateInfo: RateInfo,
+) {
+  const { logger } = options;
+  const client = new BigQuery();
+
+  const origin = request.body?.origin;
+  const month = request.body?.month;
+
+  const { longName, shortName } = rateInfo;
+
+  const query = `SELECT
+    SUM(${shortName}.density) * 100 AS fast_${shortName}_rate,
+     (
+      SELECT
+        SUM(${shortName}.density) * 100
+      FROM
+        \`chrome-ux-report.all.${month}\`,
+        UNNEST(${longName}.histogram.bin) AS ${shortName}
+      WHERE
+        origin = '${origin}'
+        AND ${shortName}.start > 1000
+        AND ${shortName}.start <= 2500
+    ) AS avg_${shortName}_rate, 
+     (
+      SELECT
+        SUM(${shortName}.density) * 100
+      FROM
+        \`chrome-ux-report.all.${month}\`,
+        UNNEST(${longName}.histogram.bin) AS ${shortName}
+      WHERE
+        origin = '${origin}'
+        AND ${shortName}.start > 2500
+    ) AS slow_${shortName}_rate 
+    FROM
+    \`chrome-ux-report.all.${month}\`,
+    UNNEST(${longName}.histogram.bin) AS ${shortName}
+    WHERE
+    origin = '${origin}'
+    AND ${shortName}.start >= 0
+    AND ${shortName}.start <= 1000
+  `;
+
+  const queryOptions = {
+    query,
+    // Location must match that of the dataset(s) referenced in the query.
+    location: 'US',
+  };
+
+  const [job] = await client.createQueryJob(queryOptions);
+  logger.info(`Job ${job.id} started.`);
+
+  const [rows] = await job.getQueryResults();
+  response.send({ rates: rows[0] });
 }
