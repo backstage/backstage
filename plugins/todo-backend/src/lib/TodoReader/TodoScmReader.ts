@@ -30,7 +30,7 @@ import { Config } from '@backstage/config';
 type TodoParser = (ctx: {
   content: string;
   path: string;
-}) => (TodoItem & { line: number })[];
+}) => { text: string; author?: string; lineNumber: number }[];
 
 type Options = {
   logger: Logger;
@@ -52,7 +52,7 @@ const defaultTodoParser: TodoParser = ({ content, path }) => {
     return comments.map(comment => ({
       text: comment.text,
       author: comment.ref,
-      line: comment.line,
+      lineNumber: comment.line,
     }));
   } catch /* ignore unsupported extensions */ {
     return [];
@@ -119,18 +119,14 @@ export class TodoScmReader implements TodoReader {
           base: url,
         });
 
-        let editUrl: string | undefined = this.integrations.resolveEditUrl(
-          viewUrl,
-        );
-        if (editUrl === viewUrl) {
-          editUrl = undefined;
-        }
-
         todos.push(
-          ...items.map(item => ({
-            ...item,
-            editUrl,
-            viewUrl: item.line ? `${viewUrl}#L${item.line}` : viewUrl,
+          ...items.map(({ lineNumber, text, author }) => ({
+            text,
+            author,
+            lineNumber,
+            repoFilePath: file.path,
+            viewUrl:
+              lineNumber === undefined ? viewUrl : `${viewUrl}#L${lineNumber}`,
           })),
         );
       } catch (error) {

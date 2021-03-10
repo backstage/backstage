@@ -18,10 +18,20 @@ import { createApiRef } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 
 export type TodoItem = {
+  /** The contents of the TODO comment */
   text: string;
+
+  /** References author, if any */
   author?: string;
+
+  /** URL used to view the file */
   viewUrl?: string;
-  editUrl?: string;
+
+  /** The line number of the file that the TODO occurs at */
+  lineNumber?: number;
+
+  /** The path of the file containing the TODO within the repo */
+  repoFilePath?: string;
 };
 
 export type TodoListOptions = {

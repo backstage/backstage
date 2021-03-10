@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { Progress, Table, TableColumn, useApi } from '@backstage/core';
+import {
+  Progress,
+  Table,
+  TableColumn,
+  useApi,
+  OverflowTooltip,
+  Link,
+} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Alert from '@material-ui/lab/Alert';
 import React, { useState } from 'react';
@@ -23,29 +30,29 @@ import { todoApiRef } from '../../api';
 import { TodoItem } from '../../api/types';
 
 const columns: TableColumn<TodoItem>[] = [
-  { title: 'Text', field: 'text' },
-  { title: 'Author', field: 'author' },
   {
-    title: 'View',
-    field: 'viewUrl',
-    render({ viewUrl }) {
-      return (
-        <a target="_blank" href={viewUrl}>
-          {viewUrl}
-        </a>
-      );
-    },
+    title: 'Text',
+    width: '100%',
+    highlight: true,
+    render: ({ text }) => <OverflowTooltip text={text} />,
   },
   {
-    title: 'Edit',
-    field: 'editUrl',
-    render({ editUrl }) {
-      return (
-        <a target="_blank" href={editUrl}>
-          {editUrl}
-        </a>
-      );
-    },
+    title: 'File',
+    width: '80%',
+    render: ({ viewUrl, repoFilePath }) =>
+      viewUrl ? (
+        <Link to={viewUrl} target="_blank">
+          <OverflowTooltip text={repoFilePath} />
+        </Link>
+      ) : (
+        <OverflowTooltip text={repoFilePath} />
+      ),
+  },
+  {
+    title: 'Author',
+    field: 'author',
+    width: '20%',
+    render: ({ author }) => <OverflowTooltip text={author} />,
   },
 ];
 
@@ -77,6 +84,7 @@ export const TodoList = () => {
       options={{
         search: false,
         pageSize,
+        padding: 'dense',
       }}
       page={page}
       columns={columns}
