@@ -16,13 +16,13 @@
 import {
   createApiFactory,
   createPlugin,
-  createRoutableExtension,
+  createComponentExtension,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
 import { todoApiRef, TodoClient } from './api';
 
-import { rootRouteRef } from './routes';
+// import { rootRouteRef } from './routes';
 
 export const todoPlugin = createPlugin({
   id: 'todo',
@@ -39,13 +39,16 @@ export const todoPlugin = createPlugin({
     }),
   ],
   routes: {
-    root: rootRouteRef,
+    // root: rootRouteRef,
   },
 });
 
 export const EntityTodoContent = todoPlugin.provide(
-  createRoutableExtension({
-    component: () => import('./components/TodoList').then(m => m.TodoList),
-    mountPoint: rootRouteRef,
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/TodoList').then(m => m.TodoList),
+    },
+    // TODO(Rugvip): Switch back to routable extension once apps are migrated
+    // mountPoint: rootRouteRef,
   }),
 );
