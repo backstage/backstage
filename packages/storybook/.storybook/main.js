@@ -3,8 +3,8 @@ const WebpackPluginFailBuildOnWarning = require('./webpack-plugin-fail-build-on-
 
 module.exports = {
   stories: [
-    '../../core/src/layout/**/*.stories.tsx',
-    '../../core/src/components/**/*.stories.tsx',
+    '../../components/src/layout/**/*.stories.tsx',
+    '../../components/src/components/**/*.stories.tsx',
     '../../../plugins/**/src/**/*.stories.tsx',
   ],
   addons: [
@@ -15,7 +15,7 @@ module.exports = {
   ],
   webpackFinal: async config => {
     /* eslint-disable-next-line no-restricted-syntax */
-    const coreSrc = path.resolve(__dirname, '../../core/src');
+    const componentsSrc = path.resolve(__dirname, '../../components/src');
 
     // Mirror config in packages/cli/src/lib/bundler
     config.resolve.mainFields = ['browser', 'module', 'main'];
