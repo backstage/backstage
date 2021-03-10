@@ -30,7 +30,6 @@ export type IdentityApi = {
    */
   getUserId(): string;
 
-  // TODO: getProfile(): Promise<Profile> - We want this to be async when added, but needs more work.
   /**
    * The profile of the signed in user.
    */
