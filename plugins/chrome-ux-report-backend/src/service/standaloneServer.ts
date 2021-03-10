@@ -33,11 +33,13 @@ import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { Config } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
+  config: Config;
 }
 
 export async function startStandaloneServer(
@@ -45,9 +47,12 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'chrome-ux-report-backend' });
   logger.debug('Starting application server...');
-  const router = await createRouter({
-    logger,
-  });
+  const router = await createRouter(
+    {
+      logger,
+    },
+    options.config,
+  );
 
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

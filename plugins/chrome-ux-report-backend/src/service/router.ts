@@ -23,7 +23,6 @@ import { Config } from '@backstage/config';
 
 export interface RouterOptions {
   logger: Logger;
-  config: Config;
 }
 
 export interface RateInfo {
@@ -31,10 +30,23 @@ export interface RateInfo {
   shortName: string;
 }
 
+function createBigQueryClient(config: Config) {
+  const projectId = config.getString('chromeUXReport.projectId');
+  const keyPath = config.getString('chromeUXReport.keyPath');
+
+  return new BigQuery({
+    projectId: projectId,
+    keyFilename: keyPath,
+  });
+}
+
 export async function createRouter(
   options: RouterOptions,
+  config: Config,
 ): Promise<express.Router> {
   const { logger } = options;
+
+  logger.info('Plugin Chrome UX Report has started');
 
   const router = Router();
   router.use(express.json());
@@ -49,7 +61,14 @@ export async function createRouter(
       longName: 'first_contentful_paint',
       shortName: 'fcp',
     };
-    await bigQueryClient(request, response, options, rateInfo);
+    const [rows] = await queryUXMetrics(
+      request.body.origin,
+      request.body.month,
+      rateInfo,
+      config,
+    );
+    console.log(rows);
+    response.send({ rates: rows });
   });
 
   router.post('/dcl', async (request, response) => {
@@ -57,7 +76,15 @@ export async function createRouter(
       longName: 'dom_content_loaded',
       shortName: 'dcl',
     };
-    await bigQueryClient(request, response, options, rateInfo);
+
+    const [rows] = await queryUXMetrics(
+      request.body.origin,
+      request.body.month,
+      rateInfo,
+      config,
+    );
+
+    response.send({ rates: rows[0] });
   });
 
   router.post('/lcp', async (request, response) => {
@@ -65,25 +92,28 @@ export async function createRouter(
       longName: 'largest_contentful_paint',
       shortName: 'lcp',
     };
-    await bigQueryClient(request, response, options, rateInfo);
+
+    const [rows] = await queryUXMetrics(
+      request.body.origin,
+      request.body.month,
+      rateInfo,
+      config,
+    );
+
+    response.send({ rates: rows[0] });
   });
 
   router.use(errorHandler());
   return router;
 }
 
-async function bigQueryClient(
-  request: express.Request,
-  response: express.Response,
-  options: RouterOptions,
+async function queryUXMetrics(
+  origin: string,
+  month: string,
   rateInfo: RateInfo,
+  config: Config,
 ) {
-  const { logger } = options;
-  const client = new BigQuery();
-
-  const origin = request.body?.origin;
-  const month = request.body?.month;
-
+  const client = createBigQueryClient(config);
   const { longName, shortName } = rateInfo;
 
   const query = `SELECT
@@ -125,8 +155,7 @@ async function bigQueryClient(
   };
 
   const [job] = await client.createQueryJob(queryOptions);
-  logger.info(`Job ${job.id} started.`);
 
   const [rows] = await job.getQueryResults();
-  response.send({ rates: rows[0] });
+  return rows;
 }
