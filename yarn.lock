@@ -2420,6 +2420,23 @@
     query-string "^6.13.3"
     xcase "^2.0.1"
 
+"@google-cloud/bigquery@^5.5.0":
+  version "5.5.0"
+  resolved "https://registry.npmjs.org/@google-cloud/bigquery/-/bigquery-5.5.0.tgz#cfe72f8d056abd9c8289c724150d1082a0a6367d"
+  integrity sha512-hMje0+Fd1B/b29yMUGvnTUXEaUQQD1zyvYjGEu/HCh9w2ek47DQr1zVrHdstlpstUZfaeRCjxK/c3HY6wWrVFg==
+  dependencies:
+    "@google-cloud/common" "^3.1.0"
+    "@google-cloud/paginator" "^3.0.0"
+    "@google-cloud/promisify" "^2.0.0"
+    arrify "^2.0.1"
+    big.js "^6.0.0"
+    duplexify "^4.0.0"
+    extend "^3.0.2"
+    is "^3.3.0"
+    p-event "^4.1.0"
+    stream-events "^1.0.5"
+    uuid "^8.0.0"
+
 "@google-cloud/common@^0.32.0":
   version "0.32.1"
   resolved "https://registry.npmjs.org/@google-cloud/common/-/common-0.32.1.tgz#6a32c340172cea3db6674d0e0e34e78740a0073f"
@@ -2436,6 +2453,21 @@
     pify "^4.0.1"
     retry-request "^4.0.0"
     teeny-request "^3.11.3"
+
+"@google-cloud/common@^3.1.0":
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/@google-cloud/common/-/common-3.6.0.tgz#c2f6da5f79279a4a9ac7c71fc02d582beab98e8b"
+  integrity sha512-aHIFTqJZmeTNO9md8XxV+ywuvXF3xBm5WNmgWeeCK+XN5X+kGW0WEX94wGwj+/MdOnrVf4dL2RvSIt9J5yJG6Q==
+  dependencies:
+    "@google-cloud/projectify" "^2.0.0"
+    "@google-cloud/promisify" "^2.0.0"
+    arrify "^2.0.1"
+    duplexify "^4.1.1"
+    ent "^2.2.0"
+    extend "^3.0.2"
+    google-auth-library "^7.0.2"
+    retry-request "^4.1.1"
+    teeny-request "^7.0.0"
 
 "@google-cloud/common@^3.5.0":
   version "3.5.0"
@@ -8884,6 +8916,11 @@ big.js@^5.2.2:
   version "5.2.2"
   resolved "https://registry.npmjs.org/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
+
+big.js@^6.0.0:
+  version "6.0.3"
+  resolved "https://registry.npmjs.org/big.js/-/big.js-6.0.3.tgz#8b4d99ac7023668e0e465d3f78c23b8ac29ad381"
+  integrity sha512-n6yn1FyVL1EW2DBAr4jlU/kObhRzmr+NNRESl65VIOT8WBJj/Kezpx2zFdhJUqYI6qrtTW7moCStYL5VxeVdPA==
 
 bignumber.js@^9.0.0:
   version "9.0.1"
@@ -16052,6 +16089,11 @@ is-yarn-global@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/is-yarn-global/-/is-yarn-global-0.3.0.tgz#d502d3382590ea3004893746754c89139973e232"
   integrity sha512-VjSeb/lHmkoyd8ryPVIKvOCn4D1koMqY+vqyjjUfc3xyKtP4dYOxM44sZrnqQSzSds3xyOrUTLTC9LVCVgLngw==
+
+is@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/is/-/is-3.3.0.tgz#61cff6dd3c4193db94a3d62582072b44e5645d79"
+  integrity sha512-nW24QBoPcFGGHJGUwnfpI7Yc5CdqWNdsyHQszVE/z2pKHXzh7FZ5GWhJqSyaQ9wMkQnsTx+kAI8bHlCX4tKdbg==
 
 isarray@1.0.0, isarray@^1.0.0, isarray@~1.0.0:
   version "1.0.0"

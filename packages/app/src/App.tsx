@@ -52,6 +52,7 @@ import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { ChromeUxReportPage } from '@backstage/plugin-chrome-ux-report';
 
 const app = createApp({
   apis,
@@ -122,6 +123,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/chrome-ux-report" element={<ChromeUxReportPage />} />
   </FlatRoutes>
 );
 
