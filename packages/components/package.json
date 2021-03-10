@@ -69,6 +69,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.3",
+    "@backstage/core": "^0.7.0",
     "@backstage/core-api": "^0.2.12",
     "@backstage/test-utils": "^0.1.8",
     "@testing-library/jest-dom": "^5.10.1",
