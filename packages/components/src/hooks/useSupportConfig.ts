@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi, configApiRef } from '@backstage/core-api';
+import { useApi, configApiRef } from '@backstage/plugin-api';
 
 export type SupportItemLink = {
   url: string;

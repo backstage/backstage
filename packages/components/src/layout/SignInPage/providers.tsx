@@ -21,7 +21,7 @@ import {
   useApi,
   useApiHolder,
   errorApiRef,
-} from '@backstage/core-api';
+} from '@backstage/plugin-api';
 import { SignInConfig, IdentityProviders, SignInProvider } from './types';
 import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';

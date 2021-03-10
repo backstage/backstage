@@ -21,11 +21,10 @@ import { DismissableBanner } from './DismissableBanner';
 import {
   ApiRegistry,
   ApiProvider,
-  storageApiRef,
   CreateStorageApiOptions,
-  StorageApi,
   WebStorage,
 } from '@backstage/core-api';
+import { storageApiRef, StorageApi } from '@backstage/plugin-api';
 
 describe('<DismissableBanner />', () => {
   let apis: ApiRegistry;

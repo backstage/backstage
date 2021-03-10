@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { Snackbar, IconButton } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
-import { AlertMessage, useApi, alertApiRef } from '@backstage/core-api';
+import { AlertMessage, useApi, alertApiRef } from '@backstage/plugin-api';
 
 // TODO: improve on this and promote to a shared component for use by all apps.
 export const AlertDisplay = () => {

@@ -20,7 +20,7 @@ import { Header } from '../Header';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid, Button, Typography } from '@material-ui/core';
-import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
+import { SignInPageProps, useApi, configApiRef } from '@backstage/plugin-api';
 import { useSignInProviders, getSignInProviders } from './providers';
 import { IdentityProviders, SignInConfig } from './types';
 import { Progress } from '../../components/Progress';

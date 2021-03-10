@@ -16,7 +16,6 @@
 import React, { FunctionComponentFactory } from 'react';
 import { Button } from './Button';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import { createRouteRef } from '@backstage/core-api';
 import {
   Divider,
   Link,
@@ -63,11 +62,6 @@ export default {
 };
 
 export const Default = () => {
-  const routeRef = createRouteRef({
-    path: '/hello',
-    title: 'Hi there!',
-  });
-
   // Design Permutations:
   // color   = default | primary | secondary
   // variant = contained | outlined | text
@@ -81,7 +75,7 @@ export const Default = () => {
           <pre>color="primary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to={routeRef.path} color="primary" variant="contained">
+        <Button to="/hello" color="primary" variant="contained">
           Register Component
         </Button>
       </ListItem>
@@ -94,7 +88,7 @@ export const Default = () => {
           <pre>color="secondary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to={routeRef.path} color="secondary" variant="contained">
+        <Button to="/hello" color="secondary" variant="contained">
           Cancel
         </Button>
       </ListItem>
@@ -107,7 +101,7 @@ export const Default = () => {
           <pre>color="default" variant="outlined"</pre>
         </ListItemText>
 
-        <Button to={routeRef.path} color="default" variant="outlined">
+        <Button to="/hello" color="default" variant="outlined">
           View Details
         </Button>
       </ListItem>
@@ -116,11 +110,6 @@ export const Default = () => {
 };
 
 export const ButtonLinks = () => {
-  const routeRef = createRouteRef({
-    path: '/hello',
-    title: 'Hi there!',
-  });
-
   const handleClick = () => {
     return 'Your click worked!';
   };
@@ -132,7 +121,7 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <Button to={routeRef.path} color="default" variant="outlined">
+          <Button to="/hello" color="default" variant="outlined">
             Route Ref
           </Button>
           &nbsp; has props for both Material-UI's component as well as for

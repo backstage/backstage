@@ -23,7 +23,7 @@ import {
   SignInProvider,
   SignInConfig,
 } from './types';
-import { useApi, errorApiRef } from '@backstage/core-api';
+import { useApi, errorApiRef } from '@backstage/plugin-api';
 import { GridItem } from './styles';
 
 const Component: ProviderComponent = ({ config, onResult }) => {

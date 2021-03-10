@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { attachComponentData } from '@backstage/core-api';
+import { attachComponentData } from '@backstage/plugin-api';
 import React, {
   Children,
   Fragment,
