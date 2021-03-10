@@ -222,9 +222,8 @@ security:
 ### Customizing table columns and filters
 
 It's possible to specify which columns and filters you want this plugin to
-display. You can do so by declaring the columns and/or filters that you want to
-display, and then letting the `ApiExplorerTable` component know about them like
-so:
+display. You can do so by declaring the columns and/or filters as props for the
+`ApiExplorerPage` component like so:
 
 ```tsx
 const domainColumn = { title: 'Domain', field: 'entity.metadata.domain' };
