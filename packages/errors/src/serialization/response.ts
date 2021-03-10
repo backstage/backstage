@@ -14,43 +14,44 @@
  * limitations under the License.
  */
 
+import { SerializedError } from './error';
+
 /**
  * A standard shape of JSON data returned as the body of backend errors.
  */
-export type ServerResponseErrorBody = {
+export type ErrorResponse = {
   /** Details of the error that was caught */
-  error: {
-    /** The numeric HTTP status code that was returned */
-    statusCode: number;
-    /** The name of the exception that was thrown */
-    name: string;
-    /** The message of the exception that was thrown */
-    message: string;
-    /** A stringified stack trace, may not be present */
-    stack?: string;
-  };
+  error: SerializedError;
 
-  /** The incoming request */
+  /** Details about the incoming request */
   request?: {
     /** The HTTP method of the request */
     method: string;
     /** The URL of the request (excluding protocol and host/port) */
     url: string;
   };
+
+  /** Details about the response */
+  response: {
+    /** The numeric HTTP status code that was returned */
+    statusCode: number;
+  };
 };
 
 /**
- * Attempts to extract the ServerResponseErrorBody out of a server response.
- * This consumes the body of the response.
+ * Attempts to construct an ErrorResponse out of a failed server request.
+ * Assumes that the response has already been checked to be not ok. This
+ * function consumes the body of the response, and assumes that it hasn't
+ * been consumed before.
  *
  * The code is forgiving, and constructs a useful synthetic body as best it can
- * if the response wasn't on the expected form.
+ * if the response body wasn't on the expected form.
  *
  * @param response The response of a failed request
  */
-export async function parseServerResponseErrorBody(
+export async function parseErrorResponse(
   response: Response,
-): Promise<ServerResponseErrorBody> {
+): Promise<ErrorResponse> {
   try {
     const text = await response.text();
     if (text) {
@@ -59,7 +60,7 @@ export async function parseServerResponseErrorBody(
       ) {
         try {
           const body = JSON.parse(text);
-          if (body.error && body.request) {
+          if (body.error && body.response) {
             return body;
           }
         } catch {
@@ -69,9 +70,11 @@ export async function parseServerResponseErrorBody(
 
       return {
         error: {
-          statusCode: response.status,
           name: 'Unknown',
           message: `Request failed with status ${response.status} ${response.statusText}, ${text}`,
+        },
+        response: {
+          statusCode: response.status,
         },
       };
     }
@@ -81,9 +84,11 @@ export async function parseServerResponseErrorBody(
 
   return {
     error: {
-      statusCode: response.status,
       name: 'Unknown',
       message: `Request failed with status ${response.status} ${response.statusText}`,
+    },
+    response: {
+      statusCode: response.status,
     },
   };
 }

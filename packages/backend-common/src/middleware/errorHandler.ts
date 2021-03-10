@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
-import { Logger } from 'winston';
 import {
-  NotModifiedError,
-  InputError,
   AuthenticationError,
+  ConflictError,
+  ErrorResponse,
+  InputError,
   NotAllowedError,
   NotFoundError,
-  ConflictError,
-  ServerResponseErrorBody,
+  NotModifiedError,
+  serializeError,
 } from '@backstage/errors';
+import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+import { Logger } from 'winston';
 import { getRootLogger } from '../logging';
 
 export type ErrorHandlerOptions = {
@@ -86,17 +87,10 @@ export function errorHandler(
       return;
     }
 
-    const body: ServerResponseErrorBody = {
-      error: {
-        statusCode,
-        name: error.name || 'Error',
-        message: error.message || '<no reason given>',
-        stack: showStackTraces ? error.stack : undefined,
-      },
-      request: {
-        method: req.method,
-        url: req.url,
-      },
+    const body: ErrorResponse = {
+      error: serializeError(error, { includeStack: showStackTraces }),
+      request: { method: req.method, url: req.url },
+      response: { statusCode },
     };
 
     res.status(statusCode).json(body);

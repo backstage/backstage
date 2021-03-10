@@ -15,12 +15,12 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { NotFoundError } from '@backstage/errors';
 import type { Entity } from '@backstage/catalog-model';
 import {
   analyzeLocationSchema,
   locationSpecSchema,
 } from '@backstage/catalog-model';
+import { NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';

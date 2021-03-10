@@ -15,11 +15,12 @@
  */
 
 export {
-  InputError,
   AuthenticationError,
+  ConflictError,
+  InputError,
   NotAllowedError,
   NotFoundError,
-  ConflictError,
   NotModifiedError,
 } from './common';
-export { ServerResponseError } from './server';
+export { CustomErrorBase } from './CustomErrorBase';
+export { ResponseError } from './ResponseError';

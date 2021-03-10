@@ -2,4 +2,4 @@
 '@backstage/core': patch
 ---
 
-Add a `ErrorResponsePanel` to render `ServerResponseError` from `@backstage/errors`
+Add a `ResponseErrorPanel` to render `ResponseError` from `@backstage/errors`

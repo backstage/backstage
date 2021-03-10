@@ -16,7 +16,6 @@ After:
 ```json
 {
   "error": {
-    "statusCode": 404,
     "name": "NotFoundError",
     "message": "No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'",
     "stack": "NotFoundError: No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'\n    at eval (webpack-internal:///../../plugins/catalog-backend/src/service/router.ts:117:17)"
@@ -24,6 +23,9 @@ After:
   "request": {
     "method": "GET",
     "url": "/entities/by-name/user/default/tara.macgovern2"
+  },
+  "response": {
+    "statusCode": 404
   }
 }
 ```

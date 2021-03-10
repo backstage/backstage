@@ -116,7 +116,7 @@ describe('parseEntityYaml', () => {
   });
 
   it('should handle empty yaml documents', () => {
-    // This happens if the user accidentially adds a "---"
+    // This happens if the user accidentally adds a "---"
     // at the end of a file
     const results = Array.from(
       parseEntityYaml(
@@ -205,7 +205,7 @@ describe('parseEntityYaml', () => {
 
   it('must be an object at root', () => {
     const results = Array.from(
-      parseEntityYaml(Buffer.from('imma-string', 'utf8'), testLoc),
+      parseEntityYaml(Buffer.from('i-am-a-string', 'utf8'), testLoc),
     );
 
     expect(results).toEqual([

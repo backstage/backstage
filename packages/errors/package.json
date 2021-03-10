@@ -30,7 +30,8 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.2",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "serialize-error": "^8.0.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.1",

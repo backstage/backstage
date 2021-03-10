@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
-export { parseServerResponseErrorBody } from './ServerResponseErrorBody';
-export type { ServerResponseErrorBody } from './ServerResponseErrorBody';
+export { deserializeError, serializeError } from './error';
+export type { SerializedError } from './error';
+export { parseErrorResponse } from './response';
+export type { ErrorResponse } from './response';

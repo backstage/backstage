@@ -22,7 +22,7 @@ export * from './CopyTextButton';
 export * from './DependencyGraph';
 export * from './DismissableBanner';
 export * from './EmptyState';
-export * from './ErrorResponse';
+export * from './ResponseErrorPanel';
 export * from './FeatureDiscovery';
 export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';

@@ -20,12 +20,12 @@ import {
 } from '@backstage/catalog-model';
 import {
   Content,
-  ErrorResponsePanel,
   Header,
   HeaderLabel,
   Link,
   Page,
   Progress,
+  ResponseErrorPanel,
   WarningPanel,
 } from '@backstage/core';
 import {
@@ -143,7 +143,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
 
       {error && (
         <Content>
-          <ErrorResponsePanel error={error} />
+          <ResponseErrorPanel error={error} />
         </Content>
       )}
 

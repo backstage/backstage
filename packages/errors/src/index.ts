@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './error';
-export * from './payload';
+export * from './errors';
+export * from './serialization';

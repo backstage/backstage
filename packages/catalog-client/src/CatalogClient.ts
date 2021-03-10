@@ -21,7 +21,7 @@ import {
   LOCATION_ANNOTATION,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
-import { ServerResponseError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
@@ -154,7 +154,7 @@ export class CatalogClient implements CatalogApi {
       },
     );
     if (!response.ok) {
-      throw await ServerResponseError.forResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
     return undefined;
   }
@@ -175,7 +175,7 @@ export class CatalogClient implements CatalogApi {
     });
 
     if (!response.ok) {
-      throw await ServerResponseError.forResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();
@@ -196,7 +196,7 @@ export class CatalogClient implements CatalogApi {
       if (response.status === 404) {
         return undefined;
       }
-      throw await ServerResponseError.forResponse(response);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();

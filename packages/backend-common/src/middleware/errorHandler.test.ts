@@ -39,15 +39,12 @@ describe('errorHandler', () => {
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({
-      error: {
-        statusCode: 500,
+      error: expect.objectContaining({
         name: 'Error',
         message: 'some message',
-      },
-      request: {
-        method: 'GET',
-        url: '/breaks',
-      },
+      }),
+      request: { method: 'GET', url: '/breaks' },
+      response: { statusCode: 500 },
     });
   });
 
@@ -86,14 +83,17 @@ describe('errorHandler', () => {
     expect(response.status).toBe(432);
     expect(response.body).toEqual({
       error: {
-        statusCode: 432,
+        expose: true,
         name: 'BadRequestError',
         message: 'Some Message',
+        status: 432,
+        statusCode: 432,
       },
       request: {
         method: 'GET',
         url: '/breaks',
       },
+      response: { statusCode: 432 },
     });
   });
 
