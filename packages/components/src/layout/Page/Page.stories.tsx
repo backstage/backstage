@@ -26,7 +26,7 @@ import {
   InfoCard,
   Page,
 } from '../';
-import { createApp } from '../../api-wrappers';
+import { createApp } from '@backstage/core';
 import {
   GaugeCard,
   StatusOK,
