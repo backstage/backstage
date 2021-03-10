@@ -22,3 +22,4 @@ export {
 export { GraphiQLPage as Router } from './components';
 export * from './lib/api';
 export * from './route-refs';
+export { default as GraphiQLIcon } from './graphiql.icon.svg';
