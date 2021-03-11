@@ -15,7 +15,7 @@
  */
 
 import MicrosoftIcon from '@material-ui/icons/AcUnit';
-import { microsoftAuthApiRef } from '../../../definitions/auth';
+import { microsoftAuthApiRef } from '@backstage/plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
 

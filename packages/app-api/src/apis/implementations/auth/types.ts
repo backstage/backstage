@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { AuthProvider, DiscoveryApi, OAuthRequestApi } from '../../definitions';
+import {
+  AuthProvider,
+  DiscoveryApi,
+  OAuthRequestApi,
+} from '@backstage/plugin-api';
 
 export type OAuthApiCreateOptions = AuthApiCreateOptions & {
   oauthRequestApi: OAuthRequestApi;

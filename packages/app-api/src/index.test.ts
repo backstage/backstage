@@ -23,9 +23,9 @@ describe('index', () => {
       createApp: expect.any(Function),
       ApiProvider: expect.any(Function),
       // TODO(Rugvip): Figure out if we need these
-      // ApiFactoryRegistry: expect.any(Function),
-      // ApiResolver: expect.any(Function),
-      // ApiRegistry: expect.any(Function),
+      ApiFactoryRegistry: expect.any(Function),
+      ApiResolver: expect.any(Function),
+      ApiRegistry: expect.any(Function),
 
       // Components
       FlatRoutes: expect.any(Function),
@@ -49,10 +49,6 @@ describe('index', () => {
       SamlAuth: expect.any(Function),
       UrlPatternDiscovery: expect.any(Function),
       WebStorage: expect.any(Function),
-
-      // Enums
-      SessionState: expect.any(Object),
-      FeatureFlagState: { 0: 'None', 1: 'Active', Active: 1, None: 0 },
     });
   });
 });

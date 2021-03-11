@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ProfileInfo, BackstageIdentity } from '../../../definitions';
+import { ProfileInfo, BackstageIdentity } from '@backstage/plugin-api';
 
 export type SamlSession = {
   userId: string;

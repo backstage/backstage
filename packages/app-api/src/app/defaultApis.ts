@@ -15,12 +15,9 @@
  */
 
 import {
-  alertApiRef,
-  errorApiRef,
   AlertApiForwarder,
   ErrorApiForwarder,
   ErrorAlerter,
-  discoveryApiRef,
   GoogleAuth,
   GithubAuth,
   OAuth2,
@@ -28,8 +25,19 @@ import {
   GitlabAuth,
   Auth0Auth,
   MicrosoftAuth,
-  oauthRequestApiRef,
   OAuthRequestManager,
+  WebStorage,
+  createApiFactory,
+  UrlPatternDiscovery,
+  SamlAuth,
+  OneLoginAuth,
+} from '../apis';
+
+import {
+  alertApiRef,
+  errorApiRef,
+  discoveryApiRef,
+  oauthRequestApiRef,
   googleAuthApiRef,
   githubAuthApiRef,
   oauth2ApiRef,
@@ -38,16 +46,11 @@ import {
   auth0AuthApiRef,
   microsoftAuthApiRef,
   storageApiRef,
-  WebStorage,
-  createApiFactory,
   configApiRef,
-  UrlPatternDiscovery,
   samlAuthApiRef,
-  SamlAuth,
   oneloginAuthApiRef,
-  OneLoginAuth,
   oidcAuthApiRef,
-} from '../apis';
+} from '@backstage/plugin-api';
 
 import OAuth2Icon from '@material-ui/icons/AcUnit';
 

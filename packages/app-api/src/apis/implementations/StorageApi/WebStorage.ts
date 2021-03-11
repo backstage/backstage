@@ -17,12 +17,16 @@ import {
   StorageApi,
   StorageValueChange,
   ErrorApi,
-  CreateStorageApiOptions,
-} from '../../definitions';
+} from '@backstage/plugin-api';
 import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();
+
+export type CreateStorageApiOptions = {
+  errorApi: ErrorApi;
+  namespace?: string;
+};
 
 export class WebStorage implements StorageApi {
   constructor(

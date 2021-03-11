@@ -18,9 +18,8 @@ import { ComponentType } from 'react';
 import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
 import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
-import { AppTheme, ProfileInfo } from '../apis/definitions';
+import { AppTheme, ProfileInfo, IconComponent } from '@backstage/plugin-api';
 import { AppConfig } from '@backstage/config';
-import { IconComponent } from '@backstage/plugin-api';
 import { SubRouteRef } from '../routing/types';
 import { AppIcons } from './icons';
 

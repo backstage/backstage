@@ -15,12 +15,12 @@
  */
 
 import OneLoginIcon from '@material-ui/icons/AcUnit';
-import { oneloginAuthApiRef } from '../../../definitions/auth';
 import {
+  oneloginAuthApiRef,
   OAuthRequestApi,
   AuthProvider,
   DiscoveryApi,
-} from '../../../definitions';
+} from '@backstage/plugin-api';
 import { OAuth2 } from '../oauth2';
 
 type CreateOptions = {

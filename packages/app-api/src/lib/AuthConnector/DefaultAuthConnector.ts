@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { AuthRequester } from '../../apis';
 import {
+  AuthRequester,
   OAuthRequestApi,
   AuthProvider,
   DiscoveryApi,
-} from '../../apis/definitions';
+} from '@backstage/plugin-api';
 import { showLoginPopup } from '../loginPopup';
 import { AuthConnector, CreateSessionOptions } from './types';
 

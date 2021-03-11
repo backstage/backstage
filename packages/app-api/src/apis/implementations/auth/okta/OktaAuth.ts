@@ -15,7 +15,7 @@
  */
 
 import OktaIcon from '@material-ui/icons/AcUnit';
-import { oktaAuthApiRef } from '../../../definitions/auth';
+import { oktaAuthApiRef } from '@backstage/plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
 

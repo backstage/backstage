@@ -15,7 +15,7 @@
  */
 
 import GoogleIcon from '@material-ui/icons/AcUnit';
-import { googleAuthApiRef } from '../../../definitions/auth';
+import { googleAuthApiRef } from '@backstage/plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
 

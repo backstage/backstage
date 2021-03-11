@@ -15,7 +15,7 @@
  */
 
 import { RefreshingAuthSessionManager } from './RefreshingAuthSessionManager';
-import { SessionState } from '../../apis';
+import { SessionState } from '@backstage/plugin-api';
 
 const defaultOptions = {
   sessionScopes: (session: { scopes: Set<string> }) => session.scopes,

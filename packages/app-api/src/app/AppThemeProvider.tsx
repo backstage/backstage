@@ -16,7 +16,7 @@
 
 import React, { useMemo, useEffect, useState, PropsWithChildren } from 'react';
 import { ThemeProvider, CssBaseline } from '@material-ui/core';
-import { useApi, appThemeApiRef, AppTheme } from '../apis';
+import { useApi, appThemeApiRef, AppTheme } from '@backstage/plugin-api';
 import { useObservable } from 'react-use';
 
 // This tries to find the most accurate match, but also falls back to less

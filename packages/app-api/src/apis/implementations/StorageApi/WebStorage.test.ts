@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { WebStorage } from './WebStorage';
-import { CreateStorageApiOptions, StorageApi } from '../../definitions';
+import { CreateStorageApiOptions, WebStorage } from './WebStorage';
+import { StorageApi } from '@backstage/plugin-api';
 
 describe('WebStorage Storage API', () => {
   const mockErrorApi = { post: jest.fn(), error$: jest.fn() };

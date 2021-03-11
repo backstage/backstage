@@ -29,7 +29,7 @@ import {
   SessionState,
   SessionApi,
   BackstageIdentityApi,
-} from '../../../definitions/auth';
+} from '@backstage/plugin-api';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
 

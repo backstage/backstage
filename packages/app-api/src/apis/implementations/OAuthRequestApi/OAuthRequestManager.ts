@@ -19,7 +19,7 @@ import {
   PendingAuthRequest,
   AuthRequester,
   AuthRequesterOptions,
-} from '../../definitions';
+} from '@backstage/plugin-api';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
 import { BehaviorSubject } from '../../../lib';
 import { Observable } from '../../../types';
