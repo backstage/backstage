@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConflictError } from '@backstage/backend-common';
+import { ConflictError } from '@backstage/errors';
 import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
 import { EntityFilters } from '../service/EntityFilters';
 import { DatabaseManager } from './DatabaseManager';

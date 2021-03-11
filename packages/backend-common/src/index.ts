@@ -17,7 +17,6 @@
 export * from './config';
 export * from './database';
 export * from './discovery';
-export * from './errors';
 export * from './hot';
 export * from './logging';
 export * from './middleware';

@@ -50,6 +50,7 @@
     "@backstage/cli": "*",
     "@backstage/config": "*",
     "@backstage/core": "*",
+    "@backstage/errors": "*",
     "@backstage/plugin-api-docs": "*",
     "@backstage/plugin-app-backend": "*",
     "@backstage/plugin-auth-backend": "*",

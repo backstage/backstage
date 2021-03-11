@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { EntitiesSearchFilter, EntityFilter } from '../database';
 
 /**

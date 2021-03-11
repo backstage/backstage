@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';

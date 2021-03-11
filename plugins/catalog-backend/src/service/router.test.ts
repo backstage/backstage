@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, NotFoundError } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
+import { NotFoundError } from '@backstage/errors';
 import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
 import request from 'supertest';

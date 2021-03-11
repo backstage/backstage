@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { errorHandler, NotFoundError } from '@backstage/backend-common';
-import {
-  locationSpecSchema,
-  analyzeLocationSchema,
-} from '@backstage/catalog-model';
+import { errorHandler } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
+import {
+  analyzeLocationSchema,
+  locationSpecSchema,
+} from '@backstage/catalog-model';
+import { NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { LocationAnalyzer, HigherOrderOperation } from '../ingestion/types';
-import { translateQueryToFieldMapper } from './filterQuery';
+import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
 import { EntityFilters } from './EntityFilters';
+import { translateQueryToFieldMapper } from './filterQuery';
 import { requireRequestBody, validateRequestBody } from './util';
 
 export interface RouterOptions {
@@ -105,7 +106,7 @@ export async function createRouter(
         );
         if (!entities.length) {
           throw new NotFoundError(
-            `No entity with kind ${kind} namespace ${namespace} name ${name}`,
+            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
           );
         }
         res.status(200).json(entities[0]);

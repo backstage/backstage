@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  InputError,
-  NotModifiedError,
-  UrlReader,
-} from '@backstage/backend-common';
+
+import { UrlReader } from '@backstage/backend-common';
+import { InputError, NotModifiedError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import parseGitUrl from 'git-url-parse';
