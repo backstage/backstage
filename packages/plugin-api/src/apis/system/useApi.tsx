@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiRef, ApiHolder } from './types';
+import React, { PropsWithChildren } from 'react';
+import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { useVersionedContext } from '../../lib/versionedValues';
 
 export function useApiHolder(): ApiHolder {
@@ -35,4 +36,36 @@ export function useApi<T>(apiRef: ApiRef<T>): T {
     throw new Error(`No implementation available for ${apiRef}`);
   }
   return api;
+}
+
+export function withApis<T>(apis: TypesToApiRefs<T>) {
+  return function withApisWrapper<P extends T>(
+    WrappedComponent: React.ComponentType<P>,
+  ) {
+    const Hoc = (props: PropsWithChildren<Omit<P, keyof T>>) => {
+      const apiHolder = useApiHolder();
+
+      const impls = {} as T;
+
+      for (const key in apis) {
+        if (apis.hasOwnProperty(key)) {
+          const ref = apis[key];
+
+          const api = apiHolder.get(ref);
+          if (!api) {
+            throw new Error(`No implementation available for ${ref}`);
+          }
+          impls[key] = api;
+        }
+      }
+
+      return <WrappedComponent {...(props as P)} {...impls} />;
+    };
+    const displayName =
+      WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
+    Hoc.displayName = `withApis(${displayName})`;
+
+    return Hoc;
+  };
 }
