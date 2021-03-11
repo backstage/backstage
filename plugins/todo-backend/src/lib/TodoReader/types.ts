@@ -18,6 +18,9 @@ export type TodoItem = {
   /** The contents of the TODO comment */
   text: string;
 
+  /** The tag used, e.g. TODO, FIXME */
+  tag: string;
+
   /** References author, if any */
   author?: string;
 
@@ -59,6 +62,7 @@ type TodoParserContext = {
 
 type TodoParserResult = {
   text: string;
+  tag: string;
   author?: string;
   lineNumber: number;
 };

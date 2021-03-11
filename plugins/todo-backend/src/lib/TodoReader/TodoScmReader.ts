@@ -96,8 +96,9 @@ export class TodoScmReader implements TodoReader {
         });
 
         todos.push(
-          ...items.map(({ lineNumber, text, author }) => ({
+          ...items.map(({ lineNumber, text, tag, author }) => ({
             text,
+            tag,
             author,
             lineNumber,
             repoFilePath: file.path,

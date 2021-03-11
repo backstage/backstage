@@ -31,6 +31,10 @@ const PAGE_SIZE = 10;
 
 const columns: TableColumn<TodoItem>[] = [
   {
+    title: 'Tag',
+    field: 'tag',
+  },
+  {
     title: 'Text',
     field: 'text',
     width: '100%',
@@ -53,7 +57,6 @@ const columns: TableColumn<TodoItem>[] = [
   {
     title: 'Author',
     field: 'author',
-    width: '20%',
     render: ({ author }) => <OverflowTooltip text={author} />,
   },
 ];

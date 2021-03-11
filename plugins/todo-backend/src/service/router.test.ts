@@ -21,7 +21,7 @@ import { createRouter } from './router';
 import { TodoService } from './types';
 
 const mockListBody = {
-  items: [{ text: 'my todo' }],
+  items: [{ text: 'my todo', tag: 'TODO' }],
   totalCount: 1,
   offset: 0,
   limit: 10,

@@ -34,6 +34,7 @@ export function createTodoParser(options: TodoParserOptions = {}): TodoParser {
 
       return comments.map(comment => ({
         text: comment.text,
+        tag: comment.tag,
         author: comment.ref,
         lineNumber: comment.line,
       }));

@@ -21,6 +21,9 @@ export type TodoItem = {
   /** The contents of the TODO comment */
   text: string;
 
+  /** The tag used, e.g. TODO, FIXME */
+  tag: string;
+
   /** References author, if any */
   author?: string;
 
@@ -39,7 +42,7 @@ export type TodoListOptions = {
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: 'text' | 'author' | 'viewUrl' | 'repoFilePath';
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     direction: 'asc' | 'desc';
   };
 };

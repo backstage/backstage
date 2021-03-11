@@ -22,6 +22,7 @@ import { TodoService } from './types';
 
 const ALLOWED_ORDER_BY_FIELDS = [
   'text',
+  'tag',
   'author',
   'viewUrl',
   'repoFilePath',

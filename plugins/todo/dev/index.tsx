@@ -50,6 +50,7 @@ const mockedApi = {
     items: [
       {
         text: 'Make sure this works',
+        tag: 'TODO',
         author: 'Rugvip',
         viewUrl: 'https://github.com/backstage/backstage',
       },

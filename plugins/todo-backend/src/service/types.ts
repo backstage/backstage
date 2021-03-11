@@ -22,7 +22,7 @@ export type ListTodosRequest = {
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: 'text' | 'author' | 'viewUrl' | 'repoFilePath';
+    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
     direction: 'asc' | 'desc';
   };
 };

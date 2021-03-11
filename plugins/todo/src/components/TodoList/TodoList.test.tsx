@@ -29,6 +29,7 @@ describe('TodoList', () => {
         items: [
           {
             text: 'My TODO',
+            tag: 'FIXME',
             viewUrl: 'https://example.com',
             repoFilePath: '/my-file.js',
           },
@@ -48,6 +49,6 @@ describe('TodoList', () => {
       </ApiProvider>,
     );
 
-    await expect(rendered.findByText('1-1 of 1')).resolves.toBeInTheDocument();
+    await expect(rendered.findByText('FIXME')).resolves.toBeInTheDocument();
   });
 });
