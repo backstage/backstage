@@ -15,9 +15,7 @@
  */
 
 import { AnyParams, ExternalRouteRef } from './types';
-import { createExternalRouteRef, isExternalRouteRef } from './ExternalRouteRef';
-import { isSubRouteRef } from './SubRouteRef';
-import { isRouteRef } from './RouteRef';
+import { createExternalRouteRef } from './ExternalRouteRef';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
@@ -27,11 +25,6 @@ describe('ExternalRouteRef', () => {
     expect(routeRef.params).toEqual([]);
     expect(routeRef.optional).toBe(false);
     expect(String(routeRef)).toBe('routeRef{type=external,id=my-route-ref}');
-    expect(isRouteRef(routeRef)).toBe(false);
-    expect(isSubRouteRef(routeRef)).toBe(false);
-    expect(isExternalRouteRef(routeRef)).toBe(true);
-
-    expect(isRouteRef({} as ExternalRouteRef)).toBe(false);
   });
 
   it('should be created as optional', () => {

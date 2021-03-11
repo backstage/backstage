@@ -15,8 +15,6 @@
  */
 
 import {
-  RouteRef,
-  SubRouteRef,
   ExternalRouteRef,
   routeRefType,
   AnyParams,
@@ -69,16 +67,4 @@ export function createExternalRouteRef<
     (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
     Boolean(options.optional) as Optional,
   );
-}
-
-export function isExternalRouteRef<
-  Params extends AnyParams,
-  Optional extends boolean
->(
-  routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, Optional>,
-): routeRef is ExternalRouteRef<Params, Optional> {
-  return routeRef[routeRefType] === 'external';
 }

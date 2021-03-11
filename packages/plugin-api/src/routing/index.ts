@@ -15,7 +15,7 @@
  */
 
 export type { RouteRef, SubRouteRef, ExternalRouteRef } from './types';
-export { createRouteRef, isRouteRef } from './RouteRef';
-export { createSubRouteRef, isSubRouteRef } from './SubRouteRef';
-export { createExternalRouteRef, isExternalRouteRef } from './ExternalRouteRef';
+export { createRouteRef } from './RouteRef';
+export { createSubRouteRef } from './SubRouteRef';
+export { createExternalRouteRef } from './ExternalRouteRef';
 export { useRouteRef } from './useRouteRef';

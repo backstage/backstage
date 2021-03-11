@@ -21,15 +21,11 @@ import {
   AnyParams,
   RouteFunc,
   routeRefType,
-} from './types';
-import {
-  RouteRef,
-  ExternalRouteRef,
-  SubRouteRef,
   isRouteRef,
   isSubRouteRef,
   isExternalRouteRef,
-} from '@backstage/plugin-api';
+} from './types';
+import { RouteRef, ExternalRouteRef, SubRouteRef } from '@backstage/plugin-api';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 function joinPaths(...paths: string[]): string {

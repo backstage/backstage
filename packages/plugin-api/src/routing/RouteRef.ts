@@ -16,8 +16,6 @@
 
 import {
   RouteRef,
-  SubRouteRef,
-  ExternalRouteRef,
   routeRefType,
   AnyParams,
   ParamKeys,
@@ -59,13 +57,4 @@ export function createRouteRef<
     config.id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
   );
-}
-
-export function isRouteRef<Params extends AnyParams>(
-  routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, any>,
-): routeRef is RouteRef<Params> {
-  return routeRef[routeRefType] === 'absolute';
 }

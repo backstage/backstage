@@ -15,9 +15,8 @@
  */
 
 import { AnyParams, SubRouteRef } from './types';
-import { createSubRouteRef, isSubRouteRef } from './SubRouteRef';
-import { createRouteRef, isRouteRef } from './RouteRef';
-import { isExternalRouteRef } from './ExternalRouteRef';
+import { createSubRouteRef } from './SubRouteRef';
+import { createRouteRef } from './RouteRef';
 
 const parent = createRouteRef({ id: 'parent' });
 const parentX = createRouteRef({ id: 'parent-x', params: ['x'] });
@@ -33,11 +32,6 @@ describe('SubRouteRef', () => {
     expect(routeRef.parent).toBe(parent);
     expect(routeRef.params).toEqual([]);
     expect(String(routeRef)).toBe('routeRef{type=sub,id=my-route-ref}');
-    expect(isRouteRef(routeRef)).toBe(false);
-    expect(isSubRouteRef(routeRef)).toBe(true);
-    expect(isExternalRouteRef(routeRef)).toBe(false);
-
-    expect(isRouteRef({} as SubRouteRef)).toBe(false);
   });
 
   it('should be created with params', () => {
