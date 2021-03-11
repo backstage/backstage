@@ -242,9 +242,9 @@ export const CITableView = ({
 };
 
 export const CITable = () => {
-  const { owner, repo } = useProjectSlugFromEntity();
+  const projectName = useProjectSlugFromEntity();
 
-  const [tableProps, { setPage, retry, setPageSize }] = useBuilds(owner, repo);
+  const [tableProps, { setPage, retry, setPageSize }] = useBuilds(projectName);
 
   return (
     <CITableView
