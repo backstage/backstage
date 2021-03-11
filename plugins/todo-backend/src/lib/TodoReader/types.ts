@@ -51,3 +51,16 @@ export interface TodoReader {
    */
   readTodos(options: ReadTodosOptions): Promise<ReadTodosResult>;
 }
+
+type TodoParserContext = {
+  content: string;
+  path: string;
+};
+
+type TodoParserResult = {
+  text: string;
+  author?: string;
+  lineNumber: number;
+};
+
+export type TodoParser = (ctx: TodoParserContext) => TodoParserResult[];

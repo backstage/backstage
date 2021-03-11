@@ -15,6 +15,7 @@
  */
 
 export { TodoScmReader } from './TodoScmReader';
+export { createTodoParser } from './createTodoParser';
 export type {
   TodoItem,
   TodoReader,

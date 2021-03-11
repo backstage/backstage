@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
 import { UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
-import { parse } from 'leasot';
+
 import {
   ReadTodosOptions,
   ReadTodosResult,
   TodoItem,
+  TodoParser,
   TodoReader,
 } from './types';
 import { Config } from '@backstage/config';
-
-type TodoParser = (ctx: {
-  content: string;
-  path: string;
-}) => { text: string; author?: string; lineNumber: number }[];
+import { createTodoParser } from './createTodoParser';
 
 type Options = {
   logger: Logger;
@@ -41,22 +37,6 @@ type Options = {
 type CacheItem = {
   etag: string;
   result: ReadTodosResult;
-};
-
-const defaultTodoParser: TodoParser = ({ content, path }) => {
-  try {
-    const comments = parse(content, {
-      extension: extname(path),
-    });
-
-    return comments.map(comment => ({
-      text: comment.text,
-      author: comment.ref,
-      lineNumber: comment.line,
-    }));
-  } catch /* ignore unsupported extensions */ {
-    return [];
-  }
 };
 
 export class TodoScmReader implements TodoReader {
@@ -74,7 +54,7 @@ export class TodoScmReader implements TodoReader {
   private constructor(options: Options, integrations: ScmIntegrations) {
     this.logger = options.logger;
     this.reader = options.reader;
-    this.parser = options.parser ?? defaultTodoParser;
+    this.parser = options.parser ?? createTodoParser();
     this.integrations = integrations;
   }
 

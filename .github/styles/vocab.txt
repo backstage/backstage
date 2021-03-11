@@ -42,6 +42,7 @@ JavaScript
 Kaewkasi
 Knex
 Kumar
+Leasot
 Lerna
 Lundberg
 Luxon
