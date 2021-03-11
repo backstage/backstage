@@ -40,7 +40,15 @@ export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
 
   useEffect(() => {
     (async () => {
-      const clusters = await kubernetesApi.getClusters();
+      let clusters = [];
+
+      try {
+        clusters = await kubernetesApi.getClusters();
+      } catch (e) {
+        setError(e.message);
+        return;
+      }
+
       const authProviders: string[] = [
         ...new Set(clusters.map(c => c.authProvider)),
       ];
@@ -50,21 +58,25 @@ export const useKubernetesObjects = (entity: Entity): KubernetesObjects => {
       };
       for (const authProviderStr of authProviders) {
         // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
-        requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
-          authProviderStr,
-          requestBody,
-        );
+        try {
+          requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
+            authProviderStr,
+            requestBody,
+          );
+        } catch (e) {
+          setError(e.message);
+          return;
+        }
       }
 
-      // TODO: Add validation on contents/format of requestBody
-      kubernetesApi
-        .getObjectsByEntity(requestBody)
-        .then(result => {
-          setKubernetesObjects(result);
-        })
-        .catch(e => {
-          setError(e.message);
-        });
+      try {
+        setKubernetesObjects(
+          await kubernetesApi.getObjectsByEntity(requestBody),
+        );
+      } catch (e) {
+        setError(e.message);
+        return;
+      }
     })();
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [entity.metadata.name, kubernetesApi, kubernetesAuthProvidersApi]);
