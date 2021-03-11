@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
 import { EntityName, parseEntityName } from '@backstage/catalog-model';
+import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { TodoService } from './types';

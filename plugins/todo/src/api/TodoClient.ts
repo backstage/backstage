@@ -15,6 +15,7 @@
  */
 
 import { serializeEntityRef } from '@backstage/catalog-model';
+import { ResponseError } from '@backstage/errors';
 import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { TodoApi, TodoListOptions, TodoListResult } from './types';
 
@@ -64,39 +65,10 @@ export class TodoClient implements TodoApi {
     });
 
     if (!res.ok) {
-      const error = await this.readResponseError(res, 'list todos');
-      throw error;
+      throw await ResponseError.fromResponse(res);
     }
 
     const data: TodoListResult = await res.json();
     return data;
-  }
-
-  private async readResponseError(res: Response, action: string) {
-    const error = new Error() as Error & { status: number };
-    error.status = res.status;
-
-    try {
-      const json = await res.clone().json();
-      if (typeof json?.error?.message !== 'string') {
-        throw new Error('invalid error');
-      }
-      error.message = json.error.message;
-      if (json.error.name) {
-        error.name = json.error.name;
-      }
-    } catch {
-      try {
-        const text = await res.text();
-        error.message = `Failed to ${action}, ${text}`;
-      } catch {
-        error.message = `Failed to ${action}, status ${res.status}`;
-      }
-      if (res.status === 404) {
-        error.name = 'NotFoundError';
-      }
-    }
-
-    throw error;
   }
 }

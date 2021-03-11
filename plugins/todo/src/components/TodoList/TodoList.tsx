@@ -20,9 +20,9 @@ import {
   useApi,
   OverflowTooltip,
   Link,
+  ResponseErrorPanel,
 } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import Alert from '@material-ui/lab/Alert';
 import React, { useState } from 'react';
 import { todoApiRef } from '../../api';
 import { TodoItem, TodoListOptions } from '../../api/types';
@@ -64,7 +64,7 @@ export const TodoList = () => {
   const [error, setError] = useState<Error>();
 
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

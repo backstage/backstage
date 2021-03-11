@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError, NotFoundError } from '@backstage/backend-common';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   LOCATION_ANNOTATION,
