@@ -112,7 +112,12 @@ kubernetes:
     type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
-      clusters: []
+      clusters: 
+        - url: https://B182759F93D251942CB146063F57036B.yl4.eu-west-1.eks.amazonaws.com
+          name: hellman
+          authProvider: 'serviceAccount'
+          serviceAccountToken: 
+            $env: HELLMAN_SERVICE_ACCOUNT_TOKEN
 
 kafka:
   clientId: backstage

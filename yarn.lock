@@ -1590,17 +1590,10 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.4"
 
-<<<<<<< HEAD
-"@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.8.3":
-  version "7.12.5"
-  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.12.5.tgz#ffee91da0eb4c6dae080774e94ba606368e414f4"
-  integrity sha512-roGr54CsTmNPPzZoCP1AmDXuBoNao7tnSA83TXTwt+UK5QVyh1DIJnrgYRPWKCF2flqZQXwa7Yr8v7VmLzF0YQ==
-=======
 "@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.13.6":
   version "7.13.9"
   resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.13.9.tgz#b2fa9a6e5690ef8d4c4f2d30cac3ec1a8bb633ce"
   integrity sha512-p6WSr71+5u/VBf1KDS/Y4dK3ZwbV+DD6wQO3X2EbUVluEOiyXUk09DzcwSaUH4WomYXrEPC+i2rqzuthhZhOJw==
->>>>>>> backstage/master
   dependencies:
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
@@ -5849,17 +5842,10 @@
   dependencies:
     "@types/node" "*"
 
-<<<<<<< HEAD
-"@types/codemirror@^0.0.98":
-  version "0.0.98"
-  resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.98.tgz#b35c7a4ab1fc1684b08a4e3eb65240020556ebfb"
-  integrity sha512-cbty5LPayy2vNSeuUdjNA9tggG+go5vAxmnLDRWpiZI5a+RDBi9dlozy4/jW/7P/gletbBWbQREEa7A81YxstA==
-=======
 "@types/codemirror@^0.0.108":
   version "0.0.108"
   resolved "https://registry.npmjs.org/@types/codemirror/-/codemirror-0.0.108.tgz#e640422b666bf49251b384c390cdeb2362585bde"
   integrity sha512-3FGFcus0P7C2UOGCNUVENqObEb4SFk+S8Dnxq7K6aIsLVs/vDtlangl3PEO0ykaKXyK56swVF6Nho7VsA44uhw==
->>>>>>> backstage/master
   dependencies:
     "@types/tern" "*"
 
@@ -10093,17 +10079,16 @@ commander@^4.0.0, commander@^4.1.1:
   resolved "https://registry.npmjs.org/commander/-/commander-4.1.1.tgz#9fd602bd936294e9e9ef46a3f4d6964044b18068"
   integrity sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==
 
-commander@^5.0.0, commander@^5.1.0:
+commander@^5.0.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/commander/-/commander-5.1.0.tgz#46abbd1652f8e059bddaef99bbdcb2ad9cf179ae"
   integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
 
-<<<<<<< HEAD
-commander@^6.0.0, commander@^6.1.0:
+commander@^6.0.0:
   version "6.2.0"
   resolved "https://registry.npmjs.org/commander/-/commander-6.2.0.tgz#b990bfb8ac030aedc6d11bc04d1488ffef56db75"
   integrity sha512-zP4jEKbe8SHzKJYQmq8Y9gYjtO/POJLgIdKgV7B9qNmABVFVc+ctqSX6iXh4mCpJfRBOabiZ2YKPg8ciDw6C+Q==
-=======
+
 commander@^6.1.0:
   version "6.2.1"
   resolved "https://registry.npmjs.org/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
@@ -10113,7 +10098,6 @@ commander@^7.1.0:
   version "7.1.0"
   resolved "https://registry.npmjs.org/commander/-/commander-7.1.0.tgz#f2eaecf131f10e36e07d894698226e36ae0eb5ff"
   integrity sha512-pRxBna3MJe6HKnBGsDyMv8ETbptw3axEdYHoqNh7gu5oDcew8fs0xnivZGm06Ogk8zGAJ9VX+OPEr2GXEQK4dg==
->>>>>>> backstage/master
 
 common-tags@1.8.0, common-tags@^1.8.0:
   version "1.8.0"
@@ -10628,11 +10612,7 @@ create-react-class@^15.5.1:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-<<<<<<< HEAD
-create-react-context@0.3.0, create-react-context@^0.3.0:
-=======
 create-react-context@0.3.0:
->>>>>>> backstage/master
   version "0.3.0"
   resolved "https://registry.npmjs.org/create-react-context/-/create-react-context-0.3.0.tgz#546dede9dc422def0d3fc2fe03afe0bc0f4f7d8c"
   integrity sha512-dNldIoSuNSvlTJ7slIKC/ZFGKexBMBrrcc+TTe1NdmROnaASuLPvqpwj9v4XS4uXZ8+YPu0sNmShX2rXI5LNsw==
@@ -11859,12 +11839,6 @@ domhandler@^3.0, domhandler@^3.0.0:
   dependencies:
     domelementtype "^2.0.1"
 
-<<<<<<< HEAD
-dompurify@^2.0.12, dompurify@^2.0.7, dompurify@^2.1.1:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.0.tgz#51d34e76faa38b5d6b4e83a0678530f27fe3965c"
-  integrity sha512-bqFOQ7XRmmozp0VsKdIEe8UwZYxj0yttz7l80GBtBqdVRY48cOpXH2J/CVO7AEkV51qY0EBVXfilec18mdmQ/w==
-=======
 domhandler@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/domhandler/-/domhandler-4.0.0.tgz#01ea7821de996d85f69029e81fa873c21833098e"
@@ -11876,7 +11850,6 @@ dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.6:
   version "2.2.6"
   resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.6.tgz#54945dc5c0b45ce5ae228705777e8e59d7b2edc4"
   integrity sha512-7b7ZArhhH0SP6W2R9cqK6RjaU82FZ2UPM7RO8qN1b1wyvC/NY1FNWcX1Pu00fFOAnzEORtwXe4bPaClg6pUybQ==
->>>>>>> backstage/master
 
 domutils@1.5.1:
   version "1.5.1"
@@ -13104,7 +13077,7 @@ extsprintf@^1.2.0:
   resolved "https://registry.npmjs.org/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-deep-equal@2.0.1:
+fast-deep-equal@2.0.1, fast-deep-equal@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
   integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
@@ -13143,19 +13116,12 @@ fast-json-parse@^1.0.3:
   resolved "https://registry.npmjs.org/fast-json-parse/-/fast-json-parse-1.0.3.tgz#43e5c61ee4efa9265633046b770fb682a7577c4d"
   integrity sha512-FRWsaZRWEJ1ESVNbDWmsAlqDk96gPQezzLghafp5J4GUKjbCz3OkAHuZs5TuPEtkbVQERysLp9xv6c24fBm8Aw==
 
-<<<<<<< HEAD
-fast-json-patch@^3.0.0-1:
-  version "3.0.0-1"
-  resolved "https://registry.npmjs.org/fast-json-patch/-/fast-json-patch-3.0.0-1.tgz#4c68f2e7acfbab6d29d1719c44be51899c93dabb"
-  integrity sha512-6pdFb07cknxvPzCeLsFHStEy+MysPJPgZQ9LbQ/2O67unQF93SNqfdSqnPPl71YMHX+AD8gbl7iuoGFzHEdDuw==
-=======
 fast-json-patch@^2.1.0:
   version "2.2.1"
   resolved "https://registry.npmjs.org/fast-json-patch/-/fast-json-patch-2.2.1.tgz#18150d36c9ab65c7209e7d4eb113f4f8eaabe6d9"
   integrity sha512-4j5uBaTnsYAV5ebkidvxiLUYOwjQ+JSFljeqfTxCrH9bDmlCQaOJFS84oDJ2rAXZq2yskmk3ORfoP9DCwqFNig==
   dependencies:
     fast-deep-equal "^2.0.1"
->>>>>>> backstage/master
 
 fast-json-patch@^3.0.0-1:
   version "3.0.0-1"
@@ -19775,17 +19741,10 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
-<<<<<<< HEAD
-ora@*, ora@^5.1.0:
+ora@^5.1.0:
   version "5.1.0"
   resolved "https://registry.npmjs.org/ora/-/ora-5.1.0.tgz#b188cf8cd2d4d9b13fd25383bc3e5cba352c94f8"
   integrity sha512-9tXIMPvjZ7hPTbk8DFq1f7Kow/HU/pQYB60JbNq+QnGwcyhWVZaQ4hM9zQDEsPxw/muLpgiHSaumUZxCAmod/w==
-=======
-ora@^4.0.3:
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/ora/-/ora-4.0.4.tgz#e8da697cc5b6a47266655bf68e0fb588d29a545d"
-  integrity sha512-77iGeVU1cIdRhgFzCK8aw1fbtT1B/iZAvWjS+l/o1x0RShMgxHUZaD2yDpWsNCPwXg9z1ZA78Kbdvr8kBmG/Ww==
->>>>>>> backstage/master
   dependencies:
     chalk "^4.1.0"
     cli-cursor "^3.1.0"
@@ -22135,39 +22094,10 @@ react-string-replace@^0.4.1:
   dependencies:
     lodash "^4.17.4"
 
-<<<<<<< HEAD
-react-syntax-highlighter@=13.5.0:
-  version "13.5.0"
-  resolved "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-13.5.0.tgz#c0f3fd826a52b2a6ce5786d4ce60c3e0665b65c0"
-  integrity sha512-2nKo8spFxe9shcjbdUiqxkrf/IMDqKUZLx7JVIxEJ17P+fYFGL4CRsZZC66UPeQ2o/f29eKu31CrkKGCK1RHuA==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    highlight.js "^10.1.1"
-    lowlight "^1.14.0"
-    prismjs "^1.21.0"
-    refractor "^3.1.0"
-
-react-syntax-highlighter@^12.2.1:
-  version "12.2.1"
-  resolved "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-12.2.1.tgz#14d78352da1c1c3f93c6698b70ec7c706b83493e"
-  integrity sha512-CTsp0ZWijwKRYFg9xhkWD4DSpQqE4vb2NKVMdPAkomnILSmsNBHE0n5GuI5zB+PU3ySVvXvdt9jo+ViD9XibCA==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    highlight.js "~9.15.1"
-    lowlight "1.12.1"
-    prismjs "^1.8.4"
-    refractor "^2.4.1"
-
-react-syntax-highlighter@^13.5.1:
-  version "13.5.1"
-  resolved "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-13.5.1.tgz#f21737cf6d582474a0f18b06b52613f4349c0e64"
-  integrity sha512-VVYTnFXF55WMRGdr3QNEzAzcypFZqH45kS7rqh90+AFeNGtui8/gV5AIOIJjwTsuP2UxcO9qvEq94Jq9BYFUhw==
-=======
 react-syntax-highlighter@^13.5.0:
   version "13.5.3"
   resolved "https://registry.npmjs.org/react-syntax-highlighter/-/react-syntax-highlighter-13.5.3.tgz#9712850f883a3e19eb858cf93fad7bb357eea9c6"
   integrity sha512-crPaF+QGPeHNIblxxCdf2Lg936NAHKhNhuMzRL3F9ct6aYXL3NcZtCL0Rms9+qVo6Y1EQLdXGypBNSbPL/r+qg==
->>>>>>> backstage/master
   dependencies:
     "@babel/runtime" "^7.3.1"
     highlight.js "^10.1.1"
@@ -23193,24 +23123,24 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.3, rxjs@^6.5.5, rxjs@^6.6.0:
+rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.3, rxjs@^6.6.0:
   version "6.6.2"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.2.tgz#8096a7ac03f2cc4fe5860ef6e572810d9e01c0d2"
   integrity sha512-BHdBMVoWC2sL26w//BCu3YzKT4s2jip/WhwsGEDmeKYBhKDZeYezVUnHatYB7L85v5xs0BAQmg6BEYJEKxBabg==
   dependencies:
     tslib "^1.9.0"
 
-<<<<<<< HEAD
 rxjs@^6.6.2:
   version "6.6.3"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.3.tgz#8ca84635c4daa900c0d3967a6ee7ac60271ee552"
   integrity sha512-trsQc+xYYXZ3urjOiJOuCOa5N3jAZ3eiSpQB5hIT8zGlL2QfnHLJ2r7GMkBGuIausdJN1OneaI6gQlsqNHHmZQ==
-=======
+  dependencies:
+    tslib "^1.9.0"
+
 rxjs@^6.6.3:
   version "6.6.6"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.6.tgz#14d8417aa5a07c5e633995b525e1e3c0dec03b70"
   integrity sha512-/oTwee4N4iWzAMAL9xdGKjkEHmIwupR3oXbQjCKywF1BeFohswF3vZdogbmEF6pZkOsXTzWkrZszrWpQTByYVg==
->>>>>>> backstage/master
   dependencies:
     tslib "^1.9.0"
 
@@ -24663,17 +24593,10 @@ svgo@^1.0.0, svgo@^1.2.2:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-<<<<<<< HEAD
-swagger-client@=3.12.0:
-  version "3.12.0"
-  resolved "https://registry.npmjs.org/swagger-client/-/swagger-client-3.12.0.tgz#28d940cc44d5d1dbc4d833066eec1093b65277d3"
-  integrity sha512-u8IAf+xWYvUY4H23gIgpN77I6BnJngAoZ80pnKB/Qex/nNxf99MvnpzatU0Wj4L5vz/Qa145PIj/ACbcMKK/MQ==
-=======
 swagger-client@^3.13.1:
   version "3.13.1"
   resolved "https://registry.npmjs.org/swagger-client/-/swagger-client-3.13.1.tgz#d2531ede4a498911aa084384e387e5008e7b6a70"
   integrity sha512-Hmy4+wVVa3kveWzC7PIeUwiAY5qcYbm4XlC4uZ7e5kAePfB2cprXImiqrZHIzL+ndU0YTN7I+9w/ZayTisn3Jg==
->>>>>>> backstage/master
   dependencies:
     "@babel/runtime-corejs3" "^7.11.2"
     btoa "^1.2.1"
@@ -24690,21 +24613,12 @@ swagger-client@^3.13.1:
     traverse "~0.6.6"
     url "~0.11.0"
 
-<<<<<<< HEAD
-swagger-ui-react@^3.31.1:
-  version "3.36.1"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.36.1.tgz#628867c3ccd1b7096183d4ca259e66b337377904"
-  integrity sha512-IJBWDnQQRPbD84jIZh70cRswV8FFbwl1tlGeTzL8VaQT2D/aq4nBn7vVtQmHgiH9SuEVDh2U0Yx+Y/5LM2naOw==
-  dependencies:
-    "@babel/runtime-corejs3" "^7.11.2"
-=======
 swagger-ui-react@^3.37.2:
   version "3.44.0"
   resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.44.0.tgz#4b553d7af46b45efa3bf96a53a05c58ed3b6e34e"
   integrity sha512-+OMrm/D/V51XUPdh97RCUFCnomH4wJzR50NdE2ho6ZM0M+EsNaYzPmNLoeEhBupNHbL20NO6buSiVA99B4DjRg==
   dependencies:
     "@babel/runtime-corejs3" "^7.13.6"
->>>>>>> backstage/master
     "@braintree/sanitize-url" "^5.0.0"
     "@kyleshockey/object-assign-deep" "^0.4.2"
     "@kyleshockey/xml" "^1.0.2"
@@ -24728,24 +24642,15 @@ swagger-ui-react@^3.37.2:
     react-inspector "^2.3.0"
     react-motion "^0.5.2"
     react-redux "=4.4.10"
-<<<<<<< HEAD
-    react-syntax-highlighter "=13.5.0"
-=======
     react-syntax-highlighter "^15.4.3"
->>>>>>> backstage/master
     redux "=3.7.2"
     redux-immutable "3.1.0"
     remarkable "^2.0.1"
     reselect "^4.0.0"
     serialize-error "^2.1.0"
     sha.js "^2.4.11"
-<<<<<<< HEAD
-    swagger-client "=3.12.0"
-    url-parse "^1.4.7"
-=======
     swagger-client "^3.13.1"
     url-parse "^1.5.1"
->>>>>>> backstage/master
     xml-but-prettier "^1.0.1"
     zenscroll "^4.0.2"
 
