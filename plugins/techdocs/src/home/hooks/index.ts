@@ -14,21 +14,4 @@
  * limitations under the License.
  */
 
-import { ComponentType } from 'react';
-import { SvgIconProps } from '@material-ui/core';
-
-export type SystemIconKey =
-  | 'brokenImage'
-  | 'chat'
-  | 'dashboard'
-  | 'email'
-  | 'github'
-  | 'group'
-  | 'help'
-  | 'user'
-  | 'warning'
-  | 'docs';
-
-export type IconComponent = ComponentType<SvgIconProps>;
-export type IconKey = SystemIconKey | string;
-export type IconComponentMap = { [key in IconKey]: IconComponent };
+export { useOwnUser } from './useOwnUser';

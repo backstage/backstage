@@ -24,7 +24,7 @@ import {
   rootDocsRouteRef,
   rootCatalogDocsRouteRef,
 } from './plugin';
-import { TechDocsHome } from './reader/components/TechDocsHome';
+import { TechDocsHome } from './home/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
 
