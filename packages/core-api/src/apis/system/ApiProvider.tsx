@@ -20,6 +20,7 @@ import React, {
   ReactNode,
   PropsWithChildren,
   Context,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
@@ -54,14 +55,15 @@ export const ApiProvider = ({
   children,
 }: PropsWithChildren<ApiProviderProps>) => {
   const parentHolder = useContext(ApiContext)?.atVersion(1);
-  const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
-
-  return (
-    <ApiContext.Provider
-      value={createVersionedValueMap({ 1: holder })}
-      children={children}
-    />
+  const versionedValue = useMemo(
+    () =>
+      createVersionedValueMap({
+        1: parentHolder ? new ApiAggregator(apis, parentHolder) : apis,
+      }),
+    [parentHolder, apis],
   );
+
+  return <ApiContext.Provider value={versionedValue} children={children} />;
 };
 
 ApiProvider.propTypes = {

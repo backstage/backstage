@@ -19,6 +19,7 @@ import React, {
   PropsWithChildren,
   useContext,
   Context,
+  useMemo,
 } from 'react';
 import {
   VersionedValue,
@@ -43,7 +44,10 @@ export const AppContextProvider = ({
   appContext,
   children,
 }: PropsWithChildren<Props>) => {
-  const versionedValue = createVersionedValueMap({ 1: appContext });
+  const versionedValue = useMemo(
+    () => createVersionedValueMap({ 1: appContext }),
+    [appContext],
+  );
 
   return <AppContext.Provider value={versionedValue} children={children} />;
 };
