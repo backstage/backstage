@@ -145,7 +145,7 @@ You should follow the
 
 TechDocs needs access to read files and metadata of the S3 bucket. So if you are
 creating a policy for a user you want to make sure it is granted access to
-ListBucket, GetObject and PutObject.
+ListObjects, GetObject and PutObject.
 
 If the environment variables
 
