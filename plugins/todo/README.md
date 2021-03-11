@@ -1,6 +1,6 @@
 # @backstage/plugin-todo
 
-This plugins lists `// TODO` comments in source code. It currently exports a single component extension for use on entity pages.
+This plugin lists `// TODO` comments in source code. It currently exports a single component extension for use on entity pages.
 
 ## Extensions
 

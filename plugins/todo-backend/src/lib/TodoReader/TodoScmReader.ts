@@ -129,7 +129,9 @@ export class TodoScmReader implements TodoReader {
           })),
         );
       } catch (error) {
-        this.logger.error(`Failed to parse TODO in ${url}, ${error}`);
+        this.logger.error(
+          `Failed to parse TODO in ${url} at ${file.path}, ${error}`,
+        );
       }
     }
 

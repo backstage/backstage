@@ -51,7 +51,7 @@ export class TodoReaderService implements TodoService {
 
   async listTodos(req: ListTodosRequest): Promise<ListTodosResponse> {
     if (!req.entity) {
-      throw new InputError('entity filter is required to list todos');
+      throw new InputError('Entity filter is required to list TODOs');
     }
     const entity = await this.catalogClient.getEntityByName(req.entity);
     if (!entity) {
