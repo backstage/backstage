@@ -84,6 +84,15 @@ interface KubernetesDrawerContentProps<T extends KubernetesDrawerable> {
   kind: string;
 }
 
+function replaceNullsWithUndefined(someObj: any) {
+  const replacer = (_: any, value: any) =>
+    String(value) === 'null' || String(value) === 'undefined'
+      ? undefined
+      : value;
+
+  return JSON.parse(JSON.stringify(someObj, replacer));
+}
+
 const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
   toggleDrawer,
   object,
@@ -139,7 +148,11 @@ const KubernetesDrawerContent = <T extends KubernetesDrawerable>({
       </div>
       <div className={classes.content}>
         {isYaml && <CodeSnippet language="yaml" text={jsYaml.dump(object)} />}
-        {!isYaml && <StructuredMetadataTable metadata={renderObject(object)} />}
+        {!isYaml && (
+          <StructuredMetadataTable
+            metadata={renderObject(replaceNullsWithUndefined(object))}
+          />
+        )}
       </div>
     </>
   );

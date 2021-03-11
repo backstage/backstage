@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  ClusterLocatorMethod,
-  CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
-
-export interface Config {
-  kubernetes?: {
-    /**
-     * @visibility frontend
-     */
-    serviceLocatorMethod: {
-      /**
-       * @visibility frontend
-       */
-      type: 'multiTenant';
-    };
-    /**
-     * @visibility frontend
-     */
-    clusterLocatorMethods: ClusterLocatorMethod[];
-    /**
-     * @visibility frontend
-     */
-    customResources?: CustomResource[];
-  };
-}
+export * from './useKubernetesObjects';
+export * from './PodNamesWithErrors';
+export * from './GroupedResponses';

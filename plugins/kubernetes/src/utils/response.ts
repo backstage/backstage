@@ -45,6 +45,9 @@ export const groupResponses = (
         case 'ingresses':
           prev.ingresses.push(...next.resources);
           break;
+        case 'customresources':
+          prev.customResources.push(...next.resources);
+          break;
         default:
       }
       return prev;
@@ -57,6 +60,7 @@ export const groupResponses = (
       configMaps: [],
       horizontalPodAutoscalers: [],
       ingresses: [],
+      customResources: [],
     } as GroupedResponses,
   );
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,26 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import * as oneIngressFixture from './__fixtures__/2-ingresses.json';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { IngressesAccordions } from './IngressesAccordions';
 import { kubernetesProviders } from '../../hooks/test-utils';
+import * as ar from './__fixtures__/analysis-run.json';
+import { DefaultCustomResourceAccordions } from './DefaultCustomResource';
 
-describe('IngressesAccordions', () => {
-  it('should render 1 ingress', async () => {
-    const wrapper = kubernetesProviders(oneIngressFixture, new Set());
+describe('DefaultCustomResource', () => {
+  it('should render DefaultCustomResource Accordion', async () => {
+    const wrapper = kubernetesProviders({}, new Set([]));
 
     const { getByText } = render(
-      wrapper(wrapInTestApp(<IngressesAccordions />)),
+      wrapper(
+        wrapInTestApp(
+          <DefaultCustomResourceAccordions
+            customResources={[ar] as any}
+            customResourceName="AnalysisRun"
+          />,
+        ),
+      ),
     );
-
-    expect(getByText('awesome-service')).toBeInTheDocument();
-    expect(getByText('Ingress')).toBeInTheDocument();
+    expect(getByText('dice-roller-546c476497-4-1')).toBeInTheDocument();
+    expect(getByText('AnalysisRun')).toBeInTheDocument();
   });
 });

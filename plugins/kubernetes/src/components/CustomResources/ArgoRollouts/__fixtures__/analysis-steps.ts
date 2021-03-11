@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AnalysisStep } from '../types';
 
-import {
-  ClusterLocatorMethod,
-  CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
+export const steps: AnalysisStep[] = [
+  {
+    analysis: {
+      templates: [
+        {
+          templateName: 'always-pass',
+        },
+        {
+          templateName: 'always-fail',
+        },
+      ],
+    },
+  },
+  {
+    analysis: {
+      templates: [
+        {
+          templateName: 'req-rate',
+          clusterScope: true,
+        },
+      ],
+    },
+  },
+];
 
-export interface Config {
-  kubernetes?: {
-    /**
-     * @visibility frontend
-     */
-    serviceLocatorMethod: {
-      /**
-       * @visibility frontend
-       */
-      type: 'multiTenant';
-    };
-    /**
-     * @visibility frontend
-     */
-    clusterLocatorMethods: ClusterLocatorMethod[];
-    /**
-     * @visibility frontend
-     */
-    customResources?: CustomResource[];
-  };
-}
+export default steps;

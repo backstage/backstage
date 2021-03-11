@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  ClusterLocatorMethod,
-  CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
+import { getOwnedResources } from './owner';
+import * as fixture from '../__fixtures__/2-deployments.json';
 
-export interface Config {
-  kubernetes?: {
-    /**
-     * @visibility frontend
-     */
-    serviceLocatorMethod: {
-      /**
-       * @visibility frontend
-       */
-      type: 'multiTenant';
-    };
-    /**
-     * @visibility frontend
-     */
-    clusterLocatorMethods: ClusterLocatorMethod[];
-    /**
-     * @visibility frontend
-     */
-    customResources?: CustomResource[];
-  };
-}
+describe('owner', () => {
+  describe('getOwnedResources', () => {
+    it('should find replicaset ownership from deployment', () => {
+      const result = getOwnedResources(
+        fixture.deployments[0] as any,
+        fixture.replicaSets as any,
+      );
+      expect(result).toHaveLength(1);
+      expect(result[0]?.metadata?.name).toBe('dice-roller-6c8646bfd');
+    });
+  });
+});

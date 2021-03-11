@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-import {
-  ClusterLocatorMethod,
-  CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
+export interface SetWeightStep {
+  setWeight: number;
+}
 
-export interface Config {
-  kubernetes?: {
-    /**
-     * @visibility frontend
-     */
-    serviceLocatorMethod: {
-      /**
-       * @visibility frontend
-       */
-      type: 'multiTenant';
-    };
-    /**
-     * @visibility frontend
-     */
-    clusterLocatorMethods: ClusterLocatorMethod[];
-    /**
-     * @visibility frontend
-     */
-    customResources?: CustomResource[];
+export interface PauseStep {
+  pause: {
+    duration?: string;
   };
 }
+
+export interface AnalysisStep {
+  analysis: {
+    templates: {
+      templateName: string;
+      clusterScope?: boolean;
+    }[];
+  };
+}
+
+export type ArgoRolloutCanaryStep = SetWeightStep | PauseStep | AnalysisStep;
