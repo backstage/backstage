@@ -1,5 +1,65 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 9581ff0b4: Restructure configuration; Add GKE cluster locator
+
+  Config migration
+
+  1. `kubernetes.clusters` is now at `kubernetes.clusterLocatorMethods[].clusters` when the `clusterLocatorMethod` is of `type: 'config''`
+  2. `kubernetes.serviceLocatorMethod` is now an object. `multiTenant` is the only valid `type` currently
+
+  Old config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod: 'multiTenant'
+    clusterLocatorMethods:
+      - 'config'
+    clusters:
+      - url: http://127.0.0.1:9999
+        name: minikube
+        authProvider: 'serviceAccount'
+        serviceAccountToken:
+          $env: K8S_MINIKUBE_TOKEN
+      - url: http://127.0.0.2:9999
+        name: aws-cluster-1
+        authProvider: 'aws'
+  ```
+
+  New config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod:
+      type: 'multiTenant'
+    clusterLocatorMethods:
+      - type: 'config'
+        clusters:
+          - url: http://127.0.0.1:9999
+            name: minikube
+            authProvider: 'serviceAccount'
+            serviceAccountToken:
+              $env: K8S_MINIKUBE_TOKEN
+          - url: http://127.0.0.2:9999
+            name: aws-cluster-1
+            authProvider: 'aws'
+  ```
+
+- e2c1b3fb6: Add initial CRD support framework
+
+### Patch Changes
+
+- 5d7834baf: Use AWS SDK V2 instead of V3 for Kubernetes authentication
+- 8de9963f0: Remove Kubernetes client caching
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.2.8
 
 ### Patch Changes

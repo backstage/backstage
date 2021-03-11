@@ -1,5 +1,27 @@
 # @backstage/plugin-github-actions
 
+## 0.4.0
+
+### Minor Changes
+
+- eabe89d38: Show workflow name
+
+### Patch Changes
+
+- 13fb84244: Link to GitHub using host defined in app config if defined.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [2089de76b]
+- Updated dependencies [d4e77ec5f]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/integration@0.5.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.3.5
 
 ### Patch Changes

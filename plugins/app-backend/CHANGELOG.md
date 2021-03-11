@@ -1,5 +1,15 @@
 # @backstage/plugin-app-backend
 
+## 0.3.9
+
+### Patch Changes
+
+- 393b623ae: Add a `Cache-Control: no-store, max-age=0` header to the `index.html` response to instruct the browser to not cache the pages.
+  This tells the browser to not serve a cached `index.html` that might link to static assets from a previous deployment that are not available anymore.
+- Updated dependencies [d7245b733]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+
 ## 0.3.8
 
 ### Patch Changes

@@ -1,5 +1,28 @@
 # @backstage/techdocs-common
 
+## 0.4.4
+
+### Patch Changes
+
+- d7245b733: Remove runDockerContainer, and start using the utility function provided by @backstage/backend-common
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 2ef5bc7ea: Implement proper AWS Credentials precedence with assume-role and explicit credentials
+- aa095e469: OpenStack Swift publisher added for tech-docs.
+- bc46435f5: - Improve deprecation warning messaging in logs.
+  - Replace temp folder path from git provider domain(`source`) to full git host name (`resource`). (See: https://github.com/IonicaBizau/git-url-parse#giturlparseurl)
+- a501128db: Refactor log messaging to improve clarity
+- ca4a904f6: Add an optional configuration option for setting the url endpoint for AWS S3 publisher: `techdocs.publisher.awsS3.endpoint`
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.4.3
 
 ### Patch Changes

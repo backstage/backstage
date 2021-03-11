@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs
 
+## 0.6.1
+
+### Patch Changes
+
+- aa095e469: OpenStack Swift publisher added for tech-docs.
+- 2089de76b: Make use of the new core `ItemCardGrid` and `ItemCardHeader` instead of the deprecated `ItemCard`.
+- 868e4cdf2: - Adds a link to the owner entity
+  - Corrects the link to the component which includes the namespace
+- ca4a904f6: Add an optional configuration option for setting the url endpoint for AWS S3 publisher: `techdocs.publisher.awsS3.endpoint`
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [aa095e469]
+- Updated dependencies [2089de76b]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [bc46435f5]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+  - @backstage/techdocs-common@0.4.4
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.6.0
 
 ### Minor Changes

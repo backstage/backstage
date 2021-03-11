@@ -1,5 +1,53 @@
 # @backstage/core-api
 
+## 0.2.13
+
+### Patch Changes
+
+- 13524b80b: Fully deprecate `title` option of `RouteRef`s and introduce `id` instead.
+- e74b07578: Fixed a bug where FlatRoutes didn't handle React Fragments properly.
+- 6fb4258a8: Add `SubRouteRef`s, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you for example have a page that is mounted at a sub route of a routable extension component, and you want other plugins to be able to route to that page.
+
+  For example:
+
+  ```tsx
+  // routes.ts
+  const rootRouteRef = createRouteRef({ id: 'root' });
+  const detailsRouteRef = createSubRouteRef({
+    id: 'root-sub',
+    parent: rootRouteRef,
+    path: '/details',
+  });
+
+  // plugin.ts
+  export const myPlugin = createPlugin({
+    routes: {
+      root: rootRouteRef,
+      details: detailsRouteRef,
+    }
+  })
+
+  export const MyPage = plugin.provide(createRoutableExtension({
+    component: () => import('./components/MyPage').then(m => m.MyPage),
+    mountPoint: rootRouteRef,
+  }))
+
+  // components/MyPage.tsx
+  const MyPage = () => (
+    <Routes>
+      {/* myPlugin.routes.root will take the user to this page */}
+      <Route path='/' element={<IndexPage />}>
+
+      {/* myPlugin.routes.details will take the user to this page */}
+      <Route path='/details' element={<DetailsPage />}>
+    </Routes>
+  )
+  ```
+
+- 395885905: Wait for `configApi` to be ready before using `featureFlagsApi`
+- Updated dependencies [2089de76b]
+  - @backstage/theme@0.2.4
+
 ## 0.2.12
 
 ### Patch Changes

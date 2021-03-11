@@ -1,5 +1,43 @@
 # example-app
 
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies [13fb84244]
+- Updated dependencies [4f3d0dce0]
+- Updated dependencies [8f72318fe]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [aa095e469]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9f7dc10fb]
+- Updated dependencies [eabe89d38]
+- Updated dependencies [9581ff0b4]
+- Updated dependencies [93c62c755]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [868e4cdf2]
+- Updated dependencies [ca4a904f6]
+- Updated dependencies [763926bc1]
+- Updated dependencies [5ab5864f6]
+- Updated dependencies [4202807bb]
+- Updated dependencies [e2c1b3fb6]
+  - @backstage/plugin-github-actions@0.4.0
+  - @backstage/plugin-catalog@0.4.2
+  - @backstage/plugin-kafka@0.2.6
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/plugin-techdocs@0.6.1
+  - @backstage/plugin-scaffolder@0.7.1
+  - @backstage/plugin-kubernetes@0.4.0
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore@0.3.1
+  - @backstage/cli@0.6.4
+
 ## 0.2.18
 
 ### Patch Changes
