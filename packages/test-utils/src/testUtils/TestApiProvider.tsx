@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-export * from './apis';
-export { default as mockBreakpoint } from './mockBreakpoint';
-export { wrapInTestApp, renderInTestApp } from './appWrappers';
-export * from './msw';
-export { TestApiProvider } from './TestApiProvider';
+import React, { ReactNode } from 'react';
+import { ApiProvider, ApiRegistry } from '@backstage/app-api';
+import { ApiRef } from '@backstage/plugin-api';
+
+type ApiImplPair<T> = T extends infer I ? [ApiRef<T>, I] : never;
+type PairedApiImpls<T> = { [P in keyof T]: ApiImplPair<T[P]> };
+
+type TestApiProviderProps<T extends any[]> = {
+  apis: [...PairedApiImpls<T>];
+  children: ReactNode;
+};
+
+export const TestApiProvider = <T extends any[]>({
+  apis,
+  children,
+}: TestApiProviderProps<T>) => {
+  return <ApiProvider apis={ApiRegistry.from(apis)} children={children} />;
+};
