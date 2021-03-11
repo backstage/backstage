@@ -43,6 +43,7 @@ export type PublishResponse = {
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
+  etag: string;
 };
 
 /**
