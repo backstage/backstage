@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.3",
-    "@types/http-proxy-middleware": "^0.19.3",
+    "@types/http-proxy-middleware": "^1.0.0",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.29.8",
