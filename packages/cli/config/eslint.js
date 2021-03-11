@@ -100,7 +100,7 @@ module.exports = {
       },
     },
     {
-      files: ['*.test.*', 'src/setupTests.*', 'dev/**'],
+      files: ['*.test.*', '*.stories.*', 'src/setupTests.*', 'dev/**'],
       rules: {
         // Tests are allowed to import dev dependencies
         'import/no-extraneous-dependencies': [
