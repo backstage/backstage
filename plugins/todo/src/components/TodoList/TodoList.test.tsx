@@ -26,9 +26,16 @@ describe('TodoList', () => {
   it('should render', async () => {
     const mockApi: jest.Mocked<TodoApi> = {
       listTodos: jest.fn().mockResolvedValue({
-        items: [{ text: 'My TODO' }],
+        items: [
+          {
+            text: 'My TODO',
+            viewUrl: 'https://example.com',
+            repoFilePath: '/my-file.js',
+          },
+        ],
         totalCount: 1,
-        cursors: { prev: 'prev', self: 'self', next: 'next' },
+        limit: 10,
+        offset: 0,
       }),
     };
     const mockEntity = { metadata: { name: 'mock' } } as Entity;
@@ -41,6 +48,6 @@ describe('TodoList', () => {
       </ApiProvider>,
     );
 
-    await expect(rendered.findByText('My TODO')).resolves.toBeInTheDocument();
+    await expect(rendered.findByText('1-1 of 1')).resolves.toBeInTheDocument();
   });
 });
