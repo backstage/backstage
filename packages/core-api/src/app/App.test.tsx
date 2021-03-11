@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import {
+  configApiRef,
+  createApiFactory,
+  featureFlagsApiRef,
+  LocalStorageFeatureFlags,
+} from '../apis';
 import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
@@ -243,6 +249,67 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
     expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
+  });
+
+  it('should wait for the config to load before calling feature flags', async () => {
+    const storageFlags = new LocalStorageFeatureFlags();
+    jest.spyOn(storageFlags, 'registerFlag');
+
+    const apis = [
+      createApiFactory({
+        api: featureFlagsApiRef,
+        deps: { configApi: configApiRef },
+        factory() {
+          return storageFlags;
+        },
+      }),
+    ];
+
+    const app = new PrivateAppImpl({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultSystemIcons,
+      plugins: [
+        createPlugin({
+          id: 'test',
+          register: p => p.featureFlags.register('name'),
+        }),
+      ],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          err: plugin1RouteRef,
+          errParams: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <ExposedComponent path="/" />
+            <HiddenComponent path="/foo" />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(storageFlags.registerFlag).toHaveBeenCalledWith({
+      name: 'name',
+      pluginId: 'test',
+    });
   });
 
   it('should throw some error when the route has duplicate params', () => {
