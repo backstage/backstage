@@ -120,6 +120,7 @@ techdocs:
 
 Create a dedicated AWS S3 bucket for the storage of TechDocs sites.
 [Refer to the official documentation](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html).
+[Terraform example](https://github.com/backstage/backstage/blob/master/contrib/terraform/techdocs-s3-storage/terraform.tf).
 
 TechDocs will publish documentation to this bucket and will fetch files from
 here to serve documentation in Backstage. Note that the bucket names are
@@ -142,7 +143,9 @@ variables**
 You should follow the
 [AWS security best practices guide for authentication](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html).
 
-TechDocs needs access to read files and metadata of the S3 bucket.
+TechDocs needs access to read files and metadata of the S3 bucket. So if you are
+creating a policy for a user you want to make sure it is granted access to
+ListBucket, GetObject and PutObject.
 
 If the environment variables
 
