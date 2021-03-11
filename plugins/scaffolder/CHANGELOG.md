@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 0.7.1
+
+### Patch Changes
+
+- f98f212e4: Introduce scaffolder actions page which lists all available actions along with documentation about their input/output.
+
+  Allow for actions to be extended with a description.
+
+  The list actions page is by default available at `/create/actions`.
+
+- 2089de76b: Make use of the new core `ItemCardGrid` and `ItemCardHeader` instead of the deprecated `ItemCard`.
+- 4202807bb: Added a default type when is not defined in the schema to prevent id collision
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [2089de76b]
+- Updated dependencies [d4e77ec5f]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/integration@0.5.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.7.0
 
 ### Minor Changes

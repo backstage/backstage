@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog
 
+## 0.4.2
+
+### Patch Changes
+
+- 4f3d0dce0: This is a quick fix (while #2791 is being implemented) to make it possible view non well known component types listed in the catalog index page. It buckets any component entities that are not a `service`, `library`, or `documentation` into the `Other` tab. It also displays a `Type` column when on Other tab.
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 9f7dc10fb: Show a Not Found message when navigating to a nonexistent entity
+- 93c62c755: Move logic for generating URLs for the view, edit and source links of catalog
+  entities from the catalog frontend into the backend. This is done using the
+  existing support for the `backstage.io/view-url`, `backstage.io/edit-url` and
+  `backstage.io/source-location` annotations that are now filled by the
+  `AnnotateLocationEntityProcessor`. If these annotations are missing or empty,
+  the UI disables the related controls.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [2089de76b]
+- Updated dependencies [d4e77ec5f]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/integration@0.5.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.4.1
 
 ### Patch Changes

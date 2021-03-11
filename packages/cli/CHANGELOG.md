@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.6.4
+
+### Patch Changes
+
+- 5ab5864f6: Add support for most TypeScript 4.1 syntax.
+
 ## 0.6.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.4
+
+### Patch Changes
+
+- 2089de76b: Deprecated `ItemCard`. Added `ItemCardGrid` and `ItemCardHeader` instead, that can be used to compose functionality around regular Material-UI `Card` components instead.
+
 ## 0.2.3
 
 ### Patch Changes

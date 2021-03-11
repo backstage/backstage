@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.7.4
+
+### Patch Changes
+
+- 0b42fff22: Add parseLocationReference, stringifyLocationReference
+
 ## 0.7.3
 
 ### Patch Changes

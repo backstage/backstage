@@ -1,5 +1,81 @@
 # @backstage/create-app
 
+## 0.3.13
+
+### Patch Changes
+
+- b03fba0dc: Adds "yarn dev" command to simplify local development.
+
+  To add the command to an existing application, first add it to the `scripts`
+  section of your monorepo root `package.json` like so:
+
+  ```diff
+   "scripts": {
+  +    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+       "start": "yarn workspace app start",
+       "start-backend": "yarn workspace backend start",
+  ```
+
+  And then add the `concurrently` package to your monorepo, like so:
+
+  ```sh
+  yarn add concurrently@6.0.0 --dev -W
+  ```
+
+  Notes:
+
+  - This needs to be done to the monorepo root, not your frontend or backend package.
+  - The `--dev -W` will add it only to `devDependencies`, and force it to the monorepo main root.
+
+  You can then run `yarn dev` which will start both the Backstage frontend and backend in a single window.
+
+- Updated dependencies [13fb84244]
+- Updated dependencies [9ef5a126d]
+- Updated dependencies [4f3d0dce0]
+- Updated dependencies [d7245b733]
+- Updated dependencies [393b623ae]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [c532c1682]
+- Updated dependencies [761698831]
+- Updated dependencies [aa095e469]
+- Updated dependencies [761698831]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9f7dc10fb]
+- Updated dependencies [eabe89d38]
+- Updated dependencies [93c62c755]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [868e4cdf2]
+- Updated dependencies [02d78290a]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+- Updated dependencies [5f1b7ea35]
+- Updated dependencies [5ab5864f6]
+- Updated dependencies [4202807bb]
+- Updated dependencies [2e57922de]
+  - @backstage/plugin-github-actions@0.4.0
+  - @backstage/plugin-catalog-backend@0.6.5
+  - @backstage/plugin-catalog@0.4.2
+  - @backstage/backend-common@0.5.6
+  - @backstage/plugin-app-backend@0.3.9
+  - @backstage/plugin-scaffolder-backend@0.9.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/plugin-techdocs-backend@0.6.4
+  - @backstage/plugin-techdocs@0.6.1
+  - @backstage/plugin-auth-backend@0.3.4
+  - @backstage/plugin-scaffolder@0.7.1
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore@0.3.1
+  - @backstage/cli@0.6.4
+
 ## 0.3.12
 
 ### Patch Changes

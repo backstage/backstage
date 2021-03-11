@@ -1,5 +1,21 @@
 # @backstage/plugin-explore
 
+## 0.3.1
+
+### Patch Changes
+
+- c9b5c1eca: Standardize the tool cards in explore some more
+- 2089de76b: Make use of the new core `ItemCardGrid` and `ItemCardHeader` instead of the deprecated `ItemCard`.
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore-react@0.0.4
+
 ## 0.3.0
 
 ### Minor Changes
