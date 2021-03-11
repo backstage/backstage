@@ -5,10 +5,13 @@ your backstage deployment, showing information related to data from
 the catalog, such as entity owner and lifecycle data for instance.
 
 The available badges are setup in the `badges-backend` plugin, see
-link below.
+link below for more details.
 
-To get markdown code for the badges, access the `Badges` context menu
-(three dots in the upper right corner) of an entity page.
+## Entity badges
+
+To get markdown code for the entity badges, access the `Badges` context menu
+(three dots in the upper right corner) of an entity page, which will popup a
+badges dialog showing all available badges for that entity.
 
 ## Links
 

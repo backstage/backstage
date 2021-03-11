@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
+export * from './badges';
+export * from './lib';
 export * from './service/router';
 export * from './types';
-export * from './utils';
-export * from './badges';

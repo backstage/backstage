@@ -15,35 +15,40 @@
  */
 
 import express from 'express';
-import fetch from 'cross-fetch';
 import Router from 'express-promise-router';
 import {
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { Config, JsonObject } from '@backstage/config';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 
 export interface RouterOptions {
   badgeBuilder?: BadgeBuilder;
   badgeFactories?: BadgeFactories;
+  catalog?: CatalogApi;
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery?: PluginEndpointDiscovery;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
+  if (!options.catalog && !options.discovery) {
+    throw new Error('must provide either catalog api or discovery api');
+  }
+  const catalog =
+    options.catalog || new CatalogClient({ discoveryApi: options.discovery! });
   const badgeBuilder =
     options.badgeBuilder ||
     new DefaultBadgeBuilder(options.badgeFactories || {});
+  const router = Router();
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
-    const entityUri = getEntityUri(req.params);
-    const entity = await getEntity(options.discovery, entityUri);
+    const { namespace, kind, name } = req.params;
+    const entity = await catalog.getEntityByName({ namespace, kind, name });
     if (!entity) {
       res.status(404).send(`Unknown entity`);
       return;
@@ -78,10 +83,8 @@ export async function createRouter(
   });
 
   router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
-    const { badgeId } = req.params;
-
-    const entityUri = getEntityUri(req.params);
-    const entity = await getEntity(options.discovery, entityUri);
+    const { namespace, kind, name, badgeId } = req.params;
+    const entity = await catalog.getEntityByName({ namespace, kind, name });
     if (!entity) {
       res.status(404).send(`Unknown entity`);
       return;
@@ -116,22 +119,4 @@ export async function createRouter(
   router.use(errorHandler());
 
   return router;
-}
-
-function getEntityUri(params: JsonObject): string {
-  const { kind, namespace, name } = params;
-  return `${kind}/${namespace}/${name}`;
-}
-
-async function getEntity(
-  discovery: PluginEndpointDiscovery,
-  entityUri: string,
-): Promise<Entity> {
-  const catalogUrl = await discovery.getBaseUrl('catalog');
-
-  const entity = (await (
-    await fetch(`${catalogUrl}/entities/by-name/${entityUri}`)
-  ).json()) as Entity;
-
-  return entity;
 }
