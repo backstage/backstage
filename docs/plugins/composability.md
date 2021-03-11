@@ -369,6 +369,50 @@ It is currently not possible to have parameterized `ExternalRouteRef`s, or to
 bind an external route to a parameterized route, although this may be added in
 the future if needed.
 
+### Subroutes
+
+The last kind of route refs that can be created are `SubRouteRef`s, which can be
+used to create a route ref with a fixed path relative to an absolute `RouteRef`.
+They are useful if you have a page that internally is mounted at a sub route of
+a routable extension component, and you want other plugins to be able to route
+to that page.
+
+For example:
+
+```tsx
+// routes.ts
+const rootRouteRef = createRouteRef({ id: 'root' });
+const detailsRouteRef = createSubRouteRef({
+  id: 'root-sub',
+  parent: rootRouteRef,
+  path: '/details',
+});
+
+// plugin.ts
+export const myPlugin = createPlugin({
+  routes: {
+    root: rootRouteRef,
+    details: detailsRouteRef,
+  }
+})
+
+export const MyPage = plugin.provide(createRoutableExtension({
+  component: () => import('./components/MyPage').then(m => m.MyPage),
+  mountPoint: rootRouteRef,
+}))
+
+// components/MyPage.tsx
+const MyPage = () => (
+  <Routes>
+    {/* myPlugin.routes.root will take the user to this page */}
+    <Route path='/' element={<IndexPage />}>
+
+    {/* myPlugin.routes.details will take the user to this page */}
+    <Route path='/details' element={<DetailsPage />}>
+  </Routes>
+)
+```
+
 ### New Catalog Components
 
 The established pattern for selecting what plugins should be available on each

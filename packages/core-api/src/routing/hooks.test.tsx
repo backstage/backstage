@@ -29,18 +29,11 @@ import {
   routeParentCollector,
   routeObjectCollector,
 } from './collectors';
-import {
-  useRouteRef,
-  RoutingProvider,
-  validateRoutes,
-  RouteFunc,
-} from './hooks';
-import {
-  createRouteRef,
-  createExternalRouteRef,
-  RouteRefConfig,
-} from './RouteRef';
-import { AnyRouteRef, RouteRef, ExternalRouteRef } from './types';
+import { validateRoutes } from './validation';
+import { useRouteRef, RoutingProvider } from './hooks';
+import { createRouteRef, RouteRefConfig } from './RouteRef';
+import { createExternalRouteRef } from './ExternalRouteRef';
+import { AnyRouteRef, RouteFunc, RouteRef, ExternalRouteRef } from './types';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',

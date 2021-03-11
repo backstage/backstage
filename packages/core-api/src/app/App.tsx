@@ -57,7 +57,8 @@ import {
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
-import { RoutingProvider, validateRoutes } from '../routing/hooks';
+import { RoutingProvider } from '../routing/hooks';
+import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
 import { AppThemeProvider } from './AppThemeProvider';

@@ -23,13 +23,17 @@ import { createRoutableExtension } from '../extensions';
 import { defaultSystemIcons } from '../icons';
 import { createPlugin } from '../plugin';
 import { useRouteRef } from '../routing/hooks';
-import { createExternalRouteRef, createRouteRef } from '../routing/RouteRef';
+import {
+  createExternalRouteRef,
+  createRouteRef,
+  createSubRouteRef,
+} from '../routing';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 
 describe('generateBoundRoutes', () => {
   it('runs happy path', () => {
     const external = { myRoute: createExternalRouteRef({ id: '1' }) };
-    const ref = createRouteRef({ path: '', title: '' });
+    const ref = createRouteRef({ id: 'ref-1' });
     const result = generateBoundRoutes(({ bind }) => {
       bind(external, { myRoute: ref });
     });
@@ -39,7 +43,7 @@ describe('generateBoundRoutes', () => {
 
   it('throws on unknown keys', () => {
     const external = { myRoute: createExternalRouteRef({ id: '2' }) };
-    const ref = createRouteRef({ path: '', title: '' });
+    const ref = createRouteRef({ id: 'ref-2' });
     expect(() =>
       generateBoundRoutes(({ bind }) => {
         bind(external, { someOtherRoute: ref } as any);
@@ -49,20 +53,39 @@ describe('generateBoundRoutes', () => {
 });
 
 describe('Integration Test', () => {
-  const plugin1RouteRef = createRouteRef({ path: '/blah1', title: '' });
-  const plugin2RouteRef = createRouteRef({
-    path: '/blah2',
-    title: '',
+  const plugin1RouteRef = createRouteRef({ id: 'ref-1' });
+  const plugin2RouteRef = createRouteRef({ id: 'ref-2', params: ['x'] });
+  const subRouteRef1 = createSubRouteRef({
+    id: 'sub1',
+    path: '/sub1',
+    parent: plugin1RouteRef,
+  });
+  const subRouteRef2 = createSubRouteRef({
+    id: 'sub2',
+    path: '/sub2/:x',
+    parent: plugin1RouteRef,
+  });
+  const subRouteRef3 = createSubRouteRef({
+    id: 'sub3',
+    path: '/sub3',
+    parent: plugin2RouteRef,
+  });
+  const subRouteRef4 = createSubRouteRef({
+    id: 'sub4',
+    path: '/sub4/:y',
+    parent: plugin2RouteRef,
+  });
+  const extRouteRef1 = createExternalRouteRef({ id: 'extRouteRef1' });
+  const extRouteRef2 = createExternalRouteRef({
+    id: 'extRouteRef2',
     params: ['x'],
   });
-  const err = createExternalRouteRef({ id: 'err' });
-  const errParams = createExternalRouteRef({ id: 'errParams', params: ['x'] });
-  const errOptional = createExternalRouteRef({
-    id: 'errOptional',
+  const extRouteRef3 = createExternalRouteRef({
+    id: 'extRouteRef3',
     optional: true,
   });
-  const errParamsOptional = createExternalRouteRef({
-    id: 'errParamsOptional',
+  const extRouteRef4 = createExternalRouteRef({
+    id: 'extRouteRef4',
     optional: true,
     params: ['x'],
   });
@@ -70,10 +93,10 @@ describe('Integration Test', () => {
   const plugin1 = createPlugin({
     id: 'blob',
     externalRoutes: {
-      err,
-      errParams,
-      errOptional,
-      errParamsOptional,
+      extRouteRef1,
+      extRouteRef2,
+      extRouteRef3,
+      extRouteRef4,
     },
   });
 
@@ -92,19 +115,28 @@ describe('Integration Test', () => {
     createRoutableExtension({
       component: () =>
         Promise.resolve((_: PropsWithChildren<{ path?: string }>) => {
-          const errLink = useRouteRef(err);
-          const errParamsLink = useRouteRef(errParams);
-          const errOptionalLink = useRouteRef(errOptional);
-          const errParamsOptionalLink = useRouteRef(errParamsOptional);
+          const link1 = useRouteRef(plugin1RouteRef);
+          const link2 = useRouteRef(plugin2RouteRef);
+          const subLink1 = useRouteRef(subRouteRef1);
+          const subLink2 = useRouteRef(subRouteRef2);
+          const subLink3 = useRouteRef(subRouteRef3);
+          const subLink4 = useRouteRef(subRouteRef4);
+          const extLink1 = useRouteRef(extRouteRef1);
+          const extLink2 = useRouteRef(extRouteRef2);
+          const extLink3 = useRouteRef(extRouteRef3);
+          const extLink4 = useRouteRef(extRouteRef4);
           return (
             <div>
-              <span>err: {errLink()}</span>
-              <span>errParams: {errParamsLink({ x: 'a' })}</span>
-              <span>errOptional: {errOptionalLink?.() ?? '<none>'}</span>
-              <span>
-                errParamsOptional:{' '}
-                {errParamsOptionalLink?.({ x: 'b' }) ?? '<none>'}
-              </span>
+              <span>link1: {link1()}</span>
+              <span>link2: {link2({ x: 'a' })}</span>
+              <span>subLink1: {subLink1()}</span>
+              <span>subLink2: {subLink2({ x: 'a' })}</span>
+              <span>subLink3: {subLink3({ x: 'b' })}</span>
+              <span>subLink4: {subLink4({ x: 'c', y: 'd' })}</span>
+              <span>extLink1: {extLink1()}</span>
+              <span>extLink2: {extLink2({ x: 'a' })}</span>
+              <span>extLink3: {extLink3?.() ?? '<none>'}</span>
+              <span>extLink4: {extLink4?.({ x: 'b' }) ?? '<none>'}</span>
             </div>
           );
         }),
@@ -136,10 +168,10 @@ describe('Integration Test', () => {
       components,
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
-          err: plugin1RouteRef,
-          errParams: plugin2RouteRef,
-          errOptional: plugin1RouteRef,
-          errParamsOptional: plugin2RouteRef,
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+          extRouteRef3: subRouteRef1,
+          extRouteRef4: plugin2RouteRef,
         });
       },
     });
@@ -152,16 +184,22 @@ describe('Integration Test', () => {
         <Router>
           <Routes>
             <ExposedComponent path="/" />
-            <HiddenComponent path="/foo" />
+            <HiddenComponent path="/foo/:x" />
           </Routes>
         </Router>
       </Provider>,
     );
 
-    expect(screen.getByText('err: /')).toBeInTheDocument();
-    expect(screen.getByText('errParams: /foo')).toBeInTheDocument();
-    expect(screen.getByText('errOptional: /')).toBeInTheDocument();
-    expect(screen.getByText('errParamsOptional: /foo')).toBeInTheDocument();
+    expect(screen.getByText('link1: /')).toBeInTheDocument();
+    expect(screen.getByText('link2: /foo/a')).toBeInTheDocument();
+    expect(screen.getByText('subLink1: /sub1')).toBeInTheDocument();
+    expect(screen.getByText('subLink2: /sub2/a')).toBeInTheDocument();
+    expect(screen.getByText('subLink3: /foo/b/sub3')).toBeInTheDocument();
+    expect(screen.getByText('subLink4: /foo/c/sub4/d')).toBeInTheDocument();
+    expect(screen.getByText('extLink1: /')).toBeInTheDocument();
+    expect(screen.getByText('extLink2: /foo/a')).toBeInTheDocument();
+    expect(screen.getByText('extLink3: /sub1')).toBeInTheDocument();
+    expect(screen.getByText('extLink4: /foo/b')).toBeInTheDocument();
   });
 
   it('runs happy paths without optional routes', async () => {
@@ -181,8 +219,8 @@ describe('Integration Test', () => {
       components,
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
-          err: plugin1RouteRef,
-          errParams: plugin2RouteRef,
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
         });
       },
     });
@@ -201,10 +239,10 @@ describe('Integration Test', () => {
       </Provider>,
     );
 
-    expect(screen.getByText('err: /')).toBeInTheDocument();
-    expect(screen.getByText('errParams: /foo')).toBeInTheDocument();
-    expect(screen.getByText('errOptional: <none>')).toBeInTheDocument();
-    expect(screen.getByText('errParamsOptional: <none>')).toBeInTheDocument();
+    expect(screen.getByText('extLink1: /')).toBeInTheDocument();
+    expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
+    expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
+    expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
   });
 
   it('should throw some error when the route has duplicate params', () => {
@@ -224,8 +262,8 @@ describe('Integration Test', () => {
       components,
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
-          err: plugin1RouteRef,
-          errParams: plugin2RouteRef,
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
         });
       },
     });
