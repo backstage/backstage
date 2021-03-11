@@ -74,8 +74,6 @@ export class TodoReaderService implements TodoService {
     let offset = req.offset ?? 0;
     if (offset < 0) {
       offset = 0;
-    } else if (offset - limit > totalCount) {
-      offset = totalCount - limit;
     }
 
     let items = todos.items;

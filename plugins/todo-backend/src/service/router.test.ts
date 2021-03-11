@@ -44,7 +44,7 @@ describe('createRouter', () => {
     jest.resetAllMocks();
   });
 
-  describe('GET /health', () => {
+  describe('GET /todos', () => {
     it('returns list without query', async () => {
       mockService.listTodos.mockResolvedValueOnce(mockListBody);
 
