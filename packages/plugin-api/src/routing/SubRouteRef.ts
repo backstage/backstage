@@ -16,7 +16,6 @@
 
 import {
   AnyParams,
-  ExternalRouteRef,
   OptionalParams,
   ParamKeys,
   RouteRef,
@@ -116,13 +115,4 @@ export function createSubRouteRef<
   // But skip type checking of the return value itself, because the conditional
   // type checking of the parent parameter overlap is tricky to express.
   return subRouteRef as any;
-}
-
-export function isSubRouteRef<Params extends AnyParams>(
-  routeRef:
-    | RouteRef<Params>
-    | SubRouteRef<Params>
-    | ExternalRouteRef<Params, any>,
-): routeRef is SubRouteRef<Params> {
-  return routeRef[routeRefType] === 'sub';
 }

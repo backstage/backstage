@@ -17,7 +17,8 @@
 import { RouteRef, SubRouteRef, ExternalRouteRef } from '@backstage/plugin-api';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
-export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
+type RouteRefType = Exclude<keyof RouteRef, 'params'>;
+export const routeRefType: RouteRefType = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
@@ -45,4 +46,34 @@ export interface BackstageRouteObject {
   element: React.ReactNode;
   path: string;
   routeRefs: Set<RouteRef>;
+}
+
+export function isRouteRef<Params extends AnyParams>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, any>,
+): routeRef is RouteRef<Params> {
+  return routeRef[routeRefType] === 'absolute';
+}
+
+export function isSubRouteRef<Params extends AnyParams>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, any>,
+): routeRef is SubRouteRef<Params> {
+  return routeRef[routeRefType] === 'sub';
+}
+
+export function isExternalRouteRef<
+  Params extends AnyParams,
+  Optional extends boolean
+>(
+  routeRef:
+    | RouteRef<Params>
+    | SubRouteRef<Params>
+    | ExternalRouteRef<Params, Optional>,
+): routeRef is ExternalRouteRef<Params, Optional> {
+  return routeRef[routeRefType] === 'external';
 }
