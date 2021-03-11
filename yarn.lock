@@ -1744,7 +1744,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.7.4"
+  version "0.7.3"
   dependencies:
     "@backstage/config" "^0.1.3"
     "@types/json-schema" "^7.0.5"
@@ -1756,7 +1756,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.7.4"
+  version "0.7.3"
   dependencies:
     "@backstage/config" "^0.1.3"
     "@types/json-schema" "^7.0.5"
@@ -1768,12 +1768,12 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.7.1"
+  version "0.7.0"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.13"
+    "@backstage/core-api" "^0.2.12"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1810,12 +1810,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.0":
-  version "0.7.1"
+  version "0.7.0"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.13"
+    "@backstage/core-api" "^0.2.12"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1852,12 +1852,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.1":
-  version "0.7.1"
+  version "0.7.0"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.13"
+    "@backstage/core-api" "^0.2.12"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1894,14 +1894,14 @@
     zen-observable "^0.8.15"
 
 "@backstage/plugin-catalog@^0.2.1":
-  version "0.4.2"
+  version "0.4.1"
   dependencies:
-    "@backstage/catalog-client" "^0.3.7"
-    "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.1"
-    "@backstage/integration" "^0.5.1"
+    "@backstage/catalog-client" "^0.3.6"
+    "@backstage/catalog-model" "^0.7.3"
+    "@backstage/core" "^0.7.0"
+    "@backstage/integration" "^0.5.0"
     "@backstage/plugin-catalog-react" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1917,14 +1917,14 @@
     swr "^0.3.0"
 
 "@backstage/plugin-catalog@^0.3.1":
-  version "0.4.2"
+  version "0.4.1"
   dependencies:
-    "@backstage/catalog-client" "^0.3.7"
-    "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.1"
-    "@backstage/integration" "^0.5.1"
+    "@backstage/catalog-client" "^0.3.6"
+    "@backstage/catalog-model" "^0.7.3"
+    "@backstage/core" "^0.7.0"
+    "@backstage/integration" "^0.5.0"
     "@backstage/plugin-catalog-react" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.3"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -5716,18 +5716,6 @@
     "@babel/runtime" "^7.5.4"
     "@types/testing-library__react-hooks" "^3.4.0"
 
-"@testing-library/react-hooks@^5.1.0":
-  version "5.1.0"
-  resolved "https://registry.npmjs.org/@testing-library/react-hooks/-/react-hooks-5.1.0.tgz#6014b7536d0e9427a1e73ce1d073c49a6af5fb3b"
-  integrity sha512-ChRyyA14e0CeVkWGp24v8q/IiWUqH+B8daRx4lGZme4dsudmMNWz+Qo2Q2NzbD2O5rAVXh2hSbS/KTKeqHYhkw==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
-    "@types/react" ">=16.9.0"
-    "@types/react-dom" ">=16.9.0"
-    "@types/react-test-renderer" ">=16.9.0"
-    filter-console "^0.1.1"
-    react-error-boundary "^3.1.0"
-
 "@testing-library/react@^11.2.5":
   version "11.2.5"
   resolved "https://registry.npmjs.org/@testing-library/react/-/react-11.2.5.tgz#ae1c36a66c7790ddb6662c416c27863d87818eb9"
@@ -6680,13 +6668,6 @@
     "@types/webpack" "*"
     "@types/webpack-dev-server" "*"
 
-"@types/react-dom@>=16.9.0":
-  version "17.0.2"
-  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.2.tgz#35654cf6c49ae162d5bc90843d5437dc38008d43"
-  integrity sha512-Icd9KEgdnFfJs39KyRyr0jQ7EKhq8U6CcHRMGAS45fp5qgUvxL3ujUCfWFttUK2UErqZNj97t9gsVPNAqcwoCg==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-dom@^16.9.8":
   version "16.9.8"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-16.9.8.tgz#fe4c1e11dfc67155733dfa6aa65108b4971cb423"
@@ -6730,13 +6711,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-test-renderer@>=16.9.0":
-  version "17.0.1"
-  resolved "https://registry.npmjs.org/@types/react-test-renderer/-/react-test-renderer-17.0.1.tgz#3120f7d1c157fba9df0118dae20cb0297ee0e06b"
-  integrity sha512-3Fi2O6Zzq/f3QR9dRnlnHso9bMl7weKCviFmfF6B4LS1Uat6Hkm15k0ZAQuDz+UBq6B3+g+NM6IT2nr5QgPzCw==
-  dependencies:
-    "@types/react" "*"
-
 "@types/react-text-truncate@^0.14.0":
   version "0.14.0"
   resolved "https://registry.npmjs.org/@types/react-text-truncate/-/react-text-truncate-0.14.0.tgz#588bbabbc7f2a13815e805f3a48942db73fe65fe"
@@ -6772,15 +6746,6 @@
   integrity sha512-9LDZdhsuKSc+DjY65SjBkA958oBWcTWSVWAd2cD9XqKBjhGw1KzAkRhWRw2eIsXvaIE/TOTjjKMFVC+JA1iU4g==
   dependencies:
     csstype "^2.2.0"
-
-"@types/react@>=16.9.0":
-  version "17.0.3"
-  resolved "https://registry.npmjs.org/@types/react/-/react-17.0.3.tgz#ba6e215368501ac3826951eef2904574c262cc79"
-  integrity sha512-wYOUxIgs2HZZ0ACNiIayItyluADNbONl7kt8lkLjVK8IitMH5QMyAh75Fwhmo37r1m7L2JaFj03sIfxBVDvRAg==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
 
 "@types/reactcss@*":
   version "1.2.3"
@@ -6862,11 +6827,6 @@
     "@types/cssnano" "*"
     "@types/node" "*"
     rollup "^0.63.4"
-
-"@types/scheduler@*":
-  version "0.16.1"
-  resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.1.tgz#18845205e86ff0038517aab7a18a62a6b9f71275"
-  integrity sha512-EaCxbanVeyxDRTQBkdLb3Bvl/HK7PBK6UJjsSixB0iHKoWxE5uu2Q/DgtpOhPIojN0Zl1whvOd7PoHs2P0s5eA==
 
 "@types/semver@^6.0.0":
   version "6.2.1"
@@ -11009,11 +10969,6 @@ csstype@^2.2.0, csstype@^2.5.2, csstype@^2.5.5, csstype@^2.5.7, csstype@^2.6.5, 
   resolved "https://registry.npmjs.org/csstype/-/csstype-2.6.9.tgz#05141d0cd557a56b8891394c1911c40c8a98d098"
   integrity sha512-xz39Sb4+OaTsULgUERcCk+TJj8ylkL4aSVDQiX/ksxbELSqwkgt4d4RD7fovIdgJGSuNYqwZEiVjYY5l0ask+Q==
 
-csstype@^3.0.2:
-  version "3.0.7"
-  resolved "https://registry.npmjs.org/csstype/-/csstype-3.0.7.tgz#2a5fb75e1015e84dd15692f71e89a1450290950b"
-  integrity sha512-KxnUB0ZMlnUWCsx2Z8MUsr6qV6ja1w9ArPErJaJaF8a5SOWoHLIszeCTKGRGRgtLgYrs1E8CHkNSP1VZTTPc9g==
-
 csv-generate@^3.2.4:
   version "3.2.4"
   resolved "https://registry.npmjs.org/csv-generate/-/csv-generate-3.2.4.tgz#440dab9177339ee0676c9e5c16f50e2b3463c019"
@@ -13390,11 +13345,6 @@ fill-range@^7.0.1:
   integrity sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
   dependencies:
     to-regex-range "^5.0.1"
-
-filter-console@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.npmjs.org/filter-console/-/filter-console-0.1.1.tgz#6242be28982bba7415bcc6db74a79f4a294fa67c"
-  integrity sha512-zrXoV1Uaz52DqPs+qEwNJWJFAWZpYJ47UNmpN9q4j+/EYsz85uV0DC9k8tRND5kYmoVzL0W+Y75q4Rg8sRJCdg==
 
 finalhandler@~1.1.2:
   version "1.1.2"
@@ -21913,13 +21863,6 @@ react-draggable@^4.0.3:
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.0"
-
-react-error-boundary@^3.1.0:
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/react-error-boundary/-/react-error-boundary-3.1.1.tgz#932c5ca5cbab8ec4fe37fd7b415aa5c3a47597e7"
-  integrity sha512-W3xCd9zXnanqrTUeViceufD3mIW8Ut29BUD+S2f0eO2XCOU8b6UrJfY46RDGe5lxCJzfe4j0yvIfh0RbTZhKJw==
-  dependencies:
-    "@babel/runtime" "^7.12.5"
 
 react-error-overlay@^6.0.7, react-error-overlay@^6.0.9:
   version "6.0.9"
