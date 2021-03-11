@@ -33,6 +33,7 @@ const columns: TableColumn<TodoItem>[] = [
   {
     title: 'Tag',
     field: 'tag',
+    filtering: false,
   },
   {
     title: 'Text',
@@ -57,6 +58,7 @@ const columns: TableColumn<TodoItem>[] = [
   {
     title: 'Author',
     field: 'author',
+    width: '20%',
     render: ({ author }) => <OverflowTooltip text={author} />,
   },
 ];
@@ -80,7 +82,9 @@ export const TodoList = () => {
         sorting: true,
         draggable: false,
         paging: true,
-        paginationType: 'stepped',
+        filtering: true,
+        debounceInterval: 500,
+        filterCellStyle: { padding: '0 16px 0 20px' },
       }}
       columns={columns}
       data={async query => {
@@ -97,6 +101,10 @@ export const TodoList = () => {
                 field: query.orderBy.field,
                 direction: query.orderDirection,
               } as TodoListOptions['orderBy']),
+            filters: query?.filters?.map(filter => ({
+              field: filter.column.field!,
+              value: `*${filter.value}*`,
+            })) as TodoListOptions['filters'],
           });
           return {
             data: result.items,

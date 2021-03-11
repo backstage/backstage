@@ -37,14 +37,21 @@ export type TodoItem = {
   repoFilePath?: string;
 };
 
+type Fields = 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
+
 export type TodoListOptions = {
   entity?: Entity;
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
+    field: Fields;
     direction: 'asc' | 'desc';
   };
+  filters?: {
+    field: Fields;
+    /** Value to filter by, with '*' used as wildcard */
+    value: string;
+  }[];
 };
 
 export type TodoListResult = {

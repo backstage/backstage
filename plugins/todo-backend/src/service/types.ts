@@ -17,14 +17,21 @@
 import { EntityName } from '@backstage/catalog-model';
 import { TodoItem } from '../lib';
 
+type Fields = 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
+
 export type ListTodosRequest = {
   entity?: EntityName;
   offset?: number;
   limit?: number;
   orderBy?: {
-    field: 'text' | 'tag' | 'author' | 'viewUrl' | 'repoFilePath';
+    field: Fields;
     direction: 'asc' | 'desc';
   };
+  filters?: {
+    field: Fields;
+    /** Value to filter by, with '*' used as wildcard */
+    value: string;
+  }[];
 };
 
 export type ListTodosResponse = {

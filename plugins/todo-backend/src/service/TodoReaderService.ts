@@ -36,6 +36,13 @@ type Options = {
   defaultPageSize?: number;
 };
 
+function wildcardRegex(str: string): RegExp {
+  const pattern = str
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*');
+  return new RegExp(`^${pattern}$`, 'i');
+}
+
 export class TodoReaderService implements TodoService {
   private readonly todoReader: TodoReader;
   private readonly catalogClient: CatalogClient;
@@ -62,7 +69,6 @@ export class TodoReaderService implements TodoService {
 
     const url = this.getEntitySourceUrl(entity);
     const todos = await this.todoReader.readTodos({ url });
-    const totalCount = todos.items.length;
 
     let limit = req.limit ?? this.defaultPageSize;
     if (limit < 0) {
@@ -77,7 +83,15 @@ export class TodoReaderService implements TodoService {
     }
 
     let items = todos.items;
-    const { orderBy } = req;
+    const { orderBy, filters } = req;
+
+    if (filters) {
+      for (const { field, value } of filters) {
+        const pattern = wildcardRegex(value);
+        items = items.filter(item => item[field]?.match(pattern));
+      }
+    }
+
     if (orderBy) {
       const dir = orderBy.direction === 'asc' ? 1 : -1;
       const field = orderBy.field;
@@ -98,7 +112,7 @@ export class TodoReaderService implements TodoService {
 
     return {
       items: items.slice(offset, offset + limit),
-      totalCount,
+      totalCount: items.length,
       offset,
       limit,
     };

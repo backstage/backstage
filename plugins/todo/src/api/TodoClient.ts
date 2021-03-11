@@ -38,6 +38,7 @@ export class TodoClient implements TodoApi {
     offset,
     limit,
     orderBy,
+    filters,
   }: TodoListOptions): Promise<TodoListResult> {
     const baseUrl = await this.discoveryApi.getBaseUrl('todo');
     const token = await this.identityApi.getIdToken();
@@ -54,6 +55,11 @@ export class TodoClient implements TodoApi {
     }
     if (orderBy) {
       query.set('orderBy', `${orderBy.field}=${orderBy.direction}`);
+    }
+    if (filters) {
+      for (const filter of filters) {
+        query.append('filter', `${filter.field}=${filter.value}`);
+      }
     }
 
     const res = await fetch(`${baseUrl}/v1/todos?${query}`, {
