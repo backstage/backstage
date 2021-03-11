@@ -263,6 +263,7 @@ export const TaskPage = () => {
 
   const entityRef = taskStream.output?.entityRef;
   const remoteUrl = taskStream.output?.remoteUrl;
+  const remoteUrlText = taskStream.output?.remoteUrlText || 'Repo';
   return (
     <Page themeId="home">
       <Header
@@ -319,7 +320,7 @@ export const TaskPage = () => {
                           variant="outlined"
                           href={remoteUrl}
                         >
-                          Repo
+                          {remoteUrlText}
                         </Button>
                       )}
                     </Box>

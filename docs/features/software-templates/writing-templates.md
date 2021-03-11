@@ -260,11 +260,12 @@ scaffolder frontend for after the job is finished. This is useful for things
 like linking to the entity that has been created with the backend, and also
 linking to the created repository.
 
-The main two that are used are the following:
+The main three that are used are the following:
 
 ```yaml
 output:
   remoteUrl: '{{ steps.publish.output.remoteUrl }}' # link to the remote repository
+  remoteUrlText: '{{ steps.publish.output.remoteUrlText }}' # Text for link (defaults to 'Repo')
   entityRef: '{{ steps.register.output.entityRef }}' # link to the entitiy that has been ingested to the catalog
 ```
 
