@@ -88,7 +88,7 @@
     "ora": "^4.0.3",
     "raw-loader": "^4.0.1",
     "react": "^16.0.0",
-    "react-dev-utils": "^10.2.1",
+    "react-dev-utils": "^11.0.4",
     "react-hot-loader": "^4.12.21",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
