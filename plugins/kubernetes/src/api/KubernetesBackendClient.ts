@@ -14,46 +14,77 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { KubernetesApi } from './types';
 import {
-  AuthRequestBody,
-  ObjectsByServiceIdResponse,
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
-  private async getRequired(
-    path: string,
-    requestBody: AuthRequestBody,
-  ): Promise<any> {
-    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-
+  private async handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
       const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      let message;
+      switch (response.status) {
+        case 404:
+          message =
+            'Could not find the Kubernetes Backend (HTTP 404). Make sure the plugin has been fully installed.';
+          break;
+        default:
+          message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
+      }
       throw new Error(message);
     }
 
     return await response.json();
   }
 
-  async getObjectsByServiceId(
-    serviceId: String,
-    requestBody: AuthRequestBody,
-  ): Promise<ObjectsByServiceIdResponse> {
-    return await this.getRequired(`/services/${serviceId}`, requestBody);
+  private async postRequired(
+    path: string,
+    requestBody: KubernetesRequestBody,
+  ): Promise<any> {
+    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
+    const idToken = await this.identityApi.getIdToken();
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    return this.handleResponse(response);
+  }
+
+  async getObjectsByEntity(
+    requestBody: KubernetesRequestBody,
+  ): Promise<ObjectsByEntityResponse> {
+    return await this.postRequired(
+      `/services/${requestBody.entity.metadata.name}`,
+      requestBody,
+    );
+  }
+
+  async getClusters(): Promise<{ name: string; authProvider: string }[]> {
+    const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+    });
+
+    return (await this.handleResponse(response)).items;
   }
 }

@@ -96,6 +96,7 @@ typings/
 .nuxt
 dist
 dist-types
+dist-workspace
 
 # Gatsby files
 .cache/
@@ -129,3 +130,6 @@ site
 
 # Local configuration files
 *.local.yaml
+
+# Sensitive credentials
+*-credentials.yaml

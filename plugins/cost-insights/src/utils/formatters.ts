@@ -15,14 +15,19 @@
  */
 
 import moment from 'moment';
-import { Duration, DEFAULT_DATE_FORMAT } from '../types';
+import pluralize from 'pluralize';
+import { Duration } from '../types';
 import { inclusiveEndDateOf, inclusiveStartDateOf } from '../utils/duration';
-import { pluralOf } from '../utils/grammar';
 
 export type Period = {
   periodStart: string;
   periodEnd: string;
 };
+
+export const costFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
 
 export const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -70,7 +75,7 @@ export function formatCurrency(amount: number, currency?: string): string {
   const n = Math.round(amount);
   const numString = numberFormatter.format(n);
 
-  return currency ? `${numString} ${pluralOf(n, currency)}` : numString;
+  return currency ? `${numString} ${pluralize(currency, n)}` : numString;
 }
 
 export function formatPercent(n: number): string {
@@ -78,35 +83,21 @@ export function formatPercent(n: number): string {
   if (isNaN(n) || Math.abs(n) < 0.01) {
     return '0%';
   }
-  if (Math.abs(n) >= 1e19) {
-    return '∞%';
+
+  if (Math.abs(n) > 10) {
+    return `>1000%`;
   }
+
   return `${(n * 100).toFixed(0)}%`;
 }
 
 export function formatLastTwoLookaheadQuarters(inclusiveEndDate: string) {
-  const exclusiveEndDate = moment(inclusiveEndDate)
-    .add(1, 'day')
-    .format(DEFAULT_DATE_FORMAT);
   const start = moment(
-    inclusiveStartDateOf(Duration.P3M, exclusiveEndDate),
+    inclusiveStartDateOf(Duration.P3M, inclusiveEndDate),
   ).format('[Q]Q YYYY');
   const end = moment(inclusiveEndDateOf(Duration.P3M, inclusiveEndDate)).format(
     '[Q]Q YYYY',
   );
-  return `${start} vs ${end}`;
-}
-
-export function formatLastTwoMonths(inclusiveEndDate: string) {
-  const exclusiveEndDate = moment(inclusiveEndDate)
-    .add(1, 'day')
-    .format(DEFAULT_DATE_FORMAT);
-  const start = moment(inclusiveStartDateOf(Duration.P1M, exclusiveEndDate))
-    .utc()
-    .format('MMMM');
-  const end = moment(inclusiveEndDateOf(Duration.P1M, inclusiveEndDate))
-    .utc()
-    .format('MMMM');
   return `${start} vs ${end}`;
 }
 
@@ -130,12 +121,6 @@ export function formatPeriod(
   isEndDate: boolean,
 ) {
   switch (duration) {
-    case Duration.P1M:
-      return monthOf(
-        isEndDate
-          ? inclusiveEndDateOf(duration, date)
-          : inclusiveStartDateOf(duration, date),
-      );
     case Duration.P3M:
       return quarterOf(
         isEndDate

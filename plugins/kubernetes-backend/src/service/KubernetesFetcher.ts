@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import http from 'http';
 import {
   AppsV1Api,
   AutoscalingV1Api,
@@ -27,19 +26,21 @@ import {
   V1Pod,
   V1ReplicaSet,
 } from '@kubernetes/client-node';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { V1Service } from '@kubernetes/client-node/dist/gen/model/v1Service';
+import http from 'http';
+import lodash, { Dictionary } from 'lodash';
 import { Logger } from 'winston';
 import {
-  KubernetesFetcher,
   ClusterDetails,
-  KubernetesObjectTypes,
   FetchResponse,
   FetchResponseWrapper,
-  KubernetesFetchError,
   KubernetesErrorTypes,
-} from '..';
-import lodash, { Dictionary } from 'lodash';
+  KubernetesFetcher,
+  KubernetesFetchError,
+  KubernetesObjectTypes,
+  ObjectFetchParams,
+} from '../types/types';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 
 export interface Clients {
   core: CoreV1Api;
@@ -73,6 +74,8 @@ function fetchResultsToResponseWrapper(
 
 const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
   switch (statusCode) {
+    case 400:
+      return 'BAD_REQUEST';
     case 401:
       return 'UNAUTHORIZED_ERROR';
     case 500:
@@ -105,15 +108,16 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     this.logger = logger;
   }
 
-  fetchObjectsByServiceId(
-    serviceId: string,
-    clusterDetails: ClusterDetails,
-    objectTypesToFetch: Set<KubernetesObjectTypes>,
+  fetchObjectsForService(
+    params: ObjectFetchParams,
   ): Promise<FetchResponseWrapper> {
-    const fetchResults = Array.from(objectTypesToFetch).map(type => {
-      return this.fetchByObjectType(serviceId, clusterDetails, type).catch(
-        captureKubernetesErrorsRethrowOthers,
-      );
+    const fetchResults = Array.from(params.objectTypesToFetch).map(type => {
+      return this.fetchByObjectType(
+        params.clusterDetails,
+        type,
+        params.labelSelector ||
+          `backstage.io/kubernetes-id=${params.serviceId}`,
+      ).catch(captureKubernetesErrorsRethrowOthers);
     });
 
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
@@ -121,45 +125,47 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
 
   // TODO could probably do with a tidy up
   private fetchByObjectType(
-    serviceId: string,
     clusterDetails: ClusterDetails,
     type: KubernetesObjectTypes,
+    labelSelector: string,
   ): Promise<FetchResponse> {
     switch (type) {
       case 'pods':
-        return this.fetchPodsByServiceId(serviceId, clusterDetails).then(r => ({
-          type: type,
-          resources: r,
-        }));
+        return this.fetchPodsForService(clusterDetails, labelSelector).then(
+          r => ({
+            type: type,
+            resources: r,
+          }),
+        );
       case 'configmaps':
-        return this.fetchConfigMapsByServiceId(
-          serviceId,
+        return this.fetchConfigMapsForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'deployments':
-        return this.fetchDeploymentsByServiceId(
-          serviceId,
+        return this.fetchDeploymentsForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'replicasets':
-        return this.fetchReplicaSetsByServiceId(
-          serviceId,
+        return this.fetchReplicaSetsForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'services':
-        return this.fetchServicesByServiceId(
-          serviceId,
+        return this.fetchServicesForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'horizontalpodautoscalers':
-        return this.fetchHorizontalPodAutoscalersByServiceId(
-          serviceId,
+        return this.fetchHorizontalPodAutoscalersForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       case 'ingresses':
-        return this.fetchIngressesByServiceId(
-          serviceId,
+        return this.fetchIngressesForService(
           clusterDetails,
+          labelSelector,
         ).then(r => ({ type: type, resources: r }));
       default:
         // unrecognised type
@@ -192,79 +198,54 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     });
   }
 
-  private fetchServicesByServiceId(
-    serviceId: string,
+  private fetchServicesForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Service>> {
     return this.singleClusterFetch<V1Service>(clusterDetails, ({ core }) =>
-      core.listServiceForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listServiceForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchPodsByServiceId(
-    serviceId: string,
+  private fetchPodsForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Pod>> {
     return this.singleClusterFetch<V1Pod>(clusterDetails, ({ core }) =>
-      core.listPodForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listPodForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchConfigMapsByServiceId(
-    serviceId: string,
+  private fetchConfigMapsForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1ConfigMap>> {
     return this.singleClusterFetch<V1Pod>(clusterDetails, ({ core }) =>
-      core.listConfigMapForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      core.listConfigMapForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchDeploymentsByServiceId(
-    serviceId: string,
+  private fetchDeploymentsForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1Deployment>> {
     return this.singleClusterFetch<V1Deployment>(clusterDetails, ({ apps }) =>
-      apps.listDeploymentForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      apps.listDeploymentForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchReplicaSetsByServiceId(
-    serviceId: string,
+  private fetchReplicaSetsForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1ReplicaSet>> {
     return this.singleClusterFetch<V1ReplicaSet>(clusterDetails, ({ apps }) =>
-      apps.listReplicaSetForAllNamespaces(
-        false,
-        '',
-        '',
-        `backstage.io/kubernetes-id=${serviceId}`,
-      ),
+      apps.listReplicaSetForAllNamespaces(false, '', '', labelSelector),
     );
   }
 
-  private fetchHorizontalPodAutoscalersByServiceId(
-    serviceId: string,
+  private fetchHorizontalPodAutoscalersForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<V1HorizontalPodAutoscaler>> {
     return this.singleClusterFetch<V1HorizontalPodAutoscaler>(
       clusterDetails,
@@ -273,14 +254,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           false,
           '',
           '',
-          `backstage.io/kubernetes-id=${serviceId}`,
+          labelSelector,
         ),
     );
   }
 
-  private fetchIngressesByServiceId(
-    serviceId: string,
+  private fetchIngressesForService(
     clusterDetails: ClusterDetails,
+    labelSelector: string,
   ): Promise<Array<ExtensionsV1beta1Ingress>> {
     return this.singleClusterFetch<ExtensionsV1beta1Ingress>(
       clusterDetails,
@@ -289,7 +270,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
           false,
           '',
           '',
-          `backstage.io/kubernetes-id=${serviceId}`,
+          labelSelector,
         ),
     );
   }

@@ -30,33 +30,59 @@ it doesn't.
 Add the following entry to the head of your `packages/app/src/plugins.ts`:
 
 ```ts
-export { plugin as CatalogPlugin } from '@backstage/plugin-catalog';
+export { catalogPlugin } from '@backstage/plugin-catalog';
 ```
 
-Add the following to your `packages/app/src/apis.ts`:
+Next we need to install the two pages that the catalog plugin provides. You can
+choose any name for these routes, but we recommend the following:
+
+```tsx
+import {
+  catalogPlugin,
+  CatalogIndexPage,
+  CatalogEntityPage,
+} from '@backstage/plugin-catalog';
+
+// Add to the top-level routes, directly within <FlatRoutes>
+<Route path="/catalog" element={<CatalogIndexPage />} />
+<Route path="/catalog/:namespace/:kind/:name" element={<CatalogEntityPage />}>
+  {/*
+    This is the root of the custom entity pages for your app, refer to the example app
+    in the main repo or the output of @backstage/create-app for an example
+  */}
+  <EntityPage />
+</Route>
+```
+
+The catalog plugin also has one external route that needs to be bound for it to
+function: the `createComponent` route which should link to the page where the
+user can create components. In a typical setup the create component route will
+be linked to the Scaffolder plugin's template index page:
 
 ```ts
-import { catalogApiRef, CatalogClient } from '@backstage/plugin-catalog';
+import { catalogPlugin } from '@backstage/plugin-catalog';
+import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 
-// Inside the ApiRegistry builder function ...
-
-builder.add(
-  catalogApiRef,
-  new CatalogClient({
-    apiOrigin: backendUrl,
-    basePath: '/catalog',
-  }),
-);
+const app = createApp({
+  // ...
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+  },
+});
 ```
 
-Where `backendUrl` is the `backend.baseUrl` from config, i.e.
-`const backendUrl = config.getString('backend.baseUrl')`.
+You may also want to add a link to the catalog index page to your sidebar:
 
-The catalog components depend on a number of other
-[Utility APIs](../../api/utility-apis.md) to function, including at least the
-`ErrorApi` and `StorageApi`. You can find an example of how to install these in
-your app
-[here](https://github.com/backstage/backstage/blob/61c3a7e5b750dc7c059ef16b188594d31b2c04c2/packages/app/src/apis.ts#L80).
+```tsx
+import HomeIcon from '@material-ui/icons/Home';
+
+// Somewhere within the <Sidebar>
+<SidebarItem icon={HomeIcon} to="/catalog" text="Home" />;
+```
+
+This is all that is needed for the frontend part of the Catalog plugin to work!
 
 ## Gotchas that we will fix
 

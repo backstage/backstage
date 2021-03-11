@@ -17,10 +17,7 @@
 import React from 'react';
 import { MenuItem, Select, SelectProps } from '@material-ui/core';
 import { Duration } from '../../types';
-import {
-  formatLastTwoLookaheadQuarters,
-  formatLastTwoMonths,
-} from '../../utils/formatters';
+import { formatLastTwoLookaheadQuarters } from '../../utils/formatters';
 import { findAlways } from '../../utils/assert';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 import { useLastCompleteBillingDate } from '../../hooks';
@@ -41,10 +38,6 @@ export function getDefaultOptions(
     {
       value: Duration.P30D,
       label: 'Past 60 Days',
-    },
-    {
-      value: Duration.P1M,
-      label: formatLastTwoMonths(lastCompleteBillingDate),
     },
     {
       value: Duration.P3M,

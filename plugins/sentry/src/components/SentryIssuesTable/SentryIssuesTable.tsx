@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
-import { SentryIssue } from '../../data/sentry-issue';
+import { SentryIssue } from '../../api';
 import { format } from 'timeago.js';
 import { ErrorCell } from '../ErrorCell/ErrorCell';
 import { ErrorGraph } from '../ErrorGraph/ErrorGraph';

@@ -19,6 +19,8 @@ import {
   createRouteRef,
   createApiFactory,
   discoveryApiRef,
+  createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core';
 import { jenkinsApiRef, JenkinsApi } from './api';
 
@@ -32,7 +34,7 @@ export const buildRouteRef = createRouteRef({
   title: 'Jenkins run',
 });
 
-export const plugin = createPlugin({
+export const jenkinsPlugin = createPlugin({
   id: 'jenkins',
   apis: [
     createApiFactory({
@@ -41,4 +43,21 @@ export const plugin = createPlugin({
       factory: ({ discoveryApi }) => new JenkinsApi({ discoveryApi }),
     }),
   ],
+  routes: {
+    entityContent: rootRouteRef,
+  },
 });
+
+export const EntityJenkinsContent = jenkinsPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+export const EntityLatestJenkinsRunCard = jenkinsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/Cards').then(m => m.LatestRunCard),
+    },
+  }),
+);

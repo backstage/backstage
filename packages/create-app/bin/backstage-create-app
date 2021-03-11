@@ -24,6 +24,8 @@ const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
   require('..');
 } else {
+  // Only used for development, so should be a devDependency
+  // eslint-disable-next-line import/no-extraneous-dependencies
   require('ts-node').register({
     transpileOnly: true,
     project: path.resolve(__dirname, '../../../tsconfig.json'),

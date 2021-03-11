@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export {
+  gitopsProfilesPlugin,
+  gitopsProfilesPlugin as plugin,
+  GitopsProfilesClusterListPage,
+  GitopsProfilesClusterPage,
+  GitopsProfilesCreatePage,
+} from './plugin';
 export * from './api';

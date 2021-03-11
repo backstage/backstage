@@ -1,0 +1,57 @@
+{
+  "ingresses": [
+    {
+      "metadata": {
+        "annotations": {
+          "artifact.spinnaker.io/location": "default",
+          "artifact.spinnaker.io/name": "awesome-service",
+          "artifact.spinnaker.io/type": "kubernetes/ingress",
+          "kubernetes.io/ingress.class": "traefik",
+          "kubernetes.io/ingress.global-static-ip-name": "traefik-tcp-lb",
+          "moniker.spinnaker.io/application": "awesome-service",
+          "moniker.spinnaker.io/cluster": "ingress awesome-service"
+        },
+        "creationTimestamp": "2018-11-16T14:00:13.000Z",
+        "generation": 11,
+        "labels": {
+          "app": "awesome-service",
+          "app.kubernetes.io/managed-by": "spinnaker",
+          "app.kubernetes.io/name": "awesome-service"
+        },
+        "name": "awesome-service",
+        "namespace": "default",
+        "resourceVersion": "564824116",
+        "selfLink": "/apis/networking.k8s.io/v1beta1/namespaces/default/ingresses/awesome-service",
+        "uid": "f072e0b4-e9a7-11e8-af65-42010a9c0022"
+      },
+      "spec": {
+        "rules": [
+          {
+            "host": "api.awesome-host.io",
+            "http": {
+              "paths": [
+                {
+                  "backend": {
+                    "serviceName": "awesome-service",
+                    "servicePort": 80
+                  },
+                  "path": "/v1/awesome-service"
+                },
+                {
+                  "backend": {
+                    "serviceName": "awesome-service",
+                    "servicePort": 80
+                  },
+                  "path": "/v1/awesome-services"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ]
+}

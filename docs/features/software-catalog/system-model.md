@@ -23,7 +23,7 @@ We model software in the Backstage catalogue using these three core entities
 - **Resources** are physical or virtual infrastructure needed to operate a
   component
 
-![](../../assets/software-catalog/software-model-core-entities.png)
+![](../../assets/software-catalog/software-model-core-entities.drawio.svg)
 
 ### Component
 
@@ -44,8 +44,8 @@ Backstage model and the primary way to discover existing functionality in the
 ecosystem.
 
 APIs are implemented by components and form boundaries between components. They
-might be defined using an RPC IDL (eg Protobuf, GraphQL, ...), a data schema (eg
-Avro, TFRecord, ...), or as code interfaces. In any case, APIs exposed by
+might be defined using an RPC IDL (e.g., Protobuf, GraphQL, ...), a data schema
+(e.g., Avro, TFRecord, ...), or as code interfaces. In any case, APIs exposed by
 components need to be in a known machine-readable format so we can build further
 tooling and analysis on top.
 
@@ -72,6 +72,8 @@ these entities using the following (optional) concepts:
 - **Systems** are a collection of entities that cooperate to perform some
   function
 - **Domains** relate entities and systems to part of the business
+
+![](../../assets/software-catalog/software-model-entities.drawio.svg)
 
 ### System
 
@@ -106,10 +108,6 @@ domain would come with some documentation on how to accept payments for a new
 product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
-
-## Current status
-
-Backstage currently supports Components and APIs.
 
 ## Links
 

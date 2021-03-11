@@ -56,14 +56,16 @@ proxy:
     target: 'https://example.com'
     changeOrigin: true
 
+# Reference documentation http://backstage.io/docs/features/techdocs/configuration
+# Note: After experimenting with basic setup, use CI/CD to generate docs
+# and an external cloud storage when deploying TechDocs for production use-case.
+# https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs
+  builder: 'local' # Alternatives - 'external'
   generators:
-    techdocs: 'docker'
-
-lighthouse:
-  baseUrl: http://localhost:3003
+    techdocs: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
   # see https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers
@@ -88,23 +90,23 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
 
     # Backstage example templates
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
       rules:
         - allow: [Template]
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
       rules:
         - allow: [Template]
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
       rules:
         - allow: [Template]
-    - type: github
+    - type: url
       target: https://github.com/spotify/cookiecutter-golang/blob/master/template.yaml
       rules:
         - allow: [Template]
-    - type: github
+    - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/docs-template/template.yaml
       rules:
         - allow: [Template]

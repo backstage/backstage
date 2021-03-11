@@ -17,8 +17,8 @@
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { RollbarTopItemsTable } from './RollbarTopItemsTable';
 import { RollbarTopActiveItem } from '../../api/types';
+import { RollbarTopItemsTable } from './RollbarTopItemsTable';
 
 const items: RollbarTopActiveItem[] = [
   {

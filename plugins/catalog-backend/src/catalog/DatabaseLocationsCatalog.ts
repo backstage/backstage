@@ -70,7 +70,7 @@ export class DatabaseLocationsCatalog implements LocationsCatalog {
 
   async logUpdateSuccess(
     locationId: string,
-    entityName?: string,
+    entityName?: string | string[],
   ): Promise<void> {
     await this.database.addLocationUpdateLogEvent(
       locationId,

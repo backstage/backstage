@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { githubAuthApiRef, errorApiRef } from '@backstage/core';
-import { plugin, GraphQLEndpoints, graphQlBrowseApiRef } from '../src';
+import {
+  graphiqlPlugin,
+  GraphQLEndpoints,
+  graphQlBrowseApiRef,
+  GraphiQLPage,
+} from '../src';
 
 createDevApp()
-  .registerPlugin(plugin)
+  .registerPlugin(graphiqlPlugin)
   .registerApi({
     api: graphQlBrowseApiRef,
     deps: {
@@ -46,5 +52,9 @@ createDevApp()
         }),
       ]);
     },
+  })
+  .addPage({
+    title: 'GraphiQL',
+    element: <GraphiQLPage />,
   })
   .render();

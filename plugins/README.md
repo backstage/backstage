@@ -1,14 +1,12 @@
 # Plugins
 
-Backstage is a single-page application composed of a set of plugins.
+Backstage is a single-page application composed of a set of plugins. This folder holds numerous plugins that are managed by this repository.
 
-Our goal for the plugin ecosystem is that the definition of a plugin is flexible enough to allow you to expose pretty much any kind of infrastructure or software development tool as a plugin in Backstage. By following strong [design guidelines](https://github.com/backstage/backstage/blob/master/docs/dls/design.md) we ensure the overall user experience stays consistent between plugins.
+For more information about the plugin ecosystem, see the documentation here:
 
-![plugin](../docs/assets/my-plugin_screenshot.png)
+> https://backstage.io/docs/plugins/
 
-## Creating a plugin
-
-To create a plugin, follow the steps outlined [here](https://github.com/backstage/backstage/blob/master/docs/plugins/create-a-plugin.md).
+You can also see the [Plugin Marketplace](https://backstage.io/plugins) for other open source plugins you can add to your Backstage instance.
 
 ## Suggesting a plugin
 

@@ -1,14 +1,21 @@
 # @backstage/create-app
 
-This package provides a CLI for creating apps.
+This package provides a CLI for creating a copy of the Backstage app.
+
 You can use the flag `--skip-install` to skip the install.
 
-## Installation
+## Usage
 
 With `npx`:
 
 ```sh
 $ npx @backstage/create-app
+```
+
+With a local clone of this repo, from the main `create-app/` folder, run:
+
+```sh
+$ yarn backstage-create-app
 ```
 
 ## Documentation

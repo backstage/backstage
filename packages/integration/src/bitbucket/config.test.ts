@@ -15,6 +15,7 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { loadConfigSchema } from '@backstage/config-loader';
 import {
   BitbucketIntegrationConfig,
   readBitbucketIntegrationConfig,
@@ -23,7 +24,22 @@ import {
 
 describe('readBitbucketIntegrationConfig', () => {
   function buildConfig(data: Partial<BitbucketIntegrationConfig>): Config {
-    return ConfigReader.fromConfigs([{ context: '', data }]);
+    return new ConfigReader(data);
+  }
+
+  async function buildFrontendConfig(
+    data: Partial<BitbucketIntegrationConfig>,
+  ): Promise<Config> {
+    const schema = await loadConfigSchema({
+      dependencies: [require('../../package.json').name],
+    });
+    const processed = schema.process(
+      [{ data: { integrations: { bitbucket: [data] } }, context: 'app' }],
+      { visibility: ['frontend'] },
+    );
+    return new ConfigReader(
+      (processed[0].data as any).integrations.bitbucket[0],
+    );
   }
 
   it('reads all values', () => {
@@ -79,13 +95,28 @@ describe('readBitbucketIntegrationConfig', () => {
       readBitbucketIntegrationConfig(buildConfig({ ...valid, appPassword: 7 })),
     ).toThrow(/appPassword/);
   });
+
+  it('works on the frontend', async () => {
+    expect(
+      readBitbucketIntegrationConfig(
+        await buildFrontendConfig({
+          host: 'a.com',
+          apiBaseUrl: 'https://a.com/api',
+          token: 't',
+          username: 'u',
+          appPassword: 'p',
+        }),
+      ),
+    ).toEqual({
+      host: 'a.com',
+      apiBaseUrl: 'https://a.com/api',
+    });
+  });
 });
 
 describe('readBitbucketIntegrationConfigs', () => {
   function buildConfig(data: Partial<BitbucketIntegrationConfig>[]): Config[] {
-    return data.map(item =>
-      ConfigReader.fromConfigs([{ context: '', data: item }]),
-    );
+    return data.map(item => new ConfigReader(item));
   }
 
   it('reads all values', () => {

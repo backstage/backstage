@@ -1,6 +1,9 @@
 site_name: 'Backstage'
 site_description: 'Main documentation for Backstage features and platform APIs'
 
+plugins:
+  - techdocs-core
+
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
@@ -13,7 +16,7 @@ nav:
   - Getting started:
       - Getting Started: 'getting-started/index.md'
       - Running Backstage locally: 'getting-started/running-backstage-locally.md'
-      - Local development: 'getting-started/development-environment.md'
+      - Contributors: 'getting-started/contributors.md'
       - Demo deployment: https://backstage-demo.roadie.io
       - Production deployments:
           - Create an App: 'getting-started/create-an-app.md'
@@ -21,6 +24,7 @@ nav:
               - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
               - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
           - Deployment scenarios:
+              - Docker: 'getting-started/deployment-docker.md'
               - Kubernetes: 'getting-started/deployment-k8s.md'
               - Kubernetes and Helm: 'getting-started/deployment-helm.md'
               - Other: 'getting-started/deployment-other.md'
@@ -45,20 +49,36 @@ nav:
               - Create your own Templater: 'features/software-templates/extending/create-your-own-templater.md'
               - Create your own Publisher: 'features/software-templates/extending/create-your-own-publisher.md'
               - Create your own Preparer: 'features/software-templates/extending/create-your-own-preparer.md'
+      - Backstage Search:
+          - Overview: 'features/search/README.md'
+          - Architecture: 'features/search/architecture.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'
           - Getting Started: 'features/techdocs/getting-started.md'
           - Concepts: 'features/techdocs/concepts.md'
           - TechDocs Architecture: 'features/techdocs/architecture.md'
           - Creating and Publishing Documentation: 'features/techdocs/creating-and-publishing.md'
+          - Configuration: 'features/techdocs/configuration.md'
+          - Using Cloud Storage: 'features/techdocs/using-cloud-storage.md'
+          - HOW TO guides: 'features/techdocs/how-to-guides.md'
           - Troubleshooting: 'features/techdocs/troubleshooting.md'
           - FAQ: 'features/techdocs/FAQ.md'
+      - Kubernetes:
+          - Overview: 'features/kubernetes/index.md'
+  - Integrations:
+      - GitHub:
+          - Org Data: 'integrations/github/org.md'
+      - LDAP:
+          - Org Data: 'integrations/ldap/org.md'
+      - Google Analytics:
+          - Installation: 'integrations/google-analytics/installation.md'
   - Plugins:
       - Overview: 'plugins/index.md'
       - Existing plugins: 'plugins/existing-plugins.md'
       - Creating a new plugin: 'plugins/create-a-plugin.md'
       - Developing a plugin: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'
+      - Composability System Migration: 'plugins/composability.md'
       - Backends and APIs:
           - Proxying: 'plugins/proxying.md'
           - Backstage backend plugin: 'plugins/backend-plugin.md'
@@ -66,8 +86,9 @@ nav:
       - Testing:
           - Overview: 'plugins/testing.md'
       - Publishing:
-          - Open source and NPM: 'plugins/publishing.md'
+          - Open source and npm: 'plugins/publishing.md'
           - Private/internal (non-open source): 'plugins/publish-private.md'
+          - Observability: 'plugins/observability.md'
   - Configuration:
       - Overview: 'conf/index.md'
       - Reading Configuration: 'conf/reading.md'
@@ -90,7 +111,6 @@ nav:
           - Utilities: 'api/utility-apis.md'
           - createPlugin: 'reference/createPlugin.md'
           - createPlugin-feature-flags: 'reference/createPlugin-feature-flags.md'
-          - createPlugin-router: 'reference/createPlugin-router.md'
       - Backend APIs:
           - Backend: 'api/backend.md'
   - Tutorials:
@@ -106,11 +126,10 @@ nav:
       - ADR007 - Use MSW for Network Request Mocking: 'architecture-decisions/adr007-use-msw-to-mock-service-requests.md'
       - ADR008 - Default Catalog File Name: 'architecture-decisions/adr008-default-catalog-file-name.md'
       - ADR009 - Entity References: 'architecture-decisions/adr009-entity-references.md'
-  - Contribute: '../CONTRIBUTING.md'
+      - ADR010 - Luxon Date Library: 'architecture-decisions/adr010-luxon-date-library.md'
+      - ADR011 - Plugin Package Structure: 'architecture-decisions/adr011-plugin-package-structure.md'
   - Support:
       - 'support/support.md'
       - 'support/project-structure.md'
+  - Glossary: glossary.md
   - FAQ: FAQ.md
-
-plugins:
-  - techdocs-core

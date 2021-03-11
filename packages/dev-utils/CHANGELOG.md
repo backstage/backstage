@@ -1,5 +1,177 @@
 # @backstage/dev-utils
 
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [9d455f69a]
+- Updated dependencies [4c049a1a1]
+- Updated dependencies [02816ecd7]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/core@0.7.0
+  - @backstage/plugin-catalog-react@0.1.1
+
+## 0.1.12
+
+### Patch Changes
+
+- 5aa4ceea6: Make sure to provide dummy routes for all external routes of plugins given to DevApp
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [dc12852c9]
+- Updated dependencies [d0760ecdf]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [88f1f1b60]
+- Updated dependencies [bad21a085]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [5c2e2863f]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/test-utils@0.1.8
+  - @backstage/plugin-catalog-react@0.1.0
+  - @backstage/catalog-model@0.7.2
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [fd3f2a8c0]
+- Updated dependencies [d34d26125]
+- Updated dependencies [0af242b6d]
+- Updated dependencies [f4c2bcf54]
+- Updated dependencies [10a0124e0]
+- Updated dependencies [07e226872]
+- Updated dependencies [f62e7abe5]
+- Updated dependencies [96f378d10]
+- Updated dependencies [688b73110]
+  - @backstage/core@0.6.2
+  - @backstage/plugin-catalog-react@0.0.4
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies [b51ee6ece]
+- Updated dependencies [19d354c78]
+- Updated dependencies [b51ee6ece]
+  - @backstage/test-utils@0.1.7
+  - @backstage/plugin-catalog-react@0.0.3
+  - @backstage/core@0.6.1
+
+## 0.1.9
+
+### Patch Changes
+
+- 720149854: Added `path` option to `addPage` that can be used to set a specific path for the page rather than a generated one. Also omit sidebar item altogether if `title` option is not set.
+- 019fe39a0: Switch dependency from `@backstage/plugin-catalog` to `@backstage/plugin-catalog-react`.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [7fc89bae2]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [6e612ce25]
+- Updated dependencies [025e122c3]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [7881f2117]
+- Updated dependencies [54c7d02f7]
+- Updated dependencies [11cb5ef94]
+  - @backstage/core@0.6.0
+  - @backstage/plugin-catalog-react@0.0.2
+  - @backstage/theme@0.2.3
+  - @backstage/catalog-model@0.7.1
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies [def2307f3]
+- Updated dependencies [efd6ef753]
+- Updated dependencies [593632f07]
+- Updated dependencies [33846acfc]
+- Updated dependencies [a187b8ad0]
+- Updated dependencies [f04db53d7]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/core@0.5.0
+  - @backstage/plugin-catalog@0.2.12
+
+## 0.1.7
+
+### Patch Changes
+
+- 696b8ce74: Add new `addPage` method for use with extensions, as well as an `EntityGridItem` to easily create different test cases for entity overview cards.
+- Updated dependencies [a08c32ced]
+- Updated dependencies [7e0b8cac5]
+- Updated dependencies [87c0c53c2]
+  - @backstage/core@0.4.3
+  - @backstage/plugin-catalog@0.2.9
+
+## 0.1.6
+
+### Patch Changes
+
+- b6557c098: Update ApiFactory type to correctly infer API type and disallow mismatched implementations.
+
+  This fixes for example the following code:
+
+  ```ts
+  interface MyApi {
+    myMethod(): void
+  }
+
+  const myApiRef = createApiRef<MyApi>({...});
+
+  createApiFactory({
+    api: myApiRef,
+    deps: {},
+    // This should've caused an error, since the empty object does not fully implement MyApi
+    factory: () => ({}),
+  })
+  ```
+
+- e1f4e24ef: Fix @backstage/cli not being a devDependency
+- Updated dependencies [2527628e1]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [b4488ddb0]
+- Updated dependencies [4a655c89d]
+- Updated dependencies [8a16e8af8]
+- Updated dependencies [00670a96e]
+  - @backstage/cli@0.4.0
+  - @backstage/test-utils@0.1.4
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [902340451]
+  - @backstage/cli@0.3.0
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
 ## 0.1.3
 
 ### Patch Changes

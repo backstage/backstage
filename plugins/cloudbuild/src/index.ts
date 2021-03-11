@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { plugin } from './plugin';
+export {
+  cloudbuildPlugin,
+  cloudbuildPlugin as plugin,
+  EntityCloudbuildContent,
+  EntityLatestCloudbuildRunCard,
+  EntityLatestCloudbuildsForBranchCard,
+} from './plugin';
 export * from './api';
-export { Router, isPluginApplicableToEntity } from './components/Router';
+export {
+  Router,
+  isCloudbuildAvailable,
+  isCloudbuildAvailable as isPluginApplicableToEntity,
+} from './components/Router';
 export * from './components/Cards';
 export { CLOUDBUILD_ANNOTATION } from './components/useProjectName';

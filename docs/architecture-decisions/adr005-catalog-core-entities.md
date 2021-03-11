@@ -4,10 +4,6 @@ title: ADR005: Catalog Core Entities
 description: Architecture Decision Record (ADR) log on Catalog Core Entities
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| 2020-05-29 | Open   |
-
 ## Context
 
 We want to standardize on a few core entities that we are tracking in the
@@ -58,7 +54,7 @@ discover existing functionality in the ecosystem.
 APIs are implemented by components and make their boundaries explicit. They
 might be defined using an RPC IDL (e.g. in Protobuf, GraphQL or similar), a data
 schema (e.g. in Avro, TFRecord or similar), or as code interfaces (e.g.
-framework APIs in Swift, Kotlin, Java, C++, Typescript etc). In any case, APIs
+framework APIs in Swift, Kotlin, Java, C++, TypeScript etc). In any case, APIs
 exposed by components need to be in a known machine-readable format so we can
 build further tooling and analysis on top.
 

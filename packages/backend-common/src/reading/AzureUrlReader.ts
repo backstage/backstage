@@ -15,39 +15,53 @@
  */
 
 import {
-  AzureIntegrationConfig,
-  readAzureIntegrationConfigs,
+  AzureIntegration,
+  getAzureCommitsUrl,
+  getAzureDownloadUrl,
+  getAzureFileFetchUrl,
+  getAzureRequestOptions,
+  ScmIntegrations,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
+import { Readable } from 'stream';
+import { NotFoundError, NotModifiedError } from '../errors';
+import { ReadTreeResponseFactory } from './tree';
+import { stripFirstDirectoryFromPath } from './tree/util';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
+  UrlReader,
+} from './types';
 
 export class AzureUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
-    const configs = readAzureIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.azure') ?? [],
-    );
-    return configs.map(options => {
-      const reader = new AzureUrlReader(options);
-      const predicate = (url: URL) => url.host === options.host;
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.azure.list().map(integration => {
+      const reader = new AzureUrlReader(integration, { treeResponseFactory });
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: AzureIntegrationConfig) {
-    if (options.host !== 'dev.azure.com') {
-      throw Error(
-        `Azure integration currently only supports 'dev.azure.com', tried to use host '${options.host}'`,
-      );
-    }
-  }
+  constructor(
+    private readonly integration: AzureIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {}
 
   async read(url: string): Promise<Buffer> {
-    const builtUrl = this.buildRawUrl(url);
+    const builtUrl = getAzureFileFetchUrl(url);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+      response = await fetch(
+        builtUrl,
+        getAzureRequestOptions(this.integration.config),
+      );
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -64,84 +78,84 @@ export class AzureUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('AzureUrlReader does not implement readTree');
-  }
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    // TODO: Support filepath based reading tree feature like other providers
 
-  // Converts
-  // from: https://dev.azure.com/{organization}/{project}/_git/reponame?path={path}&version=GB{commitOrBranch}&_a=contents
-  // to:   https://dev.azure.com/{organization}/{project}/_apis/git/repositories/reponame/items?path={path}&version={commitOrBranch}
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
+    // Get latest commit SHA
 
-      const [
-        empty,
-        userOrOrg,
-        project,
-        srcKeyword,
-        repoName,
-      ] = url.pathname.split('/');
-
-      const path = url.searchParams.get('path') || '';
-      const ref = url.searchParams.get('version')?.substr(2);
-
-      if (
-        url.hostname !== 'dev.azure.com' ||
-        empty !== '' ||
-        userOrOrg === '' ||
-        project === '' ||
-        srcKeyword !== '_git' ||
-        repoName === '' ||
-        path === '' ||
-        ref === ''
-      ) {
-        throw new Error('Wrong Azure Devops URL or Invalid file path');
+    const commitsAzureResponse = await fetch(
+      getAzureCommitsUrl(url),
+      getAzureRequestOptions(this.integration.config),
+    );
+    if (!commitsAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${commitsAzureResponse.status} ${commitsAzureResponse.statusText}`;
+      if (commitsAzureResponse.status === 404) {
+        throw new NotFoundError(message);
       }
-
-      // transform to api
-      url.pathname = [
-        empty,
-        userOrOrg,
-        project,
-        '_apis',
-        'git',
-        'repositories',
-        repoName,
-        'items',
-      ].join('/');
-
-      const queryParams = [`path=${path}`];
-
-      if (ref) {
-        queryParams.push(`version=${ref}`);
-      }
-
-      url.search = queryParams.join('&');
-
-      url.protocol = 'https';
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  private getRequestOptions(): RequestInit {
-    const headers: HeadersInit = {};
-
-    if (this.options.token) {
-      headers.Authorization = `Basic ${Buffer.from(
-        `:${this.options.token}`,
-        'utf8',
-      ).toString('base64')}`;
+      throw new Error(message);
     }
 
-    return { headers };
+    const commitSha = (await commitsAzureResponse.json()).value[0].commitId;
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    const archiveAzureResponse = await fetch(
+      getAzureDownloadUrl(url),
+      getAzureRequestOptions(this.integration.config, {
+        Accept: 'application/zip',
+      }),
+    );
+    if (!archiveAzureResponse.ok) {
+      const message = `Failed to read tree from ${url}, ${archiveAzureResponse.status} ${archiveAzureResponse.statusText}`;
+      if (archiveAzureResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return await this.deps.treeResponseFactory.fromZipArchive({
+      stream: (archiveAzureResponse.body as unknown) as Readable,
+      etag: commitSha,
+      filter: options?.filter,
+    });
+  }
+
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const { filepath } = parseGitUrl(url);
+    const matcher = new Minimatch(filepath);
+
+    // TODO(freben): For now, read the entire repo and filter through that. In
+    // a future improvement, we could be smart and try to deduce that non-glob
+    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
+    // to get just that part of the repo.
+    const treeUrl = new URL(url);
+    treeUrl.searchParams.delete('path');
+    treeUrl.pathname = treeUrl.pathname.replace(/\/+$/, '');
+
+    const tree = await this.readTree(treeUrl.toString(), {
+      etag: options?.etag,
+      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+    });
+    const files = await tree.files();
+
+    return {
+      etag: tree.etag,
+      files: files.map(file => ({
+        url: this.integration.resolveUrl({
+          url: `/${file.path}`,
+          base: url,
+        }),
+        content: file.content,
+      })),
+    };
   }
 
   toString() {
-    const { host, token } = this.options;
+    const { host, token } = this.integration.config;
     return `azure{host=${host},authed=${Boolean(token)}}`;
   }
 }

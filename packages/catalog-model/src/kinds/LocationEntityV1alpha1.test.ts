@@ -54,9 +54,9 @@ describe('LocationV1alpha1Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(false);
   });
 
-  it('rejects missing type', async () => {
+  it('accepts missing type', async () => {
     delete (entity as any).spec.type;
-    await expect(validator.check(entity)).rejects.toThrow(/type/);
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('rejects wrong type', async () => {

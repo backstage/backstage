@@ -18,7 +18,7 @@
  * TODO favoriteable capability
  */
 
-import React, { ComponentType, Fragment, FC } from 'react';
+import React, { ComponentType, Fragment, PropsWithChildren } from 'react';
 import { Typography, makeStyles } from '@material-ui/core';
 import { Helmet } from 'react-helmet';
 
@@ -62,10 +62,10 @@ type DefaultTitleProps = {
   className: string;
 };
 
-const DefaultTitle: FC<DefaultTitleProps> = ({
+const DefaultTitle = ({
   title = 'Unknown page',
   className,
-}) => (
+}: DefaultTitleProps) => (
   <Typography variant="h4" className={className} data-testid="header-title">
     {title}
   </Typography>
@@ -78,13 +78,13 @@ type ContentHeaderProps = {
   textAlign?: 'left' | 'right' | 'center';
 };
 
-export const ContentHeader: FC<ContentHeaderProps> = ({
+export const ContentHeader = ({
   description,
   title,
   titleComponent: TitleComponent = undefined,
   children,
   textAlign = 'left',
-}) => {
+}: PropsWithChildren<ContentHeaderProps>) => {
   const classes = useStyles({ textAlign })();
 
   const renderedTitle = TitleComponent ? (

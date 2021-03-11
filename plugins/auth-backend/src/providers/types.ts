@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
+import { Config } from '@backstage/config';
 import express from 'express';
 import { Logger } from 'winston';
 import { TokenIssuer } from '../identity';
-import { Config } from '@backstage/config';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 export type AuthProviderConfig = {
   /**
@@ -111,12 +112,28 @@ export interface AuthProviderRouteHandlers {
   logout?(req: express.Request, res: express.Response): Promise<void>;
 }
 
+/**
+ * EXPERIMENTAL - this will almost certainly break in a future release.
+ *
+ * Used to resolve an identity from auth information in some auth providers.
+ */
+export type ExperimentalIdentityResolver = (
+  /**
+   * An object containing information specific to the auth provider.
+   */
+  payload: object,
+  catalogApi: CatalogApi,
+) => Promise<AuthResponse<any>>;
+
 export type AuthProviderFactoryOptions = {
+  providerId: string;
   globalConfig: AuthProviderConfig;
   config: Config;
   logger: Logger;
   tokenIssuer: TokenIssuer;
   discovery: PluginEndpointDiscovery;
+  catalogApi: CatalogApi;
+  identityResolver?: ExperimentalIdentityResolver;
 };
 
 export type AuthProviderFactory = (

@@ -39,7 +39,7 @@ export const makeProfileInfo = (
   }
 
   let picture: string | undefined = undefined;
-  if (profile.photos) {
+  if (profile.photos && profile.photos.length > 0) {
     const [firstPhoto] = profile.photos;
     picture = firstPhoto.value;
   }
@@ -80,15 +80,15 @@ export const executeRedirectStrategy = async (
   });
 };
 
-export const executeFrameHandlerStrategy = async <T, PrivateInfo = never>(
+export const executeFrameHandlerStrategy = async <Result, PrivateInfo = never>(
   req: express.Request,
   providerStrategy: passport.Strategy,
 ) => {
-  return new Promise<{ response: T; privateInfo: PrivateInfo }>(
+  return new Promise<{ result: Result; privateInfo: PrivateInfo }>(
     (resolve, reject) => {
       const strategy = Object.create(providerStrategy);
-      strategy.success = (response: any, privateInfo: any) => {
-        resolve({ response, privateInfo });
+      strategy.success = (result: any, privateInfo: any) => {
+        resolve({ result, privateInfo });
       };
       strategy.fail = (
         info: { type: 'success' | 'error'; message?: string },
@@ -190,19 +190,17 @@ type ProviderStrategy = {
 export const executeFetchUserProfileStrategy = async (
   providerStrategy: passport.Strategy,
   accessToken: string,
-  idToken?: string,
-): Promise<ProfileInfo> => {
+): Promise<passport.Profile> => {
   return new Promise((resolve, reject) => {
     const anyStrategy = (providerStrategy as unknown) as ProviderStrategy;
     anyStrategy.userProfile(
       accessToken,
-      (error: Error, passportProfile: passport.Profile) => {
+      (error: Error, rawProfile: passport.Profile) => {
         if (error) {
           reject(error);
+        } else {
+          resolve(rawProfile);
         }
-
-        const profile = makeProfileInfo(passportProfile, idToken);
-        resolve(profile);
       },
     );
   });

@@ -43,15 +43,19 @@ export const useEntityFilterGroup = (
     filterGroupStates,
   } = context;
 
-  // Intentionally consider initial set only at mount time
+  // on state changes unregisters and registers the filtergroup
+  // ensure that it re-registers with the correct filter as the prop changes and not the default
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialMemo = useMemo(() => initialSelectedFilters?.slice(), []);
+  const initialMemo = useMemo(() => {
+    return initialSelectedFilters?.slice();
+  }, [initialSelectedFilters]);
 
   // Register the group on mount, and unregister on unmount
   useEffect(() => {
     register(filterGroupId, filterGroup, initialMemo);
     return () => unregister(filterGroupId);
-  }, [register, unregister, filterGroupId, filterGroup, initialMemo]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [register, unregister, filterGroupId, filterGroup]);
 
   const setSelectedFilters = useCallback(
     (filters: string[]) => {

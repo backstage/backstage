@@ -3,12 +3,18 @@ kind: Group
 metadata:
   name: acme-corp
   description: The acme-corp organization
+  links:
+    - url: http://www.acme.com/
+      title: Website
+    - url: https://meta.wikimedia.org/wiki/
+      title: Intranet
 spec:
   type: organization
-  ancestors: []
+  profile:
+    displayName: ACME Corp
+    email: info@example.com
+    picture: https://avatars.dicebear.com/api/identicon/info@example.com.svg?background=%23fff&margin=25
   children: [infrastructure]
-  descendants:
-    [infrastructure, backstage, boxoffice, team-a, team-b, team-c, team-d]
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Location
@@ -16,12 +22,11 @@ metadata:
   name: example-groups
   description: A collection of all Backstage example Groups
 spec:
-  type: github
   targets:
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/infrastructure-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/boxoffice-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/backstage-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/team-a-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/team-b-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/team-c-group.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/team-d-group.yaml
+    - ./infrastructure-group.yaml
+    - ./boxoffice-group.yaml
+    - ./backstage-group.yaml
+    - ./team-a-group.yaml
+    - ./team-b-group.yaml
+    - ./team-c-group.yaml
+    - ./team-d-group.yaml

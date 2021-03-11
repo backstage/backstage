@@ -20,11 +20,10 @@
     "lint:all": "lerna run lint --",
     "lint:type-deps": "node scripts/check-type-dependencies.js",
     "docgen": "lerna run docgen",
-    "docker-build:app": "yarn workspace example-app build && docker build . -t spotify/backstage",
-    "docker-build": "yarn tsc && yarn workspace example-backend build-image",
+    "docker-build": "yarn tsc && yarn workspace example-backend build --build-dependencies && yarn workspace example-backend build-image",
     "create-plugin": "backstage-cli create-plugin --scope backstage --no-private",
     "remove-plugin": "backstage-cli remove-plugin",
-    "release": "changeset version && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}'",
+    "release": "changeset version && yarn diff --yes && yarn prettier --write '{packages,plugins}/*/{package.json,CHANGELOG.md}' && yarn install",
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
@@ -37,20 +36,23 @@
     ]
   },
   "resolutions": {
-    "**/@roadiehq/backstage-plugin-*/@backstage/core": "0.3.0"
+    "**/@roadiehq/**/@backstage/core": "*",
+    "**/@roadiehq/**/@backstage/plugin-catalog": "*",
+    "**/@roadiehq/**/@backstage/catalog-model": "*"
   },
   "version": "1.0.0",
   "devDependencies": {
-    "@changesets/cli": "^2.11.0",
+    "@changesets/cli": "^2.14.0",
+    "@octokit/openapi-types": "^2.2.0",
     "@spotify/eslint-config-oss": "^1.0.1",
-    "@spotify/prettier-config": "^8.0.0",
+    "@spotify/prettier-config": "^9.0.0",
     "command-exists": "^1.2.9",
-    "concurrently": "^5.2.0",
+    "concurrently": "^6.0.0",
     "fs-extra": "^9.0.0",
     "husky": "^4.2.3",
-    "lerna": "^3.20.2",
+    "lerna": "^4.0.0",
     "lint-staged": "^10.1.0",
-    "prettier": "^2.0.5",
+    "prettier": "^2.2.1",
     "recursive-readdir": "^2.2.2",
     "shx": "^0.3.2"
   },
@@ -74,7 +76,7 @@
   },
   "jest": {
     "transformModules": [
-      "@kyma-project/asyncapi-react"
+      "@asyncapi/react-component"
     ]
   }
 }

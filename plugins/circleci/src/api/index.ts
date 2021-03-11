@@ -14,82 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  CircleCIOptions,
-  getMe,
-  getBuildSummaries,
-  getFullBuild,
-  postBuildActions,
-  BuildAction,
+export { CircleCIApi, circleCIApiRef, GitType } from './CircleCIApi';
+export type {
   BuildWithSteps,
   BuildStepAction,
   BuildSummary,
-  GitType,
-} from 'circleci-api';
-import { createApiRef, DiscoveryApi } from '@backstage/core';
-
-export { GitType };
-export type { BuildWithSteps, BuildStepAction, BuildSummary };
-
-export const circleCIApiRef = createApiRef<CircleCIApi>({
-  id: 'plugin.circleci.service',
-  description: 'Used by the CircleCI plugin to make requests',
-});
-
-const DEFAULT_PROXY_PATH = '/circleci/api';
-
-type Options = {
-  discoveryApi: DiscoveryApi;
-  /**
-   * Path to use for requests via the proxy, defaults to /circleci/api
-   */
-  proxyPath?: string;
-};
-
-export class CircleCIApi {
-  private readonly discoveryApi: DiscoveryApi;
-  private readonly proxyPath: string;
-
-  constructor(options: Options) {
-    this.discoveryApi = options.discoveryApi;
-    this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
-  }
-
-  async retry(buildNumber: number, options: Partial<CircleCIOptions>) {
-    return postBuildActions('', buildNumber, BuildAction.RETRY, {
-      circleHost: await this.getApiUrl(),
-      ...options.vcs,
-    });
-  }
-
-  async getBuilds(
-    { limit = 10, offset = 0 }: { limit: number; offset: number },
-    options: Partial<CircleCIOptions>,
-  ) {
-    return getBuildSummaries('', {
-      options: {
-        limit,
-        offset,
-      },
-      vcs: {},
-      circleHost: await this.getApiUrl(),
-      ...options,
-    });
-  }
-
-  async getUser(options: Partial<CircleCIOptions>) {
-    return getMe('', { circleHost: await this.getApiUrl(), ...options });
-  }
-
-  async getBuild(buildNumber: number, options: Partial<CircleCIOptions>) {
-    return getFullBuild('', buildNumber, {
-      circleHost: await this.getApiUrl(),
-      ...options.vcs,
-    });
-  }
-
-  private async getApiUrl() {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return proxyUrl + this.proxyPath;
-  }
-}
+} from './CircleCIApi';

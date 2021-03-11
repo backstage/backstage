@@ -1,6 +1,6 @@
 ---
 title: How to quickly set up Backstage
-author: Marcus Eide
+author: Marcus Eide, Spotify
 authorURL: https://github.com/marcuseide
 authorImageURL: https://secure.gravatar.com/avatar/20223f1e03673c7c1e6282fbebaf6942
 ---

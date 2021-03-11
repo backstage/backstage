@@ -25,4 +25,5 @@ export type {
   OAuthState,
   OAuthStartRequest,
   OAuthRefreshRequest,
+  OAuthResult,
 } from './types';

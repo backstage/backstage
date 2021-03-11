@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useRef, useState, MouseEventHandler } from 'react';
+import React, { useRef, useState, MouseEventHandler } from 'react';
 import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import CopyIcon from '@material-ui/icons/FileCopy';
@@ -56,7 +56,7 @@ const defaultProps = {
   tooltipText: 'Text copied to clipboard',
 };
 
-export const CopyTextButton: FC<Props> = props => {
+export const CopyTextButton = (props: Props) => {
   const { text, tooltipDelay, tooltipText } = {
     ...defaultProps,
     ...props,

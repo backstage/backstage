@@ -2,7 +2,7 @@
 title: Lighthouse
 author: Spotify
 authorUrl: https://github.com/spotify
-category: Accessibility
+category: Quality
 description: Google's Lighthouse tool is a great resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your website.
 documentation: https://github.com/backstage/backstage/tree/master/plugins/lighthouse
 iconUrl: https://seeklogo.com/images/G/google-lighthouse-logo-1C7FA08580-seeklogo.com.png

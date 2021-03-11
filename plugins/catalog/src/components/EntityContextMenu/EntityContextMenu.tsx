@@ -25,8 +25,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
 import MoreVert from '@material-ui/icons/MoreVert';
-import SwapHoriz from '@material-ui/icons/SwapHoriz';
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 
 // TODO(freben): It should probably instead be the case that Header sets the theme text color to white inside itself unconditionally instead
 const useStyles = makeStyles({
@@ -39,7 +38,7 @@ type Props = {
   onUnregisterEntity: () => void;
 };
 
-export const EntityContextMenu: FC<Props> = ({ onUnregisterEntity }) => {
+export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
 
@@ -81,12 +80,6 @@ export const EntityContextMenu: FC<Props> = ({ onUnregisterEntity }) => {
               <Cancel fontSize="small" />
             </ListItemIcon>
             <Typography variant="inherit">Unregister entity</Typography>
-          </MenuItem>
-          <MenuItem>
-            <ListItemIcon>
-              <SwapHoriz fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">Move repository</Typography>
           </MenuItem>
         </MenuList>
       </Popover>

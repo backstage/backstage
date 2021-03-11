@@ -37,6 +37,18 @@ export const costInsightsLightTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(219, 219, 219, 0.13)',
+    dataViz: [
+      '#509BF5',
+      '#4B917D',
+      '#FF6437',
+      '#F573A0',
+      '#F59B23',
+      '#B49BC8',
+      '#C39687',
+      '#A0C3D2',
+      '#FFC864',
+      '#BABABA',
+    ],
   },
 } as CostInsightsThemeOptions;
 
@@ -55,6 +67,18 @@ export const costInsightsDarkTheme = {
     },
     navigationText: '#b5b5b5',
     alertBackground: 'rgba(32, 32, 32, 0.13)',
+    dataViz: [
+      '#8accff',
+      '#7bc2ac',
+      '#ff9664',
+      '#ffa5d1',
+      '#ffcc57',
+      '#e6ccfb',
+      '#f7c7b7',
+      '#d2f6ff',
+      '#fffb94',
+      '#ececec',
+    ],
   },
 } as CostInsightsThemeOptions;
 
@@ -86,6 +110,20 @@ export const useCostOverviewStyles = (theme: CostInsightsTheme) => ({
     width: 75,
   },
 });
+
+export const useOverviewTabsStyles = makeStyles<CostInsightsTheme>(
+  (theme: CostInsightsTheme) => ({
+    default: {
+      padding: theme.spacing(2),
+      fontWeight: theme.typography.fontWeightBold,
+      color: theme.palette.text.secondary,
+      textTransform: 'uppercase',
+    },
+    selected: {
+      color: theme.palette.text.primary,
+    },
+  }),
+);
 
 export const useBarChartStyles = (theme: CostInsightsTheme) => ({
   axis: {
@@ -184,16 +222,13 @@ export const useBarChartLabelStyles = makeStyles<BackstageTheme>(theme =>
   }),
 );
 
-export const useCostInsightsStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
-    createStyles({
-      h6Subtle: {
-        ...theme.typography.h6,
-        fontWeight: 'normal',
-        color: theme.palette.textSubtle,
-      },
-    }),
-);
+export const useCostInsightsStyles = makeStyles<BackstageTheme>(theme => ({
+  h6Subtle: {
+    ...theme.typography.h6,
+    fontWeight: 'normal',
+    color: theme.palette.textSubtle,
+  },
+}));
 
 export const useCostInsightsTabsStyles = makeStyles<BackstageTheme>(
   (theme: BackstageTheme) => ({
@@ -272,40 +307,37 @@ export const useCostGrowthStyles = makeStyles<BackstageTheme>(
     }),
 );
 
-export const useCostGrowthLegendStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
-    createStyles({
-      h5: {
-        ...theme.typography.h5,
-        fontWeight: 500,
-        padding: 0,
-      },
-      marker: {
-        display: 'inherit',
-        marginRight: theme.spacing(1),
-      },
-      helpIcon: {
-        display: 'inherit',
-      },
-      title: {
-        ...theme.typography.overline,
-        fontWeight: 500,
-        lineHeight: 0,
-        marginRight: theme.spacing(1),
-        color: theme.palette.textSubtle,
-      },
-      tooltip: {
-        display: 'block',
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.navigation.background,
-      },
-      tooltipText: {
-        color: theme.palette.background.default,
-        fontSize: theme.typography.fontSize,
-        lineHeight: 1.5,
-      },
-    }),
-);
+export const useCostGrowthLegendStyles = makeStyles<BackstageTheme>(theme => ({
+  h5: {
+    ...theme.typography.h5,
+    fontWeight: 500,
+    padding: 0,
+  },
+  marker: {
+    display: 'inherit',
+    marginRight: theme.spacing(1),
+  },
+  helpIcon: {
+    display: 'inherit',
+  },
+  title: {
+    ...theme.typography.overline,
+    fontWeight: 500,
+    lineHeight: 0,
+    marginRight: theme.spacing(1),
+    color: theme.palette.textSubtle,
+  },
+  tooltip: {
+    display: 'block',
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.navigation.background,
+  },
+  tooltipText: {
+    color: theme.palette.background.default,
+    fontSize: theme.typography.fontSize,
+    lineHeight: 1.5,
+  },
+}));
 
 export const useBarChartStepperStyles = makeStyles<BackstageTheme>(
   (theme: BackstageTheme) =>
@@ -353,6 +385,7 @@ export const useNavigationStyles = makeStyles<CostInsightsTheme>(
       menuList: {
         borderRadius: theme.shape.borderRadius,
         backgroundColor: theme.palette.navigation.background,
+        minWidth: 250,
       },
       menuItem: {
         background: 'transparent',
@@ -386,6 +419,9 @@ export const useTooltipStyles = makeStyles<CostInsightsTheme>(
         boxShadow: theme.shadows[1],
         color: theme.palette.tooltip.color,
         fontSize: theme.typography.fontSize,
+        minWidth: 300,
+      },
+      maxWidth: {
         maxWidth: 300,
       },
       actions: {
@@ -443,8 +479,8 @@ export const useSelectStyles = makeStyles<BackstageTheme>(
     }),
 );
 
-export const useAlertActionCardStyles = makeStyles<BackstageTheme>(
-  (theme: BackstageTheme) =>
+export const useActionItemCardStyles = makeStyles<CostInsightsTheme>(
+  (theme: CostInsightsTheme) =>
     createStyles({
       card: {
         boxShadow: 'none',
@@ -453,15 +489,12 @@ export const useAlertActionCardStyles = makeStyles<BackstageTheme>(
         backgroundColor: theme.palette.textVerySubtle,
         color: theme.palette.text.primary,
       },
-    }),
-);
-
-export const useAlertActionCardHeader = makeStyles<CostInsightsTheme>(
-  (theme: CostInsightsTheme) =>
-    createStyles({
       root: {
+        minHeight: 80,
         paddingBottom: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
+      },
+      activeRoot: {
         cursor: 'pointer',
         transition: theme.transitions.create('background', {
           duration: theme.transitions.duration.short,
@@ -563,3 +596,31 @@ export const useEntityDialogStyles = makeStyles<BackstageTheme>(theme =>
     },
   }),
 );
+
+export const useAlertDialogStyles = makeStyles((theme: BackstageTheme) =>
+  createStyles({
+    content: {
+      padding: theme.spacing(0, 5, 2, 5),
+    },
+    actions: {
+      padding: theme.spacing(2, 5),
+    },
+    radio: {
+      margin: theme.spacing(-0.5, 0, -0.5, 0),
+    },
+    icon: {
+      color: theme.palette.primary.dark,
+      margin: theme.spacing(2.5, 2.5, 0, 0),
+      padding: 0,
+    },
+  }),
+);
+
+export const useAlertStatusSummaryButtonStyles = makeStyles(() => ({
+  icon: {
+    transform: 'transform 5s',
+  },
+  clicked: {
+    transform: 'rotate(180deg)',
+  },
+}));

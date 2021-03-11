@@ -70,6 +70,7 @@ components:
       items:
         $ref: "#/components/schemas/Pet"
 `,
+        system: 'system',
       },
     };
   });
@@ -151,5 +152,20 @@ components:
   it('rejects empty definition', async () => {
     (entity as any).spec.definition = '';
     await expect(validator.check(entity)).rejects.toThrow(/definition/);
+  });
+
+  it('accepts missing system', async () => {
+    delete (entity as any).spec.system;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong system', async () => {
+    (entity as any).spec.system = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/system/);
+  });
+
+  it('rejects empty system', async () => {
+    (entity as any).spec.system = '';
+    await expect(validator.check(entity)).rejects.toThrow(/system/);
   });
 });

@@ -16,15 +16,15 @@ frameworks and libraries like [Mocha](https://mochajs.org/),
 
 Running all tests:
 
-    yarn test-react
+    yarn test
 
 Running an individual test (e.g. `MyComponent.test.js`):
 
-    yarn test-react MyComponent
+    yarn test MyComponent
 
 To run both `MyComponent.test.js` and `MyControl.test.js` suite of tests:
 
-    yarn test-react MyCo
+    yarn test MyCo
 
 Note: if `console.logs` are not appearing, run only the individual test you are
 working on.
@@ -52,12 +52,12 @@ render React components.
 
 TODO.
 
-# Writing Unit Tests
+## Writing Unit Tests
 
 The following principles are good guides for determining if you are writing high
 quality frontend unit tests.
 
-## Bad Unit Test Principle
+### Bad Unit Test Principle
 
 > No unit test is better than a bad one.
 
@@ -69,7 +69,7 @@ Writing a poor unit test:
 - Adds to future work by requiring updates to the unit test for irrelevant code
   changes.
 
-## Input/Output Principle
+### Input/Output Principle
 
 > A unit test verifies an output matches an expected input.
 
@@ -77,7 +77,7 @@ For backend, this would be that when you provide configuration X, then the
 object responds with Y. For frontend, this would be that when you provide
 properties X to a component, then the visual functionality responds with Y.
 
-## Blackbox Principle
+### Blackbox Principle
 
 > A good unit test does not tell the object how it should do its job but should
 > only compare inputs to outputs.
@@ -86,7 +86,7 @@ Consider a unit test for a form. A good unit test would not test the order of
 the form fields. Instead, it would verify that the inputs to the form fields
 lead to a certain backend call when submit is clicked.
 
-## Scalability Principle
+### Scalability Principle
 
 > Unit test quality is directly proportionate to how much code can change
 > without having to touch the unit test.
@@ -97,7 +97,7 @@ to the code, you have to update the unit test. A good unit test suite allows a
 lot of flexibility in _how_ the code is written so that future refactoring can
 occur without having to touch the original unit tests.
 
-## Increasing Complexity Principle
+### Increasing Complexity Principle
 
 > The ordering of unit tests in a suite should proceed from least specific to
 > most specific.
@@ -116,7 +116,7 @@ throwing an error saying that output was incorrect will lead the next developer
 into thinking they may have broken the entire functionality of the object rather
 than simply letting them know they had an invalid input.
 
-## Broken Functionality Principle
+### Broken Functionality Principle
 
 > Generally, a unit test should not test exactly how the output appears, it
 > should test that the functionality has an expected _general_ response to an
@@ -131,7 +131,7 @@ test a slightly different color on the button the unit test will break. A better
 unit test would verify that the button's CSS classname is assigned properly on
 hover or test for something completely different.
 
-## Example: Loading Indicator
+### Example: Loading Indicator
 
 A classic unit test on frontends is verifying a loading indicator displays when
 a backend request is being made.
@@ -192,11 +192,14 @@ returns a result or displays an error or console message, like so:
 
 **`StringUtil ellipsis`**
 
-    export function ellipsis(text, maxLength, midCharIx = 0, ellipsis = '...') {
-      // Do something blackbox. We should not care about the internals, only inputs and outputs.
-      ...
-      return someFinalValue;
-    }
+```js
+export function ellipsis(text, maxLength, midCharIx = 0, ellipsis = '...') {
+  // Do something blackbox. We should not care about the internals,
+  // only inputs and outputs.
+  ...
+  return someFinalValue;
+}
+```
 
 There are four things to test for in a utility function:
 
@@ -207,34 +210,40 @@ There are four things to test for in a utility function:
 
 > Handle Invalid Input (handle thrown errors):
 
-    it('Throws an error on improper arguments', () => {
-      expect(() => {
-        ellipsis();
-      }).toThrowError('Expected \'text\' to be defined');
-    });
+```js
+it('Throws an error on improper arguments', () => {
+  expect(() => {
+    ellipsis();
+  }).toThrowError("Expected 'text' to be defined");
+});
+```
 
 > Verify default input arguments:
 
-    it('Works with defaults', () => {
-      expect(ellipsis('Hello world', 3)).toBe('Hel...');
-      expect(ellipsis('', 3)).toBe('');
-      expect(ellipsis('H', 3)).toBe('H');
-      expect(ellipsis('Hello', 5)).toBe('Hello');
-    });
+```js
+it('Works with defaults', () => {
+  expect(ellipsis('Hello world', 3)).toBe('Hel...');
+  expect(ellipsis('', 3)).toBe('');
+  expect(ellipsis('H', 3)).toBe('H');
+  expect(ellipsis('Hello', 5)).toBe('Hello');
+});
+```
 
 > Verify output for expected input arguments:
 
 This is especially true for edge cases!
 
-    it('Works with midCharIx', () => {
-      expect(ellipsis('Hello world', 3, 6)).toBe('...o w...');
-      expect(ellipsis('', 3, 6)).toBe('');
-      expect(ellipsis('Backstage is amazing', 4, 10)).toBe('...e is...');
-    });
+```js
+it('Works with midCharIx', () => {
+  expect(ellipsis('Hello world', 3, 6)).toBe('...o w...');
+  expect(ellipsis('', 3, 6)).toBe('');
+  expect(ellipsis('Backstage is amazing', 4, 10)).toBe('...e is...');
+});
+```
 
 ## Non-React Classes
 
-Testing a Javascript object which is _not_ a React component follows a lot of
+Testing a JavaScript object which is _not_ a React component follows a lot of
 the same principles as testing objects in other languages.
 
 ### API Testing Principles
@@ -243,7 +252,7 @@ Testing an API involves verifying four things:
 
 1. Invalid inputs are caught before being sent to the server.
 2. Valid inputs translate into a valid browser request.
-3. Server response is translated into an expected Javascript object.
+3. Server response is translated into an expected JavaScript object.
 4. Server errors are handled gracefully.
 
 ### Mocking API Calls
@@ -265,7 +274,7 @@ export {
 };
 ```
 
-**`./\_\_mocks\_\_/MyApi.js`**
+**`./__mocks__/MyApi.js`**
 
 ```js
 export {
@@ -372,4 +381,4 @@ IDE.
 In most cases, we have found that using `console.log` works well.
 
 Note: if your console.logs are not being displayed, focus your specific unit
-test from the command line by running them like so `yarn test-react MyTest`.
+test from the command line by running them like so `yarn test MyTest`.

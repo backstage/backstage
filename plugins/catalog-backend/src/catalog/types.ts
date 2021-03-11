@@ -32,17 +32,30 @@ export type EntityUpsertResponse = {
 };
 
 export type EntitiesCatalog = {
+  /**
+   * Fetch entities.
+   *
+   * @param filter A filter to apply when reading
+   */
   entities(filter?: EntityFilter): Promise<Entity[]>;
+
+  /**
+   * Removes a single entity.
+   *
+   * @param uid The metadata.uid of the entity
+   */
   removeEntityByUid(uid: string): Promise<void>;
 
   /**
    * Writes a number of entities efficiently to storage.
    *
-   * @param entities Some entities
-   * @param locationId The location that they all belong to
+   * @param requests The entities and their relations
+   * @param options.locationId The location that they all belong to (default none)
+   * @param options.dryRun Whether to throw away the results (default false)
+   * @param options.outputEntities Whether to return the resulting entities (default false)
    */
   batchAddOrUpdateEntities(
-    entities: EntityUpsertRequest[],
+    requests: EntityUpsertRequest[],
     options?: {
       locationId?: string;
       dryRun?: boolean;
@@ -80,7 +93,10 @@ export type LocationsCatalog = {
   locations(): Promise<LocationResponse[]>;
   location(id: string): Promise<LocationResponse>;
   locationHistory(id: string): Promise<LocationUpdateLogEvent[]>;
-  logUpdateSuccess(locationId: string, entityName?: string): Promise<void>;
+  logUpdateSuccess(
+    locationId: string,
+    entityName?: string | string[],
+  ): Promise<void>;
   logUpdateFailure(
     locationId: string,
     error?: Error,

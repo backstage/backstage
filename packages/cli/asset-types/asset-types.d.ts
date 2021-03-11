@@ -97,3 +97,15 @@ declare module '*.module.sass' {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
+
+// NOTE(freben): Both the fix, and the placement of the fix, are not great.
+//
+// The fix is because the PositionError was renamed to
+// GeolocationPositionError outside of our control, and react-use is dependent
+// on the old name.
+//
+// The placement is because it's the one location we have at the moment, where
+// a central .d.ts file is imported by the frontend and can be amended.
+//
+// After both TS and react-use are bumped high enough, this should be removed.
+type PositionError = GeolocationPositionError;

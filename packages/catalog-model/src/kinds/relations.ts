@@ -30,10 +30,12 @@ export const RELATION_OWNED_BY = 'ownedBy';
 export const RELATION_OWNER_OF = 'ownerOf';
 
 /**
- * A relation with an API entity, typically from a component or system
+ * A relation with an API entity, typically from a component
  */
 export const RELATION_CONSUMES_API = 'consumesApi';
+export const RELATION_API_CONSUMED_BY = 'apiConsumedBy';
 export const RELATION_PROVIDES_API = 'providesApi';
+export const RELATION_API_PROVIDED_BY = 'apiProvidedBy';
 
 /**
  * A relation denoting a dependency on another entity.
@@ -53,3 +55,10 @@ export const RELATION_CHILD_OF = 'childOf';
  */
 export const RELATION_MEMBER_OF = 'memberOf';
 export const RELATION_HAS_MEMBER = 'hasMember';
+
+/**
+ * A part/whole relation, typically for components in a system and systems
+ * in a domain.
+ */
+export const RELATION_PART_OF = 'partOf';
+export const RELATION_HAS_PART = 'hasPart';

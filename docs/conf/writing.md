@@ -97,13 +97,13 @@ order:
 - If no config flags are provided, `app-config.local.yaml` has higher priority
   than `app-config.yaml`.
 
-## Secrets
+## Includes and Dynamic Data
 
-Secrets are supported via special secret keys that are prefixed with `$`, which
-in turn provide a number of different ways to read in secrets. To load a
-configuration value as a secret, supply an object with one of the special secret
-keys, for example `$env` or `$file`. A full list of supported secret keys can be
-found below. For example, the following will read the config key
+Includes are supported via special data loading keys that are prefixed with `$`,
+which in turn provide a number of different ways to read in data. To load in an
+external configuration value, supply an object with one of the special include
+keys, for example `$env` or `$file`. A full list of supported include keys can
+be found below. For example, the following will read the config key
 `backend.mySecretKey` from the environment variable `MY_SECRET_KEY`:
 
 ```yaml
@@ -114,47 +114,42 @@ backend:
 
 With the above configuration, calling `config.getString('backend.mySecretKey')`
 will return the value of the environment variable `MY_SECRET_KEY` when the
-backend started up. All secrets are loaded at startup, so changing the contents
-of secret files or environment variables will not be reflected at runtime.
+backend started up. All includes are loaded at startup, so changing the contents
+of files or environment variables will not be reflected at runtime.
 
-Note that secrets will never be included in the frontend bundle or development
-builds. When loading configuration you have to explicitly enable reading of
-secrets, which is only done for the backend configuration.
+Below is a list of the currently supported methods for loading includes.
 
-As hinted at, secrets can be loaded from a bunch of different sources, and can
-be extended with more. Below is a list of the currently supported methods for
-loading secrets.
+### Env Includes
 
-### Env Secrets
-
-This reads a secret from an environment variable. For example, the following
-config loads the secret from the `MY_SECRET` env var.
+This reads a string value from an environment variable. For example, the
+following configuration loads the string value from the `MY_SECRET` environment
+variable.
 
 ```yaml
 $env: MY_SECRET
 ```
 
-### File Secrets
+### File Includes
 
-This reads a secret from the entire contents of a file. The file path is
-relative to the `app-config.yaml` the defines the secrets. For example, the
-following reads the contents of `my-secret.txt` relative to the config file
-itself:
+This reads a string value from the entire contents of a text file. The file path
+is relative to the source config file. For example, the following reads the
+contents of `my-secret.txt` relative to the config file itself:
 
 ```yaml
 $file: ./my-secret.txt
 ```
 
-### Data File Secrets
+### Including Files
 
-This reads secrets from a path within a JSON-like data file. The file path
-behaves similar to file secrets, but with the addition of a url fragment that is
-used to point to a specific value inside the file. Supported file extensions are
-`.json`, `.yaml`, and `.yml`. For example, the following would read out
-`my-secret-key` from `my-secrets.json`:
+The `$include` keyword can be used to load configuration values from an external
+file. It's able to load and parse data from `.json`, `.yml`, and `.yaml` files.
+It's also possible to include a url fragment (`#`) to point to a value at the
+given path in the file, using a dot-separated list of keys.
+
+For example, the following would read `my-secret-key` from `my-secrets.json`:
 
 ```yaml
-$data: ./my-secrets.json#deployment.key
+$include: ./my-secrets.json#deployment.key
 ```
 
 Example `my-secrets.json` file:
@@ -166,3 +161,19 @@ Example `my-secrets.json` file:
   }
 }
 ```
+
+## Environment Variable Substitution
+
+Configuration files support environment variable substitution via a `${MY_VAR}`
+syntax. For example:
+
+```yaml
+app:
+  baseUrl: https://${HOST}
+```
+
+Note that all environment variables must be available, or the entire
+configuration value will evaluate to `undefined`.
+
+The substitution syntax can be escaped using `$${...}`, which will be resolved
+as `${...}`.

@@ -15,75 +15,39 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { CardTab, useApi, TabbedCard } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { CardTab, TabbedCard, useApi } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
-import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
-import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
-import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
-
-export type ApiDefinitionWidget = {
-  type: string;
-  title: string;
-  component: (definition: string) => React.ReactElement;
-  rawLanguage?: string;
-};
-
-export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
-  return [
-    {
-      type: 'openapi',
-      title: 'OpenAPI',
-      rawLanguage: 'yaml',
-      component: definition => (
-        <OpenApiDefinitionWidget definition={definition} />
-      ),
-    },
-    {
-      type: 'asyncapi',
-      title: 'AsyncAPI',
-      rawLanguage: 'yaml',
-      component: definition => (
-        <AsyncApiDefinitionWidget definition={definition} />
-      ),
-    },
-    {
-      type: 'graphql',
-      title: 'GraphQL',
-      rawLanguage: 'graphql',
-      component: definition => (
-        <GraphQlDefinitionWidget definition={definition} />
-      ),
-    },
-  ];
-}
 
 type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
   apiEntity?: ApiEntity;
 };
 
-export const ApiDefinitionCard = ({ apiEntity }: Props) => {
+export const ApiDefinitionCard = (_: Props) => {
+  const entity = useEntity().entity as ApiEntity;
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
 
-  if (!apiEntity) {
+  if (!entity) {
     return <Alert severity="error">Could not fetch the API</Alert>;
   }
 
-  const definitionWidget = getApiDefinitionWidget(apiEntity);
+  const definitionWidget = getApiDefinitionWidget(entity);
 
   if (definitionWidget) {
     return (
-      <TabbedCard title={apiEntity.metadata.name}>
+      <TabbedCard title={entity.metadata.name}>
         <CardTab label={definitionWidget.title} key="widget">
-          {definitionWidget.component(apiEntity.spec.definition)}
+          {definitionWidget.component(entity.spec.definition)}
         </CardTab>
         <CardTab label="Raw" key="raw">
           <PlainApiDefinitionWidget
-            definition={apiEntity.spec.definition}
-            language={definitionWidget.rawLanguage || apiEntity.spec.type}
+            definition={entity.spec.definition}
+            language={definitionWidget.rawLanguage || entity.spec.type}
           />
         </CardTab>
       </TabbedCard>
@@ -92,13 +56,13 @@ export const ApiDefinitionCard = ({ apiEntity }: Props) => {
 
   return (
     <TabbedCard
-      title={apiEntity.metadata.name}
+      title={entity.metadata.name}
       children={[
         // Has to be an array, otherwise typescript doesn't like that this has only a single child
-        <CardTab label={apiEntity.spec.type} key="raw">
+        <CardTab label={entity.spec.type} key="raw">
           <PlainApiDefinitionWidget
-            definition={apiEntity.spec.definition}
-            language={apiEntity.spec.type}
+            definition={entity.spec.definition}
+            language={entity.spec.type}
           />
         </CardTab>,
       ]}

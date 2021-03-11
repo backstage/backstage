@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-import { V1Deployment, V1Pod, V1ReplicaSet } from '@kubernetes/client-node';
+import {
+  V1Deployment,
+  V1Pod,
+  V1ReplicaSet,
+  V1HorizontalPodAutoscaler,
+  V1Service,
+  V1ConfigMap,
+  ExtensionsV1beta1Ingress,
+} from '@kubernetes/client-node';
 
-export interface DeploymentTriple {
+export interface DeploymentResources {
   pods: V1Pod[];
   replicaSets: V1ReplicaSet[];
   deployments: V1Deployment[];
+  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+}
+
+export interface GroupedResponses extends DeploymentResources {
+  services: V1Service[];
+  configMaps: V1ConfigMap[];
+  ingresses: ExtensionsV1beta1Ingress[];
 }

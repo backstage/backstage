@@ -4,14 +4,17 @@ metadata:
   name: example-components
   description: A collection of all Backstage example components
 spec:
-  type: github
   targets:
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/petstore-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-order-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/podcast-api-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/queue-proxy-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/searcher-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-lib-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/www-artist-component.yaml
-    - https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/shuffle-api-component.yaml
+    - ./components/artist-lookup-component.yaml
+    - ./components/petstore-component.yaml
+    - ./components/playback-order-component.yaml
+    - ./components/podcast-api-component.yaml
+    - ./components/queue-proxy-component.yaml
+    - ./components/searcher-component.yaml
+    - ./components/playback-lib-component.yaml
+    - ./components/www-artist-component.yaml
+    - ./components/shuffle-api-component.yaml
+    - ./components/wayback-archive-component.yaml
+    - ./components/wayback-archive-ingestion-component.yaml
+    - ./components/wayback-archive-storage-component.yaml
+    - ./components/wayback-search-component.yaml

@@ -49,7 +49,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     )}
     {configuredProviders.includes('github') && (
       <ProviderSettingsItem
-        title="Github"
+        title="GitHub"
         description={githubAuthApiRef.description}
         apiRef={githubAuthApiRef}
         icon={Star}
@@ -57,7 +57,7 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
     )}
     {configuredProviders.includes('gitlab') && (
       <ProviderSettingsItem
-        title="Gitlab"
+        title="GitLab"
         description={gitlabAuthApiRef.description}
         apiRef={gitlabAuthApiRef}
         icon={Star}

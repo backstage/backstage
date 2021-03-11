@@ -14,119 +14,147 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
+import { initRepoAndPush } from './helpers';
+import {
+  GitHubIntegrationConfig,
+  GithubCredentialsProvider,
+} from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
 import { Octokit } from '@octokit/rest';
-
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
+import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
-interface GithubPublisherParams {
-  client: Octokit;
-  token: string;
-  repoVisibility: RepoVisibilityOptions;
-}
-
 export class GithubPublisher implements PublisherBase {
-  private client: Octokit;
-  private token: string;
-  private repoVisibility: RepoVisibilityOptions;
+  static async fromConfig(
+    config: GitHubIntegrationConfig,
+    { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
+  ) {
+    if (!config.token && !config.apps) {
+      return undefined;
+    }
 
-  constructor({
-    client,
-    token,
-    repoVisibility = 'public',
-  }: GithubPublisherParams) {
-    this.client = client;
-    this.token = token;
-    this.repoVisibility = repoVisibility;
+    const credentialsProvider = GithubCredentialsProvider.create(config);
+
+    return new GithubPublisher({
+      credentialsProvider,
+      repoVisibility,
+      apiBaseUrl: config.apiBaseUrl,
+    });
   }
+
+  constructor(
+    private readonly config: {
+      credentialsProvider: GithubCredentialsProvider;
+      repoVisibility: RepoVisibilityOptions;
+      apiBaseUrl: string | undefined;
+    },
+  ) {}
 
   async publish({
     values,
-    directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
-    const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    workspacePath,
+    logger,
+  }: PublisherOptions): Promise<PublisherResult> {
+    const { owner, name } = parseGitUrl(values.storePath);
 
-    return { remoteUrl };
+    const { token } = await this.config.credentialsProvider.getCredentials({
+      url: values.storePath,
+    });
+
+    if (!token) {
+      throw new Error(
+        `No token could be acquired for URL: ${values.storePath}`,
+      );
+    }
+
+    const client = new Octokit({
+      auth: token,
+      baseUrl: this.config.apiBaseUrl,
+    });
+
+    const description = values.description as string;
+    const access = values.access as string;
+    const remoteUrl = await this.createRemote({
+      client,
+      description,
+      access,
+      name,
+      owner,
+    });
+
+    await initRepoAndPush({
+      dir: path.join(workspacePath, 'result'),
+      remoteUrl,
+      auth: {
+        username: 'x-access-token',
+        password: token,
+      },
+      logger,
+    });
+
+    const catalogInfoUrl = remoteUrl.replace(
+      /\.git$/,
+      '/blob/master/catalog-info.yaml',
+    );
+    return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [owner, name] = values.storePath.split('/');
-    const description = values.description as string;
+  private async createRemote(opts: {
+    client: Octokit;
+    access: string;
+    name: string;
+    owner: string;
+    description: string;
+  }) {
+    const { client, access, description, owner, name } = opts;
 
-    const user = await this.client.users.getByUsername({ username: owner });
+    const user = await client.users.getByUsername({
+      username: owner,
+    });
 
     const repoCreationPromise =
       user.data.type === 'Organization'
-        ? this.client.repos.createInOrg({
+        ? client.repos.createInOrg({
             name,
             org: owner,
-            private: this.repoVisibility !== 'public',
-            visibility: this.repoVisibility,
+            private: this.config.repoVisibility !== 'public',
+            visibility: this.config.repoVisibility,
             description,
           })
-        : this.client.repos.createForAuthenticatedUser({
+        : client.repos.createForAuthenticatedUser({
             name,
-            private: this.repoVisibility === 'private',
+            private: this.config.repoVisibility === 'private',
             description,
           });
 
     const { data } = await repoCreationPromise;
 
-    const access = values.access as string;
-    if (access?.startsWith(`${owner}/`)) {
-      const [, team] = access.split('/');
-      await this.client.teams.addOrUpdateRepoPermissionsInOrg({
-        org: owner,
-        team_slug: team,
-        owner,
-        repo: name,
-        permission: 'admin',
-      });
-      // no need to add access if it's the person who own's the personal account
-    } else if (access && access !== owner) {
-      await this.client.repos.addCollaborator({
-        owner,
-        repo: name,
-        username: access,
-        permission: 'admin',
-      });
+    try {
+      if (access?.startsWith(`${owner}/`)) {
+        const [, team] = access.split('/');
+        await client.teams.addOrUpdateRepoPermissionsInOrg({
+          org: owner,
+          team_slug: team,
+          owner,
+          repo: name,
+          permission: 'admin',
+        });
+        // no need to add access if it's the person who owns the personal account
+      } else if (access && access !== owner) {
+        await client.repos.addCollaborator({
+          owner,
+          repo: name,
+          username: access,
+          permission: 'admin',
+        });
+      }
+    } catch (e) {
+      throw new Error(
+        `Failed to add access to '${access}'. Status ${e.status} ${e.message}`,
+      );
     }
-
     return data?.clone_url;
-  }
-
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        credentials: () => {
-          return Cred.userpassPlaintextNew(this.token, 'x-oauth-basic');
-        },
-      },
-    });
   }
 }

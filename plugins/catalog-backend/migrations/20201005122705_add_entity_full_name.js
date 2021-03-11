@@ -17,7 +17,7 @@
 // @ts-check
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('entities', table => {
@@ -30,12 +30,11 @@ exports.up = async function up(knex) {
     ),
   });
 
-  try {
+  // SQLite does not support alter column
+  if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities', table => {
       table.text('full_name').notNullable().alter();
     });
-  } catch (e) {
-    // SQLite does not support alter column, ignore
   }
 
   await knex.schema.alterTable('entities', table => {
@@ -46,7 +45,7 @@ exports.up = async function up(knex) {
 };
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('entities', table => {

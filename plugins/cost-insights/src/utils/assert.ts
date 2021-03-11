@@ -17,7 +17,15 @@
 export function notEmpty<TValue>(
   value: TValue | null | undefined,
 ): value is TValue {
-  return value !== null && value !== undefined;
+  return !isNull(value) && !isUndefined(value);
+}
+
+export function isUndefined(value: any): boolean {
+  return value === undefined;
+}
+
+export function isNull(value: any): boolean {
+  return value === null;
 }
 
 // Utility for exhaustiveness checking in switch statements
@@ -41,4 +49,10 @@ export function findAlways<T>(
   callback: (el: T) => boolean,
 ): T {
   return assertAlways(collection.find(callback));
+}
+
+export function findAnyKey<T>(
+  record: Record<string, T> | undefined,
+): string | undefined {
+  return Object.keys(record ?? {}).find(_ => true);
 }

@@ -16,34 +16,27 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { readEnvConfig } from '@backstage/config-loader';
 import { Logger } from 'winston';
+import { AppConfig, Config, JsonObject } from '@backstage/config';
+import { loadConfigSchema, readEnvConfig } from '@backstage/config-loader';
 
-type Options = {
-  // Environment to read config from
-  env: { [name: string]: string | undefined };
+type InjectOptions = {
+  appConfigs: AppConfig[];
   // Directory of the static JS files to search for file to inject
   staticDir: string;
   logger: Logger;
 };
 
 /**
- * Injects config from APP_CONFIG_ env vars, replacing existing
- * injected config if it has already been injected.
+ * Injects configs into the app bundle, replacing any existing injected config.
  */
-export async function injectEnvConfig(options: Options) {
-  const { env, staticDir, logger } = options;
-
-  const envConfig = readEnvConfig(env);
-  if (envConfig.length === 0) {
-    return;
-  }
+export async function injectConfig(options: InjectOptions) {
+  const { staticDir, logger, appConfigs } = options;
 
   const files = await fs.readdir(staticDir);
   const jsFiles = files.filter(file => file.endsWith('.js'));
 
-  const [{ data }] = envConfig;
-  const escapedData = JSON.stringify(data).replace(/("|'|\\)/g, '\\$1');
+  const escapedData = JSON.stringify(appConfigs).replace(/("|'|\\)/g, '\\$1');
   const injected = `/*__APP_INJECTED_CONFIG_MARKER__*/"${escapedData}"/*__INJECTED_END__*/`;
 
   for (const jsFile of jsFiles) {
@@ -71,4 +64,43 @@ export async function injectEnvConfig(options: Options) {
     }
   }
   logger.info('Env config not injected');
+}
+
+type ReadOptions = {
+  env: { [name: string]: string | undefined };
+  appDistDir: string;
+  config: Config;
+};
+
+/**
+ * Read config from environment and process the backend config using the
+ * schema that is embedded in the frontend build.
+ */
+export async function readConfigs(options: ReadOptions): Promise<AppConfig[]> {
+  const { env, appDistDir, config } = options;
+
+  const appConfigs = readEnvConfig(env);
+
+  const schemaPath = resolvePath(appDistDir, '.config-schema.json');
+  if (await fs.pathExists(schemaPath)) {
+    const serializedSchema = await fs.readJson(schemaPath);
+
+    try {
+      const schema = await loadConfigSchema({ serialized: serializedSchema });
+
+      const frontendConfigs = await schema.process(
+        [{ data: config.get() as JsonObject, context: 'app' }],
+        { visibility: ['frontend'] },
+      );
+      appConfigs.push(...frontendConfigs);
+    } catch (error) {
+      throw new Error(
+        'Invalid app bundle schema. If this error is unexpected you need to run `yarn build` in the app. ' +
+          `If that doesn't help you should make sure your config schema is correct and rebuild the app bundle again. ` +
+          `Caused by the following schema error, ${error}`,
+      );
+    }
+  }
+
+  return appConfigs;
 }

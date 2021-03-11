@@ -33,14 +33,14 @@ const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
 const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
 
 export async function buildBundle(options: BuildOptions) {
-  const { statsJsonEnabled } = options;
+  const { statsJsonEnabled, schema: configSchema } = options;
 
   const paths = resolveBundlingPaths(options);
   const config = await createConfig(paths, {
     ...options,
     checksEnabled: false,
     isDev: false,
-    baseUrl: resolveBaseUrl(options.config),
+    baseUrl: resolveBaseUrl(options.frontendConfig),
   });
   const compiler = webpack(config);
 
@@ -54,6 +54,14 @@ export async function buildBundle(options: BuildOptions) {
       dereference: true,
       filter: file => file !== paths.targetHtml,
     });
+  }
+
+  if (configSchema) {
+    await fs.writeJson(
+      resolvePath(paths.targetDist, '.config-schema.json'),
+      configSchema.serialize(),
+      { spaces: 2 },
+    );
   }
 
   const { stats } = await build(compiler, isCi).catch(error => {

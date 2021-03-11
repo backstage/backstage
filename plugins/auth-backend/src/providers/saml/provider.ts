@@ -15,6 +15,7 @@
  */
 
 import express from 'express';
+import { SamlConfig } from 'passport-saml/lib/passport-saml/types';
 import {
   Strategy as SamlStrategy,
   Profile as SamlProfile,
@@ -25,17 +26,17 @@ import {
   executeRedirectStrategy,
   PassportDoneCallback,
 } from '../../lib/passport';
-import {
-  AuthProviderRouteHandlers,
-  ProfileInfo,
-  AuthProviderFactory,
-} from '../types';
+import { AuthProviderRouteHandlers, AuthProviderFactory } from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { TokenIssuer } from '../../identity';
 
 type SamlInfo = {
-  userId: string;
-  profile: ProfileInfo;
+  fullProfile: any;
+};
+
+type Options = SamlConfig & {
+  tokenIssuer: TokenIssuer;
+  appUrl: string;
 };
 
 export class SamlAuthProvider implements AuthProviderRouteHandlers {
@@ -43,11 +44,11 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   private readonly tokenIssuer: TokenIssuer;
   private readonly appUrl: string;
 
-  constructor(options: SAMLProviderOptions) {
+  constructor(options: Options) {
     this.appUrl = options.appUrl;
     this.tokenIssuer = options.tokenIssuer;
     this.strategy = new SamlStrategy({ ...options }, ((
-      profile: SamlProfile,
+      fullProfile: SamlProfile,
       done: PassportDoneCallback<SamlInfo>,
     ) => {
       // TODO: There's plenty more validation and profile handling to do here,
@@ -55,13 +56,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       //       for non-oauth auth flows.
       // TODO: This flow doesn't issue an identity token that can be used to validate
       //       the identity of the user in other backends, which we need in some form.
-      done(undefined, {
-        userId: profile.nameID!,
-        profile: {
-          email: profile.email!,
-          displayName: profile.displayName as string,
-        },
-      });
+      done(undefined, { fullProfile });
     }) as VerifyWithoutRequest);
   }
 
@@ -75,11 +70,13 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
     res: express.Response,
   ): Promise<void> {
     try {
-      const {
-        response: { userId, profile },
-      } = await executeFrameHandlerStrategy<SamlInfo>(req, this.strategy);
+      const { result } = await executeFrameHandlerStrategy<SamlInfo>(
+        req,
+        this.strategy,
+      );
 
-      const id = userId;
+      const id = result.fullProfile.nameID;
+
       const idToken = await this.tokenIssuer.issueToken({
         claims: { sub: id },
       });
@@ -87,8 +84,11 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
       return postMessageResponse(res, this.appUrl, {
         type: 'authorization_response',
         response: {
+          profile: {
+            email: result.fullProfile.email,
+            displayName: result.fullProfile.displayName,
+          },
           providerInfo: {},
-          profile,
           backstageIdentity: { id, idToken },
         },
       });
@@ -112,30 +112,36 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
   }
 }
 
-type SAMLProviderOptions = {
-  entryPoint: string;
-  issuer: string;
-  path: string;
-  tokenIssuer: TokenIssuer;
-  appUrl: string;
-};
+type SignatureAlgorithm = 'sha1' | 'sha256' | 'sha512';
 
-export const createSamlProvider: AuthProviderFactory = ({
-  globalConfig,
-  config,
-  tokenIssuer,
-}) => {
-  const url = new URL(globalConfig.baseUrl);
-  const providerId = 'saml';
-  const entryPoint = config.getString('entryPoint');
-  const issuer = config.getString('issuer');
-  const opts = {
-    entryPoint,
-    issuer,
-    path: `${url.pathname}/${providerId}/handler/frame`,
-    tokenIssuer,
-    appUrl: globalConfig.appUrl,
+export type SamlProviderOptions = {};
+
+export const createSamlProvider = (
+  _options?: SamlProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) => {
+    const opts = {
+      callbackUrl: `${globalConfig.baseUrl}/${providerId}/handler/frame`,
+      entryPoint: config.getString('entryPoint'),
+      logoutUrl: config.getOptionalString('logoutUrl'),
+      issuer: config.getString('issuer'),
+      cert: config.getOptionalString('cert'),
+      privateCert: config.getOptionalString('privateKey'),
+      decryptionPvk: config.getOptionalString('decryptionPvk'),
+      signatureAlgorithm: config.getOptionalString('signatureAlgorithm') as
+        | SignatureAlgorithm
+        | undefined,
+      digestAlgorithm: config.getOptionalString('digestAlgorithm'),
+
+      tokenIssuer,
+      appUrl: globalConfig.appUrl,
+    };
+
+    // passport-saml will return an error if the `cert` key is set, and the value is empty.
+    // Since we read from config (such as environment variables) an empty string should be equal to being unset.
+    if (!opts.cert) {
+      delete opts.cert;
+    }
+    return new SamlAuthProvider(opts);
   };
-
-  return new SamlAuthProvider(opts);
 };

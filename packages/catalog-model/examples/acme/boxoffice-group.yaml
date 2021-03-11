@@ -5,7 +5,9 @@ metadata:
   description: The boxoffice sub-department
 spec:
   type: sub-department
+  profile:
+    displayName: Box Office
+    email: boxoffice@example.com
+    # Intentional no picture for testing
   parent: infrastructure
-  ancestors: [infrastructure, acme-corp]
   children: [team-c, team-d]
-  descendants: [team-c, team-d]

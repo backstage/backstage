@@ -15,14 +15,32 @@
  */
 
 import React from 'react';
-import { ErrorPage } from '@backstage/core';
+import { ErrorPage, useApi, configApiRef } from '@backstage/core';
 
-export const TechDocsNotFound = () => {
+type Props = {
+  errorMessage?: string;
+  statusCode?: number;
+};
+
+export const TechDocsNotFound = ({ errorMessage, statusCode }: Props) => {
+  const techdocsBuilder = useApi(configApiRef).getOptionalString(
+    'techdocs.builder',
+  );
+
+  let additionalInfo = '';
+  if (techdocsBuilder !== 'local') {
+    additionalInfo =
+      "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
+      "generate docs if they are not found. Make sure the project's docs are generated and published by some external " +
+      "process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage " +
+      'instance.';
+  }
+
   return (
     <ErrorPage
-      status="404"
-      statusMessage="Documentation not found"
-      additionalInfo={window.location.pathname}
+      status={statusCode ? statusCode.toString() : '404'}
+      statusMessage={errorMessage || 'Documentation not found'}
+      additionalInfo={additionalInfo}
     />
   );
 };

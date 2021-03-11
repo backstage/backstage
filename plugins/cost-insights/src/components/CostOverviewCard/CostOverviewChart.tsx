@@ -16,7 +16,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { useTheme } from '@material-ui/core';
+import { useTheme, Box } from '@material-ui/core';
 import {
   ComposedChart,
   ContentRenderer,
@@ -50,6 +50,7 @@ import {
 import { useCostOverviewStyles as useStyles } from '../../utils/styles';
 import { groupByDate, toDataMax, trendFrom } from '../../utils/charts';
 import { aggregationSort } from '../../utils/sort';
+import { CostOverviewLegend } from './CostOverviewLegend';
 
 dayjs.extend(utc);
 
@@ -93,7 +94,7 @@ export const CostOverviewChart = ({
     .sort(aggregationSort)
     .map(entry => ({
       date: Date.parse(entry.date),
-      trend: trendFrom(data.dailyCost.data.trendline, Date.parse(entry.date)),
+      trend: trendFrom(data.dailyCost.data.trendline!, Date.parse(entry.date)),
       dailyCost: entry.amount,
       ...(metric && data.metric.data
         ? { [data.metric.dataKey]: metricsByDate[`${entry.date}`] }
@@ -135,67 +136,74 @@ export const CostOverviewChart = ({
   };
 
   return (
-    <ResponsiveContainer
-      width={responsive ? '100%' : styles.container.width}
-      height={styles.container.height}
-      className="cost-overview-chart"
-    >
-      <ComposedChart margin={styles.chart.margin} data={chartData}>
-        <CartesianGrid stroke={styles.cartesianGrid.stroke} />
-        <XAxis
-          dataKey="date"
-          domain={['dataMin', 'dataMax']}
-          tickFormatter={overviewGraphTickFormatter}
-          tickCount={6}
-          type="number"
-          stroke={styles.axis.fill}
-        />
-        <YAxis
-          domain={[() => 0, 'dataMax']}
-          tick={{ fill: styles.axis.fill }}
-          tickFormatter={formatGraphValue}
-          width={styles.yAxis.width}
-          yAxisId={data.dailyCost.dataKey}
-        />
-        {metric && (
-          <YAxis
-            hide
-            domain={[() => 0, toDataMax(data.metric.dataKey, chartData)]}
-            width={styles.yAxis.width}
-            yAxisId={data.metric.dataKey}
+    <Box display="flex" flexDirection="column">
+      <CostOverviewLegend
+        dailyCostData={dailyCostData}
+        metric={metric}
+        metricData={metricData}
+      />
+      <ResponsiveContainer
+        width={responsive ? '100%' : styles.container.width}
+        height={styles.container.height}
+        className="cost-overview-chart"
+      >
+        <ComposedChart margin={styles.chart.margin} data={chartData}>
+          <CartesianGrid stroke={styles.cartesianGrid.stroke} />
+          <XAxis
+            dataKey="date"
+            domain={['dataMin', 'dataMax']}
+            tickFormatter={overviewGraphTickFormatter}
+            tickCount={6}
+            type="number"
+            stroke={styles.axis.fill}
           />
-        )}
-        <Area
-          dataKey={data.dailyCost.dataKey}
-          isAnimationActive={false}
-          fill={theme.palette.blue}
-          fillOpacity={0.4}
-          stroke="none"
-          yAxisId={data.dailyCost.dataKey}
-        />
-        <Line
-          activeDot={false}
-          dataKey="trend"
-          dot={false}
-          isAnimationActive={false}
-          label={false}
-          strokeWidth={2}
-          stroke={theme.palette.blue}
-          yAxisId={data.dailyCost.dataKey}
-        />
-        {metric && (
+          <YAxis
+            domain={[() => 0, 'dataMax']}
+            tick={{ fill: styles.axis.fill }}
+            tickFormatter={formatGraphValue}
+            width={styles.yAxis.width}
+            yAxisId={data.dailyCost.dataKey}
+          />
+          {metric && (
+            <YAxis
+              hide
+              domain={[() => 0, toDataMax(data.metric.dataKey, chartData)]}
+              width={styles.yAxis.width}
+              yAxisId={data.metric.dataKey}
+            />
+          )}
+          <Area
+            dataKey={data.dailyCost.dataKey}
+            isAnimationActive={false}
+            fill={theme.palette.blue}
+            fillOpacity={0.4}
+            stroke="none"
+            yAxisId={data.dailyCost.dataKey}
+          />
           <Line
-            dataKey={data.metric.dataKey}
+            activeDot={false}
+            dataKey="trend"
             dot={false}
             isAnimationActive={false}
             label={false}
             strokeWidth={2}
-            stroke={theme.palette.magenta}
-            yAxisId={data.metric.dataKey}
+            stroke={theme.palette.blue}
+            yAxisId={data.dailyCost.dataKey}
           />
-        )}
-        <RechartsTooltip content={tooltipRenderer} animationDuration={100} />
-      </ComposedChart>
-    </ResponsiveContainer>
+          {metric && (
+            <Line
+              dataKey={data.metric.dataKey}
+              dot={false}
+              isAnimationActive={false}
+              label={false}
+              strokeWidth={2}
+              stroke={theme.palette.magenta}
+              yAxisId={data.metric.dataKey}
+            />
+          )}
+          <RechartsTooltip content={tooltipRenderer} animationDuration={100} />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </Box>
   );
 };

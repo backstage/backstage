@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
-import { InfoCard, StructuredMetadataTable } from '@backstage/core';
+import {
+  InfoCard,
+  InfoCardVariants,
+  StructuredMetadataTable,
+} from '@backstage/core';
+import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
-import { useBuilds } from '../useBuilds';
+import { DateTime, Duration } from 'luxon';
+import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
+import { useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
@@ -30,14 +35,21 @@ const useStyles = makeStyles<Theme>({
 
 const WidgetContent = ({
   loading,
-  lastRun,
+  latestRun,
 }: {
   loading?: boolean;
-  lastRun: any;
+  latestRun: any;
   branch: string;
 }) => {
   const classes = useStyles();
-  if (loading || !lastRun) return <LinearProgress />;
+  if (loading || !latestRun) return <LinearProgress />;
+  const displayDate = DateTime.fromMillis(latestRun.timestamp).toRelative();
+  const displayDuration =
+    (latestRun.building ? 'Running for ' : '') +
+    DateTime.local()
+      .minus(Duration.fromMillis(latestRun.duration))
+      .toRelative({ locale: 'en' })
+      ?.replace(' ago', '');
 
   return (
     <StructuredMetadataTable
@@ -45,13 +57,15 @@ const WidgetContent = ({
         status: (
           <>
             <JenkinsRunStatus
-              status={lastRun.building ? 'running' : lastRun.result}
+              status={latestRun.building ? 'running' : latestRun.result}
             />
           </>
         ),
-        build: lastRun.fullDisplayName,
-        url: (
-          <Link href={lastRun.url} target="_blank">
+        build: latestRun.fullDisplayName,
+        'latest run': displayDate,
+        duration: displayDuration,
+        link: (
+          <Link href={latestRun.url} target="_blank">
             See more on Jenkins{' '}
             <ExternalLinkIcon className={classes.externalLinkIcon} />
           </Link>
@@ -66,14 +80,14 @@ export const LatestRunCard = ({
   variant,
 }: {
   branch: string;
-  variant?: string;
+  variant?: InfoCardVariants;
 }) => {
   const { owner, repo } = useProjectSlugFromEntity();
   const [{ builds, loading }] = useBuilds(owner, repo, branch);
-  const lastRun = builds ?? {};
+  const latestRun = builds ?? {};
   return (
-    <InfoCard title={`Last ${branch} build`} variant={variant}>
-      <WidgetContent loading={loading} branch={branch} lastRun={lastRun} />
+    <InfoCard title={`Latest ${branch} build`} variant={variant}>
+      <WidgetContent loading={loading} branch={branch} latestRun={latestRun} />
     </InfoCard>
   );
 };

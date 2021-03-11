@@ -14,57 +14,34 @@
  * limitations under the License.
  */
 
-import * as yup from 'yup';
 import type { Entity } from '../entity/Entity';
-import { schemaValidator } from './util';
+import schema from '../schema/kinds/Group.v1alpha1.schema.json';
+import entitySchema from '../schema/Entity.schema.json';
+import entityMetaSchema from '../schema/EntityMeta.schema.json';
+import commonSchema from '../schema/shared/common.schema.json';
+import { ajvCompiledJsonSchemaValidator } from './util';
 
 const API_VERSION = ['backstage.io/v1alpha1', 'backstage.io/v1beta1'] as const;
 const KIND = 'Group' as const;
-
-const schema = yup.object<Partial<GroupEntityV1alpha1>>({
-  apiVersion: yup.string().required().oneOf(API_VERSION),
-  kind: yup.string().required().equals([KIND]),
-  spec: yup
-    .object({
-      type: yup.string().required().min(1),
-      parent: yup.string().notRequired().min(1),
-      // Use these manual tests because yup .required() requires at least
-      // one element and there is no simple workaround -_-
-      // the cast is there to convince typescript that the array itself is
-      // required without using .required()
-      ancestors: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'ancestors must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-      children: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'children must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-      descendants: yup.array(yup.string().required()).test({
-        name: 'isDefined',
-        message: 'descendants must be defined',
-        test: v => Boolean(v),
-      }) as yup.ArraySchema<string, object>,
-    })
-    .required(),
-});
 
 export interface GroupEntityV1alpha1 extends Entity {
   apiVersion: typeof API_VERSION[number];
   kind: typeof KIND;
   spec: {
     type: string;
+    profile?: {
+      displayName?: string;
+      email?: string;
+      picture?: string;
+    };
     parent?: string;
-    ancestors: string[];
     children: string[];
-    descendants: string[];
   };
 }
 
-export const groupEntityV1alpha1Validator = schemaValidator(
+export const groupEntityV1alpha1Validator = ajvCompiledJsonSchemaValidator(
   KIND,
   API_VERSION,
   schema,
+  [commonSchema, entityMetaSchema, entitySchema],
 );

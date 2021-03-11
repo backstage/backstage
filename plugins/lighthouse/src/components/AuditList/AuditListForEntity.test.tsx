@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
+import { Entity } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import { render } from '@testing-library/react';
+import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import {
   lighthouseApiRef,
   LighthouseRestApi,
   WebsiteListResponse,
 } from '../../api';
-
-import * as data from '../../__fixtures__/website-list-response.json';
-import { EntityContext } from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
-import { AuditListForEntity } from './AuditListForEntity';
-import { lightTheme } from '@backstage/theme';
-import { ThemeProvider } from '@material-ui/core';
-import { MemoryRouter } from 'react-router-dom';
 import { useWebsiteForEntity } from '../../hooks/useWebsiteForEntity';
+import * as data from '../../__fixtures__/website-list-response.json';
+import { AuditListForEntity } from './AuditListForEntity';
 
 jest.mock('../../hooks/useWebsiteForEntity', () => ({
   useWebsiteForEntity: jest.fn(),

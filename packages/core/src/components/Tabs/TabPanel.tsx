@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import Box from '@material-ui/core/Box';
 
 export interface TabPanelProps {
-  children: any;
   value?: any;
   index?: number;
 }
 
-export const TabPanel: FC<TabPanelProps> = props => {
+export const TabPanel = (props: PropsWithChildren<TabPanelProps>) => {
   const { children, value, index, ...other } = props;
 
   return (

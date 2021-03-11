@@ -92,4 +92,32 @@ export class CommonValidatorFunctions {
       /^[a-z0-9]+(\-[a-z0-9]+)*$/.test(value)
     );
   }
+
+  /**
+   * Checks that the value is a valid URL.
+   *
+   * @param value The value to check
+   */
+  static isValidUrl(value: unknown): boolean {
+    if (typeof value !== 'string') {
+      return false;
+    }
+
+    try {
+      // eslint-disable-next-line no-new
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Checks that the value is a non empty string value.
+   *
+   * @param value The value to check
+   */
+  static isValidString(value: unknown): boolean {
+    return typeof value === 'string' && value?.trim()?.length >= 1;
+  }
 }

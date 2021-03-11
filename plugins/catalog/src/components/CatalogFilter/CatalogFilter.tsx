@@ -81,6 +81,14 @@ type Props = {
 };
 
 /**
+ * Sidebar filter type and human readable label for it. owned/starred/all
+ */
+export type CatalogFilterType = {
+  id: string;
+  label: string;
+};
+
+/**
  * The main filter group in the sidebar, toggling owned/starred/all.
  */
 export const CatalogFilter = ({

@@ -48,6 +48,19 @@ h6 {
   color: $textColor;
 }
 
+summary {
+  color: $textColor;
+  cursor: pointer;
+}
+
+h2:hover .hash-link {
+  opacity: 1;
+}
+
+.hash-link {
+  fill: white;
+}
+
 /* body elements  */
 p,
 ul,
@@ -1022,6 +1035,55 @@ code {
   }
 }
 
+.Banner {
+  position: relative;
+  padding: 14px;
+  margin: 14px 20px;
+  border-radius: 4px;
+  background-color: $primaryColor;
+  font-family: Helvetica Neue, sans-serif;
+  color: #000;
+}
+
+.Banner--hidden {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.Banner a {
+  color: #000;
+  text-decoration: underline;
+}
+
+.Banner__Container {
+  position: relative;
+  overflow: visible;
+  z-index: 100;
+
+  max-width: 1430px;
+  height: 0;
+  margin: -14px auto 14px auto;
+}
+
+.Banner__DismissButton {
+  position: absolute;
+  display: flex;
+  right: 8px;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+
+  border-radius: 50%;
+  padding: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+}
+
+.Banner__DismissButton:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .logos-mobile-background {
   position: absolute;
   width: 200vw;
@@ -1051,6 +1113,10 @@ code {
 
 .post p {
   font-size: 115%;
+}
+
+.post pre {
+  color: #e4e4e4;
 }
 
 .Block__GIF {
@@ -1093,4 +1159,9 @@ code {
     width: auto;
     margin: 0 1.5em;
   }
+}
+
+/* Zoomed images using the medium-zoom library should be on top of screen. */
+.medium-zoom-image {
+  z-index: 10000;
 }

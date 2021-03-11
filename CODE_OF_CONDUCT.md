@@ -18,7 +18,7 @@ Harassment includes, but is not limited to:
 - Offensive comments related to gender, gender identity and expression, sexual orientation, disability, mental illness, neuro(a)typicality, physical appearance, body size, race, age, regional discrimination, political or religious affiliation
 - Unwelcome comments regarding a person’s lifestyle choices and practices, including those related to food, health, parenting, drugs, and employment
 - Deliberate misgendering. This includes deadnaming or persistently using a pronoun that does not correctly reflect a person's gender identity. You must address people by the name they give you when not addressing them by their username or handle
-- Physical contact and simulated physical contact (eg, textual descriptions like “_hug_” or “_backrub_”) without consent or after a request to stop
+- Physical contact and simulated physical contact (e.g., textual descriptions like “_hug_” or “_backrub_”) without consent or after a request to stop
 - Threats of violence, both physical and psychological
 - Incitement of violence towards any individual, including encouraging a person to commit suicide or to engage in self-harm
 - Deliberate intimidation

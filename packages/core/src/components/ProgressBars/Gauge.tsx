@@ -17,7 +17,7 @@
 import { makeStyles, useTheme } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 import { Circle } from 'rc-progress';
-import React, { FC } from 'react';
+import React from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   root: {
@@ -77,7 +77,7 @@ export function getProgressColor(
   return palette.status.ok;
 }
 
-export const Gauge: FC<Props> = props => {
+export const Gauge = (props: Props) => {
   const classes = useStyles(props);
   const theme = useTheme<BackstageTheme>();
   const { value, fractional, inverse, unit, max } = {

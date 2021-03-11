@@ -13,45 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import {
   createRouter,
-  DirectoryPreparer,
-  Preparers,
   Generators,
-  LocalPublish,
-  TechdocsGenerator,
-  CommonGitPreparer,
-  UrlPreparer,
+  Preparers,
+  Publisher,
 } from '@backstage/plugin-techdocs-backend';
-import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
   config,
   discovery,
   reader,
-}: PluginEnvironment) {
-  const generators = new Generators();
-  const techdocsGenerator = new TechdocsGenerator(logger, config);
-  generators.register('techdocs', techdocsGenerator);
+}: PluginEnvironment): Promise<Router> {
+  // Preparers are responsible for fetching source files for documentation.
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
 
-  const preparers = new Preparers();
+  // Generators are used for generating documentation sites.
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
 
-  const directoryPreparer = new DirectoryPreparer(logger);
-  preparers.register('dir', directoryPreparer);
+  // Publisher is used for
+  // 1. Publishing generated files to storage
+  // 2. Fetching files from storage and passing them to TechDocs frontend.
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
 
-  const commonGitPreparer = new CommonGitPreparer(logger);
-  preparers.register('github', commonGitPreparer);
-  preparers.register('gitlab', commonGitPreparer);
-  preparers.register('azure/api', commonGitPreparer);
-
-  const urlPreparer = new UrlPreparer(reader, logger);
-  preparers.register('url', urlPreparer);
-
-  const publisher = new LocalPublish(logger);
-
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
   const dockerClient = new Docker();
 
   return await createRouter({

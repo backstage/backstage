@@ -15,17 +15,18 @@
  */
 
 import React from 'react';
-import CodeIcon from '@material-ui/icons/Code';
-import { Header, HeaderLabel, Link } from '@backstage/core';
-import { CircularProgress } from '@material-ui/core';
-import { ParsedEntityId } from '../../types';
 import { AsyncState } from 'react-use/lib/useAsync';
+import CodeIcon from '@material-ui/icons/Code';
+import { EntityName, parseEntityName } from '@backstage/catalog-model';
+import { Header, HeaderLabel, Link, useRouteRef } from '@backstage/core';
+import { TechDocsMetadata } from '../../types';
+import { EntityRefLink, entityRouteRef } from '@backstage/plugin-catalog-react';
 
 type TechDocsPageHeaderProps = {
-  entityId: ParsedEntityId;
+  entityId: EntityName;
   metadataRequest: {
     entity: AsyncState<any>;
-    mkdocs: AsyncState<any>;
+    techdocs: AsyncState<TechDocsMetadata>;
   };
 };
 
@@ -33,34 +34,57 @@ export const TechDocsPageHeader = ({
   entityId,
   metadataRequest,
 }: TechDocsPageHeaderProps) => {
-  const { mkdocs: mkdocsMetadata, entity: entityMetadata } = metadataRequest;
+  const {
+    techdocs: techdocsMetadata,
+    entity: entityMetadata,
+  } = metadataRequest;
 
-  const { value: mkDocsMetadataValues } = mkdocsMetadata;
+  const { value: techdocsMetadataValues } = techdocsMetadata;
   const { value: entityMetadataValues } = entityMetadata;
 
-  const { kind, name } = entityId;
+  const { name } = entityId;
 
   const { site_name: siteName, site_description: siteDescription } =
-    mkDocsMetadataValues || {};
+    techdocsMetadataValues || {};
 
   const {
     locationMetadata,
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
-  const componentLink = `/catalog/${kind}/${name}`;
+  const componentLink = useRouteRef(entityRouteRef);
+
+  let ownerEntity;
+  if (owner) {
+    ownerEntity = parseEntityName(owner, { defaultKind: 'group' });
+  }
 
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={componentLink}>
+          <Link style={{ color: '#fff' }} to={componentLink(entityId)}>
             {name}
           </Link>
         }
       />
-      {owner ? <HeaderLabel label="Site Owner" value={owner} /> : null}
+      {owner ? (
+        <HeaderLabel
+          label="Owner"
+          value={
+            ownerEntity ? (
+              <EntityRefLink
+                style={{ color: '#fff' }}
+                entityRef={ownerEntity}
+                defaultKind="group"
+              />
+            ) : (
+              owner
+            )
+          }
+        />
+      ) : null}
       {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
@@ -83,13 +107,13 @@ export const TechDocsPageHeader = ({
 
   return (
     <Header
-      title={siteName ? siteName : <CircularProgress />}
+      title={siteName ? siteName : '.'}
       pageTitleOverride={siteName || name}
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
       type={name}
-      typeLink={componentLink}
+      typeLink={componentLink(entityId)}
     >
       {labels}
     </Header>

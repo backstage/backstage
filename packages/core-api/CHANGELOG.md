@@ -1,5 +1,129 @@
 # @backstage/core-api
 
+## 0.2.12
+
+### Patch Changes
+
+- 40c0fdbaa: Added support for optional external route references. By setting `optional: true` when creating an `ExternalRouteRef` it is no longer a requirement to bind the route in the app. If the app isn't bound `useRouteRef` will return `undefined`.
+- 2a271d89e: Internal refactor of how component data is access to avoid polluting components and make it possible to bridge across versions.
+
+## 0.2.11
+
+### Patch Changes
+
+- 3a58084b6: The `FlatRoutes` components now renders the not found page of the app if no routes are matched.
+- 1407b34c6: More informative error message for missing ApiContext.
+- b6c4f485d: Fix error when querying Backstage Identity with SAML authentication
+- 3a58084b6: Created separate `AppContext` type to be returned from `useApp` rather than the `BackstageApp` itself. The `AppContext` type includes but deprecates `getPlugins`, `getProvider`, `getRouter`, and `getRoutes`. In addition, the `AppContext` adds a new `getComponents` method which providers access to the app components.
+- Updated dependencies [a1f5e6545]
+  - @backstage/config@0.1.3
+
+## 0.2.10
+
+### Patch Changes
+
+- f10950bd2: Minor refactoring of BackstageApp.getSystemIcons to support custom registered
+  icons. Custom Icons can be added using:
+
+  ```tsx
+  import AlarmIcon from '@material-ui/icons/Alarm';
+  import MyPersonIcon from './MyPerson';
+
+  const app = createApp({
+    icons: {
+      user: MyPersonIcon // override system icon
+      alert: AlarmIcon, // Custom icon
+    },
+  });
+  ```
+
+- fd3f2a8c0: Export `createExternalRouteRef`, as well as give it an `id` for easier debugging, and fix parameter requirements when used with `useRouteRef`.
+
+## 0.2.9
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
+## 0.2.8
+
+### Patch Changes
+
+- a08c32ced: Add `FlatRoutes` component to replace the top-level `Routes` component from `react-router` within apps, removing the need for manually appending `/*` to paths or sorting routes.
+- 86c3c652a: Deprecate `RouteRef` path parameter and member, and remove deprecated `routeRef.createSubRouteRef`.
+- 27f2af935: Delay auth loginPopup close to avoid race condition with callers of authFlowHelpers.
+
+## 0.2.7
+
+### Patch Changes
+
+- d681db2b5: Fix for GitHub and SAML auth not properly updating session state when already logged in.
+- 1dc445e89: Introduce new plugin extension API
+- Updated dependencies [1dc445e89]
+  - @backstage/test-utils@0.1.6
+
+## 0.2.6
+
+### Patch Changes
+
+- 7dd2ef7d1: Use auth provider ID to create unique session storage keys for GitHub and SAML Auth.
+
+## 0.2.5
+
+### Patch Changes
+
+- b6557c098: Update ApiFactory type to correctly infer API type and disallow mismatched implementations.
+
+  This fixes for example the following code:
+
+  ```ts
+  interface MyApi {
+    myMethod(): void
+  }
+
+  const myApiRef = createApiRef<MyApi>({...});
+
+  createApiFactory({
+    api: myApiRef,
+    deps: {},
+    // This should've caused an error, since the empty object does not fully implement MyApi
+    factory: () => ({}),
+  })
+  ```
+
+- d8d5a17da: Deprecated the `ConcreteRoute`, `MutableRouteRef`, `AbsoluteRouteRef` types and added a new `RouteRef` type as replacement.
+
+  Deprecated and disabled the `createSubRoute` method of `AbsoluteRouteRef`.
+
+  Add an as of yet unused `params` option to `createRouteRef`.
+
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/config@0.1.2
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
+## 0.2.4
+
+### Patch Changes
+
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+  - @backstage/test-utils@0.1.4
+
+## 0.2.3
+
+### Patch Changes
+
+- 700a212b4: bug fix: issue 3223 - detect mismatching origin and indicate it in the message at auth failure
+
+## 0.2.2
+
+### Patch Changes
+
+- 9b9e86f8a: export oidc provider
+
 ## 0.2.1
 
 ### Patch Changes
@@ -43,7 +167,7 @@
 
   ![](https://user-images.githubusercontent.com/872486/93851658-1a76f200-fce3-11ea-990b-26ca1a327a15.png)
 
-- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the Github Auth Api. As a result the
+- b79017fd3: Updated the `GithubAuth.create` method to configure the default scope of the GitHub Auth Api. As a result the
   default scope is configurable when overwriting the Core Api in the app.
 
   ```

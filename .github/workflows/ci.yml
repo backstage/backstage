@@ -15,6 +15,10 @@ jobs:
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
+      INTEGRATION_TEST_GITHUB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITHUB_TOKEN }}
+      INTEGRATION_TEST_GITLAB_TOKEN: ${{ secrets.INTEGRATION_TEST_GITLAB_TOKEN }}
+      INTEGRATION_TEST_BITBUCKET_TOKEN: ${{ secrets.INTEGRATION_TEST_BITBUCKET_TOKEN }}
+      INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
@@ -72,6 +76,9 @@ jobs:
       - name: prettier
         run: yarn prettier:check
 
+      - name: validate config
+        run: yarn backstage-cli config:check --lax
+
       - name: lint
         run: yarn lerna -- run lint --since origin/master
 
@@ -80,7 +87,7 @@ jobs:
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
-        run: yarn lerna -- run build --since origin/master
+        run: yarn lerna -- run build --since origin/master --include-dependencies
 
       - name: build all packages
         if: ${{ steps.yarn-lock.outcome == 'failure' }}

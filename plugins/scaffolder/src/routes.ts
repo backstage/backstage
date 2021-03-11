@@ -15,13 +15,6 @@
  */
 import { createRouteRef } from '@backstage/core';
 
-export const rootRoute = createRouteRef({
-  icon: () => null,
-  path: '/create',
+export const rootRouteRef = createRouteRef({
   title: 'Create new entity',
-});
-export const templateRoute = createRouteRef({
-  icon: () => null,
-  path: '/create/:templateName',
-  title: 'Entity creation',
 });

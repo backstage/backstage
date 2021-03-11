@@ -21,15 +21,25 @@ import { BuildWithStepsPage } from './BuildWithStepsPage/';
 import { BuildsPage } from './BuildsPage';
 import { CIRCLECI_ANNOTATION } from '../constants';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { MissingAnnotationEmptyState } from '@backstage/core';
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isCircleCIAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[CIRCLECI_ANNOTATION]);
 
-export const Router = ({ entity }: { entity: Entity }) =>
-  !isPluginApplicableToEntity(entity) ? (
-    <MissingAnnotationEmptyState annotation={CIRCLECI_ANNOTATION} />
-  ) : (
+type Props = {
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
+};
+
+export const Router = (_props: Props) => {
+  const { entity } = useEntity();
+
+  if (!isCircleCIAvailable(entity)) {
+    return <MissingAnnotationEmptyState annotation={CIRCLECI_ANNOTATION} />;
+  }
+
+  return (
     <Routes>
       <Route path={`/${circleCIRouteRef.path}`} element={<BuildsPage />} />
       <Route
@@ -38,3 +48,4 @@ export const Router = ({ entity }: { entity: Entity }) =>
       />
     </Routes>
   );
+};

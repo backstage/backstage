@@ -8,9 +8,9 @@ description: Roadmap of Backstage Project
 
 > Backstage is currently under rapid development. This means that you can expect
 > APIs and features to evolve. It is also recommended that teams who adopt
-> Backstage today upgrade their installation as new
-> [releases](https://github.com/backstage/backstage/releases) become available,
-> as Backwards compatibility is not yet guaranteed.
+> Backstage today [upgrade their installation](../cli/commands.md#versionsbump)
+> as new [releases](https://github.com/backstage/backstage/releases) become
+> available, as Backwards compatibility is not yet guaranteed.
 
 ## Phases
 
@@ -47,54 +47,43 @@ guidelines to get started.
 
 ### Ongoing work 🚧
 
-- **[Plugins for managing micro services end-2-end](https://github.com/backstage/backstage/milestone/14)**
-  Out of the box Backstage will ship with a set of plugins (Overview, CI, API
-  and Docs) that will demonstrate how a user can manage a micro service and
-  follow a change all the way out in production. Completing this work will make
-  it much easier to see how a plugin can be built that integrates with the
-  Backstage Service Catalog.
+- **[Platform stabilization](https://github.com/backstage/backstage/milestone/19)** -
+  Stabilize the core of Backstage, including its core features, so that the
+  platform can be depended on for production use. After this, plugins will
+  require little-to-no maintenance.
 
-- **[Users and teams](https://github.com/backstage/backstage/issues/1807)**
-  Ownership is a central concept in Backstage. It should be easy to import your
-  existing organizational data, such as users and groups/teams, into Backstage.
-  A user the logs into Backstage should see software components owned by the
-  team(s) they are in.
+- **[Kubernetes plugin for service owners](https://github.com/backstage/backstage/issues/2857)** -
+  Improve native support for Kubernetes, making it easier for service owners to
+  see and manage their services running in K8s, regardless if that's locally, in
+  AWS, GCS, Azure, or elsewhere.
 
-- **[Backstage platform is stable](https://github.com/backstage/backstage/milestone/19)** -
-  The platform APIs and features are stable and can be depended on for
-  production use. After this plugins will require little to no maintenance.
+- **[Search platform](../features/search/README.md)** - Evolve the basic search
+  functionality currently available into a platform that **a)** enables search
+  across the software catalog, TechDocs, and any other information exposed by
+  plugins, and **b)** supports a variety of search engine technologies.
 
-* **[Improved Kubernetes plugin](https://github.com/backstage/backstage/issues/2857)** -
-  Native support for Kubernetes, making it easier for developers to see and
-  manage their services running in k8s.
-
-- Further improvements to platform documentation. Examples include a Golden Path
-  for plugin development.
+- **[Software Templates V2](https://github.com/backstage/backstage/issues/2771)** -
+  Expand the templates to make the steps more composable by adding the ability
+  to add more steps for custom logic, including webhooks and using authorization
+  from integrations.
 
 ### Future work 🔮
 
-- **Deploy a product demo at `demo.backstage.io`** - Deploy a typical Backstage
-  deployment available publicly so that people can click around and get a feel
-  for the product without having to install anything.
+- **Golden Path for Plugin Development** - Create an easy, standardized way for
+  developers to build plugins that will encourage contributions and lead to a
+  richer ecosystem for everyone.
 
-- **[Global search](https://github.com/backstage/backstage/issues/1499)** -
-  Extend the basic search available in the Backstage Service Catalog with a
-  global search experience. Long term this search solution should be extensible,
-  making it possible for you add custom search results.
-
-- **[[TechDocs V.2] Stabilization release](https://github.com/backstage/backstage/milestone/17)** -
-  Platform stability and compatibility improvements.
-
-- **Additional auth providers** - Backstage should work for most (all!) auth
-  solutions. Since Backstage can be used by companies regardless of what cloud
-  (or on prem) you are using we are especially keen to get auth support for
-  [AWS](https://github.com/backstage/backstage/issues/290),
-  [Azure](https://github.com/backstage/backstage/issues/348) and others.
-
-- **[Initial GraphQL API](https://github.com/backstage/backstage/milestone/13)** -
-  A GraphQL API will open up the rich metadata provided by Backstage in a single
+- **[GraphQL API](https://github.com/backstage/backstage/milestone/13)** - A
+  GraphQL API will open up the rich metadata provided by Backstage in a single
   query. Plugins can easily query this API as well as extend the model where
   needed.
+
+- **Inter-Plugin Communication** - **[Under consideration]** Establish more
+  clearly defined patterns for plugins to communicate.
+
+- **Improved Access Control** - **[Under consideration]** Provide finer grained
+  access controls and management for better control of the platform user
+  experience.
 
 ### Plugins
 
@@ -110,8 +99,19 @@ Are you missing a plugin for your favorite tool? Please
 [suggest a new one](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
 Chances are that someone will jump in and help build it.
 
+### Community Initiatives 🧑‍🤝‍🧑
+
+- [**Backstage Community Sessions**](https://github.com/backstage/community#meetups) -
+  A monthly meetup for the community to come together to share and learn about
+  the latest happenings in Backstage.
+
+- **Backstage Hackathons** - (Coming soon) Open to everyone in our Backstage
+  community, a celebration of you, the project and building awesome things
+  together
+
 ### Completed milestones ✅
 
+- [Deploy a product demo at `demo.backstage.io`](https://demo.backstage.io)
 - [Kubernetes plugin - v1](https://github.com/backstage/backstage/tree/master/plugins/kubernetes)
 - [Helm charts](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage)
 - [Backstage Design System 💅](https://backstage.io/blog/2020/09/30/backstage-design-system)

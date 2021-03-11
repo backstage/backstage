@@ -20,16 +20,11 @@ import { ConfigClusterLocator } from './ConfigClusterLocator';
 
 describe('ConfigClusterLocator', () => {
   it('empty clusters returns empty cluster details', async () => {
-    const config: Config = new ConfigReader(
-      {
-        clusters: [],
-      },
-      'ctx',
-    );
+    const config: Config = new ConfigReader({
+      clusters: [],
+    });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 
@@ -37,22 +32,17 @@ describe('ConfigClusterLocator', () => {
   });
 
   it('one clusters returns one cluster details', async () => {
-    const config: Config = new ConfigReader(
-      {
-        clusters: [
-          {
-            name: 'cluster1',
-            url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
-          },
-        ],
-      },
-      'ctx',
-    );
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+        },
+      ],
+    });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 
@@ -67,28 +57,23 @@ describe('ConfigClusterLocator', () => {
   });
 
   it('two clusters returns two cluster details', async () => {
-    const config: Config = new ConfigReader(
-      {
-        clusters: [
-          {
-            name: 'cluster1',
-            serviceAccountToken: 'token',
-            url: 'http://localhost:8080',
-            authProvider: 'serviceAccount',
-          },
-          {
-            name: 'cluster2',
-            url: 'http://localhost:8081',
-            authProvider: 'google',
-          },
-        ],
-      },
-      'ctx',
-    );
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster1',
+          serviceAccountToken: 'token',
+          url: 'http://localhost:8080',
+          authProvider: 'serviceAccount',
+        },
+        {
+          name: 'cluster2',
+          url: 'http://localhost:8081',
+          authProvider: 'google',
+        },
+      ],
+    });
 
-    const sut = ConfigClusterLocator.fromConfig(
-      config.getConfigArray('clusters'),
-    );
+    const sut = ConfigClusterLocator.fromConfig(config);
 
     const result = await sut.getClusters();
 

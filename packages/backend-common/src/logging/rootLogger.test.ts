@@ -15,7 +15,7 @@
  */
 
 import * as winston from 'winston';
-import { getRootLogger, setRootLogger } from './rootLogger';
+import { createRootLogger, getRootLogger, setRootLogger } from './rootLogger';
 
 describe('rootLogger', () => {
   it('can replace the default logger', () => {
@@ -28,5 +28,71 @@ describe('rootLogger', () => {
     expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('testing'),
     );
+  });
+
+  describe('createRootLoger', () => {
+    it('creates a new logger', () => {
+      const oldLogger = getRootLogger();
+      const newLogger = createRootLogger();
+
+      expect(oldLogger).not.toBe(newLogger);
+    });
+
+    it('replaces the existing root logger', () => {
+      const oldLogger = getRootLogger();
+      createRootLogger();
+      const newLogger = getRootLogger();
+      expect(oldLogger).not.toBe(newLogger);
+    });
+
+    it('can append additional default metadata', () => {
+      const format = winston.format.json();
+      const logger = createRootLogger({
+        format,
+        defaultMeta: {
+          appName: 'backstage',
+          appEnv: 'prod',
+          containerId: 'abc',
+        },
+      });
+      jest.spyOn(format, 'transform');
+
+      logger.info('testing');
+
+      expect(format.transform).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'testing',
+          service: 'backstage',
+          appName: 'backstage',
+          appEnv: 'prod',
+          containerId: 'abc',
+        }),
+        {},
+      );
+    });
+
+    it('can add override existing transports', () => {
+      const transport = new winston.transports.Console({ level: 'debug' });
+      const logger = createRootLogger({ transports: [transport] });
+      expect(logger.transports.length).toBe(1);
+      expect(logger.transports[0]).toBe(transport);
+    });
+
+    it('can append an additional transport', () => {
+      const logger = createRootLogger();
+      const transport = new winston.transports.Console({ level: 'debug' });
+      logger.add(transport);
+      expect(logger.transports.length).toBe(2);
+      expect(logger.transports[1]).toBe(transport);
+      expect(logger.transports[1].level).toBe('debug');
+    });
+
+    it('can override default format', () => {
+      const format = winston.format(() => false)();
+      const logger = createRootLogger({ format });
+      expect(
+        logger.format.transform({ message: 'hello', level: 'info' }),
+      ).toBeFalsy();
+    });
   });
 });

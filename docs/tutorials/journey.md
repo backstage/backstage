@@ -22,7 +22,7 @@ music and wants to have a theme tune for every service in Backstage.
 
 Sam built a Spotify plugin for Backstage that allows service owners to define a
 theme tune for their service. The theme tune plays whenever a user visits the
-service page in Backstage. The plugin is published to NPM and available for any
+service page in Backstage. The plugin is published to npm and available for any
 organization to easily install and add to their Backstage installation.
 
 # 1. A New Plugin

@@ -15,10 +15,11 @@
  */
 
 import { OAuthApi } from '@backstage/core';
-import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-backend';
 import { KubernetesAuthProvider, KubernetesAuthProvidersApi } from './types';
 import { GoogleKubernetesAuthProvider } from './GoogleKubernetesAuthProvider';
 import { ServiceAccountKubernetesAuthProvider } from './ServiceAccountKubernetesAuthProvider';
+import { AwsKubernetesAuthProvider } from './AwsKubernetesAuthProvider';
 
 export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
   private readonly kubernetesAuthProviderMap: Map<
@@ -36,12 +37,13 @@ export class KubernetesAuthProviders implements KubernetesAuthProvidersApi {
       'serviceAccount',
       new ServiceAccountKubernetesAuthProvider(),
     );
+    this.kubernetesAuthProviderMap.set('aws', new AwsKubernetesAuthProvider());
   }
 
   async decorateRequestBodyForAuth(
     authProvider: string,
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody> {
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody> {
     const kubernetesAuthProvider:
       | KubernetesAuthProvider
       | undefined = this.kubernetesAuthProviderMap.get(authProvider);

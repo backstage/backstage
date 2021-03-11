@@ -24,7 +24,7 @@ import {
   Theme,
   Button,
 } from '@material-ui/core';
-import React, { FC, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useObservable } from 'react-use';
 import LoginRequestListItem from './LoginRequestListItem';
 import { useApi, oauthRequestApiRef } from '@backstage/core-api';
@@ -41,9 +41,7 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }));
 
-type OAuthRequestDialogProps = {};
-
-export const OAuthRequestDialog: FC<OAuthRequestDialogProps> = () => {
+export const OAuthRequestDialog = () => {
   const classes = useStyles();
   const [busy, setBusy] = useState(false);
   const oauthRequestApi = useApi(oauthRequestApiRef);

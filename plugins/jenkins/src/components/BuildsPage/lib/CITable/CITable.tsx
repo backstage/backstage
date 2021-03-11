@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import { Box, IconButton, Link, Typography, Tooltip } from '@material-ui/core';
 import RetryIcon from '@material-ui/icons/Replay';
-import GitHubIcon from '@material-ui/icons/GitHub';
+import JenkinsLogo from '../../../../assets/JenkinsLogo.svg';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { Table, TableColumn } from '@backstage/core';
 import { JenkinsRunStatus } from '../Status';
@@ -201,7 +201,7 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-export const CITableView: FC<Props> = ({
+export const CITableView = ({
   projectName,
   loading,
   pageSize,
@@ -211,7 +211,7 @@ export const CITableView: FC<Props> = ({
   onChangePage,
   onChangePageSize,
   total,
-}) => {
+}: Props) => {
   return (
     <Table
       isLoading={loading}
@@ -231,9 +231,9 @@ export const CITableView: FC<Props> = ({
       onChangeRowsPerPage={onChangePageSize}
       title={
         <Box display="flex" alignItems="center">
-          <GitHubIcon />
-          <Box mr={1} />
-          <Typography variant="h6">{projectName}</Typography>
+          <img src={JenkinsLogo} alt="Jenkins logo" height="50px" />
+          <Box mr={2} />
+          <Typography variant="h6">Project: {projectName}</Typography>
         </Box>
       }
       columns={generatedColumns}

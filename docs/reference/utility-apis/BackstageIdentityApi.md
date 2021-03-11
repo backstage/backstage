@@ -1,7 +1,7 @@
 # BackstageIdentityApi
 
 The BackstageIdentityApi type is defined at
-[packages/core-api/src/apis/definitions/auth.ts:134](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L134).
+[packages/core-api/src/apis/definitions/auth.ts:134](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L134).
 
 The following Utility APIs implement this type:
 
@@ -17,7 +17,11 @@ The following Utility APIs implement this type:
 
 - [oauth2ApiRef](./README.md#oauth2)
 
+- [oidcAuthApiRef](./README.md#oidcauth)
+
 - [oktaAuthApiRef](./README.md#oktaauth)
+
+- [oneloginAuthApiRef](./README.md#oneloginauth)
 
 - [samlAuthApiRef](./README.md#samlauth)
 
@@ -70,7 +74,7 @@ export type AuthRequestOptions = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L40).
+[packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L40).
 
 Referenced by: [getBackstageIdentity](#getbackstageidentity).
 
@@ -91,6 +95,6 @@ export type BackstageIdentity = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/auth.ts:147](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/auth.ts#L147).
+[packages/core-api/src/apis/definitions/auth.ts:147](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L147).
 
 Referenced by: [getBackstageIdentity](#getbackstageidentity).

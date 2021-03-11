@@ -25,18 +25,19 @@ export function createApiFactory<
   Api,
   Impl extends Api,
   Deps extends { [name in string]: unknown }
->(factory: ApiFactory<Api, Deps>): ApiFactory<Api, Deps>;
-export function createApiFactory<Api>(
+>(factory: ApiFactory<Api, Impl, Deps>): ApiFactory<Api, Impl, Deps>;
+export function createApiFactory<Api, Impl extends Api>(
   api: ApiRef<Api>,
-  instance: Api,
-): ApiFactory<Api, {}>;
+  instance: Impl,
+): ApiFactory<Api, Impl, {}>;
 export function createApiFactory<
   Api,
+  Impl extends Api,
   Deps extends { [name in string]: unknown }
 >(
-  factory: ApiFactory<Api, Deps> | ApiRef<Api>,
-  instance?: Api,
-): ApiFactory<Api, Deps> {
+  factory: ApiFactory<Api, Impl, Deps> | ApiRef<Api>,
+  instance?: Impl,
+): ApiFactory<Api, Impl, Deps> {
   if ('id' in factory) {
     return {
       api: factory,

@@ -15,8 +15,7 @@
  */
 import type { Writable } from 'stream';
 import Docker from 'dockerode';
-import { JsonValue } from '@backstage/config';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import gitUrlParse from 'git-url-parse';
 
 /**
  * Currently the required template values. The owner
@@ -25,7 +24,12 @@ import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 export type RequiredTemplateValues = {
   owner: string;
   storePath: string;
+  destination?: {
+    git?: gitUrlParse.GitUrl;
+  };
 };
+
+export type TemplaterValues = RequiredTemplateValues & Record<string, any>;
 
 /**
  * The returned directory from the templater which is ready
@@ -41,15 +45,15 @@ export type TemplaterRunResult = {
  * client to run any templater on top of your directory.
  */
 export type TemplaterRunOptions = {
-  directory: string;
-  values: RequiredTemplateValues & Record<string, JsonValue>;
+  workspacePath: string;
+  values: TemplaterValues;
   logStream?: Writable;
   dockerClient: Docker;
 };
 
 export type TemplaterBase = {
   // runs the templating with the values and returns the directory to push the VCS
-  run(opts: TemplaterRunOptions): Promise<TemplaterRunResult>;
+  run(opts: TemplaterRunOptions): Promise<void>;
 };
 
 export type TemplaterConfig = {
@@ -66,5 +70,5 @@ export type SupportedTemplatingKey = 'cookiecutter' | string;
  */
 export type TemplaterBuilder = {
   register(protocol: SupportedTemplatingKey, templater: TemplaterBase): void;
-  get(template: TemplateEntityV1alpha1): TemplaterBase;
+  get(templater: string): TemplaterBase;
 };

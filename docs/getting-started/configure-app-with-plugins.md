@@ -4,9 +4,65 @@ title: Configuring App with plugins
 description: Documentation on How Configuring App with plugins
 ---
 
+Backstage plugins customize the app for your needs. There is a
+[plugin marketplace](https://backstage.io/plugins) with plugins for many common
+infrastructure needs - CI/CD, monitoring, auditing, and more.
+
 ## Adding existing plugins to your app
 
-Coming soon!
+The following steps assume that you have
+[created a Backstage app](./create-an-app.md) and want to add an existing plugin
+to it. We are using the
+[CircleCI](https://github.com/backstage/backstage/blob/master/plugins/circleci/README.md)
+plugin in this example.
+
+1. Add the plugin's npm package to the repo:
+
+```bash
+yarn workspace app add @backstage/plugin-circleci
+```
+
+Note the plugin is added to the `app` package, rather than the root
+package.json. Backstage Apps are set up as monorepos with
+[yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
+CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
+
+2. Add the plugin itself to the App:
+
+```js
+// packages/app/src/plugins.ts
+export { plugin as Circleci } from '@backstage/plugin-circleci';
+```
+
+3. Register the plugin router:
+
+```jsx
+// packages/app/src/components/catalog/EntityPage.tsx
+
+import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
+
+// Then somewhere inside <EntityPageLayout>
+<EntityPageLayout.Content
+  path="/ci-cd/*"
+  title="CI/CD"
+  element={<CircleCIRouter />}
+/>;
+```
+
+Note that stand-alone plugins that are not "attached" to the Software Catalog
+would be added outside the `EntityPage`.
+
+4. [Optional] Add proxy config:
+
+```yaml
+// app-config.yaml
+proxy:
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token:
+        $env: CIRCLECI_AUTH_TOKEN
+```
 
 ### Adding a plugin page to the Sidebar
 

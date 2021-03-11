@@ -26,6 +26,21 @@ type State = {
   errorInfo?: ErrorInfo;
 };
 
+type EProps = {
+  error?: Error;
+  slackChannel?: string;
+  children?: React.ReactNode;
+};
+
+const Error = ({ slackChannel }: EProps) => {
+  return (
+    <div role="alert">
+      Something went wrong here.{' '}
+      {slackChannel && <>Please contact {slackChannel} for help.</>}
+    </div>
+  );
+};
+
 export const ErrorBoundary: ComponentClass<
   Props,
   State
@@ -55,19 +70,4 @@ export const ErrorBoundary: ComponentClass<
 
     return <Error error={error} slackChannel={slackChannel} />;
   }
-};
-
-type EProps = {
-  error?: Error;
-  slackChannel?: string;
-  children?: React.ReactNode;
-};
-
-const Error = ({ slackChannel }: EProps) => {
-  return (
-    <div role="alert">
-      Something went wrong here.{' '}
-      {slackChannel && <>Please contact {slackChannel} for help.</>}
-    </div>
-  );
 };

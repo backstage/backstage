@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-import { PluginConfig, PluginOutput, BackstagePlugin } from './types';
+import {
+  PluginConfig,
+  PluginOutput,
+  BackstagePlugin,
+  Extension,
+  AnyRoutes,
+  AnyExternalRoutes,
+} from './types';
 import { AnyApiFactory } from '../apis';
 
-export class PluginImpl {
+export class PluginImpl<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes
+> implements BackstagePlugin<Routes, ExternalRoutes> {
   private storedOutput?: PluginOutput[];
 
-  constructor(private readonly config: PluginConfig) {}
+  constructor(private readonly config: PluginConfig<Routes, ExternalRoutes>) {}
 
   getId(): string {
     return this.config.id;
@@ -28,6 +38,14 @@ export class PluginImpl {
 
   getApis(): Iterable<AnyApiFactory> {
     return this.config.apis ?? [];
+  }
+
+  get routes(): Routes {
+    return this.config.routes ?? ({} as Routes);
+  }
+
+  get externalRoutes(): ExternalRoutes {
+    return this.config.externalRoutes ?? ({} as ExternalRoutes);
   }
 
   output(): PluginOutput[] {
@@ -50,9 +68,6 @@ export class PluginImpl {
             options,
           });
         },
-        registerRoute(path, component, options) {
-          outputs.push({ type: 'legacy-route', path, component, options });
-        },
       },
       featureFlags: {
         register(name) {
@@ -65,11 +80,20 @@ export class PluginImpl {
     return this.storedOutput;
   }
 
+  provide<T>(extension: Extension<T>): T {
+    return extension.expose(this);
+  }
+
   toString() {
     return `plugin{${this.config.id}}`;
   }
 }
 
-export function createPlugin(config: PluginConfig): BackstagePlugin {
+export function createPlugin<
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {}
+>(
+  config: PluginConfig<Routes, ExternalRoutes>,
+): BackstagePlugin<Routes, ExternalRoutes> {
   return new PluginImpl(config);
 }

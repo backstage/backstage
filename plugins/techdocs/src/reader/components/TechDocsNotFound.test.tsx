@@ -27,3 +27,34 @@ describe('<TechDocsNotFound />', () => {
     expect(rendered.getByTestId('go-back-link')).toBeDefined();
   });
 });
+
+describe('<TechDocsNotFound errorMessage="This is a custom error message" />', () => {
+  it('should render with status code, custom error message and go back link', () => {
+    const rendered = render(
+      wrapInTestApp(
+        <TechDocsNotFound errorMessage="This is a custom error message" />,
+      ),
+    );
+    rendered.getByText(/This is a custom error message/i);
+    rendered.getByText(/404/i);
+    rendered.getByText(/Looks like someone dropped the mic!/i);
+    expect(rendered.getByTestId('go-back-link')).toBeDefined();
+  });
+});
+
+describe('<TechDocsNotFound statusCode={500} errorMessage="This is a custom error message" />', () => {
+  it('should render with a custom status code, custom error message and go back link', () => {
+    const rendered = render(
+      wrapInTestApp(
+        <TechDocsNotFound
+          statusCode={500}
+          errorMessage="This is a custom error message"
+        />,
+      ),
+    );
+    rendered.getByText(/This is a custom error message/i);
+    rendered.getByText(/500/i);
+    rendered.getByText(/Looks like someone dropped the mic!/i);
+    expect(rendered.getByTestId('go-back-link')).toBeDefined();
+  });
+});

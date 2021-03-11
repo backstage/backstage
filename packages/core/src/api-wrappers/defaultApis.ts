@@ -46,7 +46,10 @@ import {
   SamlAuth,
   oneloginAuthApiRef,
   OneLoginAuth,
+  oidcAuthApiRef,
 } from '@backstage/core-api';
+
+import OAuth2Icon from '@material-ui/icons/AcUnit';
 
 export const defaultApis = [
   createApiFactory({
@@ -75,30 +78,42 @@ export const defaultApis = [
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      GoogleAuth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      GoogleAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: microsoftAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      MicrosoftAuth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      MicrosoftAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: githubAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
       GithubAuth.create({
         discoveryApi,
         oauthRequestApi,
         defaultScopes: ['read:user'],
+        environment: configApi.getOptionalString('auth.environment'),
       }),
   }),
   createApiFactory({
@@ -106,51 +121,100 @@ export const defaultApis = [
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      OktaAuth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OktaAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: gitlabAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      GitlabAuth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      GitlabAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: auth0AuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      Auth0Auth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      Auth0Auth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: oauth2ApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      OAuth2.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: samlAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi }) => SamlAuth.create({ discoveryApi }),
+    factory: ({ discoveryApi, configApi }) =>
+      SamlAuth.create({
+        discoveryApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
   createApiFactory({
     api: oneloginAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
     },
-    factory: ({ discoveryApi, oauthRequestApi }) =>
-      OneLoginAuth.create({ discoveryApi, oauthRequestApi }),
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OneLoginAuth.create({
+        discoveryApi,
+        oauthRequestApi,
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
+  }),
+  createApiFactory({
+    api: oidcAuthApiRef,
+    deps: {
+      discoveryApi: discoveryApiRef,
+      oauthRequestApi: oauthRequestApiRef,
+      configApi: configApiRef,
+    },
+    factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      OAuth2.create({
+        discoveryApi,
+        oauthRequestApi,
+        provider: {
+          id: 'oidc',
+          title: 'Your Identity Provider',
+          icon: OAuth2Icon,
+        },
+        environment: configApi.getOptionalString('auth.environment'),
+      }),
   }),
 ];

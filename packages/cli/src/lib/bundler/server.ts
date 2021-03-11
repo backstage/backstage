@@ -23,12 +23,12 @@ import { ServeOptions } from './types';
 import { resolveBundlingPaths } from './paths';
 
 export async function serveBundle(options: ServeOptions) {
-  const url = resolveBaseUrl(options.config);
+  const url = resolveBaseUrl(options.frontendConfig);
 
   const host =
-    options.config.getOptionalString('app.listen.host') || url.hostname;
+    options.frontendConfig.getOptionalString('app.listen.host') || url.hostname;
   const port =
-    options.config.getOptionalNumber('app.listen.port') ||
+    options.frontendConfig.getOptionalNumber('app.listen.port') ||
     Number(url.port) ||
     (url.protocol === 'https:' ? 443 : 80);
 
@@ -58,10 +58,12 @@ export async function serveBundle(options: ServeOptions) {
     host,
     port,
     proxy: pkg.proxy,
+    // When the dev server is behind a proxy, the host and public hostname differ
+    allowedHosts: [url.hostname],
   });
 
-  await new Promise((resolve, reject) => {
-    server.listen(port, url.hostname, (err?: Error) => {
+  await new Promise<void>((resolve, reject) => {
+    server.listen(port, host, (err?: Error) => {
       if (err) {
         reject(err);
         return;

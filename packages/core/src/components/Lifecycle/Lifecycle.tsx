@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import CSS from 'csstype';
 import { makeStyles } from '@material-ui/core';
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const Lifecycle: FC<Props> = props => {
+export const Lifecycle = (props: Props) => {
   const classes = useStyles(props);
   const { shorthand, alpha } = props;
   return shorthand ? (

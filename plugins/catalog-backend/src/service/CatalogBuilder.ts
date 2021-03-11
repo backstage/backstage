@@ -26,6 +26,7 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import lodash from 'lodash';
 import { Logger } from 'winston';
 import {
@@ -37,28 +38,33 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
+  BuiltinKindsEntityProcessor,
   CatalogProcessor,
+  CatalogProcessorParser,
   CodeOwnersProcessor,
   FileReaderProcessor,
+  GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   HigherOrderOperation,
   HigherOrderOperations,
+  LdapOrgReaderProcessor,
+  LocationEntityProcessor,
   LocationReaders,
-  LocationRefProcessor,
-  OwnerRelationProcessor,
+  MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
-import { BuiltinKindsEntityProcessor } from '../ingestion/processors/BuiltinKindsEntityProcessor';
-import { LdapOrgReaderProcessor } from '../ingestion/processors/LdapOrgReaderProcessor';
+import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
   textPlaceholderResolver,
   yamlPlaceholderResolver,
 } from '../ingestion/processors/PlaceholderProcessor';
+import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
+import { LocationAnalyzer } from '../ingestion/types';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -94,6 +100,7 @@ export class CatalogBuilder {
   private fieldFormatValidators: Partial<Validators>;
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
+  private parser: CatalogProcessorParser | undefined;
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -103,6 +110,7 @@ export class CatalogBuilder {
     this.fieldFormatValidators = {};
     this.processors = [];
     this.processorsReplace = false;
+    this.parser = undefined;
   }
 
   /**
@@ -196,21 +204,38 @@ export class CatalogBuilder {
   }
 
   /**
+   * Sets up the catalog to use a custom parser for entity data.
+   *
+   * This is the function that gets called immediately after some raw entity
+   * specification data has been read from a remote source, and needs to be
+   * parsed and emitted as structured data.
+   *
+   * @param parser The custom parser
+   */
+  setEntityDataParser(parser: CatalogProcessorParser): CatalogBuilder {
+    this.parser = parser;
+    return this;
+  }
+
+  /**
    * Wires up and returns all of the component parts of the catalog
    */
   async build(): Promise<{
     entitiesCatalog: EntitiesCatalog;
     locationsCatalog: LocationsCatalog;
     higherOrderOperation: HigherOrderOperation;
+    locationAnalyzer: LocationAnalyzer;
   }> {
     const { config, database, logger } = this.env;
 
     const policy = this.buildEntityPolicy();
     const processors = this.buildProcessors();
     const rulesEnforcer = CatalogRulesEnforcer.fromConfig(config);
+    const parser = this.parser || defaultEntityDataParser;
 
     const locationReader = new LocationReaders({
       ...this.env,
+      parser,
       processors,
       rulesEnforcer,
       policy,
@@ -229,11 +254,13 @@ export class CatalogBuilder {
       locationReader,
       logger,
     );
+    const locationAnalyzer = new RepoLocationAnalyzer(logger);
 
     return {
       entitiesCatalog,
       locationsCatalog,
       higherOrderOperation,
+      locationAnalyzer,
     };
   }
 
@@ -255,6 +282,7 @@ export class CatalogBuilder {
 
   private buildProcessors(): CatalogProcessor[] {
     const { config, logger, reader } = this.env;
+    const integrations = ScmIntegrations.fromConfig(config);
 
     this.checkDeprecatedReaderProcessors();
 
@@ -276,13 +304,14 @@ export class CatalogBuilder {
     if (!this.processorsReplace) {
       processors.push(
         new FileReaderProcessor(),
+        GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
+        MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
-        new CodeOwnersProcessor({ reader }),
-        new LocationRefProcessor(),
-        new OwnerRelationProcessor(),
-        new AnnotateLocationEntityProcessor(),
+        new CodeOwnersProcessor({ reader, logger }),
+        new LocationEntityProcessor({ integrations }),
+        new AnnotateLocationEntityProcessor({ integrations }),
       );
     }
 

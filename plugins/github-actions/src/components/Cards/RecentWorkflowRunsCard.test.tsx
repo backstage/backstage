@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
-import React from 'react';
-import { render } from '@testing-library/react';
-import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
-import { ApiProvider, ApiRegistry, errorApiRef } from '@backstage/core-api';
-import { useWorkflowRuns } from '../useWorkflowRuns';
-import { ThemeProvider } from '@material-ui/core';
+import {
+  ApiProvider,
+  ApiRegistry,
+  errorApiRef,
+  configApiRef,
+  ConfigApi,
+  ConfigReader,
+} from '@backstage/core';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter } from 'react-router';
+import { useWorkflowRuns } from '../useWorkflowRuns';
+import type { Props as RecentWorkflowRunsCardProps } from './RecentWorkflowRunsCard';
+import { RecentWorkflowRunsCard } from './RecentWorkflowRunsCard';
 
 jest.mock('../useWorkflowRuns', () => ({
   useWorkflowRuns: jest.fn(),
@@ -32,6 +40,8 @@ const mockErrorApi: jest.Mocked<typeof errorApiRef.T> = {
   post: jest.fn(),
   error$: jest.fn(),
 };
+
+const configApi: ConfigApi = new ConfigReader({});
 
 describe('<RecentWorkflowRunsCard />', () => {
   const entity = {
@@ -69,8 +79,15 @@ describe('<RecentWorkflowRunsCard />', () => {
     render(
       <ThemeProvider theme={lightTheme}>
         <MemoryRouter>
-          <ApiProvider apis={ApiRegistry.with(errorApiRef, mockErrorApi)}>
-            <RecentWorkflowRunsCard {...props} />
+          <ApiProvider
+            apis={ApiRegistry.with(errorApiRef, mockErrorApi).with(
+              configApiRef,
+              configApi,
+            )}
+          >
+            <EntityProvider entity={props.entity!}>
+              <RecentWorkflowRunsCard {...props} />
+            </EntityProvider>
           </ApiProvider>
         </MemoryRouter>
       </ThemeProvider>,

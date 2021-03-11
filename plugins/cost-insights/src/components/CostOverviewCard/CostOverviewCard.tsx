@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Box, Card, CardContent, Divider, useTheme } from '@material-ui/core';
-import { CostGrowth } from '../CostGrowth';
+import React, { useEffect, useState } from 'react';
+import {
+  Box,
+  capitalize,
+  Card,
+  CardContent,
+  Divider,
+  Tab,
+  Tabs,
+  useTheme,
+} from '@material-ui/core';
 import { CostOverviewChart } from './CostOverviewChart';
+import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
 import { CostOverviewHeader } from './CostOverviewHeader';
-import { LegendItem } from '../LegendItem';
 import { MetricSelect } from '../MetricSelect';
 import { PeriodSelect } from '../PeriodSelect';
-import {
-  useScroll,
-  useFilters,
-  useConfig,
-  useLastCompleteBillingDate,
-} from '../../hooks';
+import { useConfig, useFilters } from '../../hooks';
 import { mapFiltersToProps } from './selector';
 import { DefaultNavigation } from '../../utils/navigation';
-import { formatPercent } from '../../utils/formatters';
 import { findAlways } from '../../utils/assert';
-import { getComparedChange } from '../../utils/change';
-import { Cost, CostInsightsTheme, MetricData } from '../../types';
+import { Cost, CostInsightsTheme, Maybe, MetricData } from '../../types';
+import { useOverviewTabsStyles } from '../../utils/styles';
+import { ScrollAnchor } from '../../utils/scroll';
 
 export type CostOverviewCardProps = {
   dailyCostData: Cost;
-  metricData: MetricData | null;
+  metricData: Maybe<MetricData>;
 };
 
 export const CostOverviewCard = ({
@@ -45,71 +48,88 @@ export const CostOverviewCard = ({
   metricData,
 }: CostOverviewCardProps) => {
   const theme = useTheme<CostInsightsTheme>();
+  const styles = useOverviewTabsStyles(theme);
   const config = useConfig();
-  const lastCompleteBillingDate = useLastCompleteBillingDate();
-  const { ScrollAnchor } = useScroll(DefaultNavigation.CostOverviewCard);
+  const [tabIndex, setTabIndex] = useState(0);
   const { setDuration, setProject, setMetric, ...filters } = useFilters(
     mapFiltersToProps,
   );
 
+  // Reset tabIndex if breakdowns available change
+  useEffect(() => {
+    // Intentionally off-by-one to account for the overview tab
+    const lastIndex = Object.keys(dailyCostData.groupedCosts ?? {}).length;
+    if (tabIndex > lastIndex) {
+      setTabIndex(0);
+    }
+  }, [dailyCostData, tabIndex, setTabIndex]);
+
   const metric = filters.metric
     ? findAlways(config.metrics, m => m.kind === filters.metric)
     : null;
-  const comparedChange = metricData
-    ? getComparedChange(
-        dailyCostData,
-        metricData,
-        filters.duration,
-        lastCompleteBillingDate,
-      )
-    : null;
+
+  const breakdownTabs = Object.keys(dailyCostData.groupedCosts ?? {}).map(
+    key => ({
+      id: key,
+      label: `Breakdown by ${key}`,
+      title: `Cloud Cost By ${capitalize(key)}`,
+    }),
+  );
+  const tabs = [
+    { id: 'overview', label: 'Total cost', title: 'Cloud Cost' },
+  ].concat(breakdownTabs);
+  // tabIndex can temporarily be invalid while the useEffect above processes
+  const safeTabIndex = tabIndex > tabs.length - 1 ? 0 : tabIndex;
+
+  const OverviewTabs = () => {
+    return (
+      <>
+        <Tabs
+          indicatorColor="primary"
+          onChange={(_, index) => setTabIndex(index)}
+          value={safeTabIndex}
+        >
+          {tabs.map((tab, index) => (
+            <Tab
+              className={styles.default}
+              label={tab.label}
+              key={tab.id}
+              value={index}
+              classes={{ selected: styles.selected }}
+            />
+          ))}
+        </Tabs>
+      </>
+    );
+  };
+
+  // Metrics can only be selected on the total cost graph
+  const showMetricSelect = config.metrics.length && safeTabIndex === 0;
 
   return (
     <Card style={{ position: 'relative' }}>
-      <ScrollAnchor behavior="smooth" top={-20} />
+      <ScrollAnchor id={DefaultNavigation.CostOverviewCard} />
       <CardContent>
-        <CostOverviewHeader title="Cloud Cost">
+        {dailyCostData.groupedCosts && <OverviewTabs />}
+        <CostOverviewHeader title={tabs[safeTabIndex].title}>
           <PeriodSelect duration={filters.duration} onSelect={setDuration} />
         </CostOverviewHeader>
         <Divider />
-        <Box my={1} display="flex" flexDirection="column">
-          <Box display="flex" flexDirection="row">
-            <Box mr={2}>
-              <LegendItem title="Cost Trend" markerColor={theme.palette.blue}>
-                {formatPercent(dailyCostData.change.ratio)}
-              </LegendItem>
-            </Box>
-            {metric && metricData && comparedChange && (
-              <>
-                <Box mr={2}>
-                  <LegendItem
-                    title={`${metric.name} Trend`}
-                    markerColor={theme.palette.magenta}
-                  >
-                    {formatPercent(metricData.change.ratio)}
-                  </LegendItem>
-                </Box>
-                <LegendItem
-                  title={
-                    comparedChange.ratio <= 0 ? 'Your Savings' : 'Your Excess'
-                  }
-                >
-                  <CostGrowth
-                    change={comparedChange}
-                    duration={filters.duration}
-                  />
-                </LegendItem>
-              </>
-            )}
-          </Box>
-          <CostOverviewChart
-            dailyCostData={dailyCostData}
-            metric={metric}
-            metricData={metricData}
-          />
+        <Box ml={2} my={1} display="flex" flexDirection="column">
+          {safeTabIndex === 0 ? (
+            <CostOverviewChart
+              dailyCostData={dailyCostData}
+              metric={metric}
+              metricData={metricData}
+            />
+          ) : (
+            <CostOverviewBreakdownChart
+              costBreakdown={dailyCostData.groupedCosts![tabs[safeTabIndex].id]}
+            />
+          )}
         </Box>
         <Box display="flex" justifyContent="flex-end" alignItems="center">
-          {config.metrics.length && (
+          {showMetricSelect && (
             <MetricSelect
               metric={filters.metric}
               metrics={config.metrics}

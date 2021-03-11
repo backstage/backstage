@@ -2,6 +2,19 @@ app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
+  support:
+    url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
+    items: # Used by common SupportButton component
+      - title: Issues
+        icon: github
+        links:
+          - url: https://github.com/backstage/backstage/issues
+            title: GitHub Issues
+      - title: Discord Chatroom
+        icon: chat
+        links:
+          - url: https://discord.gg/MUpMjP2
+            title: '#backstage'
 
 backend:
   baseUrl: http://localhost:7000
@@ -16,6 +29,10 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+  reading:
+    allow:
+      - host: example.com
+      - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
@@ -38,7 +55,7 @@ proxy:
     headers:
       Authorization:
         $env: TRAVISCI_AUTH_TOKEN
-      travis-api-version: 3
+      travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
@@ -46,37 +63,63 @@ proxy:
       X-Api-Key:
         $env: NEW_RELIC_REST_API_KEY
 
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
+
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
       Authorization:
         $env: BUILDKITE_TOKEN
 
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: SENTRY_TOKEN
+
 organization:
   name: My Company
 
+# Reference documentation http://backstage.io/docs/features/techdocs/configuration
+# Note: After experimenting with basic setup, use CI/CD to generate docs
+# and an external cloud storage when deploying TechDocs for production use-case.
+# https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs
+  builder: 'local' # Alternatives - 'external'
   generators:
-    techdocs: 'docker'
+    techdocs: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
 sentry:
   organization: my-company
 
 rollbar:
   organization: my-company
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
 
 lighthouse:
   baseUrl: http://localhost:3003
 
 kubernetes:
-  serviceLocatorMethod: 'multiTenant'
+  serviceLocatorMethod:
+    type: 'multiTenant'
   clusterLocatorMethods:
-    - 'config'
-  clusters: []
+    - type: 'config'
+      clusters: []
+
+kafka:
+  clientId: backstage
+  clusters:
+    - name: cluster
+      brokers:
+        - localhost:9092
 
 integrations:
   github:
@@ -110,7 +153,16 @@ integrations:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow:
+        - Component
+        - API
+        - Resource
+        - Group
+        - User
+        - Template
+        - System
+        - Domain
+        - Location
 
   processors:
     githubOrg:
@@ -120,7 +172,7 @@ catalog:
             $env: GITHUB_TOKEN
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
-        #   apiBaseUrl: https://ghe.example.net/api/v3
+        #   apiBaseUrl: https://ghe.example.net/api
         #   token:
         #     $env: GHE_TOKEN
     ldapOrg:
@@ -129,7 +181,8 @@ catalog:
       #   - target: ldaps://ds.example.net
       #     bind:
       #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret: { $secret: { env: LDAP_SECRET } }
+      #       secret:
+      #         $env: LDAP_SECRET
       #     users:
       #       dn: ou=people,ou=example,dc=example,dc=net
       #       options:
@@ -140,26 +193,61 @@ catalog:
       #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
       #       options:
       #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
+    microsoftGraphOrg:
+      ### Example for how to add your Microsoft Graph tenant
+      #providers:
+      #  - target: https://graph.microsoft.com/v1.0
+      #    authority: https://login.microsoftonline.com
+      #    tenantId:
+      #      $env: MICROSOFT_GRAPH_TENANT_ID
+      #    clientId:
+      #      $env: MICROSOFT_GRAPH_CLIENT_ID
+      #    clientSecret:
+      #      $env: MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN
+      #    userFilter: accountEnabled eq true and userType eq 'member'
+      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
   locations:
+    # Add a location here to ingest it, for example from a URL:
+    #
+    #     - type: url
+    #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    #
+    # For local development you can use a file location instead:
+    #
+    #     - type: file
+    #       target: ../catalog-model/examples/all-components.yaml
+    #
+    # File locations are relative to the current working directory of the
+    # backend, for example packages/backend/.
+
     # Backstage example components
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
-    # Example component for github-actions
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/github-actions/examples/sample.yaml
-    # Example component for techdocs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/examples/documented-component/documented-component.yaml
+    - type: file
+      target: ../catalog-model/examples/all-components.yaml
+    # Example component for github-actions and TechDocs
+    - type: file
+      target: ../../plugins/github-actions/examples/sample.yaml
+    # Example component for TechDocs
+    - type: file
+      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
     # Backstage example APIs
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+    - type: file
+      target: ../catalog-model/examples/all-apis.yaml
+    # Backstage example resources
+    - type: file
+      target: ../catalog-model/examples/all-resources.yaml
+    # Backstage example systems
+    - type: file
+      target: ../catalog-model/examples/all-systems.yaml
+    # Backstage example domains
+    - type: file
+      target: ../catalog-model/examples/all-domains.yaml
     # Backstage example templates
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
     # Backstage example groups and users
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
+    - type: file
+      target: ../catalog-model/examples/acme-corp.yaml
 
 scaffolder:
   github:
@@ -171,13 +259,26 @@ scaffolder:
       baseUrl: https://gitlab.com
       token:
         $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
       token:
         $env: AZURE_TOKEN
+  bitbucket:
+    api:
+      host: https://bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      token:
+        $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
 
 auth:
+  environment: development
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
   providers:
     google:
       development:
@@ -222,6 +323,24 @@ auth:
           $env: AUTH_OAUTH2_AUTH_URL
         tokenUrl:
           $env: AUTH_OAUTH2_TOKEN_URL
+        ###
+        # provide a list of scopes as needed for your OAuth2 Server:
+        #
+        # scope: saml-login-selector openid profile email
+    oidc:
+      development:
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
+        clientId:
+          $env: AUTH_OIDC_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OIDC_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OIDC_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OIDC_TOKEN_URL
+        tokenSignedResponseAlg:
+          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
     auth0:
       development:
         clientId:
@@ -261,6 +380,9 @@ costInsights:
     bigQuery:
       name: BigQuery
       icon: search
+    events:
+      name: Events
+      icon: data
   metrics:
     DAU:
       name: Daily Active Users
@@ -270,10 +392,12 @@ costInsights:
 homepage:
   clocks:
     - label: UTC
-      timzone: UTC
+      timezone: UTC
     - label: NYC
       timezone: 'America/New_York'
     - label: STO
       timezone: 'Europe/Stockholm'
     - label: TYO
       timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

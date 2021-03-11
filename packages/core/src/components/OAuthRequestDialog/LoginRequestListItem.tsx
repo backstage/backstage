@@ -22,7 +22,7 @@ import {
   Typography,
   Theme,
 } from '@material-ui/core';
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { PendingAuthRequest } from '@backstage/core-api';
 
 const useItemStyles = makeStyles<Theme>(theme => ({
@@ -37,7 +37,7 @@ type RowProps = {
   setBusy: (busy: boolean) => void;
 };
 
-const LoginRequestListItem: FC<RowProps> = ({ request, busy, setBusy }) => {
+const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const classes = useItemStyles();
   const [error, setError] = useState<Error>();
 

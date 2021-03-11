@@ -16,7 +16,7 @@
 import { errorApiRef, useApi } from '@backstage/core';
 import { useCallback, useMemo } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { circleCIApiRef } from '../api/index';
+import { circleCIApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
 import { useProjectSlugFromEntity, mapVcsType } from './useBuilds';
 

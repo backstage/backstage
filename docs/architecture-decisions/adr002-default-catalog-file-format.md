@@ -4,10 +4,6 @@ title: ADR002: Default Software Catalog File Format
 description: Architecture Decision Record (ADR) log on Default Software Catalog File Format
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| 2020-05-17 | Open   |
-
 ## Background
 
 Backstage comes with a software catalog functionality, that you can use to track

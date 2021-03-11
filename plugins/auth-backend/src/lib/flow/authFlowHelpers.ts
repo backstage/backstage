@@ -38,11 +38,27 @@ export const postMessageResponse = (
   // data.
 
   // TODO: Make target app origin configurable globally
+
+  //
+  // postMessage fails silently if the targetOrigin is disallowed.
+  // So 2 postMessages are sent from the popup to the parent window.
+  // First, the origin being used to post the actual authorization response is
+  // shared with the parent window with a postMessage with targetOrigin '*'.
+  // Second, the actual authorization response is sent with the app origin
+  // as the targetOrigin.
+  // If the first message was received but the actual auth response was
+  // never received, the event listener can conclude that targetOrigin
+  // was disallowed, indicating potential misconfiguration.
+  //
   const script = `
-    var json = decodeURIComponent('${base64Data}');
+    var authResponse = decodeURIComponent('${base64Data}');
     var origin = decodeURIComponent('${base64Origin}');
-    (window.opener || window.parent).postMessage(JSON.parse(json), origin);
-    window.close();
+    var originInfo = {'type': 'config_info', 'targetOrigin': origin};
+    (window.opener || window.parent).postMessage(originInfo, '*');
+    (window.opener || window.parent).postMessage(JSON.parse(authResponse), origin);
+    setTimeout(() => {
+      window.close();
+    }, 100); // same as the interval of the core-api lib/loginPopup.ts (to address race conditions)
   `;
   const hash = crypto.createHash('sha256').update(script).digest('base64');
 

@@ -20,6 +20,13 @@ import { RouteRef } from '@backstage/core';
 
 // As we don't know which path the catalog's router mounted on
 // We need to inject this from the app
+
+/**
+ * Provides a router for registering a component.
+ *
+ * @deprecated The router for this component is deprecated and replaced with the `catalog-import` plugin.
+ * @see https://github.com/backstage/backstage/tree/master/plugins/catalog-import
+ */
 export const Router = ({ catalogRouteRef }: { catalogRouteRef: RouteRef }) => (
   <Routes>
     <Route

@@ -14,65 +14,75 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/no-extraneous-dependencies,monorepo/no-internal-import */
+/* eslint-disable monorepo/no-relative-import */
 
 /*
 This is a list of all packages used by the template. If dependencies are added or removed,
 this list should be updated as well.
 
-The list, and the accompanying devDependencies entries, are here to ensure correct versioning
+The list, and the accompanying peerDependencies entries, are here to ensure correct versioning
 and bumping of this package. Without this list the version would not be bumped unless we
 manually trigger a release.
 
 This does not create an actual dependency on these packages and does not bring in any code.
+Relative imports are used rather than package imports to make sure the packages aren't externalized.
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
 
-import { version as backendCommon } from '@backstage/backend-common/package.json';
-import { version as catalogModel } from '@backstage/catalog-model/package.json';
-import { version as cli } from '@backstage/cli/package.json';
-import { version as config } from '@backstage/config/package.json';
-import { version as core } from '@backstage/core/package.json';
-import { version as pluginApiDocs } from '@backstage/plugin-api-docs/package.json';
-import { version as pluginAuthBackend } from '@backstage/plugin-auth-backend/package.json';
-import { version as pluginCatalog } from '@backstage/plugin-catalog/package.json';
-import { version as pluginCatalogBackend } from '@backstage/plugin-catalog-backend/package.json';
-import { version as pluginCircleci } from '@backstage/plugin-circleci/package.json';
-import { version as pluginExplore } from '@backstage/plugin-explore/package.json';
-import { version as pluginGithubActions } from '@backstage/plugin-github-actions/package.json';
-import { version as pluginLighthouse } from '@backstage/plugin-lighthouse/package.json';
-import { version as pluginProxyBackend } from '@backstage/plugin-proxy-backend/package.json';
-import { version as pluginRegisterComponent } from '@backstage/plugin-register-component/package.json';
-import { version as pluginRollbarBackend } from '@backstage/plugin-rollbar-backend/package.json';
-import { version as pluginScaffolder } from '@backstage/plugin-scaffolder/package.json';
-import { version as pluginScaffolderBackend } from '@backstage/plugin-scaffolder-backend/package.json';
-import { version as pluginTechRadar } from '@backstage/plugin-tech-radar/package.json';
-import { version as pluginTechdocs } from '@backstage/plugin-techdocs/package.json';
-import { version as pluginTechdocsBackend } from '@backstage/plugin-techdocs-backend/package.json';
-import { version as pluginUserSettings } from '@backstage/plugin-user-settings/package.json';
-import { version as testUtils } from '@backstage/test-utils/package.json';
-import { version as theme } from '@backstage/theme/package.json';
+import { version as backendCommon } from '../../../backend-common/package.json';
+import { version as catalogClient } from '../../../catalog-client/package.json';
+import { version as catalogModel } from '../../../catalog-model/package.json';
+import { version as cli } from '../../../cli/package.json';
+import { version as config } from '../../../config/package.json';
+import { version as core } from '../../../core/package.json';
+import { version as testUtils } from '../../../test-utils/package.json';
+import { version as theme } from '../../../theme/package.json';
+
+import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
+import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
+import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
+import { version as pluginCatalogReact } from '../../../../plugins/catalog-react/package.json';
+import { version as pluginCatalogBackend } from '../../../../plugins/catalog-backend/package.json';
+import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
+import { version as pluginCircleci } from '../../../../plugins/circleci/package.json';
+import { version as pluginExplore } from '../../../../plugins/explore/package.json';
+import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
+import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
+import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
+import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
+import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
+import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
+import { version as pluginSearch } from '../../../../plugins/search/package.json';
+import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
+import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
+import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
+import { version as pluginUserSettings } from '../../../../plugins/user-settings/package.json';
 
 export const packageVersions = {
   '@backstage/backend-common': backendCommon,
+  '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core': core,
   '@backstage/plugin-api-docs': pluginApiDocs,
+  '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
   '@backstage/plugin-catalog': pluginCatalog,
+  '@backstage/plugin-catalog-react': pluginCatalogReact,
   '@backstage/plugin-catalog-backend': pluginCatalogBackend,
+  '@backstage/plugin-catalog-import': pluginCatalogImport,
   '@backstage/plugin-circleci': pluginCircleci,
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-register-component': pluginRegisterComponent,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
+  '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,

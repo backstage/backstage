@@ -45,7 +45,7 @@ export type GithubAuthResponse = {
 
 const DEFAULT_PROVIDER = {
   id: 'github',
-  title: 'Github',
+  title: 'GitHub',
   icon: GithubIcon,
 };
 
@@ -84,7 +84,7 @@ class GithubAuth implements OAuthApi, SessionApi {
 
     const authSessionStore = new AuthSessionStore<GithubSession>({
       manager: sessionManager,
-      storageKey: 'githubSession',
+      storageKey: `${provider.id}Session`,
       sessionScopes: (session: GithubSession) => session.providerInfo.scopes,
     });
 

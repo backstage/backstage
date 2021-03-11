@@ -16,7 +16,7 @@ const {
 const pluginsDirectory = require('path').join(process.cwd(), 'data/plugins');
 const pluginMetadata = fs
   .readdirSync(pluginsDirectory)
-  .map(file => yaml.safeLoad(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
+  .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
 const truncate = text =>
   text.length > 170 ? text.substr(0, 170) + '...' : text;
@@ -97,14 +97,14 @@ const Plugins = () => (
           </div>
           <Container className="PluginCardFooter">
             <p>
-              See what plugins are already{' '}
+              See what plugins are already
               <a href="https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin+sort%3Areactions-%2B1-desc">
                 in progress
-              </a>{' '}
-              and 👍. Missing a plugin for your favorite tool? Please{' '}
+              </a>
+              and 👍. Missing a plugin for your favorite tool? Please
               <a href="https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME">
                 suggest
-              </a>{' '}
+              </a>
               a new one.
             </p>
           </Container>

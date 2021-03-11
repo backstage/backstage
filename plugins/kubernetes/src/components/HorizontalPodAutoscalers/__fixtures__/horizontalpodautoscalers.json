@@ -74,8 +74,9 @@
       "targetCPUUtilizationPercentage": 50
     },
     "status": {
-      "currentReplicas": 10,
-      "desiredReplicas": 0
+      "currentReplicas": 13,
+      "desiredReplicas": 14,
+      "currentCPUUtilizationPercentage": 30
     }
   }
 ]

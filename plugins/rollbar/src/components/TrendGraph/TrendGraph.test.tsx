@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { render } from '@testing-library/react';
+import React from 'react';
 import { TrendGraph } from './TrendGraph';
 
 describe('TrendGraph component', () => {

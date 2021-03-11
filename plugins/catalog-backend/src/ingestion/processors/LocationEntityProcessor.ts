@@ -15,29 +15,69 @@
  */
 
 import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import path from 'path';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
-export class LocationRefProcessor implements CatalogProcessor {
+export function toAbsoluteUrl(
+  integrations: ScmIntegrationRegistry,
+  base: LocationSpec,
+  target: string,
+): string {
+  try {
+    if (base.type === 'file') {
+      if (target.startsWith('.')) {
+        return path.join(path.dirname(base.target), target);
+      }
+      return target;
+    }
+    return integrations.resolveUrl({ url: target, base: base.target });
+  } catch (e) {
+    return target;
+  }
+}
+
+type Options = {
+  integrations: ScmIntegrationRegistry;
+};
+
+export class LocationEntityProcessor implements CatalogProcessor {
+  constructor(private readonly options: Options) {}
+
   async postProcessEntity(
     entity: Entity,
-    _location: LocationSpec,
+    location: LocationSpec,
     emit: CatalogProcessorEmit,
   ): Promise<Entity> {
     if (entity.kind === 'Location') {
-      const location = entity as LocationEntity;
-      if (location.spec.target) {
+      const locationEntity = entity as LocationEntity;
+
+      const type = locationEntity.spec.type || location.type;
+      if (type === 'file' && location.target.endsWith(path.sep)) {
         emit(
-          result.location(
-            { type: location.spec.type, target: location.spec.target },
-            false,
+          result.inputError(
+            location,
+            `LocationEntityProcessor cannot handle ${type} type location with target ${location.target} that ends with a path separator`,
           ),
         );
       }
-      if (location.spec.targets) {
-        for (const target of location.spec.targets) {
-          emit(result.location({ type: location.spec.type, target }, false));
-        }
+
+      const targets = new Array<string>();
+      if (locationEntity.spec.target) {
+        targets.push(locationEntity.spec.target);
+      }
+      if (locationEntity.spec.targets) {
+        targets.push(...locationEntity.spec.targets);
+      }
+
+      for (const maybeRelativeTarget of targets) {
+        const target = toAbsoluteUrl(
+          this.options.integrations,
+          location,
+          maybeRelativeTarget,
+        );
+        emit(result.location({ type, target }, false));
       }
     }
 

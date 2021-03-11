@@ -72,6 +72,9 @@ describe('errorHandler', () => {
 
   it('handles well-known error classes', async () => {
     const app = express();
+    app.use('/NotModifiedError', () => {
+      throw new errors.NotModifiedError();
+    });
     app.use('/InputError', () => {
       throw new errors.InputError();
     });
@@ -90,6 +93,7 @@ describe('errorHandler', () => {
     app.use(errorHandler());
 
     const r = request(app);
+    expect((await r.get('/NotModifiedError')).status).toBe(304);
     expect((await r.get('/InputError')).status).toBe(400);
     expect((await r.get('/AuthenticationError')).status).toBe(401);
     expect((await r.get('/NotAllowedError')).status).toBe(403);
@@ -129,5 +133,21 @@ describe('errorHandler', () => {
     await request(app).get('/NotFound');
 
     expect(mockLogger.error).not.toHaveBeenCalled();
+  });
+
+  it('log 400 errors when logClientErrors is true', async () => {
+    const app = express();
+
+    const mockLogger = { child: jest.fn(), error: jest.fn() };
+    mockLogger.child.mockImplementation(() => mockLogger as any);
+
+    app.use('/NotFound', () => {
+      throw new errors.NotFoundError();
+    });
+    app.use(errorHandler({ logger: mockLogger as any, logClientErrors: true }));
+
+    await request(app).get('/NotFound');
+
+    expect(mockLogger.error).toHaveBeenCalled();
   });
 });

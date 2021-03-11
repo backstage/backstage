@@ -28,7 +28,7 @@ import {
   Product,
   ProjectGrowthData,
 } from '../../types';
-import { ProjectGrowthAlert } from '../../utils/alerts';
+import { ProjectGrowthAlert } from '../../alerts';
 
 const today = moment().format(DEFAULT_DATE_FORMAT);
 
@@ -72,26 +72,28 @@ export const ProjectGrowthInstructionsPage = () => {
       ratio: 3,
       amount: 40_000,
     },
-    entities: [
-      {
-        id: 'service-one',
-        aggregation: [18_200, 58_500],
-        entities: [],
-        change: { ratio: 2.21, amount: 40_300 },
-      },
-      {
-        id: 'service-two',
-        aggregation: [1200, 1300],
-        entities: [],
-        change: { ratio: 0.083, amount: 100 },
-      },
-      {
-        id: 'service-three',
-        aggregation: [600, 200],
-        entities: [],
-        change: { ratio: -0.666, amount: -400 },
-      },
-    ],
+    entities: {
+      service: [
+        {
+          id: 'service-one',
+          aggregation: [18_200, 58_500],
+          entities: {},
+          change: { ratio: 2.21, amount: 40_300 },
+        },
+        {
+          id: 'service-two',
+          aggregation: [1200, 1300],
+          entities: {},
+          change: { ratio: 0.083, amount: 100 },
+        },
+        {
+          id: 'service-three',
+          aggregation: [600, 200],
+          entities: {},
+          change: { ratio: -0.666, amount: -400 },
+        },
+      ],
+    },
   };
 
   return (
@@ -133,7 +135,7 @@ export const ProjectGrowthInstructionsPage = () => {
         <Typography paragraph>
           Next, evaluate whether the growth is significant. This helps avoid
           premature optimization, where cost in engineering time is more than
-          would be saved from the optimization over a reasonable timeframe.
+          would be saved from the optimization over a reasonable time frame.
         </Typography>
         <Typography paragraph>
           We recommend reframing the cost growth itself in terms of engineering
@@ -203,7 +205,7 @@ export const ProjectGrowthInstructionsPage = () => {
           Is the workload using cloud resources efficiently? For compute
           resources, do the utilization metrics look reasonable? Autoscaling
           infrastructure, such as Kubernetes, can run workloads more efficiently
-          without comprimising reliability.
+          without compromising reliability.
         </Typography>
         <Typography variant="h5">Lifecycle</Typography>
         <Typography paragraph>

@@ -17,6 +17,7 @@ import React, { useEffect } from 'react';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRun, WorkflowRunsTable } from '../WorkflowRunsTable';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { Link, Theme, makeStyles, LinearProgress } from '@material-ui/core';
 import {
@@ -72,12 +73,13 @@ const WidgetContent = ({
 };
 
 export const LatestWorkflowRunCard = ({
-  entity,
   branch = 'master',
 }: {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   branch: string;
 }) => {
+  const { entity } = useEntity();
   const errorApi = useApi(errorApiRef);
   const projectId = entity?.metadata.annotations?.[CLOUDBUILD_ANNOTATION] || '';
 
@@ -104,13 +106,17 @@ export const LatestWorkflowRunCard = ({
 };
 
 export const LatestWorkflowsForBranchCard = ({
-  entity,
   branch = 'master',
 }: {
-  entity: Entity;
+  /** @deprecated The entity is now grabbed from context instead */
+  entity?: Entity;
   branch: string;
-}) => (
-  <InfoCard title={`Last ${branch} build`}>
-    <WorkflowRunsTable entity={entity} />
-  </InfoCard>
-);
+}) => {
+  const { entity } = useEntity();
+
+  return (
+    <InfoCard title={`Last ${branch} build`}>
+      <WorkflowRunsTable entity={entity} />
+    </InfoCard>
+  );
+};

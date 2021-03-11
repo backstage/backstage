@@ -16,16 +16,56 @@
 
 import { Command } from 'commander';
 import { stringify as stringifyYaml } from 'yaml';
+import { AppConfig, ConfigReader } from '@backstage/config';
 import { loadCliConfig } from '../../lib/config';
+import { ConfigSchema, ConfigVisibility } from '@backstage/config-loader';
 
 export default async (cmd: Command) => {
-  const { config } = await loadCliConfig(cmd.config, cmd.withSecrets ?? false);
-
-  const flatConfig = config.get();
+  const { schema, appConfigs } = await loadCliConfig({
+    args: cmd.config,
+    fromPackage: cmd.package,
+    mockEnv: cmd.lax,
+  });
+  const visibility = getVisibilityOption(cmd);
+  const data = serializeConfigData(appConfigs, schema, visibility);
 
   if (cmd.format === 'json') {
-    process.stdout.write(`${JSON.stringify(flatConfig, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
   } else {
-    process.stdout.write(`${stringifyYaml(flatConfig)}\n`);
+    process.stdout.write(`${stringifyYaml(data)}\n`);
   }
 };
+
+function getVisibilityOption(cmd: Command): ConfigVisibility {
+  if (cmd.frontend && cmd.withSecrets) {
+    throw new Error('Not allowed to combine frontend and secret config');
+  }
+  if (cmd.frontend) {
+    return 'frontend';
+  } else if (cmd.withSecrets) {
+    return 'secret';
+  }
+  return 'backend';
+}
+
+function serializeConfigData(
+  appConfigs: AppConfig[],
+  schema: ConfigSchema,
+  visibility: ConfigVisibility,
+) {
+  if (visibility === 'frontend') {
+    const frontendConfigs = schema.process(appConfigs, {
+      visibility: ['frontend'],
+    });
+    return ConfigReader.fromConfigs(frontendConfigs).get();
+  } else if (visibility === 'secret') {
+    return ConfigReader.fromConfigs(appConfigs).get();
+  }
+
+  const sanitizedConfigs = schema.process(appConfigs, {
+    valueTransform: (value, context) =>
+      context.visibility === 'secret' ? '<secret>' : value,
+  });
+
+  return ConfigReader.fromConfigs(sanitizedConfigs).get();
+}

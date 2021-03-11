@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import classNames from 'classnames';
 import { Theme, makeStyles } from '@material-ui/core';
 
@@ -42,13 +42,13 @@ type Props = {
   className?: string;
 };
 
-export const Content: FC<Props> = ({
+export const Content = ({
   className,
   stretch,
   noPadding,
   children,
   ...props
-}) => {
+}: PropsWithChildren<Props>) => {
   const classes = useStyles();
   return (
     <article

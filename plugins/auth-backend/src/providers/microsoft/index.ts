@@ -15,3 +15,4 @@
  */
 
 export { createMicrosoftProvider } from './provider';
+export type { MicrosoftProviderOptions } from './provider';

@@ -1,6 +1,6 @@
 ---
 title: Backstage has been accepted into the CNCF Sandbox
-author: Stefan Ålund
+author: Stefan Ålund, Spotify
 authorURL: https://twitter.com/stalund
 ---
 

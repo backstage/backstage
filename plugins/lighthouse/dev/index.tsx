@@ -15,11 +15,11 @@
  */
 
 import { createDevApp } from '@backstage/dev-utils';
-import { plugin } from '../src/plugin';
+import { lighthousePlugin } from '../src/plugin';
 import { lighthouseApiRef, LighthouseRestApi } from '../src';
 
 createDevApp()
-  .registerPlugin(plugin)
+  .registerPlugin(lighthousePlugin)
   .registerApi({
     api: lighthouseApiRef,
     deps: {},

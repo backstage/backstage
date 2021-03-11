@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { RouteRef, StructuredMetadataTable } from '@backstage/core';
-import { entityRoute, entityRouteParams } from '@backstage/plugin-catalog';
+import {
+  entityRoute,
+  entityRouteParams,
+} from '@backstage/plugin-catalog-react';
 import {
   Button,
   Dialog,
@@ -100,7 +103,9 @@ export const RegisterComponentResultDialog = ({
                     metadata={{
                       name: entity.metadata.name,
                       type: entity.spec.type,
-                      link: (
+                      link: dryRun ? (
+                        entityPath
+                      ) : (
                         <Link component={RouterLink} to={entityPath}>
                           {entityPath}
                         </Link>

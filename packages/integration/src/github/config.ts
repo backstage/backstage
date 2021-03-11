@@ -15,6 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
+import { isValidHost } from '../helpers';
 
 const GITHUB_HOST = 'github.com';
 const GITHUB_API_BASE_URL = 'https://api.github.com';
@@ -57,6 +58,41 @@ export type GitHubIntegrationConfig = {
    * If no token is specified, anonymous access is used.
    */
   token?: string;
+
+  /**
+   * The GitHub Apps configuration to use for requests to this provider.
+   *
+   * If no apps are specified, token or anonymous is used.
+   */
+  apps?: GithubAppConfig[];
+};
+
+/**
+ * The configuration parameters for authenticating a GitHub Application.
+ * A Github Apps configuration can be generated using the `backstage-cli create-github-app` command.
+ */
+export type GithubAppConfig = {
+  /**
+   * Unique app identifier, found at https://github.com/organizations/$org/settings/apps/$AppName
+   */
+  appId: number;
+  /**
+   * The private key is used by the GitHub App integration to authenticate the app.
+   * A private key can be generated from the app at https://github.com/organizations/$org/settings/apps/$AppName
+   */
+  privateKey: string;
+  /**
+   * Webhook secret can be configured at https://github.com/organizations/$org/settings/apps/$AppName
+   */
+  webhookSecret: string;
+  /**
+   * Found at https://github.com/organizations/$org/settings/apps/$AppName
+   */
+  clientId: string;
+  /**
+   * Client secrets can be generated at https://github.com/organizations/$org/settings/apps/$AppName
+   */
+  clientSecret: string;
 };
 
 /**
@@ -71,6 +107,19 @@ export function readGitHubIntegrationConfig(
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
   let rawBaseUrl = config.getOptionalString('rawBaseUrl');
   const token = config.getOptionalString('token');
+  const apps = config.getOptionalConfigArray('apps')?.map(c => ({
+    appId: c.getNumber('appId'),
+    clientId: c.getString('clientId'),
+    clientSecret: c.getString('clientSecret'),
+    webhookSecret: c.getString('webhookSecret'),
+    privateKey: c.getString('privateKey'),
+  }));
+
+  if (!isValidHost(host)) {
+    throw new Error(
+      `Invalid GitHub integration config, '${host}' is not a valid host`,
+    );
+  }
 
   if (apiBaseUrl) {
     apiBaseUrl = apiBaseUrl.replace(/\/+$/, '');
@@ -84,7 +133,7 @@ export function readGitHubIntegrationConfig(
     rawBaseUrl = GITHUB_RAW_BASE_URL;
   }
 
-  return { host, apiBaseUrl, rawBaseUrl, token };
+  return { host, apiBaseUrl, rawBaseUrl, token, apps };
 }
 
 /**

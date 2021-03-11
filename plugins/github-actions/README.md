@@ -44,24 +44,11 @@ yarn add @backstage/plugin-github-actions
 ```
 
 ```js
-// packages/app/src/api.ts
-import { ApiRegistry } from '@backstage/core';
-import { GithubActionsClient, githubActionsApiRef } from '@backstage/plugin-github-actions';
-
-const builder = ApiRegistry.builder();
-builder.add(githubActionsApiRef, new GithubActionsClient());
-
-export default builder.build() as ApiHolder;
-```
-
-2. Add plugin itself:
-
-```js
 // packages/app/src/plugins.ts
 export { plugin as GithubActions } from '@backstage/plugin-github-actions';
 ```
 
-3. Run the app with `yarn start` and the backend with `yarn --cwd packages/backend start`, navigate to `/github-actions/`.
+2. Run the app with `yarn start` and the backend with `yarn --cwd packages/backend start`, navigate to `/github-actions/`.
 
 ## Features
 

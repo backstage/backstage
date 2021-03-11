@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { NotFoundError, UrlReader } from '@backstage/backend-common';
+import {
+  Entity,
+  LocationSpec,
+  stringifyLocationReference,
+} from '@backstage/catalog-model';
 import * as codeowners from 'codeowners-utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 // NOTE: This can be removed when ES2021 is implemented
 import 'core-js/features/promise';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
 import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { Logger } from 'winston';
 import { CatalogProcessor } from './types';
+
+const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
 const ALLOWED_LOCATION_TYPES = [
   'url',
@@ -41,6 +48,7 @@ const KNOWN_LOCATIONS = ['', '/docs', '/.bitbucket', '/.github', '/.gitlab'];
 
 type Options = {
   reader: UrlReader;
+  logger: Logger;
 };
 
 export class CodeOwnersProcessor implements CatalogProcessor {
@@ -53,14 +61,17 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     // Only continue if the owner is not set
     if (
       !entity ||
-      !['Component', 'API'].includes(entity.kind) ||
+      !ALLOWED_KINDS.includes(entity.kind) ||
       !ALLOWED_LOCATION_TYPES.includes(location.type) ||
       (entity.spec && entity.spec.owner)
     ) {
       return entity;
     }
 
-    const owner = await resolveCodeOwner(location, this.options.reader);
+    const owner = await resolveCodeOwner(location, this.options);
+    if (!owner) {
+      return entity;
+    }
 
     return {
       ...entity,
@@ -71,12 +82,11 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 
 export async function resolveCodeOwner(
   location: LocationSpec,
-  reader: UrlReader,
+  options: Options,
 ): Promise<string | undefined> {
-  const ownersText = await findRawCodeOwners(location, reader);
-
+  const ownersText = await findRawCodeOwners(location, options);
   if (!ownersText) {
-    throw Error(`Unable to find codeowners file for: ${location.target}`);
+    return undefined;
   }
 
   const owners = parseCodeOwners(ownersText);
@@ -86,25 +96,44 @@ export async function resolveCodeOwner(
 
 export async function findRawCodeOwners(
   location: LocationSpec,
-  reader: UrlReader,
+  options: Options,
 ): Promise<string | undefined> {
   const readOwnerLocation = async (basePath: string): Promise<string> => {
     const ownerUrl = buildCodeOwnerUrl(
       location.target,
       `${basePath}/CODEOWNERS`,
     );
-    const data = await reader.read(ownerUrl);
+    const data = await options.reader.read(ownerUrl);
     return data.toString();
   };
 
-  return Promise.any(KNOWN_LOCATIONS.map(readOwnerLocation));
+  const candidates = KNOWN_LOCATIONS.map(readOwnerLocation);
+  return Promise.any(candidates).catch((aggregateError: AggregateError) => {
+    const hardError = aggregateError.errors.find(
+      error => !(error instanceof NotFoundError),
+    );
+    if (hardError) {
+      options.logger.warn(
+        `Failed to read codeowners for location ${stringifyLocationReference(
+          location,
+        )}, ${hardError}`,
+      );
+    } else {
+      options.logger.debug(
+        `Failed to find codeowners for location ${stringifyLocationReference(
+          location,
+        )}`,
+      );
+    }
+    return undefined;
+  });
 }
 
 export function buildCodeOwnerUrl(
   basePath: string,
   codeOwnersPath: string,
 ): string {
-  return buildUrl({ ...parseGitUri(basePath), codeOwnersPath });
+  return buildUrl({ ...parseGitUrl(basePath), codeOwnersPath });
 }
 
 export function parseCodeOwners(ownersText: string) {

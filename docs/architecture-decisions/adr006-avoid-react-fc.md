@@ -6,7 +6,7 @@ description: Architecture Decision Record (ADR) log on Avoid React.FC and React.
 
 ## Context
 
-Facebook has removed `React.FC` from their base template for a Typescript
+Facebook has removed `React.FC` from their base template for a TypeScript
 project. The reason for this was that it was found to be an unnecessary feature
 with next to no benefits in combination with a few downsides.
 
@@ -37,6 +37,15 @@ const BadComponent: FC<BadProps> = ({ text, children }) => (
 
 /* Do this instead: */
 type GoodProps = { text: string; children?: React.ReactNode };
+const GoodComponent = ({ text, children }: GoodProps) => (
+  <div>
+    <div>{text}</div>
+    {children}
+  </div>
+);
+
+/* Or as a shorthand, if no specifc child type is required */
+type GoodProps = PropsWithChildren<{ text: string }>;
 const GoodComponent = ({ text, children }: GoodProps) => (
   <div>
     <div>{text}</div>

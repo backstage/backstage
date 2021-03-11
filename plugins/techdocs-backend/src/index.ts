@@ -15,4 +15,4 @@
  */
 
 export * from './service/router';
-export * from './techdocs';
+export * from '@backstage/techdocs-common';

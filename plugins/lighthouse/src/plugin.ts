@@ -19,6 +19,8 @@ import {
   createRouteRef,
   createApiFactory,
   configApiRef,
+  createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core';
 import { lighthouseApiRef, LighthouseRestApi } from './api';
 
@@ -37,7 +39,11 @@ export const createAuditRouteRef = createRouteRef({
   title: 'Create Lighthouse Audit',
 });
 
-export const plugin = createPlugin({
+export const entityContentRouteRef = createRouteRef({
+  title: 'Lighthouse Entity Content',
+});
+
+export const lighthousePlugin = createPlugin({
   id: 'lighthouse',
   apis: [
     createApiFactory({
@@ -46,4 +52,31 @@ export const plugin = createPlugin({
       factory: ({ configApi }) => LighthouseRestApi.fromConfig(configApi),
     }),
   ],
+  routes: {
+    root: createAuditRouteRef,
+    entityContent: entityContentRouteRef,
+  },
 });
+
+export const LighthousePage = lighthousePlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.Router),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityLighthouseContent = lighthousePlugin.provide(
+  createRoutableExtension({
+    component: () => import('./Router').then(m => m.EmbeddedRouter),
+    mountPoint: entityContentRouteRef,
+  }),
+);
+
+export const EntityLastLighthouseAuditCard = lighthousePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/Cards').then(m => m.LastLighthouseAuditCard),
+    },
+  }),
+);

@@ -61,7 +61,7 @@ class PackageJsonHandler {
       await this.syncField('main:src');
     }
     await this.syncField('types');
-    await this.syncField('files');
+    await this.syncFiles();
     await this.syncScripts();
     await this.syncPublishConfig();
     await this.syncDependencies('dependencies');
@@ -102,6 +102,15 @@ class PackageJsonHandler {
         targetObj[fieldName] = newValue;
         await this.write();
       }
+    }
+  }
+
+  private async syncFiles() {
+    if (typeof this.targetPkg.configSchema === 'string') {
+      const files = [...this.pkg.files, this.targetPkg.configSchema];
+      await this.syncField('files', { files });
+    } else {
+      await this.syncField('files');
     }
   }
 

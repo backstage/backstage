@@ -4,23 +4,28 @@ title: Running Backstage Locally
 description: Documentation on How to run Backstage Locally
 ---
 
+To develop a plugin or contribute to the Backstage project, we recommend cloning
+the Backstage repository and running locally in development mode. If you are not
+trying to contribute, follow the instructions to
+[Create an App](./create-an-app.md) instead.
+
 ## Prerequisites
 
 - Node.js
 
-First make sure you are using Node.js with an Active LTS Release, currently v12.
+First make sure you are using Node.js with an Active LTS Release, currently v14.
 This is made easy with a version manager such as
 [nvm](https://github.com/nvm-sh/nvm) which allows for version switching.
 
 ```bash
 # Installing a new version
-nvm install 12
-> Downloading and installing node v12.18.3...
-> Now using node v12.18.3 (npm v6.14.6)
+nvm install 14
+> Downloading and installing node v14.15.1...
+> Now using node v14.15.1 (npm v6.14.8)
 
 # Checking your version
 node --version
-> v12.18.3
+> v14.15.1
 ```
 
 - Yarn
@@ -104,7 +109,6 @@ The value of Backstage grows with every new plugin that gets added. Here is a
 collection of tutorials that will guide you through setting up and extending an
 instance of Backstage with your own plugins.
 
-- [Development Environment](development-environment.md)
 - [Create a Backstage Plugin](../plugins/create-a-plugin.md)
 - [Structure of a Plugin](../plugins/structure-of-a-plugin.md)
 - [Utility APIs](../api/utility-apis.md)

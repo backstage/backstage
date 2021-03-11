@@ -1,5 +1,7 @@
 # Register component plugin
 
+> This plugin is deprecated in favor of [`@backstage/catalog-import`](https://github.com/backstage/backstage/tree/master/plugins/catalog-import), and will be soon removed from the project.
+
 Welcome to the register-component plugin!
 
 This plugin allows you to submit your Backstage component using your software's YAML config.

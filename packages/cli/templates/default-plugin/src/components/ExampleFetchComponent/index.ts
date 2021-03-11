@@ -1,1 +1,1 @@
-export { default } from './ExampleFetchComponent';
+export { ExampleFetchComponent } from './ExampleFetchComponent';

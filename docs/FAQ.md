@@ -48,10 +48,9 @@ source candidates. (And we'll probably end up writing some brand new ones, too.)
 ### What's the roadmap for Backstage?
 
 We envision three phases, which you can learn about in
-[our project roadmap](https://github.com/backstage/backstage#project-roadmap).
-Even though the open source version of Backstage is relatively new compared to
-our internal version, we have already begun work on various aspects of all three
-phases. Looking at the
+[our project roadmap](overview/roadmap.md). Even though the open source version
+of Backstage is relatively new compared to our internal version, we have already
+begun work on various aspects of all three phases. Looking at the
 [milestones for active issues](https://github.com/backstage/backstage/milestones)
 will also give you a sense of our progress.
 
@@ -115,9 +114,43 @@ type of content. Plugins all use a common set of platform APIs and reusable UI
 components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
-Learn more about
-[the different components](https://github.com/backstage/backstage#overview) that
+Learn more about [the different components](overview/what-is-backstage.md) that
 make up Backstage.
+
+### Why can't I dynamically install plugins without modifications the app?
+
+This decision is part of the core architecture and development flow of
+Backstage. Plugins have a lot of freedom in what they provide and how they are
+integrated into the app, and it would therefore add a lot of complexity to allow
+plugins to be integrated via configuration the same way as they can be
+integrated with code.
+
+By bundling all plugins and their dependencies into one app bundle it is also
+possible to do significant optimizations to the app load time by allowing
+plugins to share dependencies between each other when possible. This contributes
+to Backstage being fast, which is an important part of the user and developer
+experience.
+
+### Why are there no published Docker images or helm charts for Backstage?
+
+As mentioned above, Backstage is not a packaged service that you can use out of
+the box. In order to get started with Backstage you need to use the
+`@backstage/create-app` package to create and customize your own Backstage app.
+
+In order to build a Docker image from your own app, you can use the
+`yarn build-image` command which is included out of the box in the app template.
+By default this image will bundle up both the frontend and the backend into a
+single image that you can deploy using your favorite tooling.
+
+There are also some examples that can help you deploy Backstage to kubernetes in
+the
+[contrib](https://github.com/backstage/backstage/tree/master/contrib/kubernetes)
+folder.
+
+It is possible that example images will be provided in the future, which can be
+used to quickly try out a small subset of the functionality of Backstage, but
+these would not be able to provide much more functionality on top of what you
+can see on a demo site.
 
 ### Do I have to write plugins in TypeScript?
 
@@ -126,16 +159,16 @@ APIs in TypeScript, but aren't forcing it on individual plugins.
 
 ### How do I find out if a plugin already exists?
 
-Before you write a plugin,
+You can browse and search for all available plugins in the
+[Plugin Marketplace](https://backstage.io/plugins).
+
+If you can't find it in the marketplace, before you write a plugin
 [search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
-to see if it already exists or is in the works. If no one's thought of it yet,
-great! Open a new issue as
+to see if is in the works. If no one's thought of it yet, great! Open a new
+issue as
 [a plugin suggestion](https://github.com/backstage/backstage/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
-
-You can browse and search for all available plugins in the
-[Plugin Marketplace](https://backstage.io/plugins).
 
 ### Which plugin is used the most at Spotify?
 
@@ -182,6 +215,10 @@ comes to [deployment](https://backstage.io/docs/getting-started/deployment-k8s),
 the system integrator (typically, the infrastructure team in your organization)
 maintains Backstage in your own environment.
 
+For more information, see our
+[Owners](https://github.com/backstage/backstage/blob/master/OWNERS.md) and
+[Governance](https://github.com/backstage/backstage/blob/master/GOVERNANCE.md).
+
 ### Does Spotify provide a managed version of Backstage?
 
 No, this is not a service offering. We build the piece of software, and someone
@@ -215,14 +252,14 @@ data is shared with.
 Yes. The core frontend framework could be used for building any large-scale web
 application where (1) multiple teams are building separate parts of the app, and
 (2) you want the overall experience to be consistent. That being said, in
-[Phase 2](https://github.com/backstage/backstage#project-roadmap) of the project
-we will add features that are needed for developer portals and systems for
-managing software ecosystems. Our ambition will be to keep Backstage modular.
+[Phase 2](overview/roadmap.md) of the project we will add features that are
+needed for developer portals and systems for managing software ecosystems. Our
+ambition will be to keep Backstage modular.
 
 ### How can I get involved?
 
 Jump right in! Come help us fix some of the
-[early bugs and first issues](https://github.com/backstage/backstage/labels/good%20first%20issue)
+[early bugs and good first issues](https://github.com/backstage/backstage/contribute)
 or reach [a new milestone](https://github.com/backstage/backstage/milestones).
 Or write an open source plugin for Backstage, like this
 [Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).

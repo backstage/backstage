@@ -31,7 +31,7 @@ export function createOidcRouter(options: Options) {
     issuer: baseUrl,
     token_endpoint: `${baseUrl}/v1/token`,
     userinfo_endpoint: `${baseUrl}/v1/userinfo`,
-    jwks_uri: `${baseUrl}/v1/certs`,
+    jwks_uri: `${baseUrl}/.well-known/jwks.json`,
     response_types_supported: ['id_token'],
     subject_types_supported: ['public'],
     id_token_signing_alg_values_supported: ['RS256'],

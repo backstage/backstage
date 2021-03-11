@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EntityPolicy } from '../../types';
+import { EntityPolicy } from './types';
 import { Entity } from '../Entity';
 
 const defaultKnownFields = ['apiVersion', 'kind', 'metadata', 'spec'];

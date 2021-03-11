@@ -16,7 +16,6 @@
 
 import webpack, { Module, Plugin } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { BundlingOptions, BackendBundlingOptions } from './types';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
@@ -24,9 +23,11 @@ type Transforms = {
   plugins: Plugin[];
 };
 
-export const transforms = (
-  options: BundlingOptions | BackendBundlingOptions,
-): Transforms => {
+type TransformOptions = {
+  isDev: boolean;
+};
+
+export const transforms = (options: TransformOptions): Transforms => {
   const { isDev } = options;
 
   const extraTransforms = isDev ? ['react-hot-loader'] : [];

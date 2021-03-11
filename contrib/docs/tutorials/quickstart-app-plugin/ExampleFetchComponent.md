@@ -3,7 +3,7 @@
 ExampleFetchComponent.tsx reference
 
 ```tsx
-import React, { FC } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import {
@@ -11,8 +11,8 @@ import {
   TableColumn,
   Progress,
   githubAuthApiRef,
+  useApi,
 } from '@backstage/core';
-import { useApi } from '@backstage/core-api';
 import { graphql } from '@octokit/graphql';
 
 const query = `{
@@ -57,7 +57,7 @@ type DenseTableProps = {
   viewer: Viewer;
 };
 
-export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
+export const DenseTable = ({ viewer }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Name', field: 'name' },
     { title: 'Created', field: 'createdAt' },
@@ -76,7 +76,7 @@ export const DenseTable: FC<DenseTableProps> = ({ viewer }) => {
   );
 };
 
-const ExampleFetchComponent: FC<{}> = () => {
+const ExampleFetchComponent = () => {
   const auth = useApi(githubAuthApiRef);
 
   const { value, loading, error } = useAsync(async (): Promise<any> => {

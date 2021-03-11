@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext, FC, ReactNode } from 'react';
+import React, { useContext, ReactNode, PropsWithChildren } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
 import { StepActions } from './SimpleStepperStep';
 import { VerticalStepperContext } from './SimpleStepper';
@@ -27,20 +27,33 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const RestartBtn: FC<{
+interface CommonBtnProps {
   text?: string;
   handleClick?: () => void;
   stepIndex: number;
-}> = ({ text, handleClick }) => (
-  <Button onClick={handleClick}>{text || 'Reset'}</Button>
-);
-const NextBtn: FC<{
-  text?: string;
-  handleClick?: () => void;
+}
+interface RestartBtnProps extends CommonBtnProps {}
+
+interface NextBtnProps extends CommonBtnProps {
   disabled?: boolean;
   last?: boolean;
   stepIndex: number;
-}> = ({ text, handleClick, disabled, last, stepIndex }) => (
+}
+interface BackBtnProps extends CommonBtnProps {
+  disabled?: boolean;
+  stepIndex: number;
+}
+export const RestartBtn = ({ text, handleClick }: RestartBtnProps) => (
+  <Button onClick={handleClick}>{text || 'Reset'}</Button>
+);
+
+const NextBtn = ({
+  text,
+  handleClick,
+  disabled,
+  last,
+  stepIndex,
+}: NextBtnProps) => (
   <Button
     variant="contained"
     color="primary"
@@ -51,12 +64,8 @@ const NextBtn: FC<{
     {text || (last ? 'Finish' : 'Next')}
   </Button>
 );
-const BackBtn: FC<{
-  text?: string;
-  handleClick?: () => void;
-  disabled?: boolean;
-  stepIndex: number;
-}> = ({ text, handleClick, disabled, stepIndex }) => (
+
+const BackBtn = ({ text, handleClick, disabled, stepIndex }: BackBtnProps) => (
   <Button
     onClick={handleClick}
     data-testid={`backButton-${stepIndex}`}
@@ -71,10 +80,10 @@ export type SimpleStepperFooterProps = {
   children?: ReactNode;
 };
 
-export const SimpleStepperFooter: FC<SimpleStepperFooterProps> = ({
+export const SimpleStepperFooter = ({
   actions = {},
   children,
-}) => {
+}: PropsWithChildren<SimpleStepperFooterProps>) => {
   const classes = useStyles();
   const {
     stepperLength,

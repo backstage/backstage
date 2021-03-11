@@ -31,7 +31,7 @@ export type TypeLink = {
 };
 
 /**
- * TypeInfo describes a Typescript Type.
+ * TypeInfo describes a TypeScript Type.
  */
 export type TypeInfo = {
   id: number;

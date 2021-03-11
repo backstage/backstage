@@ -1,0 +1,8 @@
+{
+  "baseUrl": "http://localhost:7000",
+  "integrationFolder": "./src/integration",
+  "supportFile": "./src/support",
+  "fixturesFolder": "./src/fixures",
+  "pluginsFile": "./src/plugins",
+  "defaultCommandTimeout": 10000
+}

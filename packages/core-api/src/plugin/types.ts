@@ -15,7 +15,7 @@
  */
 
 import { ComponentType } from 'react';
-import { RouteRef } from '../routing';
+import { RouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
 
 export type RouteOptions = {
@@ -66,35 +66,51 @@ export type PluginOutput =
   | RedirectRouteOutput
   | FeatureFlagOutput;
 
-export type BackstagePlugin = {
+export type Extension<T> = {
+  expose(plugin: BackstagePlugin<any, any>): T;
+};
+
+export type AnyRoutes = { [name: string]: RouteRef<any> };
+
+export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
+
+export type BackstagePlugin<
+  Routes extends AnyRoutes = {},
+  ExternalRoutes extends AnyExternalRoutes = {}
+> = {
   getId(): string;
   output(): PluginOutput[];
   getApis(): Iterable<AnyApiFactory>;
+  provide<T>(extension: Extension<T>): T;
+  routes: Routes;
+  externalRoutes: ExternalRoutes;
 };
 
-export type PluginConfig = {
+export type PluginConfig<
+  Routes extends AnyRoutes,
+  ExternalRoutes extends AnyExternalRoutes
+> = {
   id: string;
   apis?: Iterable<AnyApiFactory>;
   register?(hooks: PluginHooks): void;
+  routes?: Routes;
+  externalRoutes?: ExternalRoutes;
 };
 
 export type PluginHooks = {
+  /**
+   * @deprecated All router hooks have been deprecated
+   */
   router: RouterHooks;
   featureFlags: FeatureFlagsHooks;
 };
 
 export type RouterHooks = {
+  /**
+   * @deprecated Use a routable extension instead, see https://backstage.io/docs/plugins/composability#porting-existing-plugins
+   */
   addRoute(
     target: RouteRef,
-    Component: ComponentType<any>,
-    options?: RouteOptions,
-  ): void;
-
-  /**
-   * @deprecated See the `addRoute` method
-   */
-  registerRoute(
-    path: RoutePath,
     Component: ComponentType<any>,
     options?: RouteOptions,
   ): void;

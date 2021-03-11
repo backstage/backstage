@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useEffect } from 'react';
+import {
+  EmptyState,
+  Link,
+  Progress,
+  Table,
+  TableColumn,
+  useApi,
+} from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
-
-import { makeStyles, Typography, Grid, Divider } from '@material-ui/core';
-import { Table, TableColumn, useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog';
-
-import { FiltersButton, Filters, FiltersState } from '../Filters';
 import SearchApi, { Result, SearchResults } from '../../apis';
+import { Filters, FiltersButton, FiltersState } from '../Filters';
 
 const useStyles = makeStyles(theme => ({
-  searchTerm: {
-    background: '#eee',
+  searchQuery: {
+    color: theme.palette.text.primary,
+    background: theme.palette.background.default,
     borderRadius: '10%',
   },
   tableHeader: {
@@ -50,17 +57,15 @@ type TableHeaderProps = {
   handleToggleFilters: () => void;
 };
 
-type Filters = {
-  selected: string;
-  checked: Array<string | null>;
-};
-
 // TODO: move out column to make the search result component more generic
 const columns: TableColumn[] = [
   {
-    title: 'Component Id',
+    title: 'Name',
     field: 'name',
     highlight: true,
+    render: (result: Partial<Result>) => (
+      <Link to={result.url || ''}>{result.name}</Link>
+    ),
   },
   {
     title: 'Description',
@@ -100,7 +105,7 @@ const TableHeader = ({
           <Typography variant="h6">
             {`${numberOfResults} `}
             {numberOfResults > 1 ? `results for ` : `result for `}
-            <span className={classes.searchTerm}>"{searchQuery}"</span>{' '}
+            <span className={classes.searchQuery}>"{searchQuery}"</span>{' '}
           </Typography>
         ) : (
           <Typography variant="h6">{`${numberOfResults} results`}</Typography>
@@ -114,8 +119,8 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
-  const [filters, setFilters] = useState<FiltersState>({
-    selected: 'All',
+  const [selectedFilters, setSelectedFilters] = useState<FiltersState>({
+    selected: '',
     checked: [],
   });
 
@@ -134,16 +139,18 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
       // apply filters
 
       // filter on selected
-      if (filters.selected !== 'All') {
+      if (selectedFilters.selected !== '') {
         withFilters = results.filter((result: Result) =>
-          filters.selected.includes(result.kind),
+          selectedFilters.selected.includes(result.kind),
         );
       }
 
       // filter on checked
-      if (filters.checked.length > 0) {
-        withFilters = withFilters.filter((result: Result) =>
-          filters.checked.includes(result.lifecycle),
+      if (selectedFilters.checked.length > 0) {
+        withFilters = withFilters.filter(
+          (result: Result) =>
+            result.lifecycle &&
+            selectedFilters.checked.includes(result.lifecycle),
         );
       }
 
@@ -152,44 +159,74 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         withFilters = withFilters.filter(
           (result: Result) =>
             result.name?.toLowerCase().includes(searchQuery) ||
+            result.name
+              ?.toLowerCase()
+              .includes(searchQuery.split(' ').join('-')) ||
             result.description?.toLowerCase().includes(searchQuery),
         );
       }
 
       setFilteredResults(withFilters);
     }
-  }, [filters, searchQuery, results]);
-
-  if (loading || error || !results) return null;
+  }, [selectedFilters, searchQuery, results]);
+  if (loading) {
+    return <Progress />;
+  }
+  if (error) {
+    return (
+      <Alert severity="error">
+        Error encountered while fetching search results. {error.toString()}
+      </Alert>
+    );
+  }
+  if (!results || results.length === 0) {
+    return <EmptyState missing="data" title="Sorry, no results were found" />;
+  }
 
   const resetFilters = () => {
-    setFilters({
-      selected: 'All',
+    setSelectedFilters({
+      selected: '',
       checked: [],
     });
   };
 
   const updateSelected = (filter: string) => {
-    setFilters(prevState => ({
+    setSelectedFilters(prevState => ({
       ...prevState,
       selected: filter,
     }));
   };
 
   const updateChecked = (filter: string) => {
-    if (filters.checked.includes(filter)) {
-      setFilters(prevState => ({
+    if (selectedFilters.checked.includes(filter)) {
+      setSelectedFilters(prevState => ({
         ...prevState,
         checked: prevState.checked.filter(item => item !== filter),
       }));
       return;
     }
 
-    setFilters(prevState => ({
+    setSelectedFilters(prevState => ({
       ...prevState,
       checked: [...prevState.checked, filter],
     }));
   };
+
+  const filterOptions = results.reduce(
+    (acc, curr) => {
+      if (curr.kind && acc.kind.indexOf(curr.kind) < 0) {
+        acc.kind.push(curr.kind);
+      }
+      if (curr.lifecycle && acc.lifecycle.indexOf(curr.lifecycle) < 0) {
+        acc.lifecycle.push(curr.lifecycle);
+      }
+      return acc;
+    },
+    {
+      kind: [] as Array<string>,
+      lifecycle: [] as Array<string>,
+    },
+  );
 
   return (
     <>
@@ -197,7 +234,8 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         {showFilters && (
           <Grid item xs={3}>
             <Filters
-              filters={filters}
+              filters={selectedFilters}
+              filterOptions={filterOptions}
               resetFilters={resetFilters}
               updateSelected={updateSelected}
               updateChecked={updateChecked}
@@ -206,7 +244,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
         )}
         <Grid item xs={showFilters ? 9 : 12}>
           <Table
-            options={{ paging: true, search: false }}
+            options={{ paging: true, pageSize: 20, search: false }}
             data={filteredResults}
             columns={columns}
             title={
@@ -214,7 +252,8 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
                 searchQuery={searchQuery}
                 numberOfResults={filteredResults.length}
                 numberOfSelectedFilters={
-                  (filters.selected !== 'All' ? 1 : 0) + filters.checked.length
+                  (selectedFilters.selected !== '' ? 1 : 0) +
+                  selectedFilters.checked.length
                 }
                 handleToggleFilters={() => toggleFilters(!showFilters)}
               />

@@ -83,13 +83,20 @@ const getHardCodedData = () =>
     rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
     entries: [
       {
-        moved: 0,
-        ring: 'use',
         url: '#',
         key: 'github-actions',
         id: 'github-actions',
         title: 'GitHub Actions',
         quadrant: 'infrastructure',
+        timeline: [
+          {
+            moved: 0,
+            ringId: 'use',
+            date: new Date('2020-08-06'),
+            description:
+              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
+          },
+        ],
       },
     ],
   });

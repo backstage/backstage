@@ -22,6 +22,7 @@ spec:
       component_id:
         title: Name
         type: string
+        pattern: ^[a-z0-9A-Z_.-]{1,63}$
         description: Unique name of the component
       description:
         title: Description

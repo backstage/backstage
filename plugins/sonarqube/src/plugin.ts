@@ -17,22 +17,32 @@
 import {
   configApiRef,
   createApiFactory,
+  createComponentExtension,
   createPlugin,
   discoveryApiRef,
 } from '@backstage/core';
-import { SonarQubeApi, sonarQubeApiRef } from './api';
+import { sonarQubeApiRef, SonarQubeClient } from './api';
 
-export const plugin = createPlugin({
+export const sonarQubePlugin = createPlugin({
   id: 'sonarqube',
   apis: [
     createApiFactory({
       api: sonarQubeApiRef,
       deps: { configApi: configApiRef, discoveryApi: discoveryApiRef },
       factory: ({ configApi, discoveryApi }) =>
-        new SonarQubeApi({
+        new SonarQubeClient({
           discoveryApi,
           baseUrl: configApi.getOptionalString('sonarQube.baseUrl'),
         }),
     }),
   ],
 });
+
+export const EntitySonarQubeCard = sonarQubePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SonarQubeCard').then(m => m.SonarQubeCard),
+    },
+  }),
+);

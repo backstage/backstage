@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ContentHeader, InfoCard, MarkdownContent } from '@backstage/core';
+import { Button, Grid, makeStyles, Tab, Tabs } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import Markdown from 'react-markdown';
-import { ContentHeader, InfoCard } from '@backstage/core';
-import { makeStyles, Button, Grid, Tabs, Tab } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-
 import LighthouseSupportButton from '../SupportButton';
+
+// TODO(freben): move all of this out of index
 
 export const LIGHTHOUSE_INTRO_LOCAL_STORAGE =
   '@backstage/lighthouse-plugin/intro-dismissed';
 
 const USE_CASES = `
 Google's [Lighthouse](https://developers.google.com/web/tools/lighthouse) auditing tool for websites
-is a great open-source resource forbenchmarking and improving the accessibility, performance, SEO, and best practices of your site.
+is a great open-source resource for benchmarking and improving the accessibility, performance, SEO, and best practices of your site.
 At Spotify, we keep track of Lighthouse audit scores over time to look at trends and overall areas for investment.
 
 This plugin allows you to generate on-demand Lighthouse audits for websites, and to track the trends for the
@@ -42,32 +43,37 @@ To get started, you will need a running instance of [lighthouse-audit-service](h
 _It's likely you will need to enable CORS when running lighthouse-audit-service. Initialize the app
 with the environment variable \`LAS_CORS\` set to \`true\`._
 
-When you have an instance running that Backstage can hook into, make sure to export the plugin in
-your app's [\`plugins.ts\`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts)
-to enable the plugin:
+When you have an instance running that Backstage can hook into, first install the plugin into your app:
 
-\`\`\`js
-import { default as LighthousePlugin } from '@backstage/plugin-lighthouse';
-export LighthousePlugin;
+\`\`\`sh
+$ yarn add @backstage/plugin-lighthouse
 \`\`\`
 
-Then, you need to use the \`lighthouseApiRef\` exported from the plugin to initialize the Rest API in
-your [\`apis.ts\`](https://github.com/backstage/backstage/blob/master/packages/app/src/apis.ts).
+Then make sure to export the plugin in your app's [\`plugins.ts\`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts) to enable the plugin:
 
 \`\`\`js
-import { ApiHolder, ApiRegistry } from '@backstage/core';
-import {
-  lighthouseApiRef,
-  LighthouseRestApi,
-} from '@backstage/plugin-lighthouse';
+export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
+\`\`\`
 
-const builder = ApiRegistry.builder();
+Modify your app routes in \`App.tsx\` or \`App.jsx\` to include the Router component exported from the plugin, for example:
 
-export const lighthouseApi =
-  new LighthouseRestApi(/* your service url here! */);
-builder.add(lighthouseApiRef, lighthouseApi);
+\`\`\`js
+// At the top imports
+import { LighthousePage } from '@backstage/plugin-lighthouse';
 
-export default builder.build() as ApiHolder;
+// Inside App component
+<FlatRoutes>
+  // ...
+  <Route path="/lighthouse" element={<LighthousePage />} />
+  // ...
+</FlatRoutes>;
+\`\`\`
+
+Then configure the \`lighthouse-audit-service\` URL in your [\`app-config.yaml\`](https://github.com/backstage/backstage/blob/master/app-config.yaml).
+
+\`\`\`yaml
+lighthouse:
+  baseUrl: http://your-service-url
 \`\`\`
 `;
 
@@ -116,8 +122,8 @@ function GettingStartedCard() {
         </>
       }
     >
-      {value === 0 && <Markdown source={USE_CASES} />}
-      {value === 1 && <Markdown source={SETUP} />}
+      {value === 0 && <MarkdownContent content={USE_CASES} />}
+      {value === 1 && <MarkdownContent content={SETUP} />}
     </InfoCard>
   );
 }

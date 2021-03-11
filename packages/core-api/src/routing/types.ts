@@ -15,27 +15,58 @@
  */
 
 import { IconComponent } from '../icons';
+import { getGlobalSingleton } from '../lib/globalObject';
 
-export const resolveRoute = Symbol('resolve-route');
-export const routeReference = Symbol('route-ref');
+export type AnyParams = { [param in string]: string } | undefined;
+export type ParamKeys<Params extends AnyParams> = keyof Params extends never
+  ? []
+  : (keyof Params)[];
 
-export type ReferencedRoute = {
-  [routeReference]: unknown;
-};
+export const routeRefType: unique symbol = getGlobalSingleton<any>(
+  'route-ref-type',
+  () => Symbol('route-ref-type'),
+);
 
-export type ConcreteRoute = ReferencedRoute & {
-  [resolveRoute](path: string): string;
-};
+export type RouteRef<Params extends AnyParams = any> = {
+  readonly [routeRefType]: 'absolute';
 
-export type RouteRef = {
-  // TODO(Rugvip): Remove path, look up via registry instead
+  params: ParamKeys<Params>;
+
+  // TODO(Rugvip): Remove all of these once plugins don't rely on the path
+  /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
   path: string;
+  /** @deprecated icons are no longer accessed via RouteRefs */
   icon?: IconComponent;
-  title: string;
+  /** @deprecated titles are no longer accessed via RouteRefs */
+  title?: string;
 };
 
-export type RouteRefConfig = {
-  path: string;
-  icon?: IconComponent;
-  title: string;
+export type ExternalRouteRef<
+  Params extends AnyParams = any,
+  Optional extends boolean = any
+> = {
+  readonly [routeRefType]: 'external';
+
+  params: ParamKeys<Params>;
+
+  optional?: Optional;
 };
+
+export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any, any>;
+
+// TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
+/** @deprecated */
+export type ConcreteRoute = {};
+/** @deprecated */
+export type AbsoluteRouteRef = RouteRef<{}>;
+/** @deprecated */
+export type MutableRouteRef = RouteRef<{}>;
+
+// A duplicate of the react-router RouteObject, but with routeRef added
+export interface BackstageRouteObject {
+  caseSensitive: boolean;
+  children?: BackstageRouteObject[];
+  element: React.ReactNode;
+  path: string;
+  routeRefs: Set<AnyRouteRef>;
+}

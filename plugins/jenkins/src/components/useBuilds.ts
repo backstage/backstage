@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { errorApiRef, useApi } from '@backstage/core';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 
@@ -26,21 +26,6 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
 
-  const getBuilds = useCallback(async () => {
-    try {
-      let build;
-      if (branch) {
-        build = await api.getLastBuild(`${owner}/${repo}/${branch}`);
-      } else {
-        build = await api.getFolder(`${owner}/${repo}`);
-      }
-      return build;
-    } catch (e) {
-      errorApi.post(e);
-      return Promise.reject(e);
-    }
-  }, [api, branch, errorApi, owner, repo]);
-
   const restartBuild = async (buildName: string) => {
     try {
       await api.retry(buildName);
@@ -49,18 +34,24 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
     }
   };
 
-  useEffect(() => {
-    getBuilds().then(b => {
-      const size = Array.isArray(b) ? b?.[0].build_num! : 1;
-      setTotal(size);
-    });
-  }, [repo, getBuilds]);
+  const { loading, value: builds, retry } = useAsyncRetry(async () => {
+    try {
+      let build;
+      if (branch) {
+        build = await api.getLastBuild(`${owner}/${repo}/${branch}`);
+      } else {
+        build = await api.getFolder(`${owner}/${repo}`);
+      }
 
-  const { loading, value: builds, retry } = useAsyncRetry(
-    () =>
-      getBuilds().then(retrievedBuilds => retrievedBuilds ?? [], restartBuild),
-    [page, pageSize, getBuilds],
-  );
+      const size = Array.isArray(build) ? build?.[0].build_num! : 1;
+      setTotal(size);
+
+      return build || [];
+    } catch (e) {
+      errorApi.post(e);
+      throw e;
+    }
+  }, [api, errorApi, owner, repo, branch]);
 
   const projectName = `${owner}/${repo}`;
   return [

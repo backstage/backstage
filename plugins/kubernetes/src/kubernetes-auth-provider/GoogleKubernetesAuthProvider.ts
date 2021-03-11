@@ -16,7 +16,7 @@
 
 import { OAuthApi } from '@backstage/core';
 import { KubernetesAuthProvider } from './types';
-import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-backend';
 
 export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   authProvider: OAuthApi;
@@ -26,8 +26,8 @@ export class GoogleKubernetesAuthProvider implements KubernetesAuthProvider {
   }
 
   async decorateRequestBodyForAuth(
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody> {
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody> {
     const googleAuthToken: string = await this.authProvider.getAccessToken(
       'https://www.googleapis.com/auth/cloud-platform',
     );

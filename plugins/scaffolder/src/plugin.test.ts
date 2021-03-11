@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { scaffolderPlugin } from './plugin';
 
 describe('scaffolder', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(scaffolderPlugin).toBeDefined();
   });
 });

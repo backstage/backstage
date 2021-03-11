@@ -22,7 +22,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { FC, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const useStyles = makeStyles({
   accordionDetails: {
@@ -35,12 +35,14 @@ const useStyles = makeStyles({
   },
 });
 
-export const ActionOutput: FC<{
+type ActionOutputProps = {
   url: string;
   name: string;
   className?: string;
   action: any;
-}> = ({ url, name, className }) => {
+};
+
+export const ActionOutput = ({ url, name, className }: ActionOutputProps) => {
   const classes = useStyles();
 
   useEffect(() => {}, [url]);

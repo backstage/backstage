@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { Link, WarningPanel } from '@backstage/core';
+import { Breadcrumbs, Link, WarningPanel } from '@backstage/core';
 import {
-  Breadcrumbs,
+  Box,
   LinearProgress,
   Link as MaterialLink,
   makeStyles,
@@ -86,10 +86,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
 
   return (
     <div className={classes.root}>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link to="..">Workflow runs</Link>
-        <Typography>Workflow run details</Typography>
-      </Breadcrumbs>
+      <Box mb={3}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to="..">Build history</Link>
+          <Typography>Build details</Typography>
+        </Breadcrumbs>
+      </Box>
       <TableContainer component={Paper} className={classes.table}>
         <Table>
           <TableBody>

@@ -36,7 +36,7 @@ export async function createStandaloneApplication(
   options: ApplicationOptions,
 ): Promise<express.Application> {
   const { enableCors, logger } = options;
-  const config = ConfigReader.fromConfigs([]);
+  const config = new ConfigReader({});
   const app = express();
 
   app.use(helmet());

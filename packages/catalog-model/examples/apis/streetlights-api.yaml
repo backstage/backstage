@@ -5,10 +5,14 @@ metadata:
   description: The Smartylighting Streetlights API allows you to remotely manage the city lights.
   tags:
     - mqtt
+  links:
+    - url: https://github.com/asyncapi/asyncapi/blob/master/examples/1.2.0/streetlights.yml
+      title: Source Code
+      icon: code
 spec:
   type: asyncapi
   lifecycle: production
-  owner: streetlights@example.com
+  owner: team-c
   definition: |
     asyncapi: 2.0.0
     info:

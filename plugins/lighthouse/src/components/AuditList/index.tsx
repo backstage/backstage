@@ -13,33 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useMemo, FC, ReactNode } from 'react';
-import { useLocalStorage, useAsync } from 'react-use';
-import { useNavigate } from 'react-router-dom';
-import { Grid, Button } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import Pagination from '@material-ui/lab/Pagination';
+
 import {
-  InfoCard,
-  Header,
-  Page,
   Content,
   ContentHeader,
+  Header,
   HeaderLabel,
+  InfoCard,
+  Page,
   Progress,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
-
+import { Button, Grid } from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
+import React, { ReactNode, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAsync, useLocalStorage } from 'react-use';
 import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
-import LighthouseSupportButton from '../SupportButton';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';
+import LighthouseSupportButton from '../SupportButton';
 import AuditListTable from './AuditListTable';
-import { createAuditRouteRef } from '../../plugin';
+
+// TODO(freben): move all of this out of index
 
 export const LIMIT = 10;
 
-const AuditList: FC<{}> = () => {
+const AuditList = () => {
   const [dismissedStored] = useLocalStorage(LIGHTHOUSE_INTRO_LOCAL_STORAGE);
   const [dismissed, setDismissed] = useState(dismissedStored);
 
@@ -86,9 +87,9 @@ const AuditList: FC<{}> = () => {
     content = <Progress />;
   } else if (error) {
     content = (
-      <Alert severity="error" data-testid="error-message">
+      <WarningPanel severity="error" title="Could not load audit list.">
         {error.message}
-      </Alert>
+      </WarningPanel>
     );
   }
 
@@ -110,7 +111,7 @@ const AuditList: FC<{}> = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate(createAuditRouteRef.path)}
+            onClick={() => navigate('create-audit')}
           >
             Create Audit
           </Button>

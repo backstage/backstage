@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  FC,
-  useRef,
-  useEffect,
-  MutableRefObject,
-  useState,
-} from 'react';
+import React, { useRef, useEffect, MutableRefObject, useState } from 'react';
 import { BackstageTheme } from '@backstage/theme';
 import { AppBar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -64,7 +58,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const Tabs: FC<TabsProps> = ({ tabs }) => {
+export const Tabs = ({ tabs }: TabsProps) => {
   const classes = useStyles();
   const [value, setValue] = useState([0, 0]); // [selectedChunkedNavIndex, selectedIndex]
   const [navIndex, setNavIndex] = useState(0);

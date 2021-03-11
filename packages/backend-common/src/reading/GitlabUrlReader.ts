@@ -15,42 +15,53 @@
  */
 
 import {
-  GitLabIntegrationConfig,
-  readGitLabIntegrationConfigs,
+  getGitLabFileFetchUrl,
+  getGitLabRequestOptions,
+  GitLabIntegration,
+  ScmIntegrations,
 } from '@backstage/integration';
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
-import { ReaderFactory, ReadTreeResponse, UrlReader } from './types';
+import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
+import { Readable } from 'stream';
+import { NotFoundError, NotModifiedError } from '../errors';
+import { ReadTreeResponseFactory } from './tree';
+import { stripFirstDirectoryFromPath } from './tree/util';
+import {
+  ReaderFactory,
+  ReadTreeOptions,
+  ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
+  UrlReader,
+} from './types';
 
 export class GitlabUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
-    const configs = readGitLabIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.gitlab') ?? [],
-    );
-    return configs.map(options => {
-      const reader = new GitlabUrlReader(options);
-      const predicate = (url: URL) => url.host === options.host;
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.gitlab.list().map(integration => {
+      const reader = new GitlabUrlReader(integration, {
+        treeResponseFactory,
+      });
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
-  constructor(private readonly options: GitLabIntegrationConfig) {}
+  constructor(
+    private readonly integration: GitLabIntegration,
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {}
 
   async read(url: string): Promise<Buffer> {
-    // TODO(Rugvip): merged the old GitlabReaderProcessor in here and used
-    // the existence of /~/blob/ to switch the logic. Don't know if this
-    // makes sense and it might require some more work.
-    let builtUrl: URL;
-    if (url.includes('/-/blob/')) {
-      const projectID = await this.getProjectID(url);
-      builtUrl = this.buildProjectUrl(url, projectID);
-    } else {
-      builtUrl = this.buildRawUrl(url);
-    }
+    const builtUrl = await getGitLabFileFetchUrl(url, this.integration.config);
 
     let response: Response;
     try {
-      response = await fetch(builtUrl.toString(), this.getRequestOptions());
+      response = await fetch(
+        builtUrl,
+        getGitLabRequestOptions(this.integration.config),
+      );
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -66,115 +77,109 @@ export class GitlabUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('GitlabUrlReader does not implement readTree');
-  }
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const { ref, full_name, filepath } = parseGitUrl(url);
 
-  // Converts
-  // from: https://gitlab.example.com/a/b/blob/master/c.yaml
-  // to:   https://gitlab.example.com/a/b/raw/master/c.yaml
-  private buildRawUrl(target: string): URL {
-    try {
-      const url = new URL(target);
-
-      const [
-        empty,
-        userOrOrg,
-        repoName,
-        blobKeyword,
-        ...restOfPath
-      ] = url.pathname.split('/');
-
-      if (
-        empty !== '' ||
-        userOrOrg === '' ||
-        repoName === '' ||
-        blobKeyword !== 'blob' ||
-        !restOfPath.join('/').match(/\.yaml$/)
-      ) {
-        throw new Error('Wrong GitLab URL');
-      }
-
-      // Replace 'blob' with 'raw'
-      url.pathname = [empty, userOrOrg, repoName, 'raw', ...restOfPath].join(
-        '/',
-      );
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  // convert https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-  // to https://gitlab.com/api/v4/projects/<PROJECTID>/repository/files/filepath?ref=branch
-  private buildProjectUrl(target: string, projectID: Number): URL {
-    try {
-      const url = new URL(target);
-
-      const branchAndFilePath = url.pathname.split('/-/blob/')[1];
-
-      const [branch, ...filePath] = branchAndFilePath.split('/');
-
-      url.pathname = [
-        '/api/v4/projects',
-        projectID,
-        'repository/files',
-        encodeURIComponent(filePath.join('/')),
-        'raw',
-      ].join('/');
-      url.search = `?ref=${branch}`;
-
-      return url;
-    } catch (e) {
-      throw new Error(`Incorrect url: ${target}, ${e}`);
-    }
-  }
-
-  private async getProjectID(target: string): Promise<Number> {
-    const url = new URL(target);
-
-    if (
-      // absPaths to gitlab files should contain /-/blob
-      // ex: https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath
-      !url.pathname.match(/\/\-\/blob\//)
-    ) {
-      throw new Error('Please provide full path to yaml file from Gitlab');
-    }
-    try {
-      const repo = url.pathname.split('/-/blob/')[0];
-
-      // Find ProjectID from url
-      // convert 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/filepath'
-      // to 'https://gitlab.com/api/v4/projects/groupA%2Fteams%2FsubgroupA%2FteamA%2Frepo'
-      const repoIDLookup = new URL(
-        `${url.protocol + url.hostname}/api/v4/projects/${encodeURIComponent(
-          repo.replace(/^\//, ''),
+    // Use GitLab API to get the default branch
+    // encodeURIComponent is required for GitLab API
+    // https://docs.gitlab.com/ee/api/README.html#namespaced-path-encoding
+    const projectGitlabResponse = await fetch(
+      new URL(
+        `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
+          full_name,
         )}`,
-      );
-      const response = await fetch(
-        repoIDLookup.toString(),
-        this.getRequestOptions(),
-      );
-      const projectIDJson = await response.json();
-      const projectID: Number = projectIDJson.id;
-
-      return projectID;
-    } catch (e) {
-      throw new Error(`Could not get GitLab ProjectID for: ${target}, ${e}`);
+      ).toString(),
+      getGitLabRequestOptions(this.integration.config),
+    );
+    if (!projectGitlabResponse.ok) {
+      const msg = `Failed to read tree from ${url}, ${projectGitlabResponse.status} ${projectGitlabResponse.statusText}`;
+      if (projectGitlabResponse.status === 404) {
+        throw new NotFoundError(msg);
+      }
+      throw new Error(msg);
     }
+    const projectGitlabResponseJson = await projectGitlabResponse.json();
+
+    // ref is an empty string if no branch is set in provided url to readTree.
+    const branch = ref || projectGitlabResponseJson.default_branch;
+
+    // Fetch the latest commit in the provided or default branch to compare against
+    // the provided sha.
+    const branchGitlabResponse = await fetch(
+      new URL(
+        `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
+          full_name,
+        )}/repository/branches/${branch}`,
+      ).toString(),
+      getGitLabRequestOptions(this.integration.config),
+    );
+    if (!branchGitlabResponse.ok) {
+      const message = `Failed to read tree (branch) from ${url}, ${branchGitlabResponse.status} ${branchGitlabResponse.statusText}`;
+      if (branchGitlabResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    const commitSha = (await branchGitlabResponse.json()).commit.id;
+
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    // https://docs.gitlab.com/ee/api/repositories.html#get-file-archive
+    const archiveGitLabResponse = await fetch(
+      `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
+        full_name,
+      )}/repository/archive.zip?sha=${branch}`,
+      getGitLabRequestOptions(this.integration.config),
+    );
+    if (!archiveGitLabResponse.ok) {
+      const message = `Failed to read tree (archive) from ${url}, ${archiveGitLabResponse.status} ${archiveGitLabResponse.statusText}`;
+      if (archiveGitLabResponse.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return await this.deps.treeResponseFactory.fromZipArchive({
+      stream: (archiveGitLabResponse.body as unknown) as Readable,
+      subpath: filepath,
+      etag: commitSha,
+      filter: options?.filter,
+    });
   }
 
-  private getRequestOptions(): RequestInit {
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const { filepath } = parseGitUrl(url);
+    const matcher = new Minimatch(filepath);
+
+    // TODO(freben): For now, read the entire repo and filter through that. In
+    // a future improvement, we could be smart and try to deduce that non-glob
+    // prefixes (like for filepaths such as some-prefix/**/a.yaml) can be used
+    // to get just that part of the repo.
+    const treeUrl = url.replace(filepath, '').replace(/\/+$/, '');
+
+    const tree = await this.readTree(treeUrl, {
+      etag: options?.etag,
+      filter: path => matcher.match(stripFirstDirectoryFromPath(path)),
+    });
+    const files = await tree.files();
+
     return {
-      headers: {
-        ['PRIVATE-TOKEN']: this.options.token ?? '',
-      },
+      etag: tree.etag,
+      files: files.map(file => ({
+        url: this.integration.resolveUrl({ url: `/${file.path}`, base: url }),
+        content: file.content,
+      })),
     };
   }
 
   toString() {
-    const { host, token } = this.options;
+    const { host, token } = this.integration.config;
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 }

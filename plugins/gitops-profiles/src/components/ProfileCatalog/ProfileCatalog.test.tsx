@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render } from '@testing-library/react';
-import ProfileCatalog from './ProfileCatalog';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
 import {
   ApiProvider,
   ApiRegistry,
-  githubAuthApiRef,
   GithubAuth,
+  githubAuthApiRef,
   OAuthRequestManager,
   UrlPatternDiscovery,
 } from '@backstage/core';
+import { renderInTestApp } from '@backstage/test-utils';
+import { lightTheme } from '@backstage/theme';
+import { ThemeProvider } from '@material-ui/core';
+import React from 'react';
 import { gitOpsApiRef, GitOpsRestApi } from '../../api';
+import ProfileCatalog from './ProfileCatalog';
 
 describe('ProfileCatalog', () => {
-  it('should render', () => {
+  it('should render', async () => {
     const oauthRequestApi = new OAuthRequestManager();
     const apis = ApiRegistry.from([
       [gitOpsApiRef, new GitOpsRestApi('http://localhost:3008')],
@@ -44,15 +44,15 @@ describe('ProfileCatalog', () => {
         }),
       ],
     ]);
-    const rendered = render(
+
+    const { getByText } = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
         <ApiProvider apis={apis}>
           <ProfileCatalog />
         </ApiProvider>
       </ThemeProvider>,
     );
-    expect(
-      rendered.getByText('Create GitOps-managed Cluster'),
-    ).toBeInTheDocument();
+
+    expect(getByText('Create GitOps-managed Cluster')).toBeInTheDocument();
   });
 });

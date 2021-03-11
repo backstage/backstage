@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { createRouteRef } from '@backstage/core';
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-const CircleCIIcon: FC<SvgIconProps> = props => (
+const CircleCIIcon = (props: SvgIconProps) => (
   <SvgIcon
     {...props}
     enableBackground="new 0 0 200 200"

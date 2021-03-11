@@ -22,15 +22,7 @@ import {
 
 describe('sqlite3', () => {
   const createConfig = (connection: any) =>
-    ConfigReader.fromConfigs([
-      {
-        context: '',
-        data: {
-          client: 'sqlite3',
-          connection,
-        },
-      },
-    ]);
+    new ConfigReader({ client: 'sqlite3', connection });
 
   describe('buildSqliteDatabaseConfig', () => {
     it('buidls a string connection', () => {

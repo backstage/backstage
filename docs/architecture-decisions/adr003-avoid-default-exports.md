@@ -4,10 +4,6 @@ title: ADR003: Avoid Default Exports and Prefer Named Exports
 description: Architecture Decision Record (ADR) log on Avoid Default Exports and Prefer Named Exports
 ---
 
-| Created    | Status |
-| ---------- | ------ |
-| 2020-05-19 | Open   |
-
 ## Context
 
 When CommonJS was the primary authoring format, the best practice was to export

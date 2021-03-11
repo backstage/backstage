@@ -33,4 +33,4 @@ that someone else will pick up the work.
 If your plugin isn't supposed to live as a standalone page, but rather needs to
 be presented as a part of a Service Catalog (e.g. a separate tab or a card on an
 "Overview" tab), then check out
-[the instruction](integrating-plugin-into-service-catalog.md). on how to do it.
+[the instruction](integrating-plugin-into-service-catalog.md) on how to do it.

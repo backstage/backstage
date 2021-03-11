@@ -19,7 +19,7 @@ import { Observable } from '../../../types';
 
 type RequestQueueEntry<ResultType> = {
   scopes: Set<string>;
-  resolve: (value?: ResultType | PromiseLike<ResultType> | undefined) => void;
+  resolve: (value: ResultType | PromiseLike<ResultType>) => void;
   reject: (reason: Error) => void;
 };
 

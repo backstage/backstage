@@ -15,7 +15,7 @@
  */
 
 import { Link, makeStyles, Typography } from '@material-ui/core';
-import React, { FC } from 'react';
+import React from 'react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,10 +45,9 @@ type HeaderLabelContentProps = {
   className: string;
 };
 
-const HeaderLabelContent: FC<HeaderLabelContentProps> = ({
-  value,
-  className,
-}) => <Typography className={className}>{value}</Typography>;
+const HeaderLabelContent = ({ value, className }: HeaderLabelContentProps) => (
+  <Typography className={className}>{value}</Typography>
+);
 
 type HeaderLabelProps = {
   label: string;
@@ -56,7 +55,7 @@ type HeaderLabelProps = {
   url?: string;
 };
 
-export const HeaderLabel: FC<HeaderLabelProps> = ({ label, value, url }) => {
+export const HeaderLabel = ({ label, value, url }: HeaderLabelProps) => {
   const classes = useStyles();
   const content = (
     <HeaderLabelContent

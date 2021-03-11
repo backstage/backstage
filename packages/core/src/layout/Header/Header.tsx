@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, CSSProperties, FC } from 'react';
-import { Helmet } from 'react-helmet';
-import {
-  Link,
-  Typography,
-  Tooltip,
-  makeStyles,
-  Breadcrumbs,
-} from '@material-ui/core';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { BackstageTheme } from '@backstage/theme';
+import { makeStyles, Tooltip, Typography } from '@material-ui/core';
+import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
+import { Helmet } from 'react-helmet';
+import { Link } from '../../components/Link';
+import { Breadcrumbs } from '../Breadcrumbs';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   header: {
@@ -121,12 +116,12 @@ type SubtitleFragmentProps = {
   subtitle?: Props['subtitle'];
 };
 
-const TypeFragment: FC<TypeFragmentProps> = ({
+const TypeFragment = ({
   type,
   typeLink,
   classes,
   pageTitle,
-}) => {
+}: TypeFragmentProps) => {
   if (!type) {
     return null;
   }
@@ -136,24 +131,14 @@ const TypeFragment: FC<TypeFragmentProps> = ({
   }
 
   return (
-    <Breadcrumbs
-      aria-label="breadcrumb"
-      separator={<ChevronRightIcon fontSize="small" />}
-      className={classes.breadcrumb}
-    >
-      <Link href={typeLink} color="inherit">
-        <Typography className={classes.breadcrumbType}> {type}</Typography>
-      </Link>
-      <Typography className={classes.breadcrumbTitle}>{pageTitle}</Typography>
+    <Breadcrumbs className={classes.breadcrumb}>
+      <Link to={typeLink}>{type}</Link>
+      <Typography>{pageTitle}</Typography>
     </Breadcrumbs>
   );
 };
 
-const TitleFragment: FC<TitleFragmentProps> = ({
-  pageTitle,
-  classes,
-  tooltip,
-}) => {
+const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
   const FinalTitle = (
     <Typography className={classes.title} variant="h4">
       {pageTitle}
@@ -171,7 +156,7 @@ const TitleFragment: FC<TitleFragmentProps> = ({
   );
 };
 
-const SubtitleFragment: FC<SubtitleFragmentProps> = ({ classes, subtitle }) => {
+const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   if (!subtitle) {
     return null;
   }
@@ -187,7 +172,7 @@ const SubtitleFragment: FC<SubtitleFragmentProps> = ({ classes, subtitle }) => {
   );
 };
 
-export const Header: FC<Props> = ({
+export const Header = ({
   children,
   pageTitleOverride,
   style,
@@ -196,7 +181,7 @@ export const Header: FC<Props> = ({
   tooltip,
   type,
   typeLink,
-}) => {
+}: PropsWithChildren<Props>) => {
   const classes = useStyles();
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;

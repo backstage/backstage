@@ -1,5 +1,196 @@
 # @backstage/plugin-cost-insights
 
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [4c049a1a1]
+  - @backstage/core@0.7.0
+
+## 0.8.2
+
+### Patch Changes
+
+- 38205492a: Default alert properties can be overridden using accessors
+- Updated dependencies [3a58084b6]
+- Updated dependencies [e799e74d4]
+- Updated dependencies [1407b34c6]
+- Updated dependencies [9615e68fb]
+- Updated dependencies [49f9b7346]
+- Updated dependencies [3a58084b6]
+- Updated dependencies [a1f5e6545]
+- Updated dependencies [2c1f2a7c2]
+  - @backstage/core@0.6.3
+  - @backstage/config@0.1.3
+
+## 0.8.1
+
+### Patch Changes
+
+- b33fa4cf4: fixes a bug in default dismiss form where other text input persists between reason selections
+- d36660721: Fix snooze quarter option
+- 02d6803e8: Migrated to new composability API, exporting the plugin instance as `costInsightsPlugin`, the root `'/cost-insights'` page as `CostInsightsPage`, the `'/cost-insights/investigating-growth'` page as `CostInsightsProjectGrowthInstructionsPage`, and the `'/cost-insights/labeling-jobs'` page as `CostInsightsLabelDataflowInstructionsPage`.
+- Updated dependencies [b51ee6ece]
+  - @backstage/core@0.6.1
+
+## 0.8.0
+
+### Minor Changes
+
+- 19172f5a9: add alert hooks
+
+### Patch Changes
+
+- 4c6a6dddd: Fixed date calculations incorrectly converting to UTC in some cases. This should be a transparent change.
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [54c7d02f7]
+  - @backstage/core@0.6.0
+  - @backstage/theme@0.2.3
+
+## 0.7.0
+
+### Minor Changes
+
+- 19172f5a9: add alert hooks
+
+## 0.6.0
+
+### Minor Changes
+
+- fac91bcc5: Add support for additional breakdowns of daily cost data.
+  This changes the type of Cost.groupedCosts returned by CostInsightsApi.getGroupDailyCost.
+
+### Patch Changes
+
+- 8b7ef9f8b: Allow expand functionality to top panel product chart tooltip.
+
+## 0.5.7
+
+### Patch Changes
+
+- 8c2437c15: bug(cost-insights): Remove entity count when none present
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+  - @backstage/core@0.5.0
+
+## 0.5.6
+
+### Patch Changes
+
+- 9e9504ce4: Minor wording change in UI
+
+## 0.5.5
+
+### Patch Changes
+
+- ab0892358: Remove test dependencies from production package list
+
+## 0.5.4
+
+### Patch Changes
+
+- 3fca9adb9: Fix links in sample instructions
+- Updated dependencies [a08c32ced]
+  - @backstage/core@0.4.3
+
+## 0.5.3
+
+### Patch Changes
+
+- c02defd57: Make alert url field optional
+
+## 0.5.2
+
+### Patch Changes
+
+- 48c305e69: pin all projects selection to the top of menu list
+- Updated dependencies [8ef71ed32]
+  - @backstage/core@0.4.1
+
+## 0.5.1
+
+### Patch Changes
+
+- 64c9fd84c: fix breakdown sorting
+- Fix bar chart legend label bug for unlabeled dataflow alerts
+
+## 0.5.0
+
+### Minor Changes
+
+- e3071a0d4: Add support for multiple types of entity cost breakdown.
+
+  This change is backwards-incompatible with plugin-cost-insights 0.3.x; the `entities` field on Entity returned in product cost queries changed from `Entity[]` to `Record<string, Entity[]`.
+
+- d6e8099ed: convert duration + last completed billing date to intervals
+- 88ef11b45: Remove calendar MoM period option and fix quarter end date logic
+
+### Patch Changes
+
+- 90458fed6: fix react-hooks/exhaustive-deps error
+- Updated dependencies [2527628e1]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [e1f4e24ef]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/core@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/test-utils@0.1.5
+  - @backstage/theme@0.2.2
+
+## 0.4.2
+
+### Patch Changes
+
+- fe7257ff0: enable SKU breakdown for unlabeled entities
+- a2cfa311a: Add breakdown view to the Cost Overview panel
+- 69f38457f: Add support for non-SKU breakdowns for entities in the product panels.
+- bec334b33: disable support button
+- b4488ddb0: Added a type alias for PositionError = GeolocationPositionError
+- 00670a96e: sort product panels and navigation menu by greatest cost
+  update tsconfig.json to use ES2020 api
+  - @backstage/test-utils@0.1.4
+
+## 0.4.1
+
+### Patch Changes
+
+- 8e6728e25: fix product icon configuration
+- c93a14b49: truncate large percentages > 1000%
+- Updated dependencies [475fc0aaa]
+  - @backstage/core@0.3.2
+
+## 0.4.0
+
+### Minor Changes
+
+- 4040d4fcb: remove cost insights currency feature flag
+
+### Patch Changes
+
+- 1722cb53c: Added configuration schema
+- 17a9f48f6: remove excessive margin from cost overview banner
+- f360395d0: UI improvements: Increase width of first column in product entity dialog table
+  UI improvement: Display full cost amount in product entity dialog table
+- 259d848ee: Fix savings/excess display calculation
+- Updated dependencies [1722cb53c]
+  - @backstage/core@0.3.1
+  - @backstage/test-utils@0.1.3
+
 ## 0.3.0
 
 ### Minor Changes

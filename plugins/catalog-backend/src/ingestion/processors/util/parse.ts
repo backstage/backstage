@@ -18,7 +18,7 @@ import { Entity, LocationSpec } from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from '../results';
-import { CatalogProcessorResult } from '../types';
+import { CatalogProcessorParser, CatalogProcessorResult } from '../types';
 
 export function* parseEntityYaml(
   data: Buffer,
@@ -40,6 +40,9 @@ export function* parseEntityYaml(
       const json = document.toJSON();
       if (lodash.isPlainObject(json)) {
         yield result.entity(location, json as Entity);
+      } else if (json === null) {
+        // Ignore null values, these happen if there is an empty document in the
+        // YAML file, for example if --- is added to the end of the file.
       } else {
         const message = `Expected object at root, got ${typeof json}`;
         yield result.generalError(location, message);
@@ -47,3 +50,12 @@ export function* parseEntityYaml(
     }
   }
 }
+
+export const defaultEntityDataParser: CatalogProcessorParser = async function* defaultEntityDataParser({
+  data,
+  location,
+}) {
+  for (const e of parseEntityYaml(data, location)) {
+    yield e;
+  }
+};

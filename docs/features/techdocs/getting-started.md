@@ -1,7 +1,7 @@
 ---
 id: getting-started
 title: Getting Started
-description: Getting Started Guidelines
+description: Getting Started Documentation
 ---
 
 TechDocs functions as a plugin to Backstage, so you will need to use Backstage
@@ -10,73 +10,191 @@ to use TechDocs.
 If you haven't setup Backstage already, start
 [here](../../getting-started/index.md).
 
-## Installing TechDocs
+> If you used `npx @backstage/create-app`, TechDocs may already be present.
+>
+> You should skip to [`Setting the Configuration`](#setting-the-configuration)
+> below.
 
-TechDocs is provided with the Backstage application by default. If you want to
-set up TechDocs manually, keep following the instructions below.
-
-### Adding the package
+## Adding TechDocs frontend plugin
 
 The first step is to add the TechDocs plugin to your Backstage application.
-Navigate to your new Backstage application folder:
+Navigate to your new Backstage application directory. And then to your
+`packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash
-cd hello-world/
-```
-
-Then navigate to your `packages/app` folder to install TechDocs:
-
-```bash
+cd my-backstage-app/
 cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
 
-After a short while, the TechDocs plugin should be successfully installed.
+Once the package has been installed, you need to import the plugin in your app.
 
-Next, you need to set up some basic configuration. Enter the following command:
-
-```bash
-yarn install
-```
-
-Add this to `packages/app/src/plugins.ts`:
+Add the following to `packages/app/src/plugins.ts`:
 
 ```typescript
 export { plugin as TechDocs } from '@backstage/plugin-techdocs';
 ```
 
-### Setting the configuration
+Now let us embed the TechDocs router in our main Backstage frontend router. In
+`packages/app/src/App.tsx`, import the TechDocs router and add the following to
+`AppRoutes`:
 
-TechDocs allows for configuration of the docs storage URL through your
-`app-config.yaml` file. We provide two different values to be configured,
-`requestUrl` and `storageUrl`. The `requestUrl` is what the reader will request
-its data from, and `storageUrl` is where the backend can find the stored
-documentation.
+```tsx
+import { Router as DocsRouter } from '@backstage/plugin-techdocs';
 
-The default storage and request URLs:
+// ...
+
+const AppRoutes = () => {
+  <Routes>
+    // ... other plugin routes
+    <Route path="/docs/*" element={<DocsRouter />} />
+  </Routes>;
+};
+```
+
+That's it! But now, we need the TechDocs Backend plugin for the frontend to
+work.
+
+## Adding TechDocs Backend plugin
+
+Navigate to `packages/backend` of your Backstage app, and install the
+`@backstage/plugin-techdocs-backend` package.
+
+```bash
+cd my-backstage-app/
+cd packages/backend
+yarn add @backstage/plugin-techdocs-backend
+```
+
+Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and
+add the following
+
+```typescript
+import {
+  createRouter,
+  Preparers,
+  Generators,
+  Publisher,
+} from '@backstage/plugin-techdocs-backend';
+import { PluginEnvironment } from '../types';
+import Docker from 'dockerode';
+
+export default async function createPlugin({
+  logger,
+  config,
+  discovery,
+  reader,
+}: PluginEnvironment) {
+  // Preparers are responsible for fetching source files for documentation.
+  const preparers = await Preparers.fromConfig(config, {
+    logger,
+    reader,
+  });
+
+  // Generators are used for generating documentation sites.
+  const generators = await Generators.fromConfig(config, {
+    logger,
+  });
+
+  // Publisher is used for
+  // 1. Publishing generated files to storage
+  // 2. Fetching files from storage and passing them to TechDocs frontend.
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
+
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  const dockerClient = new Docker();
+
+  return await createRouter({
+    preparers,
+    generators,
+    publisher,
+    dockerClient,
+    logger,
+    config,
+    discovery,
+  });
+}
+```
+
+You may need to install the `dockerode` package. But you may already have it in
+your backend since [Scaffolder plugin](../software-templates/index.md) also uses
+it.
+
+See [Concepts](concepts.md) and [TechDocs Architecture](architecture.md) to
+learn more about how preparers, generators and publishers work.
+
+Final step is to import the techdocs backend plugin in Backstage app backend.
+Add the following to your `packages/backend/src/index.ts`:
+
+```typescript
+import techdocs from './plugins/techdocs';
+
+// .... main should already be present.
+async function main() {
+  // ... other backend plugin envs
+  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+
+  // ... other backend plugin routes
+  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+}
+```
+
+That's it! TechDocs frontend and backend have now been added to your Backstage
+app. Now let us tweak some configurations to suit your needs.
+
+## Setting the configuration
+
+**See [TechDocs Configuration Options](configuration.md) for complete
+configuration reference.**
+
+### Should TechDocs Backend generate docs?
 
 ```yaml
 techdocs:
-  storageUrl: http://localhost:7000/api/techdocs/static/docs
-  requestUrl: http://localhost:7000/api/techdocs/
+  builder: 'local'
 ```
 
-If you want `techdocs-backend` to manage building and publishing, you want
-`requestUrl` to point to the default value (or wherever `techdocs-backend` is
-hosted). `storageUrl` should be where your publisher publishes your docs. Using
-the default `LocalPublish` that is the default value.
+Note that we recommend generating docs on CI/CD instead. Read more in the
+"Basic" and "Recommended" sections of the
+[TechDocs Architecture](architecture.md). But if you want to get started quickly
+set `techdocs.builder` to `'local'` so that TechDocs Backend is responsible for
+generating documentation sites. If set to `'external'`, Backstage will assume
+that the sites are being generated on each entity's CI/CD pipeline, and are
+being stored in a storage somewhere.
 
-If you have a setup where you are not using `techdocs-backend` for managing
-building and publishing of your documentation, you want to change the
-`requestUrl` to point to your storage. In this case `storageUrl` is not
-required.
+When `techdocs.builder` is set to `'external'`, TechDocs becomes more or less a
+read-only experience where it serves static files from a storage containing all
+the generated documentation.
 
-### Disable Docker in Docker situation (Optional)
+### Choosing storage (publisher)
 
-The TechDocs backend plugin runs a docker container with mkdocs installed to
+TechDocs needs to know where to store generated documentation sites and where to
+fetch the sites from. This is managed by a
+[Publisher](./concepts.md#techdocs-publisher). Examples: Google Cloud Storage,
+Amazon S3, or local filesystem of Backstage server.
+
+It is okay to use the local filesystem in a "basic" setup when you are trying
+out Backstage for the first time. At a later time, review
+[Using Cloud Storage](./using-cloud-storage.md).
+
+```yaml
+techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
+```
+
+### Disabling Docker in Docker situation (Optional)
+
+You can skip this if your `techdocs.builder` is set to `'external'`.
+
+The TechDocs Backend plugin runs a docker container with mkdocs installed to
 generate the frontend of the docs from source files (Markdown). If you are
 deploying Backstage using Docker, this will mean that your Backstage Docker
-container will try to run another Docker container for TechDocs backend.
+container will try to run another Docker container for TechDocs Backend.
 
 To avoid this problem, we have a configuration available. You can set a value in
 your `app-config.yaml` that tells the techdocs generator if it should run the
@@ -85,6 +203,9 @@ no config is provided.
 
 ```yaml
 techdocs:
+  builder: 'local'
+  publisher:
+    type: 'local'
   generators:
     techdocs: local
 ```
@@ -95,36 +216,26 @@ environment is compatible with techdocs.
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
 apt). See our
-[Dockerfile](https://github.com/spotify/backstage/blob/master/packages/techdocs-container/Dockerfile)
-for the latest requirements. You should be trying to match your Dockerfile with
-this one.
+[`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
+for the latest requirements. You should be trying to match your `Dockerfile`
+with this one.
 
 Note: We recommend Python version 3.7 or higher.
 
-Caveat: Please install the `mkdocs-techdocs-core` package after all other Python
-packages. The order is important to make sure we get correct version of some of
-the dependencies. For example, we want `Markdown` version to be
-[3.2.2](https://github.com/spotify/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
-You can also explicitly install `Markdown==3.2.2` after installing all other
-Python packages.
+> Caveat: Please install the `mkdocs-techdocs-core` package after all other
+> Python packages. The order is important to make sure we get correct version of
+> some of the dependencies. For example, we want `Markdown` version to be
+> [3.2.2](https://github.com/backstage/backstage/blob/f9f70c225548017b6a14daea75b00fbd399c11eb/packages/techdocs-container/techdocs-core/requirements.txt#L11).
+> You can also explicitly install `Markdown==3.2.2` after installing all other
+> Python packages.
 
-## Run Backstage locally
+## Running Backstage locally
 
-Change folder to `<backstage-project-root>/packages/backend` and run the
-following command:
+Start the frontend and the backend app by
+[running Backstage locally](../../getting-started/running-backstage-locally.md).
 
-```bash
-yarn start
-```
-
-Open a new command line window. Change directory to your Backstage application
-root and run the following command:
-
-```bash
-yarn start
-```
-
-Open your browser at [http://localhost:3000/docs/](http://localhost:3000/docs/).
+Open your browser at [http://localhost:3000/docs/](http://localhost:3000/docs/)
+to see all your documentation sites.
 
 ## Additional reading
 

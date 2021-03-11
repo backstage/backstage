@@ -1,6 +1,6 @@
 ---
 title: Backstage Service Catalog released in alpha
-author: Stefan Ålund
+author: Stefan Ålund, Spotify
 authorURL: http://twitter.com/stalund
 image: https://backstage.io/blog/assets/6/header.png
 ---

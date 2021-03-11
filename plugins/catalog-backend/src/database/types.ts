@@ -33,6 +33,7 @@ export type DbEntitiesRow = {
 export type DbEntityRequest = {
   locationId?: string;
   entity: Entity;
+  relations: EntityRelationSpec[];
 };
 
 export type DbEntityResponse = {
@@ -114,7 +115,7 @@ export type EntityFilter = {
  * An abstraction for transactions of the underlying database technology.
  */
 export type Transaction = {
-  rollback(): Promise<void>;
+  rollback(): Promise<unknown>;
 };
 
 /**
@@ -184,10 +185,12 @@ export type Database = {
   removeEntityByUid(tx: Transaction, uid: string): Promise<void>;
 
   /**
-   * Remove current relations for the entity and replace them with the new relations array
+   * Remove current relations for the entity and replace them with the new
+   * relations array.
+   *
    * @param tx An ongoing transaction
-   * @param entityUid the entity uid
-   * @param relations the relationships to be set
+   * @param entityUid The entity uid
+   * @param relations The relationships to be set
    */
   setRelations(
     tx: Transaction,
@@ -208,7 +211,7 @@ export type Database = {
   addLocationUpdateLogEvent(
     locationId: string,
     status: DatabaseLocationUpdateLogStatus,
-    entityName?: string,
+    entityName?: string | string[],
     message?: string,
   ): Promise<void>;
 };

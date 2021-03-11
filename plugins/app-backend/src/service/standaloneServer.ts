@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
+import { createServiceBuilder } from '@backstage/backend-common';
+import { Config } from '@backstage/config';
 import { createRouter } from './router';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
+  config: Config;
   logger: Logger;
 }
 
@@ -32,6 +34,7 @@ export async function startStandaloneServer(
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
+    config: options.config,
     appPackageName: 'example-app',
   });
 

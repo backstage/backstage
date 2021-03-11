@@ -31,7 +31,7 @@ export const ProjectSelect = ({
 }: ProjectSelectProps) => {
   const classes = useStyles();
 
-  const projectOptions = [{ id: 'all' } as Project, ...projects]
+  const projectOptions = projects
     .filter(p => p.id)
     .sort((a, b) => (a.id as string).localeCompare(b.id as string));
 
@@ -57,7 +57,7 @@ export const ProjectSelect = ({
       onChange={handleOnChange}
       data-testid="project-filter-select"
     >
-      {projectOptions.map(proj => (
+      {[{ id: 'all' }, ...projectOptions].map(proj => (
         <MenuItem
           className={`${classes.menuItem} compact`}
           key={proj.id}

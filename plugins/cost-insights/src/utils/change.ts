@@ -22,13 +22,13 @@ import {
   GrowthType,
   MetricData,
   Duration,
-  DEFAULT_DATE_FORMAT,
+  DateAggregation,
 } from '../types';
 import dayjs, { OpUnitType } from 'dayjs';
-import duration from 'dayjs/plugin/duration';
+import durationPlugin from 'dayjs/plugin/duration';
 import { inclusiveStartDateOf } from './duration';
 
-dayjs.extend(duration);
+dayjs.extend(durationPlugin);
 
 // Used for displaying status colors
 export function growthOf(ratio: number, amount?: number) {
@@ -54,9 +54,9 @@ export function getComparedChange(
   duration: Duration,
   lastCompleteBillingDate: string, // YYYY-MM-DD,
 ): ChangeStatistic {
-  const ratio = dailyCost.change.ratio - metricData.change.ratio;
+  const ratio = dailyCost.change!.ratio - metricData.change.ratio;
   const previousPeriodTotal = getPreviousPeriodTotalCost(
-    dailyCost,
+    dailyCost.aggregation,
     duration,
     lastCompleteBillingDate,
   );
@@ -67,15 +67,12 @@ export function getComparedChange(
 }
 
 export function getPreviousPeriodTotalCost(
-  dailyCost: Cost,
+  aggregation: DateAggregation[],
   duration: Duration,
   inclusiveEndDate: string,
 ): number {
   const dayjsDuration = dayjs.duration(duration);
-  const startDate = inclusiveStartDateOf(
-    duration,
-    dayjs(inclusiveEndDate).add(1, 'day').format(DEFAULT_DATE_FORMAT),
-  );
+  const startDate = inclusiveStartDateOf(duration, inclusiveEndDate);
   // dayjs doesn't allow adding an ISO 8601 period to dates.
   const [amount, type]: [number, OpUnitType] = dayjsDuration.days()
     ? [dayjsDuration.days(), 'day']
@@ -83,7 +80,7 @@ export function getPreviousPeriodTotalCost(
   const nextPeriodStart = dayjs(startDate).add(amount, type);
 
   // Add up costs that incurred before the start of the next period.
-  return dailyCost.aggregation.reduce((acc, costByDate) => {
+  return aggregation.reduce((acc, costByDate) => {
     return dayjs(costByDate.date).isBefore(nextPeriodStart)
       ? acc + costByDate.amount
       : acc;

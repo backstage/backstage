@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core';
 import {
   catalogApiRef,
   useEntityCompoundName,
-} from '@backstage/plugin-catalog';
+} from '@backstage/plugin-catalog-react';
+import { useAsync } from 'react-use';
 
 export function useCatalogEntity() {
   const catalogApi = useApi(catalogApiRef);

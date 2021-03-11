@@ -17,6 +17,7 @@
 import {
   createServiceBuilder,
   SingleHostDiscovery,
+  UrlReader,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
@@ -27,8 +28,8 @@ import {
   DirectoryPreparer,
   Generators,
   TechdocsGenerator,
-  LocalPublish,
-} from '../techdocs';
+  Publisher,
+} from '@backstage/techdocs-common';
 import { ConfigReader } from '@backstage/config';
 
 export interface ServerOptions {
@@ -41,19 +42,34 @@ export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'techdocs-backend' });
-  const config = ConfigReader.fromConfigs([]);
+  const config = new ConfigReader({
+    techdocs: {
+      publisher: {
+        type: 'local',
+      },
+    },
+  });
   const discovery = SingleHostDiscovery.fromConfig(config);
+  const mockUrlReader: jest.Mocked<UrlReader> = {
+    read: jest.fn(),
+    readTree: jest.fn(),
+    search: jest.fn(),
+  };
 
   logger.debug('Creating application...');
   const preparers = new Preparers();
-  const directoryPreparer = new DirectoryPreparer(logger);
+  const directoryPreparer = new DirectoryPreparer(
+    config,
+    logger,
+    mockUrlReader,
+  );
   preparers.register('dir', directoryPreparer);
 
   const generators = new Generators();
   const techdocsGenerator = new TechdocsGenerator(logger, config);
   generators.register('techdocs', techdocsGenerator);
 
-  const publisher = new LocalPublish(logger);
+  const publisher = await Publisher.fromConfig(config, { logger, discovery });
 
   const dockerClient = new Docker();
 

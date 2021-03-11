@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
-export * from './client';
+export {
+  costInsightsPlugin,
+  costInsightsPlugin as plugin,
+  CostInsightsPage,
+  CostInsightsProjectGrowthInstructionsPage,
+  CostInsightsLabelDataflowInstructionsPage,
+} from './plugin';
+export { ExampleCostInsightsClient } from './example';
+export { BarChart, LegendItem, CostGrowth } from './components';
+export { MockConfigProvider, MockCurrencyProvider } from './testUtils';
 export * from './api';
-export * from './components';
-export { useCurrency } from './hooks';
+export * from './alerts';
 export * from './types';
-export * from './utils/tests';
-export * from './utils/duration';
-export * from './utils/alerts';

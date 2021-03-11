@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JSONSchema } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import { Content, StructuredMetadataTable } from '@backstage/core';
 import {
   Box,
   Button,
   Paper,
-  Step,
+  Step as StepUI,
   StepContent,
   StepLabel,
   Stepper,
@@ -28,22 +28,25 @@ import {
 import { FormProps, IChangeEvent, withTheme } from '@rjsf/core';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
 import React, { useState } from 'react';
+import { transformSchemaToProps } from './schema';
 
 const Form = withTheme(MuiTheme);
 type Step = {
-  schema: JSONSchema;
-  label: string;
+  schema: JsonObject;
+  title: string;
 } & Partial<Omit<FormProps<any>, 'schema'>>;
 
 type Props = {
   /**
-   * Steps for the form, each contains label and form schema
+   * Steps for the form, each contains title and form schema
    */
   steps: Step[];
   formData: Record<string, any>;
   onChange: (e: IChangeEvent) => void;
   onReset: () => void;
   onFinish: () => void;
+  widgets?: FormProps<any>['widgets'];
+  fields?: FormProps<any>['fields'];
 };
 
 export const MultistepJsonForm = ({
@@ -52,6 +55,8 @@ export const MultistepJsonForm = ({
   onChange,
   onReset,
   onFinish,
+  fields,
+  widgets,
 }: Props) => {
   const [activeStep, setActiveStep] = useState(0);
 
@@ -66,30 +71,37 @@ export const MultistepJsonForm = ({
   return (
     <>
       <Stepper activeStep={activeStep} orientation="vertical">
-        {steps.map(({ label, schema, ...formProps }) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-            <StepContent>
-              <Form
-                noHtml5Validate
-                formData={formData}
-                onChange={onChange}
-                schema={schema as FormProps<any>['schema']}
-                onSubmit={e => {
-                  if (e.errors.length === 0) handleNext();
-                }}
-                {...formProps}
-              >
-                <Button disabled={activeStep === 0} onClick={handleBack}>
-                  Back
-                </Button>
-                <Button variant="contained" color="primary" type="submit">
-                  Next step
-                </Button>
-              </Form>
-            </StepContent>
-          </Step>
-        ))}
+        {steps.map(({ title, schema, ...formProps }) => {
+          return (
+            <StepUI key={title}>
+              <StepLabel>
+                <Typography variant="h6">{title}</Typography>
+              </StepLabel>
+              <StepContent key={title}>
+                <Form
+                  showErrorList={false}
+                  fields={fields}
+                  widgets={widgets}
+                  noHtml5Validate
+                  formData={formData}
+                  onChange={onChange}
+                  onSubmit={e => {
+                    if (e.errors.length === 0) handleNext();
+                  }}
+                  {...formProps}
+                  {...transformSchemaToProps(schema)}
+                >
+                  <Button disabled={activeStep === 0} onClick={handleBack}>
+                    Back
+                  </Button>
+                  <Button variant="contained" color="primary" type="submit">
+                    Next step
+                  </Button>
+                </Form>
+              </StepContent>
+            </StepUI>
+          );
+        })}
       </Stepper>
       {activeStep === steps.length && (
         <Content>

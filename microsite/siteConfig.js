@@ -8,11 +8,8 @@
 // See https://docusaurus.io/docs/site-config for all the possible
 // site configuration options.
 
-// List of projects/orgs using your project for the users page.
-const users = [];
-
 const siteConfig = {
-  title: 'Backstage', // Title for your website.
+  title: 'Backstage Service Catalog and Developer Platform', // Title for your website.
   tagline: 'An open platform for building developer portals',
   url: 'https://backstage.io', // Your website URL
   cname: 'backstage.io',
@@ -72,11 +69,6 @@ const siteConfig = {
     navGroupSubcategoryTitleColor: '#9e9e9e',
   },
 
-  /* Colors for syntax highlighting */
-  highlight: {
-    theme: 'dark',
-  },
-
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
   copyright: `Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage`,
 
@@ -86,7 +78,13 @@ const siteConfig = {
   },
 
   // Add custom scripts here that would be placed in <script> tags.
-  scripts: ['https://buttons.github.io/buttons.js'],
+  scripts: [
+    'https://buttons.github.io/buttons.js',
+    'https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js',
+    '/js/medium-zoom.js',
+    '/js/dismissable-banner.js',
+    '/js/scroll-nav-to-view-in-docs.js',
+  ],
 
   // On page navigation for the current documentation page.
   onPageNav: 'separate',

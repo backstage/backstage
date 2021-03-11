@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Header } from '.';
 import { HeaderLabel } from '../HeaderLabel';
 import { Page } from '../Page';
+import { Header } from './Header';
 
 export default {
   title: 'Layout/Header',

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
 import { CodeOwnersEntry } from 'codeowners-utils';
 import {
@@ -26,6 +27,8 @@ import {
   parseCodeOwners,
   resolveCodeOwner,
 } from './CodeOwnersProcessor';
+
+const logger = getVoidLogger();
 
 describe('CodeOwnersProcessor', () => {
   const mockUrl = ({ basePath = '' } = {}): string =>
@@ -157,18 +160,21 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read, readTree: jest.fn() };
-      const result = await findRawCodeOwners(mockLocation(), reader);
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
+      const result = await findRawCodeOwners(mockLocation(), {
+        reader,
+        logger,
+      });
       expect(result).toEqual(ownersText);
     });
 
-    it('should raise error when no codeowner', async () => {
+    it('should return undefined when no codeowner', async () => {
       const read = jest.fn().mockRejectedValue(mockReadResult());
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       await expect(
-        findRawCodeOwners(mockLocation(), reader),
-      ).rejects.toBeInstanceOf(Error);
+        findRawCodeOwners(mockLocation(), { reader, logger }),
+      ).resolves.toBeUndefined();
     });
 
     it('should look at known codeowner locations', async () => {
@@ -178,9 +184,12 @@ describe('CodeOwnersProcessor', () => {
         .mockImplementationOnce(() => mockReadResult({ error: 'foo' }))
         .mockImplementationOnce(() => mockReadResult({ error: 'bar' }))
         .mockResolvedValue(mockReadResult({ data: ownersText }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
-      const result = await findRawCodeOwners(mockLocation(), reader);
+      const result = await findRawCodeOwners(mockLocation(), {
+        reader,
+        logger,
+      });
 
       expect(read.mock.calls.length).toBe(5);
       expect(read.mock.calls[0]).toEqual([mockReadUrl('')]);
@@ -197,21 +206,21 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
-      const owner = await resolveCodeOwner(mockLocation(), reader);
+      const owner = await resolveCodeOwner(mockLocation(), { reader, logger });
       expect(owner).toBe('backstage-core');
     });
 
-    it('should raise an error when no codeowner', async () => {
+    it('should return undefined when no codeowner', async () => {
       const read = jest
         .fn()
         .mockImplementation(() => mockReadResult({ error: 'error: foo' }));
-      const reader = { read, readTree: jest.fn() };
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
 
       await expect(
-        resolveCodeOwner(mockLocation(), reader),
-      ).rejects.toBeInstanceOf(Error);
+        resolveCodeOwner(mockLocation(), { reader, logger }),
+      ).resolves.toBeUndefined();
     });
   });
 
@@ -221,8 +230,8 @@ describe('CodeOwnersProcessor', () => {
       const read = jest
         .fn()
         .mockResolvedValue(mockReadResult({ data: mockCodeOwnersText() }));
-      const reader = { read, readTree: jest.fn() };
-      const processor = new CodeOwnersProcessor({ reader });
+      const reader = { read, readTree: jest.fn(), search: jest.fn() };
+      const processor = new CodeOwnersProcessor({ reader, logger });
 
       return { entity, processor, read };
     };

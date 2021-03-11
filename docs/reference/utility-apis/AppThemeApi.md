@@ -1,7 +1,7 @@
 # AppThemeApi
 
 The AppThemeApi type is defined at
-[packages/core-api/src/apis/definitions/AppThemeApi.ts:56](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AppThemeApi.ts#L56).
+[packages/core-api/src/apis/definitions/AppThemeApi.ts:56](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/AppThemeApi.ts#L56).
 
 The following Utility API implements this type:
 [appThemeApiRef](./README.md#apptheme)
@@ -81,7 +81,7 @@ export type AppTheme = {
 </pre>
 
 Defined at
-[packages/core-api/src/apis/definitions/AppThemeApi.ts:25](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/apis/definitions/AppThemeApi.ts#L25).
+[packages/core-api/src/apis/definitions/AppThemeApi.ts:25](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/AppThemeApi.ts#L25).
 
 Referenced by: [getInstalledThemes](#getinstalledthemes).
 
@@ -92,7 +92,7 @@ export type BackstagePalette = Palette &amp; <a href="#paletteadditions">Palette
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:74](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/theme/src/types.ts#L74).
+[packages/theme/src/types.ts:74](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/theme/src/types.ts#L74).
 
 Referenced by: [BackstageTheme](#backstagetheme).
 
@@ -107,7 +107,7 @@ export interface BackstageTheme extends Theme {
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:81](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/theme/src/types.ts#L81).
+[packages/theme/src/types.ts:81](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/theme/src/types.ts#L81).
 
 Referenced by: [AppTheme](#apptheme).
 
@@ -136,7 +136,7 @@ export type Observable&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:53](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L53).
+[packages/core-api/src/types.ts:53](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L53).
 
 Referenced by: [activeThemeId\$](#activethemeid).
 
@@ -155,7 +155,7 @@ export type Observer&lt;T&gt; = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:24](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L24).
+[packages/core-api/src/types.ts:24](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L24).
 
 Referenced by: [Observable](#observable).
 
@@ -170,7 +170,7 @@ export type PageTheme = {
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:103](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/theme/src/types.ts#L103).
+[packages/theme/src/types.ts:103](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/theme/src/types.ts#L103).
 
 Referenced by: [BackstageTheme](#backstagetheme).
 
@@ -183,7 +183,7 @@ export type PageThemeSelector = {
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:77](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/theme/src/types.ts#L77).
+[packages/theme/src/types.ts:77](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/theme/src/types.ts#L77).
 
 Referenced by: [BackstageTheme](#backstagetheme).
 
@@ -243,7 +243,7 @@ type PaletteAdditions = {
 </pre>
 
 Defined at
-[packages/theme/src/types.ts:23](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/theme/src/types.ts#L23).
+[packages/theme/src/types.ts:23](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/theme/src/types.ts#L23).
 
 Referenced by: [BackstagePalette](#backstagepalette).
 
@@ -266,6 +266,6 @@ export type Subscription = {
 </pre>
 
 Defined at
-[packages/core-api/src/types.ts:33](https://github.com/backstage/backstage/blob/ca535f2f66c3a4980c80f4b1a049dfd07569010e/packages/core-api/src/types.ts#L33).
+[packages/core-api/src/types.ts:33](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/types.ts#L33).
 
 Referenced by: [Observable](#observable).

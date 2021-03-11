@@ -13,26 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
-import Router from 'express-promise-router';
-import express from 'express';
-import Knex from 'knex';
-import fetch from 'cross-fetch';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import Docker from 'dockerode';
 import {
   GeneratorBuilder,
+  getLocationForEntity,
   PreparerBuilder,
   PublisherBase,
-  LocalPublish,
-} from '../techdocs';
-import {
-  PluginEndpointDiscovery,
-  resolvePackagePath,
-} from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
-import { DocsBuilder } from './helpers';
-import { getLocationForEntity } from '../helpers';
+} from '@backstage/techdocs-common';
+import fetch from 'cross-fetch';
+import Docker from 'dockerode';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Knex } from 'knex';
+import { Logger } from 'winston';
+import { DocsBuilder } from '../DocsBuilder';
+import { getEntityNameFromUrlPath } from './helpers';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -45,11 +42,6 @@ type RouterOptions = {
   dockerClient: Docker;
 };
 
-const staticDocsDir = resolvePackagePath(
-  '@backstage/plugin-techdocs-backend',
-  'static/docs',
-);
-
 export async function createRouter({
   preparers,
   generators,
@@ -61,24 +53,26 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   const router = Router();
 
-  router.get('/metadata/mkdocs/*', async (req, res) => {
-    let storageUrl = config.getString('techdocs.storageUrl');
-    if (publisher instanceof LocalPublish) {
-      storageUrl = new URL(
-        new URL(storageUrl).pathname,
-        await discovery.getBaseUrl('techdocs'),
-      ).toString();
-    }
+  router.get('/metadata/techdocs/*', async (req, res) => {
+    // path is `:namespace/:kind:/:name`
     const { '0': path } = req.params;
-
-    const metadataURL = `${storageUrl}/${path}/techdocs_metadata.json`;
+    const entityName = getEntityNameFromUrlPath(path);
 
     try {
-      const mkDocsMetadata = await (await fetch(metadataURL)).json();
-      res.send(mkDocsMetadata);
+      const techdocsMetadata = await publisher.fetchTechDocsMetadata(
+        entityName,
+      );
+
+      res.json(techdocsMetadata);
     } catch (err) {
-      logger.info(`Unable to get metadata for ${path} with error ${err}`);
-      throw new Error(`Unable to get metadata for ${path} with error ${err}`);
+      logger.error(
+        `Unable to get metadata for ${entityName.namespace}/${entityName.name} with error ${err}`,
+      );
+      res
+        .status(500)
+        .send(
+          `Unable to get metadata for $${entityName.namespace}/${entityName.name}, reason: ${err}`,
+        );
     }
   });
 
@@ -88,14 +82,18 @@ export async function createRouter({
     const { kind, namespace, name } = req.params;
 
     try {
+      const token = getBearerToken(req.headers.authorization);
       const entity = (await (
         await fetch(
           `${catalogUrl}/entities/by-name/${kind}/${namespace}/${name}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
         )
       ).json()) as Entity;
 
       const locationMetadata = getLocationForEntity(entity);
-      res.send({ ...entity, locationMetadata });
+      res.json({ ...entity, locationMetadata });
     } catch (err) {
       logger.info(
         `Unable to get metadata for ${kind}/${namespace}/${name} with error ${err}`,
@@ -107,14 +105,18 @@ export async function createRouter({
   });
 
   router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
-    const storageUrl = config.getString('techdocs.storageUrl');
-
     const { kind, namespace, name } = req.params;
+    const storageUrl =
+      config.getOptionalString('techdocs.storageUrl') ??
+      `${await discovery.getExternalBaseUrl('techdocs')}/static/docs`;
 
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
-    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`);
+    const token = getBearerToken(req.headers.authorization);
+    const catalogRes = await fetch(`${catalogUrl}/entities/by-name/${triple}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     if (!catalogRes.ok) {
       const catalogResText = await catalogRes.text();
       res.status(catalogRes.status);
@@ -124,25 +126,91 @@ export async function createRouter({
 
     const entity: Entity = await catalogRes.json();
 
-    const docsBuilder = new DocsBuilder({
-      preparers,
-      generators,
-      publisher,
-      dockerClient,
-      logger,
-      entity,
-    });
+    let publisherType = '';
+    try {
+      publisherType = config.getString('techdocs.publisher.type');
+    } catch (err) {
+      throw new Error(
+        'Unable to get techdocs.publisher.type in your app config. Set it to either ' +
+          "'local', 'googleGcs' or other support storage providers. Read more here " +
+          'https://backstage.io/docs/features/techdocs/architecture',
+      );
+    }
 
-    if (!(await docsBuilder.docsUpToDate())) {
-      await docsBuilder.build();
+    // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
+    // If set to 'external', it will only try to fetch and assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider.
+    if (config.getString('techdocs.builder') === 'local') {
+      const docsBuilder = new DocsBuilder({
+        preparers,
+        generators,
+        publisher,
+        dockerClient,
+        logger,
+        entity,
+      });
+      switch (publisherType) {
+        case 'local':
+          await docsBuilder.build();
+          break;
+        case 'awsS3':
+        case 'azureBlobStorage':
+        case 'openStackSwift':
+        case 'googleGcs':
+          // This block should be valid for all external storage implementations. So no need to duplicate in future,
+          // add the publisher type in the list here.
+          if (!(await publisher.hasDocsBeenGenerated(entity))) {
+            logger.info(
+              'No pre-generated documentation files found for the entity in the storage. Building docs...',
+            );
+            await docsBuilder.build();
+            // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+            // on the user's page. If not, respond with a message asking them to check back later.
+            // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
+            let foundDocs = false;
+            for (let attempt = 0; attempt < 5; attempt++) {
+              if (await publisher.hasDocsBeenGenerated(entity)) {
+                foundDocs = true;
+                break;
+              }
+              await new Promise(r => setTimeout(r, 1000));
+            }
+            if (!foundDocs) {
+              logger.error(
+                'Published files are taking longer to show up in storage. Something went wrong.',
+              );
+              res
+                .status(408)
+                .send(
+                  'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
+                );
+              return;
+            }
+          } else {
+            logger.info(
+              'Found pre-generated docs for this entity. Serving them.',
+            );
+            // TODO: re-trigger build for cache invalidation.
+            // Add build info in techdocs_metadata.json and compare it against
+            // the etag/commit in the repository.
+            // Without this, docs will not be re-built once they have been generated.
+            // Although it is unconventional that anyone will face this issue - because
+            // if you have an external storage, you should be using CI/CD to build and publish docs.
+          }
+          break;
+        default:
+      }
     }
 
     res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
   });
 
-  if (publisher instanceof LocalPublish) {
-    router.use('/static/docs', express.static(staticDocsDir));
-  }
+  // Route middleware which serves files from the storage set in the publisher.
+  router.use('/static/docs', publisher.docsRouter());
 
   return router;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }

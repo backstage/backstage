@@ -6,4 +6,5 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: artists@example.com
+  owner: team-a
+  system: artist-engagement-portal

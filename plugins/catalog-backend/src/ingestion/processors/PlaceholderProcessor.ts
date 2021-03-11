@@ -76,21 +76,28 @@ export class PlaceholderProcessor implements CatalogProcessor {
           ? [data, false]
           : [Object.fromEntries(entries.map(([k, [v]]) => [k, v])), true];
       } else if (keys.length !== 1) {
-        throw new Error(
-          'Placeholders have to be on the form of a single $-prefixed key in an object',
-        );
+        // This was an object that had more than one key, some of which were
+        // dollar prefixed. We only handle the case where there is exactly one
+        // such key; anything else is left alone.
+        return [data, false];
       }
 
       const resolverKey = keys[0].substr(1);
+      const resolverValue = data[keys[0]];
       const resolver = this.options.resolvers[resolverKey];
-      if (!resolver) {
-        throw new Error(`Encountered unknown placeholder \$${resolverKey}`);
+      if (!resolver || typeof resolverValue !== 'string') {
+        // If there was no such placeholder resolver or if the value was not a
+        // string, we err on the side of safety and assume that this is
+        // something that's best left alone. For example, if the input contains
+        // JSONSchema, there may be "$ref": "#/definitions/node" nodes in the
+        // document.
+        return [data, false];
       }
 
       return [
         await resolver({
           key: resolverKey,
-          value: data[keys[0]],
+          value: resolverValue,
           baseUrl: location.target,
           read: this.options.reader.read.bind(this.options.reader),
         }),
@@ -196,7 +203,7 @@ function relativeUrl({ key, value, baseUrl }: ResolverParams): string {
       // path traversal attacks and access to any file on the host system. Implementing this
       // would require additional security measures.
       throw new Error(
-        `Placeholder \$${key} could not form an URL out of ${baseUrl} and ${value}`,
+        `Placeholder \$${key} could not form a URL out of ${baseUrl} and ${value}`,
       );
     }
   }

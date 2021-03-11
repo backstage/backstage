@@ -55,6 +55,37 @@ const data = [
     month: <TrendLine data={[1, 0.8, 0.8, 0.8]} title="Trend over time" />,
     year: <TrendLine data={[1, 0.6, 0.9, 0.7]} title="Trend over time" />,
   },
+  {
+    stock: 'E',
+    day: (
+      <TrendLine
+        data={[1, 0.3, 0.3, 0.6]}
+        color="blue"
+        title="Trend over time"
+      />
+    ),
+    week: (
+      <TrendLine
+        data={[0.1, 0.9, 0.1, 0.9]}
+        color="rgb(241,225,89)"
+        title="Trend over time"
+      />
+    ),
+    month: (
+      <TrendLine
+        data={[0.1, 0.3, 0.5, 0.7]}
+        color="#9a59b7"
+        title="Trend over time"
+      />
+    ),
+    year: (
+      <TrendLine
+        data={[0.1, 0.7, 0.4, 1]}
+        color="#000000"
+        title="Trend over time"
+      />
+    ),
+  },
 ];
 
 const columns = [
@@ -96,5 +127,15 @@ export const TrendingUp = () => (
 export const TrendingDown = () => (
   <div style={containerStyle}>
     <TrendLine data={[0.8, 0.7, 0.5, 0.1]} title="Trend over time" />
+  </div>
+);
+
+export const TrendingCustomColor = () => (
+  <div style={containerStyle}>
+    <TrendLine
+      data={[0.8, 0.7, 0.5, 0.1]}
+      color="purple"
+      title="Trend over time"
+    />
   </div>
 );

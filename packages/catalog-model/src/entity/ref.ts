@@ -18,6 +18,27 @@ import { EntityName, EntityRef } from '../types';
 import { ENTITY_DEFAULT_NAMESPACE } from './constants';
 import { Entity } from './Entity';
 
+function parseRefString(
+  ref: string,
+): {
+  kind?: string;
+  namespace?: string;
+  name: string;
+} {
+  const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
+  if (!match) {
+    throw new TypeError(
+      `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
+    );
+  }
+
+  return {
+    kind: match[1]?.slice(0, -1),
+    namespace: match[2]?.slice(0, -1),
+    name: match[3],
+  };
+}
+
 /**
  * Extracts the kind, namespace and name that form the name triplet of the
  * given entity.
@@ -86,6 +107,14 @@ export function parseEntityName(
  */
 export function parseEntityRef(
   ref: EntityRef,
+  context?: { defaultKind: string; defaultNamespace: string },
+): {
+  kind: string;
+  namespace: string;
+  name: string;
+};
+export function parseEntityRef(
+  ref: EntityRef,
   context?: { defaultKind: string },
 ): {
   kind: string;
@@ -102,14 +131,6 @@ export function parseEntityRef(
 };
 export function parseEntityRef(
   ref: EntityRef,
-  context?: { defaultKind: string; defaultNamespace: string },
-): {
-  kind: string;
-  namespace: string;
-  name: string;
-};
-export function parseEntityRef(
-  ref: EntityRef,
   context: EntityRefContext = {},
 ): {
   kind?: string;
@@ -121,17 +142,11 @@ export function parseEntityRef(
   }
 
   if (typeof ref === 'string') {
-    const match = /^([^:/]+:)?([^:/]+\/)?([^:/]+)$/.exec(ref.trim());
-    if (!match) {
-      throw new Error(
-        `Entity reference "${ref}" was not on the form [<kind>:][<namespace>/]<name>`,
-      );
-    }
-
+    const parsed = parseRefString(ref);
     return {
-      kind: match[1]?.slice(0, -1) ?? context.defaultKind,
-      namespace: match[2]?.slice(0, -1) ?? context.defaultNamespace,
-      name: match[3],
+      kind: parsed.kind ?? context.defaultKind,
+      namespace: parsed.namespace ?? context.defaultNamespace,
+      name: parsed.name,
     };
   }
 
@@ -195,4 +210,54 @@ export function serializeEntityRef(
   }
 
   return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+}
+
+/**
+ * Compares an entity to either a string reference or a compound reference.
+ *
+ * The comparison is case insensitive, and all of kind, namespace, and name
+ * must match (after applying the optional context to the ref).
+ *
+ * @param entity The entity to match
+ * @param ref A string or compound entity ref
+ * @param context An optional context of default kind and namespace, that apply
+ *                to the ref if given
+ * @returns True if matching, false otherwise
+ */
+export function compareEntityToRef(
+  entity: Entity,
+  ref: EntityRef | EntityName,
+  context?: EntityRefContext,
+): boolean {
+  const entityKind = entity.kind;
+  const entityNamespace = entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE;
+  const entityName = entity.metadata.name;
+
+  let refKind: string | undefined;
+  let refNamespace: string | undefined;
+  let refName: string;
+  if (typeof ref === 'string') {
+    const parsed = parseRefString(ref);
+    refKind = parsed.kind || context?.defaultKind;
+    refNamespace =
+      parsed.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+    refName = parsed.name;
+  } else {
+    refKind = ref.kind || context?.defaultKind;
+    refNamespace =
+      ref.namespace || context?.defaultNamespace || ENTITY_DEFAULT_NAMESPACE;
+    refName = ref.name;
+  }
+
+  if (!refKind || !refNamespace) {
+    throw new Error(
+      `Entity reference or context did not contain kind and namespace`,
+    );
+  }
+
+  return (
+    entityKind.toLowerCase() === refKind.toLowerCase() &&
+    entityNamespace.toLowerCase() === refNamespace.toLowerCase() &&
+    entityName.toLowerCase() === refName.toLowerCase()
+  );
 }

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.2.1",
+  "version": "0.5.5",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,
@@ -30,31 +30,35 @@
   },
   "dependencies": {
     "@backstage/cli-common": "^0.1.1",
-    "@backstage/config": "^0.1.1",
-    "@backstage/config-loader": "^0.2.0",
-    "@backstage/integration": "^0.1.0",
-    "@backstage/test-utils": "^0.1.2",
+    "@backstage/config": "^0.1.2",
+    "@backstage/config-loader": "^0.5.1",
+    "@backstage/integration": "^0.5.0",
+    "@octokit/rest": "^18.0.12",
     "@types/cors": "^2.8.6",
+    "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",
+    "archiver": "^5.0.2",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
     "cors": "^2.8.5",
     "cross-fetch": "^3.0.6",
+    "dockerode": "^3.2.1",
     "express": "^4.17.1",
-    "express-prom-bundle": "^6.1.0",
     "express-promise-router": "^3.0.3",
     "fs-extra": "^9.0.1",
-    "git-url-parse": "^11.4.0",
+    "git-url-parse": "^11.4.4",
     "helmet": "^4.0.0",
-    "knex": "^0.21.6",
+    "isomorphic-git": "^1.8.0",
+    "knex": "^0.95.1",
     "lodash": "^4.17.15",
     "logform": "^2.1.1",
+    "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
-    "prom-client": "^12.0.0",
     "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
     "tar": "^6.0.5",
+    "unzipper": "^0.10.11",
     "winston": "^3.2.1"
   },
   "peerDependencies": {
@@ -66,7 +70,9 @@
     }
   },
   "devDependencies": {
-    "@backstage/cli": "^0.2.0",
+    "@backstage/cli": "^0.6.3",
+    "@backstage/test-utils": "^0.1.7",
+    "@types/archiver": "^5.1.0",
     "@types/compression": "^1.7.0",
     "@types/concat-stream": "^1.6.0",
     "@types/fs-extra": "^9.0.3",
@@ -78,8 +84,8 @@
     "@types/stoppable": "^1.1.0",
     "@types/supertest": "^2.0.8",
     "@types/tar": "^4.0.3",
+    "@types/unzipper": "^0.10.3",
     "@types/webpack-env": "^1.15.2",
-    "@types/yaml": "^1.9.7",
     "get-port": "^5.1.1",
     "http-errors": "^1.7.3",
     "jest": "^26.0.1",
@@ -89,6 +95,8 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

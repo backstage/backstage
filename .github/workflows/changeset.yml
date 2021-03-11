@@ -19,4 +19,4 @@ jobs:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}

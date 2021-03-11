@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { graphiqlPlugin } from './plugin';
 
 describe('graphiql', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(graphiqlPlugin).toBeDefined();
   });
 });

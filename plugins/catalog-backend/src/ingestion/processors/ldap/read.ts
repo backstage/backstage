@@ -150,9 +150,8 @@ export async function readLdapGroups(
       },
       spec: {
         type: 'unknown',
-        ancestors: [],
+        profile: {},
         children: [],
-        descendants: [],
       },
     };
 
@@ -179,6 +178,15 @@ export async function readLdapGroups(
     });
     mapStringAttr(attributes, map.type, v => {
       entity.spec.type = v;
+    });
+    mapStringAttr(attributes, map.displayName, v => {
+      entity.spec.profile!.displayName = v;
+    });
+    mapStringAttr(attributes, map.email, v => {
+      entity.spec.profile!.email = v;
+    });
+    mapStringAttr(attributes, map.picture, v => {
+      entity.spec.profile!.picture = v;
     });
 
     mapReferencesAttr(attributes, map.memberOf, (myDn, vs) => {

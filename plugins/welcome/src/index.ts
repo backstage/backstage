@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin } from './plugin';
+export { welcomePlugin, welcomePlugin as plugin, WelcomePage } from './plugin';

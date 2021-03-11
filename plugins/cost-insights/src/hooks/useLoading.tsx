@@ -21,7 +21,6 @@ import React, {
   SetStateAction,
   useContext,
   useEffect,
-  useMemo,
   useReducer,
   useState,
 } from 'react';
@@ -30,10 +29,9 @@ import { Loading } from '../types';
 import {
   DefaultLoadingAction,
   getDefaultState,
-  getLoadingActions,
+  INITIAL_LOADING_ACTIONS,
 } from '../utils/loading';
 import { useBackdropStyles as useStyles } from '../utils/styles';
-import { useConfig } from './useConfig';
 
 export type LoadingContextProps = {
   state: Loading;
@@ -56,10 +54,7 @@ function reducer(prevState: Loading, action: Partial<Loading>): Loading {
 
 export const LoadingProvider = ({ children }: PropsWithChildren<{}>) => {
   const classes = useStyles();
-  const { products } = useConfig();
-  const actions = useMemo(() => getLoadingActions(products.map(p => p.kind)), [
-    products,
-  ]);
+  const actions = INITIAL_LOADING_ACTIONS;
   const [state, dispatch] = useReducer(reducer, getDefaultState(actions));
   const [isBackdropVisible, setBackdropVisible] = useState(false);
 

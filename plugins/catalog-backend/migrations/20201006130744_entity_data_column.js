@@ -17,7 +17,7 @@
 // @ts-check
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
   await knex.schema.alterTable('entities', table => {
@@ -40,29 +40,16 @@ exports.up = async function up(knex) {
     table.dropColumn('spec');
   });
 
-  // SQLite does not support ALTER COLUMN. Note that we do not use the try/
-  // catch method as in other migrations, because if the transaction is
-  // partially failed, it will further mess up the already messed-up
-  // statement below this.
+  // SQLite does not support ALTER COLUMN.
   if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities', table => {
       table.text('data').notNullable().alter();
     });
   }
-
-  // NOTE(freben): For some reason, specifically sqlite3 in-mem just drops some
-  // subset of constraints sometimes, when a table column is dropped - even if
-  // the column had no relation at all to the constraint. We therefore recreate
-  // the constraint here as a stupid fix.
-  if (knex.client.config.client === 'sqlite3') {
-    await knex.schema.alterTable('entities', table => {
-      table.unique(['full_name'], 'entities_unique_full_name');
-    });
-  }
 };
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('entities', table => {

@@ -11,6 +11,7 @@ const Block = Components.Block;
 const ActionBlock = Components.ActionBlock;
 const Breakpoint = Components.Breakpoint;
 const BulletLine = Components.BulletLine;
+const Banner = Components.Banner;
 
 class Index extends React.Component {
   render() {
@@ -27,8 +28,8 @@ class Index extends React.Component {
               </Block.Title>
               <Block.Paragraph>
                 Powered by a centralized service catalog, Backstage restores
-                order to your infrastructure. So your product teams can ship
-                high-quality code quickly — without compromising autonomy.
+                order to your infrastructure and enables your product teams to
+                ship high-quality code quickly — without compromising autonomy.
               </Block.Paragraph>
               <Block.LinkButton
                 href={'https://github.com/backstage/backstage#getting-started'}
@@ -52,6 +53,15 @@ class Index extends React.Component {
             </Block.Graphics>
           </Block.Container>
         </Block>
+
+        <Banner.Container>
+          <Banner.Dismissable storageKey="k8s-launch">
+            🎉 New feature: Kubernetes for service owners.{' '}
+            <a href="https://backstage.io/blog/2021/01/12/new-backstage-feature-kubernetes-for-service-owners">
+              Learn more.
+            </a>
+          </Banner.Dismissable>
+        </Banner.Container>
 
         <Block small className="stripe-top bg-black">
           <Block.Container wrapped>
@@ -376,6 +386,72 @@ class Index extends React.Component {
             href={`https://backstage.io/docs/features/techdocs/techdocs-overview`}
           >
             Docs
+          </ActionBlock.Link>
+        </ActionBlock>
+
+        <Block className="stripe-top bg-teal-bottom" wrapped>
+          <Block.Container wrapped>
+            <Block.TextBox wide>
+              <img
+                className="Block__GIF"
+                src={`${baseUrl}animations/backstage-kubernetes-icon-1.gif`}
+              />
+
+              <Block.Subtitle>Backstage Kubernetes</Block.Subtitle>
+              <Block.Title small>
+                Manage your services, not clusters
+              </Block.Title>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Kubernetes made just for service owners
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Backstage features the first Kubernetes monitoring tool designed
+                around the needs of service owners, not cluster admins
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>
+                Your service at a glance
+              </Block.SmallTitle>
+              <Block.Paragraph>
+                Get all your service's deployments in one, aggregated view — no
+                more digging through cluster logs in a CLI, no more combing
+                through lists of services you don't own
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Pick a cloud, any cloud</Block.SmallTitle>
+              <Block.Paragraph>
+                Since Backstage uses the Kubernetes API, it's cloud agnostic —
+                so it works no matter which cloud provide or managed Kubernetes
+                service you use, and even works in multi-cloud orgs
+              </Block.Paragraph>
+            </Block.TextBox>
+
+            <Block.TextBox small>
+              <BulletLine />
+              <Block.SmallTitle small>Any K8s, one UI</Block.SmallTitle>
+              <Block.Paragraph>
+                Now you don't have to switch dashboards when you move from local
+                testing to production, or from one cloud provider to another
+              </Block.Paragraph>
+            </Block.TextBox>
+          </Block.Container>
+        </Block>
+        <ActionBlock className="stripe bg-teal">
+          <ActionBlock.Title>Learn more about the K8s plugin</ActionBlock.Title>
+          <ActionBlock.Link
+            href={`https://backstage.io/blog/2021/01/12/new-backstage-feature-kubernetes-for-service-owners`}
+          >
+            Read
           </ActionBlock.Link>
         </ActionBlock>
 

@@ -31,7 +31,7 @@ export type DiscoveryApi = {
   /**
    * Returns the HTTP base backend URL for a given plugin, without a trailing slash.
    *
-   * This method must always be called just before making a request. as opposed to
+   * This method must always be called just before making a request, as opposed to
    * fetching the URL when constructing an API client. That is to ensure that more
    * flexible routing patterns can be supported.
    *

@@ -13,57 +13,102 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, {
   ComponentType,
-  FC,
+  PropsWithChildren,
+  ReactElement,
   useMemo,
   useState,
-  ReactElement,
 } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
-import { AppContextProvider } from './AppContext';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { useAsync } from 'react-use';
 import {
-  BackstageApp,
-  AppComponents,
-  AppConfigLoader,
-  SignInResult,
-  SignInPageProps,
-} from './types';
-import { BackstagePlugin } from '../plugin';
-import {
-  featureFlagsApiRef,
-  AppThemeApi,
-  ConfigApi,
-  identityApiRef,
-} from '../apis/definitions';
-import { AppThemeProvider } from './AppThemeProvider';
-
-import { IconComponent, SystemIcons, SystemIconKey } from '../icons';
-import {
+  AnyApiFactory,
+  ApiHolder,
   ApiProvider,
   ApiRegistry,
   AppTheme,
-  AppThemeSelector,
   appThemeApiRef,
+  AppThemeSelector,
   configApiRef,
   ConfigReader,
-  useApi,
-  AnyApiFactory,
-  ApiHolder,
   LocalStorageFeatureFlags,
+  useApi,
 } from '../apis';
-import { useAsync } from 'react-use';
+import {
+  AppThemeApi,
+  ConfigApi,
+  featureFlagsApiRef,
+  identityApiRef,
+} from '../apis/definitions';
+import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
+import {
+  childDiscoverer,
+  routeElementDiscoverer,
+  traverseElementTree,
+} from '../extensions/traversal';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
+import { BackstagePlugin } from '../plugin';
+import { AnyRoutes } from '../plugin/types';
+import { RouteRef, ExternalRouteRef } from '../routing';
+import {
+  routeObjectCollector,
+  routeParentCollector,
+  routePathCollector,
+} from '../routing/collectors';
+import { RoutingProvider, validateRoutes } from '../routing/hooks';
+import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
-import { ApiResolver, ApiFactoryRegistry } from '../apis/system';
+import { AppThemeProvider } from './AppThemeProvider';
+import {
+  AppComponents,
+  AppConfigLoader,
+  AppContext,
+  AppOptions,
+  AppRouteBinder,
+  BackstageApp,
+  SignInPageProps,
+  SignInResult,
+} from './types';
+
+export function generateBoundRoutes(
+  bindRoutes: AppOptions['bindRoutes'],
+): Map<ExternalRouteRef, RouteRef> {
+  const result = new Map<ExternalRouteRef, RouteRef>();
+
+  if (bindRoutes) {
+    const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {
+      for (const [key, value] of Object.entries(targetRoutes)) {
+        const externalRoute = externalRoutes[key];
+        if (!externalRoute) {
+          throw new Error(`Key ${key} is not an existing external route`);
+        }
+        if (!value && !externalRoute.optional) {
+          throw new Error(
+            `External route ${key} is required but was undefined`,
+          );
+        }
+        if (value) {
+          result.set(externalRoute, value);
+        }
+      }
+    };
+    bindRoutes({ bind });
+  }
+
+  return result;
+}
 
 type FullAppOptions = {
   apis: Iterable<AnyApiFactory>;
-  icons: SystemIcons;
-  plugins: BackstagePlugin[];
+  icons: IconComponentMap;
+  plugins: BackstagePlugin<any, any>[];
   components: AppComponents;
   themes: AppTheme[];
   configLoader?: AppConfigLoader;
   defaultApis: Iterable<AnyApiFactory>;
+  bindRoutes?: AppOptions['bindRoutes'];
 };
 
 function useConfigLoader(
@@ -101,17 +146,54 @@ function useConfigLoader(
   return { api: configReader };
 }
 
+class AppContextImpl implements AppContext {
+  constructor(private readonly app: PrivateAppImpl) {}
+
+  getPlugins(): BackstagePlugin<any, any>[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getPlugins() is deprecated and will be removed');
+    return this.app.getPlugins();
+  }
+
+  getSystemIcon(key: IconKey): IconComponent | undefined {
+    return this.app.getSystemIcon(key);
+  }
+
+  getComponents(): AppComponents {
+    return this.app.getComponents();
+  }
+
+  getProvider(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getProvider() is deprecated and will be removed');
+    return this.app.getProvider();
+  }
+
+  getRouter(): React.ComponentType<{}> {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRouter() is deprecated and will be removed');
+    return this.app.getRouter();
+  }
+
+  getRoutes(): JSX.Element[] {
+    // eslint-disable-next-line no-console
+    console.warn('appContext.getRoutes() is deprecated and will be removed');
+    return this.app.getRoutes();
+  }
+}
+
 export class PrivateAppImpl implements BackstageApp {
   private apiHolder?: ApiHolder;
   private configApi?: ConfigApi;
 
   private readonly apis: Iterable<AnyApiFactory>;
-  private readonly icons: SystemIcons;
-  private readonly plugins: BackstagePlugin[];
+  private readonly icons: IconComponentMap;
+  private readonly plugins: BackstagePlugin<any, any>[];
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
+  private readonly bindRoutes: AppOptions['bindRoutes'];
 
   private readonly identityApi = new AppIdentity();
 
@@ -123,20 +205,23 @@ export class PrivateAppImpl implements BackstageApp {
     this.themes = options.themes;
     this.configLoader = options.configLoader;
     this.defaultApis = options.defaultApis;
+    this.bindRoutes = options.bindRoutes;
   }
 
-  getPlugins(): BackstagePlugin[] {
+  getPlugins(): BackstagePlugin<any, any>[] {
     return this.plugins;
   }
 
-  getSystemIcon(key: SystemIconKey): IconComponent {
+  getSystemIcon(key: IconKey): IconComponent | undefined {
     return this.icons[key];
+  }
+
+  getComponents(): AppComponents {
+    return this.components;
   }
 
   getRoutes(): JSX.Element[] {
     const routes = new Array<JSX.Element>();
-
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
 
     const { NotFoundErrorPage } = this.components;
 
@@ -171,6 +256,32 @@ export class PrivateAppImpl implements BackstageApp {
             routes.push(<Navigate key={from.path} to={to.path} />);
             break;
           }
+          default:
+            break;
+        }
+      }
+    }
+
+    routes.push(
+      <Route
+        key="not-found-error-page"
+        path="/*"
+        element={<NotFoundErrorPage />}
+      />,
+    );
+
+    return routes;
+  }
+
+  getProvider(): ComponentType<{}> {
+    const appContext = new AppContextImpl(this);
+    const apiHolder = this.getApiHolder();
+
+    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+    for (const plugin of this.plugins.values()) {
+      for (const output of plugin.output()) {
+        switch (output.type) {
           case 'feature-flag': {
             featureFlagsApi.registerFlag({
               name: output.name,
@@ -184,17 +295,27 @@ export class PrivateAppImpl implements BackstageApp {
       }
     }
 
-    routes.push(<Route path="/*" element={<NotFoundErrorPage />} />);
-
-    return routes;
-  }
-
-  getProvider(): ComponentType<{}> {
-    const Provider: FC<{}> = ({ children }) => {
+    const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
         () => AppThemeSelector.createWithStorage(this.themes),
         [],
       );
+
+      const { routePaths, routeParents, routeObjects } = useMemo(() => {
+        const result = traverseElementTree({
+          root: children,
+          discoverers: [childDiscoverer, routeElementDiscoverer],
+          collectors: {
+            routePaths: routePathCollector,
+            routeParents: routeParentCollector,
+            routeObjects: routeObjectCollector,
+          },
+        });
+
+        validateRoutes(result.routePaths, result.routeParents);
+
+        return result;
+      }, [children]);
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -210,9 +331,18 @@ export class PrivateAppImpl implements BackstageApp {
       this.configApi = loadedConfig.api;
 
       return (
-        <ApiProvider apis={this.getApiHolder()}>
-          <AppContextProvider app={this}>
-            <AppThemeProvider>{children}</AppThemeProvider>
+        <ApiProvider apis={apiHolder}>
+          <AppContextProvider appContext={appContext}>
+            <AppThemeProvider>
+              <RoutingProvider
+                routePaths={routePaths}
+                routeParents={routeParents}
+                routeObjects={routeObjects}
+                routeBindings={generateBoundRoutes(this.bindRoutes)}
+              >
+                {children}
+              </RoutingProvider>
+            </AppThemeProvider>
           </AppContextProvider>
         </ApiProvider>
       );
@@ -227,10 +357,13 @@ export class PrivateAppImpl implements BackstageApp {
     } = this.components;
 
     // This wraps the sign-in page and waits for sign-in to be completed before rendering the app
-    const SignInPageWrapper: FC<{
+    const SignInPageWrapper = ({
+      component: Component,
+      children,
+    }: {
       component: ComponentType<SignInPageProps>;
       children: ReactElement;
-    }> = ({ component: Component, children }) => {
+    }) => {
       const [result, setResult] = useState<SignInResult>();
 
       if (result) {
@@ -241,7 +374,7 @@ export class PrivateAppImpl implements BackstageApp {
       return <Component onResult={setResult} />;
     };
 
-    const AppRouter: FC<{}> = ({ children }) => {
+    const AppRouter = ({ children }: PropsWithChildren<{}>) => {
       const configApi = useApi(configApiRef);
 
       let { pathname } = new URL(

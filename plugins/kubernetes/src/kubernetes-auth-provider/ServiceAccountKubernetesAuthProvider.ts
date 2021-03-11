@@ -15,13 +15,13 @@
  */
 
 import { KubernetesAuthProvider } from './types';
-import { AuthRequestBody } from '@backstage/plugin-kubernetes-backend';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-backend';
 
 export class ServiceAccountKubernetesAuthProvider
   implements KubernetesAuthProvider {
   async decorateRequestBodyForAuth(
-    requestBody: AuthRequestBody,
-  ): Promise<AuthRequestBody> {
+    requestBody: KubernetesRequestBody,
+  ): Promise<KubernetesRequestBody> {
     // No-op, with service account for auth, cluster config/details should already have serviceAccountToken
     return requestBody;
   }

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { WarningPanel } from './WarningPanel';
-import { Link, Button } from '@material-ui/core';
+import { Button, Link, Typography } from '@material-ui/core';
 
 export default {
   title: 'Feedback/Warning Panel',
@@ -25,11 +25,11 @@ export default {
 
 export const Default = () => (
   <WarningPanel
-    title="Example Warning Title"
+    title="Entity missing annotation"
     message={
       <>
-        This example entity is missing something. If this is unexpected, please
-        make sure you have set up everything correctly by following{' '}
+        This example entity is missing an annotation. If this is unexpected,
+        please make sure you have set up everything correctly by following{' '}
         <Link href="http://example.com">this guide</Link>.
       </>
     }
@@ -37,9 +37,36 @@ export const Default = () => (
 );
 
 export const Children = () => (
-  <WarningPanel title="Example Warning Title">
-    <Button variant="outlined" color="primary">
-      Supports custom children - for example this button
-    </Button>
+  <WarningPanel title="Could not contact backend system">
+    <Typography>
+      Supports custom children - for example these text elements. This can be
+      used to hide/expose stack traces for warnings, like this example:
+      <br />
+      SyntaxError: Error transforming
+      /home/user/github/backstage/packages/core/src/components/WarningPanel/WarningPanel.stories.tsx:
+      Unexpected token (42:16) at unexpected
+      (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/util.js:83:15)
+      at tsParseMaybeAssignWithJSX
+      (/home/user/github/backstage/node_modules/sucrase/dist/parser/plugins/typescript.js:1399:22)
+      at tsParseMaybeAssign
+      (/home/user/github/backstage/node_modules/sucrase/dist/parser/plugins/typescript.js:1373:12)
+      at parseMaybeAssign
+      (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/expression.js:118:43)
+      at parseExprListItem
+      (/home/user/github/backstage/node_modules/sucrase/dist/parser/traverser/expression.js:969:5)
+    </Typography>
+    <Button variant="contained">Learn More</Button>
   </WarningPanel>
 );
+
+export const FullExample = () => (
+  <WarningPanel
+    title="Could not contact backend system"
+    message="The backend system failed to respond. It is possible the service is down; please try again in a few minutes."
+  >
+    HTTP 500 Bad Gateway response from
+    https://usefulservice.mycompany.com/api/entity?44433
+  </WarningPanel>
+);
+
+export const TitleOnly = () => <WarningPanel title="Could not load data." />;

@@ -38,6 +38,7 @@ import {
   OAuthStartRequest,
   encodeState,
   OAuthRefreshRequest,
+  OAuthResult,
 } from '../../lib/oauth';
 
 import got from 'got';
@@ -54,32 +55,6 @@ export type MicrosoftAuthProviderOptions = OAuthProviderOptions & {
 export class MicrosoftAuthProvider implements OAuthHandlers {
   private readonly _strategy: MicrosoftStrategy;
 
-  static transformAuthResponse(
-    accessToken: string,
-    params: any,
-    rawProfile: any,
-    photoURL: any,
-  ): OAuthResponse {
-    let passportProfile: passport.Profile = rawProfile;
-    passportProfile = {
-      ...passportProfile,
-      photos: [{ value: photoURL }],
-    };
-
-    const profile = makeProfileInfo(passportProfile, params.id_token);
-    const providerInfo = {
-      idToken: params.id_token,
-      accessToken,
-      scope: params.scope,
-      expiresInSeconds: params.expires_in,
-    };
-
-    return {
-      providerInfo,
-      profile,
-    };
-  }
-
   constructor(options: MicrosoftAuthProviderOptions) {
     this._strategy = new MicrosoftStrategy(
       {
@@ -94,22 +69,10 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
         accessToken: any,
         refreshToken: any,
         params: any,
-        rawProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResponse, PrivateInfo>,
+        fullProfile: passport.Profile,
+        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
       ) => {
-        this.getUserPhoto(accessToken)
-          .then(photoURL => {
-            const authResponse = MicrosoftAuthProvider.transformAuthResponse(
-              accessToken,
-              params,
-              rawProfile,
-              photoURL,
-            );
-            done(undefined, authResponse, { refreshToken });
-          })
-          .catch(error => {
-            throw new Error(`Error processing auth response: ${error}`);
-          });
+        done(undefined, { fullProfile, accessToken, params }, { refreshToken });
       },
     );
   }
@@ -124,15 +87,37 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   async handler(
     req: express.Request,
   ): Promise<{ response: OAuthResponse; refreshToken: string }> {
-    const { response, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResponse,
+    const { result, privateInfo } = await executeFrameHandlerStrategy<
+      OAuthResult,
       PrivateInfo
     >(req, this._strategy);
 
-    return {
-      response: await this.populateIdentity(response),
-      refreshToken: privateInfo.refreshToken,
-    };
+    try {
+      const photoUrl = await this.getUserPhoto(result.accessToken);
+
+      const profile = makeProfileInfo(
+        {
+          ...result.fullProfile,
+          photos: photoUrl ? [{ value: photoUrl }] : undefined,
+        },
+        result.params.id_token,
+      );
+
+      return {
+        response: await this.populateIdentity({
+          profile,
+          providerInfo: {
+            idToken: result.params.id_token,
+            accessToken: result.accessToken,
+            scope: result.params.scope,
+            expiresInSeconds: result.params.expires_in,
+          },
+        }),
+        refreshToken: privateInfo.refreshToken,
+      };
+    } catch (error) {
+      throw new Error(`Error processing auth response: ${error}`);
+    }
   }
 
   async refresh(req: OAuthRefreshRequest): Promise<OAuthResponse> {
@@ -142,11 +127,11 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
       req.scope,
     );
 
-    const profile = await executeFetchUserProfileStrategy(
+    const fullProfile = await executeFetchUserProfileStrategy(
       this._strategy,
       accessToken,
-      params.id_token,
     );
+    const profile = makeProfileInfo(fullProfile, params.id_token);
     const photo = await this.getUserPhoto(accessToken);
     if (photo) {
       profile.picture = photo;
@@ -163,7 +148,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
     });
   }
 
-  private getUserPhoto(accessToken: string): Promise<string> {
+  private getUserPhoto(accessToken: string): Promise<string | undefined> {
     return new Promise(resolve => {
       got
         .get('https://graph.microsoft.com/v1.0/me/photos/48x48/$value', {
@@ -184,7 +169,7 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
             `Could not retrieve user profile photo from Microsoft Graph API: ${error}`,
           );
           // User profile photo is optional, ignore errors and resolve undefined
-          resolve();
+          resolve(undefined);
         });
     });
   }
@@ -205,33 +190,33 @@ export class MicrosoftAuthProvider implements OAuthHandlers {
   }
 }
 
-export const createMicrosoftProvider: AuthProviderFactory = ({
-  globalConfig,
-  config,
-  tokenIssuer,
-}) =>
-  OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-    const providerId = 'microsoft';
+export type MicrosoftProviderOptions = {};
 
-    const clientId = envConfig.getString('clientId');
-    const clientSecret = envConfig.getString('clientSecret');
-    const tenantID = envConfig.getString('tenantId');
+export const createMicrosoftProvider = (
+  _options?: MicrosoftProviderOptions,
+): AuthProviderFactory => {
+  return ({ providerId, globalConfig, config, tokenIssuer }) =>
+    OAuthEnvironmentHandler.mapConfig(config, envConfig => {
+      const clientId = envConfig.getString('clientId');
+      const clientSecret = envConfig.getString('clientSecret');
+      const tenantId = envConfig.getString('tenantId');
 
-    const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-    const authorizationUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/authorize`;
-    const tokenUrl = `https://login.microsoftonline.com/${tenantID}/oauth2/v2.0/token`;
+      const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
+      const authorizationUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
+      const tokenUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
 
-    const provider = new MicrosoftAuthProvider({
-      clientId,
-      clientSecret,
-      callbackUrl,
-      authorizationUrl,
-      tokenUrl,
+      const provider = new MicrosoftAuthProvider({
+        clientId,
+        clientSecret,
+        callbackUrl,
+        authorizationUrl,
+        tokenUrl,
+      });
+
+      return OAuthAdapter.fromConfig(globalConfig, provider, {
+        disableRefresh: false,
+        providerId,
+        tokenIssuer,
+      });
     });
-
-    return OAuthAdapter.fromConfig(globalConfig, provider, {
-      disableRefresh: false,
-      providerId,
-      tokenIssuer,
-    });
-  });
+};

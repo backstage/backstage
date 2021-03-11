@@ -22,7 +22,7 @@ import {
   Duration,
   Cost,
 } from '../types';
-import { MockAggregatedDailyCosts, trendlineOf, changeOf } from './mockData';
+import { MockAggregatedDailyCosts, trendlineOf, changeOf } from '../testUtils';
 
 const GrowthMap = {
   [GrowthType.Negligible]: 'negligible growth',
@@ -76,13 +76,13 @@ describe('getPreviousPeriodTotalCost', () => {
       change: changeOf(MockAggregatedDailyCosts),
       trendline: trendlineOf(MockAggregatedDailyCosts),
     };
-    const exclusiveEndDate = '2020-09-30';
+    const inclusiveEndDate = '2020-09-30';
     expect(
       getPreviousPeriodTotalCost(
-        mockGroupDailyCost,
-        Duration.P1M,
-        exclusiveEndDate,
+        mockGroupDailyCost.aggregation,
+        Duration.P30D,
+        inclusiveEndDate,
       ),
-    ).toEqual(100_000);
+    ).toEqual(96_600);
   });
 });

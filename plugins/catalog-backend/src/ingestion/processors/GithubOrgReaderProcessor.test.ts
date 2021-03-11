@@ -16,74 +16,9 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
-import { ConfigReader } from '@backstage/config';
-import {
-  GithubOrgReaderProcessor,
-  parseUrl,
-  readConfig,
-} from './GithubOrgReaderProcessor';
+import { GithubOrgReaderProcessor, parseUrl } from './GithubOrgReaderProcessor';
 
 describe('GithubOrgReaderProcessor', () => {
-  describe('readConfig', () => {
-    function config(
-      providers: { target: string; apiBaseUrl?: string; token?: string }[],
-    ) {
-      return ConfigReader.fromConfigs([
-        {
-          context: '',
-          data: {
-            catalog: { processors: { githubOrg: { providers } } },
-          },
-        },
-      ]);
-    }
-
-    it('adds a default GitHub entry when missing', () => {
-      const output = readConfig(config([]));
-      expect(output).toEqual([
-        {
-          target: 'https://github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-      ]);
-    });
-
-    it('injects the correct GitHub API base URL when missing', () => {
-      const output = readConfig(config([{ target: 'https://github.com' }]));
-      expect(output).toEqual([
-        {
-          target: 'https://github.com',
-          apiBaseUrl: 'https://api.github.com',
-        },
-      ]);
-    });
-
-    it('rejects custom targets with no base URLs', () => {
-      expect(() =>
-        readConfig(config([{ target: 'https://ghe.company.com' }])),
-      ).toThrow(
-        'Provider at https://ghe.company.com must configure an explicit apiBaseUrl',
-      );
-    });
-
-    it('rejects funky configs', () => {
-      expect(() => readConfig(config([{ target: 7 } as any]))).toThrow(
-        /target/,
-      );
-      expect(() => readConfig(config([{ noTarget: '7' } as any]))).toThrow(
-        /target/,
-      );
-      expect(() =>
-        readConfig(
-          config([{ target: 'https://github.com', apiBaseUrl: 7 } as any]),
-        ),
-      ).toThrow(/apiBaseUrl/);
-      expect(() =>
-        readConfig(config([{ target: 'https://github.com', token: 7 } as any])),
-      ).toThrow(/token/);
-    });
-  });
-
   describe('parseUrl', () => {
     it('only supports clean org urls, and decodes them', () => {
       expect(() => parseUrl('https://github.com')).toThrow();

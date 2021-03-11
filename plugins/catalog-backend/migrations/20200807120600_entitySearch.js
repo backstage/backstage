@@ -17,27 +17,25 @@
 // @ts-check
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  try {
+  // Sqlite does not support alter column.
+  if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
       table.text('value').nullable().alter();
     });
-  } catch (e) {
-    // Sqlite does not support alter column.
   }
 };
 
 /**
- * @param {import('knex')} knex
+ * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  try {
+  // Sqlite does not support alter column.
+  if (knex.client.config.client !== 'sqlite3') {
     await knex.schema.alterTable('entities_search', table => {
       table.string('value').nullable().alter();
     });
-  } catch (e) {
-    // Sqlite does not support alter column.
   }
 };

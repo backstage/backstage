@@ -19,7 +19,7 @@ import { default as HappyFace } from '@material-ui/icons/SentimentSatisfiedAlt';
 import { renderInTestApp } from '@backstage/test-utils';
 import { CostInsightsNavigation } from './CostInsightsNavigation';
 import { Product, Icon } from '../../types';
-import { MockConfigProvider, MockScrollProvider } from '../../utils/tests';
+import { MockConfigProvider, MockScrollProvider } from '../../testUtils';
 import { getDefaultNavigationItems } from '../../utils/navigation';
 
 const mockIcons: Icon[] = [
@@ -46,7 +46,7 @@ const renderWrapped = (children: React.ReactNode) =>
 describe('<CostInsightsNavigation />', () => {
   it('should render each navigation item', async () => {
     const { getByText } = await renderWrapped(
-      <CostInsightsNavigation alerts={3} />,
+      <CostInsightsNavigation products={mockProducts} alerts={3} />,
     );
     getDefaultNavigationItems(3)
       .map(item => item.title)
@@ -55,12 +55,16 @@ describe('<CostInsightsNavigation />', () => {
   });
 
   it('should not display action items navigation if there are no action items', async () => {
-    const rendered = await renderWrapped(<CostInsightsNavigation alerts={0} />);
+    const rendered = await renderWrapped(
+      <CostInsightsNavigation products={mockProducts} alerts={0} />,
+    );
     expect(rendered.queryByText(/Action Items/)).not.toBeInTheDocument();
   });
 
   it('should display the correct amount of action items in the badge', async () => {
-    const rendered = await renderWrapped(<CostInsightsNavigation alerts={3} />);
+    const rendered = await renderWrapped(
+      <CostInsightsNavigation products={mockProducts} alerts={3} />,
+    );
     expect(rendered.getByText(/3/)).toBeInTheDocument();
   });
 });

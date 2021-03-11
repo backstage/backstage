@@ -1,5 +1,260 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.3
+
+### Patch Changes
+
+- f43192207: remove usage of res.send() for res.json() and res.end() to ensure content types are more consistently application/json on backend responses and error cases
+- 3af994c81: Expose a configuration option for the oidc scope
+- Updated dependencies [12d8f27a6]
+- Updated dependencies [497859088]
+- Updated dependencies [8adb48df4]
+  - @backstage/catalog-model@0.7.3
+  - @backstage/backend-common@0.5.5
+
+## 0.3.2
+
+### Patch Changes
+
+- ec504e7b4: Fix for refresh token being lost during Microsoft login.
+- Updated dependencies [bad21a085]
+- Updated dependencies [a1f5e6545]
+  - @backstage/catalog-model@0.7.2
+  - @backstage/config@0.1.3
+
+## 0.3.1
+
+### Patch Changes
+
+- 92f01d75c: Refactored auth provider factories to accept options along with other internal refactoring of the auth providers.
+- d9687c524: Fixed parsing of OIDC key timestamps when using SQLite.
+- 3600ac3b0: Migrated the package from using moment to Luxon. #4278
+- Updated dependencies [16fb1d03a]
+- Updated dependencies [491f3a0ec]
+- Updated dependencies [434b4e81a]
+- Updated dependencies [fb28da212]
+  - @backstage/backend-common@0.5.4
+
+## 0.3.0
+
+### Minor Changes
+
+- 1deb31141: Remove undocumented scope (default) from the OIDC auth provider which was breaking some identity services. If your app relied on this scope, you can manually specify it by adding a new factory in `packages/app/src/apis.ts`:
+
+  ```
+  export const apis = [
+    createApiFactory({
+      api: oidcAuthApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        oauthRequestApi: oauthRequestApiRef,
+        configApi: configApiRef,
+      },
+      factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+        OAuth2.create({
+          discoveryApi,
+          oauthRequestApi,
+          provider: {
+            id: 'oidc',
+            title: 'Your Identity Provider',
+            icon: OAuth2Icon,
+          },
+          defaultScopes: [
+            'default',
+            'openid',
+            'email',
+            'offline_access',
+          ],
+          environment: configApi.getOptionalString('auth.environment'),
+        }),
+    }),
+  ];
+  ```
+
+### Patch Changes
+
+- 6ed2b47d6: Include Backstage identity token in requests to backend plugins.
+- 07bafa248: Add configurable `scope` for oauth2 auth provider.
+
+  Some OAuth2 providers require certain scopes to facilitate a user sign-in using the Authorization Code flow.
+  This change adds the optional `scope` key to auth.providers.oauth2. An example is:
+
+  ```yaml
+  auth:
+    providers:
+      oauth2:
+        development:
+          clientId:
+            $env: DEV_OAUTH2_CLIENT_ID
+          clientSecret:
+            $env: DEV_OAUTH2_CLIENT_SECRET
+          authorizationUrl:
+            $env: DEV_OAUTH2_AUTH_URL
+          tokenUrl:
+            $env: DEV_OAUTH2_TOKEN_URL
+          scope: saml-login-selector openid profile email
+  ```
+
+  This tells the OAuth 2.0 AS to perform a SAML login and return OIDC information include the `profile`
+  and `email` claims as part of the ID Token.
+
+- Updated dependencies [6ed2b47d6]
+- Updated dependencies [ffffea8e6]
+- Updated dependencies [82b2c11b6]
+- Updated dependencies [965e200c6]
+- Updated dependencies [72b96e880]
+- Updated dependencies [5a5163519]
+  - @backstage/catalog-client@0.3.6
+  - @backstage/backend-common@0.5.3
+
+## 0.2.12
+
+### Patch Changes
+
+- d7b1d317f: Fixed serialization issue with caching of public keys in AWS ALB auth provider
+- 39b05b9ae: Use .text instead of .json for ALB key response
+- 4eaa06057: Fix AWS ALB issuer check
+- Updated dependencies [26a3a6cf0]
+- Updated dependencies [664dd08c9]
+- Updated dependencies [9dd057662]
+  - @backstage/backend-common@0.5.1
+
+## 0.2.11
+
+### Patch Changes
+
+- 0643a3336: Add AWS ALB OIDC reverse proxy authentication provider
+- a2291d7cc: Optional identity token authorization of api requests
+- Updated dependencies [def2307f3]
+- Updated dependencies [0b135e7e0]
+- Updated dependencies [294a70cab]
+- Updated dependencies [0ea032763]
+- Updated dependencies [5345a1f98]
+- Updated dependencies [09a370426]
+- Updated dependencies [a93f42213]
+  - @backstage/catalog-model@0.7.0
+  - @backstage/backend-common@0.5.0
+  - @backstage/catalog-client@0.3.5
+
+## 0.2.10
+
+### Patch Changes
+
+- 468579734: Allow blank certificates and support logout URLs in the SAML provider.
+- Updated dependencies [f3b064e1c]
+- Updated dependencies [abbee6fff]
+- Updated dependencies [147fadcb9]
+  - @backstage/catalog-model@0.6.1
+  - @backstage/backend-common@0.4.3
+
+## 0.2.9
+
+### Patch Changes
+
+- 0289a059c: Add support for the majority of the Core configurations for Passport-SAML.
+
+  These configuration keys are supported:
+
+  - entryPoint
+  - issuer
+  - cert
+  - privateKey
+  - decryptionPvk
+  - signatureAlgorithm
+  - digestAlgorithm
+
+  As part of this change, there is also a fix to the redirection behaviour when doing load balancing and HTTPS termination - the application's baseUrl is used to generate the callback URL. For properly configured Backstage installations, no changes are necessary, and the baseUrl is respected.
+
+- Updated dependencies [5ecd50f8a]
+- Updated dependencies [00042e73c]
+- Updated dependencies [0829ff126]
+- Updated dependencies [036a84373]
+  - @backstage/backend-common@0.4.2
+
+## 0.2.8
+
+### Patch Changes
+
+- cc046682e: fix bug in token expiration date
+
+## 0.2.7
+
+### Patch Changes
+
+- 7b15cc271: Added configuration schema for the commonly used properties
+- Updated dependencies [c911061b7]
+- Updated dependencies [1d1c2860f]
+- Updated dependencies [0e6298f7e]
+- Updated dependencies [4eafdec4a]
+- Updated dependencies [ac3560b42]
+  - @backstage/catalog-model@0.6.0
+  - @backstage/backend-common@0.4.1
+  - @backstage/catalog-client@0.3.4
+
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [38e24db00]
+- Updated dependencies [e3bd9fc2f]
+- Updated dependencies [12bbd748c]
+- Updated dependencies [83b6e0c1f]
+- Updated dependencies [e3bd9fc2f]
+  - @backstage/backend-common@0.4.0
+  - @backstage/config@0.1.2
+  - @backstage/catalog-model@0.5.0
+  - @backstage/catalog-client@0.3.3
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [612368274]
+- Updated dependencies [08835a61d]
+- Updated dependencies [a9fd599f7]
+- Updated dependencies [bcc211a08]
+  - @backstage/backend-common@0.3.3
+  - @backstage/catalog-model@0.4.0
+  - @backstage/catalog-client@0.3.2
+
+## 0.2.4
+
+### Patch Changes
+
+- 50eff1d00: Allow the backend to register custom AuthProviderFactories
+- 700a212b4: bug fix: issue 3223 - detect mismatching origin and indicate it in the message at auth failure
+- Updated dependencies [3aa7efb3f]
+- Updated dependencies [ab94c9542]
+- Updated dependencies [2daf18e80]
+- Updated dependencies [069cda35f]
+- Updated dependencies [b3d4e4e57]
+  - @backstage/backend-common@0.3.2
+  - @backstage/catalog-model@0.3.1
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [1166fcc36]
+- Updated dependencies [bff3305aa]
+- Updated dependencies [1185919f3]
+- Updated dependencies [b47dce06f]
+  - @backstage/catalog-model@0.3.0
+  - @backstage/backend-common@0.3.1
+  - @backstage/catalog-client@0.3.1
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [1722cb53c]
+- Updated dependencies [1722cb53c]
+- Updated dependencies [7b37e6834]
+- Updated dependencies [8e2effb53]
+- Updated dependencies [717e43de1]
+  - @backstage/backend-common@0.3.0
+  - @backstage/catalog-client@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

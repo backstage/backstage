@@ -16,7 +16,10 @@
 import { ApiRef, createApiRef } from '../system';
 import { Config } from '@backstage/config';
 
-// Using interface to make the ConfigApi name show up in docs
+/**
+ * The Config API is used to provide a mechanism to access the
+ * runtime configuration of the system.
+ */
 export type ConfigApi = Config;
 
 export const configApiRef: ApiRef<ConfigApi> = createApiRef({

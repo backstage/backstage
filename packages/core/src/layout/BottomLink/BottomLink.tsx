@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import {
   ListItem,
   ListItemIcon,
@@ -47,7 +47,7 @@ export type BottomLinkProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const BottomLink: FC<BottomLinkProps> = ({ link, title, onClick }) => {
+export const BottomLink = ({ link, title, onClick }: BottomLinkProps) => {
   const classes = useStyles();
 
   return (

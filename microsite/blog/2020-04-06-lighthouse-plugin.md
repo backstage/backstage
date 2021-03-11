@@ -1,6 +1,6 @@
 ---
 title: Introducing Lighthouse for Backstage
-author: Paul Marbach
+author: Paul Marbach, Spotify
 authorURL: http://twitter.com/fastfrwrd
 authorImageURL: https://pbs.twimg.com/profile_images/1224058798958088192/JPxS8uzR_400x400.jpg
 ---

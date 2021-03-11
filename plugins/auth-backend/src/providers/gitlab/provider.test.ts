@@ -15,14 +15,21 @@
  */
 
 import { GitlabAuthProvider } from './provider';
+import * as helpers from '../../lib/passport';
+import { OAuthResult } from '../../lib/oauth';
+
+const mockFrameHandler = (jest.spyOn(
+  helpers,
+  'executeFrameHandlerStrategy',
+) as unknown) as jest.MockedFunction<() => Promise<{ result: OAuthResult }>>;
 
 describe('GitlabAuthProvider', () => {
-  it('should transform to type OAuthResponse', () => {
+  it('should transform to type OAuthResponse', async () => {
     const tests = [
       {
-        arguments: {
+        result: {
           accessToken: '19xasczxcm9n7gacn9jdgm19me',
-          rawProfile: {
+          fullProfile: {
             id: 'uid-123',
             username: 'jimmymarkum',
             provider: 'gitlab',
@@ -58,10 +65,10 @@ describe('GitlabAuthProvider', () => {
         },
       },
       {
-        arguments: {
+        result: {
           accessToken:
             'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
-          rawProfile: {
+          fullProfile: {
             id: 'ipd12039',
             username: 'daveboyle',
             provider: 'gitlab',
@@ -74,6 +81,7 @@ describe('GitlabAuthProvider', () => {
           },
           params: {
             scope: 'read_repository',
+            expires_in: 200,
           },
         },
         expect: {
@@ -83,6 +91,7 @@ describe('GitlabAuthProvider', () => {
           providerInfo: {
             accessToken:
               'ajakljsdoiahoawxbrouawucmbawe.awkxjemaneasdxwe.sodijxqeqwexeqwxe',
+            expiresInSeconds: 200,
             scope: 'read_repository',
           },
           profile: {
@@ -93,14 +102,16 @@ describe('GitlabAuthProvider', () => {
       },
     ];
 
+    const provider = new GitlabAuthProvider({
+      clientId: 'mock',
+      clientSecret: 'mock',
+      callbackUrl: 'mock',
+      baseUrl: 'mock',
+    });
     for (const test of tests) {
-      expect(
-        GitlabAuthProvider.transformOAuthResponse(
-          test.arguments.accessToken,
-          test.arguments.rawProfile,
-          test.arguments.params,
-        ),
-      ).toEqual(test.expect);
+      mockFrameHandler.mockResolvedValueOnce({ result: test.result });
+      const { response } = await provider.handler({} as any);
+      expect(response).toEqual(test.expect);
     }
   });
 });

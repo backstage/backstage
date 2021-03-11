@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  TemplateEntityV1alpha1,
-  LOCATION_ANNOTATION,
-} from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+
 import { InputError } from '@backstage/backend-common';
-import { RemoteProtocol } from './types';
+import {
+  LOCATION_ANNOTATION,
+  parseLocationReference,
+  TemplateEntityV1alpha1,
+} from '@backstage/catalog-model';
+import { posix as posixPath } from 'path';
 
 export type ParsedLocationAnnotation = {
-  protocol: RemoteProtocol;
+  protocol: 'file' | 'url';
   location: string;
 };
 
@@ -30,64 +31,32 @@ export const parseLocationAnnotation = (
   entity: TemplateEntityV1alpha1,
 ): ParsedLocationAnnotation => {
   const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-
   if (!annotation) {
     throw new InputError(
       `No location annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 
-  // split on the first colon for the protocol and the rest after the first split
-  // is the location.
-  const [protocol, location] = annotation.split(/:(.+)/) as [
-    RemoteProtocol?,
-    string?,
-  ];
-
-  if (!protocol || !location) {
-    throw new InputError(
-      `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
-    );
-  }
-
+  const { type, target } = parseLocationReference(annotation);
   return {
-    protocol,
-    location,
+    protocol: type as 'file' | 'url',
+    location: target,
   };
 };
 
-export type DeprecatedLocationTypeDetector = (
-  url: string,
-) => string | undefined;
+export function joinGitUrlPath(repoUrl: string, path?: string): string {
+  const parsed = new URL(repoUrl);
 
-// The reason for the existence of this is to help in migration to using mostly locations
-// of type 'url'. This allows us to detect the deprecated location type based on the host,
-// which we in turn can use to select out preparer or publisher.
-//
-// TODO(Rugvip): This should be removed in the future once we fully migrate to using
-//               integrations configuration for the scaffolder.
-export function makeDeprecatedLocationTypeDetector(
-  config: Config,
-): DeprecatedLocationTypeDetector {
-  const hostMap = new Map();
+  if (parsed.hostname.endsWith('azure.com')) {
+    const templatePath = posixPath.normalize(
+      posixPath.join(
+        posixPath.dirname(parsed.searchParams.get('path') || '/'),
+        path || '.',
+      ),
+    );
+    parsed.searchParams.set('path', templatePath);
+    return parsed.toString();
+  }
 
-  // These are installed by default by the integrations
-  hostMap.set('github.com', 'github');
-  hostMap.set('gitlab.com', 'gitlab');
-  hostMap.set('dev.azure.com', 'azure/api');
-
-  config.getOptionalConfigArray('integrations.github')?.forEach(sub => {
-    hostMap.set(sub.getString('host'), 'github');
-  });
-  config.getOptionalConfigArray('integrations.gitlab')?.forEach(sub => {
-    hostMap.set(sub.getString('host'), 'gitlab');
-  });
-  config.getOptionalConfigArray('integrations.azure')?.forEach(sub => {
-    hostMap.set(sub.getString('host'), 'azure/api');
-  });
-
-  return (url: string): string | undefined => {
-    const parsed = new URL(url);
-    return hostMap.get(parsed.hostname);
-  };
+  return new URL(path || '.', repoUrl).toString().replace(/\/$/, '');
 }

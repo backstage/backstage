@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React, { PropsWithChildren } from 'react';
 import { Tabs, makeStyles } from '@material-ui/core';
 import { BackstageTheme } from '@backstage/theme';
 
@@ -40,7 +40,7 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   },
 }));
 
-export const StyledTabs: FC<StyledTabsProps> = props => {
+export const StyledTabs = (props: PropsWithChildren<StyledTabsProps>) => {
   const classes = useStyles(props);
   return (
     <Tabs

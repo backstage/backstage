@@ -20,7 +20,7 @@ import { Maybe } from './Maybe';
 export interface Entity {
   id: Maybe<string>;
   aggregation: [number, number];
-  entities: Entity[];
+  entities: Record<string, Entity[]>;
   change: ChangeStatistic;
 }
 
@@ -30,8 +30,15 @@ export interface Entity {
   An entity could be atomic or composite. An atomic entity is indivisible
   and cannot be broken into sub-entities.
 
-  A composite entity can be broken down recursively into sub-entities
-  that generate cost **over the same time period**. All costs must sum to the root cost.
+  A composite entity is divided into sub-entities that account for portions
+  of the total cost **over the same time period**. The root entity is
+  expected to only have _one_ Record consisting of the sub-entities to display
+  in the product panel (keyed by the entity type, such as "service" for
+  compute entities).
+
+  The root sub-entities may have multiple breakdowns  - for example, a
+  breakdown of an entity cost by SKU vs deployment environment. The sum
+  aggregated cost of each keyed breakdown should equal the sub-entity's cost.
 
   Entities with null ids are considered "unlabeled" - costs without attribution.
   If an entity is a composite, it may only have one (1) null child but may have any number of
@@ -44,44 +51,68 @@ export interface Entity {
       ratio: 2000,
       amount: 200
     },
-    entities: [
-      {
-        id: 'service-a',
-        aggregation: [0, 100],
-        change: {
-          ratio: 100,
-          amount: 100
-        },
-        entities: []
-      },
-      {
-        id: 'service-b',
-        aggregation: [0, 100],
-        change: {
-          ratio: 100,
-          amount: 100
-        },
-        entities: [
-          {
-            id: 'service-b-sku-a',
-            aggregation: [0, 25],
-            change: {
-              ratio: 25,
-              amount: 25
-            },
-            entities: []
+    entities: {
+      service: [
+        {
+          id: 'service-a',
+          aggregation: [0, 100],
+          change: {
+            ratio: 100,
+            amount: 100
           },
-          {
-            id: null, // Unlabeled cost for service-b
-            aggregation: [0, 75],
-            change: {
-              ratio: 75,
-              amount: 75
-            },
-            entities: []
+          entities: {}
+        },
+        {
+          id: 'service-b',
+          aggregation: [0, 100],
+          change: {
+            ratio: 100,
+            amount: 100
           },
-        ]
-      },
-    ]
+          entities: {
+            SKU: [
+              {
+                id: 'service-b-sku-a',
+                aggregation: [0, 25],
+                change: {
+                  ratio: 25,
+                  amount: 25
+                },
+                entities: {}
+              },
+              {
+                id: null, // Unlabeled cost for service-b
+                aggregation: [0, 75],
+                change: {
+                  ratio: 75,
+                  amount: 75
+                },
+                entities: {}
+              },
+            ],
+            deployment: [
+              {
+                id: 'service-b-env-a',
+                aggregation: [0, 50],
+                change: {
+                  ratio: 50,
+                  amount: 50
+                },
+                entities: {}
+              },
+              {
+                id: 'service-b-env-b',
+                aggregation: [0, 50],
+                change: {
+                  ratio: 50,
+                  amount: 50
+                },
+                entities: {}
+              },
+            ]
+          }
+        },
+      ]
+    }
   }
 */

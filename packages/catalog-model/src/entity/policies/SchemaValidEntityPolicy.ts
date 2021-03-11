@@ -14,30 +14,12 @@
  * limitations under the License.
  */
 
-import * as yup from 'yup';
-import { EntityPolicy } from '../../types';
+import Ajv, { ValidateFunction } from 'ajv';
+import entitySchema from '../../schema/Entity.schema.json';
+import entityMetaSchema from '../../schema/EntityMeta.schema.json';
+import commonSchema from '../../schema/shared/common.schema.json';
 import { Entity } from '../Entity';
-
-const DEFAULT_ENTITY_SCHEMA = yup
-  .object({
-    apiVersion: yup.string().required(),
-    kind: yup.string().required(),
-    metadata: yup
-      .object({
-        uid: yup.string().notRequired().min(1),
-        etag: yup.string().notRequired().min(1),
-        generation: yup.number().notRequired().integer().min(1),
-        name: yup.string().required(),
-        namespace: yup.string().notRequired(),
-        description: yup.string().notRequired(),
-        labels: yup.object<Record<string, string>>().notRequired(),
-        annotations: yup.object<Record<string, string>>().notRequired(),
-        tags: yup.array<string>().notRequired(),
-      })
-      .required(),
-    spec: yup.object({}).notRequired(),
-  })
-  .required();
+import { EntityPolicy } from './types';
 
 /**
  * Ensures that the entity spec is valid according to a schema.
@@ -47,17 +29,28 @@ const DEFAULT_ENTITY_SCHEMA = yup
  * typescript type.
  */
 export class SchemaValidEntityPolicy implements EntityPolicy {
-  private readonly schema: yup.Schema<Entity>;
-
-  constructor(schema: yup.Schema<Entity> = DEFAULT_ENTITY_SCHEMA) {
-    this.schema = schema;
-  }
+  private validate: ValidateFunction<Entity> | undefined;
 
   async enforce(entity: Entity): Promise<Entity> {
-    try {
-      return await this.schema.validate(entity, { strict: true });
-    } catch (e) {
-      throw new Error(`Malformed envelope, ${e}`);
+    if (!this.validate) {
+      const ajv = new Ajv({ allowUnionTypes: true });
+      this.validate = ajv
+        .addSchema([commonSchema, entityMetaSchema], undefined, undefined, true)
+        .compile<Entity>(entitySchema);
     }
+
+    const result = this.validate(entity);
+    if (result === true) {
+      return entity;
+    }
+
+    const [error] = this.validate.errors || [];
+    if (!error) {
+      throw new Error(`Malformed envelope, Unknown error`);
+    }
+
+    throw new Error(
+      `Malformed envelope, ${error.dataPath || '<root>'} ${error.message}`,
+    );
   }
 }

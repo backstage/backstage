@@ -18,7 +18,6 @@ import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import {
   Entity,
   entityHasChanges,
-  EntityRelationSpec,
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
@@ -73,38 +72,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     return items.map(i => i.entity);
   }
 
-  private async addOrUpdateEntity(
-    entity: Entity,
-    tx: Transaction,
-    locationId?: string,
-  ): Promise<Entity> {
-    // Find a matching (by uid, or by compound name, depending on the given
-    // entity) existing entity, to know whether to update or add
-    const existing = entity.metadata.uid
-      ? await this.database.entityByUid(tx, entity.metadata.uid)
-      : await this.database.entityByName(tx, getEntityName(entity));
-
-    // If it's an update, run the algorithm for annotation merging, updating
-    // etag/generation, etc.
-    let response: DbEntityResponse;
-    if (existing) {
-      const updated = generateUpdatedEntity(existing.entity, entity);
-      response = await this.database.updateEntity(
-        tx,
-        { locationId, entity: updated },
-        existing.entity.metadata.etag,
-        existing.entity.metadata.generation,
-      );
-    } else {
-      const added = await this.database.addEntities(tx, [
-        { locationId, entity },
-      ]);
-      response = added[0];
-    }
-
-    return response.entity;
-  }
-
   async removeEntityByUid(uid: string): Promise<void> {
     return await this.database.transaction(async tx => {
       const entityResponse = await this.database.entityByUid(tx, uid);
@@ -135,13 +102,6 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     });
   }
 
-  /**
-   * Writes a number of entities efficiently to storage.
-   *
-   * @param entities Some entities
-   * @param options.locationId The location that they all belong to
-   * @param options.tx A database transaction to execute the queries in
-   */
   async batchAddOrUpdateEntities(
     requests: EntityUpsertRequest[],
     options?: {
@@ -150,120 +110,123 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       outputEntities?: boolean;
     },
   ): Promise<EntityUpsertResponse[]> {
-    const locationId = options?.locationId;
+    // Group the requests by unique kind+namespace combinations. The reason for
+    // this is that the change detection and merging logic requires finding
+    // pre-existing versions of the entities in the database. Those queries are
+    // easier and faster to make if every batch revolves around a single kind-
+    // namespace pair.
+    const requestsByKindAndNamespace = groupBy(requests, ({ entity }) => {
+      const name = getEntityName(entity);
+      return `${name.kind}:${name.namespace}`.toLowerCase();
+    });
 
-    return await this.database.transaction(async tx => {
-      // Group the entities by unique kind+namespace combinations
-      const entitiesByKindAndNamespace = groupBy(requests, ({ entity }) => {
-        const name = getEntityName(entity);
-        return `${name.kind}:${name.namespace}`.toLowerCase();
-      });
+    // Go through the requests in reasonable batch sizes. Sometimes, sources
+    // produce tens of thousands of entities, and those are too large batch
+    // sizes to reasonably send to the database.
+    const batches = Object.values(requestsByKindAndNamespace)
+      .map(request => chunk(request, BATCH_SIZE))
+      .flat();
 
-      const limiter = limiterFactory(BATCH_CONCURRENCY);
-      const tasks: Promise<EntityUpsertResponse[]>[] = [];
-
-      for (const groupRequests of Object.values(entitiesByKindAndNamespace)) {
-        const { kind, namespace } = getEntityName(groupRequests[0].entity);
-
-        // Go through the new entities in reasonable chunk sizes (sometimes,
-        // sources produce tens of thousands of entities, and those are too large
-        // batch sizes to reasonably send to the database)
-        for (const batch of chunk(groupRequests, BATCH_SIZE)) {
-          tasks.push(
-            limiter(async () => {
-              const first = serializeEntityRef(batch[0].entity);
-              const last = serializeEntityRef(batch[batch.length - 1].entity);
-              let modifiedEntityIds: EntityUpsertResponse[] = [];
-
-              this.logger.debug(
-                `Considering batch ${first}-${last} (${batch.length} entries)`,
+    // Bound the number of concurrent batches. We want a bit of concurrency for
+    // performance reasons, but not so much that we starve the connection pool
+    // or start thrashing.
+    const limiter = limiterFactory(BATCH_CONCURRENCY);
+    const tasks = batches.map(batch =>
+      limiter(async () => {
+        // Retry the batch write a few times to deal with contention
+        for (let attempt = 1; ; ++attempt) {
+          try {
+            return this.batchAddOrUpdateEntitiesSingleBatch(batch, options);
+          } catch (e) {
+            if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
+              this.logger.warn(
+                `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
               );
+            } else {
+              throw e;
+            }
+          }
+        }
+      }),
+    );
 
-              // Retry the batch write a few times to deal with contention
-              const context = {
-                kind,
-                namespace,
-                locationId,
-              };
-              for (let attempt = 1; attempt <= BATCH_ATTEMPTS; ++attempt) {
-                try {
-                  const { toAdd, toUpdate, toIgnore } = await this.analyzeBatch(
-                    batch,
-                    context,
-                    tx,
-                  );
-                  if (toAdd.length) {
-                    modifiedEntityIds.push(
-                      ...(await this.batchAdd(toAdd, context, tx)),
-                    );
-                  }
-                  if (toUpdate.length) {
-                    modifiedEntityIds.push(
-                      ...(await this.batchUpdate(toUpdate, context, tx)),
-                    );
-                  }
-                  // TODO(Rugvip): We currently always update relations, but we
-                  // likely want to figure out a way to avoid that
-                  for (const { entity, relations } of toIgnore) {
-                    const entityId = entity.metadata.uid;
-                    if (entityId) {
-                      await this.setRelations(entityId, relations, tx);
-                      modifiedEntityIds.push({ entityId });
-                    }
-                  }
+    const responses = await Promise.all(tasks);
+    return responses.flat();
+  }
 
-                  break;
-                } catch (e) {
-                  if (e instanceof ConflictError && attempt < BATCH_ATTEMPTS) {
-                    this.logger.warn(
-                      `Failed to write batch at attempt ${attempt}/${BATCH_ATTEMPTS}, ${e}`,
-                    );
-                  } else {
-                    throw e;
-                  }
-                }
-              }
+  // Defines the actual logic of running a single batch. All of these share a
+  // common kind and namespace.
+  private async batchAddOrUpdateEntitiesSingleBatch(
+    batch: EntityUpsertRequest[],
+    options?: {
+      locationId?: string;
+      dryRun?: boolean;
+      outputEntities?: boolean;
+    },
+  ) {
+    const { kind, namespace } = getEntityName(batch[0].entity);
+    const context = {
+      kind,
+      namespace,
+      locationId: options?.locationId,
+    };
 
-              if (options?.outputEntities) {
-                const writtenEntities = await this.database.entities(
-                  tx,
-                  EntityFilters.ofMatchers({
-                    'metadata.uid': modifiedEntityIds.map(e => e.entityId),
-                  }),
-                );
+    this.logger.debug(
+      `Considering batch ${serializeEntityRef(
+        batch[0].entity,
+      )}-${serializeEntityRef(batch[batch.length - 1].entity)} (${
+        batch.length
+      } entries)`,
+    );
 
-                modifiedEntityIds = writtenEntities.map(e => ({
-                  entityId: e.entity.metadata.uid!,
-                  entity: e.entity,
-                }));
-              }
+    return this.database.transaction(async tx => {
+      const { toAdd, toUpdate, toIgnore } = await this.analyzeBatch(
+        batch,
+        context,
+        tx,
+      );
 
-              return modifiedEntityIds;
-            }),
-          );
+      let responses = new Array<EntityUpsertResponse>();
+      if (toAdd.length) {
+        const items = await this.batchAdd(toAdd, context, tx);
+        responses.push(...items);
+      }
+      if (toUpdate.length) {
+        const items = await this.batchUpdate(toUpdate, context, tx);
+        responses.push(...items);
+      }
+      for (const { entity, relations } of toIgnore) {
+        // TODO(Rugvip): We currently always update relations, but we
+        // likely want to figure out a way to avoid that
+        const entityId = entity.metadata.uid;
+        if (entityId) {
+          await this.database.setRelations(tx, entityId, relations);
+          responses.push({ entityId });
         }
       }
 
-      const entityUpserts = (await Promise.all(tasks)).flat();
+      if (options?.outputEntities && responses.length > 0) {
+        const writtenEntities = await this.database.entities(
+          tx,
+          EntityFilters.ofMatchers({
+            'metadata.uid': responses.map(e => e.entityId),
+          }),
+        );
+        responses = writtenEntities.map(e => ({
+          entityId: e.entity.metadata.uid!,
+          entity: e.entity,
+        }));
+      }
 
+      // If this is only a dry run, cancel the database transaction even if it
+      // was successful.
       if (options?.dryRun) {
-        // If this is only a dry run, cancel the database transaction even if it was successful.
         await tx.rollback();
-
         this.logger.debug(`Performed successful dry run of adding entities`);
       }
 
-      return entityUpserts;
+      return responses;
     });
-  }
-
-  // Set the relations originating from an entity using the DB layer
-  private async setRelations(
-    originatingEntityId: string,
-    relations: EntityRelationSpec[],
-    tx: Transaction,
-  ): Promise<void> {
-    await this.database.setRelations(tx, originatingEntityId, relations);
   }
 
   // Given a batch of entities that were just read from a location, take them
@@ -281,6 +244,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   }> {
     const markTimestamp = process.hrtime();
 
+    // Here we make use of the fact that all of the entities share kind and
+    // namespace within a batch
     const names = requests.map(({ entity }) => entity.metadata.name);
     const oldEntities = await this.database.entities(
       tx,
@@ -320,7 +285,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         // instead and call a dedicated batch update database method
         toUpdate.push(request);
       } else {
-        toIgnore.push(request);
+        // Use the existing entity to ensure that we're able to read it back by uid if needed
+        toIgnore.push({ ...request, entity: oldEntity });
       }
     }
 
@@ -344,22 +310,22 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
     const res = await this.database.addEntities(
       tx,
-      requests.map(({ entity }) => ({ locationId, entity })),
+      requests.map(({ entity, relations }) => ({
+        locationId,
+        entity,
+        relations,
+      })),
     );
 
-    const entityIds = res.map(({ entity }) => ({
+    const responses = res.map(({ entity }) => ({
       entityId: entity.metadata.uid!,
     }));
-
-    for (const [index, { entityId }] of entityIds.entries()) {
-      await this.setRelations(entityId, requests[index].relations, tx);
-    }
 
     this.logger.debug(
       `Added ${requests.length} entities in ${durationText(markTimestamp)}`,
     );
 
-    return entityIds;
+    return responses;
   }
 
   // Efficiently updates the given entities into storage, under the assumption
@@ -370,19 +336,52 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     tx: Transaction,
   ): Promise<EntityUpsertResponse[]> {
     const markTimestamp = process.hrtime();
-    const responseIds: EntityUpsertResponse[] = [];
+    const responses: EntityUpsertResponse[] = [];
+
     // TODO(freben): Still not batched
-    for (const entity of requests) {
-      const res = await this.addOrUpdateEntity(entity.entity, tx, locationId);
+    for (const request of requests) {
+      const res = await this.addOrUpdateEntity(tx, request, locationId);
       const entityId = res.metadata.uid!;
-      responseIds.push({ entityId });
-      await this.setRelations(entityId, entity.relations, tx);
+      responses.push({ entityId });
     }
 
     this.logger.debug(
       `Updated ${requests.length} entities in ${durationText(markTimestamp)}`,
     );
 
-    return responseIds;
+    return responses;
+  }
+
+  // TODO(freben): Incorporate this into batchUpdate which is the only caller
+  private async addOrUpdateEntity(
+    tx: Transaction,
+    { entity, relations }: EntityUpsertRequest,
+    locationId?: string,
+  ): Promise<Entity> {
+    // Find a matching (by uid, or by compound name, depending on the given
+    // entity) existing entity, to know whether to update or add
+    const existing = entity.metadata.uid
+      ? await this.database.entityByUid(tx, entity.metadata.uid)
+      : await this.database.entityByName(tx, getEntityName(entity));
+
+    // If it's an update, run the algorithm for annotation merging, updating
+    // etag/generation, etc.
+    let response: DbEntityResponse;
+    if (existing) {
+      const updated = generateUpdatedEntity(existing.entity, entity);
+      response = await this.database.updateEntity(
+        tx,
+        { locationId, entity: updated, relations },
+        existing.entity.metadata.etag,
+        existing.entity.metadata.generation,
+      );
+    } else {
+      const added = await this.database.addEntities(tx, [
+        { locationId, entity, relations },
+      ]);
+      response = added[0];
+    }
+
+    return response.entity;
   }
 }

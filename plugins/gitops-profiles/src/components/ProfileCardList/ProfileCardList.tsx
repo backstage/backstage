@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Grid } from '@material-ui/core';
 import ProfileCard from '../ProfileCard';
 
@@ -26,7 +26,7 @@ interface Props {
   }[];
 }
 
-const ProfileCardList: FC<Props> = props => {
+const ProfileCardList = (props: Props) => {
   const [selections, setSelections] = useState<Set<number>>(new Set<number>());
   const [profiles, setProfiles] = useState<Set<string>>(new Set<string>());
 

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { render } from '@testing-library/react';
 import SentryIssuesTable from './SentryIssuesTable';
-import { SentryIssue } from '../../data/sentry-issue';
-import mockIssue from '../../data/sentry-issue-mock.json';
+import { SentryIssue } from '../../api';
+import mockIssue from '../../api/mock/sentry-issue-mock.json';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 

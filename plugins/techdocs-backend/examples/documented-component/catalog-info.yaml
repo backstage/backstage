@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: documented-component
+  description: A Service with TechDocs documentation
+  annotations:
+    backstage.io/techdocs-ref: 'url:https://github.com/backstage/backstage/tree/master/plugins/techdocs-backend/examples/documented-component'
+spec:
+  type: service
+  lifecycle: experimental
+  owner: documented@example.com

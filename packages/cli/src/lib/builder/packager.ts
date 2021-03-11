@@ -83,6 +83,23 @@ async function build(config: RollupOptions) {
 }
 
 export const buildPackage = async (options: BuildOptions) => {
+  try {
+    const { resolutions } = await fs.readJson(
+      paths.resolveTargetRoot('package.json'),
+    );
+    if (resolutions?.esbuild) {
+      console.warn(
+        chalk.red(
+          'Your root package.json contains a "resolutions" entry for "esbuild". This was ' +
+            'included in older @backstage/create-app templates in order to work around build ' +
+            'issues that have since been fixed. Please remove the entry and run `yarn install`',
+        ),
+      );
+    }
+  } catch {
+    /* Errors ignored, this is just a warning */
+  }
+
   const configs = await makeConfigs(options);
   await fs.remove(paths.resolveTarget('dist'));
   await Promise.all(configs.map(build));

@@ -16,6 +16,7 @@
 
 import {
   SessionManager,
+  MutableSessionManager,
   SessionScopesFunc,
   SessionShouldRefreshFunc,
   GetSessionOptions,
@@ -24,7 +25,7 @@ import { SessionScopeHelper } from './common';
 
 type Options<T> = {
   /** The connector used for acting on the auth session */
-  manager: SessionManager<T>;
+  manager: MutableSessionManager<T>;
   /** Storage key to use to store sessions */
   storageKey: string;
   /** Used to get the scope of the session */
@@ -40,7 +41,7 @@ type Options<T> = {
  * Session is serialized to JSON with special support for following types: Set.
  */
 export class AuthSessionStore<T> implements SessionManager<T> {
-  private readonly manager: SessionManager<T>;
+  private readonly manager: MutableSessionManager<T>;
   private readonly storageKey: string;
   private readonly sessionShouldRefreshFunc: SessionShouldRefreshFunc<T>;
   private readonly helper: SessionScopeHelper<T>;
@@ -70,6 +71,7 @@ export class AuthSessionStore<T> implements SessionManager<T> {
       const shouldRefresh = this.sessionShouldRefreshFunc(session!);
 
       if (!shouldRefresh) {
+        this.manager.setSession(session!);
         return session!;
       }
     }

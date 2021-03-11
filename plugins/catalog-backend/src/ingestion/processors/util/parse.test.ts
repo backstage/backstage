@@ -115,6 +115,41 @@ describe('parseEntityYaml', () => {
     ]);
   });
 
+  it('should handle empty yaml documents', () => {
+    // This happens if the user accidentially adds a "---"
+    // at the end of a file
+    const results = Array.from(
+      parseEntityYaml(
+        Buffer.from(
+          `
+      apiVersion: backstage.io/v1alpha1
+      kind: Component
+      metadata:
+        name: web
+      spec:
+        type: website
+---
+    `,
+          'utf8',
+        ),
+        testLoc,
+      ),
+    );
+
+    expect(results).toEqual([
+      result.entity(testLoc, {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'web',
+        },
+        spec: {
+          type: 'website',
+        },
+      }),
+    ]);
+  });
+
   it('should emit parsing errors', () => {
     const results = Array.from(
       parseEntityYaml(Buffer.from('`', 'utf8'), testLoc),

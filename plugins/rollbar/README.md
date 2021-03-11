@@ -19,17 +19,7 @@ yarn add @backstage/plugin-rollbar
 export { plugin as Rollbar } from '@backstage/plugin-rollbar';
 ```
 
-4. Add plugin API to your Backstage instance:
-
-```ts
-// packages/app/src/api.ts
-import { RollbarClient, rollbarApiRef } from '@backstage/plugin-rollbar';
-
-// ...
-builder.add(rollbarApiRef, new RollbarClient({ discoveryApi }));
-```
-
-5. Add to the app `EntityPage` component:
+4. Add to the app `EntityPage` component:
 
 ```ts
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -48,17 +38,18 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
 );
 ```
 
-6. Setup the `app.config.yaml` and account token environment variable
+5. Setup the `app.config.yaml` and account token environment variable
 
 ```yaml
 # app.config.yaml
 rollbar:
   organization: organization-name
+  # used by rollbar-backend
   accountToken:
     $env: ROLLBAR_ACCOUNT_TOKEN
 ```
 
-7. Annotate entities with the rollbar project slug
+6. Annotate entities with the rollbar project slug
 
 ```yaml
 # pump-station-catalog-component.yaml
@@ -70,7 +61,7 @@ metadata:
     rollbar.com/project-slug: project-name
 ```
 
-8. Run app with `yarn start` and navigate to `/rollbar` or a catalog entity
+7. Run app with `yarn start` and navigate to `/rollbar` or a catalog entity
 
 ## Features
 

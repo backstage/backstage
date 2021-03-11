@@ -14,39 +14,35 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
-import { Content, Header, HeaderTabs, Page } from '@backstage/core';
-import { General } from './General';
+import { Header, Page, TabbedLayout } from '@backstage/core';
+import React from 'react';
 import { AuthProviders } from './AuthProviders';
 import { FeatureFlags } from './FeatureFlags';
+import { General } from './General';
 
 type Props = {
   providerSettings?: JSX.Element;
 };
 
 export const SettingsPage = ({ providerSettings }: Props) => {
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const onTabChange = (index: number) => {
-    setActiveTab(index);
-  };
-
-  const tabs = [
-    { id: 'general', label: 'General' },
-    { id: 'auth-providers', label: 'Authentication Providers' },
-    { id: 'feature-flags', label: 'Feature Flags' },
-  ];
-
-  const content = [
-    <General />,
-    <AuthProviders providerSettings={providerSettings} />,
-    <FeatureFlags />,
-  ];
-
   return (
     <Page themeId="home">
       <Header title="Settings" />
-      <HeaderTabs tabs={tabs} onChange={onTabChange} />
-      <Content>{content[activeTab]}</Content>
+
+      <TabbedLayout>
+        <TabbedLayout.Route path="general" title="General">
+          <General />
+        </TabbedLayout.Route>
+        <TabbedLayout.Route
+          path="auth-providers"
+          title="Authentication Providers"
+        >
+          <AuthProviders providerSettings={providerSettings} />
+        </TabbedLayout.Route>
+        <TabbedLayout.Route path="feature-flags" title="Feature Flags">
+          <FeatureFlags />
+        </TabbedLayout.Route>
+      </TabbedLayout>
     </Page>
   );
 };

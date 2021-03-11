@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [14.x]
 
     env:
       CI: true
@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: verify doc links
+        run: node scripts/verify-links.js
+
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: yarn install
@@ -39,4 +42,8 @@ jobs:
 
       - name: build microsite
         run: yarn build
+        working-directory: microsite
+
+      - name: verify sidebars
+        run: yarn verify:sidebars
         working-directory: microsite

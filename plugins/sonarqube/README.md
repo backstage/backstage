@@ -42,6 +42,8 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 
 4. Add the proxy config:
 
+   Provide a method for your Backstage backend to get to your SonarQube API end point.
+
 **SonarCloud**
 
 ```yaml

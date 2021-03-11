@@ -14,87 +14,146 @@
  * limitations under the License.
  */
 
-import React, { ReactElement, useEffect, useState } from 'react';
-import { Grid, TabProps } from '@material-ui/core';
-import { Config } from '@backstage/config';
+import React, { useEffect, useState } from 'react';
 import {
-  CardTab,
-  configApiRef,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Divider,
+  Grid,
+  Typography,
+} from '@material-ui/core';
+import {
   Content,
   Page,
   Progress,
-  TabbedCard,
+  StatusError,
+  StatusOK,
   useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { kubernetesApiRef } from '../../api/types';
 import {
-  AuthRequestBody,
   ClusterObjects,
-  FetchResponse,
-  ObjectsByServiceIdResponse,
+  KubernetesRequestBody,
+  ObjectsByEntityResponse,
 } from '@backstage/plugin-kubernetes-backend';
 import { kubernetesAuthProvidersApiRef } from '../../kubernetes-auth-provider/types';
-import { DeploymentTables } from '../DeploymentTables';
-import { DeploymentTriple } from '../../types/types';
-import {
-  ExtensionsV1beta1Ingress,
-  V1ConfigMap,
-  V1HorizontalPodAutoscaler,
-  V1Service,
-} from '@kubernetes/client-node';
-import { Services } from '../Services';
-import { ConfigMaps } from '../ConfigMaps';
-import { Ingresses } from '../Ingresses';
-import { HorizontalPodAutoscalers } from '../HorizontalPodAutoscalers';
 import { ErrorPanel } from './ErrorPanel';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { DeploymentsAccordions } from '../DeploymentsAccordions';
+import { ErrorReporting } from '../ErrorReporting';
+import { groupResponses } from '../../utils/response';
+import { DetectedError, detectErrors } from '../../error-detection';
+import { IngressesAccordions } from '../IngressesAccordions';
+import { ServicesAccordions } from '../ServicesAccordions';
 
-interface GroupedResponses extends DeploymentTriple {
-  services: V1Service[];
-  configMaps: V1ConfigMap[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
-  ingresses: ExtensionsV1beta1Ingress[];
-}
+type ClusterSummaryProps = {
+  clusterName: string;
+  totalNumberOfPods: number;
+  numberOfPodsWithErrors: number;
+  children?: React.ReactNode;
+};
 
-// TODO this could probably be a lodash groupBy
-const groupResponses = (fetchResponse: FetchResponse[]) => {
-  return fetchResponse.reduce(
-    (prev, next) => {
-      switch (next.type) {
-        case 'deployments':
-          prev.deployments.push(...next.resources);
-          break;
-        case 'pods':
-          prev.pods.push(...next.resources);
-          break;
-        case 'replicasets':
-          prev.replicaSets.push(...next.resources);
-          break;
-        case 'services':
-          prev.services.push(...next.resources);
-          break;
-        case 'configmaps':
-          prev.configMaps.push(...next.resources);
-          break;
-        case 'horizontalpodautoscalers':
-          prev.horizontalPodAutoscalers.push(...next.resources);
-          break;
-        case 'ingresses':
-          prev.ingresses.push(...next.resources);
-          break;
-        default:
-      }
-      return prev;
-    },
-    {
-      pods: [],
-      replicaSets: [],
-      deployments: [],
-      services: [],
-      configMaps: [],
-      horizontalPodAutoscalers: [],
-      ingresses: [],
-    } as GroupedResponses,
+const ClusterSummary = ({
+  clusterName,
+  totalNumberOfPods,
+  numberOfPodsWithErrors,
+}: ClusterSummaryProps) => {
+  return (
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+    >
+      <Grid
+        xs={2}
+        item
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+        spacing={0}
+      >
+        <Grid item xs>
+          <Typography variant="h3">{clusterName}</Typography>
+          <Typography color="textSecondary" variant="body1">
+            Cluster
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item xs={1}>
+        <Divider style={{ height: '4em' }} orientation="vertical" />
+      </Grid>
+      <Grid
+        item
+        container
+        xs={3}
+        direction="column"
+        justify="flex-start"
+        alignItems="flex-start"
+      >
+        <Grid item>
+          <StatusOK>{totalNumberOfPods} pods</StatusOK>
+        </Grid>
+        <Grid item>
+          {numberOfPodsWithErrors > 0 ? (
+            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+          ) : (
+            <StatusOK>No pods with errors</StatusOK>
+          )}
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+type ClusterProps = {
+  clusterObjects: ClusterObjects;
+  detectedErrors?: DetectedError[];
+  children?: React.ReactNode;
+};
+
+const Cluster = ({ clusterObjects, detectedErrors }: ClusterProps) => {
+  const groupedResponses = groupResponses(clusterObjects.resources);
+
+  const podsWithErrors = new Set<string>(
+    detectedErrors
+      ?.filter(de => de.kind === 'Pod')
+      .map(de => de.names)
+      .flat() ?? [],
+  );
+
+  return (
+    <>
+      <Accordion TransitionProps={{ unmountOnExit: true }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <ClusterSummary
+            clusterName={clusterObjects.cluster.name}
+            totalNumberOfPods={groupedResponses.pods.length}
+            numberOfPodsWithErrors={podsWithErrors.size}
+          />
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container direction="column">
+            <Grid item>
+              <DeploymentsAccordions
+                deploymentResources={groupedResponses}
+                clusterPodNamesWithErrors={podsWithErrors}
+              />
+            </Grid>
+
+            <Grid item>
+              <IngressesAccordions deploymentResources={groupedResponses} />
+            </Grid>
+
+            <Grid item>
+              <ServicesAccordions deploymentResources={groupedResponses} />
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 };
 
@@ -104,23 +163,22 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   const kubernetesApi = useApi(kubernetesApiRef);
 
   const [kubernetesObjects, setKubernetesObjects] = useState<
-    ObjectsByServiceIdResponse | undefined
+    ObjectsByEntityResponse | undefined
   >(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
-
-  const configApi = useApi(configApiRef);
-  const clusters: Config[] = configApi.getConfigArray('kubernetes.clusters');
-  const allAuthProviders: string[] = clusters.map(c =>
-    c.getString('authProvider'),
-  );
-  const authProviders: string[] = [...new Set(allAuthProviders)];
 
   const kubernetesAuthProvidersApi = useApi(kubernetesAuthProvidersApiRef);
 
   useEffect(() => {
     (async () => {
+      const clusters = await kubernetesApi.getClusters();
+      const authProviders: string[] = [
+        ...new Set(clusters.map(c => c.authProvider)),
+      ];
       // For each auth type, invoke decorateRequestBodyForAuth on corresponding KubernetesAuthProvider
-      let requestBody: AuthRequestBody = {};
+      let requestBody: KubernetesRequestBody = {
+        entity,
+      };
       for (const authProviderStr of authProviders) {
         // Multiple asyncs done sequentially instead of all at once to prevent same requestBody from being modified simultaneously
         requestBody = await kubernetesAuthProvidersApi.decorateRequestBodyForAuth(
@@ -131,7 +189,7 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
 
       // TODO: Add validation on contents/format of requestBody
       kubernetesApi
-        .getObjectsByServiceId(entity.metadata.name, requestBody)
+        .getObjectsByEntity(requestBody)
         .then(result => {
           setKubernetesObjects(result);
         })
@@ -146,104 +204,64 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
   const clustersWithErrors =
     kubernetesObjects?.items.filter(r => r.errors.length > 0) ?? [];
 
+  const detectedErrors =
+    kubernetesObjects !== undefined
+      ? detectErrors(kubernetesObjects)
+      : new Map<string, DetectedError[]>();
+
   return (
     <Page themeId="tool">
       <Content>
-        <Grid container spacing={3} direction="column">
-          {kubernetesObjects === undefined && error === undefined && (
-            <Progress />
-          )}
+        {kubernetesObjects === undefined && error === undefined && <Progress />}
 
-          {/* errors retrieved from the kubernetes clusters */}
-          {clustersWithErrors.length > 0 && (
-            <ErrorPanel
-              entityName={entity.metadata.name}
-              clustersWithErrors={clustersWithErrors}
-            />
-          )}
-
-          {/* other errors */}
-          {error !== undefined && (
-            <ErrorPanel
-              entityName={entity.metadata.name}
-              errorMessage={error}
-            />
-          )}
-
-          {kubernetesObjects?.items.map((item, i) => (
-            <Grid item key={i}>
-              <Cluster clusterObjects={item} />
+        {/* errors retrieved from the kubernetes clusters */}
+        {clustersWithErrors.length > 0 && (
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <ErrorPanel
+                entityName={entity.metadata.name}
+                clustersWithErrors={clustersWithErrors}
+              />
             </Grid>
-          ))}
-        </Grid>
+          </Grid>
+        )}
+
+        {/* other errors */}
+        {error !== undefined && (
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <ErrorPanel
+                entityName={entity.metadata.name}
+                errorMessage={error}
+              />
+            </Grid>
+          </Grid>
+        )}
+
+        {kubernetesObjects && (
+          <Grid container spacing={3} direction="column">
+            <Grid item>
+              <ErrorReporting detectedErrors={detectedErrors} />
+            </Grid>
+            <Grid item>
+              <Divider />
+            </Grid>
+            <Grid item>
+              <Typography variant="h3">Your Clusters</Typography>
+            </Grid>
+            <Grid item container>
+              {kubernetesObjects?.items.map((item, i) => (
+                <Grid item key={i} xs={12}>
+                  <Cluster
+                    clusterObjects={item}
+                    detectedErrors={detectedErrors.get(item.cluster.name)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        )}
       </Content>
     </Page>
-  );
-};
-
-type ClusterProps = {
-  clusterObjects: ClusterObjects;
-  children?: React.ReactNode;
-};
-
-const Cluster = ({ clusterObjects }: ClusterProps) => {
-  const [selectedTab, setSelectedTab] = useState<string | number>('one');
-
-  const handleChange = (_ev: any, newSelectedTab: string | number) =>
-    setSelectedTab(newSelectedTab);
-
-  const groupedResponses = groupResponses(clusterObjects.resources);
-
-  const configMaps = groupedResponses.configMaps;
-  const hpas = groupedResponses.horizontalPodAutoscalers;
-  const ingresses = groupedResponses.ingresses;
-
-  const tabs: ReactElement<TabProps>[] = [
-    <CardTab key={1} value="one" label="Deployments">
-      <DeploymentTables
-        deploymentTriple={{
-          deployments: groupedResponses.deployments,
-          replicaSets: groupedResponses.replicaSets,
-          pods: groupedResponses.pods,
-        }}
-      />
-    </CardTab>,
-    <CardTab key={2} value="two" label="Services">
-      <Services services={groupedResponses.services} />
-    </CardTab>,
-  ];
-
-  if (configMaps.length > 0) {
-    tabs.push(
-      <CardTab key={3} value="three" label="Config Maps">
-        <ConfigMaps configMaps={configMaps} />
-      </CardTab>,
-    );
-  }
-  if (hpas.length > 0) {
-    tabs.push(
-      <CardTab key={4} value="four" label="Horizontal Pod Autoscalers">
-        <HorizontalPodAutoscalers hpas={hpas} />
-      </CardTab>,
-    );
-  }
-  if (ingresses.length > 0) {
-    tabs.push(
-      <CardTab key={5} value="five" label="Ingresses">
-        <Ingresses ingresses={ingresses} />
-      </CardTab>,
-    );
-  }
-
-  return (
-    <>
-      <TabbedCard
-        value={selectedTab}
-        onChange={handleChange}
-        title={clusterObjects.cluster.name}
-      >
-        {tabs}
-      </TabbedCard>
-    </>
   );
 };

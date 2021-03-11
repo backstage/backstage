@@ -15,106 +15,32 @@
  */
 
 import {
-  GitHubIntegrationConfig,
-  readGitHubIntegrationConfigs,
+  getGitHubFileFetchUrl,
+  GithubCredentialsProvider,
+  GitHubIntegration,
+  ScmIntegrations,
 } from '@backstage/integration';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch from 'cross-fetch';
-import parseGitUri from 'git-url-parse';
+import parseGitUrl from 'git-url-parse';
+import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import { InputError, NotFoundError } from '../errors';
+import { NotFoundError, NotModifiedError } from '../errors';
 import { ReadTreeResponseFactory } from './tree';
 import {
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
+  SearchOptions,
+  SearchResponse,
+  SearchResponseFile,
   UrlReader,
 } from './types';
 
-export function getApiRequestOptions(
-  provider: GitHubIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {
-    Accept: 'application/vnd.github.v3.raw',
-  };
-
-  if (provider.token) {
-    headers.Authorization = `token ${provider.token}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-export function getRawRequestOptions(
-  provider: GitHubIntegrationConfig,
-): RequestInit {
-  const headers: HeadersInit = {};
-
-  if (provider.token) {
-    headers.Authorization = `token ${provider.token}`;
-  }
-
-  return {
-    headers,
-  };
-}
-
-// Converts for example
-// from: https://github.com/a/b/blob/branchname/path/to/c.yaml
-// to:   https://api.github.com/repos/a/b/contents/path/to/c.yaml?ref=branchname
-export function getApiUrl(
-  target: string,
-  provider: GitHubIntegrationConfig,
-): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw')
-    ) {
-      throw new Error('Invalid GitHub URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.apiBaseUrl}/repos/${owner}/${name}/contents/${pathWithoutSlash}?ref=${ref}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
-
-// Converts for example
-// from: https://github.com/a/b/blob/branchname/c.yaml
-// to:   https://raw.githubusercontent.com/a/b/branchname/c.yaml
-export function getRawUrl(
-  target: string,
-  provider: GitHubIntegrationConfig,
-): URL {
-  try {
-    const { owner, name, ref, filepathtype, filepath } = parseGitUri(target);
-
-    if (
-      !owner ||
-      !name ||
-      !ref ||
-      (filepathtype !== 'blob' && filepathtype !== 'raw')
-    ) {
-      throw new Error('Invalid GitHub URL or file path');
-    }
-
-    const pathWithoutSlash = filepath.replace(/^\//, '');
-    return new URL(
-      `${provider.rawBaseUrl}/${owner}/${name}/${ref}/${pathWithoutSlash}`,
-    );
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${target}, ${e}`);
-  }
-}
+export type GhRepoResponse = RestEndpointMethodTypes['repos']['get']['response']['data'];
+export type GhBranchResponse = RestEndpointMethodTypes['repos']['getBranch']['response']['data'];
+export type GhTreeResponse = RestEndpointMethodTypes['git']['getTree']['response']['data'];
+export type GhBlobResponse = RestEndpointMethodTypes['git']['getBlob']['response']['data'];
 
 /**
  * A processor that adds the ability to read files from GitHub v3 APIs, such as
@@ -122,40 +48,47 @@ export function getRawUrl(
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
-    const configs = readGitHubIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.github') ?? [],
-    );
-    return configs.map(provider => {
-      const reader = new GithubUrlReader(provider, { treeResponseFactory });
-      const predicate = (url: URL) => url.host === provider.host;
+    const integrations = ScmIntegrations.fromConfig(config);
+    return integrations.github.list().map(integration => {
+      const credentialsProvider = GithubCredentialsProvider.create(
+        integration.config,
+      );
+      const reader = new GithubUrlReader(integration, {
+        treeResponseFactory,
+        credentialsProvider,
+      });
+      const predicate = (url: URL) => url.host === integration.config.host;
       return { reader, predicate };
     });
   };
 
   constructor(
-    private readonly config: GitHubIntegrationConfig,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly integration: GitHubIntegration,
+    private readonly deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+      credentialsProvider: GithubCredentialsProvider;
+    },
   ) {
-    if (!config.apiBaseUrl && !config.rawBaseUrl) {
+    if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
       throw new Error(
-        `GitHub integration for '${config.host}' must configure an explicit apiBaseUrl and rawBaseUrl`,
+        `GitHub integration '${integration.title}' must configure an explicit apiBaseUrl or rawBaseUrl`,
       );
     }
   }
 
   async read(url: string): Promise<Buffer> {
-    const useApi =
-      this.config.apiBaseUrl && (this.config.token || !this.config.rawBaseUrl);
-    const ghUrl = useApi
-      ? getApiUrl(url, this.config)
-      : getRawUrl(url, this.config);
-    const options = useApi
-      ? getApiRequestOptions(this.config)
-      : getRawRequestOptions(this.config);
-
+    const ghUrl = getGitHubFileFetchUrl(url, this.integration.config);
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
     let response: Response;
     try {
-      response = await fetch(ghUrl.toString(), options);
+      response = await fetch(ghUrl.toString(), {
+        headers: {
+          ...headers,
+          Accept: 'application/vnd.github.v3.raw',
+        },
+      });
     } catch (e) {
       throw new Error(`Unable to read ${url}, ${e}`);
     }
@@ -175,49 +108,190 @@ export class GithubUrlReader implements UrlReader {
     url: string,
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    const {
-      name: repoName,
-      ref,
-      protocol,
-      source,
-      full_name,
-      filepath,
-    } = parseGitUri(url);
+    const repoDetails = await this.getRepoDetails(url);
+    const commitSha = repoDetails.branch.commit.sha!;
 
-    if (!ref) {
-      // TODO(Rugvip): We should add support for defaulting to the default branch
-      throw new InputError(
-        'GitHub URL must contain branch to be able to fetch tree',
-      );
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
     }
 
-    // TODO(Rugvip): use API to fetch URL instead
-    const response = await fetch(
-      new URL(
-        `${protocol}://${source}/${full_name}/archive/${ref}.tar.gz`,
-      ).toString(),
+    const { filepath } = parseGitUrl(url);
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    return this.doReadTree(
+      repoDetails.repo.archive_url,
+      commitSha,
+      filepath,
+      { headers },
+      options,
     );
+  }
+
+  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+    const repoDetails = await this.getRepoDetails(url);
+    const commitSha = repoDetails.branch.commit.sha!;
+
+    if (options?.etag && options.etag === commitSha) {
+      throw new NotModifiedError();
+    }
+
+    const { filepath } = parseGitUrl(url);
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    const files = await this.doSearch(
+      url,
+      repoDetails.repo.trees_url,
+      repoDetails.repo.archive_url,
+      commitSha,
+      filepath,
+      { headers },
+    );
+
+    return { files, etag: commitSha };
+  }
+
+  toString() {
+    const { host, token } = this.integration.config;
+    return `github{host=${host},authed=${Boolean(token)}}`;
+  }
+
+  private async doReadTree(
+    archiveUrl: string,
+    sha: string,
+    subpath: string,
+    init: RequestInit,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    // archive_url looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
+    const archive = await this.fetchResponse(
+      archiveUrl
+        .replace('{archive_format}', 'tarball')
+        .replace('{/ref}', `/${sha}`),
+      init,
+    );
+
+    return await this.deps.treeResponseFactory.fromTarArchive({
+      // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
+      //               to stick to using that in exclusively backend code.
+      stream: (archive.body as unknown) as Readable,
+      subpath,
+      etag: sha,
+      filter: options?.filter,
+    });
+  }
+
+  private async doSearch(
+    url: string,
+    treesUrl: string,
+    archiveUrl: string,
+    sha: string,
+    query: string,
+    init: RequestInit,
+  ): Promise<SearchResponseFile[]> {
+    function pathToUrl(path: string): string {
+      // TODO(freben): Use the integration package facility for this instead
+      // pathname starts as /backstage/backstage/blob/master/<path>
+      const updated = new URL(url);
+      const base = updated.pathname.split('/').slice(1, 5).join('/');
+      updated.pathname = `${base}/${path}`;
+      return updated.toString();
+    }
+
+    const matcher = new Minimatch(query.replace(/^\/+/, ''));
+
+    // trees_url looks like "https://api.github.com/repos/octocat/Hello-World/git/trees{/sha}"
+    const recursiveTree: GhTreeResponse = await this.fetchJson(
+      treesUrl.replace('{/sha}', `/${sha}?recursive=true`),
+      init,
+    );
+
+    // The simple case is that we got the entire tree in a single operation.
+    if (!recursiveTree.truncated) {
+      const matching = recursiveTree.tree.filter(
+        item =>
+          item.type === 'blob' &&
+          item.path &&
+          item.url &&
+          matcher.match(item.path),
+      );
+
+      return matching.map(item => ({
+        url: pathToUrl(item.path!),
+        content: async () => {
+          const blob: GhBlobResponse = await this.fetchJson(item.url!, init);
+          return Buffer.from(blob.content, 'base64');
+        },
+      }));
+    }
+
+    // For larger repos, we leverage readTree and filter through that instead
+    const tree = await this.doReadTree(archiveUrl, sha, '', init, {
+      filter: path => matcher.match(path),
+    });
+    const files = await tree.files();
+
+    return files.map(file => ({
+      url: pathToUrl(file.path),
+      content: file.content,
+    }));
+  }
+
+  private async getRepoDetails(
+    url: string,
+  ): Promise<{
+    repo: GhRepoResponse;
+    branch: GhBranchResponse;
+  }> {
+    const parsed = parseGitUrl(url);
+    const { ref, full_name } = parsed;
+
+    // Caveat: The ref will totally be incorrect if the branch name includes a
+    // slash. Thus, some operations can not work on URLs containing branch
+    // names that have a slash in them.
+
+    const { headers } = await this.deps.credentialsProvider.getCredentials({
+      url,
+    });
+
+    const repo: GhRepoResponse = await this.fetchJson(
+      `${this.integration.config.apiBaseUrl}/repos/${full_name}`,
+      { headers },
+    );
+
+    // branches_url looks like "https://api.github.com/repos/owner/repo/branches{/branch}"
+    const branch: GhBranchResponse = await this.fetchJson(
+      repo.branches_url.replace('{/branch}', `/${ref || repo.default_branch}`),
+      { headers },
+    );
+
+    return { repo, branch };
+  }
+
+  private async fetchResponse(
+    url: string | URL,
+    init: RequestInit,
+  ): Promise<Response> {
+    const urlAsString = url.toString();
+
+    const response = await fetch(urlAsString, init);
+
     if (!response.ok) {
-      const message = `Failed to read tree from ${url}, ${response.status} ${response.statusText}`;
+      const message = `Request failed for ${urlAsString}, ${response.status} ${response.statusText}`;
       if (response.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    const path = `${repoName}-${ref}/${filepath}`;
-
-    return this.deps.treeResponseFactory.fromArchive({
-      // TODO(Rugvip): Underlying implementation of fetch will be node-fetch, we probably want
-      //               to stick to using that in exclusively backend code.
-      stream: (response.body as unknown) as Readable,
-      path,
-      filter: options?.filter,
-    });
+    return response;
   }
 
-  toString() {
-    const { host, token } = this.config;
-    return `github{host=${host},authed=${Boolean(token)}}`;
+  private async fetchJson(url: string | URL, init: RequestInit): Promise<any> {
+    const response = await this.fetchResponse(url, init);
+    return await response.json();
   }
 }

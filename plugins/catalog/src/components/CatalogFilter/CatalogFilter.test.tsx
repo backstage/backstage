@@ -23,40 +23,42 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { EntityFilterGroupsProvider } from '../../filter';
-import { catalogApiRef } from '../../plugin';
 import { ButtonGroup, CatalogFilter } from './CatalogFilter';
 
 describe('Catalog Filter', () => {
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
-      Promise.resolve([
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity1',
+      Promise.resolve({
+        items: [
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'Entity1',
+            },
+            spec: {
+              owner: 'tools@example.com',
+              type: 'service',
+            },
           },
-          spec: {
-            owner: 'tools@example.com',
-            type: 'service',
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'Entity2',
+            },
+            spec: {
+              owner: 'not-tools@example.com',
+              type: 'service',
+            },
           },
-        },
-        {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Component',
-          metadata: {
-            name: 'Entity2',
-          },
-          spec: {
-            owner: 'not-tools@example.com',
-            type: 'service',
-          },
-        },
-      ] as Entity[]),
+        ] as Entity[],
+      }),
   };
 
   const identityApi: Partial<IdentityApi> = {

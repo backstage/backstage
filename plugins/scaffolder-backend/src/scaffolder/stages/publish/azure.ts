@@ -14,69 +14,70 @@
  * limitations under the License.
  */
 
-import { PublisherBase } from './types';
-import { GitApi } from 'azure-devops-node-api/GitApi';
+import { PublisherBase, PublisherOptions, PublisherResult } from './types';
+import { IGitApi } from 'azure-devops-node-api/GitApi';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
-
-import { JsonValue } from '@backstage/config';
-import { RequiredTemplateValues } from '../templater';
-import { Repository, Remote, Signature, Cred } from 'nodegit';
+import { initRepoAndPush } from './helpers';
+import { AzureIntegrationConfig } from '@backstage/integration';
+import parseGitUrl from 'git-url-parse';
+import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
+import path from 'path';
 
 export class AzurePublisher implements PublisherBase {
-  private readonly client: GitApi;
-  private readonly token: string;
-
-  constructor(client: GitApi, token: string) {
-    this.client = client;
-    this.token = token;
+  static async fromConfig(config: AzureIntegrationConfig) {
+    if (!config.token) {
+      return undefined;
+    }
+    return new AzurePublisher({ token: config.token });
   }
+
+  constructor(private readonly config: { token: string }) {}
 
   async publish({
     values,
-    directory,
-  }: {
-    values: RequiredTemplateValues & Record<string, JsonValue>;
-    directory: string;
-  }): Promise<{ remoteUrl: string }> {
-    const remoteUrl = await this.createRemote(values);
-    await this.pushToRemote(directory, remoteUrl);
+    workspacePath,
+    logger,
+  }: PublisherOptions): Promise<PublisherResult> {
+    const { owner, name, organization, resource } = parseGitUrl(
+      values.storePath,
+    );
+    const authHandler = getPersonalAccessTokenHandler(this.config.token);
+    const webApi = new WebApi(
+      `https://${resource}/${organization}`,
+      authHandler,
+    );
+    const client = await webApi.getGitApi();
 
-    return { remoteUrl };
+    const remoteUrl = await this.createRemote({
+      project: owner,
+      name,
+      client,
+    });
+
+    const catalogInfoUrl = `${remoteUrl}?path=%2Fcatalog-info.yaml`;
+
+    await initRepoAndPush({
+      dir: path.join(workspacePath, 'result'),
+      remoteUrl,
+      auth: {
+        username: 'notempty',
+        password: this.config.token,
+      },
+      logger,
+    });
+
+    return { remoteUrl, catalogInfoUrl };
   }
 
-  private async createRemote(
-    values: RequiredTemplateValues & Record<string, JsonValue>,
-  ) {
-    const [project, name] = values.storePath.split('/');
-
+  private async createRemote(opts: {
+    name: string;
+    project: string;
+    client: IGitApi;
+  }) {
+    const { name, project, client } = opts;
     const createOptions: GitRepositoryCreateOptions = { name };
-    const repo = await this.client.createRepository(createOptions, project);
+    const repo = await client.createRepository(createOptions, project);
 
     return repo.remoteUrl || '';
-  }
-
-  private async pushToRemote(directory: string, remote: string): Promise<void> {
-    const repo = await Repository.init(directory, 0);
-    const index = await repo.refreshIndex();
-    await index.addAll();
-    await index.write();
-    const oid = await index.writeTree();
-    await repo.createCommit(
-      'HEAD',
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      Signature.now('Scaffolder', 'scaffolder@backstage.io'),
-      'initial commit',
-      oid,
-      [],
-    );
-
-    const remoteRepo = await Remote.create(repo, 'origin', remote);
-
-    await remoteRepo.push(['refs/heads/master:refs/heads/master'], {
-      callbacks: {
-        // Username can anything but the empty string according to: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page#use-a-pat
-        credentials: () => Cred.userpassPlaintextNew('notempty', this.token),
-      },
-    });
   }
 }

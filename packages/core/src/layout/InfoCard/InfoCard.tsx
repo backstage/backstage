@@ -76,24 +76,9 @@ const VARIANT_STYLES = {
       height: 'calc(100% - 10px)', // for pages without content header
       marginBottom: '10px',
     },
-    /**
-     * @deprecated This variant is replaced by 'gridItem'.
-     */
-    height100: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: 'calc(100% - 10px)', // for pages without content header
-      marginBottom: '10px',
-    },
   },
   cardContent: {
     fullHeight: {
-      flex: 1,
-    },
-    /**
-     * @deprecated This variant is replaced by 'gridItem'.
-     */
-    height100: {
       flex: 1,
     },
     gridItem: {
@@ -101,6 +86,8 @@ const VARIANT_STYLES = {
     },
   },
 };
+
+export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
@@ -126,7 +113,7 @@ type Props = {
   divider?: boolean;
   deepLink?: BottomLinkProps;
   slackChannel?: string;
-  variant?: string;
+  variant?: InfoCardVariants;
   style?: object;
   cardStyle?: object;
   children?: ReactNode;
@@ -167,12 +154,6 @@ export const InfoCard = ({
   if (variant) {
     const variants = variant.split(/[\s]+/g);
     variants.forEach(name => {
-      if (name === 'height100') {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Variant 'height100' of InfoCard is deprecated. Use variant 'gridItem' instead.",
-        );
-      }
       calculatedStyle = {
         ...calculatedStyle,
         ...VARIANT_STYLES.card[name as keyof typeof VARIANT_STYLES['card']],

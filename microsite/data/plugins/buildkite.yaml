@@ -1,0 +1,12 @@
+---
+title: Buildkite
+author: roadie.io
+authorUrl: https://roadie.io
+category: CI/CD
+description: View Buildkite CI builds for your service in Backstage.
+documentation: https://roadie.io/backstage/plugins/buildkite
+iconUrl: https://roadie.io/images/logos/buildkite.png
+npmPackageName: '@roadiehq/backstage-plugin-buildkite'
+tags:
+  - ci
+  - cd

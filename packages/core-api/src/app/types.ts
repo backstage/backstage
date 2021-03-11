@@ -15,8 +15,9 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, SystemIconKey, SystemIcons } from '../icons';
-import { BackstagePlugin } from '../plugin';
+import { IconComponent, IconComponentMap, IconKey } from '../icons';
+import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
+import { ExternalRouteRef, RouteRef } from '../routing';
 import { AnyApiFactory } from '../apis';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
@@ -78,6 +79,41 @@ export type AppComponents = {
  */
 export type AppConfigLoader = () => Promise<AppConfig[]>;
 
+/**
+ * Extracts a union of the keys in a map whose value extends the given type
+ */
+type KeysWithType<Obj extends { [key in string]: any }, Type> = {
+  [key in keyof Obj]: Obj[key] extends Type ? key : never;
+}[keyof Obj];
+
+/**
+ * Takes a map Map required values and makes all keys matching Keys optional
+ */
+type PartialKeys<
+  Map extends { [name in string]: any },
+  Keys extends keyof Map
+> = Partial<Pick<Map, Keys>> & Required<Omit<Map, Keys>>;
+
+/**
+ * Creates a map of target routes with matching parameters based on a map of external routes.
+ */
+type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
+  [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
+    infer Params,
+    any
+  >
+    ? RouteRef<Params>
+    : never;
+};
+
+export type AppRouteBinder = <ExternalRoutes extends AnyExternalRoutes>(
+  externalRoutes: ExternalRoutes,
+  targetRoutes: PartialKeys<
+    TargetRouteMap<ExternalRoutes>,
+    KeysWithType<ExternalRoutes, ExternalRouteRef<any, true>>
+  >,
+) => void;
+
 export type AppOptions = {
   /**
    * A collection of ApiFactories to register in the application to either
@@ -88,12 +124,12 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: Partial<SystemIcons>;
+  icons?: IconComponentMap;
 
   /**
    * A list of all plugins to include in the app.
    */
-  plugins?: BackstagePlugin[];
+  plugins?: BackstagePlugin<any, any>[];
 
   /**
    * Supply components to the app to override the default ones.
@@ -134,18 +170,38 @@ export type AppOptions = {
    *  that was packaged by the backstage-cli and default docker container boot script.
    */
   configLoader?: AppConfigLoader;
+
+  /**
+   * A function that is used to register associations between cross-plugin route
+   * references, enabling plugins to navigate between each other.
+   *
+   * The `bind` function that is passed in should be used to bind all external
+   * routes of all used plugins.
+   *
+   * ```ts
+   * bindRoutes({ bind }) {
+   *   bind(docsPlugin.externalRoutes, {
+   *     homePage: managePlugin.routes.managePage,
+   *   })
+   *   bind(homePagePlugin.externalRoutes, {
+   *     settingsPage: settingsPlugin.routes.settingsPage,
+   *   })
+   * }
+   * ```
+   */
+  bindRoutes?(context: { bind: AppRouteBinder }): void;
 };
 
 export type BackstageApp = {
   /**
    * Returns all plugins registered for the app.
    */
-  getPlugins(): BackstagePlugin[];
+  getPlugins(): BackstagePlugin<any, any>[];
 
   /**
-   * Get a common icon for this app.
+   * Get a common or custom icon for this app.
    */
-  getSystemIcon(key: SystemIconKey): IconComponent;
+  getSystemIcon(key: IconKey): IconComponent | undefined;
 
   /**
    * Provider component that should wrap the Router created with getRouter()
@@ -161,6 +217,40 @@ export type BackstageApp = {
 
   /**
    * Routes component that contains all routes for plugin pages in the app.
+   *
+   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
+   */
+  getRoutes(): JSX.Element[];
+};
+
+export type AppContext = {
+  /**
+   * @deprecated Will be removed
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
+   * Get a common or custom icon for this app.
+   */
+  getSystemIcon(key: IconKey): IconComponent | undefined;
+
+  /**
+   * Get the components registered for various purposes in the app.
+   */
+  getComponents(): AppComponents;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getProvider(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
+   */
+  getRouter(): ComponentType<{}>;
+
+  /**
+   * @deprecated Will be removed
    */
   getRoutes(): JSX.Element[];
 };

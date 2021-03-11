@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
-import { utc } from 'moment';
 import { resolvePackagePath } from '@backstage/backend-common';
+import { Knex } from 'knex';
+import { DateTime } from 'luxon';
 import { AnyJWK, KeyStore, StoredKey } from './types';
 
 const migrationsDir = resolvePackagePath(
@@ -27,13 +27,28 @@ const migrationsDir = resolvePackagePath(
 const TABLE = 'signing_keys';
 
 type Row = {
-  created_at: Date;
+  created_at: Date; // row.created_at is a string after being returned from the database
   kid: string;
   key: string;
 };
 
 type Options = {
   database: Knex;
+};
+
+const parseDate = (date: string | Date) => {
+  const parsedDate =
+    typeof date === 'string'
+      ? DateTime.fromSQL(date, { zone: 'UTC' })
+      : DateTime.fromJSDate(date);
+
+  if (!parsedDate.isValid) {
+    throw new Error(
+      `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
+    );
+  }
+
+  return parsedDate.toJSDate();
 };
 
 export class DatabaseKeyStore implements KeyStore {
@@ -66,7 +81,7 @@ export class DatabaseKeyStore implements KeyStore {
     return {
       items: rows.map(row => ({
         key: JSON.parse(row.key),
-        createdAt: utc(row.created_at),
+        createdAt: parseDate(row.created_at),
       })),
     };
   }

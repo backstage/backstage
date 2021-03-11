@@ -40,13 +40,16 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import { isEqual, transform } from 'lodash';
 import MTable, {
   Column,
+  Icons,
   MaterialTableProps,
+  MTableBody,
   MTableHeader,
   MTableToolbar,
   Options,
 } from 'material-table';
 import React, {
   forwardRef,
+  ReactNode,
   useCallback,
   useEffect,
   useRef,
@@ -56,58 +59,28 @@ import { CheckboxTreeProps } from '../CheckboxTree/CheckboxTree';
 import { SelectProps } from '../Select/Select';
 import { Filter, Filters, SelectedFilters, Without } from './Filters';
 
-const tableIcons = {
-  Add: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <AddBox {...props} ref={ref} />
-  )),
-  Check: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Check {...props} ref={ref} />
-  )),
-  Clear: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Delete: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <DeleteOutline {...props} ref={ref} />
-  )),
-  DetailPanel: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+const tableIcons: Icons = {
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => (
     <ChevronRight {...props} ref={ref} />
   )),
-  Edit: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Edit {...props} ref={ref} />
-  )),
-  Export: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <SaveAlt {...props} ref={ref} />
-  )),
-  Filter: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <FilterList {...props} ref={ref} />
-  )),
-  FirstPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <FirstPage {...props} ref={ref} />
-  )),
-  LastPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <LastPage {...props} ref={ref} />
-  )),
-  NextPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ChevronRight {...props} ref={ref} />
-  )),
-  PreviousPage: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => (
     <ChevronLeft {...props} ref={ref} />
   )),
-  ResetSearch: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Clear {...props} ref={ref} />
-  )),
-  Search: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Search {...props} ref={ref} />
-  )),
-  SortArrow: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ArrowUpward {...props} ref={ref} />
-  )),
-  ThirdStateCheck: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <Remove {...props} ref={ref} />
-  )),
-  ViewColumn: forwardRef((props, ref: React.Ref<SVGSVGElement>) => (
-    <ViewColumn {...props} ref={ref} />
-  )),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
 };
 
 // TODO: Material table might already have such a function internally that we can use?
@@ -231,6 +204,7 @@ export interface TableProps<T extends object = {}>
   subtitle?: string;
   filters?: TableFilter[];
   initialState?: TableState;
+  emptyContent?: ReactNode;
   onStateChange?: (state: TableState) => any;
 }
 
@@ -241,6 +215,7 @@ export function Table<T extends object = {}>({
   subtitle,
   filters,
   initialState,
+  emptyContent,
   onStateChange,
   ...props
 }: TableProps<T>) {
@@ -303,6 +278,9 @@ export function Table<T extends object = {}>({
   );
 
   useEffect(() => {
+    if (typeof data === 'function') {
+      return;
+    }
     if (!selectedFilters) {
       setTableData(data as any[]);
       return;
@@ -452,9 +430,26 @@ export function Table<T extends object = {}>({
     ],
   );
 
+  const Body = useCallback(
+    bodyProps => {
+      if (emptyContent && typeof data !== 'function' && data.length === 0) {
+        return (
+          <tbody>
+            <tr>
+              <td colSpan={columns.length}>{emptyContent}</td>
+            </tr>
+          </tbody>
+        );
+      }
+
+      return <MTableBody {...bodyProps} />;
+    },
+    [data, emptyContent, columns],
+  );
+
   return (
     <div className={tableClasses.root}>
-      {filtersOpen && data && filters?.length && (
+      {filtersOpen && data && typeof data !== 'function' && filters?.length && (
         <Filters
           filters={constructFilters(filters, data as any[])}
           selectedFilters={selectedFilters}
@@ -467,6 +462,7 @@ export function Table<T extends object = {}>({
             <MTableHeader classes={headerClasses} {...headerProps} />
           ),
           Toolbar,
+          Body,
         }}
         options={{ ...defaultOptions, ...options }}
         columns={MTColumns}
@@ -481,7 +477,7 @@ export function Table<T extends object = {}>({
             )}
           </>
         }
-        data={tableData}
+        data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
         {...propsWithoutData}
       />

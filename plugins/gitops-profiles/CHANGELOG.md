@@ -1,5 +1,60 @@
 # @backstage/plugin-gitops-profiles
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [40c0fdbaa]
+- Updated dependencies [2a271d89e]
+- Updated dependencies [bece09057]
+- Updated dependencies [169f48deb]
+- Updated dependencies [8a1566719]
+- Updated dependencies [4c049a1a1]
+  - @backstage/core@0.7.0
+
+## 0.2.5
+
+### Patch Changes
+
+- accdfeb30: Migrated to new composability API, exporting the plugin instance as `gitopsProfilesPlugin` and pages as `GitopsProfilesClusterListPage`, `GitopsProfilesClusterPage`, and `GitopsProfilesCreatePage`.
+- Updated dependencies [b51ee6ece]
+  - @backstage/core@0.6.1
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [12ece98cd]
+- Updated dependencies [d82246867]
+- Updated dependencies [c810082ae]
+- Updated dependencies [5fa3bdb55]
+- Updated dependencies [21e624ba9]
+- Updated dependencies [da9f53c60]
+- Updated dependencies [32c95605f]
+- Updated dependencies [54c7d02f7]
+  - @backstage/core@0.6.0
+  - @backstage/theme@0.2.3
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [efd6ef753]
+- Updated dependencies [a187b8ad0]
+  - @backstage/core@0.5.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [2527628e1]
+- Updated dependencies [1c69d4716]
+- Updated dependencies [1665ae8bb]
+- Updated dependencies [04f26f88d]
+- Updated dependencies [ff243ce96]
+  - @backstage/core@0.4.0
+  - @backstage/theme@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

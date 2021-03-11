@@ -21,6 +21,7 @@ import { Trendline } from './Trendline';
 export interface Cost {
   id: string;
   aggregation: DateAggregation[];
-  change: ChangeStatistic;
-  trendline: Trendline;
+  change?: ChangeStatistic;
+  trendline?: Trendline;
+  groupedCosts?: Record<string, Cost[]>;
 }

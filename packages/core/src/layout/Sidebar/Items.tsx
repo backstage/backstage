@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
+import { IconComponent } from '@backstage/core-api';
+import { BackstageTheme } from '@backstage/theme';
 import {
+  Badge,
   makeStyles,
   styled,
   TextField,
   Typography,
-  Badge,
 } from '@material-ui/core';
-import { BackstageTheme } from '@backstage/theme';
-import { IconComponent } from '@backstage/core-api';
 import SearchIcon from '@material-ui/icons/Search';
 import clsx from 'clsx';
 import React, {
-  FC,
+  forwardRef,
+  KeyboardEventHandler,
+  ReactNode,
   useContext,
   useState,
-  KeyboardEventHandler,
-  forwardRef,
-  ReactNode,
 } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarConfig, SidebarContext } from './config';
@@ -53,6 +52,15 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
       alignItems: 'center',
       height: 48,
       cursor: 'pointer',
+    },
+    buttonItem: {
+      background: 'none',
+      border: 'none',
+      width: 'auto',
+      margin: 0,
+      padding: 0,
+      textAlign: 'inherit',
+      font: 'inherit',
     },
     closed: {
       width: drawerWidthClosed,
@@ -115,112 +123,122 @@ const useStyles = makeStyles<BackstageTheme>(theme => {
   };
 });
 
-type SidebarItemProps = {
+type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
-  // If 'to' is set the item will act as a nav link with highlight, otherwise it's just a button
-  to?: string;
   hasNotifications?: boolean;
-  onClick?: () => void;
   children?: ReactNode;
+  className?: string;
 };
 
-export const SidebarItem = forwardRef<any, SidebarItemProps>(
-  (
-    { icon: Icon, text, to, hasNotifications = false, onClick, children },
-    ref,
-  ) => {
-    const classes = useStyles();
-    // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
-    // depend on the current location, and at least have it being optionally forced to selected.
-    // Still waiting on a Q answered to fine tune the implementation
-    const { isOpen } = useContext(SidebarContext);
+type SidebarItemButtonProps = SidebarItemBaseProps & {
+  onClick: (ev: React.MouseEvent) => void;
+};
 
-    const itemIcon = (
-      <Badge
-        color="secondary"
-        variant="dot"
-        overlap="circle"
-        invisible={!hasNotifications}
-      >
-        <Icon fontSize="small" className={classes.icon} />
-      </Badge>
-    );
+type SidebarItemLinkProps = SidebarItemBaseProps & {
+  to: string;
+  onClick?: (ev: React.MouseEvent) => void;
+};
 
-    const childProps = {
-      onClick,
-      className: clsx(classes.root, isOpen ? classes.open : classes.closed),
-    };
+type SidebarItemProps = SidebarItemButtonProps | SidebarItemLinkProps;
 
-    if (!isOpen) {
-      if (to === undefined) {
-        return (
-          <div {...childProps} ref={ref}>
-            {itemIcon}
-          </div>
-        );
-      }
+function isButtonItem(
+  props: SidebarItemProps,
+): props is SidebarItemButtonProps {
+  return (props as SidebarItemLinkProps).to === undefined;
+}
 
-      return (
-        <NavLink
-          {...childProps}
-          activeClassName={classes.selected}
-          to={to}
-          end
-          ref={ref}
-        >
-          {itemIcon}
-        </NavLink>
-      );
-    }
+export const SidebarItem = forwardRef<any, SidebarItemProps>((props, ref) => {
+  const {
+    icon: Icon,
+    text,
+    hasNotifications = false,
+    onClick,
+    children,
+    className,
+  } = props;
+  const classes = useStyles();
+  // XXX (@koroeskohr): unsure this is optimal. But I just really didn't want to have the item component
+  // depend on the current location, and at least have it being optionally forced to selected.
+  // Still waiting on a Q answered to fine tune the implementation
+  const { isOpen } = useContext(SidebarContext);
 
-    const content = (
-      <>
-        <div data-testid="login-button" className={classes.iconContainer}>
-          {itemIcon}
-        </div>
-        {text && (
-          <Typography variant="subtitle2" className={classes.label}>
-            {text}
-          </Typography>
-        )}
-        <div className={classes.secondaryAction}>{children}</div>
-      </>
-    );
+  const itemIcon = (
+    <Badge
+      color="secondary"
+      variant="dot"
+      overlap="circle"
+      invisible={!hasNotifications}
+    >
+      <Icon fontSize="small" className={classes.icon} />
+    </Badge>
+  );
 
-    if (to === undefined) {
-      return (
-        <div {...childProps} ref={ref}>
-          {content}
-        </div>
-      );
-    }
+  const closedContent = itemIcon;
 
+  const openContent = (
+    <>
+      <div data-testid="login-button" className={classes.iconContainer}>
+        {itemIcon}
+      </div>
+      {text && (
+        <Typography variant="subtitle2" className={classes.label}>
+          {text}
+        </Typography>
+      )}
+      <div className={classes.secondaryAction}>{children}</div>
+    </>
+  );
+
+  const content = isOpen ? openContent : closedContent;
+
+  const childProps = {
+    onClick,
+    className: clsx(
+      className,
+      classes.root,
+      isOpen ? classes.open : classes.closed,
+      isButtonItem(props) && classes.buttonItem,
+    ),
+  };
+
+  if (isButtonItem(props)) {
     return (
-      <NavLink
-        {...childProps}
-        activeClassName={classes.selected}
-        to={to}
-        end
-        ref={ref}
-      >
+      <button {...childProps} ref={ref}>
         {content}
-      </NavLink>
+      </button>
     );
-  },
-);
+  }
+
+  return (
+    <NavLink
+      {...childProps}
+      activeClassName={classes.selected}
+      to={props.to}
+      ref={ref}
+    >
+      {content}
+    </NavLink>
+  );
+});
 
 type SidebarSearchFieldProps = {
   onSearch: (input: string) => void;
+  to?: string;
 };
 
-export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
+export const SidebarSearchField = (props: SidebarSearchFieldProps) => {
   const [input, setInput] = useState('');
   const classes = useStyles();
 
+  const search = () => {
+    props.onSearch(input);
+    setInput('');
+  };
+
   const handleEnter: KeyboardEventHandler = ev => {
     if (ev.key === 'Enter') {
-      props.onSearch(input);
+      search();
     }
   };
 
@@ -228,11 +246,25 @@ export const SidebarSearchField: FC<SidebarSearchFieldProps> = props => {
     setInput(ev.target.value);
   };
 
+  const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+    // Clicking into the search fields shouldn't navigate to the search page
+    ev.preventDefault();
+    ev.stopPropagation();
+  };
+
+  const handleItemClick = (ev: React.MouseEvent) => {
+    // Clicking on the search icon while should execute a query with the current field content
+    search();
+    ev.preventDefault();
+  };
+
   return (
     <div className={classes.searchRoot}>
-      <SidebarItem icon={SearchIcon}>
+      <SidebarItem icon={SearchIcon} to={props.to} onClick={handleItemClick}>
         <TextField
           placeholder="Search"
+          value={input}
+          onClick={handleInputClick}
           onChange={handleInput}
           onKeyDown={handleEnter}
           className={classes.searchContainer}

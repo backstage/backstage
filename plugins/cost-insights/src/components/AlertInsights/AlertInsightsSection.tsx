@@ -15,31 +15,86 @@
  */
 import React from 'react';
 import { Box, Button } from '@material-ui/core';
+import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
+import { default as AcceptIcon } from '@material-ui/icons/Check';
+import { default as DismissIcon } from '@material-ui/icons/Delete';
 import { AlertInsightsSectionHeader } from './AlertInsightsSectionHeader';
 import { Alert } from '../../types';
+import {
+  isSnoozeEnabled,
+  isAcceptEnabled,
+  isDismissEnabled,
+} from '../../utils/alerts';
 
 type AlertInsightsSectionProps = {
   alert: Alert;
   number: number;
+  onSnooze: (alert: Alert) => void;
+  onAccept: (alert: Alert) => void;
+  onDismiss: (alert: Alert) => void;
 };
 
 export const AlertInsightsSection = ({
   alert,
   number,
+  onSnooze,
+  onAccept,
+  onDismiss,
 }: AlertInsightsSectionProps) => {
+  const isSnoozeButtonDisplayed = isSnoozeEnabled(alert);
+  const isAcceptButtonDisplayed = isAcceptEnabled(alert);
+  const isDismissButtonDisplayed = isDismissEnabled(alert);
+  const isButtonGroupDisplayed =
+    isSnoozeButtonDisplayed ||
+    isAcceptButtonDisplayed ||
+    isDismissButtonDisplayed;
+
   return (
-    <Box display="flex" flexDirection="column">
-      <AlertInsightsSectionHeader
-        title={alert.title}
-        subtitle={alert.subtitle}
-        number={number}
-      />
-      <Box textAlign="left" mt={0} mb={4}>
-        <Button variant="contained" color="primary" href={alert.url}>
-          {alert.buttonText || 'View Instructions'}
-        </Button>
-        {/* <Button color="primary">Dismiss notification</Button> */}
-      </Box>
+    <Box display="flex" flexDirection="column" mb={6}>
+      <AlertInsightsSectionHeader alert={alert} number={number} />
+      {isButtonGroupDisplayed && (
+        <Box display="flex" alignItems="center" mb={4}>
+          {isAcceptButtonDisplayed && (
+            <Box mr={1}>
+              <Button
+                color="primary"
+                variant="contained"
+                aria-label="accept"
+                onClick={() => onAccept(alert)}
+                startIcon={<AcceptIcon />}
+              >
+                Accept
+              </Button>
+            </Box>
+          )}
+          {isSnoozeButtonDisplayed && (
+            <Box mr={1}>
+              <Button
+                color="default"
+                variant="outlined"
+                aria-label="snooze"
+                disableElevation
+                onClick={() => onSnooze(alert)}
+                startIcon={<SnoozeIcon />}
+              >
+                Snooze
+              </Button>
+            </Box>
+          )}
+          {isDismissButtonDisplayed && (
+            <Button
+              color="secondary"
+              variant="outlined"
+              aria-label="dismiss"
+              disableElevation
+              onClick={() => onDismiss(alert)}
+              startIcon={<DismissIcon />}
+            >
+              Dismiss
+            </Button>
+          )}
+        </Box>
+      )}
       {alert.element}
     </Box>
   );

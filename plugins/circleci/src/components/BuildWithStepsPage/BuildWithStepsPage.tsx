@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC, useEffect } from 'react';
+
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { InfoCard, Progress, Link } from '@backstage/core';
+import { Breadcrumbs, InfoCard, Progress, Link } from '@backstage/core';
 import { BuildWithSteps, BuildStepAction } from '../../api';
 import {
   Grid,
   Box,
   IconButton,
-  Breadcrumbs,
   Typography,
   Link as MaterialLink,
 } from '@material-ui/core';
@@ -31,7 +31,8 @@ import LaunchIcon from '@material-ui/icons/Launch';
 import { useBuildWithSteps } from '../../state/useBuildWithSteps';
 
 const IconLink = (IconButton as any) as typeof MaterialLink;
-const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
+
+const BuildName = ({ build }: { build?: BuildWithSteps }) => (
   <Box display="flex" alignItems="center">
     #{build?.build_num} - {build?.subject}
     <IconLink href={build?.build_url} target="_blank">
@@ -39,6 +40,7 @@ const BuildName: FC<{ build?: BuildWithSteps }> = ({ build }) => (
     </IconLink>
   </Box>
 );
+
 const useStyles = makeStyles(theme => ({
   neutral: {},
   failed: {
@@ -96,20 +98,11 @@ const pickClassName = (
   return classes.neutral;
 };
 
-const BuildsList: FC<{ build?: BuildWithSteps }> = ({ build }) => (
-  <Box>
-    {build &&
-      build.steps &&
-      build.steps.map(
-        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
-          <ActionsList key={name} name={name} actions={actions} />
-        ),
-      )}
-  </Box>
-);
-
-const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
+const ActionsList = ({
   actions,
+}: {
+  actions: BuildStepAction[];
+  name: string;
 }) => {
   const classes = useStyles();
   return (
@@ -126,6 +119,18 @@ const ActionsList: FC<{ actions: BuildStepAction[]; name: string }> = ({
   );
 };
 
+const BuildsList = ({ build }: { build?: BuildWithSteps }) => (
+  <Box>
+    {build &&
+      build.steps &&
+      build.steps.map(
+        ({ name, actions }: { name: string; actions: BuildStepAction[] }) => (
+          <ActionsList key={name} name={name} actions={actions} />
+        ),
+      )}
+  </Box>
+);
+
 export const BuildWithStepsPage = () => {
   const { buildId = '' } = useParams();
   const classes = useStyles();
@@ -140,10 +145,12 @@ export const BuildWithStepsPage = () => {
 
   return (
     <>
-      <Breadcrumbs aria-label="breadcrumb">
-        <Link to="..">All builds</Link>
-        <Typography>Build details</Typography>
-      </Breadcrumbs>
+      <Box mb={3}>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to="..">All builds</Link>
+          <Typography>Build details</Typography>
+        </Breadcrumbs>
+      </Box>
       <Grid container spacing={3} direction="column">
         <Grid item>
           <InfoCard

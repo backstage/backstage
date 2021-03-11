@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SessionManager, GetSessionOptions } from './types';
+import { MutableSessionManager, GetSessionOptions } from './types';
 import { AuthConnector } from '../AuthConnector';
 import { SessionScopeHelper } from './common';
 import { SessionStateTracker } from './SessionStateTracker';
@@ -31,7 +31,7 @@ type Options<T> = {
 /**
  * StaticAuthSessionManager manages an underlying session that does not expire.
  */
-export class StaticAuthSessionManager<T> implements SessionManager<T> {
+export class StaticAuthSessionManager<T> implements MutableSessionManager<T> {
   private readonly connector: AuthConnector<T>;
   private readonly helper: SessionScopeHelper<T>;
   private readonly stateTracker = new SessionStateTracker();
@@ -43,6 +43,11 @@ export class StaticAuthSessionManager<T> implements SessionManager<T> {
 
     this.connector = connector;
     this.helper = new SessionScopeHelper({ sessionScopes, defaultScopes });
+  }
+
+  setSession(session: T | undefined): void {
+    this.currentSession = session;
+    this.stateTracker.setIsSignedIn(Boolean(session));
   }
 
   async getSession(options: GetSessionOptions): Promise<T | undefined> {

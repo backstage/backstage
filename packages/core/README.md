@@ -4,7 +4,7 @@ This package provides the core API used by Backstage plugins and apps.
 
 ## Installation
 
-Install the package via npm or yarn:
+Install the package via npm or Yarn:
 
 ```sh
 $ npm install --save @backstage/core

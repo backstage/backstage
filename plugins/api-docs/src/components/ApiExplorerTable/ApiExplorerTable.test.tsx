@@ -22,7 +22,7 @@ import * as React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerTable } from './ApiExplorerTable';
 
-const entites: Entity[] = [
+const entities: Entity[] = [
   {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'API',
@@ -61,7 +61,7 @@ describe('ApiCatalogTable component', () => {
       ),
     );
     const errorMessage = await rendered.findByText(
-      /Error encountered while fetching catalog entities./,
+      /Could not fetch catalog entities./,
     );
     expect(errorMessage).toBeInTheDocument();
   });
@@ -70,7 +70,7 @@ describe('ApiCatalogTable component', () => {
     const rendered = render(
       wrapInTestApp(
         <ApiProvider apis={apiRegistry}>
-          <ApiExplorerTable entities={entites} loading={false} />
+          <ApiExplorerTable entities={entities} loading={false} />
         </ApiProvider>,
       ),
     );

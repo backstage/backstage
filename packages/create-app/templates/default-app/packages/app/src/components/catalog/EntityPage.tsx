@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Router as GitHubActionsRouter,
-  isPluginApplicableToEntity as isGitHubActionsAvailable,
-} from '@backstage/plugin-github-actions';
-import {
-  Router as CircleCIRouter,
-  isPluginApplicableToEntity as isCircleCIAvailable,
-} from '@backstage/plugin-circleci';
-import { Router as ApiDocsRouter } from '@backstage/plugin-api-docs';
-import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
-
-import React from 'react';
-import {
-  EntityPageLayout,
-  useEntity,
-  AboutCard,
-} from '@backstage/plugin-catalog';
-import { Entity } from '@backstage/catalog-model';
-import { Grid } from '@material-ui/core';
+import { ApiEntity, Entity } from '@backstage/catalog-model';
 import { WarningPanel } from '@backstage/core';
+import {
+  ApiDefinitionCard,
+  ConsumedApisCard,
+  ConsumingComponentsCard,
+  ProvidedApisCard,
+  ProvidingComponentsCard
+} from '@backstage/plugin-api-docs';
+import {
+  AboutCard, EntityPageLayout,
+} from '@backstage/plugin-catalog';
+import {
+  useEntity
+} from '@backstage/plugin-catalog-react';
+import {
+  isPluginApplicableToEntity as isGitHubActionsAvailable, Router as GitHubActionsRouter
+} from '@backstage/plugin-github-actions';
+import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { Grid } from '@material-ui/core';
+import React from 'react';
+
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -40,8 +42,6 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   switch (true) {
     case isGitHubActionsAvailable(entity):
       return <GitHubActionsRouter entity={entity} />;
-    case isCircleCIAvailable(entity):
-      return <CircleCIRouter entity={entity} />;
     default:
       return (
         <WarningPanel title="CI/CD switcher:">
@@ -56,6 +56,17 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item>
       <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const ComponentApisContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <ProvidedApisCard entity={entity} />
+    </Grid>
+    <Grid item md={6}>
+      <ConsumedApisCard entity={entity} />
     </Grid>
   </Grid>
 );
@@ -75,7 +86,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/api/*"
       title="API"
-      element={<ApiDocsRouter entity={entity} />}
+      element={<ComponentApisContent entity={entity} />}
     />
     <EntityPageLayout.Content
       path="/docs/*"
@@ -120,13 +131,64 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
-export const EntityPage = () => {
-  const { entity } = useEntity();
+export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
   switch (entity?.spec?.type) {
     case 'service':
       return <ServiceEntityPage entity={entity} />;
     case 'website':
       return <WebsiteEntityPage entity={entity} />;
+    default:
+      return <DefaultEntityPage entity={entity} />;
+  }
+};
+
+const ApiOverviewContent = ({ entity }: { entity: Entity }) => (
+  <Grid container spacing={3}>
+    <Grid item md={6}>
+      <AboutCard entity={entity} />
+    </Grid>
+    <Grid container item md={12}>
+      <Grid item md={6}>
+        <ProvidingComponentsCard entity={entity} />
+      </Grid>
+      <Grid item md={6}>
+        <ConsumingComponentsCard entity={entity} />
+      </Grid>
+    </Grid>
+  </Grid>
+);
+
+const ApiDefinitionContent = ({ entity }: { entity: ApiEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <ApiDefinitionCard apiEntity={entity} />
+    </Grid>
+  </Grid>
+);
+
+const ApiEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<ApiOverviewContent entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/definition/*"
+      title="Definition"
+      element={<ApiDefinitionContent entity={entity as ApiEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+export const EntityPage = () => {
+  const { entity } = useEntity();
+
+  switch (entity?.kind?.toLowerCase()) {
+    case 'component':
+      return <ComponentEntityPage entity={entity} />;
+    case 'api':
+      return <ApiEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }

@@ -17,6 +17,7 @@
 import React from 'react';
 import { makeStyles, Theme } from '@material-ui/core';
 import { WithLink } from '../../utils/components';
+import { RadarDescription } from '../RadarDescription';
 
 export type Props = {
   x: number;
@@ -25,6 +26,8 @@ export type Props = {
   color: string;
   url?: string;
   moved?: number;
+  description?: string;
+  title?: string;
   onMouseEnter?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
   onMouseLeave?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
   onClick?: (event: React.MouseEvent<SVGGElement, MouseEvent>) => void;
@@ -59,9 +62,12 @@ const makeBlip = (color: string, moved?: number) => {
 
 const RadarEntry = (props: Props): JSX.Element => {
   const classes = useStyles(props);
+  const [open, setOpen] = React.useState(false);
 
   const {
     moved,
+    description,
+    title,
     color,
     url,
     value,
@@ -74,6 +80,18 @@ const RadarEntry = (props: Props): JSX.Element => {
 
   const blip = makeBlip(color, moved);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const toggle = () => {
+    setOpen(!open);
+  };
+
   return (
     <g
       transform={`translate(${x}, ${y})`}
@@ -82,9 +100,32 @@ const RadarEntry = (props: Props): JSX.Element => {
       onClick={onClick}
       data-testid="radar-entry"
     >
-      <WithLink url={url} className={classes.link}>
-        {blip}
-      </WithLink>
+      {' '}
+      {open && (
+        <RadarDescription
+          open={open}
+          onClose={handleClose}
+          title={title ? title : 'no title'}
+          description={description ? description : 'no description'}
+          url={url}
+        />
+      )}
+      {description ? (
+        <a
+          className={classes.link}
+          onClick={handleClickOpen}
+          href={url ? url : '#'}
+          role="button"
+          tabIndex={0}
+          onKeyPress={toggle}
+        >
+          {blip}
+        </a>
+      ) : (
+        <WithLink url={url} className={classes.link}>
+          {blip}
+        </WithLink>
+      )}
       <text y={3} className={classes.text}>
         {value}
       </text>

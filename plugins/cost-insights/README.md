@@ -11,6 +11,8 @@ At Spotify, we find that cloud costs are optimized organically when:
 
 Cost Insights shows trends over time, at the granularity of Backstage catalog entities - rather than the cloud provider's concepts. It can be used to troubleshoot cost anomalies, and promote cost-saving infrastructure migrations.
 
+Learn more with the Backstage blog post [New Cost Insights plugin: The engineer's solution to taming cloud costs](https://backstage.io/blog/2020/10/22/cost-insights-plugin).
+
 ## Install
 
 ```bash
@@ -22,6 +24,8 @@ yarn add @backstage/plugin-cost-insights
 1. Configure `app-config.yaml`. See [Configuration](#configuration).
 
 2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
+
+**Note:** We've briefly explored using the AWS Cost Explorer API to implement a CostInsights client. Learn more about our findings [here](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/contrib/aws-cost-explorer-api.md).
 
 ```ts
 // path/to/CostInsightsClient.ts
@@ -52,6 +56,38 @@ export const apis = [
 ```ts
 // packages/app/src/plugins.ts
 export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
+```
+
+5. Add Cost Insights to your app Sidebar.
+
+To expose the plugin to your users, you can integrate the `cost-insights` route anyway that suits your application, but most commonly it is added to the Sidebar.
+
+```diff
+// packages/app/src/sidebar.tsx
++ import MoneyIcon from '@material-ui/icons/MonetizationOn';
+
+ ...
+
+ export const AppSidebar = () => (
+   <Sidebar>
+     <SidebarLogo />
+     <SidebarSearch />
+     <SidebarDivider />
+     {/* Global nav, not org-specific */}
+     <SidebarItem icon={HomeIcon} to="./" text="Home" />
+     <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+     <SidebarItem icon={LibraryBooks} to="/docs" text="Docs" />
+     <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
+     <SidebarDivider />
+     <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
++    <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
+     {/* End global nav */}
+     <SidebarDivider />
+     <SidebarSpace />
+     <SidebarDivider />
+     <SidebarSettings />
+   </Sidebar>
+ );
 ```
 
 ## Configuration
@@ -110,4 +146,4 @@ The CostInsightsApi `getAlerts` method may return any type of alert or recommend
 
 The Alert type includes an `element` field to supply the JSX Element that will be rendered in the Cost Insights "Action Items" section; we recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
 
-The Alert `url` should link to documentation or instructions for resolving the alert.
+The Alert `url` should link to documentation or instructions for resolving the alert. This may be omitted if no external link is needed.

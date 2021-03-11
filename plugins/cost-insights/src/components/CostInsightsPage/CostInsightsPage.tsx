@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Container, Divider, Grid, Typography } from '@material-ui/core';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Box,
+  Collapse,
+  Container,
+  Divider,
+  Grid,
+  Typography,
+} from '@material-ui/core';
 import { Progress, useApi } from '@backstage/core';
 import { default as MaterialAlert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
-import { AlertActionCardList } from '../AlertActionCardList';
+import { ActionItems } from '../ActionItems';
 import { AlertInsights } from '../AlertInsights';
 import { CostInsightsLayout } from '../CostInsightsLayout';
 import { CopyUrlToClipboard } from '../CopyUrlToClipboard';
@@ -32,7 +39,8 @@ import {
 import { CostInsightsNavigation } from '../CostInsightsNavigation';
 import { CostOverviewCard } from '../CostOverviewCard';
 import { ProductInsights } from '../ProductInsights';
-import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
+/* https://github.com/backstage/backstage/issues/2574 */
+// import { CostInsightsSupportButton } from '../CostInsightsSupportButton';
 import {
   useConfig,
   useCurrency,
@@ -41,11 +49,17 @@ import {
   useLastCompleteBillingDate,
   useLoading,
 } from '../../hooks';
-import { Alert, Cost, Maybe, MetricData, Project } from '../../types';
+import { Alert, Cost, Maybe, MetricData, Product, Project } from '../../types';
 import { mapLoadingToProps } from './selector';
 import { ProjectSelect } from '../ProjectSelect';
 import { intervalsOf } from '../../utils/duration';
 import { useSubtleTypographyStyles } from '../../utils/styles';
+import {
+  isAlertActive,
+  isAlertAccepted,
+  isAlertDismissed,
+  isAlertSnoozed,
+} from '../../utils/alerts';
 
 export const CostInsightsPage = () => {
   const classes = useSubtleTypographyStyles();
@@ -53,14 +67,23 @@ export const CostInsightsPage = () => {
   const config = useConfig();
   const groups = useGroups();
   const lastCompleteBillingDate = useLastCompleteBillingDate();
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [currency, setCurrency] = useCurrency();
   const [projects, setProjects] = useState<Maybe<Project[]>>(null);
+  const [products, setProducts] = useState<Maybe<Product[]>>(null);
   const [dailyCost, setDailyCost] = useState<Maybe<Cost>>(null);
   const [metricData, setMetricData] = useState<Maybe<MetricData>>(null);
-  const [alerts, setAlerts] = useState<Maybe<Alert[]>>(null);
   const [error, setError] = useState<Maybe<Error>>(null);
 
   const { pageFilters, setPageFilters } = useFilters(p => p);
+
+  const active = useMemo(() => alerts.filter(isAlertActive), [alerts]);
+  const snoozed = useMemo(() => alerts.filter(isAlertSnoozed), [alerts]);
+  const accepted = useMemo(() => alerts.filter(isAlertAccepted), [alerts]);
+  const dismissed = useMemo(() => alerts.filter(isAlertDismissed), [alerts]);
+
+  const isActionItemsDisplayed = !!active.length;
+  const isAlertInsightsDisplayed = !!alerts.length;
 
   const {
     loadingActions,
@@ -163,7 +186,7 @@ export const CostInsightsPage = () => {
       <CostInsightsLayout groups={groups}>
         <Box textAlign="right">
           <CopyUrlToClipboard />
-          <CostInsightsSupportButton />
+          {/* <CostInsightsSupportButton /> */}
         </Box>
         <Container maxWidth="lg">
           <CostInsightsHeaderNoGroups />
@@ -175,8 +198,8 @@ export const CostInsightsPage = () => {
       </CostInsightsLayout>
     );
   }
-  // These should be defined, alerts can be an empty array but that's truthy
-  if (!dailyCost || !alerts) {
+
+  if (!dailyCost) {
     return (
       <MaterialAlert severity="error">{`Error: Could not fetch cost insights data for team ${pageFilters.group}`}</MaterialAlert>
     );
@@ -224,7 +247,10 @@ export const CostInsightsPage = () => {
       <Grid container wrap="nowrap">
         <Grid item>
           <Box position="sticky" top={20}>
-            <CostInsightsNavigation alerts={alerts.length} />
+            <CostInsightsNavigation
+              products={products}
+              alerts={active.length}
+            />
           </Box>
         </Grid>
         <Grid item xs>
@@ -235,7 +261,7 @@ export const CostInsightsPage = () => {
             mb={2}
           >
             <CopyUrlToClipboard />
-            <CostInsightsSupportButton />
+            {/* <CostInsightsSupportButton /> */}
           </Box>
           <Container maxWidth="lg" disableGutters>
             <Grid container direction="column">
@@ -244,19 +270,22 @@ export const CostInsightsPage = () => {
                   owner={pageFilters.group}
                   groups={groups}
                   hasCostData={!!dailyCost.aggregation.length}
-                  alerts={alerts.length}
+                  alerts={active.length}
                 />
               </Grid>
-              {!!alerts.length && (
-                <>
-                  <Grid item xs>
-                    <Box px={3} py={6}>
-                      <AlertActionCardList alerts={alerts} />
-                    </Box>
-                  </Grid>
-                  <Divider />
-                </>
-              )}
+              <Collapse in={isActionItemsDisplayed} enter={false}>
+                <Grid item xs>
+                  <Box px={3} py={6}>
+                    <ActionItems
+                      active={active}
+                      snoozed={snoozed}
+                      accepted={accepted}
+                      dismissed={dismissed}
+                    />
+                  </Box>
+                </Grid>
+                <Divider />
+              </Collapse>
               <Grid item xs>
                 <CostOverviewBanner />
               </Grid>
@@ -271,17 +300,29 @@ export const CostInsightsPage = () => {
                   <WhyCostsMatter />
                 </Box>
               </Grid>
-              <Grid item xs>
-                {!!alerts?.length && (
+              <Collapse in={isAlertInsightsDisplayed} enter={false}>
+                <Grid item xs>
                   <Box px={6} py={6} mx={-3} bgcolor="alertBackground">
-                    <AlertInsights alerts={alerts} />
+                    <AlertInsights
+                      group={pageFilters.group}
+                      active={active}
+                      snoozed={snoozed}
+                      accepted={accepted}
+                      dismissed={dismissed}
+                      onChange={setAlerts}
+                    />
                   </Box>
-                )}
-              </Grid>
-              {!alerts.length && <Divider />}
+                </Grid>
+              </Collapse>
+              {!isAlertInsightsDisplayed && <Divider />}
               <Grid item xs>
                 <Box px={3} py={6}>
-                  <ProductInsights />
+                  <ProductInsights
+                    group={pageFilters.group}
+                    project={pageFilters.project}
+                    products={config.products}
+                    onLoaded={setProducts}
+                  />
                 </Box>
               </Grid>
             </Grid>

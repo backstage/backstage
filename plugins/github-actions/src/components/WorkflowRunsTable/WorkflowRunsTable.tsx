@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FC } from 'react';
+import React from 'react';
 import {
   Link,
   Typography,
@@ -25,15 +25,23 @@ import {
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink, generatePath } from 'react-router-dom';
-import { EmptyState, Table, TableColumn } from '@backstage/core';
+import {
+  EmptyState,
+  Table,
+  TableColumn,
+  configApiRef,
+  useApi,
+} from '@backstage/core';
 import { useWorkflowRuns } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
 import { buildRouteRef } from '../../plugin';
 import { useProjectName } from '../useProjectName';
 import { Entity } from '@backstage/catalog-model';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export type WorkflowRun = {
+  workflowName: string;
   id: string;
   message: string;
   url?: string;
@@ -80,6 +88,10 @@ const generatedColumns: TableColumn[] = [
     ),
   },
   {
+    title: 'Workflow',
+    field: 'workflowName',
+  },
+  {
     title: 'Status',
     width: '150px',
 
@@ -114,7 +126,7 @@ type Props = {
   onChangePageSize: (pageSize: number) => void;
 };
 
-export const WorkflowRunsTableView: FC<Props> = ({
+export const WorkflowRunsTableView = ({
   projectName,
   loading,
   pageSize,
@@ -124,7 +136,7 @@ export const WorkflowRunsTableView: FC<Props> = ({
   onChangePage,
   onChangePageSize,
   total,
-}) => {
+}: Props) => {
   return (
     <Table
       isLoading={loading}
@@ -162,27 +174,35 @@ export const WorkflowRunsTable = ({
   entity: Entity;
   branch?: string;
 }) => {
+  const config = useApi(configApiRef);
   const { value: projectName, loading } = useProjectName(entity);
+  // TODO: Get github hostname from metadata annotation
+  const hostname = readGitHubIntegrationConfigs(
+    config.getOptionalConfigArray('integrations.github') ?? [],
+  )[0].host;
   const [owner, repo] = (projectName ?? '/').split('/');
   const [
     { runs, ...tableProps },
     { retry, setPage, setPageSize },
   ] = useWorkflowRuns({
+    hostname,
     owner,
     repo,
     branch,
   });
 
+  const githubHost = hostname || 'github.com';
+
   return !runs ? (
     <EmptyState
       missing="data"
       title="No Workflow Data"
-      description="This component has Github Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+      description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
       action={
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${projectName}/actions/new`}
+          href={`https://${githubHost}/${projectName}/actions/new`}
         >
           Create new Workflow
         </Button>

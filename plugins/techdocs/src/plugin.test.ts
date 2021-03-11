@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { plugin } from './plugin';
+import { techdocsPlugin } from './plugin';
 
 describe('techdocs', () => {
   it('should export plugin', () => {
-    expect(plugin).toBeDefined();
+    expect(techdocsPlugin).toBeDefined();
   });
 });

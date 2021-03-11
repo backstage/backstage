@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ErrorCell } from './ErrorCell';
 import React from 'react';
 import { render } from '@testing-library/react';
-import mockIssue from '../../data/sentry-issue-mock.json';
+import mockIssue from '../../api/mock/sentry-issue-mock.json';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 

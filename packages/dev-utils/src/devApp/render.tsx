@@ -14,24 +14,46 @@
  * limitations under the License.
  */
 
-import { hot } from 'react-hot-loader/root';
-import React, { FC, ComponentType, ReactNode } from 'react';
-import ReactDOM from 'react-dom';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
 import {
+  AlertDisplay,
+  AnyApiFactory,
+  ApiFactory,
+  attachComponentData,
   createApp,
-  SidebarPage,
+  createPlugin,
+  createRouteRef,
+  FlatRoutes,
+  IconComponent,
+  OAuthRequestDialog,
+  RouteRef,
   Sidebar,
   SidebarItem,
+  SidebarPage,
   SidebarSpacer,
-  ApiFactory,
-  createPlugin,
-  AlertDisplay,
-  OAuthRequestDialog,
-  AnyApiFactory,
 } from '@backstage/core';
+import { Box } from '@material-ui/core';
+import BookmarkIcon from '@material-ui/icons/Bookmark';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
-import { Routes } from 'react-router';
+import React, { ComponentType, ReactNode } from 'react';
+import ReactDOM from 'react-dom';
+import { hot } from 'react-hot-loader';
+import { Route } from 'react-router';
+
+const GatheringRoute: (props: {
+  path: string;
+  element: JSX.Element;
+  children?: ReactNode;
+}) => JSX.Element = ({ element }) => element;
+
+attachComponentData(GatheringRoute, 'core.gatherMountPoints', true);
+
+type RegisterPageOptions = {
+  path?: string;
+  element: JSX.Element;
+  children?: JSX.Element;
+  title?: string;
+  icon?: IconComponent;
+};
 
 // TODO(rugvip): export proper plugin type from core that isn't the plugin class
 type BackstagePlugin = ReturnType<typeof createPlugin>;
@@ -44,6 +66,8 @@ class DevAppBuilder {
   private readonly plugins = new Array<BackstagePlugin>();
   private readonly apis = new Array<AnyApiFactory>();
   private readonly rootChildren = new Array<ReactNode>();
+  private readonly routes = new Array<JSX.Element>();
+  private readonly sidebarItems = new Array<JSX.Element>();
 
   /**
    * Register one or more plugins to render in the dev app
@@ -56,9 +80,11 @@ class DevAppBuilder {
   /**
    * Register an API factory to add to the app
    */
-  registerApi<Api, Deps extends { [name in string]: unknown }>(
-    factory: ApiFactory<Api, Deps>,
-  ): DevAppBuilder {
+  registerApi<
+    Api,
+    Impl extends Api,
+    Deps extends { [name in string]: unknown }
+  >(factory: ApiFactory<Api, Impl, Deps>): DevAppBuilder {
     this.apis.push(factory);
     return this;
   }
@@ -74,12 +100,54 @@ class DevAppBuilder {
   }
 
   /**
+   * Adds a page component along with accompanying sidebar item.
+   *
+   * If no path is provided one will be generated.
+   * If no title is provided, no sidebar item will be created.
+   */
+  addPage(opts: RegisterPageOptions): DevAppBuilder {
+    const path = opts.path ?? `/page-${this.routes.length + 1}`;
+    if (opts.title) {
+      this.sidebarItems.push(
+        <SidebarItem
+          key={path}
+          to={path}
+          text={opts.title}
+          icon={opts.icon ?? BookmarkIcon}
+        />,
+      );
+    }
+    this.routes.push(
+      <GatheringRoute
+        key={path}
+        path={path}
+        element={opts.element}
+        children={opts.children}
+      />,
+    );
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<{}> {
+    const dummyRouteRef = createRouteRef({ title: 'Page of another plugin' });
+    const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
+    attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
+
     const app = createApp({
       apis: this.apis,
       plugins: this.plugins,
+      bindRoutes: ({ bind }) => {
+        for (const plugin of this.plugins ?? []) {
+          const targets: Record<string, RouteRef<any>> = {};
+          for (const routeKey of Object.keys(plugin.externalRoutes)) {
+            targets[routeKey] = dummyRouteRef;
+          }
+          bind(plugin.externalRoutes, targets);
+        }
+      },
     });
 
     const AppProvider = app.getProvider();
@@ -88,17 +156,20 @@ class DevAppBuilder {
 
     const sidebar = this.setupSidebar(this.plugins);
 
-    const DevApp: FC<{}> = () => {
+    const DevApp = () => {
       return (
         <AppProvider>
           <AlertDisplay />
           <OAuthRequestDialog />
           {this.rootChildren}
-
           <AppRouter>
             <SidebarPage>
               {sidebar}
-              <Routes>{deprecatedAppRoutes}</Routes>
+              <FlatRoutes>
+                {this.routes}
+                {deprecatedAppRoutes}
+                <Route path="/_external_route" element={<DummyPage />} />
+              </FlatRoutes>
             </SidebarPage>
           </AppRouter>
         </AppProvider>
@@ -112,7 +183,12 @@ class DevAppBuilder {
    * Build and render directory to #root element, with react hot loading.
    */
   render(): void {
-    const DevApp = hot(this.build());
+    const hotModule =
+      require.cache['./dev/index.tsx'] ??
+      require.cache['./dev/index.ts'] ??
+      module;
+
+    const DevApp = hot(hotModule)(this.build());
 
     const paths = this.findPluginPaths(this.plugins);
 
@@ -164,6 +240,7 @@ class DevAppBuilder {
     return (
       <Sidebar>
         <SidebarSpacer />
+        {this.sidebarItems}
         {sidebarItems}
       </Sidebar>
     );
@@ -197,7 +274,7 @@ class DevAppBuilder {
 // this to provide their own plugin dev wrappers.
 
 /**
- * Creates a dev app for rendering one or more plugins and exposing the touchpoints of the plugin.
+ * Creates a dev app for rendering one or more plugins and exposing the touch points of the plugin.
  */
 export function createDevApp() {
   return new DevAppBuilder();

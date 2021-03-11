@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ObjectFetchParams } from '../types/types';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 describe('KubernetesClientProvider', () => {
@@ -57,16 +58,17 @@ describe('KubernetesClientProvider', () => {
 
     clientMock.listServiceForAllNamespaces.mockRejectedValue(errorResponse);
 
-    const result = await sut.fetchObjectsByServiceId(
-      'some-service',
-      {
+    const result = await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
         name: 'cluster1',
         url: 'http://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      new Set(['pods', 'services']),
-    );
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
 
     expect(result).toStrictEqual({
       errors: [expectedResult],
@@ -120,16 +122,17 @@ describe('KubernetesClientProvider', () => {
       },
     });
 
-    const result = await sut.fetchObjectsByServiceId(
-      'some-service',
-      {
+    const result = await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
         name: 'cluster1',
         url: 'http://localhost:9999',
         serviceAccountToken: 'token',
         authProvider: 'serviceAccount',
       },
-      new Set(['pods', 'services']),
-    );
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
 
     expect(result).toStrictEqual({
       errors: [],
@@ -169,16 +172,17 @@ describe('KubernetesClientProvider', () => {
   });
   it('should throw error on unknown type', () => {
     expect(() =>
-      sut.fetchObjectsByServiceId(
-        'some-service',
-        {
+      sut.fetchObjectsForService(<ObjectFetchParams>{
+        serviceId: 'some-service',
+        clusterDetails: {
           name: 'cluster1',
           url: 'http://localhost:9999',
           serviceAccountToken: 'token',
           authProvider: 'serviceAccount',
         },
-        new Set<any>(['foo']),
-      ),
+        objectTypesToFetch: new Set<any>(['foo']),
+        labelSelector: '',
+      }),
     ).toThrow('unrecognised type=foo');
 
     expect(clientMock.listPodForAllNamespaces.mock.calls.length).toBe(0);
@@ -190,6 +194,27 @@ describe('KubernetesClientProvider', () => {
     expect(
       kubernetesClientProvider.getCoreClientByClusterDetails.mock.calls.length,
     ).toBe(0);
+  });
+  // they're in testErrorResponse
+  // eslint-disable-next-line jest/expect-expect
+  it('should return pods, bad request error', async () => {
+    await testErrorResponse(
+      {
+        response: {
+          statusCode: 400,
+          request: {
+            uri: {
+              pathname: '/some/path',
+            },
+          },
+        },
+      },
+      {
+        errorType: 'BAD_REQUEST',
+        resourcePath: '/some/path',
+        statusCode: 400,
+      },
+    );
   });
   // they're in testErrorResponse
   // eslint-disable-next-line jest/expect-expect
@@ -253,5 +278,47 @@ describe('KubernetesClientProvider', () => {
         statusCode: 900,
       },
     );
+  });
+  it('should always add a labelSelector query', async () => {
+    clientMock.listPodForAllNamespaces.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'pod-name',
+            },
+          },
+        ],
+      },
+    });
+
+    clientMock.listServiceForAllNamespaces.mockResolvedValueOnce({
+      body: {
+        items: [
+          {
+            metadata: {
+              name: 'service-name',
+            },
+          },
+        ],
+      },
+    });
+
+    await sut.fetchObjectsForService(<ObjectFetchParams>{
+      serviceId: 'some-service',
+      clusterDetails: {
+        name: 'cluster1',
+        url: 'http://localhost:9999',
+        serviceAccountToken: 'token',
+        authProvider: 'serviceAccount',
+      },
+      objectTypesToFetch: new Set(['pods', 'services']),
+      labelSelector: '',
+    });
+
+    const mockCall = clientMock.listPodForAllNamespaces.mock.calls[0];
+    const actualSelector = mockCall[mockCall.length - 1];
+    const expectedSelector = 'backstage.io/kubernetes-id=some-service';
+    expect(actualSelector).toBe(expectedSelector);
   });
 });

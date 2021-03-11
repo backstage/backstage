@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-export * from '@backstage/catalog-client';
 export { AboutCard } from './components/AboutCard';
+export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
+export * from './components/EntitySwitch';
 export { Router } from './components/Router';
-export { useEntityCompoundName } from './components/useEntityCompoundName';
-export { EntityContext, useEntity } from './hooks/useEntity';
-export { catalogApiRef, plugin } from './plugin';
-export * from './routes';
+export {
+  CatalogEntityPage,
+  CatalogIndexPage,
+  catalogPlugin,
+  catalogPlugin as plugin,
+  EntityAboutCard,
+  EntityHasComponentsCard,
+  EntityHasSubcomponentsCard,
+  EntityHasSystemsCard,
+  EntityLinksCard,
+} from './plugin';

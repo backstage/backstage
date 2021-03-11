@@ -49,8 +49,14 @@ export type FiltersState = {
   checked: Array<string>;
 };
 
+export type FilterOptions = {
+  kind: Array<string>;
+  lifecycle: Array<string>;
+};
+
 type FiltersProps = {
   filters: FiltersState;
+  filterOptions: FilterOptions;
   resetFilters: () => void;
   updateSelected: (filter: string) => void;
   updateChecked: (filter: string) => void;
@@ -58,15 +64,12 @@ type FiltersProps = {
 
 export const Filters = ({
   filters,
+  filterOptions,
   resetFilters,
   updateSelected,
   updateChecked,
 }: FiltersProps) => {
   const classes = useStyles();
-
-  // TODO: move mocked filters out of filters component to make it more generic
-  const filter1 = ['All', 'API', 'Component', 'Location', 'Template'];
-  const filter2 = ['deprecated', 'recommended', 'experimental', 'production'];
 
   return (
     <Card className={classes.filters}>
@@ -79,54 +82,65 @@ export const Filters = ({
         }
       />
       <Divider />
-      <CardContent>
-        <Typography variant="subtitle2">Kind</Typography>
-        <Select
-          id="outlined-select"
-          onChange={(e: React.ChangeEvent<any>) =>
-            updateSelected(e?.target?.value)
-          }
-          variant="outlined"
-          className={classes.dropdown}
-          value={filters.selected}
-        >
-          {filter1.map(filter => (
-            <MenuItem
-              selected={filter === 'All'}
-              dense
-              key={filter}
-              value={filter}
-            >
-              {filter}
-            </MenuItem>
-          ))}
-        </Select>
-      </CardContent>
-      <CardContent>
-        <Typography variant="subtitle2">Lifecycle</Typography>
-        <List disablePadding dense>
-          {filter2.map(filter => (
-            <ListItem
-              key={filter}
-              dense
-              button
-              onClick={() => updateChecked(filter)}
-            >
-              <Checkbox
-                edge="start"
-                disableRipple
-                className={classes.checkbox}
-                color="primary"
-                checked={filters.checked.includes(filter)}
-                tabIndex={-1}
+      {filterOptions.kind.length === 0 && filterOptions.lifecycle.length === 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">
+            Filters cannot be applied to available results
+          </Typography>
+        </CardContent>
+      )}
+      {filterOptions.kind.length > 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">Kind</Typography>
+          <Select
+            id="outlined-select"
+            onChange={(e: React.ChangeEvent<any>) =>
+              updateSelected(e?.target?.value)
+            }
+            variant="outlined"
+            className={classes.dropdown}
+            value={filters.selected}
+          >
+            {filterOptions.kind.map(filter => (
+              <MenuItem
+                selected={filter === ''}
+                dense
+                key={filter}
                 value={filter}
-                name={filter}
-              />
-              <ListItemText id={filter} primary={filter} />
-            </ListItem>
-          ))}
-        </List>
-      </CardContent>
+              >
+                {filter}
+              </MenuItem>
+            ))}
+          </Select>
+        </CardContent>
+      )}
+      {filterOptions.lifecycle.length > 0 && (
+        <CardContent>
+          <Typography variant="subtitle2">Lifecycle</Typography>
+          <List disablePadding dense>
+            {filterOptions.lifecycle.map(filter => (
+              <ListItem
+                key={filter}
+                dense
+                button
+                onClick={() => updateChecked(filter)}
+              >
+                <Checkbox
+                  edge="start"
+                  disableRipple
+                  className={classes.checkbox}
+                  color="primary"
+                  checked={filters.checked.includes(filter)}
+                  tabIndex={-1}
+                  value={filter}
+                  name={filter}
+                />
+                <ListItemText id={filter} primary={filter} />
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+      )}
     </Card>
   );
 };
