@@ -15,7 +15,8 @@
  */
 
 import { isValidElement, ReactElement, ReactNode } from 'react';
-import { BackstageRouteObject, RouteRef } from '../routing/types';
+import { RouteRef } from '@backstage/plugin-api';
+import { BackstageRouteObject } from '../routing/types';
 import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
 

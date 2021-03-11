@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/plugin-api';
 import { ApiFactoryRegistry } from './ApiFactoryRegistry';
-import { createApiRef } from './ApiRef';
 
-const aRef = createApiRef<number>({ id: 'a', description: '' });
+const aRef = createApiRef<number>({ id: 'a' });
 const aFactory1 = { api: aRef, deps: {}, factory: () => 1 };
 const aFactory2 = { api: aRef, deps: {}, factory: () => 2 };
-const bRef = createApiRef<string>({ id: 'b', description: '' });
+const bRef = createApiRef<string>({ id: 'b' });
 const bFactory = { api: bRef, deps: {}, factory: () => 'x' };
-const cRef = createApiRef<string>({ id: 'c', description: '' });
+const cRef = createApiRef<string>({ id: 'c' });
 const cFactory = { api: cRef, deps: {}, factory: () => 'y' };
 
 describe('ApiFactoryRegistry', () => {
@@ -69,8 +69,8 @@ describe('ApiFactoryRegistry', () => {
   });
 
   it('should identify ApiRefs by id but still return the correct factory ref when listing all apis', () => {
-    const ref1 = createApiRef<number>({ id: 'a', description: 'ref1' });
-    const ref2 = createApiRef<number>({ id: 'a', description: 'ref2' });
+    const ref1 = createApiRef<number>({ id: 'a' });
+    const ref2 = createApiRef<number>({ id: 'a' });
 
     const factory1 = { api: ref1, deps: {}, factory: () => 3 };
     const factory2 = { api: ref2, deps: {}, factory: () => 3 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef, ApiHolder } from './types';
+import { ApiRef, ApiHolder } from '@backstage/plugin-api';
 
 /**
  * An ApiHolder that queries multiple other holders from for

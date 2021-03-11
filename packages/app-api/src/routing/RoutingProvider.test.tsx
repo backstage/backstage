@@ -31,38 +31,35 @@ import {
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
-import { createPlugin } from '../plugin';
+import {
+  createPlugin,
+  useRouteRef,
+  createRouteRef,
+  createExternalRouteRef,
+  RouteRef,
+  ExternalRouteRef,
+} from '@backstage/plugin-api';
+import { RoutingProvider } from './RoutingProvider';
 import {
   routePathCollector,
   routeParentCollector,
   routeObjectCollector,
 } from './collectors';
 import { validateRoutes } from './validation';
-import { useRouteRef, RoutingProvider } from './hooks';
-import { createRouteRef, RouteRefConfig } from './RouteRef';
 import { RouteResolver } from './RouteResolver';
-import { createExternalRouteRef } from './ExternalRouteRef';
-import { AnyRouteRef, RouteFunc, RouteRef, ExternalRouteRef } from './types';
+import { AnyRouteRef, RouteFunc } from './types';
 
-const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
-  path: '/unused',
-  title: 'Unused',
-  ...extra,
-});
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
   <>{children}</>
 );
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
-const ref1 = createRouteRef(mockConfig({ path: '/wat1' }));
-const ref2 = createRouteRef(mockConfig({ path: '/wat2' }));
-const ref3 = createRouteRef(mockConfig({ path: '/wat3' }));
-const ref4 = createRouteRef(mockConfig({ path: '/wat4' }));
-const ref5 = createRouteRef({
-  ...mockConfig({ path: '/wat5' }),
-  params: ['x'],
-});
+const ref1 = createRouteRef({ id: 'ref1' });
+const ref2 = createRouteRef({ id: 'ref2' });
+const ref3 = createRouteRef({ id: 'ref3' });
+const ref4 = createRouteRef({ id: 'ref4' });
+const ref5 = createRouteRef({ id: 'ref5', params: ['x'] });
 const eRefA = createExternalRouteRef({ id: '1' });
 const eRefB = createExternalRouteRef({ id: '2' });
 const eRefC = createExternalRouteRef({ id: '3', params: ['y'] });

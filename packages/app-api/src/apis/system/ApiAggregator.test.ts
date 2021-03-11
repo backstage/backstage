@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/plugin-api';
 import { ApiAggregator } from './ApiAggregator';
-import { createApiRef } from './ApiRef';
 import { ApiRegistry } from './ApiRegistry';
 
 describe('ApiAggregator', () => {
-  const apiARef = createApiRef<number>({ id: 'a', description: '' });
-  const apiBRef = createApiRef<number>({ id: 'b', description: '' });
+  const apiARef = createApiRef<number>({ id: 'a' });
+  const apiBRef = createApiRef<number>({ id: 'b' });
 
   it('should forward implementations', () => {
     const agg = new ApiAggregator(

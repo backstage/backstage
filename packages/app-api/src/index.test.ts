@@ -17,7 +17,7 @@
 import * as index from '.';
 
 describe('index', () => {
-  it('exports the plugin api', () => {
+  it('exports the app api', () => {
     expect(index).toEqual({
       // Public API
       createApp: expect.any(Function),

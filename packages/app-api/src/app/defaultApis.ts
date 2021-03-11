@@ -27,13 +27,13 @@ import {
   MicrosoftAuth,
   OAuthRequestManager,
   WebStorage,
-  createApiFactory,
   UrlPatternDiscovery,
   SamlAuth,
   OneLoginAuth,
 } from '../apis';
 
 import {
+  createApiFactory,
   alertApiRef,
   errorApiRef,
   discoveryApiRef,

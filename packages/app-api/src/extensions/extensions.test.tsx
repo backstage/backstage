@@ -15,8 +15,7 @@
  */
 
 import React from 'react';
-import { createPlugin } from '../plugin';
-import { createRouteRef } from '../routing';
+import { createPlugin, createRouteRef } from '@backstage/plugin-api';
 import { getComponentData } from './componentData';
 import {
   createComponentExtension,
@@ -50,7 +49,7 @@ describe('extensions', () => {
 
   it('should create react extensions of different types', () => {
     const Component = () => <div />;
-    const routeRef = createRouteRef({ path: '/foo', title: 'Foo' });
+    const routeRef = createRouteRef({ id: 'foo' });
 
     const extension1 = createComponentExtension({
       component: {

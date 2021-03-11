@@ -38,10 +38,6 @@ describe('v1 consumer', () => {
     const mockContext: AppContextV1 = {
       getComponents: jest.fn(),
       getSystemIcon: jest.fn(),
-      getPlugins: jest.fn(),
-      getProvider: jest.fn(),
-      getRouter: jest.fn(),
-      getRoutes: jest.fn(),
     };
 
     const renderedHook = renderHook(() => useMockAppV1(), {
@@ -59,21 +55,5 @@ describe('v1 consumer', () => {
     result.getSystemIcon('icon');
     expect(mockContext.getSystemIcon).toHaveBeenCalledTimes(1);
     expect(mockContext.getSystemIcon).toHaveBeenCalledWith('icon');
-
-    expect(mockContext.getPlugins).toHaveBeenCalledTimes(0);
-    result.getPlugins();
-    expect(mockContext.getPlugins).toHaveBeenCalledTimes(1);
-
-    expect(mockContext.getProvider).toHaveBeenCalledTimes(0);
-    result.getProvider();
-    expect(mockContext.getProvider).toHaveBeenCalledTimes(1);
-
-    expect(mockContext.getRouter).toHaveBeenCalledTimes(0);
-    result.getRouter();
-    expect(mockContext.getRouter).toHaveBeenCalledTimes(1);
-
-    expect(mockContext.getRoutes).toHaveBeenCalledTimes(0);
-    result.getRoutes();
-    expect(mockContext.getRoutes).toHaveBeenCalledTimes(1);
   });
 });

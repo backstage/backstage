@@ -15,9 +15,13 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin } from '../plugin/types';
+import {
+  Extension,
+  BackstagePlugin,
+  RouteRef,
+  useRouteRef,
+} from '@backstage/plugin-api';
 
 type ComponentLoader<T> =
   | {

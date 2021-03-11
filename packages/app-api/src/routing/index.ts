@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  RouteRef,
-  AbsoluteRouteRef,
-  ConcreteRoute,
-  MutableRouteRef,
-  ExternalRouteRef,
-} from './types';
 export { FlatRoutes } from './FlatRoutes';
-export { createRouteRef } from './RouteRef';
-export { createSubRouteRef } from './SubRouteRef';
-export { createExternalRouteRef } from './ExternalRouteRef';
-export type { RouteRefConfig } from './RouteRef';
-export { useRouteRef } from './hooks';
