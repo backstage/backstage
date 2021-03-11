@@ -31,6 +31,7 @@
   "dependencies": {
     "@backstage/config": "^0.1.3",
     "@backstage/core-api": "^0.2.13",
+    "@backstage/errors": "^0.1.1",
     "@backstage/theme": "^0.2.4",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

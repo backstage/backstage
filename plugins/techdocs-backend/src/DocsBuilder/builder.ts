@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotModifiedError } from '@backstage/backend-common';
+import { NotModifiedError } from '@backstage/errors';
 import { Entity, serializeEntityRef } from '@backstage/catalog-model';
 import {
   GeneratorBase,

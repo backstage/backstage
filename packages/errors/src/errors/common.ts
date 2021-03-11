@@ -14,38 +14,18 @@
  * limitations under the License.
  */
 
+import { CustomErrorBase } from './CustomErrorBase';
+
 /*
  * A set of common business logic errors.
  *
- * The error handler middleware understands these and will translate them to
- * well formed HTTP responses.
+ * A backend error handler middleware would understand these and translate them
+ * to well formed HTTP responses.
  *
  * While these are intentionally analogous to HTTP errors, they are not
  * intended to be thrown by the request handling layer. In those places, please
  * use e.g. the http-errors library.
  */
-
-class CustomErrorBase extends Error {
-  readonly cause?: Error;
-
-  constructor(message?: string, cause?: Error) {
-    let fullMessage = message;
-    if (cause) {
-      if (fullMessage) {
-        fullMessage += `; caused by ${cause}`;
-      } else {
-        fullMessage = `caused by ${cause}`;
-      }
-    }
-
-    super(fullMessage);
-
-    Error.captureStackTrace(this, this.constructor);
-
-    this.name = this.constructor.name;
-    this.cause = cause;
-  }
-}
 
 /**
  * The given inputs are malformed and cannot be processed.

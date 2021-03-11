@@ -33,6 +33,7 @@
     "@backstage/catalog-client": "^0.3.7",
     "@backstage/catalog-model": "^0.7.4",
     "@backstage/config": "^0.1.3",
+    "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@gitbeaker/core": "^28.0.2",
     "@gitbeaker/node": "^28.0.2",

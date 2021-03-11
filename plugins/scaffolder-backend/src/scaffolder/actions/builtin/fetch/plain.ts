@@ -15,7 +15,8 @@
  */
 
 import path from 'path';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';

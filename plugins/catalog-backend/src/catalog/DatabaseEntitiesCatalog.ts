@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import {
   Entity,
   entityHasChanges,

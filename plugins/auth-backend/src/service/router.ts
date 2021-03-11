@@ -23,10 +23,10 @@ import {
   AuthProviderFactory,
 } from '../providers';
 import {
-  NotFoundError,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { NotFoundError } from '@backstage/errors';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { createOidcRouter, DatabaseKeyStore, TokenFactory } from '../identity';

@@ -16,7 +16,7 @@
 
 import express from 'express';
 import { Config } from '@backstage/config';
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { readState } from './helpers';
 import { AuthProviderRouteHandlers } from '../../providers/types';
 

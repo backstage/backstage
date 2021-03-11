@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { NotModifiedError, UrlReader } from '@backstage/backend-common';
+
+import { NotModifiedError } from '@backstage/errors';
+import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
