@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { useApi, useApiHolder } from './useApi';
+export { useApi, useApiHolder, withApis } from './useApi';
 export { createApiRef } from './ApiRef';
 export * from './types';
 export * from './helpers';
