@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/plugin-api';
 import { ApiResolver } from './ApiResolver';
-import { createApiRef } from './ApiRef';
 import { ApiFactoryRegistry } from './ApiFactoryRegistry';
 
-const aRef = createApiRef<number>({ id: 'a', description: '' });
-const otherARef = createApiRef<number>({ id: 'a', description: 'other' });
-const bRef = createApiRef<string>({ id: 'b', description: '' });
-const otherBRef = createApiRef<string>({ id: 'b', description: 'other' });
-const cRef = createApiRef<{ x: string }>({ id: 'c', description: '' });
-const otherCRef = createApiRef<{ x: string }>({
-  id: 'c',
-  description: 'other',
-});
+const aRef = createApiRef<number>({ id: 'a' });
+const otherARef = createApiRef<number>({ id: 'a' });
+const bRef = createApiRef<string>({ id: 'b' });
+const otherBRef = createApiRef<string>({ id: 'b' });
+const cRef = createApiRef<{ x: string }>({ id: 'c' });
+const otherCRef = createApiRef<{ x: string }>({ id: 'c' });
 
 function createRegistry() {
   const registry = new ApiFactoryRegistry();

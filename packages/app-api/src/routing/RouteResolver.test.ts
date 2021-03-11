@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from './RouteRef';
-import { createSubRouteRef } from './SubRouteRef';
-import { createExternalRouteRef } from './ExternalRouteRef';
+import {
+  createRouteRef,
+  createSubRouteRef,
+  createExternalRouteRef,
+  ExternalRouteRef,
+  RouteRef,
+  SubRouteRef,
+} from '@backstage/plugin-api';
 import { RouteResolver } from './RouteResolver';
-import { ExternalRouteRef, RouteRef, SubRouteRef } from './types';
 
 const element = () => null;
 const rest = { element, caseSensitive: false };

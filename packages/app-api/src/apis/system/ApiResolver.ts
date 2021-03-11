@@ -17,10 +17,10 @@
 import {
   ApiRef,
   ApiHolder,
-  ApiFactoryHolder,
   AnyApiRef,
   TypesToApiRefs,
-} from './types';
+} from '@backstage/plugin-api';
+import { ApiFactoryHolder } from './types';
 
 export class ApiResolver implements ApiHolder {
   /**

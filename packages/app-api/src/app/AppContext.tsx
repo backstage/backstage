@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import React, {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  Context,
-} from 'react';
+import React, { createContext, PropsWithChildren } from 'react';
 import {
   VersionedValue,
   createVersionedValueMap,
 } from '../lib/versionedValues';
-import {
-  getGlobalSingleton,
-  getOrCreateGlobalSingleton,
-} from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 import { AppContext as AppContextV1 } from './types';
 
 type AppContextType = VersionedValue<{ 1: AppContextV1 }> | undefined;
@@ -46,18 +38,4 @@ export const AppContextProvider = ({
   const versionedValue = createVersionedValueMap({ 1: appContext });
 
   return <AppContext.Provider value={versionedValue} children={children} />;
-};
-
-export const useApp = (): AppContextV1 => {
-  const versionedContext = useContext(
-    getGlobalSingleton<Context<AppContextType>>('app-context'),
-  );
-  if (!versionedContext) {
-    throw new Error('No app context available');
-  }
-  const appContext = versionedContext.atVersion(1);
-  if (!appContext) {
-    throw new Error('AppContext v1 not available');
-  }
-  return appContext;
 };

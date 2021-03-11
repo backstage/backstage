@@ -15,12 +15,17 @@
  */
 
 import { ComponentType } from 'react';
-import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
-import { ExternalRouteRef, RouteRef } from '../routing';
-import { AnyApiFactory } from '../apis';
-import { AppTheme, ProfileInfo, IconComponent } from '@backstage/plugin-api';
+import {
+  AnyApiFactory,
+  AppTheme,
+  ProfileInfo,
+  IconComponent,
+  BackstagePlugin,
+  RouteRef,
+  SubRouteRef,
+  ExternalRouteRef,
+} from '@backstage/plugin-api';
 import { AppConfig } from '@backstage/config';
-import { SubRouteRef } from '../routing/types';
 import { AppIcons } from './icons';
 
 export type BootErrorPageProps = {
@@ -98,7 +103,9 @@ type PartialKeys<
 /**
  * Creates a map of target routes with matching parameters based on a map of external routes.
  */
-type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
+type TargetRouteMap<
+  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+> = {
   [name in keyof ExternalRoutes]: ExternalRoutes[name] extends ExternalRouteRef<
     infer Params,
     any
@@ -107,7 +114,9 @@ type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
     : never;
 };
 
-export type AppRouteBinder = <ExternalRoutes extends AnyExternalRoutes>(
+export type AppRouteBinder = <
+  ExternalRoutes extends { [name: string]: ExternalRouteRef }
+>(
   externalRoutes: ExternalRoutes,
   targetRoutes: PartialKeys<
     TargetRouteMap<ExternalRoutes>,
@@ -215,21 +224,9 @@ export type BackstageApp = {
    * and any other components that should only be available while signed in.
    */
   getRouter(): ComponentType<{}>;
-
-  /**
-   * Routes component that contains all routes for plugin pages in the app.
-   *
-   * @deprecated Registering routes in plugins is deprecated and this method will be removed.
-   */
-  getRoutes(): JSX.Element[];
 };
 
 export type AppContext = {
-  /**
-   * @deprecated Will be removed
-   */
-  getPlugins(): BackstagePlugin<any, any>[];
-
   /**
    * Get a common or custom icon for this app.
    */
@@ -239,19 +236,4 @@ export type AppContext = {
    * Get the components registered for various purposes in the app.
    */
   getComponents(): AppComponents;
-
-  /**
-   * @deprecated Will be removed
-   */
-  getProvider(): ComponentType<{}>;
-
-  /**
-   * @deprecated Will be removed
-   */
-  getRouter(): ComponentType<{}>;
-
-  /**
-   * @deprecated Will be removed
-   */
-  getRoutes(): JSX.Element[];
 };

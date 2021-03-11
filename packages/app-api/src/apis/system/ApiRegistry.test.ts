@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { createApiRef } from '@backstage/plugin-api';
 import { ApiRegistry } from './ApiRegistry';
-import { createApiRef } from './ApiRef';
 
 describe('ApiRegistry', () => {
-  const x1Ref = createApiRef<number>({ id: 'x1', description: '' });
-  const x1DuplicateRef = createApiRef<number>({ id: 'x1', description: '' });
-  const x2Ref = createApiRef<string>({ id: 'x2', description: '' });
+  const x1Ref = createApiRef<number>({ id: 'x1' });
+  const x1DuplicateRef = createApiRef<number>({ id: 'x1' });
+  const x2Ref = createApiRef<string>({ id: 'x2' });
 
   it('should be created', () => {
     const registry = ApiRegistry.from([]);

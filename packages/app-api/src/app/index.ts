@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { useApp } from './AppContext';
+export { createApp } from './createApp';
 export * from './types';

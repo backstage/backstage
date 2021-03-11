@@ -18,16 +18,18 @@ import { generatePath, matchRoutes } from 'react-router-dom';
 import {
   AnyRouteRef,
   BackstageRouteObject,
+  AnyParams,
+  RouteFunc,
+  routeRefType,
+} from './types';
+import {
   RouteRef,
   ExternalRouteRef,
-  AnyParams,
   SubRouteRef,
-  routeRefType,
-  RouteFunc,
-} from './types';
-import { isRouteRef } from './RouteRef';
-import { isSubRouteRef } from './SubRouteRef';
-import { isExternalRouteRef } from './ExternalRouteRef';
+  isRouteRef,
+  isSubRouteRef,
+  isExternalRouteRef,
+} from '@backstage/plugin-api';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 function joinPaths(...paths: string[]): string {

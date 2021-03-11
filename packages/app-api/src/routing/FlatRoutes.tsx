@@ -16,7 +16,7 @@
 
 import React, { ReactNode, Children, isValidElement, Fragment } from 'react';
 import { useRoutes } from 'react-router-dom';
-import { useApp } from '../app';
+import { useApp } from '@backstage/plugin-api';
 
 type RouteObject = {
   path: string;

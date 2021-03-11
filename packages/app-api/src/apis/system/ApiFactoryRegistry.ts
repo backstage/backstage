@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ApiFactoryHolder } from './types';
 import {
   ApiRef,
-  ApiFactoryHolder,
   ApiFactory,
   AnyApiRef,
   AnyApiFactory,
-} from './types';
+} from '@backstage/plugin-api';
 
 type ApiFactoryScope =
   | 'default' // Default factories registered by core and plugins

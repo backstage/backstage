@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/plugin-api';
+import { RouteRef, SubRouteRef, ExternalRouteRef } from '@backstage/plugin-api';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
+export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
+  'route-ref-type',
+  () => Symbol('route-ref-type'),
+);
+
 export type AnyParams = { [param in string]: string } | undefined;
-export type ParamKeys<Params extends AnyParams> = keyof Params extends never
-  ? []
-  : (keyof Params)[];
-export type OptionalParams<
-  Params extends { [param in string]: string }
-> = Params[keyof Params] extends never ? undefined : Params;
+
+export type AnyRouteRef =
+  | RouteRef<any>
+  | SubRouteRef<any>
+  | ExternalRouteRef<any, any>;
 
 // The extra TS magic here is to require a single params argument if the RouteRef
 // had at least one param defined, but require 0 arguments if there are no params defined.
@@ -33,59 +37,6 @@ export type OptionalParams<
 export type RouteFunc<Params extends AnyParams> = (
   ...[params]: Params extends undefined ? readonly [] : readonly [Params]
 ) => string;
-
-export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
-  'route-ref-type',
-  () => Symbol('route-ref-type'),
-);
-
-export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
-
-  params: ParamKeys<Params>;
-
-  // TODO(Rugvip): Remove all of these once plugins don't rely on the path
-  /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
-  path: string;
-  /** @deprecated icons are no longer accessed via RouteRefs */
-  icon?: IconComponent;
-  /** @deprecated titles are no longer accessed via RouteRefs */
-  title?: string;
-};
-
-export type SubRouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'sub';
-
-  parent: RouteRef;
-
-  path: string;
-
-  params: ParamKeys<Params>;
-};
-
-export type ExternalRouteRef<
-  Params extends AnyParams = any,
-  Optional extends boolean = any
-> = {
-  readonly [routeRefType]: 'external';
-
-  params: ParamKeys<Params>;
-
-  optional?: Optional;
-};
-
-export type AnyRouteRef =
-  | RouteRef<any>
-  | SubRouteRef<any>
-  | ExternalRouteRef<any, any>;
-
-// TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
-/** @deprecated */
-export type ConcreteRoute = {};
-/** @deprecated */
-export type AbsoluteRouteRef = RouteRef<{}>;
-/** @deprecated */
-export type MutableRouteRef = RouteRef<{}>;
 
 // A duplicate of the react-router RouteObject, but with routeRef added
 export interface BackstageRouteObject {

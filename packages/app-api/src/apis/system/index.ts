@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-export { ApiProvider, useApi, useApiHolder } from './ApiProvider';
+export { ApiProvider } from './ApiProvider';
 export { ApiRegistry } from './ApiRegistry';
 export { ApiResolver } from './ApiResolver';
 export { ApiFactoryRegistry } from './ApiFactoryRegistry';
-export { createApiRef } from './ApiRef';
 export * from './types';
-export * from './helpers';

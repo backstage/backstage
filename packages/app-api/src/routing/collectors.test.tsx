@@ -26,11 +26,9 @@ import {
   childDiscoverer,
   routeElementDiscoverer,
 } from '../extensions/traversal';
-import { createRouteRef } from './RouteRef';
-import { createPlugin } from '../plugin';
+import { createRouteRef, createPlugin, RouteRef } from '@backstage/plugin-api';
 import { attachComponentData, createRoutableExtension } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { RouteRef } from './types';
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
   <>{children}</>
@@ -38,11 +36,11 @@ const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
-const ref1 = createRouteRef({ path: '/foo1', title: 'Foo' });
-const ref2 = createRouteRef({ path: '/foo2', title: 'Foo' });
-const ref3 = createRouteRef({ path: '/foo3', title: 'Foo' });
-const ref4 = createRouteRef({ path: '/foo4', title: 'Foo' });
-const ref5 = createRouteRef({ path: '/foo5', title: 'Foo' });
+const ref1 = createRouteRef({ id: 'ref1' });
+const ref2 = createRouteRef({ id: 'ref2' });
+const ref3 = createRouteRef({ id: 'ref3' });
+const ref4 = createRouteRef({ id: 'ref4' });
+const ref5 = createRouteRef({ id: 'ref5' });
 const refOrder = [ref1, ref2, ref3, ref4, ref5];
 
 const Extension1 = plugin.provide(

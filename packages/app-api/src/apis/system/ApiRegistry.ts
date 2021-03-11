@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiRef, ApiHolder } from './types';
+import { ApiRef, ApiHolder } from '@backstage/plugin-api';
 
 type ApiImpl<T = unknown> = readonly [ApiRef<T>, T];
 

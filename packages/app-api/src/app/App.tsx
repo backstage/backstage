@@ -21,19 +21,19 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import {
-  AnyApiFactory,
-  ApiHolder,
   ApiProvider,
   ApiRegistry,
   AppThemeSelector,
   ConfigReader,
   LocalStorageFeatureFlags,
-  useApi,
 } from '../apis';
 import {
+  useApi,
+  AnyApiFactory,
+  ApiHolder,
   IconComponent,
   AppTheme,
   appThemeApiRef,
@@ -42,6 +42,9 @@ import {
   ConfigApi,
   featureFlagsApiRef,
   identityApiRef,
+  BackstagePlugin,
+  RouteRef,
+  ExternalRouteRef,
 } from '@backstage/plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
@@ -49,15 +52,12 @@ import {
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
-import { BackstagePlugin } from '../plugin';
-import { AnyRoutes } from '../plugin/types';
-import { RouteRef, ExternalRouteRef } from '../routing';
 import {
   routeObjectCollector,
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
-import { RoutingProvider } from '../routing/hooks';
+import { RoutingProvider } from '../routing/RoutingProvider';
 import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
@@ -79,7 +79,10 @@ export function generateBoundRoutes(
   const result = new Map<ExternalRouteRef, RouteRef>();
 
   if (bindRoutes) {
-    const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {
+    const bind: AppRouteBinder = (
+      externalRoutes,
+      targetRoutes: { [name: string]: RouteRef<any> },
+    ) => {
       for (const [key, value] of Object.entries(targetRoutes)) {
         const externalRoute = externalRoutes[key];
         if (!externalRoute) {
@@ -150,36 +153,12 @@ function useConfigLoader(
 class AppContextImpl implements AppContext {
   constructor(private readonly app: PrivateAppImpl) {}
 
-  getPlugins(): BackstagePlugin<any, any>[] {
-    // eslint-disable-next-line no-console
-    console.warn('appContext.getPlugins() is deprecated and will be removed');
-    return this.app.getPlugins();
-  }
-
   getSystemIcon(key: string): IconComponent | undefined {
     return this.app.getSystemIcon(key);
   }
 
   getComponents(): AppComponents {
     return this.app.getComponents();
-  }
-
-  getProvider(): React.ComponentType<{}> {
-    // eslint-disable-next-line no-console
-    console.warn('appContext.getProvider() is deprecated and will be removed');
-    return this.app.getProvider();
-  }
-
-  getRouter(): React.ComponentType<{}> {
-    // eslint-disable-next-line no-console
-    console.warn('appContext.getRouter() is deprecated and will be removed');
-    return this.app.getRouter();
-  }
-
-  getRoutes(): JSX.Element[] {
-    // eslint-disable-next-line no-console
-    console.warn('appContext.getRoutes() is deprecated and will be removed');
-    return this.app.getRoutes();
   }
 }
 
@@ -219,59 +198,6 @@ export class PrivateAppImpl implements BackstageApp {
 
   getComponents(): AppComponents {
     return this.components;
-  }
-
-  getRoutes(): JSX.Element[] {
-    const routes = new Array<JSX.Element>();
-
-    const { NotFoundErrorPage } = this.components;
-
-    for (const plugin of this.plugins.values()) {
-      for (const output of plugin.output()) {
-        switch (output.type) {
-          case 'legacy-route': {
-            const { path, component: Component } = output;
-            routes.push(
-              <Route key={path} path={path} element={<Component />} />,
-            );
-            break;
-          }
-          case 'route': {
-            const { target, component: Component } = output;
-            routes.push(
-              <Route
-                key={`${plugin.getId()}-${target.path}`}
-                path={target.path}
-                element={<Component />}
-              />,
-            );
-            break;
-          }
-          case 'legacy-redirect-route': {
-            const { path, target } = output;
-            routes.push(<Navigate key={path} to={target} />);
-            break;
-          }
-          case 'redirect-route': {
-            const { from, to } = output;
-            routes.push(<Navigate key={from.path} to={to.path} />);
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
-
-    routes.push(
-      <Route
-        key="not-found-error-page"
-        path="/*"
-        element={<NotFoundErrorPage />}
-      />,
-    );
-
-    return routes;
   }
 
   getProvider(): ComponentType<{}> {

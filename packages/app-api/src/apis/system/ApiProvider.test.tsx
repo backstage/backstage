@@ -15,18 +15,23 @@
  */
 
 import React, { Context, useContext } from 'react';
-import { ApiProvider, useApi, withApis } from './ApiProvider';
-import { createApiRef } from './ApiRef';
+import {
+  useApi,
+  createApiRef,
+  withApis,
+  ApiHolder,
+  ApiRef,
+} from '@backstage/plugin-api';
+import { ApiProvider } from './ApiProvider';
 import { ApiRegistry } from './ApiRegistry';
 import { render } from '@testing-library/react';
 import { withLogCollector } from '@backstage/test-utils-core';
 import { getGlobalSingleton } from '../../lib/globalObject';
-import { ApiHolder, ApiRef } from './types';
 import { VersionedValue } from '../../lib/versionedValues';
 
 describe('ApiProvider', () => {
   type Api = () => string;
-  const apiRef = createApiRef<Api>({ id: 'x', description: '' });
+  const apiRef = createApiRef<Api>({ id: 'x' });
   const registry = ApiRegistry.from([[apiRef, () => 'hello']]);
 
   const MyHookConsumer = () => {
@@ -55,8 +60,8 @@ describe('ApiProvider', () => {
   });
 
   it('should provide nested access to apis', () => {
-    const aRef = createApiRef<string>({ id: 'a', description: '' });
-    const bRef = createApiRef<string>({ id: 'b', description: '' });
+    const aRef = createApiRef<string>({ id: 'a' });
+    const bRef = createApiRef<string>({ id: 'b' });
 
     const MyComponent = () => {
       const a = useApi(aRef);
@@ -85,7 +90,7 @@ describe('ApiProvider', () => {
 
   it('should ignore deps in prototype', () => {
     // 100% coverage + happy typescript = hasOwnProperty + this atrocity
-    const xRef = createApiRef<number>({ id: 'x', description: '' });
+    const xRef = createApiRef<number>({ id: 'x' });
 
     const proto = { x: xRef };
     const props = { getMessage: { enumerable: true, value: apiRef } };
@@ -193,7 +198,7 @@ describe('v1 consumer', () => {
   }
 
   type Api = () => string;
-  const apiRef = createApiRef<Api>({ id: 'x', description: '' });
+  const apiRef = createApiRef<Api>({ id: 'x' });
   const registry = ApiRegistry.from([[apiRef, () => 'hello']]);
 
   const MyHookConsumerV1 = () => {

@@ -19,25 +19,15 @@ import React, {
   useContext,
   ReactNode,
   PropsWithChildren,
-  Context,
 } from 'react';
 import PropTypes from 'prop-types';
-import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
+import { ApiHolder } from '@backstage/plugin-api';
 import { ApiAggregator } from './ApiAggregator';
-import {
-  getGlobalSingleton,
-  getOrCreateGlobalSingleton,
-} from '../../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '../../lib/globalObject';
 import {
   VersionedValue,
   createVersionedValueMap,
 } from '../../lib/versionedValues';
-
-const missingHolderMessage =
-  'No ApiProvider available in react context. ' +
-  'A common cause of this error is that multiple versions of @backstage/core-api are installed. ' +
-  `You can check if that is the case using 'yarn backstage-cli versions:check', and can in many cases ` +
-  `fix the issue either with the --fix flag or using 'yarn backstage-cli versions:bump'`;
 
 type ApiProviderProps = {
   apis: ApiHolder;
@@ -68,62 +58,3 @@ ApiProvider.propTypes = {
   apis: PropTypes.shape({ get: PropTypes.func.isRequired }).isRequired,
   children: PropTypes.node,
 };
-
-export function useApiHolder(): ApiHolder {
-  const versionedHolder = useContext(
-    getGlobalSingleton<Context<ApiContextType>>('api-context'),
-  );
-
-  if (!versionedHolder) {
-    throw new Error(missingHolderMessage);
-  }
-
-  const apiHolder = versionedHolder.atVersion(1);
-  if (!apiHolder) {
-    throw new Error('ApiContext v1 not available');
-  }
-
-  return apiHolder;
-}
-
-export function useApi<T>(apiRef: ApiRef<T>): T {
-  const apiHolder = useApiHolder();
-
-  const api = apiHolder.get(apiRef);
-  if (!api) {
-    throw new Error(`No implementation available for ${apiRef}`);
-  }
-  return api;
-}
-
-export function withApis<T>(apis: TypesToApiRefs<T>) {
-  return function withApisWrapper<P extends T>(
-    WrappedComponent: React.ComponentType<P>,
-  ) {
-    const Hoc = (props: PropsWithChildren<Omit<P, keyof T>>) => {
-      const apiHolder = useApiHolder();
-
-      const impls = {} as T;
-
-      for (const key in apis) {
-        if (apis.hasOwnProperty(key)) {
-          const ref = apis[key];
-
-          const api = apiHolder.get(ref);
-          if (!api) {
-            throw new Error(`No implementation available for ${ref}`);
-          }
-          impls[key] = api;
-        }
-      }
-
-      return <WrappedComponent {...(props as P)} {...impls} />;
-    };
-    const displayName =
-      WrappedComponent.displayName || WrappedComponent.name || 'Component';
-
-    Hoc.displayName = `withApis(${displayName})`;
-
-    return Hoc;
-  };
-}

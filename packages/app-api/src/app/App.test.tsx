@@ -21,13 +21,13 @@ import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import { defaultAppIcons } from './icons';
-import { createPlugin } from '../plugin';
-import { useRouteRef } from '../routing/hooks';
 import {
+  createPlugin,
+  useRouteRef,
   createExternalRouteRef,
   createRouteRef,
   createSubRouteRef,
-} from '../routing';
+} from '@backstage/plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 
 describe('generateBoundRoutes', () => {
