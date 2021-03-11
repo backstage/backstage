@@ -24,7 +24,7 @@ import {
   ProfileInfo,
   BackstageIdentity,
   AuthRequestOptions,
-} from '../../../definitions/auth';
+} from '@backstage/plugin-api';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,

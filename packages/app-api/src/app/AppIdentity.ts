@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IdentityApi, ProfileInfo } from '../apis';
+import { IdentityApi, ProfileInfo } from '@backstage/plugin-api';
 import { SignInResult } from './types';
 
 /**

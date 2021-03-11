@@ -15,7 +15,7 @@
  */
 
 import { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';
-import { FeatureFlagState, FeatureFlagsApi } from '../../definitions';
+import { FeatureFlagState, FeatureFlagsApi } from '@backstage/plugin-api';
 
 describe('FeatureFlags', () => {
   beforeEach(() => {

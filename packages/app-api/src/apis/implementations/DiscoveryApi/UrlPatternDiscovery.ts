@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi } from '../../definitions/DiscoveryApi';
+import { DiscoveryApi } from '@backstage/plugin-api';
 
 /**
  * UrlPatternDiscovery is a lightweight DiscoveryApi implementation.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext } from '../..';
+import { ErrorApi, ErrorContext } from '@backstage/plugin-api';
 import { PublishSubject } from '../../../lib';
 import { Observable } from '../../../types';
 

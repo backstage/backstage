@@ -23,26 +23,26 @@ import React, {
 } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { IconComponent } from '@backstage/plugin-api';
 import {
   AnyApiFactory,
   ApiHolder,
   ApiProvider,
   ApiRegistry,
-  AppTheme,
-  appThemeApiRef,
   AppThemeSelector,
-  configApiRef,
   ConfigReader,
   LocalStorageFeatureFlags,
   useApi,
 } from '../apis';
 import {
+  IconComponent,
+  AppTheme,
+  appThemeApiRef,
+  configApiRef,
   AppThemeApi,
   ConfigApi,
   featureFlagsApiRef,
   identityApiRef,
-} from '../apis/definitions';
+} from '@backstage/plugin-api';
 import { ApiFactoryRegistry, ApiResolver } from '../apis/system';
 import {
   childDiscoverer,

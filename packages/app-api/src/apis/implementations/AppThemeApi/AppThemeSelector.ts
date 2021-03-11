@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppThemeApi, AppTheme } from '../../definitions';
+import { AppThemeApi, AppTheme } from '@backstage/plugin-api';
 import { BehaviorSubject } from '../../../lib';
 import { Observable } from '../../../types';
 

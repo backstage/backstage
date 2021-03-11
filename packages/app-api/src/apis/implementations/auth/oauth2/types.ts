@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ProfileInfo, BackstageIdentity } from '../../../definitions';
+import { ProfileInfo, BackstageIdentity } from '@backstage/plugin-api';
 
 export type OAuth2Session = {
   providerInfo: {

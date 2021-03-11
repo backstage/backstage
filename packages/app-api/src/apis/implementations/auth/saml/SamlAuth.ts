@@ -26,7 +26,7 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionApi,
-} from '../../../definitions/auth';
+} from '@backstage/plugin-api';
 import { SamlSession } from './types';
 import {
   AuthSessionStore,

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { ProfileInfo } from '../../..';
-import { BackstageIdentity } from '../../../definitions';
+import { ProfileInfo, BackstageIdentity } from '@backstage/plugin-api';
 
 export type GithubSession = {
   providerInfo: {

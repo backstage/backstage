@@ -15,7 +15,7 @@
  */
 
 import Auth0Icon from '@material-ui/icons/AcUnit';
-import { auth0AuthApiRef } from '../../../definitions/auth';
+import { auth0AuthApiRef } from '@backstage/plugin-api';
 import { OAuth2 } from '../oauth2';
 import { OAuthApiCreateOptions } from '../types';
 

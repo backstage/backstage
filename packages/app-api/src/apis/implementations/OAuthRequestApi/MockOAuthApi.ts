@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OAuthRequestApi, AuthRequesterOptions } from '../../definitions';
+import { OAuthRequestApi, AuthRequesterOptions } from '@backstage/plugin-api';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 export default class MockOAuthApi implements OAuthRequestApi {

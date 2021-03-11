@@ -15,7 +15,7 @@
  */
 
 import { BehaviorSubject } from '..';
-import { SessionState } from '../../apis';
+import { SessionState } from '@backstage/plugin-api';
 import { Observable } from '../../types';
 
 export class SessionStateTracker {
