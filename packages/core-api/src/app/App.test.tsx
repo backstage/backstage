@@ -286,8 +286,8 @@ describe('Integration Test', () => {
       components,
       bindRoutes: ({ bind }) => {
         bind(plugin1.externalRoutes, {
-          err: plugin1RouteRef,
-          errParams: plugin2RouteRef,
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
         });
       },
     });
