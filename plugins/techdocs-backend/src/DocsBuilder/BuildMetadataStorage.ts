@@ -13,37 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-type buildInfo = {
-  // Entity uid: etag
-  [key: string]: string;
-};
 
-// TODO: Build info should be part of TechDocs storage, inside `techdocs_metadata.json`
-// instead of in-memory storage of the Backstage instance.
-// In case of multi-region Backstage deployments, or even using multiple Kubernetes pods,
-// if each instance creates its separate build info in-memory, it will result in duplicate
-// builds per instance. Also if the pod restarts, all the sites will have to be re-built.
-const builds = {} as buildInfo;
+// Entity uid: unix timestamp
+const lastUpdatedRecord = {} as Record<string, number>;
 
 /**
- * Store timestamps of the most recent TechDocs build of each Entity. This is
- * used to invalidate cache if the latest commit in the documentation source
- * repository is later than the timestamp.
+ * Store timestamps of the most recent TechDocs update of each Entity. This is
+ * used to avoid checking for an update on each and every request to TechDocs.
  */
 export class BuildMetadataStorage {
-  public entityUid: string;
-  private builds: buildInfo;
+  private entityUid: string;
+  private lastUpdatedRecord: Record<string, number>;
 
   constructor(entityUid: string) {
     this.entityUid = entityUid;
-    this.builds = builds;
+    this.lastUpdatedRecord = lastUpdatedRecord;
   }
 
-  setEtag(etag: string): void {
-    this.builds[this.entityUid] = etag;
+  setLastUpdated(): void {
+    this.lastUpdatedRecord[this.entityUid] = Date.now();
   }
 
-  getEtag(): string | undefined {
-    return this.builds[this.entityUid];
+  getLastUpdated(): number | undefined {
+    return this.lastUpdatedRecord[this.entityUid];
   }
 }
+
+/**
+ * Return false if a check for update has happened in last 60 seconds.
+ */
+export const shouldCheckForUpdate = (entityUid: string) => {
+  const lastUpdated = new BuildMetadataStorage(entityUid).getLastUpdated();
+  if (lastUpdated) {
+    // The difference is in milliseconds
+    if (Date.now() - lastUpdated < 60 * 1000) {
+      return false;
+    }
+  }
+  return true;
+};

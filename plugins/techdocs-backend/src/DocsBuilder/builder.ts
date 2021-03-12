@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  serializeEntityRef,
+} from '@backstage/catalog-model';
 import { NotModifiedError } from '@backstage/errors';
-import { Entity, serializeEntityRef } from '@backstage/catalog-model';
 import {
   GeneratorBase,
   GeneratorBuilder,
@@ -81,28 +85,41 @@ export class DocsBuilder {
       )}`,
     );
 
-    // Use the in-memory storage for setting and getting etag for this entity.
-    const buildMetadataStorage = new BuildMetadataStorage(
-      this.entity.metadata.uid,
-    );
+    // If available, use the etag stored in techdocs_metadata.json to
+    // check if docs are outdated and need to be regenerated.
+    let storedEtag: string | undefined;
+    if (await this.publisher.hasDocsBeenGenerated(this.entity)) {
+      try {
+        storedEtag = (
+          await this.publisher.fetchTechDocsMetadata({
+            namespace:
+              this.entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
+            kind: this.entity.kind,
+            name: this.entity.metadata.name,
+          })
+        ).etag;
+      } catch (err) {
+        // Proceed with a fresh build
+        this.logger.warn(
+          `Unable to read techdocs_metadata.json, error ${err}.`,
+        );
+      }
+    }
 
-    // TODO: As of now, this happens on each and every request to TechDocs.
-    // In a high traffic environment, this will cause a lot of requests to the source code provider.
-    // After Async build is implemented https://github.com/backstage/backstage/issues/3717,
-    // make sure to limit checking for cache invalidation to once per minute or so.
     let preparedDir: string;
-    let etag: string;
-
+    let newEtag: string;
     try {
       const preparerResponse = await this.preparer.prepare(this.entity, {
-        etag: buildMetadataStorage.getEtag(),
+        etag: storedEtag,
       });
 
       preparedDir = preparerResponse.preparedDir;
-      etag = preparerResponse.etag;
+      newEtag = preparerResponse.etag;
     } catch (err) {
       if (err instanceof NotModifiedError) {
         // No need to prepare anymore since cache is valid.
+        // Set last check happened to now
+        new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
         this.logger.debug(
           `Docs for ${serializeEntityRef(
             this.entity,
@@ -142,7 +159,7 @@ export class DocsBuilder {
       outputDir,
       dockerClient: this.dockerClient,
       parsedLocationAnnotation,
-      etag,
+      etag: newEtag,
     });
 
     // Remove Prepared directory since it is no longer needed.
@@ -185,7 +202,7 @@ export class DocsBuilder {
       this.logger.debug(`Error removing generated directory ${error.message}`);
     }
 
-    // Store the latest build etag for the entity
-    new BuildMetadataStorage(this.entity.metadata.uid).setEtag(etag);
+    // Update the last check time for the entity
+    new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
   }
 }

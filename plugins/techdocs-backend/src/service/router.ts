@@ -29,6 +29,7 @@ import Router from 'express-promise-router';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DocsBuilder } from '../DocsBuilder';
+import { shouldCheckForUpdate } from '../DocsBuilder/BuildMetadataStorage';
 import { getEntityNameFromUrlPath } from './helpers';
 
 type RouterOptions = {
@@ -140,7 +141,11 @@ export async function createRouter({
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
     // If set to 'external', it will only try to fetch and assume that an external process (e.g. CI/CD pipeline
     // of the repository) is responsible for building and publishing documentation to the storage provider.
-    if (config.getString('techdocs.builder') === 'local') {
+    if (
+      config.getString('techdocs.builder') === 'local' &&
+      entity.metadata.uid &&
+      shouldCheckForUpdate(entity.metadata.uid)
+    ) {
       const docsBuilder = new DocsBuilder({
         preparers,
         generators,
@@ -149,56 +154,42 @@ export async function createRouter({
         logger,
         entity,
       });
+      let foundDocs = false;
       switch (publisherType) {
         case 'local':
-          await docsBuilder.build();
-          break;
         case 'awsS3':
         case 'azureBlobStorage':
         case 'openStackSwift':
         case 'googleGcs':
-          // This block should be valid for all external storage implementations. So no need to duplicate in future,
+          // This block should be valid for all storage implementations. So no need to duplicate in future,
           // add the publisher type in the list here.
-          if (!(await publisher.hasDocsBeenGenerated(entity))) {
-            logger.info(
-              'No pre-generated documentation files found for the entity in the storage. Building docs...',
-            );
-            await docsBuilder.build();
-            // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-            // on the user's page. If not, respond with a message asking them to check back later.
-            // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
-            let foundDocs = false;
-            for (let attempt = 0; attempt < 5; attempt++) {
-              if (await publisher.hasDocsBeenGenerated(entity)) {
-                foundDocs = true;
-                break;
-              }
-              await new Promise(r => setTimeout(r, 1000));
+          await docsBuilder.build();
+          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+          // on the user's page. If not, respond with a message asking them to check back later.
+          // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
+          for (let attempt = 0; attempt < 5; attempt++) {
+            if (await publisher.hasDocsBeenGenerated(entity)) {
+              foundDocs = true;
+              break;
             }
-            if (!foundDocs) {
-              logger.error(
-                'Published files are taking longer to show up in storage. Something went wrong.',
-              );
-              res
-                .status(408)
-                .send(
-                  'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
-                );
-              return;
-            }
-          } else {
-            logger.info(
-              'Found pre-generated docs for this entity. Serving them.',
+            await new Promise(r => setTimeout(r, 1000));
+          }
+          if (!foundDocs) {
+            logger.error(
+              'Published files are taking longer to show up in storage. Something went wrong.',
             );
-            // TODO: re-trigger build for cache invalidation.
-            // Add build info in techdocs_metadata.json and compare it against
-            // the etag/commit in the repository.
-            // Without this, docs will not be re-built once they have been generated.
-            // Although it is unconventional that anyone will face this issue - because
-            // if you have an external storage, you should be using CI/CD to build and publish docs.
+            res.status(408).json({
+              error:
+                'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+            });
+            return;
           }
           break;
         default:
+          res.status(400).json({
+            error: `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
+          });
+          break;
       }
     }
 
