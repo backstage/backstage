@@ -89,13 +89,21 @@ export class DocsBuilder {
     // check if docs are outdated and need to be regenerated.
     let storedEtag: string | undefined;
     if (await this.publisher.hasDocsBeenGenerated(this.entity)) {
-      storedEtag = (
-        await this.publisher.fetchTechDocsMetadata({
-          namespace: this.entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
-          kind: this.entity.kind,
-          name: this.entity.metadata.name,
-        })
-      ).etag;
+      try {
+        storedEtag = (
+          await this.publisher.fetchTechDocsMetadata({
+            namespace:
+              this.entity.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE,
+            kind: this.entity.kind,
+            name: this.entity.metadata.name,
+          })
+        ).etag;
+      } catch (err) {
+        // Proceed with a fresh build
+        this.logger.warn(
+          `Unable to read techdocs_metadata.json, error ${err}.`,
+        );
+      }
     }
 
     let preparedDir: string;
