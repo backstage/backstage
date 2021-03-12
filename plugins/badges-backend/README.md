@@ -1,6 +1,7 @@
 # Badges Backend
 
-Backend plugin for serving badges. Default implementation uses
+Backend plugin for serving badges to the `@backstage/plugin-badges` plugin.
+Default implementation uses
 [badge-maker](https://www.npmjs.com/package/badge-maker) for creating the
 badges, in SVG.
 
@@ -8,10 +9,35 @@ Currently, only entity badges are implemented. i.e. badges that may have entity
 specific information in them, and as such, are served from a entity specific
 endpoint.
 
-## Setup
+## Installation
 
-The list of all badges to offer are passed as an object with badge factories to
-the badges-backend `createRouter()` during plugin registration.
+Install the `@backstage/plugin-badges-backend` package in your backend packages,
+and then integrate the plugin using the following default setup for
+`src/plugins/badges.ts`:
+
+```ts
+import {
+  createRouter,
+  createDefaultBadgeFactories,
+} from '@backstage/plugin-badges-backend';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({
+  config,
+  discovery,
+}: PluginEnvironment) {
+  return await createRouter({
+    config,
+    discovery,
+    badgeFactories: createDefaultBadgeFactories(),
+  });
+}
+```
+
+The `createDefaultBadgeFactories()` returns an object with badge factories to
+the badges-backend `createRouter()` to forward to the default badge builder. To
+customize the available badges, provide a custom set of badge factories. See
+further down for an example of a custom badge factories function.
 
 ## Badge builder
 
@@ -27,6 +53,30 @@ as examples.
 
 Additional badges may be provided in your application by defining custom badge
 factories, and provide them to the badge builder.
+
+### Custom badges
+
+To provide custom badges, create a badges factories function, and use that when
+creating the badges backend router.
+
+```ts
+import type { Badge, BadgeContext, BadgeFactories } from '@backstage/plugin-badges-backend';
+export const createMyCustomBadgeFactories = (): BadgeFactories => ({
+    <custom-badge-id>: {
+        createBadge: (context: BadgeContext): Badge | null => {
+            // ...
+            return {
+                label: 'my-badge',
+                message: 'custom stuff',
+                // ...
+            };
+        },
+    },
+
+    // optional: include the default badges
+    // ...createDefaultBadgeFactories(),
+});
+```
 
 ## API
 

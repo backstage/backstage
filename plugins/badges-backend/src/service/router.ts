@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 
@@ -50,8 +51,9 @@ export async function createRouter(
     const { namespace, kind, name } = req.params;
     const entity = await catalog.getEntityByName({ namespace, kind, name });
     if (!entity) {
-      res.status(404).send(`Unknown entity`);
-      return;
+      throw new NotFoundError(
+        `No ${kind} entity in ${namespace} named "${name}"`,
+      );
     }
 
     const context: BadgeContext = {
@@ -86,8 +88,9 @@ export async function createRouter(
     const { namespace, kind, name, badgeId } = req.params;
     const entity = await catalog.getEntityByName({ namespace, kind, name });
     if (!entity) {
-      res.status(404).send(`Unknown entity`);
-      return;
+      throw new NotFoundError(
+        `No ${kind} entity in ${namespace} named "${name}"`,
+      );
     }
 
     let format =
@@ -109,11 +112,11 @@ export async function createRouter(
     });
 
     if (!data) {
-      res.status(404).send(`Unknown entity badge "${badgeId}"`);
-    } else {
-      res.setHeader('Content-Type', format);
-      res.status(200).send(data);
+      throw new NotFoundError(`Unknown badge "${badgeId}" for ${kind} entity.`);
     }
+
+    res.setHeader('Content-Type', format);
+    res.status(200).send(data);
   });
 
   router.use(errorHandler());

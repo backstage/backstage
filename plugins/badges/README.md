@@ -1,4 +1,4 @@
-# Badges
+# @backstage/plugin-badges
 
 The badges plugin offers a set of badges that can be used outside of
 your backstage deployment, showing information related to data from
