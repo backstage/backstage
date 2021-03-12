@@ -67,7 +67,7 @@ export async function createRouter(
       rateInfo,
       config,
     );
-    console.log(rows);
+
     response.send({ rates: rows });
   });
 
@@ -117,10 +117,10 @@ async function queryUXMetrics(
   const { longName, shortName } = rateInfo;
 
   const query = `SELECT
-    SUM(${shortName}.density) * 100 AS fast_${shortName}_rate,
+    SUM(${shortName}.density) AS fast_${shortName}_rate,
      (
       SELECT
-        SUM(${shortName}.density) * 100
+        SUM(${shortName}.density) 
       FROM
         \`chrome-ux-report.all.${month}\`,
         UNNEST(${longName}.histogram.bin) AS ${shortName}
@@ -131,7 +131,7 @@ async function queryUXMetrics(
     ) AS avg_${shortName}_rate, 
      (
       SELECT
-        SUM(${shortName}.density) * 100
+        SUM(${shortName}.density) 
       FROM
         \`chrome-ux-report.all.${month}\`,
         UNNEST(${longName}.histogram.bin) AS ${shortName}

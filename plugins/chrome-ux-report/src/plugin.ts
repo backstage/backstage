@@ -13,21 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRoutableExtension } from '@backstage/core';
+import {
+  configApiRef,
+  createApiFactory,
+  createPlugin,
+  createRoutableExtension,
+  discoveryApiRef
+} from '@backstage/core';
+
+import {
+  chromeuxReportApiRef,
+  ChromeUXReportApi
+} from './api';
 
 import { rootRouteRef } from './routes';
 
 export const chromeUxReportPlugin = createPlugin({
   id: 'chrome-ux-report',
+  apis: [
+    createApiFactory({
+      api: chromeuxReportApiRef,
+      deps: {
+        configApi: configApiRef,
+        discoveryApi: discoveryApiRef
+      },
+      factory: ({ configApi, discoveryApi }) =>
+        new ChromeUXReportApi({
+          configApi,
+          discoveryApi
+        }),
+    })
+  ],
   routes: {
-    root: rootRouteRef,
+    root: rootRouteRef
   },
 });
 
 export const ChromeUxReportPage = chromeUxReportPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+    component: () => import('./components/ChromeUXReport').then(m => m.ChromeUXReport),
     mountPoint: rootRouteRef,
   }),
 );

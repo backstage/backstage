@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ExampleComponent } from './ExampleComponent';
+import { ChromeUXReport } from './ChromeUXReport';
 import { ThemeProvider } from '@material-ui/core';
 import { lightTheme } from '@backstage/theme';
 import { rest } from 'msw';
@@ -36,11 +36,11 @@ describe('ExampleComponent', () => {
   it('should render', async () => {
     const rendered = await renderInTestApp(
       <ThemeProvider theme={lightTheme}>
-        <ExampleComponent />
+        <ChromeUXReport />
       </ThemeProvider>,
     );
     expect(
-      rendered.getByText('Welcome to chrome-ux-report!'),
+      rendered.getByText('Chrome UX Report'),
     ).toBeInTheDocument();
   });
 });

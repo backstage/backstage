@@ -44,6 +44,7 @@ import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import graphql from './plugins/graphql';
+import chromeuxreport from './plugins/chromeuxreport';
 import app from './plugins/app';
 import { PluginEnvironment } from './types';
 
@@ -80,6 +81,7 @@ async function main() {
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
+  const chromeuxreportEnv = useHotMemoize(module, () => createEnv('chromeuxreport'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
   const apiRouter = Router();
@@ -92,6 +94,7 @@ async function main() {
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use('/chromeuxreport', await chromeuxreport(chromeuxreportEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

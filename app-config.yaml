@@ -274,6 +274,12 @@ scaffolder:
         $env: BITBUCKET_TOKEN
     visibility: public # or or 'private'
 
+chromeUXReport:
+  projectId:
+    $env: GOOGLE_PROJECT_ID
+  keyPath:
+    $env: GOOGLE_APPLICATION_CREDENTIALS
+
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
