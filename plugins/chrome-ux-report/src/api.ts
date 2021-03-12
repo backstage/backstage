@@ -23,7 +23,7 @@ export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
 });
 
 export type ChromeUXReport = {
-  getChromeUXMetrics(): Promise<string>
+  getChromeUXMetrics(metricShortName: string): Promise<string>
 };
 
 /**
@@ -53,9 +53,9 @@ export class ChromeUXReportApi implements ChromeUXReport {
     );
   }
 
-  async getChromeUXMetrics(): Promise<any> {
+  async getChromeUXMetrics(metricShortName: string): Promise<any> {
     const apiOrigin = await this.getApiOrigin();
-    const requestUrl = `${apiOrigin}/fcp`;
+    const requestUrl = `${apiOrigin}/${metricShortName}`;
 
     const request = await fetch(`${requestUrl}`,{
       headers:{'content-type': 'application/json'},

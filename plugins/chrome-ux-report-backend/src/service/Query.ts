@@ -38,7 +38,7 @@ export async function queryUXMetrics(
   const { longName, shortName } = rateInfo;
 
   const query = `SELECT
-    SUM(${shortName}.density) AS fast_${shortName}_rate,
+    SUM(${shortName}.density) AS fast,
      (
       SELECT
         SUM(${shortName}.density) 
@@ -49,7 +49,7 @@ export async function queryUXMetrics(
         origin = '${origin}'
         AND ${shortName}.start > 1000
         AND ${shortName}.start <= 2500
-    ) AS avg_${shortName}_rate, 
+    ) AS average, 
      (
       SELECT
         SUM(${shortName}.density) 
@@ -59,7 +59,7 @@ export async function queryUXMetrics(
       WHERE
         origin = '${origin}'
         AND ${shortName}.start > 2500
-    ) AS slow_${shortName}_rate 
+    ) AS slow
     FROM
     \`chrome-ux-report.all.${month}\`,
     UNNEST(${longName}.histogram.bin) AS ${shortName}

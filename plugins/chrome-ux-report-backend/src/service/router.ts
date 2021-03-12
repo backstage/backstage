@@ -74,7 +74,7 @@ export async function createRouter(
       config
     );
 
-    response.send({ rates: rows[0] });
+    response.send({ rates: rows });
   });
 
   router.post('/lcp', async (request, response) => {
@@ -90,7 +90,7 @@ export async function createRouter(
       config,
     );
 
-    response.send({ rates: rows[0] });
+    response.send({ rates: rows });
   });
 
   router.use(errorHandler());

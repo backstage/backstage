@@ -19,66 +19,36 @@ import {
   Page,
   Content,
   HeaderLabel,
-  Progress,
-  useApi
+  Tabs
 } from '@backstage/core';
-import Alert from '@material-ui/lab/Alert';
-import { useAsync } from 'react-use';
-import Chart from 'react-google-charts';
-import { chromeuxReportApiRef } from '../../api';
+import { Charts } from "./Charts";
 
-export const ChromeUXReport = () => {
-  const chromeuxReportApi = useApi(chromeuxReportApiRef);
+const uxMetrics = [{
+  longName: 'Firt Contentful Paint',
+  shortName: 'fcp'
+}, {
+  longName: 'Largest Contentful Paint',
+  shortName: 'lcp'
+}, {
+  longName: 'Dom Content Loaded',
+  shortName: 'dcl'
+}];
 
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const response = await chromeuxReportApi.getChromeUXMetrics();
-    return response.rates;
-  }, []);
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  return (<Page themeId="tool">
+export const ChromeUXReport = () => (
+  <Page themeId="tool">
     <Header title="Chrome UX Report" subtitle="Optional subtitle">
       <HeaderLabel label="Owner" value="Team X"/>
       <HeaderLabel label="Lifecycle" value="Alpha"/>
     </Header>
     <Content>
-      <Chart
-        width='90%'
-        height='80%'
-        chartType="BarChart"
-        loader={<Progress />}
-        data={[
-          ['Months', 'Fast', 'Average', 'Slow'],
-          ['Aralik',value.fast_fcp_rate, value.avg_fcp_rate, value.slow_fcp_rate],
-          ['Ocak', value.fast_fcp_rate, value.avg_fcp_rate, value.slow_fcp_rate],
-          ['Subat',value.fast_fcp_rate, value.avg_fcp_rate, value.slow_fcp_rate],
-          ['Mart',value.fast_fcp_rate, value.avg_fcp_rate, value.slow_fcp_rate],
-        ]}
-        options={{
-          title: 'First Contentful Paint - FCP',
-          chartArea: { width: '80%' },
-          isStacked: true,
-          hAxis: {
-            title: 'Percentage',
-            minValue: 0,
-          },
-          animation: {
-            startup: true,
-            easing: 'linear',
-            duration: 1500,
-          },
-          vAxis: {
-            title: 'Months',
-          },
-          colors: ['#5cb85c', '#f0ad4e', '#d9534f'],
-        }}
-        rootProps={{ 'data-testid': '3' }}
-      />
+      <div>
+        <Tabs
+          tabs={uxMetrics.map((metric: {longName: string, shortName: string}) => ({
+              label: `${metric.longName}`,
+              content: <Charts metric={metric} />,
+          }))}
+        />
+      </div>
     </Content>
-  </Page>);
-};
+  </Page>
+);
