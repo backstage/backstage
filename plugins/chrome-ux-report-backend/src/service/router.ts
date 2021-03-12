@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
 import { Config } from '@backstage/config';
+import { queryUXMetrics } from "./Query";
 
 export interface RouterOptions {
   logger: Logger;
+  config: Config
 }
 
 export interface RateInfo {
@@ -30,21 +31,10 @@ export interface RateInfo {
   shortName: string;
 }
 
-function createBigQueryClient(config: Config) {
-  const projectId = config.getString('chromeUXReport.projectId');
-  const keyPath = config.getString('chromeUXReport.keyPath');
-
-  return new BigQuery({
-    projectId: projectId,
-    keyFilename: keyPath,
-  });
-}
-
 export async function createRouter(
-  options: RouterOptions,
-  config: Config,
+  options: RouterOptions
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, config } = options;
 
   logger.info('Plugin Chrome UX Report has started');
 
@@ -81,7 +71,7 @@ export async function createRouter(
       request.body.origin,
       request.body.month,
       rateInfo,
-      config,
+      config
     );
 
     response.send({ rates: rows[0] });
@@ -105,57 +95,4 @@ export async function createRouter(
 
   router.use(errorHandler());
   return router;
-}
-
-async function queryUXMetrics(
-  origin: string,
-  month: string,
-  rateInfo: RateInfo,
-  config: Config,
-) {
-  const client = createBigQueryClient(config);
-  const { longName, shortName } = rateInfo;
-
-  const query = `SELECT
-    SUM(${shortName}.density) AS fast_${shortName}_rate,
-     (
-      SELECT
-        SUM(${shortName}.density) 
-      FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(${longName}.histogram.bin) AS ${shortName}
-      WHERE
-        origin = '${origin}'
-        AND ${shortName}.start > 1000
-        AND ${shortName}.start <= 2500
-    ) AS avg_${shortName}_rate, 
-     (
-      SELECT
-        SUM(${shortName}.density) 
-      FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(${longName}.histogram.bin) AS ${shortName}
-      WHERE
-        origin = '${origin}'
-        AND ${shortName}.start > 2500
-    ) AS slow_${shortName}_rate 
-    FROM
-    \`chrome-ux-report.all.${month}\`,
-    UNNEST(${longName}.histogram.bin) AS ${shortName}
-    WHERE
-    origin = '${origin}'
-    AND ${shortName}.start >= 0
-    AND ${shortName}.start <= 1000
-  `;
-
-  const queryOptions = {
-    query,
-    // Location must match that of the dataset(s) referenced in the query.
-    location: 'US',
-  };
-
-  const [job] = await client.createQueryJob(queryOptions);
-
-  const [rows] = await job.getQueryResults();
-  return rows;
 }
