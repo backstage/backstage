@@ -465,7 +465,12 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
-      />
+    />
+    <EntityPageLayout.Content
+      path="/diagram/*"
+      title="Diagram"
+      element={<SystemDiagram entity={entity} />}
+    />
   </EntityPageLayout>
 );
 
@@ -491,11 +496,6 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
-      path="/diagram/*"
-      title="Diagram"
-      element={<SystemDiagram entity={entity} />}
     />
   </EntityPageLayout>
 );
