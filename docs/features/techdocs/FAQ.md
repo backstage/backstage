@@ -34,3 +34,14 @@ Not right now. We are currently using MkDocs to generate the documentation from
 source, so the files have to be in Markdown format. However, in the future we
 want to support other static site generators which will make it possible to use
 other file formats.
+
+#### What should be the value of `backstage.io/techdocs-ref` when using external build and storage?
+
+The value of
+[`backstage.io/techdocs-ref`](../software-catalog/well-known-annotations.md#backstageiotechdocs-ref)
+metadata annotation is used in the build process of TechDocs. But when
+[`techdocs.builder`](./configuration.md) is set to `'external'` in
+`app-config.yaml`, the value of the annotation remains unused. However the
+annotation should still be present in entity descriptor file (e.g.
+`catalog-info.yaml`) for Backstage to know that TechDocs is enabled for the
+entity.
