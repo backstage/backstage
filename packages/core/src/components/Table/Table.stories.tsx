@@ -213,8 +213,8 @@ export const SubvalueTable = () => {
         row: any, // Only needed if you want subvalue searchable
       ) =>
         `${row.col1} ${row.subvalue}`
-          .toUpperCase()
-          .includes(query.toUpperCase()),
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US')),
       field: 'col1',
       highlight: true,
       render: (row: any): React.ReactNode => (
