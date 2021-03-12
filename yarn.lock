@@ -1744,7 +1744,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.2.0":
-  version "0.7.3"
+  version "0.7.4"
   dependencies:
     "@backstage/config" "^0.1.3"
     "@types/json-schema" "^7.0.5"
@@ -1756,7 +1756,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.3.0":
-  version "0.7.3"
+  version "0.7.4"
   dependencies:
     "@backstage/config" "^0.1.3"
     "@types/json-schema" "^7.0.5"
@@ -1768,12 +1768,12 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.7.0"
+  version "0.7.1"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.12"
+    "@backstage/core-api" "^0.2.13"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.3"
+    "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1810,12 +1810,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.0":
-  version "0.7.0"
+  version "0.7.1"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.12"
+    "@backstage/core-api" "^0.2.13"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.3"
+    "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1852,12 +1852,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.1":
-  version "0.7.0"
+  version "0.7.1"
   dependencies:
     "@backstage/config" "^0.1.3"
-    "@backstage/core-api" "^0.2.12"
+    "@backstage/core-api" "^0.2.13"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.3"
+    "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1894,14 +1894,14 @@
     zen-observable "^0.8.15"
 
 "@backstage/plugin-catalog@^0.2.1":
-  version "0.4.1"
+  version "0.4.2"
   dependencies:
-    "@backstage/catalog-client" "^0.3.6"
-    "@backstage/catalog-model" "^0.7.3"
-    "@backstage/core" "^0.7.0"
-    "@backstage/integration" "^0.5.0"
+    "@backstage/catalog-client" "^0.3.7"
+    "@backstage/catalog-model" "^0.7.4"
+    "@backstage/core" "^0.7.1"
+    "@backstage/integration" "^0.5.1"
     "@backstage/plugin-catalog-react" "^0.1.1"
-    "@backstage/theme" "^0.2.3"
+    "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1917,14 +1917,14 @@
     swr "^0.3.0"
 
 "@backstage/plugin-catalog@^0.3.1":
-  version "0.4.1"
+  version "0.4.2"
   dependencies:
-    "@backstage/catalog-client" "^0.3.6"
-    "@backstage/catalog-model" "^0.7.3"
-    "@backstage/core" "^0.7.0"
-    "@backstage/integration" "^0.5.0"
+    "@backstage/catalog-client" "^0.3.7"
+    "@backstage/catalog-model" "^0.7.4"
+    "@backstage/core" "^0.7.1"
+    "@backstage/integration" "^0.5.1"
     "@backstage/plugin-catalog-react" "^0.1.1"
-    "@backstage/theme" "^0.2.3"
+    "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -6290,6 +6290,11 @@
   version "3.12.5"
   resolved "https://registry.npmjs.org/@types/js-yaml/-/js-yaml-3.12.5.tgz#136d5e6a57a931e1cce6f9d8126aa98a9c92a6bb"
   integrity sha512-JCcp6J0GV66Y4ZMDAQCXot4xprYB+Zfd3meK9+INSJeVZwJmHAW30BBEEkPzXswMXuiyReUGOP3GxrADc9wPww==
+
+"@types/js-yaml@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@types/js-yaml/-/js-yaml-4.0.0.tgz#d1a11688112091f2c711674df3a65ea2f47b5dfb"
+  integrity sha512-4vlpCM5KPCL5CfGmTbpjwVKbISRYhduEJvvUWsH5EB7QInhEj94XPZ3ts/9FPiLZFqYO0xoW4ZL8z2AabTGgJA==
 
 "@types/json-schema-merge-allof@^0.6.0":
   version "0.6.0"
