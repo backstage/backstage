@@ -18,10 +18,10 @@ import { BuildMetadataStorage } from './BuildMetadataStorage';
 describe('BuildMetadataStorage', () => {
   it('should return build timestamp', () => {
     const newMetadataStorage = new BuildMetadataStorage('entityID123abc');
-    newMetadataStorage.setEtag('etag123abc');
+    newMetadataStorage.setLastUpdated();
 
-    const timestamp = newMetadataStorage.getEtag();
+    const timestamp = newMetadataStorage.getLastUpdated();
 
-    expect(timestamp).toBe('etag123abc');
+    expect(timestamp).toBeLessThanOrEqual(Date.now());
   });
 });
