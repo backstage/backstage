@@ -31,6 +31,7 @@ import { createTodoParser } from './createTodoParser';
 type Options = {
   logger: Logger;
   reader: UrlReader;
+  integrations: ScmIntegrations;
   parser?: TodoParser;
 };
 
@@ -47,15 +48,18 @@ export class TodoScmReader implements TodoReader {
 
   private readonly cache = new Map<string, CacheItem>();
 
-  static fromConfig(config: Config, options: Options) {
-    return new TodoScmReader(options, ScmIntegrations.fromConfig(config));
+  static fromConfig(config: Config, options: Omit<Options, 'integrations'>) {
+    return new TodoScmReader({
+      ...options,
+      integrations: ScmIntegrations.fromConfig(config),
+    });
   }
 
-  private constructor(options: Options, integrations: ScmIntegrations) {
+  constructor(options: Options) {
     this.logger = options.logger;
     this.reader = options.reader;
     this.parser = options.parser ?? createTodoParser();
-    this.integrations = integrations;
+    this.integrations = options.integrations;
   }
 
   async readTodos({ url }: ReadTodosOptions): Promise<ReadTodosResult> {
