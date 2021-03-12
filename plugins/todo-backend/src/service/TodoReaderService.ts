@@ -15,7 +15,7 @@
  */
 
 import { InputError, NotFoundError } from '@backstage/errors';
-import { CatalogClient } from '@backstage/catalog-client';
+import { CatalogApi } from '@backstage/catalog-client';
 import {
   LOCATION_ANNOTATION,
   SOURCE_LOCATION_ANNOTATION,
@@ -31,7 +31,7 @@ const DEFAULT_MAX_PAGE_SIZE = 50;
 
 type Options = {
   todoReader: TodoReader;
-  catalogClient: CatalogClient;
+  catalogClient: CatalogApi;
   maxPageSize?: number;
   defaultPageSize?: number;
 };
@@ -45,7 +45,7 @@ function wildcardRegex(str: string): RegExp {
 
 export class TodoReaderService implements TodoService {
   private readonly todoReader: TodoReader;
-  private readonly catalogClient: CatalogClient;
+  private readonly catalogClient: CatalogApi;
   private readonly maxPageSize: number;
   private readonly defaultPageSize: number;
 
@@ -100,7 +100,7 @@ export class TodoReaderService implements TodoService {
         const field2 = item2[field];
 
         if (field1 && field2) {
-          return dir * field1?.localeCompare(field2, 'en-US');
+          return dir * field1.localeCompare(field2, 'en-US');
         } else if (field1 && !field2) {
           return -1;
         } else if (!field1 && field2) {
@@ -127,7 +127,7 @@ export class TodoReaderService implements TodoService {
         throw new InputError(
           `Invalid entity source location type for ${serializeEntityRef(
             entity,
-          )}, got ${parsed.type}`,
+          )}, got '${parsed.type}'`,
         );
       }
       return parsed.target;
@@ -138,9 +138,9 @@ export class TodoReaderService implements TodoService {
       const parsed = parseLocationReference(location);
       if (parsed.type !== 'url') {
         throw new InputError(
-          `Invalid entity source location type for ${serializeEntityRef(
+          `Invalid entity location type for ${serializeEntityRef(
             entity,
-          )}, got ${parsed.type}`,
+          )}, got '${parsed.type}'`,
         );
       }
       return parsed.target;
