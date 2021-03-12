@@ -186,6 +186,10 @@ export async function createRouter({
           }
           break;
         default:
+          res.status(400).json({
+            error: `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
+          });
+          break;
       }
     }
 
