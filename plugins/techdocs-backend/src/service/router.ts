@@ -178,11 +178,10 @@ export async function createRouter({
             logger.error(
               'Published files are taking longer to show up in storage. Something went wrong.',
             );
-            res
-              .status(408)
-              .send(
+            res.status(408).json({
+              error:
                 'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
-              );
+            });
             return;
           }
           break;
