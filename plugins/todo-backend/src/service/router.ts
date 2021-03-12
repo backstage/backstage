@@ -72,7 +72,10 @@ export async function createRouter(
   return router;
 }
 
-function parseIntegerParam(str: unknown, ctx: string): number | undefined {
+export function parseIntegerParam(
+  str: unknown,
+  ctx: string,
+): number | undefined {
   if (str === undefined) {
     return undefined;
   }
@@ -80,13 +83,13 @@ function parseIntegerParam(str: unknown, ctx: string): number | undefined {
     throw new InputError(`invalid ${ctx}, must be a string`);
   }
   const parsed = parseInt(str, 10);
-  if (!Number.isInteger(parsed)) {
+  if (!Number.isInteger(parsed) || String(parsed) !== str) {
     throw new InputError(`invalid ${ctx}, not an integer`);
   }
   return parsed;
 }
 
-function parseOrderByParam<T extends readonly string[]>(
+export function parseOrderByParam<T extends readonly string[]>(
   str: unknown,
   allowedFields: T,
 ): { field: T[number]; direction: 'asc' | 'desc' } | undefined {
@@ -108,13 +111,13 @@ function parseOrderByParam<T extends readonly string[]>(
 
   if (field && !allowedFields.includes(field)) {
     throw new InputError(
-      `invalid orderBy query, must be one of ${allowedFields.join(', ')}`,
+      `invalid orderBy field, must be one of ${allowedFields.join(', ')}`,
     );
   }
   return { field, direction };
 }
 
-function parseFilterParam<T extends readonly string[]>(
+export function parseFilterParam<T extends readonly string[]>(
   str: unknown,
   allowedFields: T,
 ): { field: T[number]; value: string }[] | undefined {
