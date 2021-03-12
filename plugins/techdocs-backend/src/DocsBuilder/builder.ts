@@ -86,7 +86,7 @@ export class DocsBuilder {
     );
 
     // If available, use the etag stored in techdocs_metadata.json to
-    // check if docs are outdated and needs to be regenerated.
+    // check if docs are outdated and need to be regenerated.
     let storedEtag: string | undefined;
     if (await this.publisher.hasDocsBeenGenerated(this.entity)) {
       storedEtag = (

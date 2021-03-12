@@ -180,7 +180,7 @@ export async function createRouter({
             );
             res.status(408).json({
               error:
-                'Sorry! It is taking longer for the generated docs to show up in storage. Check back later.',
+                'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
             });
             return;
           }

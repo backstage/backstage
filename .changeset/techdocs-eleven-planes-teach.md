@@ -12,4 +12,4 @@ Improvements
 
 New feature
 
-1. You can now use a mix of basic and recommended setup i.e. techdocs.builder is `'local'` but using an external cloud storage instead of local storage. Previously, in this setup, the docs would never get updated.
+1. You can now use a mix of basic and recommended setup i.e. `techdocs.builder` is `'local'` but using an external cloud storage instead of local storage. Previously, in this setup, the docs would never get updated.
