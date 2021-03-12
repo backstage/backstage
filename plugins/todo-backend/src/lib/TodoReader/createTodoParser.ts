@@ -19,23 +19,22 @@ import { parse } from 'leasot';
 import { TodoParser } from './types';
 
 export type TodoParserOptions = {
-  tags?: string[];
+  /** Custom tags to support in addition to TODO and FIXME */
+  additionalTags?: string[];
 };
 
 export function createTodoParser(options: TodoParserOptions = {}): TodoParser {
-  const { tags = ['TODO', 'FIXME'] } = options;
-
   return ({ content, path }) => {
     try {
       const comments = parse(content, {
-        customTags: tags,
+        customTags: options.additionalTags,
         extension: extname(path),
       });
 
       return comments.map(comment => ({
         text: comment.text,
         tag: comment.tag,
-        author: comment.ref,
+        author: comment.ref || undefined,
         lineNumber: comment.line,
       }));
     } catch /* ignore unsupported extensions */ {

@@ -38,7 +38,7 @@ export default async function createPlugin({
 
 ## Parser Configuration
 
-The `TodoScmReader` accepts a `TodoParser` option, which can be used to configure your own parser. The default one is based on [Leasot](https://github.com/pgilad/leasot) and supports a wide range of languages. You can change the list of supported tags by configuring your own version of the built-in parser, for example:
+The `TodoScmReader` accepts a `TodoParser` option, which can be used to configure your own parser. The default one is based on [Leasot](https://github.com/pgilad/leasot) and supports a wide range of languages. You can add to the list of supported tags by configuring your own version of the built-in parser, for example:
 
 ```ts
 import {
@@ -52,7 +52,7 @@ const todoReader = TodoScmReader.fromConfig(config, {
   logger,
   reader,
   parser: createTodoParser({
-    tags: ['TODO', 'FIXME', 'NOTE', 'XXX'],
+    additionalTags: ['NOTE', 'XXX'],
   }),
 });
 ```
