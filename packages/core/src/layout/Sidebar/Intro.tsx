@@ -133,9 +133,10 @@ export const SidebarIntro = () => {
     starredItemsDismissed: false,
     recentlyViewedItemsDismissed: false,
   };
-  const [dismissedIntro, setDismissedIntro] = useLocalStorage<
-    SidebarIntroLocalStorage
-  >(SIDEBAR_INTRO_LOCAL_STORAGE);
+  const [
+    dismissedIntro,
+    setDismissedIntro,
+  ] = useLocalStorage<SidebarIntroLocalStorage>(SIDEBAR_INTRO_LOCAL_STORAGE);
 
   const { starredItemsDismissed, recentlyViewedItemsDismissed } =
     dismissedIntro ?? {};

@@ -125,15 +125,14 @@ export const MembersListCard = (_props: {
         kind: 'User',
       },
     });
-    const groupMembersList = ((membersList.items as unknown) as Array<
-      UserEntity
-    >).filter(member =>
-      member?.relations?.some(
-        r =>
-          r.type === RELATION_MEMBER_OF &&
-          r.target.name.toLocaleLowerCase('en-US') ===
-            groupName.toLocaleLowerCase('en-US'),
-      ),
+    const groupMembersList = ((membersList.items as unknown) as Array<UserEntity>).filter(
+      member =>
+        member?.relations?.some(
+          r =>
+            r.type === RELATION_MEMBER_OF &&
+            r.target.name.toLocaleLowerCase('en-US') ===
+              groupName.toLocaleLowerCase('en-US'),
+        ),
     );
     return groupMembersList;
   }, [catalogApi]);
