@@ -16,7 +16,8 @@ alongside your `backend` package in `packages/backend`.
 Let's create a simple action that adds a new file and some contents that are
 passed as `input` to the function.
 
-In `packages/backend/src/actions/custom.ts` we can create a new action.
+In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
+new action.
 
 ```ts
 import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
