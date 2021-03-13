@@ -297,7 +297,7 @@ export class CatalogImportClient implements CatalogImportApi {
         owner,
         repo,
         path: fileName,
-        message: `Add ${fileName} config file`,
+        message: title,
         content: btoa(fileContent),
         branch: branchName,
       })
