@@ -442,9 +442,6 @@ const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
     <Grid item md={6} sm={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
-    <Grid item md={6} sm={6}>
-      <EntityLinksCard entity={entity} />
-    </Grid>
     <Grid item md={6} sm={12}>
       <EntityHasComponentsCard variant="gridItem" />
     </Grid>
