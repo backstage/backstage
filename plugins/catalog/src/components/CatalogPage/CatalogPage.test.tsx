@@ -134,6 +134,12 @@ describe('CatalogPage', () => {
     fireEvent.click(getByText(/All/));
     expect(await findByText(/All \(2\)/)).toBeInTheDocument();
   });
+  it('should set initial filter correctly', async () => {
+    const { findByText } = renderWrapped(
+      <CatalogPage initiallySelectedFilter="all" />,
+    );
+    expect(await findByText(/All \(2\)/)).toBeInTheDocument();
+  });
   // this test is for fixing the bug after favoriting an entity, the matching entities defaulting
   // to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selectedfilter', async () => {
