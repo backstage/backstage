@@ -484,11 +484,6 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
       title="Overview"
       element={<DomainOverviewContent entity={entity as DomainEntity} />}
     />
-    <EntityPageLayout.Content
-      path="/docs/*"
-      title="Docs"
-      element={<DocsRouter entity={entity} />}
-    />
   </EntityPageLayout>
 );
 
