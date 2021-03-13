@@ -462,11 +462,6 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
       element={<SystemOverviewContent entity={entity as SystemEntity} />}
     />
     <EntityPageLayout.Content
-      path="/docs/*"
-      title="Docs"
-      element={<DocsRouter entity={entity} />}
-    />
-    <EntityPageLayout.Content
       path="/diagram/*"
       title="Diagram"
       element={<SystemDiagram entity={entity} />}
