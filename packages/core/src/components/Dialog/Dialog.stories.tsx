@@ -19,10 +19,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  IconButton,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,10 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
       justifyContent: 'flex-start',
       paddingLeft: 24,
     },
-    contentBoxExample: {
-      height: 200,
-      width: 500,
-      backgroundColor: '#E1E1E1',
+    closeButton: {
+      position: 'absolute',
+      right: theme.spacing(1),
+      top: theme.spacing(1),
+      color: theme.palette.grey[500],
     },
   }),
 );
@@ -56,6 +59,45 @@ export const Default = () => {
     setOpen(false);
   };
 
+  const dialogContent = () => {
+    return (
+      <>
+        <Typography>
+          This is an example of how to use the Dialog component.
+        </Typography>
+        <Typography>
+          This component is used whenever confirmation of some sort is needed,
+          such as:
+        </Typography>
+        <ul>
+          <li>
+            <Typography>
+              Consent to sensitive matters like GDPR, access, etc;
+            </Typography>
+          </li>
+          <li>
+            <Typography>
+              Save, submit, cancel after a form is completed;
+            </Typography>
+          </li>
+          <li>
+            <Typography>Alert message;</Typography>
+          </li>
+          <li>
+            <Typography>Buttons are optional.</Typography>
+          </li>
+        </ul>
+        <Typography>
+          The color for the secondary button is the same as the primary. For the
+          primary action button, use:
+        </Typography>
+        <pre>variant="contained"</pre>
+        <Typography>For the secondary action button, use:</Typography>
+        <pre>variant="outlined"</pre>
+      </>
+    );
+  };
+
   return (
     <>
       <Button color="primary" variant="contained" onClick={openDialog}>
@@ -67,12 +109,17 @@ export const Default = () => {
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
       >
-        <DialogTitle id="dialog-title">Dialog Box Title</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="dialog-content">
-            <div className={classes.contentBoxExample} />
-          </DialogContentText>
-        </DialogContent>
+        <DialogTitle id="dialog-title">
+          Dialog Box Title
+          <IconButton
+            aria-label="close"
+            className={classes.closeButton}
+            onClick={closeDialog}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>{dialogContent()}</DialogContent>
         <DialogActions classes={{ root: classes.leftAlignButtonsDialog }}>
           <Button color="primary" variant="contained" onClick={closeDialog}>
             Primary action
