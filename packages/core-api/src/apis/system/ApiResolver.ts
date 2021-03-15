@@ -23,8 +23,6 @@ import {
 } from './types';
 
 export class ApiResolver implements ApiHolder {
-  private readonly apis = new Map<AnyApiRef, unknown>();
-
   /**
    * Validate factories by making sure that each of the apis can be created
    * without hitting any circular dependencies.
@@ -45,7 +43,7 @@ export class ApiResolver implements ApiHolder {
         }
 
         for (const dep of Object.values(factory.deps)) {
-          if (dep === api) {
+          if (dep.id === api.id) {
             throw new Error(`Circular dependency of api factory for ${api}`);
           }
           if (!allDeps.has(dep)) {
@@ -57,6 +55,8 @@ export class ApiResolver implements ApiHolder {
     }
   }
 
+  private readonly apis = new Map<string, unknown>();
+
   constructor(private readonly factories: ApiFactoryHolder) {}
 
   get<T>(ref: ApiRef<T>): T | undefined {
@@ -64,7 +64,7 @@ export class ApiResolver implements ApiHolder {
   }
 
   private load<T>(ref: ApiRef<T>, loading: AnyApiRef[] = []): T | undefined {
-    const impl = this.apis.get(ref);
+    const impl = this.apis.get(ref.id);
     if (impl) {
       return impl as T;
     }
@@ -80,7 +80,7 @@ export class ApiResolver implements ApiHolder {
 
     const deps = this.loadDeps(ref, factory.deps, [...loading, factory.api]);
     const api = factory.factory(deps);
-    this.apis.set(ref, api);
+    this.apis.set(ref.id, api);
     return api as T;
   }
 

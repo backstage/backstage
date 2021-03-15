@@ -19,10 +19,20 @@ import React, {
   useContext,
   ReactNode,
   PropsWithChildren,
+  Context,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 import { ApiRef, ApiHolder, TypesToApiRefs } from './types';
 import { ApiAggregator } from './ApiAggregator';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+} from '../../lib/globalObject';
+import {
+  VersionedValue,
+  createVersionedValueMap,
+} from '../../lib/versionedValues';
 
 const missingHolderMessage =
   'No ApiProvider available in react context. ' +
@@ -35,16 +45,25 @@ type ApiProviderProps = {
   children: ReactNode;
 };
 
-const Context = createContext<ApiHolder | undefined>(undefined);
+type ApiContextType = VersionedValue<{ 1: ApiHolder }> | undefined;
+const ApiContext = getOrCreateGlobalSingleton('api-context', () =>
+  createContext<ApiContextType>(undefined),
+);
 
 export const ApiProvider = ({
   apis,
   children,
 }: PropsWithChildren<ApiProviderProps>) => {
-  const parentHolder = useContext(Context);
-  const holder = parentHolder ? new ApiAggregator(apis, parentHolder) : apis;
+  const parentHolder = useContext(ApiContext)?.atVersion(1);
+  const versionedValue = useMemo(
+    () =>
+      createVersionedValueMap({
+        1: parentHolder ? new ApiAggregator(apis, parentHolder) : apis,
+      }),
+    [parentHolder, apis],
+  );
 
-  return <Context.Provider value={holder} children={children} />;
+  return <ApiContext.Provider value={versionedValue} children={children} />;
 };
 
 ApiProvider.propTypes = {
@@ -53,10 +72,17 @@ ApiProvider.propTypes = {
 };
 
 export function useApiHolder(): ApiHolder {
-  const apiHolder = useContext(Context);
+  const versionedHolder = useContext(
+    getGlobalSingleton<Context<ApiContextType>>('api-context'),
+  );
 
-  if (!apiHolder) {
+  if (!versionedHolder) {
     throw new Error(missingHolderMessage);
+  }
+
+  const apiHolder = versionedHolder.atVersion(1);
+  if (!apiHolder) {
+    throw new Error('ApiContext v1 not available');
   }
 
   return apiHolder;
@@ -77,11 +103,7 @@ export function withApis<T>(apis: TypesToApiRefs<T>) {
     WrappedComponent: React.ComponentType<P>,
   ) {
     const Hoc = (props: PropsWithChildren<Omit<P, keyof T>>) => {
-      const apiHolder = useContext(Context);
-
-      if (!apiHolder) {
-        throw new Error(missingHolderMessage);
-      }
+      const apiHolder = useApiHolder();
 
       const impls = {} as T;
 
