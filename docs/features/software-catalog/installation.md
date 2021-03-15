@@ -166,11 +166,14 @@ catalog:
 
 ### Running the Backend
 
-Finally, start up the backend with the new configuration:
+Finally, start up Backstage with the new configuration:
 
 ```bash
+# Run from the root to start both backend and frontend
+yarn dev
+
+# Alternatively, run only the backend from its own package
 cd packages/backend
-# or `yarn dev` to run both frontend and backend
 yarn start
 ```
 
