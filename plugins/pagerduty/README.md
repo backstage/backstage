@@ -60,7 +60,6 @@ pagerduty:
 
 In order for the client to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/) it needs an [API Token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key).
 
-
 Add the proxy configuration in `app-config.yaml`
 
 ```yaml
