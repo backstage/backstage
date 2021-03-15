@@ -81,7 +81,9 @@ async function main() {
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
-  const chromeuxreportEnv = useHotMemoize(module, () => createEnv('chromeuxreport'));
+  const chromeuxreportEnv = useHotMemoize(module, () =>
+    createEnv('chromeuxreport'),
+  );
   const appEnv = useHotMemoize(module, () => createEnv('app'));
 
   const apiRouter = Router();

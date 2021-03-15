@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
-import { queryUXMetrics } from "./Query";
+import { queryUXMetrics } from './Query';
+import { Database } from './database/Database';
 
 export interface RouterOptions {
   logger: Logger;
-  config: Config
+  config: Config;
+  database: PluginDatabaseManager;
 }
 
 export interface RateInfo {
@@ -32,9 +34,13 @@ export interface RateInfo {
 }
 
 export async function createRouter(
-  options: RouterOptions
+  options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config } = options;
+  const { logger, config, database } = options;
+  console.log(database);
+  const databaseClient = await Database.create({
+    database: await database.getClient(),
+  });
 
   logger.info('Plugin Chrome UX Report has started');
 
@@ -71,7 +77,7 @@ export async function createRouter(
       request.body.origin,
       request.body.month,
       rateInfo,
-      config
+      config,
     );
 
     response.send({ rates: rows });

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { createRouter } from '@backstage/plugin-chrome-ux-report-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+// @ts-check
 
-export default async function createPlugin({
-  logger,
-  config,
-  database,
-}: PluginEnvironment): Promise<Router> {
-  return await createRouter({ logger, config, database });
-}
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  return knex.schema.createTable('metrics', table => {});
+};
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
+  return knex.schema.dropTable('metrics');
+};

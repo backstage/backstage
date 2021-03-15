@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { Progress, useApi } from "@backstage/core";
+import { Progress, useApi } from '@backstage/core';
 import Chart from 'react-google-charts';
-import React from "react";
-import { chromeuxReportApiRef } from "../../api";
-import { useAsync } from "react-use";
-import Alert from "@material-ui/lab/Alert";
+import React from 'react';
+import { chromeuxReportApiRef } from '../../api';
+import { useAsync } from 'react-use';
+import Alert from '@material-ui/lab/Alert';
 
-export const Charts = ({ metric }: { metric: {longName: string, shortName: string} }) => {
+export const Charts = ({
+  metric,
+}: {
+  metric: { longName: string; shortName: string };
+}) => {
   const chromeuxReportApi = useApi(chromeuxReportApiRef);
   const { longName, shortName } = metric;
 
@@ -38,37 +42,39 @@ export const Charts = ({ metric }: { metric: {longName: string, shortName: strin
 
   const { fast, average, slow } = value;
 
-  return <Chart
-    width='70%'
-    height='100%'
-    chartType="BarChart"
-    loader={<Progress />}
-    data={[
-      ['Months', 'Fast', 'Average', 'Slow'],
-      ['Aralik',fast, average, slow],
-      ['Ocak', fast, average, slow],
-      ['Subat',fast, average, slow],
-      ['Mart',fast, average, slow],
-    ]}
-    options={{
-      title: `${longName} - ${shortName.toLocaleUpperCase('en-US')}`,
-      chartArea: { width: '80%' },
-      isStacked: true,
-      hAxis: {
-        title: 'Percentage',
-        minValue: 0,
-      },
-      animation: {
-        startup: true,
-        easing: 'linear',
-        duration: 500,
-      },
-      vAxis: {
-        title: 'Months',
-      },
-      backgroundColor: '#424242',
-      colors: ['#5cb85c', '#f0ad4e', '#d9534f'],
-    }}
-    rootProps={{ 'data-testid': '3' }}
-  />;
-}
+  return (
+    <Chart
+      width="70%"
+      height="100%"
+      chartType="BarChart"
+      loader={<Progress />}
+      data={[
+        ['Months', 'Fast', 'Average', 'Slow'],
+        ['Aralik', fast, average, slow],
+        ['Ocak', fast, average, slow],
+        ['Subat', fast, average, slow],
+        ['Mart', fast, average, slow],
+      ]}
+      options={{
+        title: `${longName} - ${shortName.toLocaleUpperCase('en-US')}`,
+        chartArea: { width: '80%' },
+        isStacked: true,
+        hAxis: {
+          title: 'Percentage',
+          minValue: 0,
+        },
+        animation: {
+          startup: true,
+          easing: 'linear',
+          duration: 500,
+        },
+        vAxis: {
+          title: 'Months',
+        },
+        backgroundColor: '#424242',
+        colors: ['#5cb85c', '#f0ad4e', '#d9534f'],
+      }}
+      rootProps={{ 'data-testid': '3' }}
+    />
+  );
+};

@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  Header,
-  Page,
-  Content,
-  HeaderLabel,
-  Tabs
-} from '@backstage/core';
-import { Charts } from "./Charts";
+import { Header, Page, Content, HeaderLabel, Tabs } from '@backstage/core';
+import { Charts } from './Charts';
 
-const uxMetrics = [{
-  longName: 'Firt Contentful Paint',
-  shortName: 'fcp'
-}, {
-  longName: 'Largest Contentful Paint',
-  shortName: 'lcp'
-}, {
-  longName: 'Dom Content Loaded',
-  shortName: 'dcl'
-}];
+const uxMetrics = [
+  {
+    longName: 'Firt Contentful Paint',
+    shortName: 'fcp',
+  },
+  {
+    longName: 'Largest Contentful Paint',
+    shortName: 'lcp',
+  },
+  {
+    longName: 'Dom Content Loaded',
+    shortName: 'dcl',
+  },
+];
 
 export const ChromeUXReport = () => (
   <Page themeId="tool">
     <Header title="Chrome UX Report" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X"/>
-      <HeaderLabel label="Lifecycle" value="Alpha"/>
+      <HeaderLabel label="Owner" value="Team X" />
+      <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
       <div>
         <Tabs
-          tabs={uxMetrics.map((metric: {longName: string, shortName: string}) => ({
+          tabs={uxMetrics.map(
+            (metric: { longName: string; shortName: string }) => ({
               label: `${metric.longName}`,
               content: <Charts metric={metric} />,
-          }))}
+            }),
+          )}
         />
       </div>
     </Content>

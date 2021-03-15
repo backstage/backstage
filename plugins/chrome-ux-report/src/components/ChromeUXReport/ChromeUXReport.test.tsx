@@ -39,8 +39,6 @@ describe('ExampleComponent', () => {
         <ChromeUXReport />
       </ThemeProvider>,
     );
-    expect(
-      rendered.getByText('Chrome UX Report'),
-    ).toBeInTheDocument();
+    expect(rendered.getByText('Chrome UX Report')).toBeInTheDocument();
   });
 });

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Config } from "@backstage/config";
-import { RateInfo } from "./router";
+import { Config } from '@backstage/config';
+import { RateInfo } from './router';
 import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
 
 function createBigQueryClient(config: Config) {

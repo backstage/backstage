@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {createApiRef, DiscoveryApi} from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 
 export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
@@ -23,7 +23,7 @@ export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
 });
 
 export type ChromeUXReport = {
-  getChromeUXMetrics(metricShortName: string): Promise<string>
+  getChromeUXMetrics(metricShortName: string): Promise<string>;
 };
 
 /**
@@ -36,9 +36,9 @@ export class ChromeUXReportApi implements ChromeUXReport {
   public discoveryApi: DiscoveryApi;
 
   constructor({
-                configApi,
-                discoveryApi
-              }: {
+    configApi,
+    discoveryApi,
+  }: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
   }) {
@@ -57,13 +57,13 @@ export class ChromeUXReportApi implements ChromeUXReport {
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/${metricShortName}`;
 
-    const request = await fetch(`${requestUrl}`,{
-      headers:{'content-type': 'application/json'},
+    const request = await fetch(`${requestUrl}`, {
+      headers: { 'content-type': 'application/json' },
       method: 'POST',
       body: JSON.stringify({
-          origin: "https://backstage.io",
-          month: "202101"
-       })
+        origin: 'https://backstage.io',
+        month: '202101',
+      }),
     });
     return await request.json();
   }
