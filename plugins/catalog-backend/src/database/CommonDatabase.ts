@@ -125,12 +125,25 @@ export class CommonDatabase implements Database {
   ): Promise<DbRefreshStateRow[]> {
     const tx = txOpaque as Knex.Transaction<any, any>;
 
-    return tx
-      .select('refresh_state')
-      .where('next_update_at', '<=', 'now()')
+    const items = await tx<DbRefreshStateRow>('refresh_state')
       .select()
+      .where('next_update_at', '<=', 'now()')
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'desc');
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .whereIn(
+        'entity_ref',
+        items.map(i => i.entity_ref),
+      )
+      .update({
+        next_update_at:
+          tx.client.config.client === 'sqlite3'
+            ? tx.raw(`datetime('now', ?)`, [`10 seconds`])
+            : tx.raw(`now() + interval '10 seconds'`), // TODO: test this in sqlite3
+      });
+
+    return items;
   }
 
   async addEntities(
