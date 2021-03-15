@@ -301,7 +301,7 @@ describe('CatalogImportClient', () => {
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
           fileContent: 'some content',
-          title: 'A title',
+          title: 'A title/message',
           body: 'A body',
         }),
       ).resolves.toEqual({
@@ -325,7 +325,7 @@ describe('CatalogImportClient', () => {
         owner: 'backstage',
         repo: 'backstage',
         path: 'catalog-info.yaml',
-        message: 'Add catalog-info.yaml config file',
+        message: 'A title/message',
         content: 'c29tZSBjb250ZW50',
         branch: 'backstage-integration',
       });
@@ -334,7 +334,7 @@ describe('CatalogImportClient', () => {
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
-        title: 'A title',
+        title: 'A title/message',
         head: 'backstage-integration',
         body: 'A body',
         base: 'main',
