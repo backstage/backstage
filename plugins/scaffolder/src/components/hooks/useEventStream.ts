@@ -19,6 +19,11 @@ import { scaffolderApiRef, LogEvent } from '../../api';
 import { ScaffolderTask, Status } from '../../types';
 import { Subscription, useApi } from '@backstage/core';
 
+type OutputLink = {
+  title: string;
+  url: string;
+};
+
 type Step = {
   id: string;
   status: Status;
@@ -26,7 +31,10 @@ type Step = {
   startedAt?: string;
 };
 
-type TaskOutput = { entityRef?: string } & { [key in string]: string };
+type TaskOutput = {
+  entityRef?: string;
+  links?: OutputLink[];
+} & { [key in string]: string };
 
 export type TaskStream = {
   loading: boolean;
