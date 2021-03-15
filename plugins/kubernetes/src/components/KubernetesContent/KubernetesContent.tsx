@@ -41,6 +41,8 @@ import { DetectedError, detectErrors } from '../../error-detection';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
 import { CustomResources } from '../CustomResources';
+import EmptyStateImage from '../../assets/emptystate.svg';
+
 import {
   GroupedResponsesContext,
   PodNamesWithErrorsContext,
@@ -203,24 +205,48 @@ export const KubernetesContent = ({ entity }: KubernetesContentProps) => {
               <Typography variant="h3">Your Clusters</Typography>
             </Grid>
             <Grid item container>
-              {kubernetesObjects?.items.map((item, i) => {
-                const podsWithErrors = new Set<string>(
-                  detectedErrors
-                    .get(item.cluster.name)
-                    ?.filter(de => de.kind === 'Pod')
-                    .map(de => de.names)
-                    .flat() ?? [],
-                );
-
-                return (
-                  <Grid item key={i} xs={12}>
-                    <Cluster
-                      clusterObjects={item}
-                      podsWithErrors={podsWithErrors}
+              {kubernetesObjects?.items.length <= 0 && (
+                <Grid
+                  container
+                  justify="space-around"
+                  direction="row"
+                  alignItems="center"
+                  spacing={2}
+                >
+                  <Grid item xs={4}>
+                    <Typography variant="h5">
+                      No resources on any known clusters for{' '}
+                      {entity.metadata.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <img
+                      src={EmptyStateImage}
+                      alt="EmptyState"
+                      data-testid="emptyStateImg"
                     />
                   </Grid>
-                );
-              })}
+                </Grid>
+              )}
+              {kubernetesObjects?.items.length > 0 &&
+                kubernetesObjects?.items.map((item, i) => {
+                  const podsWithErrors = new Set<string>(
+                    detectedErrors
+                      .get(item.cluster.name)
+                      ?.filter(de => de.kind === 'Pod')
+                      .map(de => de.names)
+                      .flat() ?? [],
+                  );
+
+                  return (
+                    <Grid item key={i} xs={12}>
+                      <Cluster
+                        clusterObjects={item}
+                        podsWithErrors={podsWithErrors}
+                      />
+                    </Grid>
+                  );
+                })}
             </Grid>
           </Grid>
         )}
