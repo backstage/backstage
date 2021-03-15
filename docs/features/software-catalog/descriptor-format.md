@@ -35,8 +35,32 @@ we recommend that you name them `catalog-info.yaml`.
 
 ## Overall Shape Of An Entity
 
-The following is an example of the shape of an entity as returned from the
-software catalog API.
+The following is an example of a descriptor file for a Component entity:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: artist-web
+  description: The place to be, for great artists
+  labels:
+    system: public-websites
+  annotations:
+    example.com/service-discovery: artistweb
+    circleci.com/project-slug: github/example-org/artist-website
+  tags:
+    - java
+  links:
+    - url: https://admin.example-org.com
+      title: Admin Dashboard
+      icon: dashboard
+spec:
+  type: website
+  lifecycle: production
+  owner: artist-relations-team
+```
+
+This is the same entity as returned in JSON from the software catalog API:
 
 ```js
 {
@@ -69,31 +93,6 @@ software catalog API.
     "type": "website"
   }
 }
-```
-
-The corresponding descriptor file that generated it may look as follows:
-
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: artist-web
-  description: The place to be, for great artists
-  labels:
-    system: public-websites
-  annotations:
-    example.com/service-discovery: artistweb
-    circleci.com/project-slug: github/example-org/artist-website
-  tags:
-    - java
-  links:
-    - url: https://admin.example-org.com
-      title: Admin Dashboard
-      icon: dashboard
-spec:
-  type: website
-  lifecycle: production
-  owner: artist-relations-team
 ```
 
 The root fields `apiVersion`, `kind`, `metadata`, and `spec` are part of the
