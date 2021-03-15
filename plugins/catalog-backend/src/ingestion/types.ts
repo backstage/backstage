@@ -33,6 +33,7 @@ export type HigherOrderOperation = {
   ): Promise<AddLocationResult>;
   //  refreshAllLocations(): Promise<void>;
   processAllLocations(): Promise<void>;
+  processRefreshState(): Promise<void>;
 };
 
 export type AddLocationResult = {

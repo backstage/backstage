@@ -243,13 +243,22 @@ export class HigherOrderOperations implements HigherOrderOperation {
     // Store any entities that have been found in the reader response
   }
 
-  private async processRefreshState() {
-    this.database.transaction(async tx => {
-      await this.database.getProcessableEntities(tx, { processBatchSize: 5 });
+  async processRefreshState() {
+    const locations = await this.database.transaction(async tx => {
       // Fetch X items with next_update older than Y
       // Process and update next_update
       // Update state with etags, etc.
+      // Bump the timestamp.
+      return this.database.getProcessableEntities(tx, {
+        processBatchSize: 5,
+      });
     });
+
+    // {"location":{"type":"file","target":"../catalog-model/examples/all-components.yaml"}}
+    const parsedLocations: any[] = locations.map(i => JSON.parse(i.entity));
+    await Promise.all(
+      parsedLocations.map(l => this.refreshSingleLocation(l.location)),
+    );
   }
 
   // Performs a full refresh of a single location
