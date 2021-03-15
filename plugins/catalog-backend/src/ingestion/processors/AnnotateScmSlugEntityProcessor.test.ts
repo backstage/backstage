@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { ConfigReader } from '@backstage/config';
 import { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
+
+const config = new ConfigReader({
+  /* integrations: {
+    github: [
+      {
+        host: 'github.com',
+      },
+    ],
+  },*/
+});
 
 describe('AnnotateScmSlugEntityProcessor', () => {
   describe('github', () => {
@@ -32,7 +43,7 @@ describe('AnnotateScmSlugEntityProcessor', () => {
           'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       };
 
-      const processor = new AnnotateScmSlugEntityProcessor();
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(config);
 
       expect(await processor.preProcessEntity(entity, location)).toEqual({
         apiVersion: 'backstage.io/v1alpha1',
@@ -63,7 +74,7 @@ describe('AnnotateScmSlugEntityProcessor', () => {
           'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       };
 
-      const processor = new AnnotateScmSlugEntityProcessor();
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(config);
 
       expect(await processor.preProcessEntity(entity, location)).toEqual({
         apiVersion: 'backstage.io/v1alpha1',
@@ -91,14 +102,13 @@ describe('AnnotateScmSlugEntityProcessor', () => {
           'https://gitlab.com/backstage/backstage/-/blob/master/catalog-info.yaml',
       };
 
-      const processor = new AnnotateScmSlugEntityProcessor();
+      const processor = AnnotateScmSlugEntityProcessor.fromConfig(config);
 
       expect(await processor.preProcessEntity(entity, location)).toEqual({
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
         metadata: {
           name: 'my-component',
-          annotations: {},
         },
       });
     });

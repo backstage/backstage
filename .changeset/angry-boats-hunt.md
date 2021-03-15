@@ -11,5 +11,5 @@ builder. To add it to your instance, add it to your `CatalogBuilder` using
 
 ```typescript
 const builder = new CatalogBuilder(env);
-builder.addProcessor(new AnnotateScmSlugEntityProcessor());
+builder.addProcessor(AnnotateScmSlugEntityProcessor.fromConfig(env.config));
 ```

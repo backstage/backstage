@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { identity, merge, pickBy } from 'lodash';
 import { CatalogProcessor } from './types';
@@ -21,6 +26,16 @@ import { CatalogProcessor } from './types';
 const GITHUB_ACTIONS_ANNOTATION = 'github.com/project-slug';
 
 export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
+  constructor(
+    private readonly opts: { scmIntegrationRegistry: ScmIntegrationRegistry },
+  ) {}
+
+  static fromConfig(config: Config): AnnotateScmSlugEntityProcessor {
+    return new AnnotateScmSlugEntityProcessor({
+      scmIntegrationRegistry: ScmIntegrations.fromConfig(config),
+    });
+  }
+
   async preProcessEntity(
     entity: Entity,
     location: LocationSpec,
@@ -29,11 +44,19 @@ export class AnnotateScmSlugEntityProcessor implements CatalogProcessor {
       return entity;
     }
 
+    const scmIntegration = this.opts.scmIntegrationRegistry.byUrl(
+      location.target,
+    );
+
+    if (!scmIntegration || scmIntegration.type !== 'github') {
+      return entity;
+    }
+
     const gitUrl = parseGitUrl(location.target);
     let githubProjectSlug =
       entity.metadata.annotations?.[GITHUB_ACTIONS_ANNOTATION];
 
-    if (gitUrl.source === 'github.com' && !githubProjectSlug) {
+    if (!githubProjectSlug) {
       githubProjectSlug = `${gitUrl.owner}/${gitUrl.name}`;
     }
 
