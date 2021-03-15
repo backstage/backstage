@@ -99,9 +99,7 @@ export class ScaffolderClient implements ScaffolderApi {
   }
 
   async getIntegrationsList(options: { allowedHosts: string[] }) {
-    const integrations = ScmIntegrations.fromConfig(
-      this.configApi.getConfig('integrations'),
-    );
+    const integrations = ScmIntegrations.fromConfig(this.configApi);
 
     return [
       ...integrations.azure.list(),
