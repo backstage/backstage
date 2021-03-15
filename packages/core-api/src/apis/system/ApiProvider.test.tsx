@@ -194,7 +194,7 @@ describe('v1 consumer', () => {
 
   type Api = () => string;
   const apiRef = createApiRef<Api>({ id: 'x', description: '' });
-  const registry = ApiRegistry.from([[apiRef, () => 'hello']]);
+  const registry = ApiRegistry.with(apiRef, () => 'hello');
 
   const MyHookConsumerV1 = () => {
     const api = useMockApiV1(apiRef);
