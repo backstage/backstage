@@ -135,6 +135,36 @@
             "output": {
               "type": "object",
               "description": "A templated object describing the outputs of the scaffolding task.",
+              "properties": {
+                "links": {
+                  "type": "array",
+                  "description": "A list of external hyperlinks, typically pointing to resources created or updated by the template",
+                  "items": {
+                    "type": "object",
+                    "required": ["url"],
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "A url in a standard uri format.",
+                        "examples": ["https://github.com/my-org/my-new-repo"],
+                        "minLength": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "A user friendly display name for the link.",
+                        "examples": ["View new repo"],
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "type": "string",
+                        "description": "A key representing a visual icon to be displayed in the UI.",
+                        "examples": ["dashboard"],
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              },
               "additionalProperties": {
                 "type": "string"
               }

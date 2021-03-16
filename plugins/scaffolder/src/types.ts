@@ -64,3 +64,16 @@ export type ListActionsResponse = Array<{
     output?: JSONSchema;
   };
 }>;
+
+type OutputLink = {
+  url: string;
+  title?: string;
+  icon?: string;
+};
+
+export type TaskOutput = {
+  entityRef?: string;
+  remoteUrl?: string;
+  links?: OutputLink[];
+  [key: string]: any;
+};

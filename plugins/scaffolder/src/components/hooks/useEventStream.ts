@@ -16,13 +16,8 @@
 import { useImmerReducer } from 'use-immer';
 import { useEffect } from 'react';
 import { scaffolderApiRef, LogEvent } from '../../api';
-import { ScaffolderTask, Status } from '../../types';
+import { ScaffolderTask, Status, TaskOutput } from '../../types';
 import { Subscription, useApi } from '@backstage/core';
-
-type OutputLink = {
-  title: string;
-  url: string;
-};
 
 type Step = {
   id: string;
@@ -30,11 +25,6 @@ type Step = {
   endedAt?: string;
   startedAt?: string;
 };
-
-type TaskOutput = {
-  entityRef?: string;
-  links?: OutputLink[];
-} & { [key in string]: string };
 
 export type TaskStream = {
   loading: boolean;
