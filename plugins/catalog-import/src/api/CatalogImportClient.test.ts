@@ -167,7 +167,11 @@ describe('CatalogImportClient', () => {
         catalogImportClient.analyzeUrl(
           'https://github.com/backstage/backstage',
         ),
-      ).rejects.toThrow(new Error('Invalid url'));
+      ).rejects.toThrow(
+        new Error(
+          'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+        ),
+      );
     });
 
     it('should find locations from github', async () => {

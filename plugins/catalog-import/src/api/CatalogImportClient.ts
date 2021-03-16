@@ -73,32 +73,33 @@ export class CatalogImportClient implements CatalogImportApi {
     }
 
     const ghConfig = getGithubIntegrationConfig(this.configApi, url);
+    if (!ghConfig) {
+      throw new Error(
+        'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+      );
+    }
 
-    if (ghConfig) {
-      // TODO: this could be part of the analyze-location endpoint
-      const locations = await this.checkGitHubForExistingCatalogInfo({
-        ...ghConfig,
-        url,
-      });
+    // TODO: this could be part of the analyze-location endpoint
+    const locations = await this.checkGitHubForExistingCatalogInfo({
+      ...ghConfig,
+      url,
+    });
 
-      if (locations.length > 0) {
-        return {
-          type: 'locations',
-          locations,
-        };
-      }
-
+    if (locations.length > 0) {
       return {
-        type: 'repository',
-        integrationType: 'github',
-        url: url,
-        generatedEntities: await this.generateEntityDefinitions({
-          repo: url,
-        }),
+        type: 'locations',
+        locations,
       };
     }
 
-    throw new Error('Invalid url');
+    return {
+      type: 'repository',
+      integrationType: 'github',
+      url: url,
+      generatedEntities: await this.generateEntityDefinitions({
+        repo: url,
+      }),
+    };
   }
 
   async submitPullRequest({
