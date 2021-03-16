@@ -96,7 +96,7 @@
     "rollup-plugin-dts": "^2.0.1",
     "rollup-plugin-esbuild": "2.6.x",
     "rollup-plugin-peer-deps-external": "^2.2.2",
-    "rollup-plugin-postcss": "^3.1.1",
+    "rollup-plugin-postcss": "^4.0.0",
     "rollup-pluginutils": "^2.8.2",
     "semver": "^7.3.2",
     "start-server-webpack-plugin": "^2.2.5",
