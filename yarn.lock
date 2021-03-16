@@ -17328,6 +17328,25 @@ knex@^0.95.1:
     tarn "^3.0.1"
     tildify "2.0.0"
 
+knex@^0.95.2:
+  version "0.95.2"
+  resolved "https://registry.npmjs.org/knex/-/knex-0.95.2.tgz#ebc258b23c9b936c7c3c3f73bbada58b4e138059"
+  integrity sha512-USnukuNnoVAfeV6OXrkHPLcUQRsRbTl3Tk5E3x0hmKs4uEu5vGfZHxD4luyrndIysyDrKXBWfASQ1wFpJWDDFg==
+  dependencies:
+    colorette "1.2.1"
+    commander "^7.1.0"
+    debug "4.3.1"
+    escalade "^3.1.1"
+    esm "^3.2.25"
+    getopts "2.2.5"
+    interpret "^2.2.0"
+    lodash "^4.17.21"
+    pg-connection-string "2.4.0"
+    rechoir "^0.7.0"
+    resolve-from "^5.0.0"
+    tarn "^3.0.1"
+    tildify "2.0.0"
+
 kuler@1.0.x:
   version "1.0.1"
   resolved "https://registry.npmjs.org/kuler/-/kuler-1.0.1.tgz#ef7c784f36c9fb6e16dd3150d152677b2b0228a6"

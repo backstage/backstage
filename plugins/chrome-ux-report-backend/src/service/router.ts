@@ -37,7 +37,6 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, config, database } = options;
-  console.log(database);
   const databaseClient = await Database.create({
     database: await database.getClient(),
   });
@@ -63,6 +62,27 @@ export async function createRouter(
       rateInfo,
       config,
     );
+
+    await databaseClient.addSite(request.body.origin);
+    await databaseClient.addMonthWithYear(request.body.month);
+    const sitesId = await databaseClient.getSiteId(request.body.origin);
+    const monthWithYearId = await databaseClient.getMonthWithYearId(
+      request.body.month,
+    );
+    await databaseClient.addUXMetrics({
+      sites_id: sitesId,
+      monthsWithYear_id: monthWithYearId,
+      connection_type: '4G',
+      form_factor: 'Desktop',
+      first_contentful_paint: { rates: rows },
+      largest_contentful_paint: { rates: rows },
+      dom_content_loaded: { rates: rows },
+      onload: { rates: rows },
+      first_input: { rates: rows },
+      layout_instability: { rates: rows },
+      notifications: { rates: rows },
+      time_to_first_byte: { rates: rows },
+    });
 
     response.send({ rates: rows });
   });

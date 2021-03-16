@@ -62,7 +62,7 @@ export class ChromeUXReportApi implements ChromeUXReport {
       method: 'POST',
       body: JSON.stringify({
         origin: 'https://backstage.io',
-        month: '202101',
+        month: '202102',
       }),
     });
     return await request.json();

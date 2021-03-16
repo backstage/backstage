@@ -22,16 +22,34 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
-//const TABLE = 'signing_keys';
+export type SitesRow = {
+  id: number;
+  origin: string;
+};
 
-/*type Row = {
-  created_at: Date; // row.created_at is a string after being returned from the database
-  kid: string;
-  key: string;
-};*/
+export type MonthWithYearRow = {
+  id: number;
+  date: string;
+};
+
+export type UXMetricsRow = {
+  id: number;
+  sites_id: number;
+  monthsWithYear_id: number;
+  connection_type: string;
+  form_factor: string;
+  first_contentful_paint: any;
+  largest_contentful_paint: any;
+  dom_content_loaded: any;
+  onload: any;
+  first_input: any;
+  layout_instability: any;
+  notifications: any;
+  time_to_first_byte: any;
+};
 
 type Options = {
-  database: Knex;
+  database: any;
 };
 
 export class Database {
@@ -49,5 +67,113 @@ export class Database {
 
   private constructor(options: Options) {
     this.database = options.database;
+  }
+
+  async addSite(origin: string): Promise<void> {
+    try {
+      await this.database<SitesRow>('sites').insert({
+        origin,
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  async listSites(): Promise<{ sites: any }> {
+    const rows = await this.database<SitesRow>('sites').select();
+
+    return {
+      sites: rows.map(row => ({
+        origin: row.origin,
+      })),
+    };
+  }
+
+  async getSiteId(origin: string): Promise<any> {
+    const [site] = await this.database<SitesRow>('sites')
+      .where({
+        origin: origin,
+      })
+      .select('id');
+
+    return site.id;
+  }
+
+  async removeSite(sites: string[]): Promise<void> {
+    await this.database('sites').delete().whereIn('id', sites);
+  }
+
+  async addMonthWithYear(date: any): Promise<void> {
+    try {
+      await this.database<MonthWithYearRow>('monthsWithYear').insert({
+        date,
+      });
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  async getMonthWithYearId(date: string): Promise<any> {
+    const [monthWithYear] = await this.database<MonthWithYearRow>(
+      'monthsWithYear',
+    )
+      .where({
+        date: date,
+      })
+      .select('id');
+
+    return monthWithYear.id;
+  }
+
+  async listMonthWithYear(): Promise<{ dates: any }> {
+    const rows = await this.database<MonthWithYearRow>(
+      'monthsWithYear',
+    ).select();
+
+    return {
+      dates: rows.map(row => ({
+        date: row.date,
+      })),
+    };
+  }
+
+  async removeMonthWithYear(dates: string[]): Promise<void> {
+    await this.database('monthsWithYear').delete().whereIn('id', dates);
+  }
+
+  async addUXMetrics(metrics: any): Promise<void> {
+    const {
+      sites_id,
+      monthsWithYear_id,
+      connection_type,
+      form_factor,
+      first_contentful_paint,
+      largest_contentful_paint,
+      dom_content_loaded,
+      onload,
+      first_input,
+      layout_instability,
+      notifications,
+      time_to_first_byte,
+    } = metrics;
+
+    try {
+      await this.database<UXMetricsRow>('uxMetrics').insert({
+        sites_id,
+        monthsWithYear_id,
+        connection_type,
+        form_factor,
+        first_contentful_paint,
+        largest_contentful_paint,
+        dom_content_loaded,
+        onload,
+        first_input,
+        layout_instability,
+        notifications,
+        time_to_first_byte,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

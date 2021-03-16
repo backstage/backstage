@@ -20,12 +20,53 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  return knex.schema.createTable('metrics', table => {});
+  await knex.schema.createTable('sites', table => {
+    table.comment('The table of chrome ux report sites');
+    table.increments('id').primary().notNullable();
+    table.text('origin').unique().notNullable();
+  });
+
+  await knex.schema.createTable('monthsWithYear', table => {
+    table.comment('The table of chrome ux report monthsWithYear');
+    table.increments('id').primary().notNullable();
+    table.text('date').unique().notNullable();
+  });
+
+  await knex.schema.createTable('uxMetrics', table => {
+    table.comment('The table of chrome ux report metrics');
+    table.increments('id').primary().notNullable();
+    table
+      .integer('sites_id')
+      .references('id')
+      .inTable('sites')
+      .notNullable()
+      .onDelete('CASCADE');
+    table
+      .integer('monthsWithYear_id')
+      .references('id')
+      .inTable('monthsWithYear')
+      .notNullable()
+      .onDelete('CASCADE');
+    table.text('form_factor').notNullable();
+    table.text('connection_type').notNullable();
+    table.json('first_contentful_paint').notNullable();
+    table.json('largest_contentful_paint').notNullable();
+    table.json('dom_content_loaded').notNullable();
+    table.json('layout_instability').notNullable();
+    table.json('onload').notNullable();
+    table.json('first_input').notNullable();
+    table.json('notifications').notNullable();
+    table.json('time_to_first_byte').notNullable();
+
+    table.unique(['sites_id', 'monthsWithYear_id'], 'last');
+  });
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  return knex.schema.dropTable('metrics');
+  await knex.schema.dropTable('metrics');
+  await knex.schema.dropTable('sites');
+  await knex.schema.dropTable('monthsWithYear');
 };
