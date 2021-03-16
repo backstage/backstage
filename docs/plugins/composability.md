@@ -393,24 +393,26 @@ export const myPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
     details: detailsRouteRef,
-  }
-})
+  },
+});
 
-export const MyPage = plugin.provide(createRoutableExtension({
-  component: () => import('./components/MyPage').then(m => m.MyPage),
-  mountPoint: rootRouteRef,
-}))
+export const MyPage = plugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/MyPage').then(m => m.MyPage),
+    mountPoint: rootRouteRef,
+  }),
+);
 
 // components/MyPage.tsx
 const MyPage = () => (
   <Routes>
     {/* myPlugin.routes.root will take the user to this page */}
-    <Route path='/' element={<IndexPage />}>
+    <Route path="/" element={<IndexPage />} />
 
     {/* myPlugin.routes.details will take the user to this page */}
-    <Route path='/details' element={<DetailsPage />}>
+    <Route path="/details" element={<DetailsPage />} />
   </Routes>
-)
+);
 ```
 
 ### New Catalog Components
