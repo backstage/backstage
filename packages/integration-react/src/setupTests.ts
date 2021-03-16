@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,5 @@
  * limitations under the License.
  */
 
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import parseGitUrl from 'git-url-parse';
-
-export const getGithubIntegrationConfig = (
-  scmIntegrationsApi: ScmIntegrationRegistry,
-  location: string,
-) => {
-  const integration = scmIntegrationsApi.github.byUrl(location);
-  if (!integration) {
-    return undefined;
-  }
-
-  const { name: repo, owner } = parseGitUrl(location);
-  return {
-    repo,
-    owner,
-    githubIntegrationConfig: integration.config,
-  };
-};
+import '@testing-library/jest-dom';
+import 'cross-fetch/polyfill';

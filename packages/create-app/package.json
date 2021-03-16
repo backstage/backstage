@@ -69,6 +69,7 @@
     "@backstage/plugin-techdocs": "*",
     "@backstage/plugin-techdocs-backend": "*",
     "@backstage/plugin-user-settings": "*",
+    "@backstage/integration-react": "*",
     "@backstage/test-utils": "*",
     "@backstage/theme": "*"
   },

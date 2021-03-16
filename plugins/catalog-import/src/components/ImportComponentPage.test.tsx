@@ -60,7 +60,7 @@ describe('<ImportComponentPage />', () => {
             getAccessToken: async () => 'token',
           },
           identityApi,
-          configApi: {} as any,
+          scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
         }),
       );

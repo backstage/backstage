@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/core';
+import { ScmIntegrations } from '@backstage/integration';
 import { ScaffolderClient } from './api';
 
 describe('api', () => {
   const discoveryApi = {} as any;
   const identityApi = {} as any;
-  const configApi = new ConfigReader({
-    integrations: {
-      github: [
-        {
-          host: 'hello.com',
-        },
-      ],
-    },
-  });
+  const scmIntegrationsApi = ScmIntegrations.fromConfig(
+    new ConfigReader({
+      integrations: {
+        github: [
+          {
+            host: 'hello.com',
+          },
+        ],
+      },
+    }),
+  );
   const apiClient = new ScaffolderClient({
-    configApi,
+    scmIntegrationsApi,
     discoveryApi,
     identityApi,
   });
