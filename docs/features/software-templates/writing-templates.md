@@ -265,7 +265,7 @@ The main two that are used are the following:
 ```yaml
 output:
   remoteUrl: '{{ steps.publish.output.remoteUrl }}' # link to the remote repository
-  entityRef: '{{ steps.register.output.entityRef }}' # link to the entitiy that has been ingested to the catalog
+  entityRef: '{{ steps.register.output.entityRef }}' # link to the entity that has been ingested to the catalog
 ```
 
 ### The templating syntax
