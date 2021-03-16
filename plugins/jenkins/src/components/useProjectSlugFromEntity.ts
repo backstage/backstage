@@ -19,8 +19,5 @@ import { JENKINS_ANNOTATION } from '../constants';
 export const useProjectSlugFromEntity = () => {
   const { entity } = useEntity();
 
-  const [owner, repo] = (
-    entity.metadata.annotations?.[JENKINS_ANNOTATION] ?? ''
-  ).split('/');
-  return { owner, repo };
+  return entity.metadata.annotations?.[JENKINS_ANNOTATION] ?? '';
 };
