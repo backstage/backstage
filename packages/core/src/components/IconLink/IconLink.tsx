@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Link, IconComponent } from '@backstage/core';
-import { Grid, makeStyles, Typography } from '@material-ui/core';
-import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
+import { IconComponent } from '@backstage/core-api';
+import { Grid, LinkProps, makeStyles, Typography } from '@material-ui/core';
+import LanguageIcon from '@material-ui/icons/Language';
+import { omit } from 'lodash';
+import { Link } from '../Link';
 
 const useStyles = makeStyles({
   svgIcon: {
@@ -30,15 +32,15 @@ const useStyles = makeStyles({
   },
 });
 
-export const IconLink = ({
-  href,
-  text,
-  Icon,
-}: {
-  href: string;
-  text?: string;
-  Icon?: IconComponent;
-}) => {
+export const IconLink = (
+  props: {
+    href: string;
+    text?: string;
+    Icon?: IconComponent;
+  } & LinkProps,
+) => {
+  const { href, text, Icon, ...linkProps } = props;
+
   const classes = useStyles();
 
   return (
@@ -49,7 +51,7 @@ export const IconLink = ({
         </Typography>
       </Grid>
       <Grid item>
-        <Link to={href} target="_blank" rel="noopener">
+        <Link to={href} {...linkProps}>
           {text || href}
         </Link>
       </Grid>
