@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-tech-radar': minor
+'@backstage/plugin-tech-radar': patch
 ---
 
 Map description in API RadarEntry to Entry
