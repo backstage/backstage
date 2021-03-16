@@ -15,6 +15,7 @@
  */
 
 import { DateAggregation, Trendline, ChartData } from '../types';
+import { Tab } from '@backstage/core';
 
 export function trendFrom(trendline: Trendline, date: number): number {
   return trendline.slope * (date / 1000) + trendline.intercept;
@@ -36,4 +37,11 @@ export function toDataMax(metric: string, data: ChartData[]): number {
     (data.reduce(toMaxCost).dailyCost / Math.abs(data[0].trend)) *
     data[0][metric]
   );
+}
+
+export function breakdownTabOf(label: string, index: number): Tab {
+  return {
+    id: index.toString(),
+    label: `Breakdown by ${label}`,
+  };
 }

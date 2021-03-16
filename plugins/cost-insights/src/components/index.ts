@@ -28,6 +28,7 @@ export * from './CostInsightsSupportButton';
 export * from './CostInsightsTabs';
 export * from './CostOverviewCard';
 export * from './CurrencySelect';
+export * from './EntityDialog';
 export * from './LabelDataflowInstructionsPage';
 export * from './LegendItem';
 export * from './MetricSelect';

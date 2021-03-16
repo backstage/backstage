@@ -24,7 +24,7 @@ import pluralize from 'pluralize';
 import { Box, Typography } from '@material-ui/core';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import { LegendItem } from '../LegendItem';
-import { ProductEntityDialog } from './ProductEntityDialog';
+import { EntityDialog } from '../EntityDialog';
 import { CostGrowth, CostGrowthIndicator } from '../CostGrowth';
 import {
   BarChart,
@@ -209,7 +209,7 @@ export const ProductInsightsChart = ({
         {...barChartProps}
       />
       {isSelected && entities.length && (
-        <ProductEntityDialog
+        <EntityDialog
           open={isSelected}
           onClose={() => setSelected(undefined)}
           entity={findAlways(entities, e => e.id === selectLabel)}

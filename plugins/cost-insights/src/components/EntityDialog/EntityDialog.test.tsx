@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { ProductEntityDialog } from './ProductEntityDialog';
+import { EntityDialog } from './EntityDialog';
 import { render } from '@testing-library/react';
 import { Entity } from '../../types';
 
@@ -68,25 +68,25 @@ const multiBreakdownEntity = {
   },
 };
 
-describe('<ProductEntityDialog/>', () => {
-  it('Should error if no sub-entities exist', () => {
-    expect(() =>
-      render(
-        wrapInTestApp(
-          <ProductEntityDialog
-            open
-            entity={atomicEntity}
-            onClose={jest.fn()}
-          />,
-        ),
+describe('<EntityDialog/>', () => {
+  it('Should display an error if no sub-entities exist', () => {
+    const { getByText } = render(
+      wrapInTestApp(
+        <EntityDialog open entity={atomicEntity} onClose={jest.fn()} />,
       ),
-    ).toThrow();
+    );
+
+    expect(
+      getByText(
+        `Expected ${atomicEntity.id} to have sub-entities but received none.`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('Should show a tab for a single sub-entity type', () => {
     const { getByText } = render(
       wrapInTestApp(
-        <ProductEntityDialog
+        <EntityDialog
           open
           entity={singleBreakdownEntity}
           onClose={jest.fn()}
@@ -99,11 +99,7 @@ describe('<ProductEntityDialog/>', () => {
   it('Should show tabs when multiple sub-entity types exist', () => {
     const { getByText } = render(
       wrapInTestApp(
-        <ProductEntityDialog
-          open
-          entity={multiBreakdownEntity}
-          onClose={jest.fn()}
-        />,
+        <EntityDialog open entity={multiBreakdownEntity} onClose={jest.fn()} />,
       ),
     );
     expect(getByText('Breakdown by SKU')).toBeInTheDocument();

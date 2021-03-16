@@ -23,7 +23,7 @@ import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';
 import { BarChartOptions, Entity } from '../../types';
 
-export type ProductEntityTableOptions = Partial<
+export type EntityDialogTableOptions = Partial<
   Pick<BarChartOptions, 'previousName' | 'currentName'>
 >;
 
@@ -82,19 +82,19 @@ function createSorter(field?: keyof Omit<RowData, 'id'>) {
   };
 }
 
-type ProductEntityTableProps = {
-  entityLabel: string;
+type EntityDialogTableProps = {
+  label: string;
   entity: Entity;
-  options: ProductEntityTableOptions;
+  options: EntityDialogTableOptions;
 };
 
-export const ProductEntityTable = ({
-  entityLabel,
+export const EntityDialogTable = ({
+  label,
   entity,
   options,
-}: ProductEntityTableProps) => {
+}: EntityDialogTableProps) => {
   const classes = useStyles();
-  const entities = entity.entities[entityLabel];
+  const entities = entity.entities[label];
 
   const data = Object.assign(
     {
@@ -110,7 +110,7 @@ export const ProductEntityTable = ({
   const columns: TableColumn[] = [
     {
       field: 'label',
-      title: <Typography className={firstColClasses}>{entityLabel}</Typography>,
+      title: <Typography className={firstColClasses}>{label}</Typography>,
       render: createRenderer('label', classes),
       customSort: createSorter('label'),
       width: '33.33%',
