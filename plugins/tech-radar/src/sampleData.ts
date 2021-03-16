@@ -49,6 +49,8 @@ entries.push({
   id: 'javascript',
   title: 'JavaScript',
   quadrant: 'languages',
+  description:
+    'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
 });
 entries.push({
   timeline: [
@@ -65,6 +67,8 @@ entries.push({
   id: 'typescript',
   title: 'TypeScript',
   quadrant: 'languages',
+  description:
+    'Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat',
 });
 entries.push({
   timeline: [
