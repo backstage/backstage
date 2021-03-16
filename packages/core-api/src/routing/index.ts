@@ -16,6 +16,7 @@
 
 export type {
   RouteRef,
+  SubRouteRef,
   AbsoluteRouteRef,
   ConcreteRoute,
   MutableRouteRef,
