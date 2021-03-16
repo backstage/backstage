@@ -14,86 +14,101 @@
  * limitations under the License.
  */
 
-import { catalogApiRef } from '@backstage/catalog-client';
-import { Entity, RELATION_HAS_PART } from '@backstage/catalog-model';
-import { CatalogApi, EntityProvider } from '@backstage/plugin-catalog-react';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  catalogApiRef,
+  CatalogApi,
+  getEntityRelations,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
+import { Entity, EntityName, RELATION_PART_OF } from '@backstage/catalog-model';
+
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { SystemDiagram } from './SystemDiagram';
 
 describe('<SystemDiagram />', () => {
-  const catalogApi: jest.Mocked<CatalogApi> = {
-    getLocationById: jest.fn(),
-    getEntityByName: jest.fn(),
-    getEntities: jest.fn(),
-    addLocation: jest.fn(),
-    getLocationByEntity: jest.fn(),
-    removeEntityByUid: jest.fn(),
-  } as any;
+  const catalogApi: Partial<CatalogApi> = {
+    getEntities: () =>
+      Promise.resolve({
+        items: [
+          // {
+          //   apiVersion: 'backstage.io/v1alpha1',
+          //   kind: 'System',
+          //   metadata: {
+          //     name: 'my-system',
+          //   },
+          //   spec: {
+          //     owner: 'tools@example.com',
+          //   },
+          // },
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'Component',
+            metadata: {
+              name: 'Entity2',
+            },
+            spec: {
+              owner: 'not-tools@example.com',
+              type: 'service',
+              system: 'my-system',
+            },
+          },
+        ] as Entity[],
+      }),
+  };
 
   afterEach(() => jest.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
-      kind: 'Domain',
+      kind: 'System',
       metadata: {
-        name: 'my-domain',
-        namespace: 'my-namespace',
+        name: 'my-system',
+        // namespace: 'my-namespace',
       },
       relations: [],
     };
 
     const { getByText } = await renderInTestApp(
-      <EntityProvider entity={entity}>
+      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
         <SystemDiagram entity={entity} />
-      </EntityProvider>,
+      </ApiProvider>,
     );
 
     expect(getByText('System Diagram')).toBeInTheDocument();
-    // expect(getByText('Systems')).toBeInTheDocument();
-    // expect(getByText(/No system is part of this domain/i)).toBeInTheDocument();
+    expect(getByText('my-system')).not.toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
-      kind: 'Domain',
+      kind: 'System',
       metadata: {
-        name: 'my-domain',
+        name: 'my-system',
         namespace: 'my-namespace',
       },
       relations: [
         {
           target: {
-            kind: 'System',
+            kind: 'Domain',
             namespace: 'my-namespace',
-            name: 'target-name',
+            name: 'my-domain',
           },
-          type: RELATION_HAS_PART,
+          type: RELATION_PART_OF,
         },
       ],
     };
-    catalogApi.getEntityByName.mockResolvedValue({
-      apiVersion: 'v1',
-      kind: 'System',
-      metadata: {
-        name: 'target-name',
-        namespace: 'my-namespace',
-      },
-      spec: {},
-    });
 
     const { getByText } = await renderInTestApp(
-      <EntityProvider entity={entity}>
+      <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
         <SystemDiagram entity={entity} />
-      </EntityProvider>,
+      </ApiProvider>,
     );
 
-    await waitFor(() => {
-      expect(getByText('Systems')).toBeInTheDocument();
-      expect(getByText(/target-name/i)).toBeInTheDocument();
-    });
+    expect(getByText('System Diagram')).toBeInTheDocument();
+    expect(getByText('my-system')).toBeInTheDocument();
   });
 });
