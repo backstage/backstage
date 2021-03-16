@@ -14,72 +14,69 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { makeBadge, Format } from 'badge-maker';
-import { BadgeBuilder, BadgeOptions } from './types';
+import { BadgeBuilder, BadgeInfo, BadgeOptions, BadgeSpec } from './types';
 import { Badge, BadgeFactories } from '../../types';
 
 export class DefaultBadgeBuilder implements BadgeBuilder {
   constructor(private readonly factories: BadgeFactories) {}
 
-  public async getBadgeIds(): Promise<string[]> {
-    return Object.keys(this.factories);
+  public async getBadges(): Promise<BadgeInfo[]> {
+    return Object.keys(this.factories).map(id => ({ id }));
   }
 
-  public async createBadge(options: BadgeOptions): Promise<string> {
-    const factory = this.factories[options.badgeId];
+  public async createBadgeJson(options: BadgeOptions): Promise<BadgeSpec> {
+    const factory = this.factories[options.badgeInfo.id];
     const badge = factory
       ? factory.createBadge(options.context)
       : ({
           label: 'unknown badge',
-          message: options.badgeId,
+          message: options.badgeInfo.id,
           color: 'red',
         } as Badge);
 
     if (!badge) {
-      return '';
+      throw new InputError(
+        `The badge factory failed to produce a "${options.badgeInfo.id}" badge with the provided context`,
+      );
     }
 
-    switch (options.format) {
-      case 'json':
-        return JSON.stringify(
-          {
-            badge,
-            id: options.badgeId,
-            url: options.context.badgeUrl,
-            markdown: this.getMarkdownCode(badge, options.context.badgeUrl),
-          },
-          null,
-          2,
-        );
-      case 'svg':
-        try {
-          const format = {
-            message: badge.message,
-            color: badge.color || '#36BAA2',
-            label: badge.label || '',
-            labelColor: badge.labelColor || '',
-            style: badge.style || 'flat-square',
-          } as Format;
-          return makeBadge(format);
-        } catch (err) {
-          return makeBadge({
-            label: 'invalid badge',
-            message: `${err}`,
-            color: 'red',
-          });
-        }
-      default:
-        throw new TypeError(`unsupported badge format: ${options.format}`);
+    return {
+      badge,
+      id: options.badgeInfo.id,
+      url: options.context.badgeUrl,
+      markdown: this.getMarkdownCode(badge, options.context.badgeUrl),
+    };
+  }
+
+  public async createBadgeSvg(options: BadgeOptions): Promise<string> {
+    const { badge } = await this.createBadgeJson(options);
+    try {
+      const format = {
+        message: badge.message,
+        color: badge.color || '#36BAA2',
+        label: badge.label || '',
+        labelColor: badge.labelColor || '',
+        style: badge.style || 'flat-square',
+      } as Format;
+      return makeBadge(format);
+    } catch (err) {
+      return makeBadge({
+        label: 'invalid badge',
+        message: `${err}`,
+        color: 'red',
+      });
     }
   }
 
-  private getMarkdownCode(params: Badge, badge_url: string): string {
-    let alt_text = `${params.label}: ${params.message}`;
+  private getMarkdownCode(params: Badge, badgeUrl: string): string {
+    let altText = `${params.label}: ${params.message}`;
     if (params.description && params.description !== params.label) {
-      alt_text = `${params.description}, ${alt_text}`;
+      altText = `${params.description}, ${altText}`;
     }
     const tooltip = params.description ? ` "${params.description}"` : '';
-    const img = `![${alt_text}](${badge_url}${tooltip})`;
+    const img = `![${altText}](${badgeUrl}${tooltip})`;
     return params.link ? `[${img}](${params.link})` : img;
   }
 }

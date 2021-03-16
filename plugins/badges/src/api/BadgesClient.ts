@@ -16,6 +16,7 @@
 
 import { generatePath } from 'react-router';
 import { DiscoveryApi } from '@backstage/core';
+import { ResponseError } from '@backstage/errors';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { BadgesApi, BadgeSpec } from './types';
@@ -29,11 +30,13 @@ export class BadgesClient implements BadgesApi {
 
   public async getEntityBadgeSpecs(entity: Entity): Promise<BadgeSpec[]> {
     const entityBadgeSpecsUrl = await this.getEntityBadgeSpecsUrl(entity);
-    const specs = (await (
-      await fetch(entityBadgeSpecsUrl)
-    ).json()) as BadgeSpec[];
+    const response = await fetch(entityBadgeSpecsUrl);
 
-    return specs;
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
   }
 
   private async getEntityBadgeSpecsUrl(entity: Entity): Promise<string> {

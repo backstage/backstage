@@ -14,15 +14,33 @@
  * limitations under the License.
  */
 
-import { BadgeContext } from '../../types';
+import { Badge, BadgeContext } from '../../types';
+
+export type BadgeInfo = {
+  id: string;
+};
 
 export type BadgeOptions = {
-  badgeId: string;
+  badgeInfo: BadgeInfo;
   context: BadgeContext;
-  format: 'svg' | 'json';
+};
+
+export type BadgeSpec = {
+  /** Badge id */
+  id: string;
+
+  /** Badge data */
+  badge: Badge;
+
+  /** The URL to the badge image */
+  url: string;
+
+  /** The markdown code to use the badge */
+  markdown: string;
 };
 
 export type BadgeBuilder = {
-  createBadge(options: BadgeOptions): Promise<string>;
-  getBadgeIds(): Promise<string[]>;
+  getBadges(): Promise<BadgeInfo[]>;
+  createBadgeJson(options: BadgeOptions): Promise<BadgeSpec>;
+  createBadgeSvg(options: BadgeOptions): Promise<string>;
 };

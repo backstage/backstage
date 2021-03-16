@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { DefaultBadgeBuilder } from './DefaultBadgeBuilder';
 import { BadgeBuilder, BadgeOptions } from './types';
 import { BadgeContext, BadgeFactories } from '../../types';
 
 describe('DefaultBadgeBuilder', () => {
   let builder: BadgeBuilder;
-  let config: jest.Mocked<Config>;
+  let config: Config;
   let factories: BadgeFactories;
 
   const badge = {
@@ -32,24 +32,9 @@ describe('DefaultBadgeBuilder', () => {
   };
 
   beforeAll(() => {
-    config = {
-      get: jest.fn(),
-      getBoolean: jest.fn(),
-      getConfig: jest.fn(),
-      getConfigArray: jest.fn(),
-      getNumber: jest.fn(),
-      getOptional: jest.fn(),
-      getOptionalBoolean: jest.fn(),
-      getOptionalConfig: jest.fn(),
-      getOptionalConfigArray: jest.fn(),
-      getOptionalNumber: jest.fn(),
-      getOptionalString: jest.fn(),
-      getOptionalStringArray: jest.fn(),
-      getString: jest.fn(),
-      getStringArray: jest.fn(),
-      has: jest.fn(),
-      keys: jest.fn(),
-    };
+    config = new ConfigReader({
+      backend: { baseUrl: 'http://127.0.0.1' },
+    });
 
     factories = {
       testbadge: {
@@ -63,25 +48,24 @@ describe('DefaultBadgeBuilder', () => {
     builder = new DefaultBadgeBuilder(factories);
   });
 
-  it('getBadgeIds() returns all badge factory ids', async () => {
-    expect(await builder.getBadgeIds()).toEqual(['testbadge']);
+  it('getBadges() returns all badge factory ids', async () => {
+    expect(await builder.getBadges()).toEqual([{ id: 'testbadge' }]);
   });
 
-  describe('createBadge', () => {
+  describe('createBadge[Json|Svg]', () => {
     const context: BadgeContext = {
       badgeUrl: 'http://127.0.0.1/badge/url',
       config,
     };
 
-    it('returns the spec when format is "json"', async () => {
+    it('badge spec', async () => {
       const options: BadgeOptions = {
-        badgeId: 'testbadge',
+        badgeInfo: { id: 'testbadge' },
         context,
-        format: 'json',
       };
 
-      const spec = await builder.createBadge(options);
-      expect(JSON.parse(spec)).toEqual({
+      const spec = await builder.createBadgeJson(options);
+      expect(spec).toEqual({
         badge,
         id: 'testbadge',
         url: context.badgeUrl,
@@ -89,26 +73,24 @@ describe('DefaultBadgeBuilder', () => {
       });
     });
 
-    it('returns the badge image when format is "svg"', async () => {
+    it('badge image', async () => {
       const options: BadgeOptions = {
-        badgeId: 'testbadge',
+        badgeInfo: { id: 'testbadge' },
         context,
-        format: 'svg',
       };
 
-      const spec = await builder.createBadge(options);
-      expect(spec).toEqual(expect.stringMatching(/^<svg[^>]*>.*<\/svg>$/));
+      const img = await builder.createBadgeSvg(options);
+      expect(img).toEqual(expect.stringMatching(/^<svg[^>]*>.*<\/svg>$/));
     });
 
     it('returns "unknown" badge for missing factory', async () => {
       const options: BadgeOptions = {
-        badgeId: 'other-id',
+        badgeInfo: { id: 'other-id' },
         context,
-        format: 'json',
       };
 
-      const spec = await builder.createBadge(options);
-      expect(JSON.parse(spec)).toEqual({
+      const spec = await builder.createBadgeJson(options);
+      expect(spec).toEqual({
         badge: {
           label: 'unknown badge',
           message: 'other-id',

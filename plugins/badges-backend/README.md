@@ -6,12 +6,12 @@ Default implementation uses
 badges, in SVG.
 
 Currently, only entity badges are implemented. i.e. badges that may have entity
-specific information in them, and as such, are served from a entity specific
+specific information in them, and as such, are served from an entity specific
 endpoint.
 
 ## Installation
 
-Install the `@backstage/plugin-badges-backend` package in your backend packages,
+Install the `@backstage/plugin-badges-backend` package in your backend package,
 and then integrate the plugin using the following default setup for
 `src/plugins/badges.ts`:
 
@@ -56,7 +56,7 @@ factories, and provide them to the badge builder.
 
 ### Custom badges
 
-To provide custom badges, create a badges factories function, and use that when
+To provide custom badges, create a badge factories function, and use that when
 creating the badges backend router.
 
 ```ts
@@ -80,8 +80,8 @@ export const createMyCustomBadgeFactories = (): BadgeFactories => ({
 
 ## API
 
-The badges backend api exposes two main endpoints for entity badges. (the
-`/badges` prefix is arbitrary, and the default for the example backend.)
+The badges backend api exposes two main endpoints for entity badges. The
+`/badges` prefix is arbitrary, and the default for the example backend.
 
 - `/badges/entity/:namespace/:kind/:name/badge-specs` List all defined badges
   for a particular entity, in json format. See

@@ -15,7 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { CodeSnippet, Progress, useApi } from '@backstage/core';
+import {
+  CodeSnippet,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+} from '@backstage/core';
 import {
   Button,
   Dialog,
@@ -28,7 +33,6 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { badgesApiRef } from '../api';
@@ -80,17 +84,11 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
-      <DialogTitle id="badges-dialog-title">Entity Badges</DialogTitle>
+      <DialogTitle>Entity Badges</DialogTitle>
 
       <DialogContent>
-        {loading ? <Progress /> : null}
-
-        {error ? (
-          <Alert severity="error" style={{ wordBreak: 'break-word' }}>
-            {error.toString()}
-          </Alert>
-        ) : null}
-
+        {loading && <Progress />}
+        {error && <ResponseErrorPanel error={error} />}
         {content}
       </DialogContent>
 

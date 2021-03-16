@@ -15,4 +15,4 @@
  */
 
 export { DefaultBadgeBuilder } from './DefaultBadgeBuilder';
-export * from './types';
+export type { BadgeBuilder, BadgeInfo, BadgeOptions, BadgeSpec } from './types';

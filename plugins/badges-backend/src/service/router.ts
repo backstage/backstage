@@ -31,17 +31,14 @@ export interface RouterOptions {
   badgeFactories?: BadgeFactories;
   catalog?: CatalogApi;
   config: Config;
-  discovery?: PluginEndpointDiscovery;
+  discovery: PluginEndpointDiscovery;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  if (!options.catalog && !options.discovery) {
-    throw new Error('must provide either catalog api or discovery api');
-  }
   const catalog =
-    options.catalog || new CatalogClient({ discoveryApi: options.discovery! });
+    options.catalog || new CatalogClient({ discoveryApi: options.discovery });
   const badgeBuilder =
     options.badgeBuilder ||
     new DefaultBadgeBuilder(options.badgeFactories || {});
@@ -56,70 +53,84 @@ export async function createRouter(
       );
     }
 
-    const context: BadgeContext = {
-      badgeUrl: '',
-      config: options.config,
-      entity,
-    };
-
     const specs = [];
-    for (const badgeId of await badgeBuilder.getBadgeIds()) {
-      context.badgeUrl = [
-        `${req.protocol}://`,
-        req.headers.host,
-        req.originalUrl.replace(/badge-specs$/, badgeId),
-      ].join('');
-      const badge = await badgeBuilder.createBadge({
-        badgeId,
-        context,
-        format: 'json',
-      });
+    for (const badgeInfo of await badgeBuilder.getBadges()) {
+      const context: BadgeContext = {
+        badgeUrl: await getBadgeUrl(
+          namespace,
+          kind,
+          name,
+          badgeInfo.id,
+          options,
+        ),
+        config: options.config,
+        entity,
+      };
 
+      const badge = await badgeBuilder.createBadgeJson({ badgeInfo, context });
       if (badge) {
         specs.push(badge);
       }
     }
 
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(`[${specs.join(',\n')}]`);
+    res.status(200).send(JSON.stringify(specs, null, 2));
   });
 
-  router.get('/entity/:namespace/:kind/:name/:badgeId', async (req, res) => {
-    const { namespace, kind, name, badgeId } = req.params;
-    const entity = await catalog.getEntityByName({ namespace, kind, name });
-    if (!entity) {
-      throw new NotFoundError(
-        `No ${kind} entity in ${namespace} named "${name}"`,
-      );
-    }
+  router.get(
+    '/entity/:namespace/:kind/:name/badge/:badgeId',
+    async (req, res) => {
+      const { namespace, kind, name, badgeId } = req.params;
+      const entity = await catalog.getEntityByName({ namespace, kind, name });
+      if (!entity) {
+        throw new NotFoundError(
+          `No ${kind} entity in ${namespace} named "${name}"`,
+        );
+      }
 
-    let format =
-      req.accepts(['image/svg+xml', 'application/json']) || 'image/svg+xml';
-    if (req.query.format === 'json') {
-      format = 'application/json';
-    }
+      let format =
+        req.accepts(['image/svg+xml', 'application/json']) || 'image/svg+xml';
+      if (req.query.format === 'json') {
+        format = 'application/json';
+      }
 
-    const badgeUrl = [
-      `${req.protocol}://`,
-      req.headers.host,
-      req.originalUrl,
-    ].join('');
+      const badgeOptions = {
+        badgeInfo: { id: badgeId },
+        context: {
+          badgeUrl: await getBadgeUrl(namespace, kind, name, badgeId, options),
+          config: options.config,
+          entity,
+        },
+      };
 
-    const data = await badgeBuilder.createBadge({
-      badgeId,
-      context: { badgeUrl, config: options.config, entity },
-      format: format === 'application/json' ? 'json' : 'svg',
-    });
+      let data: string;
+      if (format === 'application/json') {
+        data = JSON.stringify(
+          await badgeBuilder.createBadgeJson(badgeOptions),
+          null,
+          2,
+        );
+      } else {
+        data = await badgeBuilder.createBadgeSvg(badgeOptions);
+      }
 
-    if (!data) {
-      throw new NotFoundError(`Unknown badge "${badgeId}" for ${kind} entity.`);
-    }
-
-    res.setHeader('Content-Type', format);
-    res.status(200).send(data);
-  });
+      res.setHeader('Content-Type', format);
+      res.status(200).send(data);
+    },
+  );
 
   router.use(errorHandler());
 
   return router;
+}
+
+async function getBadgeUrl(
+  namespace: string,
+  kind: string,
+  name: string,
+  badgeId: string,
+  options: RouterOptions,
+): Promise<string> {
+  const baseUrl = await options.discovery.getExternalBaseUrl('badges');
+  return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
 }

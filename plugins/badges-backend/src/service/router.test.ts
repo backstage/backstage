@@ -16,9 +16,13 @@
 
 import express from 'express';
 import request from 'supertest';
+import {
+  PluginEndpointDiscovery,
+  SingleHostDiscovery,
+} from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import type { Entity } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 import { BadgeBuilder } from '../lib';
 
@@ -26,7 +30,8 @@ describe('createRouter', () => {
   let app: express.Express;
   let badgeBuilder: jest.Mocked<BadgeBuilder>;
   let catalog: jest.Mocked<CatalogApi>;
-  let config: jest.Mocked<Config>;
+  let config: Config;
+  let discovery: PluginEndpointDiscovery;
 
   const entity: Entity = {
     apiVersion: 'v1',
@@ -38,15 +43,19 @@ describe('createRouter', () => {
 
   const badge = {
     id: 'test-badge',
-    badge: { label: 'test badge' },
+    badge: {
+      label: 'test',
+      message: 'badge',
+    },
     url: '/...',
     markdown: '[![...](...)]',
   };
 
   beforeAll(async () => {
     badgeBuilder = {
-      createBadge: jest.fn(),
-      getBadgeIds: jest.fn(),
+      getBadges: jest.fn(),
+      createBadgeJson: jest.fn(),
+      createBadgeSvg: jest.fn(),
     };
     catalog = {
       addLocation: jest.fn(),
@@ -56,25 +65,21 @@ describe('createRouter', () => {
       getLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
     };
-    config = {
-      get: jest.fn(),
-      getBoolean: jest.fn(),
-      getConfig: jest.fn(),
-      getConfigArray: jest.fn(),
-      getNumber: jest.fn(),
-      getOptional: jest.fn(),
-      getOptionalBoolean: jest.fn(),
-      getOptionalConfig: jest.fn(),
-      getOptionalConfigArray: jest.fn(),
-      getOptionalNumber: jest.fn(),
-      getOptionalString: jest.fn(),
-      getOptionalStringArray: jest.fn(),
-      getString: jest.fn(),
-      getStringArray: jest.fn(),
-      has: jest.fn(),
-      keys: jest.fn(),
-    };
-    const router = await createRouter({ badgeBuilder, catalog, config });
+
+    config = new ConfigReader({
+      backend: {
+        baseUrl: 'http://127.0.0.1',
+        listen: { port: 7000 },
+      },
+    });
+    discovery = SingleHostDiscovery.fromConfig(config);
+
+    const router = await createRouter({
+      badgeBuilder,
+      catalog,
+      config,
+      discovery,
+    });
     app = express().use(router);
   });
 
@@ -83,7 +88,12 @@ describe('createRouter', () => {
   });
 
   it('works', async () => {
-    const router = await createRouter({ badgeBuilder, catalog, config });
+    const router = await createRouter({
+      badgeBuilder,
+      catalog,
+      config,
+      discovery,
+    });
     expect(router).toBeDefined();
   });
 
@@ -91,17 +101,15 @@ describe('createRouter', () => {
     it('returns all badge specs for entity', async () => {
       catalog.getEntityByName.mockResolvedValueOnce(entity);
 
-      badgeBuilder.getBadgeIds.mockResolvedValueOnce([badge.id]);
-      badgeBuilder.createBadge.mockResolvedValueOnce(
-        JSON.stringify(badge, null, 2),
-      );
+      badgeBuilder.getBadges.mockResolvedValueOnce([{ id: badge.id }]);
+      badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
 
       const response = await request(app).get(
         '/entity/default/service/test/badge-specs',
       );
 
       expect(response.status).toEqual(200);
-      expect(response.text).toEqual(`[${JSON.stringify(badge, null, 2)}]`);
+      expect(response.text).toEqual(JSON.stringify([badge], null, 2));
 
       expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
       expect(catalog.getEntityByName).toHaveBeenCalledWith({
@@ -110,31 +118,30 @@ describe('createRouter', () => {
         name: 'test',
       });
 
-      expect(badgeBuilder.getBadgeIds).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadge).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadge).toHaveBeenCalledWith({
-        badgeId: badge.id,
+      expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
+      expect(badgeBuilder.createBadgeJson).toHaveBeenCalledTimes(1);
+      expect(badgeBuilder.createBadgeJson).toHaveBeenCalledWith({
+        badgeInfo: { id: badge.id },
         context: {
           badgeUrl: expect.stringMatching(
-            /http:\/\/127.0.0.1:\d+\/entity\/default\/service\/test\/test-badge/,
+            /http:\/\/127.0.0.1\/api\/badges\/entity\/default\/service\/test\/badge\/test-badge/,
           ),
           config,
           entity,
         },
-        format: 'json',
       });
     });
   });
 
-  describe('GET /entity/:namespace/:kind/:name/test-badge', () => {
+  describe('GET /entity/:namespace/:kind/:name/badge/test-badge', () => {
     it('returns badge for entity', async () => {
       catalog.getEntityByName.mockResolvedValueOnce(entity);
 
       const image = '<svg>...</svg>';
-      badgeBuilder.createBadge.mockResolvedValueOnce(image);
+      badgeBuilder.createBadgeSvg.mockResolvedValueOnce(image);
 
       const response = await request(app).get(
-        '/entity/default/service/test/test-badge',
+        '/entity/default/service/test/badge/test-badge',
       );
 
       expect(response.status).toEqual(200);
@@ -147,18 +154,17 @@ describe('createRouter', () => {
         name: 'test',
       });
 
-      expect(badgeBuilder.getBadgeIds).toHaveBeenCalledTimes(0);
-      expect(badgeBuilder.createBadge).toHaveBeenCalledTimes(1);
-      expect(badgeBuilder.createBadge).toHaveBeenCalledWith({
-        badgeId: badge.id,
+      expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(0);
+      expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledTimes(1);
+      expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledWith({
+        badgeInfo: { id: badge.id },
         context: {
           badgeUrl: expect.stringMatching(
-            /http:\/\/127.0.0.1:\d+\/entity\/default\/service\/test\/test-badge/,
+            /http:\/\/127.0.0.1\/api\/badges\/entity\/default\/service\/test\/badge\/test-badge/,
           ),
           config,
           entity,
         },
-        format: 'svg',
       });
     });
   });

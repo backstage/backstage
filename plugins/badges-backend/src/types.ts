@@ -55,7 +55,7 @@ export interface BadgeContext {
 }
 
 export interface BadgeFactory {
-  createBadge(context: BadgeContext): Badge | null;
+  createBadge(context: BadgeContext): Badge;
 }
 
 export interface BadgeFactories {
