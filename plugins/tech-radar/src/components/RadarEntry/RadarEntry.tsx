@@ -111,11 +111,12 @@ const RadarEntry = (props: Props): JSX.Element => {
         />
       )}
       {description ? (
+        // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a
           className={classes.link}
           onClick={handleClickOpen}
-          href={url ? url : '#'}
           role="button"
+          href="#"
           tabIndex={0}
           onKeyPress={toggle}
         >
