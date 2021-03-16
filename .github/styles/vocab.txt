@@ -33,6 +33,7 @@ Grafana
 GraphQL
 Gustavsson
 Hackathons
+Haughwout
 Henneke
 Heroku
 Hostname
@@ -59,6 +60,7 @@ Oldsberg
 Olle
 Onboarding
 Patrik
+Peloton
 Phoen
 Platformize
 Pomaceous
