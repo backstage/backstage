@@ -1,7 +1,7 @@
 app:
   title: Backstage DFDS
   baseUrl: https://backstage.dfds.cloud
-  googleAnalyticsTrackingId: # UA-000000-0
+  googleAnalyticsTrackingId: UA-137017735-1
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
