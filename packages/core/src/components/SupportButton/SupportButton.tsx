@@ -43,9 +43,6 @@ const useStyles = makeStyles(theme => ({
     minWidth: 260,
     maxWidth: 400,
   },
-  primary: {
-    color: theme.palette.primary.light,
-  },
 }));
 
 const SupportIcon = ({ icon }: { icon: string | undefined }) => {
@@ -101,7 +98,7 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
     <Fragment>
       <Button
         data-testid="support-button"
-        className={classes.primary}
+        color="primary"
         onClick={onClickHandler}
       >
         <HelpIcon className={classes.leftIcon} />

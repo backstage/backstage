@@ -102,12 +102,11 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: '#2E77D0',
+      main: '#8CB4E5',
     },
     secondary: {
       main: '#FF88B2',
     },
-    tonalOffset: 0.45,
     banner: {
       info: '#2E77D0',
       error: '#E22134',
