@@ -36,6 +36,11 @@ export default async function createPlugin({
 }
 ```
 
+## Scanned Files
+
+The included `TodoReaderService` and `TodoScmReader` works by reading source code of to the entity that is being viewed. The location source code is determined by the value of the [`backstage.io/source-location`
+](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location) annotation of the entity, and if that is missing it falls back to the [`backstage.io/managed-by-location `](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiomanaged-by-location) annotation. Only `url` locations are currently supported, meaning locally configured `file` locations won't work. Also note that dot-files and folders are ignored.
+
 ## Parser Configuration
 
 The `TodoScmReader` accepts a `TodoParser` option, which can be used to configure your own parser. The default one is based on [Leasot](https://github.com/pgilad/leasot) and supports a wide range of languages. You can add to the list of supported tags by configuring your own version of the built-in parser, for example:
