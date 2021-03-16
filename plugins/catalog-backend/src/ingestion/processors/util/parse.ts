@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, LocationSpec } from '@backstage/catalog-model';
+import {
+  Entity,
+  LocationSpec,
+  stringifyLocationReference,
+} from '@backstage/catalog-model';
 import lodash from 'lodash';
 import yaml from 'yaml';
 import * as result from '../results';
@@ -28,13 +32,16 @@ export function* parseEntityYaml(
   try {
     documents = yaml.parseAllDocuments(data.toString('utf8')).filter(d => d);
   } catch (e) {
-    yield result.generalError(location, `Failed to parse YAML, ${e}`);
+    const loc = stringifyLocationReference(location);
+    const message = `Failed to parse YAML at ${loc}, ${e}`;
+    yield result.generalError(location, message);
     return;
   }
 
   for (const document of documents) {
     if (document.errors?.length) {
-      const message = `YAML error, ${document.errors[0]}`;
+      const loc = stringifyLocationReference(location);
+      const message = `YAML error at ${loc}, ${document.errors[0]}`;
       yield result.generalError(location, message);
     } else {
       const json = document.toJSON();
