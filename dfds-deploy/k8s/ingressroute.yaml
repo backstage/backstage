@@ -1,0 +1,29 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-backstage-backend-http
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`your.domain.com`) && PathPrefix(`/backend`)
+    kind: Rule
+    services:
+    - name: backstage-backend
+      port: 7000
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-backstage-frontend-http
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`your.domain.com`) && PathPrefix(`/frontend`)
+    kind: Rule
+    services:
+    - name: backstage-frontend
+      port: 80

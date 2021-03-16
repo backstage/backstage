@@ -1,0 +1,410 @@
+app:
+  title: Backstage DFDS
+  baseUrl: https://backstage.dfds.cloud
+  googleAnalyticsTrackingId: # UA-000000-0
+  support:
+    url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
+    items: # Used by common SupportButton component
+      - title: Issues
+        icon: github
+        links:
+          - url: https://github.com/backstage/backstage/issues
+            title: GitHub Issues
+      - title: Discord Chatroom
+        icon: chat
+        links:
+          - url: https://discord.gg/MUpMjP2
+            title: '#backstage'
+
+backend:
+  baseUrl: https://backstage.dfds.cloud/backend
+  listen:
+    port: 7000
+  database:
+    client: pg
+    connection: 
+      $secret:
+        env: BACKSTAGE_DATABASE_CONNECTIONSTRING
+  cors:
+    origin: [https://backstage.dfds.cloud, http://localhost:3000, http://localhost:7000]
+    methods: [GET, POST, PUT, DELETE]
+    credentials: true
+  csp:
+    connect-src: ["'self'", 'http:', 'https:']
+  reading:
+    allow:
+      - host: example.com
+      - host: '*.mozilla.org'
+  # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
+
+# See README.md in the proxy-backend plugin for information on the configuration format
+proxy:
+  '/circleci/api':
+    target: https://circleci.com/api/v1.1
+    headers:
+      Circle-Token:
+        $env: CIRCLECI_AUTH_TOKEN
+
+  '/jenkins/api':
+    target: http://localhost:8080
+    headers:
+      Authorization:
+        $env: JENKINS_BASIC_AUTH_HEADER
+
+  '/travisci/api':
+    target: https://api.travis-ci.com
+    changeOrigin: true
+    headers:
+      Authorization:
+        $env: TRAVISCI_AUTH_TOKEN
+      travis-api-version: '3'
+
+  '/newrelic/apm/api':
+    target: https://api.newrelic.com/v2
+    headers:
+      X-Api-Key:
+        $env: NEW_RELIC_REST_API_KEY
+
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization:
+        $env: PAGERDUTY_TOKEN
+
+  '/buildkite/api':
+    target: https://api.buildkite.com/v2/
+    headers:
+      Authorization:
+        $env: BUILDKITE_TOKEN
+
+  '/sentry/api':
+    target: https://sentry.io/api/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: SENTRY_TOKEN
+
+organization:
+  name: DFDS
+
+# Reference documentation http://backstage.io/docs/features/techdocs/configuration
+# Note: After experimenting with basic setup, use CI/CD to generate docs
+# and an external cloud storage when deploying TechDocs for production use-case.
+# https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
+techdocs:
+  builder: 'local' # Alternatives - 'external'
+  generators:
+    techdocs: 'docker' # Alternatives - 'local'
+  publisher:
+    type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
+
+sentry:
+  organization: my-company
+
+rollbar:
+  organization: my-company
+  # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
+  accountToken: my-rollbar-account-token
+
+lighthouse:
+  baseUrl: http://localhost:3003
+
+kubernetes:
+  serviceLocatorMethod:
+    type: 'multiTenant'
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters: 
+        - url: https://B182759F93D251942CB146063F57036B.yl4.eu-west-1.eks.amazonaws.com
+          name: hellman
+          authProvider: 'serviceAccount'
+          serviceAccountToken: 
+            $env: HELLMAN_SERVICE_ACCOUNT_TOKEN
+
+kafka:
+  clientId: backstage
+  clusters:
+    - name: cluster
+      brokers:
+        - localhost:9092
+
+integrations:
+  github:
+    - host: github.com
+      token:
+        $env: GITHUB_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using the API:
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token:
+    #     $env: GHE_TOKEN
+    ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
+    # - host: ghe.example.net
+    #   rawBaseUrl: https://ghe.example.net/raw
+    #   token:
+    #     $env: GHE_TOKEN
+  gitlab:
+    - host: gitlab.com
+      token:
+        $env: GITLAB_TOKEN
+  bitbucket:
+    - host: bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      appPassword:
+        $env: BITBUCKET_APP_PASSWORD
+  azure:
+    - host: dev.azure.com
+      token:
+        $env: AZURE_TOKEN
+
+catalog:
+  rules:
+    - allow:
+        - Component
+        - API
+        - Resource
+        - Group
+        - User
+        - Template
+        - System
+        - Domain
+        - Location
+
+  processors:
+    githubOrg:
+      providers:
+        - target: https://github.com
+          token:
+            $env: GITHUB_TOKEN
+        #### Example for how to add your GitHub Enterprise instance using the API:
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api
+        #   token:
+        #     $env: GHE_TOKEN
+    ldapOrg:
+      ### Example for how to add your enterprise LDAP server
+      # providers:
+      #   - target: ldaps://ds.example.net
+      #     bind:
+      #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+      #       secret:
+      #         $env: LDAP_SECRET
+      #     users:
+      #       dn: ou=people,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (uid=*)
+      #       map:
+      #         description: l
+      #     groups:
+      #       dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+      #       options:
+      #         filter: (&(objectClass=some-group-class)(!(groupType=email)))
+    microsoftGraphOrg:
+      ### Example for how to add your Microsoft Graph tenant
+      #providers:
+      #  - target: https://graph.microsoft.com/v1.0
+      #    authority: https://login.microsoftonline.com
+      #    tenantId:
+      #      $env: MICROSOFT_GRAPH_TENANT_ID
+      #    clientId:
+      #      $env: MICROSOFT_GRAPH_CLIENT_ID
+      #    clientSecret:
+      #      $env: MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN
+      #    userFilter: accountEnabled eq true and userType eq 'member'
+      #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+
+  locations:
+    # Add a location here to ingest it, for example from a URL:
+    #
+    #     - type: url
+    #       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+    #
+    # For local development you can use a file location instead:
+    #
+    #     - type: file
+    #       target: ../catalog-model/examples/all-components.yaml
+    #
+    # File locations are relative to the current working directory of the
+    # backend, for example packages/backend/.
+
+    # Backstage example components
+    - type: file
+      target: ../catalog-model/examples/all-components.yaml
+    # Example component for github-actions and TechDocs
+    - type: file
+      target: ../../plugins/github-actions/examples/sample.yaml
+    # Example component for TechDocs
+    - type: file
+      target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # Backstage example APIs
+    - type: file
+      target: ../catalog-model/examples/all-apis.yaml
+    # Backstage example resources
+    - type: file
+      target: ../catalog-model/examples/all-resources.yaml
+    # Backstage example systems
+    - type: file
+      target: ../catalog-model/examples/all-systems.yaml
+    # Backstage example domains
+    - type: file
+      target: ../catalog-model/examples/all-domains.yaml
+    # Backstage example templates
+    - type: file
+      target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
+    # Backstage example groups and users
+    - type: file
+      target: ../catalog-model/examples/acme-corp.yaml
+
+scaffolder:
+  github:
+    token:
+      $env: GITHUB_TOKEN
+    visibility: public # or 'internal' or 'private'
+  gitlab:
+    api:
+      baseUrl: https://gitlab.com
+      token:
+        $env: GITLAB_TOKEN
+    visibility: public # or 'internal' or 'private'
+  azure:
+    baseUrl: https://dev.azure.com/{your-organization}
+    api:
+      token:
+        $env: AZURE_TOKEN
+  bitbucket:
+    api:
+      host: https://bitbucket.org
+      username:
+        $env: BITBUCKET_USERNAME
+      token:
+        $env: BITBUCKET_TOKEN
+    visibility: public # or or 'private'
+
+auth:
+  environment: development
+  ### Providing an auth.session.secret will enable session support in the auth-backend
+  # session:
+  #   secret: custom session secret
+  providers:
+    google:
+      development:
+        clientId:
+          $env: AUTH_GOOGLE_CLIENT_ID
+        clientSecret:
+          $env: AUTH_GOOGLE_CLIENT_SECRET
+    github:
+      development:
+        clientId:
+          $env: AUTH_GITHUB_CLIENT_ID
+        clientSecret:
+          $env: AUTH_GITHUB_CLIENT_SECRET
+        enterpriseInstanceUrl:
+          $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+    gitlab:
+      development:
+        clientId:
+          $env: AUTH_GITLAB_CLIENT_ID
+        clientSecret:
+          $env: AUTH_GITLAB_CLIENT_SECRET
+        audience:
+          $env: GITLAB_BASE_URL
+    saml:
+      entryPoint: 'http://localhost:7001/'
+      issuer: 'passport-saml'
+    okta:
+      development:
+        clientId:
+          $env: AUTH_OKTA_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OKTA_CLIENT_SECRET
+        audience:
+          $env: AUTH_OKTA_AUDIENCE
+    oauth2:
+      development:
+        clientId:
+          $env: AUTH_OAUTH2_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OAUTH2_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OAUTH2_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OAUTH2_TOKEN_URL
+        ###
+        # provide a list of scopes as needed for your OAuth2 Server:
+        #
+        # scope: saml-login-selector openid profile email
+    oidc:
+      development:
+        metadataUrl:
+          $env: AUTH_OIDC_METADATA_URL
+        clientId:
+          $env: AUTH_OIDC_CLIENT_ID
+        clientSecret:
+          $env: AUTH_OIDC_CLIENT_SECRET
+        authorizationUrl:
+          $env: AUTH_OIDC_AUTH_URL
+        tokenUrl:
+          $env: AUTH_OIDC_TOKEN_URL
+        tokenSignedResponseAlg:
+          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
+    auth0:
+      development:
+        clientId:
+          $env: AUTH_AUTH0_CLIENT_ID
+        clientSecret:
+          $env: AUTH_AUTH0_CLIENT_SECRET
+        domain:
+          $env: AUTH_AUTH0_DOMAIN
+    microsoft:
+      development:
+        clientId:
+          $env: AUTH_MICROSOFT_CLIENT_ID
+        clientSecret:
+          $env: AUTH_MICROSOFT_CLIENT_SECRET
+        tenantId:
+          $env: AUTH_MICROSOFT_TENANT_ID
+    onelogin:
+      development:
+        clientId:
+          $env: AUTH_ONELOGIN_CLIENT_ID
+        clientSecret:
+          $env: AUTH_ONELOGIN_CLIENT_SECRET
+        issuer:
+          $env: AUTH_ONELOGIN_ISSUER
+costInsights:
+  engineerCost: 200000
+  products:
+    computeEngine:
+      name: Compute Engine
+      icon: compute
+    cloudDataflow:
+      name: Cloud Dataflow
+      icon: data
+    cloudStorage:
+      name: Cloud Storage
+      icon: storage
+    bigQuery:
+      name: BigQuery
+      icon: search
+    events:
+      name: Events
+      icon: data
+  metrics:
+    DAU:
+      name: Daily Active Users
+      default: true
+    MSC:
+      name: Monthly Subscribers
+homepage:
+  clocks:
+    - label: UTC
+      timezone: UTC
+    - label: NYC
+      timezone: 'America/New_York'
+    - label: STO
+      timezone: 'Europe/Stockholm'
+    - label: TYO
+      timezone: 'Asia/Tokyo'
+pagerduty:
+  eventsBaseUrl: 'https://events.pagerduty.com/v2'

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage
+  labels:
+    app: backstage
+    component: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: backstage
+        component: frontend
+    spec:
+      containers:
+      - name: app
+        image: 579478677147.dkr.ecr.eu-central-1.amazonaws.com/selfservice/backstage:$(Build.BuildId)
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: app
+          protocol: TCP

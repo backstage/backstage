@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backstage-backend
+  labels:
+    app: backstage
+    component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backstage
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: backstage
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        image: 579478677147.dkr.ecr.eu-central-1.amazonaws.com/selfservice/backstage-backend:$(Build.BuildId)
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 7000
+          name: backend
+          protocol: TCP
+        env:
+        - name: DATABASE_HOST
+          value: $(DATABASE_HOST)
+        - name: DATABASE_PORT
+          value: $(DATABASE_PORT)
+        - name: DATABASE_USER
+          value: $(DATABASE_USER)
+        - name: DATABASE_NAME
+          value: $(DATABASE_NAME)
+        - name: DATABASE_PASSWORD
+          value: $(DATABASE_PASSWORD)
+        - name: GITHUB_PRIVATE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: backstage-third-party-credentials
+              key: github_token
+        - name: AZUREDEVOPS_AUTH_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: backstage-third-party-credentials
+              key: azuredevops_token        
+        - name: BACKSTAGE_DATABASE_CONNECTIONSTRING
+          valueFrom:
+            secretKeyRef:
+              name: backstage-credentials
+              key: db_connstring
+        resources: {}
