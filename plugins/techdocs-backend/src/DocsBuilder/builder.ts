@@ -101,7 +101,7 @@ export class DocsBuilder {
       } catch (err) {
         // Proceed with a fresh build
         this.logger.warn(
-          `Unable to read techdocs_metadata.json, error ${err}.`,
+          `Unable to read techdocs_metadata.json, proceeding with fresh build, error ${err}.`,
         );
       }
     }
