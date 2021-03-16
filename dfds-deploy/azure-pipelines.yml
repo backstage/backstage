@@ -5,12 +5,6 @@ trigger:
   branches:
     include:
     - master
-  paths:
-    # Changes to these files does not trigger a new build / release
-    exclude:
-    - README.md
-    - LICENSE
-    - azure-pipelines.yml
 
 # Disables triggering Pipeline run at creation of every Pull Request
 pr: none
@@ -38,7 +32,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: 'Dockerfile-frontend-dfds'
+        Dockerfile: './contrib/docker/frontend-with-nginx/Dockerfile'
         arguments: '-t backstage'
 
     # Push the image to ECR with a tag based on the current BuildID
@@ -62,7 +56,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: 'Dockerfile-backend-dfds'
+        Dockerfile: './packages/backend/Dockerfile'
         arguments: '-t backstage-backend'
 
     # Push the image to ECR with a tag based on the current BuildID
@@ -83,7 +77,7 @@ stages:
     # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/install-dfds/kubernetes'
+        targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
         artifact: 'manifests'
         publishLocation: 'pipeline'   
 
