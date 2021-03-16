@@ -16,15 +16,20 @@
 
 import { Config } from '@backstage/config';
 import { ApiRef, createApiRef } from '@backstage/core';
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 
-export class ScmIntegrationsApi extends ScmIntegrations {
-  static fromConfig(config: Config): ScmIntegrationsApi {
+export class ScmIntegrationsApi {
+  static fromConfig(config: Config): ScmIntegrationRegistry {
     return ScmIntegrations.fromConfig(config);
   }
 }
 
-export const scmIntegrationsApiRef: ApiRef<ScmIntegrationsApi> = createApiRef({
-  id: 'integration.scmintegrations',
-  description: 'All of the registered SCM integrations of your config',
-});
+export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry> = createApiRef(
+  {
+    id: 'integration.scmintegrations',
+    description: 'All of the registered SCM integrations of your config',
+  },
+);
