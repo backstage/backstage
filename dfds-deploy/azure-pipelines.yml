@@ -33,6 +33,7 @@ stages:
       inputs:
         command: 'build'
         Dockerfile: './contrib/docker/frontend-with-nginx/Dockerfile'
+        buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage'
 
     # Push the image to ECR with a tag based on the current BuildID
@@ -57,6 +58,7 @@ stages:
       inputs:
         command: 'build'
         Dockerfile: './packages/backend/Dockerfile'
+        buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage-backend'
 
     # Push the image to ECR with a tag based on the current BuildID
