@@ -39,6 +39,7 @@ export async function createRouter(
   const { logger, config, database } = options;
   const databaseClient = await Database.create({
     database: await database.getClient(),
+    logger
   });
 
   logger.info('Plugin Chrome UX Report has started');

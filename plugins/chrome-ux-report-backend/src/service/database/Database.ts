@@ -16,6 +16,7 @@
 
 import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
+import { Logger } from 'winston';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-chrome-ux-report-backend',
@@ -50,9 +51,18 @@ export type UXMetricsRow = {
 
 type Options = {
   database: any;
+  logger: Logger;
 };
 
 export class Database {
+  private readonly database: Knex;
+  private readonly logger: Logger;
+
+  private constructor(options: Options) {
+    this.database = options.database;
+    this.logger = options.logger;
+  }
+
   static async create(options: Options): Promise<Database> {
     const { database } = options;
 
@@ -63,19 +73,13 @@ export class Database {
     return new Database(options);
   }
 
-  private readonly database: Knex;
-
-  private constructor(options: Options) {
-    this.database = options.database;
-  }
-
   async addSite(origin: string): Promise<void> {
     try {
       await this.database<SitesRow>('sites').insert({
         origin,
       });
     } catch (e) {
-      console.log(e.message);
+      this.logger.error(e.message);
     }
   }
 
@@ -109,7 +113,7 @@ export class Database {
         date,
       });
     } catch (e) {
-      console.log(e.message);
+      this.logger.error(e.message);
     }
   }
 
@@ -173,7 +177,7 @@ export class Database {
         time_to_first_byte,
       });
     } catch (e) {
-      console.log(e);
+      this.logger.error(e.message);
     }
   }
 }
