@@ -50,6 +50,7 @@ import {
   DbRefreshStateRow,
   Transaction,
 } from './types';
+import { locationToEntity } from '../ingestion/LocationToEntity';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -139,8 +140,8 @@ export class CommonDatabase implements Database {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`10 seconds`])
-            : tx.raw(`now() + interval '10 seconds'`), // TODO: test this in sqlite3
+            ? tx.raw(`datetime('now', ?)`, [`10 seconds`]) // TODO: test this in sqlite3
+            : tx.raw(`now() + interval '30 seconds'`),
       });
 
     return items;
@@ -401,6 +402,19 @@ export class CommonDatabase implements Database {
       target: location.target,
     };
     await tx<DbLocationsRow>('locations').insert(row);
+    const locationEntity = locationToEntity(location.type, location.target);
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .insert({
+        entity_ref: stringifyEntityRef(locationEntity),
+        entity: JSON.stringify(locationEntity.spec),
+        refresh_state: '',
+        next_update_at: 'now()',
+        last_discovery_at: 'now()',
+      })
+      .onConflict('entity_ref')
+      .merge();
+
     return row;
   }
 

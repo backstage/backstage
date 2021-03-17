@@ -36,10 +36,11 @@ export default async function createPlugin(
 
   higherOrderOperation.processAllLocations();
 
-  setInterval(() => {
+  runPeriodically(async () => {
     console.log('processing refresh state!!!');
-    higherOrderOperation.processRefreshState();
+    await higherOrderOperation.processRefreshState();
   }, 1_000);
+
   return await createRouter({
     entitiesCatalog,
     locationsCatalog,

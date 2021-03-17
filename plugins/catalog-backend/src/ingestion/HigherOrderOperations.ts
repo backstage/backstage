@@ -26,6 +26,7 @@ import { Database } from '../database';
 import { DbRefreshStateRequest } from '../database/types';
 import { durationText } from '../util';
 import { CatalogProcessingEngine } from './CatalogProcessingEngine';
+import { locationToEntity } from './LocationToEntity';
 import {
   AddLocationResult,
   HigherOrderOperation,
@@ -221,17 +222,7 @@ export class HigherOrderOperations implements HigherOrderOperation {
     const refreshStates: DbRefreshStateRequest[] = locations.map(
       ({ location: { type, target } }) => ({
         nextRefresh: 'now',
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            name: `${type}:${target}`,
-            namespace: 'default',
-          },
-          spec: {
-            location: { type, target },
-          },
-        },
+        entity: locationToEntity(type, target),
       }),
     );
 
@@ -248,9 +239,8 @@ export class HigherOrderOperations implements HigherOrderOperation {
       // Fetch X items with next_update older than Y
       // Process and update next_update
       // Update state with etags, etc.
-      // Bump the timestamp.
       return this.database.getProcessableEntities(tx, {
-        processBatchSize: 5,
+        processBatchSize: 1,
       });
     });
 

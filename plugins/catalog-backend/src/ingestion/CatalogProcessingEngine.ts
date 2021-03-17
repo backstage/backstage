@@ -35,7 +35,7 @@ import {
   CatalogProcessorParser,
   CatalogProcessorResult,
 } from './processors/types';
-import { CatalogRefreshResult, ReadLocationResult } from './types';
+import { CatalogRefreshResult } from './types';
 
 // The max amount of nesting depth of generated work items
 const MAX_DEPTH = 10;
