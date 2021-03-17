@@ -4,7 +4,7 @@ This page provides some sample code which may be used in your example component.
 
 This code uses TypeScript, and the Markdown code fence to wrap the code.
 
-```tsx
+```typescript
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
   <EntityPageLayout>
     <EntityPageLayout.Content
@@ -19,4 +19,13 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
     />
   </EntityPageLayout>
 );
+```
+
+Here is an example of Python code:
+
+```python
+def getUsersInGroup(targetGroup, secure=False):
+
+    if __debug__:
+        print('targetGroup=[' + targetGroup + ']')
 ```
