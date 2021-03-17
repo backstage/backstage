@@ -244,6 +244,7 @@ ruleset
 sam
 scaffolded
 scaffolder
+seb
 semlas
 semver
 sourcemaps
