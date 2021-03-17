@@ -58,7 +58,7 @@ exports.up = async function up(knex) {
     table.json('notifications').notNullable();
     table.json('time_to_first_byte').notNullable();
 
-    table.unique(['sites_id', 'monthsWithYear_id'], 'last');
+    table.unique(['sites_id', 'monthsWithYear_id'], 'sites_monthsWithYear_idx');
   });
 };
 
