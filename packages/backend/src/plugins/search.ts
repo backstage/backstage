@@ -17,7 +17,7 @@ import { createRouter } from '@backstage/plugin-search-backend';
 import {
   collateDocuments,
   // registerCollator,
-} from '@backstage/plugin-search-indexer-backend';
+} from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 // import { SearchCollatorFactory } from '@backstage/plugin-catalog-backend';
 

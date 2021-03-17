@@ -1,4 +1,4 @@
-# search-indexer
+# search-backend-node
 
 This plugin is part of a suite of plugins that comprise the Backstage search
 platform, which is still very much under development. This plugin specifically
