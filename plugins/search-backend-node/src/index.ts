@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-import { Registry } from './registry';
-import {
-  RegisterCollatorParameters,
-  RegisterDecoratorParameters,
-} from './types';
-
-const registry = Registry.getInstance();
-export const registerCollator = (params: RegisterCollatorParameters) => {
-  registry.addCollator(params);
-};
-export const registerDecorator = (params: RegisterDecoratorParameters) => {
-  registry.addDecorator(params);
-};
-export const collateDocuments = () => {
-  registry.execute();
-};
+export { Registry } from './registry';

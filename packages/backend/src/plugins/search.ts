@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 import { createRouter } from '@backstage/plugin-search-backend';
-import {
-  collateDocuments,
-  // registerCollator,
-} from '@backstage/plugin-search-backend-node';
+import { Registry } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 // import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
+  const indexRegistry = new Registry();
   // TODO: Within this PR, update to use REST API instead of Catalog Builder.
-  /* registerCollator({
+  /* indexRegistry.addCollator({
     type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
     collator: new DefaultCatalogCollator(entitiesCatalog),
   });*/
 
   // TODO: Make this a more proper refresh loop.
-  collateDocuments();
+  indexRegistry.execute();
 
   return await createRouter({
     logger,

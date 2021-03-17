@@ -29,18 +29,9 @@ export class Registry {
   private collators: Record<string, CollatorRegistryEntry>;
   private decorators: Record<string, DocumentDecorator[]>;
 
-  private static instance: Registry;
-
-  private constructor() {
+  constructor() {
     this.collators = {};
     this.decorators = {};
-  }
-
-  static getInstance(): Registry {
-    if (!Registry.instance) {
-      Registry.instance = new Registry();
-    }
-    return Registry.instance;
   }
 
   addCollator({
@@ -83,14 +74,5 @@ export class Registry {
         // TODO: push documents to a configured search engine.
       }),
     );
-  }
-
-  /**
-   * Utility method for tests. Do not use otherwise.
-   * @private
-   */
-  _reset() {
-    this.collators = {};
-    this.decorators = {};
   }
 }

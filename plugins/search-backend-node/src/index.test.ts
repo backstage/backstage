@@ -19,7 +19,6 @@ import {
   DocumentDecorator,
   IndexableDocument,
 } from '@backstage/search-common';
-import { registerCollator, registerDecorator } from './';
 import { Registry } from './registry';
 
 class TestDocumentCollator implements DocumentCollator {
@@ -35,16 +34,14 @@ class TestDocumentDecorator implements DocumentDecorator {
 }
 
 describe('search indexer external api', () => {
+  let testRegistry: Registry;
   let testCollator: DocumentCollator;
   let testDecorator: DocumentDecorator;
 
   beforeEach(() => {
+    testRegistry = new Registry();
     testCollator = new TestDocumentCollator();
     testDecorator = new TestDocumentDecorator();
-  });
-
-  afterEach(() => {
-    Registry.getInstance()._reset();
   });
 
   describe('registerCollator', () => {
@@ -52,14 +49,14 @@ describe('search indexer external api', () => {
       const collatorSpy = jest.spyOn(testCollator, 'execute');
 
       // Register a collator.
-      registerCollator({
+      testRegistry.addCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
       // Execute the registry and ensure the collator was invoked.
-      await Registry.getInstance().execute();
+      await testRegistry.execute();
       expect(collatorSpy).toHaveBeenCalled();
     });
   });
@@ -69,19 +66,19 @@ describe('search indexer external api', () => {
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
-      registerCollator({
+      testRegistry.addCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
       // Register a decorator.
-      registerDecorator({
+      testRegistry.addDecorator({
         decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was invoked.
-      await Registry.getInstance().execute();
+      await testRegistry.execute();
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
@@ -98,20 +95,20 @@ describe('search indexer external api', () => {
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
-      registerCollator({
+      testRegistry.addCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
       // Register a decorator for the same type.
-      registerDecorator({
+      testRegistry.addDecorator({
         types: [expectedType],
         decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was invoked.
-      await Registry.getInstance().execute();
+      await testRegistry.execute();
       expect(decoratorSpy).toHaveBeenCalled();
       expect(decoratorSpy).toHaveBeenCalledWith([docFixture]);
     });
@@ -129,20 +126,20 @@ describe('search indexer external api', () => {
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
-      registerCollator({
+      testRegistry.addCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
       // Register a decorator for a different type.
-      registerDecorator({
+      testRegistry.addDecorator({
         types: ['not-the-expected-type'],
         decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was not invoked.
-      await Registry.getInstance().execute();
+      await testRegistry.execute();
       expect(decoratorSpy).not.toHaveBeenCalled();
     });
   });
