@@ -43,6 +43,7 @@ JavaScript
 Kaewkasi
 Knex
 Kumar
+Leasot
 Lerna
 Lindgren
 Lundberg
@@ -91,6 +92,7 @@ Telenor
 Templater
 Templaters
 Thauer
+todo
 Tolerations
 Tuite
 Trendyol
