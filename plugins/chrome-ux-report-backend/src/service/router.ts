@@ -52,72 +52,53 @@ export async function createRouter(
     response.send({ status: 'ok' });
   });
 
-  router.post('/fcp', async (request, response) => {
+  router.post('/metrics', async (request, response) => {
+    const { origin, month } = request.body;
     const rateInfo: RateInfo = {
       longName: 'first_contentful_paint',
       shortName: 'fcp',
     };
-    const [rows] = await queryUXMetrics(
-      request.body.origin,
-      request.body.month,
-      rateInfo,
-      config,
-    );
 
-    await databaseClient.addSite(request.body.origin);
-    await databaseClient.addMonthWithYear(request.body.month);
-    const sitesId = await databaseClient.getSiteId(request.body.origin);
-    const monthWithYearId = await databaseClient.getMonthWithYearId(
-      request.body.month,
-    );
-    await databaseClient.addUXMetrics({
-      sites_id: sitesId,
-      monthsWithYear_id: monthWithYearId,
-      connection_type: '4G',
-      form_factor: 'Desktop',
-      first_contentful_paint: { rates: rows },
-      largest_contentful_paint: { rates: rows },
-      dom_content_loaded: { rates: rows },
-      onload: { rates: rows },
-      first_input: { rates: rows },
-      layout_instability: { rates: rows },
-      notifications: { rates: rows },
-      time_to_first_byte: { rates: rows },
-    });
+    let sitesId = await databaseClient.getSiteId(origin);
+    let monthWithYearId = await databaseClient.getMonthWithYearId(month);
 
-    response.send({ rates: rows });
-  });
+    if (sitesId && monthWithYearId) {
+      const metrics = await databaseClient.getUXMetrics(sitesId, monthWithYearId);
+      response.send({ metrics });
+    } else {
+      if (!sitesId) {
+        await databaseClient.addSite(origin);
+      } if (!monthWithYearId) {
+        await databaseClient.addMonthWithYear(month);
+      }
 
-  router.post('/dcl', async (request, response) => {
-    const rateInfo: RateInfo = {
-      longName: 'dom_content_loaded',
-      shortName: 'dcl',
-    };
+      const [rows] = await queryUXMetrics(
+        origin,
+        month,
+        rateInfo,
+        config,
+      );
 
-    const [rows] = await queryUXMetrics(
-      request.body.origin,
-      request.body.month,
-      rateInfo,
-      config,
-    );
+      sitesId = await databaseClient.getSiteId(origin);
+      monthWithYearId = await databaseClient.getMonthWithYearId(month);
 
-    response.send({ rates: rows });
-  });
+      await databaseClient.addUXMetrics({
+        sites_id: sitesId,
+        monthsWithYear_id: monthWithYearId,
+        connection_type: '4G',
+        form_factor: 'Desktop',
+        first_contentful_paint: { rates: rows },
+        largest_contentful_paint: { rates: rows },
+        dom_content_loaded: { rates: rows },
+        onload: { rates: rows },
+        first_input: { rates: rows },
+        layout_instability: { rates: rows },
+        notifications: { rates: rows },
+        time_to_first_byte: { rates: rows },
+      });
 
-  router.post('/lcp', async (request, response) => {
-    const rateInfo: RateInfo = {
-      longName: 'largest_contentful_paint',
-      shortName: 'lcp',
-    };
-
-    const [rows] = await queryUXMetrics(
-      request.body.origin,
-      request.body.month,
-      rateInfo,
-      config,
-    );
-
-    response.send({ rates: rows });
+      response.send({ rates: rows });
+    }
   });
 
   router.use(errorHandler());

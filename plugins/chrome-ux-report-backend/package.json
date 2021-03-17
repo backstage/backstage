@@ -37,6 +37,9 @@
     "supertest": "^4.0.2"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "migrations",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

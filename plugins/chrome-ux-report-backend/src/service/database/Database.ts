@@ -100,7 +100,7 @@ export class Database {
       })
       .select('id');
 
-    return site.id;
+    return site ? site?.id : undefined;
   }
 
   async removeSite(sites: string[]): Promise<void> {
@@ -126,7 +126,7 @@ export class Database {
       })
       .select('id');
 
-    return monthWithYear.id;
+    return monthWithYear ? monthWithYear?.id : undefined;
   }
 
   async listMonthWithYear(): Promise<{ dates: any }> {
@@ -179,5 +179,20 @@ export class Database {
     } catch (e) {
       this.logger.error(e.message);
     }
+  }
+
+  async getUXMetrics(sitesId: number, monthWithYearId: number): Promise<any> {
+    console.log(sitesId);
+    console.log(monthWithYearId);
+    const [metrics] = await this.database<UXMetricsRow>(
+      'uxMetrics',
+    )
+      .where({
+        sites_id: sitesId,
+        monthsWithYear_id: monthWithYearId
+      })
+      .select();
+
+    return metrics;
   }
 }

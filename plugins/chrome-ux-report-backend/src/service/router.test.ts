@@ -25,7 +25,9 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
+      database: {} as any,
       logger: getVoidLogger(),
+      config: {} as any
     });
     app = express().use(router);
   });

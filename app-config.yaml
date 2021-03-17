@@ -279,6 +279,8 @@ chromeUXReport:
     $env: GOOGLE_PROJECT_ID
   keyPath:
     $env: GOOGLE_APPLICATION_CREDENTIALS
+  origins:
+    - ORIGIN_URL
 
 auth:
   environment: development

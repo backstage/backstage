@@ -18,19 +18,20 @@
  */
 export interface Config {
   /**
-   * Configuration options for the chrome-ux-report-backend plugin
+   * @visibility frontend
    */
   chromeUXReport: {
     /**
-     * projectId for BigQuery
+     * @visibility frontend
      */
     projectId: string;
     /**
-     * path for authentication key used by BigQuery
+     * @visibility frontend
      */
     keyPath: string;
     /**
-     * origins - The websites whose metrics are requested
+     * @visibility frontend
+     * @items.visibility frontend
      */
     origins: string[];
   };

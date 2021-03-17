@@ -53,16 +53,16 @@ export class ChromeUXReportApi implements ChromeUXReport {
     );
   }
 
-  async getChromeUXMetrics(metricShortName: string): Promise<any> {
+  async getChromeUXMetrics(origin: string): Promise<any> {
     const apiOrigin = await this.getApiOrigin();
-    const requestUrl = `${apiOrigin}/${metricShortName}`;
+    const requestUrl = `${apiOrigin}/metrics`;
 
     const request = await fetch(`${requestUrl}`, {
       headers: { 'content-type': 'application/json' },
       method: 'POST',
       body: JSON.stringify({
-        origin: 'https://backstage.io',
-        month: '202102',
+        origin,
+        month: '202009',
       }),
     });
     return await request.json();
