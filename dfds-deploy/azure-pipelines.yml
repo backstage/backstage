@@ -24,7 +24,7 @@ stages:
   displayName: 'Continuous Integration'
   jobs:
 
-  - job: Build
+  - job: BuildFrontendImage
     # Use multistage image to compile code and build image
     displayName: 'Build frontend image and push to ECR'
     steps:
@@ -32,7 +32,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: './dfds-deploy/Dockerfile-frontend-dfds'
+        Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
         buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage'
 
@@ -48,7 +48,7 @@ stages:
         pushTag: '$(Build.BuildId)'
 
 
-  - job: BuildBackend
+  - job: BuildBackendImage
     # Use multistage image to compile code and build image
     displayName: 'Build backend image and push to ECR'
     steps:
@@ -57,7 +57,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: './dfds-deploy/Dockerfile-backend-dfds'
+        Dockerfile: './packages/backend/Dockerfile'
         buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage-backend'
 
