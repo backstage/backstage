@@ -24,8 +24,8 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
 Here is an example of Python code:
 
 ```python
-def getUsersInGroup( targetGroup, secure = False ):
+def getUsersInGroup(targetGroup, secure=False):
 
     if __debug__:
-        print ('targetGroup=[' + targetGroup + ']')
+        print('targetGroup=[' + targetGroup + ']')
 ```
