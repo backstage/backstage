@@ -17,10 +17,12 @@ import { errorApiRef, useApi } from '@backstage/core';
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
+import { useProxyPathFromEntity } from './useProxyPathFromEntity';
 
 export function useBuilds(projectName: string, branch?: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
+  const proxyPath = useProxyPathFromEntity();
 
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -28,7 +30,7 @@ export function useBuilds(projectName: string, branch?: string) {
 
   const restartBuild = async (buildName: string) => {
     try {
-      await api.retry(buildName);
+      await api.retry(buildName, { proxyPath });
     } catch (e) {
       errorApi.post(e);
     }
@@ -38,9 +40,11 @@ export function useBuilds(projectName: string, branch?: string) {
     try {
       let build;
       if (branch) {
-        build = await api.getLastBuild(`${projectName}/${branch}`);
+        build = await api.getLastBuild(`${projectName}/${branch}`, {
+          proxyPath,
+        });
       } else {
-        build = await api.getFolder(`${projectName}`);
+        build = await api.getFolder(`${projectName}`, { proxyPath });
       }
 
       const size = Array.isArray(build) ? build?.[0].build_num! : 1;
@@ -51,7 +55,7 @@ export function useBuilds(projectName: string, branch?: string) {
       errorApi.post(e);
       throw e;
     }
-  }, [api, errorApi, projectName, branch]);
+  }, [api, errorApi, proxyPath, projectName, branch]);
 
   return [
     {

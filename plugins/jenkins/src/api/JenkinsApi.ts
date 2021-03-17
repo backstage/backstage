@@ -26,7 +26,7 @@ export const jenkinsApiRef = createApiRef<JenkinsApi>({
 
 const DEFAULT_PROXY_PATH = '/jenkins/api';
 
-type Options = {
+type JenkinsClientOptions = {
   discoveryApi: DiscoveryApi;
   /**
    * Path to use for requests via the proxy, defaults to /jenkins/api
@@ -34,29 +34,38 @@ type Options = {
   proxyPath?: string;
 };
 
+type EntityOptions = {
+  /**
+   * Path to use for requests via the proxy from the entity catalog entry
+   * defined by annotation: `backstage.io/jenkins-proxy-path`
+   */
+   proxyPath?: string;
+}
+
 export class JenkinsApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
 
-  constructor(options: Options) {
+  constructor(options: JenkinsClientOptions) {
     this.discoveryApi = options.discoveryApi;
     this.proxyPath = options.proxyPath ?? DEFAULT_PROXY_PATH;
   }
 
-  private async getClient() {
+  private async getClient(options?: EntityOptions) {
     const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    return jenkins({ baseUrl: proxyUrl + this.proxyPath, promisify: true });
+    const proxyPath = options?.proxyPath ?? this.proxyPath;
+    return jenkins({ baseUrl: proxyUrl + proxyPath, promisify: true });
   }
 
-  async retry(buildName: string) {
-    const client = await this.getClient();
+  async retry(buildName: string, options?: EntityOptions) {
+    const client = await this.getClient(options);
     // looks like the current SDK only supports triggering a new build
     // can't see any support for replay (re-running the specific build with the same SCM info)
     return await client.job.build(buildName);
   }
 
-  async getLastBuild(jobName: string) {
-    const client = await this.getClient();
+  async getLastBuild(jobName: string, options?: EntityOptions) {
+    const client = await this.getClient(options);
     const job = await client.job.get(jobName);
 
     const lastBuild = await client.build.get(jobName, job.lastBuild.number);
@@ -101,16 +110,16 @@ export class JenkinsApi {
     return scmInfo;
   }
 
-  async getJob(jobName: string) {
-    const client = await this.getClient();
+  async getJob(jobName: string, options?: EntityOptions) {
+    const client = await this.getClient(options);
     return client.job.get({
       name: jobName,
       depth: 1,
     });
   }
 
-  async getFolder(folderName: string) {
-    const client = await this.getClient();
+  async getFolder(folderName: string, options?: EntityOptions) {
+    const client = await this.getClient(options);
     const folder = await client.job.get({
       name: folderName,
       // Filter only be the information we need, instead of loading all fields.
@@ -152,6 +161,7 @@ export class JenkinsApi {
           const ciTable = this.mapJenkinsBuildToCITable(
             buildDetails,
             jobScmInfo,
+            options,
           );
           results.push(ciTable);
         }
@@ -189,7 +199,8 @@ export class JenkinsApi {
   mapJenkinsBuildToCITable(
     jenkinsResult: any,
     jobScmInfo?: any,
-  ): CITableBuildInfo {
+    options?: EntityOptions    
+    ): CITableBuildInfo {
     const source =
       jenkinsResult.actions
         .filter(
@@ -225,15 +236,15 @@ export class JenkinsApi {
       onRestartClick: () => {
         // TODO: this won't handle non root context path, need a better way to get the job name
         const { jobName } = this.extractJobDetailsFromBuildName(path);
-        return this.retry(jobName);
+        return this.retry(jobName, options);
       },
       source: source,
       tests: this.getTestReport(jenkinsResult),
     };
   }
 
-  async getBuild(buildName: string) {
-    const client = await this.getClient();
+  async getBuild(buildName: string, options?: EntityOptions) {
+    const client = await this.getClient(options);
     const { jobName, buildNumber } = this.extractJobDetailsFromBuildName(
       buildName,
     );

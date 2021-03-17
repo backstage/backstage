@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const JENKINS_ANNOTATION = 'jenkins.io/github-folder';
-export const JENKINS_PROXYPATH_ANNOTATION = 'backstage.io/jenkins-proxy-path';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { JENKINS_PROXYPATH_ANNOTATION } from '../constants';
+
+export const useProxyPathFromEntity = () => {
+  const { entity } = useEntity();
+
+  return entity.metadata.annotations?.[JENKINS_PROXYPATH_ANNOTATION] ?? '';
+};

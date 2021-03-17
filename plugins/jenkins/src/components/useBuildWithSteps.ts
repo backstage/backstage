@@ -18,30 +18,34 @@ import { useCallback } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
+import { useProxyPathFromEntity } from './useProxyPathFromEntity';
 
 const INTERVAL_AMOUNT = 1500;
 export function useBuildWithSteps(buildName: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
+  const proxyPath = useProxyPathFromEntity();
 
   const getBuildWithSteps = useCallback(async () => {
     try {
-      const build = await api.getBuild(buildName);
+      const build = await api.getBuild(buildName, { proxyPath });
 
       const { jobName } = api.extractJobDetailsFromBuildName(buildName);
-      const job = await api.getJob(jobName);
+      const job = await api.getJob(jobName, { proxyPath });
       const jobInfo = api.extractScmDetailsFromJob(job);
 
-      return Promise.resolve(api.mapJenkinsBuildToCITable(build, jobInfo));
+      return Promise.resolve(
+        api.mapJenkinsBuildToCITable(build, jobInfo, { proxyPath }),
+      );
     } catch (e) {
       errorApi.post(e);
       return Promise.reject(e);
     }
-  }, [buildName, api, errorApi]);
+  }, [buildName, api, errorApi, proxyPath]);
 
   const restartBuild = async () => {
     try {
-      await api.retry(buildName);
+      await api.retry(buildName, { proxyPath });
     } catch (e) {
       errorApi.post(e);
     }
