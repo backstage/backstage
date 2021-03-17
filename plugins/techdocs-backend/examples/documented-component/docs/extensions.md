@@ -47,9 +47,9 @@ TechDocs -> CloudStorage: publishes
 CloudStorage -> Backstage: displays
 ```
 
-## Pymdown Extensions
+## Pymdownx Extensions
 
-Pymdown extensions are a variety of smaller additions.
+Pymdownx (Python Markdown extensions) are a variety of smaller additions.
 
 ### Details
 
