@@ -1900,6 +1900,7 @@
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.1"
     "@backstage/integration" "^0.5.1"
+    "@backstage/integration-react" "^0.1.1"
     "@backstage/plugin-catalog-react" "^0.1.1"
     "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
@@ -1923,6 +1924,7 @@
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.1"
     "@backstage/integration" "^0.5.1"
+    "@backstage/integration-react" "^0.1.1"
     "@backstage/plugin-catalog-react" "^0.1.1"
     "@backstage/theme" "^0.2.4"
     "@material-ui/core" "^4.11.0"
@@ -6385,9 +6387,9 @@
     "@types/node" "*"
 
 "@types/lodash@^4.14.151":
-  version "4.14.165"
-  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.165.tgz#74d55d947452e2de0742bad65270433b63a8c30f"
-  integrity sha512-tjSSOTHhI5mCHTy/OOXYIhi2Wt1qcbHmuXD1Ha7q70CgI/I71afO4XtLb/cVexki1oVYchpul/TOuu3Arcdxrg==
+  version "4.14.168"
+  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.168.tgz#fe24632e79b7ade3f132891afff86caa5e5ce008"
+  integrity sha512-oVfRvqHV/V6D1yifJbVRU3TMp8OT6o6BG+U9MkwuJ3U8/CsDHvalRpsxBqivn71ztOFZBTfJMvETbqHiaNSj7Q==
 
 "@types/long@^4.0.0", "@types/long@^4.0.1":
   version "4.0.1"
