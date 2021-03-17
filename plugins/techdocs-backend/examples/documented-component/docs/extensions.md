@@ -1,8 +1,10 @@
 # Plugins & Extensions
 
-Just by including the TechDocs Core Plugin to your MkDocs site included with Backstage, you gain the immediate use of a variety of popular plugins and extensions to MkDocs.
+Just by including the TechDocs Core Plugin to your MkDocs site included with Backstage,
+you gain the immediate use of a variety of popular plugins and extensions to MkDocs.
 
-For more information and full details of the available features, see the [`mkdocs-techdocs-core` repository](https://github.com/backstage/mkdocs-techdocs-core#mkdocs-plugins-and-extensions).
+For more information and full details of the available features, see the
+[`mkdocs-techdocs-core` repository](https://github.com/backstage/mkdocs-techdocs-core#mkdocs-plugins-and-extensions).
 
 This page provides a demonstration of some of the available features.
 
@@ -23,7 +25,8 @@ And they end up looking like this:
 Defining admonitions can be addicting.
 
 !!! note
-You can learn a lot about TechDocs by just visiting the Backstage web site at https://backstage.io/docs.
+You can learn a lot about TechDocs by just visiting the Backstage web site at
+https://backstage.io/docs.
 
 !!! info
 TechDocs is the core feature that supports documentation as code in Backstage.
@@ -33,7 +36,8 @@ Don't forget to spell check your documentation.
 
 ## PlantUML
 
-You can create dynamic UML diagrams on the fly by just specifying flow via text, using [PlantUML](https://pypi.org/project/plantuml-markdown/).
+You can create dynamic UML diagrams on the fly by just specifying flow via text,
+using [PlantUML](https://pypi.org/project/plantuml-markdown/).
 
 ```plantuml format="svg" classes="uml myDiagram" alt="Backstage sample PlantUML" title="Backstage sample PlantUML" width="500px" height="250px"
 User -> SCMProvider: stores
@@ -56,7 +60,8 @@ The answer is 42.
 The answer is 8.
 
 ???+ note "How do I get support?"
-You can get support by opening an issue in this repository. This detail is open by default so it's more easily visible without requiring the user to click to open it.
+You can get support by opening an issue in this repository. This detail is open by default
+so it's more easily visible without requiring the user to click to open it.
 
 ### Task Lists
 

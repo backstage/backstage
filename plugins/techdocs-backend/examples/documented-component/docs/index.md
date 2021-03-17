@@ -1,6 +1,7 @@
 # Welcome!
 
-This is a basic example of documentation. It is intended as a showcase of some of the features that TechDocs provides out of the box.
+This is a basic example of documentation. It is intended as a showcase of some of the
+features that TechDocs provides out of the box.
 
 You can see also:
 
@@ -16,7 +17,8 @@ Here is a bulleted list:
 - Item two
 - Item Three
 
-Check out the [Markdown Guide](https://www.markdownguide.org/) to learn more about how to simply create documentation.
+Check out the [Markdown Guide](https://www.markdownguide.org/) to learn more about how to
+simply create documentation.
 
 You can also learn more about how to configure and setup this documentation in Backstage,
 [read up on the TechDocs Overview](https://backstage.io/docs/features/techdocs/techdocs-overview).
@@ -29,7 +31,8 @@ This documentation is powered by Backstage's TechDocs feature:
 
 ## Table Example
 
-While this documentation isn't comprehensive, in the future it should cover the following topics outlined in this example table:
+While this documentation isn't comprehensive, in the future it should cover the following
+topics outlined in this example table:
 
 | Topic   | Description                                                  |
 | ------- | ------------------------------------------------------------ |
