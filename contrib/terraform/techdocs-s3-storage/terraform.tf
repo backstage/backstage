@@ -3,7 +3,15 @@
 #==========================
 
 variable "backstage" {
+  default = "backstage_bucket_for_my_corp"
+}
+
+variable "backstage-iam" {
   default = "backstage"
+}
+
+variable "shared-managed-tag-value" {
+  default = "terraform_for_my_corp"
 }
 
 #==========================
@@ -48,11 +56,11 @@ resource "aws_s3_bucket_public_access_block" "backstage" {
 #==========================
 
 resource "aws_iam_user" "backstage" {
-  name = var.backstage
+  name = var.backstage-iam
 }
 
 resource "aws_iam_user_policy" "backstage" {
-  name = var.backstage
+  name = var.backstage-iam
   user = aws_iam_user.backstage.name
   policy = data.aws_iam_policy_document.backstage-policy.json
 }
