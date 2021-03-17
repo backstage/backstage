@@ -27,3 +27,6 @@ export const registerCollator = (params: RegisterCollatorParameters) => {
 export const registerDecorator = (params: RegisterDecoratorParameters) => {
   registry.addDecorator(params);
 };
+export const collateDocuments = () => {
+  registry.execute();
+};
