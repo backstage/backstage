@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  IndexableDocumentCollator,
-  IndexableDocumentDecorator,
-} from '@backstage/search-common';
+import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
 } from './types';
 
 interface CollatorRegistryEntry {
-  collate: IndexableDocumentCollator;
+  collate: DocumentCollator;
   refreshInterval: number;
 }
 
 export class Registry {
   private collators: Record<string, CollatorRegistryEntry>;
-  private decorators: Record<string, IndexableDocumentDecorator[]>;
+  private decorators: Record<string, DocumentDecorator[]>;
 
   private static instance: Registry;
 
@@ -74,13 +71,13 @@ export class Registry {
   async execute() {
     return Promise.all(
       Object.keys(this.collators).map(async type => {
-        const decorators: IndexableDocumentDecorator[] = (
+        const decorators: DocumentDecorator[] = (
           this.decorators['*'] || []
         ).concat(this.decorators[type] || []);
 
-        let documents = await this.collators[type].collate();
+        let documents = await this.collators[type].collate.execute();
         for (let i = 0; i < decorators.length; i++) {
-          documents = await decorators[i](documents);
+          documents = await decorators[i].execute(documents);
         }
 
         // TODO: push documents to a configured search engine.

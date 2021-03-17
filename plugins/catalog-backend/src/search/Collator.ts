@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-import {
-  IndexableDocument,
-  IndexableDocumentCollator,
-} from '@backstage/search-common';
+import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import { EntitiesCatalog } from '../catalog';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
 }
 
-export const SearchCollatorFactory = (
-  entitiesCatalog: EntitiesCatalog,
-): IndexableDocumentCollator => {
-  return async (): Promise<IndexableDocument[]> => {
-    const entities = await entitiesCatalog.entities();
+export class DefaultCatalogCollator implements DocumentCollator {
+  protected entitiesCatalog: EntitiesCatalog;
+
+  constructor(entitiesCatalog: EntitiesCatalog) {
+    this.entitiesCatalog = entitiesCatalog;
+  }
+
+  async execute() {
+    const entities = await this.entitiesCatalog.entities();
     return entities.map(
       (entity): CatalogEntityDocument => {
         return {
@@ -45,5 +46,5 @@ export const SearchCollatorFactory = (
         };
       },
     );
-  };
-};
+  }
+}

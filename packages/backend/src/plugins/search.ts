@@ -19,14 +19,14 @@ import {
   // registerCollator,
 } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
-// import { SearchCollatorFactory } from '@backstage/plugin-catalog-backend';
+// import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
   // TODO: Within this PR, update to use REST API instead of Catalog Builder.
   /* registerCollator({
     type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
-    collator: SearchCollatorFactory(entitiesCatalog),
+    collator: new DefaultCatalogCollator(entitiesCatalog),
   });*/
 
   // TODO: Make this a more proper refresh loop.

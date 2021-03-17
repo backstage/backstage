@@ -14,23 +14,48 @@
  * limitations under the License.
  */
 
+import {
+  DocumentCollator,
+  DocumentDecorator,
+  IndexableDocument,
+} from '@backstage/search-common';
 import { registerCollator, registerDecorator } from './';
 import { Registry } from './registry';
 
-describe('external api', () => {
+class TestDocumentCollator implements DocumentCollator {
+  async execute() {
+    return [];
+  }
+}
+
+class TestDocumentDecorator implements DocumentDecorator {
+  async execute(documents: IndexableDocument[]) {
+    return documents;
+  }
+}
+
+describe('search indexer external api', () => {
+  let testCollator: DocumentCollator;
+  let testDecorator: DocumentDecorator;
+
+  beforeEach(() => {
+    testCollator = new TestDocumentCollator();
+    testDecorator = new TestDocumentDecorator();
+  });
+
   afterEach(() => {
     Registry.getInstance()._reset();
   });
 
   describe('registerCollator', () => {
     it('registers a collator', async () => {
-      const collatorSpy = jest.fn(async () => []);
+      const collatorSpy = jest.spyOn(testCollator, 'execute');
 
       // Register a collator.
       registerCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
-        collator: collatorSpy,
+        collator: testCollator,
       });
 
       // Execute the registry and ensure the collator was invoked.
@@ -41,19 +66,18 @@ describe('external api', () => {
 
   describe('registerDecorator', () => {
     it('registers a decorator', async () => {
-      const mockCollator = jest.fn(async () => []);
-      const decoratorSpy = jest.fn(async docs => docs);
+      const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
       registerCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
-        collator: mockCollator,
+        collator: testCollator,
       });
 
       // Register a decorator.
       registerDecorator({
-        decorator: decoratorSpy,
+        decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was invoked.
@@ -68,20 +92,22 @@ describe('external api', () => {
         text: 'Test text.',
         location: '/test/location',
       };
-      const mockCollator = jest.fn(async () => [docFixture]);
-      const decoratorSpy = jest.fn(async docs => docs);
+      jest
+        .spyOn(testCollator, 'execute')
+        .mockImplementation(async () => [docFixture]);
+      const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
       registerCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
-        collator: mockCollator,
+        collator: testCollator,
       });
 
       // Register a decorator for the same type.
       registerDecorator({
         types: [expectedType],
-        decorator: decoratorSpy,
+        decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was invoked.
@@ -97,20 +123,22 @@ describe('external api', () => {
         text: 'Test text.',
         location: '/test/location',
       };
-      const mockCollator = jest.fn(async () => [docFixture]);
-      const decoratorSpy = jest.fn(async docs => docs);
+      jest
+        .spyOn(testCollator, 'execute')
+        .mockImplementation(async () => [docFixture]);
+      const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Register a collator.
       registerCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
-        collator: mockCollator,
+        collator: testCollator,
       });
 
       // Register a decorator for a different type.
       registerDecorator({
         types: ['not-the-expected-type'],
-        decorator: decoratorSpy,
+        decorator: testDecorator,
       });
 
       // Execute the registry and ensure the decorator was not invoked.

@@ -62,15 +62,17 @@ export interface IndexableDocument {
 }
 
 /**
- * Signature for the callback function that implementors must register to have
- * their documents indexed.
+ * Interface that must be implemented in order to expose new documents to
+ * search.
  */
-export type IndexableDocumentCollator = () => Promise<IndexableDocument[]>;
+export interface DocumentCollator {
+  execute(): Promise<IndexableDocument[]>;
+}
 
 /**
- * Signature for the callback function that implementors must register to
- * decorate existing documents with additional metadata.
+ * Interface that must be implemented in order to decorate existing documents with
+ * additional metadata.
  */
-export type IndexableDocumentDecorator = (
-  documents: IndexableDocument[],
-) => Promise<IndexableDocument[]>;
+export interface DocumentDecorator {
+  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+}
