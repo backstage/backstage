@@ -500,7 +500,7 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
 export const EntityPage = () => {
   const { entity } = useEntity();
 
-  switch (entity?.kind?.toLowerCase()) {
+  switch (entity?.kind?.toLocaleLowerCase('en-US')) {
     case 'component':
       return <ComponentEntityPage entity={entity} />;
     case 'api':
