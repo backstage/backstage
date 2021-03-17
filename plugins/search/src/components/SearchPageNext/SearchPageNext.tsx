@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,13 @@ import {
   Page,
   useQueryParamState,
 } from '@backstage/core';
-import { SearchBar, SearchResult } from '@backstage/plugin-search';
 import { Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
+import { SearchBar } from '../SearchBar';
+import { SearchResult } from '../SearchResult';
 
-// TODO: Simplify / remove as much state handling here. The goal is for this to
-// more or less use the publicly exposed components from the search plugin and
-// not much else.
-export const SearchPage = () => {
+export const SearchPageNext = () => {
   const [queryString, setQueryString] = useQueryParamState<string>('query');
   const [searchQuery, setSearchQuery] = useState(queryString ?? '');
 
