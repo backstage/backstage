@@ -1,0 +1,30 @@
+#Setup build image
+FROM node:12.19.0-buster AS build-env
+
+#Set container filesystem to /build (and create folder if it doesnt exist)
+WORKDIR /build
+
+#Copy files to container file system.
+COPY ./ ./src
+COPY ./dfds-deploy/app-config.release.yaml ./src/app-config.yaml
+
+WORKDIR /build/src
+
+#Run yarn install
+RUN yarn install
+RUN yarn tsc
+RUN yarn build
+
+FROM nginx:mainline AS release
+
+RUN apt-get update && apt-get -y install jq && rm -rf /var/lib/apt/lists/*
+
+# Get application files from build-env image
+COPY --from=build-env /build/src/packages/app/dist /usr/share/nginx/html
+
+# Get nginx config files from local host
+COPY ./contrib/docker/frontend-with-nginx/docker/default.conf.template /etc/nginx/conf.d/default.conf.template
+COPY ./contrib/docker/frontend-with-nginx/docker/run.sh /usr/local/bin/run.sh
+CMD run.sh
+
+ENV PORT 80

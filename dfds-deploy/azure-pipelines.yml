@@ -32,7 +32,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: './contrib/docker/frontend-with-nginx/Dockerfile'
+        Dockerfile: './dfds-deploy/Dockerfile-frontend-dfds'
         buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage'
 
@@ -57,7 +57,7 @@ stages:
       displayName: 'Build Container Image'
       inputs:
         command: 'build'
-        Dockerfile: './packages/backend/Dockerfile'
+        Dockerfile: './dfds-deploy/Dockerfile-backend-dfds'
         buildContext: $(System.DefaultWorkingDirectory)
         arguments: '-t backstage-backend'
 
