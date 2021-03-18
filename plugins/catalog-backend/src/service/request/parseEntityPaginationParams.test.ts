@@ -19,5 +19,33 @@ import { parseEntityPaginationParams } from './parseEntityPaginationParams';
 describe('parseEntityPaginationParams', () => {
   it('works for the happy path', () => {
     expect(parseEntityPaginationParams({})).toBeUndefined();
+    expect(parseEntityPaginationParams({ limit: '1' })).toEqual({ limit: 1 });
+    expect(parseEntityPaginationParams({ offset: '0' })).toEqual({ offset: 0 });
+    expect(parseEntityPaginationParams({ offset: '2' })).toEqual({ offset: 2 });
+    expect(parseEntityPaginationParams({ after: 'x' })).toEqual({ after: 'x' });
+    expect(
+      parseEntityPaginationParams({ limit: '1', offset: '2', after: 'x' }),
+    ).toEqual({ limit: 1, offset: 2, after: 'x' });
+  });
+
+  it('rejects bad values', () => {
+    expect(() => parseEntityPaginationParams({ limit: '' })).toThrow(
+      'Invalid limit, not an integer',
+    );
+    expect(() => parseEntityPaginationParams({ limit: '0' })).toThrow(
+      'Invalid limit, must be greater than zero',
+    );
+    expect(() => parseEntityPaginationParams({ limit: '-1' })).toThrow(
+      'Invalid limit, must be greater than zero',
+    );
+    expect(() => parseEntityPaginationParams({ offset: '' })).toThrow(
+      'Invalid offset, not an integer',
+    );
+    expect(() => parseEntityPaginationParams({ offset: '-1' })).toThrow(
+      'Invalid offset, must be zero or greater',
+    );
+    expect(() => parseEntityPaginationParams({ after: '' })).toThrow(
+      'Invalid after, must not be empty',
+    );
   });
 });

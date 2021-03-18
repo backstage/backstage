@@ -563,17 +563,17 @@ function parsePagination(
       const json = Buffer.from(input.after, 'base64').toString('utf8');
       cursor = JSON.parse(json);
     } catch {
-      throw new InputError('Malformed after cursor');
+      throw new InputError('Malformed after cursor, could not be parsed');
     }
     if (cursor.limit !== undefined) {
       if (!Number.isInteger(cursor.limit)) {
-        throw new InputError('Malformed after cursor');
+        throw new InputError('Malformed after cursor, limit was not an number');
       }
       limit = cursor.limit;
     }
     if (cursor.offset !== undefined) {
       if (!Number.isInteger(cursor.offset)) {
-        throw new InputError('Malformed after cursor');
+        throw new InputError('Malformed after cursor, offset was not a number');
       }
       offset = cursor.offset;
     }

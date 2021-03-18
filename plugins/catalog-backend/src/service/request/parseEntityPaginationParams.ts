@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { InputError } from '@backstage/errors';
 import { EntityPagination } from '../../database';
 import { parseIntegerParam, parseStringParam } from './common';
 
@@ -32,9 +33,19 @@ export function parseEntityPaginationParams(
     return undefined;
   }
 
+  if (offset !== undefined && offset < 0) {
+    throw new InputError(`Invalid offset, must be zero or greater`);
+  }
+  if (limit !== undefined && limit <= 0) {
+    throw new InputError(`Invalid limit, must be greater than zero`);
+  }
+  if (after !== undefined && !after) {
+    throw new InputError(`Invalid after, must not be empty`);
+  }
+
   return {
-    ...(offset ? { offset } : {}),
-    ...(limit ? { limit } : {}),
-    ...(after ? { after } : {}),
+    ...(offset !== undefined ? { offset } : {}),
+    ...(limit !== undefined ? { limit } : {}),
+    ...(after !== undefined ? { after } : {}),
   };
 }
