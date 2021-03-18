@@ -22,18 +22,11 @@ stages:
 # Continuous Integration steps
 - stage: CI
   displayName: 'Continuous Integration'
-  jobs:
-  - job: BuildSourceCode
-    displayName: 'Build source code for docker images'
-    steps:
+  steps:
     - script: npm install yarn
     - script: yarn install
     - script: yarn tsc
     - script: yarn build
-  - job: BuildFrontendImage
-    # Use multistage image to compile code and build image
-    displayName: 'Build frontend image and push to ECR'
-    steps:
     - task: Docker@2
       displayName: 'Build Container Image'
       inputs:
@@ -53,11 +46,6 @@ stages:
         repositoryName: 'selfservice/backstage'
         pushTag: '$(Build.BuildId)'
 
-
-  - job: BuildBackendImage
-    # Use multistage image to compile code and build image
-    displayName: 'Build backend image and push to ECR'
-    steps:
     # Use multistage image to compile code and build image
     - task: Docker@2
       displayName: 'Build Container Image'
@@ -78,10 +66,6 @@ stages:
         repositoryName: 'selfservice/backstage-backend'
         pushTag: '$(Build.BuildId)'
 
-
-  - job: Publish
-    displayName: 'Publish pipeline manifests'
-    steps:
     # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
     - task: PublishPipelineArtifact@1
       inputs:
