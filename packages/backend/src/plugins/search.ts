@@ -23,7 +23,7 @@ export default async function createPlugin({
   logger,
   discovery,
 }: PluginEnvironment) {
-  const indexBuilder = new IndexBuilder();
+  const indexBuilder = new IndexBuilder({ logger });
 
   indexBuilder.addCollator({
     type: 'software-catalog',

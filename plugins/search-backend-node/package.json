@@ -19,7 +19,8 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/search-common": "^0.1.1"
+    "@backstage/search-common": "^0.1.1",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.0"

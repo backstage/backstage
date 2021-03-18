@@ -15,6 +15,7 @@
  */
 
 import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
+import { Logger } from 'winston';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
@@ -25,13 +26,19 @@ interface CollatorEnvelope {
   refreshInterval: number;
 }
 
+type IndexBuilderOptions = {
+  logger: Logger;
+};
+
 export class IndexBuilder {
   private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecorator[]>;
+  private logger: Logger;
 
-  constructor() {
+  constructor({ logger }: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
+    this.logger = logger;
   }
 
   /**
@@ -43,6 +50,9 @@ export class IndexBuilder {
     collator,
     defaultRefreshIntervalSeconds,
   }: RegisterCollatorParameters): void {
+    this.logger.info(
+      `Added ${collator.constructor.name} collator for type ${type}`,
+    );
     this.collators[type] = {
       refreshInterval: defaultRefreshIntervalSeconds,
       collate: collator,
@@ -58,6 +68,11 @@ export class IndexBuilder {
     types = ['*'],
     decorator,
   }: RegisterDecoratorParameters): void {
+    this.logger.info(
+      `Added decorator ${decorator.constructor.name} to types ${types.join(
+        ', ',
+      )}`,
+    );
     types.forEach(type => {
       if (this.decorators.hasOwnProperty(type)) {
         this.decorators[type].push(decorator);
@@ -80,8 +95,14 @@ export class IndexBuilder {
           this.decorators['*'] || []
         ).concat(this.decorators[type] || []);
 
+        this.logger.info(
+          `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
+        );
         let documents = await this.collators[type].collate.execute();
         for (let i = 0; i < decorators.length; i++) {
+          this.logger.info(
+            `Decorating ${type} documents via ${decorators[i].constructor.name}`,
+          );
           documents = await decorators[i].execute(documents);
         }
 
