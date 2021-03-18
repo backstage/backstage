@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerTable } from '../ApiExplorerTable';
-import { CustomizableTableProps } from "../ApiExplorerTable/defaults";
+import { CustomizableTableProps } from '../ApiExplorerTable/types';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
 type ContentProps = CustomizableTableProps;

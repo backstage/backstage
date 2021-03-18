@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,16 @@
 
 import React from 'react';
 import { Chip } from '@material-ui/core';
-import { EntityRow } from '../src/components/ApiExplorerTable/defaults';
+import {
+  defaultColumns,
+  defaultFilters,
+} from '../src/components/ApiExplorerTable/defaults';
 import { TableFilter } from '@backstage/core';
+import {
+  CustomColumn,
+  CustomFilter,
+  EntityRow,
+} from '../src/components/ApiExplorerTable/types';
 
 const domainColumn = { title: 'Domain', field: 'entity.metadata.domain' };
 const capabilitiesColumn = {
@@ -42,19 +50,32 @@ const capabilitiesColumn = {
   ),
 };
 
-export const customColumns = [
-  'Name',
-  'Description',
-  'Owner',
-  'Lifecycle',
-  'Type',
-  domainColumn,
-  capabilitiesColumn,
-];
-export const customFilters = [
-  'Owner',
-  'Type',
-  'Lifecycle',
-  { column: 'Domain', type: 'select' } as TableFilter,
-];
+const getCustomColumns = (): CustomColumn => {
+  const { name, description, owner, lifecycle, type } = defaultColumns;
+  const customColumns = {
+    name,
+    description,
+    owner,
+    lifecycle,
+    type,
+    domain: domainColumn,
+    capabilities: capabilitiesColumn,
+  };
 
+  return customColumns;
+};
+
+const getCustomFilters = (): CustomFilter => {
+  const { owner, type, lifecycle } = defaultFilters;
+  const customFilters = {
+    owner,
+    type,
+    lifecycle,
+    domain: { column: 'Domain', type: 'select' } as TableFilter,
+  };
+
+  return customFilters;
+};
+
+export const customColumns = getCustomColumns();
+export const customFilters = getCustomFilters();

@@ -15,32 +15,13 @@
  */
 
 import React from 'react';
-import { TableColumn, TableFilter } from '@backstage/core';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
-import { ApiEntityV1alpha1, EntityName } from '@backstage/catalog-model';
-import { ApiTypeTitle } from '../ApiDefinitionCard';
 import { Chip } from '@material-ui/core';
+import { CustomColumn, CustomFilter } from './types';
+import { ApiTypeTitle } from '../ApiDefinitionCard';
 
-export type CustomizableTableProps = {
-  columns?: Array<any>;
-  filters?: Array<string | TableFilter>;
-};
-
-export type EntityRow = {
-  entity: ApiEntityV1alpha1;
-  resolved: {
-    name: string;
-    partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
-    ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
-  };
-};
-
-export type NullableColumn = TableColumn<EntityRow> | undefined;
-
-export const defaultColumns: TableColumn<EntityRow>[] = [
-  {
+export const defaultColumns: CustomColumn = {
+  name: {
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
@@ -48,7 +29,7 @@ export const defaultColumns: TableColumn<EntityRow>[] = [
       <EntityRefLink entityRef={entity} defaultKind="API" />
     ),
   },
-  {
+  system: {
     title: 'System',
     field: 'resolved.partOfSystemRelationTitle',
     render: ({ resolved }) => (
@@ -58,7 +39,7 @@ export const defaultColumns: TableColumn<EntityRow>[] = [
       />
     ),
   },
-  {
+  owner: {
     title: 'Owner',
     field: 'resolved.ownedByRelationsTitle',
     render: ({ resolved }) => (
@@ -68,20 +49,20 @@ export const defaultColumns: TableColumn<EntityRow>[] = [
       />
     ),
   },
-  {
+  lifecycle: {
     title: 'Lifecycle',
     field: 'entity.spec.lifecycle',
   },
-  {
+  type: {
     title: 'Type',
     field: 'entity.spec.type',
     render: ({ entity }) => <ApiTypeTitle apiEntity={entity} />,
   },
-  {
+  description: {
     title: 'Description',
     field: 'entity.metadata.description',
   },
-  {
+  tags: {
     title: 'Tags',
     field: 'entity.metadata.tags',
     cellStyle: {
@@ -102,23 +83,23 @@ export const defaultColumns: TableColumn<EntityRow>[] = [
       </>
     ),
   },
-];
+};
 
-export const defaultFilters: TableFilter[] = [
-  {
+export const defaultFilters: CustomFilter = {
+  owner: {
     column: 'Owner',
     type: 'select',
   },
-  {
+  type: {
     column: 'Type',
     type: 'multiple-select',
   },
-  {
+  lifecycle: {
     column: 'Lifecycle',
     type: 'multiple-select',
   },
-  {
+  tags: {
     column: 'Tags',
     type: 'checkbox-tree',
   },
-];
+};

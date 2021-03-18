@@ -32,13 +32,8 @@ import {
   formatEntityRefTitle,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import {
-  CustomizableTableProps,
-  defaultColumns,
-  defaultFilters,
-  EntityRow,
-} from './defaults';
-import { toTableColumnsArray, toTableFiltersArray } from './utils';
+import { defaultColumns, defaultFilters } from './defaults';
+import { CustomizableTableProps, EntityRow } from './types';
 
 type ExplorerTableProps = CustomizableTableProps & {
   entities: Entity[];
@@ -50,8 +45,8 @@ export const ApiExplorerTable = ({
   entities,
   loading,
   error,
-  columns: customColumns,
-  filters: customFilters,
+  columns = defaultColumns,
+  filters = defaultFilters,
 }: ExplorerTableProps) => {
   const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
     'apiTable',
@@ -65,13 +60,6 @@ export const ApiExplorerTable = ({
       </WarningPanel>
     );
   }
-
-  const filters = customFilters
-    ? toTableFiltersArray(customFilters)
-    : defaultFilters;
-  const columns = customColumns
-    ? toTableColumnsArray(customColumns)
-    : defaultColumns;
 
   const rows = entities.map((entity: Entity) => {
     const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
@@ -101,10 +89,13 @@ export const ApiExplorerTable = ({
     };
   });
 
+  const columnValues = Object.values(columns);
+  const filterValues = Object.values(filters);
+
   return (
     <Table<EntityRow>
       isLoading={loading}
-      columns={columns}
+      columns={columnValues}
       options={{
         paging: false,
         actionsColumnIndex: -1,
@@ -113,7 +104,7 @@ export const ApiExplorerTable = ({
         showEmptyDataSourceMessage: !loading,
       }}
       data={rows}
-      filters={filters}
+      filters={filterValues}
       initialState={queryParamState}
       onStateChange={setQueryParamState}
     />

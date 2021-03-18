@@ -22,7 +22,8 @@ import { Chip } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerTable } from './ApiExplorerTable';
-import { CustomizableTableProps, EntityRow } from './defaults';
+import { EntityRow } from './types';
+import { defaultColumns, defaultFilters } from './defaults';
 
 const entities: Entity[] = [
   {
@@ -105,19 +106,19 @@ describe('ApiCatalogTable component', () => {
       ),
     };
     const barFilter = { column: 'Bar', type: 'select' } as TableFilter;
-    const columns = [
-      'Name',
-      'Description',
-      'Owner',
-      'Type',
-      fooColumn,
-      barColumn,
-    ];
-    const filters = [
-      'Type',
-      'Lifecycle',
-      barFilter,
-    ] as CustomizableTableProps['filters'];
+    const columns = {
+      name: defaultColumns.name,
+      description: defaultColumns.description,
+      owner: defaultColumns.owner,
+      type: defaultColumns.type,
+      foo: fooColumn,
+      bar: barColumn,
+    };
+    const filters = {
+      type: defaultFilters.type,
+      lifecycle: defaultFilters.lifecycle,
+      bar: barFilter,
+    };
 
     const rendered = render(
       wrapInTestApp(
