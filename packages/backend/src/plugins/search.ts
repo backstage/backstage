@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
 import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
-// import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
-export default async function createPlugin({ logger }: PluginEnvironment) {
+export default async function createPlugin({
+  logger,
+  discovery,
+}: PluginEnvironment) {
   const indexBuilder = new IndexBuilder();
-  // TODO: Within this PR, update to use REST API instead of Catalog Builder.
-  /* indexRegistry.addCollator({
+
+  indexBuilder.addCollator({
     type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator(entitiesCatalog),
-  });*/
+    collator: new DefaultCatalogCollator(discovery),
+  });
 
-  // TODO: Make this a more proper refresh loop.
-  indexBuilder.build();
+  // TODO: Move refresh loop logic into the builder.
+  const timerId = setInterval(() => {
+    indexBuilder.build();
+  }, 60000);
+  useHotCleanup(module, () => clearInterval(timerId));
 
   return await createRouter({
     logger,

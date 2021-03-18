@@ -14,35 +14,40 @@
  * limitations under the License.
  */
 
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
-import { EntitiesCatalog } from '../catalog';
+import fetch from 'cross-fetch';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
+  namespace: string;
+  kind: string;
 }
 
 export class DefaultCatalogCollator implements DocumentCollator {
-  protected entitiesCatalog: EntitiesCatalog;
+  protected discovery: PluginEndpointDiscovery;
 
-  constructor(entitiesCatalog: EntitiesCatalog) {
-    this.entitiesCatalog = entitiesCatalog;
+  constructor(discovery: PluginEndpointDiscovery) {
+    this.discovery = discovery;
   }
 
   async execute() {
-    const entities = await this.entitiesCatalog.entities();
+    const baseUrl = await this.discovery.getBaseUrl('catalog');
+    const res = await fetch(`${baseUrl}/entities`);
+    const entities: Entity[] = await res.json();
     return entities.map(
       (entity): CatalogEntityDocument => {
         return {
           title: entity.metadata.name,
+          // TODO: Use a config-based template approach for entity location.
           location: `/catalog/${
             entity.metadata.namespace || 'default'
           }/component/${entity.metadata.name}`,
           text: entity.metadata.description || '',
           componentType: entity.spec?.type?.toString() || 'other',
-          ...(entity.spec?.owner && { owner: entity.spec.owner.toString() }),
-          ...(entity.metadata.lifecycle && {
-            lifecycle: entity.metadata.lifecycle.toString(),
-          }),
+          namespace: entity.metadata.namespace || 'default',
+          kind: entity.kind,
         };
       },
     );

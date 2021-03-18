@@ -49,16 +49,6 @@ export interface IndexableDocument {
    * is clicked).
    */
   location: string;
-
-  /**
-   * (Optional) The owner of the document (e.g. spec.owner on a catalog entity).
-   */
-  owner?: string;
-
-  /**
-   * (Optional) The lifecycle of the document (e.g. spec.lifecycle on a catalog entity).
-   */
-  lifecycle?: string;
 }
 
 /**
