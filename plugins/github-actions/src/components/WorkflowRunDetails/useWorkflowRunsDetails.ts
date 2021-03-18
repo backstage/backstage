@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useApi } from '@backstage/core';
-import { useParams } from 'react-router-dom';
+import { useApi, useRouteRefParams } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubActionsApiRef } from '../../api';
+import { buildRouteRef } from '../../plugin';
 
 export const useWorkflowRunsDetails = ({
   hostname,
@@ -28,7 +28,7 @@ export const useWorkflowRunsDetails = ({
   repo: string;
 }) => {
   const api = useApi(githubActionsApiRef);
-  const { id } = useParams();
+  const { id } = useRouteRefParams(buildRouteRef);
   const details = useAsync(async () => {
     return repo && owner
       ? api.getWorkflowRun({
