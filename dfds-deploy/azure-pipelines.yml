@@ -26,7 +26,7 @@ stages:
   - job: BuildSourceCode
     displayName: 'Build source code for docker images'
     steps:
-    - script: npm install --global yarn
+    - script: npm install yarn
     - script: yarn install
     - script: yarn tsc
     - script: yarn build
