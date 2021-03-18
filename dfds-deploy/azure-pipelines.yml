@@ -21,57 +21,59 @@ variables:
 stages:
 # Continuous Integration steps
 - stage: CI
-  displayName: 'Continuous Integration'
-  steps:
-    - script: npm install yarn
-    - script: yarn install
-    - script: yarn tsc
-    - script: yarn build
-    - task: Docker@2
-      displayName: 'Build Container Image'
-      inputs:
-        command: 'build'
-        Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
-        buildContext: $(System.DefaultWorkingDirectory)
-        arguments: '-t backstage'
+  displayName: 'Continuous Integration'  
+  jobs:    
+  - job: BuildAndPublishImages
+    steps:
+      - script: npm install yarn
+      - script: yarn install
+      - script: yarn tsc
+      - script: yarn build
+      - task: Docker@2
+        displayName: 'Build Container Image'
+        inputs:
+          command: 'build'
+          Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
+          buildContext: $(System.DefaultWorkingDirectory)
+          arguments: '-t backstage'
 
-    # Push the image to ECR with a tag based on the current BuildID
-    - task: ECRPushImage@1
-      displayName: 'Push frontend image to Shared ECR'
-      inputs:
-        awsCredentials: 'Shared-Prod ECR-Push'
-        regionName: 'eu-central-1'
-        imageSource: 'imagename'
-        sourceImageName: 'backstage'
-        repositoryName: 'selfservice/backstage'
-        pushTag: '$(Build.BuildId)'
+      # Push the image to ECR with a tag based on the current BuildID
+      - task: ECRPushImage@1
+        displayName: 'Push frontend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage'
+          repositoryName: 'selfservice/backstage'
+          pushTag: '$(Build.BuildId)'
 
-    # Use multistage image to compile code and build image
-    - task: Docker@2
-      displayName: 'Build Container Image'
-      inputs:
-        command: 'build'
-        Dockerfile: './packages/backend/Dockerfile'
-        buildContext: $(System.DefaultWorkingDirectory)
-        arguments: '-t backstage-backend'
+      # Use multistage image to compile code and build image
+      - task: Docker@2
+        displayName: 'Build Container Image'
+        inputs:
+          command: 'build'
+          Dockerfile: './packages/backend/Dockerfile'
+          buildContext: $(System.DefaultWorkingDirectory)
+          arguments: '-t backstage-backend'
 
-    # Push the image to ECR with a tag based on the current BuildID
-    - task: ECRPushImage@1
-      displayName: 'Push backend image to Shared ECR'
-      inputs:
-        awsCredentials: 'Shared-Prod ECR-Push'
-        regionName: 'eu-central-1'
-        imageSource: 'imagename'
-        sourceImageName: 'backstage-backend'
-        repositoryName: 'selfservice/backstage-backend'
-        pushTag: '$(Build.BuildId)'
+      # Push the image to ECR with a tag based on the current BuildID
+      - task: ECRPushImage@1
+        displayName: 'Push backend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage-backend'
+          repositoryName: 'selfservice/backstage-backend'
+          pushTag: '$(Build.BuildId)'
 
-    # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
-        artifact: 'manifests'
-        publishLocation: 'pipeline'   
+      # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
+          artifact: 'manifests'
+          publishLocation: 'pipeline'   
 
 # Continuous Deployment steps
 - stage: CD
