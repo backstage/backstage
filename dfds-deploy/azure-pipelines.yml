@@ -1,4 +1,4 @@
-name: $(Build.BuildId)
+"name: $(Build.BuildId)
 
 # Triggers Pipeline only on Master
 trigger:
