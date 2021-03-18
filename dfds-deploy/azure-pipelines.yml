@@ -23,7 +23,13 @@ stages:
 - stage: CI
   displayName: 'Continuous Integration'
   jobs:
-
+  - job: BuildSourceCode
+    displayName: 'Build source code for docker images'
+    steps:
+    - task: Bash@2
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      targetType: inline
+      script: yarn install && yarn tsc && yarn build
   - job: BuildFrontendImage
     # Use multistage image to compile code and build image
     displayName: 'Build frontend image and push to ECR'

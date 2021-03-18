@@ -5,6 +5,8 @@ metadata:
   description: Shuffle API
   tags:
     - go
+  annotations: 
+    'backstage.io/kubernetes-id': shuffle-api
 spec:
   type: service
   lifecycle: production
