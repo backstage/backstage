@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { Registry } from './registry';
+export { IndexBuilder } from './IndexBuilder';

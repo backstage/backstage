@@ -19,7 +19,7 @@ import {
   DocumentDecorator,
   IndexableDocument,
 } from '@backstage/search-common';
-import { Registry } from './registry';
+import { IndexBuilder } from './IndexBuilder';
 
 class TestDocumentCollator implements DocumentCollator {
   async execute() {
@@ -33,56 +33,56 @@ class TestDocumentDecorator implements DocumentDecorator {
   }
 }
 
-describe('search indexer external api', () => {
-  let testRegistry: Registry;
+describe('IndexBuilder', () => {
+  let testIndexBuilder: IndexBuilder;
   let testCollator: DocumentCollator;
   let testDecorator: DocumentDecorator;
 
   beforeEach(() => {
-    testRegistry = new Registry();
+    testIndexBuilder = new IndexBuilder();
     testCollator = new TestDocumentCollator();
     testDecorator = new TestDocumentDecorator();
   });
 
-  describe('registerCollator', () => {
-    it('registers a collator', async () => {
+  describe('addCollator', () => {
+    it('adds a collator', async () => {
       const collatorSpy = jest.spyOn(testCollator, 'execute');
 
-      // Register a collator.
-      testRegistry.addCollator({
+      // Add a collator.
+      testIndexBuilder.addCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
-      // Execute the registry and ensure the collator was invoked.
-      await testRegistry.execute();
+      // Build the index and ensure the collator was invoked.
+      await testIndexBuilder.build();
       expect(collatorSpy).toHaveBeenCalled();
     });
   });
 
-  describe('registerDecorator', () => {
-    it('registers a decorator', async () => {
+  describe('addDecorator', () => {
+    it('adds a decorator', async () => {
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
-      // Register a collator.
-      testRegistry.addCollator({
+      // Add a collator.
+      testIndexBuilder.addCollator({
         type: 'anything',
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
-      // Register a decorator.
-      testRegistry.addDecorator({
+      // Add a decorator.
+      testIndexBuilder.addDecorator({
         decorator: testDecorator,
       });
 
-      // Execute the registry and ensure the decorator was invoked.
-      await testRegistry.execute();
+      // Build the index and ensure the decorator was invoked.
+      await testIndexBuilder.build();
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
-    it('registers a type-specific decorator', async () => {
+    it('adds a type-specific decorator', async () => {
       const expectedType = 'an-expected-type';
       const docFixture = {
         title: 'Test',
@@ -94,26 +94,26 @@ describe('search indexer external api', () => {
         .mockImplementation(async () => [docFixture]);
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
-      // Register a collator.
-      testRegistry.addCollator({
+      // Add a collator.
+      testIndexBuilder.addCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
-      // Register a decorator for the same type.
-      testRegistry.addDecorator({
+      // Add a decorator for the same type.
+      testIndexBuilder.addDecorator({
         types: [expectedType],
         decorator: testDecorator,
       });
 
-      // Execute the registry and ensure the decorator was invoked.
-      await testRegistry.execute();
+      // Build the index and ensure the decorator was invoked.
+      await testIndexBuilder.build();
       expect(decoratorSpy).toHaveBeenCalled();
       expect(decoratorSpy).toHaveBeenCalledWith([docFixture]);
     });
 
-    it('registers a type-specific decorator that should not be called', async () => {
+    it('adds a type-specific decorator that should not be called', async () => {
       const expectedType = 'an-expected-type';
       const docFixture = {
         title: 'Test',
@@ -125,21 +125,21 @@ describe('search indexer external api', () => {
         .mockImplementation(async () => [docFixture]);
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
-      // Register a collator.
-      testRegistry.addCollator({
+      // Add a collator.
+      testIndexBuilder.addCollator({
         type: expectedType,
         defaultRefreshIntervalSeconds: 600,
         collator: testCollator,
       });
 
-      // Register a decorator for a different type.
-      testRegistry.addDecorator({
+      // Add a decorator for a different type.
+      testIndexBuilder.addDecorator({
         types: ['not-the-expected-type'],
         decorator: testDecorator,
       });
 
-      // Execute the registry and ensure the decorator was not invoked.
-      await testRegistry.execute();
+      // Build the index and ensure the decorator was not invoked.
+      await testIndexBuilder.build();
       expect(decoratorSpy).not.toHaveBeenCalled();
     });
   });

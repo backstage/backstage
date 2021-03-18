@@ -20,13 +20,13 @@ import {
   RegisterDecoratorParameters,
 } from './types';
 
-interface CollatorRegistryEntry {
+interface CollatorEnvelope {
   collate: DocumentCollator;
   refreshInterval: number;
 }
 
-export class Registry {
-  private collators: Record<string, CollatorRegistryEntry>;
+export class IndexBuilder {
+  private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecorator[]>;
 
   constructor() {
@@ -34,6 +34,10 @@ export class Registry {
     this.decorators = {};
   }
 
+  /**
+   * Makes the index builder aware of a collator that should be executed at the
+   * given refresh interval.
+   */
   addCollator({
     type,
     collator,
@@ -45,6 +49,11 @@ export class Registry {
     };
   }
 
+  /**
+   * Makes the index builder aware of a decorator. If no types are provided, it
+   * will be applied to documents from all known collators, otherwise it will
+   * only be applied to documents of the given types.
+   */
   addDecorator({
     types = ['*'],
     decorator,
@@ -58,8 +67,13 @@ export class Registry {
     });
   }
 
-  // TODO: But like with coordination, timing, error handling, and what have you.
-  async execute() {
+  /**
+   * Starts the process of executing collators and decorators and building the
+   * search index.
+   *
+   * TODO: But like with coordination, timing, error handling, and what have you.
+   */
+  async build() {
     return Promise.all(
       Object.keys(this.collators).map(async type => {
         const decorators: DocumentDecorator[] = (

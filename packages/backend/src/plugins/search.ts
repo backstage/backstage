@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { createRouter } from '@backstage/plugin-search-backend';
-import { Registry } from '@backstage/plugin-search-backend-node';
+import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 // import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
 export default async function createPlugin({ logger }: PluginEnvironment) {
-  const indexRegistry = new Registry();
+  const indexBuilder = new IndexBuilder();
   // TODO: Within this PR, update to use REST API instead of Catalog Builder.
   /* indexRegistry.addCollator({
     type: 'software-catalog',
@@ -28,7 +28,7 @@ export default async function createPlugin({ logger }: PluginEnvironment) {
   });*/
 
   // TODO: Make this a more proper refresh loop.
-  indexRegistry.execute();
+  indexBuilder.build();
 
   return await createRouter({
     logger,
