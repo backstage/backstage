@@ -57,6 +57,7 @@
     "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
+    "raw-body": "^2.4.1",
     "selfsigned": "^1.10.7",
     "stoppable": "^1.1.0",
     "tar": "^6.0.5",

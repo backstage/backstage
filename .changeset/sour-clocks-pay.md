@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': minor
+'@backstage/backend-common': patch
 ---
 
 Add UrlReader for Google Cloud Storage

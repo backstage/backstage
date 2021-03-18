@@ -22,7 +22,6 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import { Logger } from 'winston';
 
 const parseURL = (
   url: string,
@@ -43,11 +42,14 @@ const parseURL = (
 
 export class GcsUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, logger }) => {
-    if (!config.has('integrations.gcs')) {
+    if (!config.has('integrations.googleGcs')) {
       return [];
     }
-    return config
-      .getConfigArray('integrations.gcs')
+    const configs = config.getOptionalConfigArray('integrations.googleGcs');
+    if (!configs) {
+      return [];
+    }
+    return configs
       .filter(integration => {
         if (!integration.has('clientEmail') || !integration.has('privateKey')) {
           logger.warn(
@@ -69,7 +71,7 @@ export class GcsUrlReader implements UrlReader {
             private_key: privKey,
           },
         });
-        const reader = new GcsUrlReader(storage, logger);
+        const reader = new GcsUrlReader(storage);
         const host =
           integration.getOptionalString('host') || 'storage.cloud.google.com';
 
@@ -79,21 +81,16 @@ export class GcsUrlReader implements UrlReader {
       });
   };
 
-  constructor(
-    private readonly storage: Storage,
-    private readonly logger: Logger,
-  ) {}
+  constructor(private readonly storage: Storage) {}
 
   async read(url: string): Promise<Buffer> {
     try {
       const { bucket, key } = parseURL(url);
 
-      this.logger.info('Reading GCS Location');
       return await getRawBody(
         this.storage.bucket(bucket).file(key).createReadStream(),
       );
     } catch (error) {
-      this.logger.warn(error.stack);
       throw new Error(`unable to read gcs file from ${url}`);
     }
   }
@@ -103,7 +100,7 @@ export class GcsUrlReader implements UrlReader {
   }
 
   async search(): Promise<SearchResponse> {
-    throw new Error('GcsUrlReader does not implement readTree');
+    throw new Error('GcsUrlReader does not implement search');
   }
 
   toString() {

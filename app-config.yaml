@@ -122,9 +122,8 @@ kafka:
         - localhost:9092
 
 integrations:
-  gcs:
-    - host: 'storage.cloud.google.com'
-      clientEmail:
+  googleGcs:
+    - clientEmail:
         $env: GCS_CLIENT_EMAIL
       privateKey:
         $env: GCS_PRIVATE_KEY

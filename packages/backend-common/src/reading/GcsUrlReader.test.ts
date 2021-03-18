@@ -31,7 +31,7 @@ describe('GcsUrlReader', () => {
     });
   };
 
-  it('does not create a reader without the gcs field', () => {
+  it('does not create a reader without the googleGcs field', () => {
     const entries = createReader({
       integrations: {},
     });
@@ -41,7 +41,7 @@ describe('GcsUrlReader', () => {
   it('creates a reader with credentials correctly configured', () => {
     const entries = createReader({
       integrations: {
-        gcs: [
+        googleGcs: [
           {
             privateKey: '--- BEGIN KEY ---- fakekey --- END KEY ---',
             clientEmail: 'someone@example.com',
@@ -60,7 +60,7 @@ describe('GcsUrlReader', () => {
   it('does not create a reader if the privateKey is missing', () => {
     const entries = createReader({
       integrations: {
-        gcs: [
+        googleGcs: [
           {
             clientEmail: 'someone@example.com',
           },
@@ -73,7 +73,7 @@ describe('GcsUrlReader', () => {
   it('does not create a reader if the clientEmail is missing', () => {
     const entries = createReader({
       integrations: {
-        gcs: [
+        googleGcs: [
           {
             privateKey:
               '-----BEGIN PRIVATE KEY----- fakekey -----END PRIVATE KEY-----',
@@ -84,10 +84,10 @@ describe('GcsUrlReader', () => {
     expect(entries).toHaveLength(0);
   });
 
-  it('predicates', () => {
+  describe('predicates', () => {
     const readers = createReader({
       integrations: {
-        gcs: [
+        googleGcs: [
           {
             privateKey:
               '-----BEGIN PRIVATE KEY----- fakekey -----END PRIVATE KEY-----',
@@ -97,17 +97,29 @@ describe('GcsUrlReader', () => {
       },
     });
     const predicate = readers[0].predicate;
-    expect(predicate(new URL('https://storage.cloud.google.com'))).toBe(true);
-    expect(
-      predicate(
-        new URL(
-          'https://storage.cloud.google.com/team1/service1/catalog-info.yaml',
+
+    it('returns true for the correct google cloud storage host', () => {
+      expect(predicate(new URL('https://storage.cloud.google.com'))).toBe(true);
+    });
+    it('returns true for a url with the full path and the correct host', () => {
+      expect(
+        predicate(
+          new URL(
+            'https://storage.cloud.google.com/team1/service1/catalog-info.yaml',
+          ),
         ),
-      ),
-    ).toBe(true);
-    expect(predicate(new URL('https://storage2.cloud.google.com'))).toBe(false);
-    expect(predicate(new URL('https://cloud.google.com'))).toBe(false);
-    expect(predicate(new URL('https://google.com'))).toBe(false);
-    expect(predicate(new URL('https://a.example.com/test'))).toBe(false);
+      ).toBe(true);
+    });
+    it('returns false for the wrong hostname under cloud.google.com', () => {
+      expect(predicate(new URL('https://storage2.cloud.google.com'))).toBe(
+        false,
+      );
+    });
+    it('returns false for a partially correct host', () => {
+      expect(predicate(new URL('https://cloud.google.com'))).toBe(false);
+    });
+    it('returns false for a completely different host', () => {
+      expect(predicate(new URL('https://a.example.com/test'))).toBe(false);
+    });
   });
 });
