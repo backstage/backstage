@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   DocumentCollator,
   DocumentDecorator,
@@ -39,7 +40,7 @@ describe('IndexBuilder', () => {
   let testDecorator: DocumentDecorator;
 
   beforeEach(() => {
-    testIndexBuilder = new IndexBuilder();
+    testIndexBuilder = new IndexBuilder({ logger: getVoidLogger() });
     testCollator = new TestDocumentCollator();
     testDecorator = new TestDocumentDecorator();
   });
