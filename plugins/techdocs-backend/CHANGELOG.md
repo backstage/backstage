@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.6.5
+
+### Patch Changes
+
+- e7baa0d2e: Separate techdocs-backend and frontend config schema declarations
+- 8686eb38c: Use errors from `@backstage/errors`
+- 424742dc1: Applies only if you use TechDocs local builder instead of building on CI/CD i.e. if `techdocs.builder` in your `app-config.yaml` is set to `'local'`
+
+  Improvements
+
+  1. Do not check for updates in the repository if a check has been made in the last 60 seconds. This is to prevent the annoying check for update on every page switch or load.
+  2. No need to maintain an in-memory etag storage, and use the one stored in `techdocs_metadata.json` file alongside generated docs.
+
+  New feature
+
+  1. You can now use a mix of basic and recommended setup i.e. `techdocs.builder` is `'local'` but using an external cloud storage instead of local storage. Previously, in this setup, the docs would never get updated.
+
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+  - @backstage/techdocs-common@0.4.5
+
 ## 0.6.4
 
 ### Patch Changes

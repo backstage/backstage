@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder
 
+## 0.8.0
+
+### Minor Changes
+
+- 3385b374b: Use `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.7.1
 
 ### Patch Changes

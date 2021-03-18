@@ -1,5 +1,107 @@
 # @backstage/create-app
 
+## 1.0.0
+
+### Patch Changes
+
+- 3385b374b: Supply a `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+  This is a new facility that plugins will start to use. You will have to add it to your local `packages/app` as described below. If this is not done, runtime errors will be seen in the frontend, on the form `No API factory available for dependency apiRef{integration.scmintegrations}`.
+
+  In `packages/app/package.json`:
+
+  ```diff
+     "dependencies": {
+  +    "@backstage/integration-react": "^0.1.1",
+  ```
+
+  In `packages/app/src/apis.ts`:
+
+  ```diff
+  +import {
+  +  scmIntegrationsApiRef,
+  +  ScmIntegrationsApi,
+  +} from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  +  createApiFactory({
+  +    api: scmIntegrationsApiRef,
+  +    deps: { configApi: configApiRef },
+  +    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  +  }),
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 028339210: Adds example groups and users to the default app template.
+
+  To apply this change in an existing application, change the following in `app-config.yaml`:
+
+  ```diff
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+  +    # Backstage example organization groups
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+  +      rules:
+  +        - allow: [Group, User]
+  +
+       # Backstage example templates
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+  ```
+
+- Updated dependencies [010aed784]
+- Updated dependencies [633a31fec]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [34e6bb409]
+- Updated dependencies [b56815b40]
+- Updated dependencies [147b4c5b1]
+- Updated dependencies [83bfc98a3]
+- Updated dependencies [7d8c4c97c]
+- Updated dependencies [e7baa0d2e]
+- Updated dependencies [8b4f7e42a]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [84972540b]
+- Updated dependencies [3385b374b]
+- Updated dependencies [0434853a5]
+- Updated dependencies [a0dacc184]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [4bc98a5b9]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d2f4efc5d]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [c8b54c370]
+- Updated dependencies [4e0b5055a]
+- Updated dependencies [8b5e59750]
+- Updated dependencies [8686eb38c]
+  - @backstage/plugin-catalog-backend@0.6.6
+  - @backstage/plugin-catalog@0.5.0
+  - @backstage/catalog-client@0.3.8
+  - @backstage/plugin-tech-radar@0.3.8
+  - @backstage/plugin-user-settings@0.2.8
+  - @backstage/plugin-techdocs@0.6.2
+  - @backstage/plugin-catalog-import@0.5.0
+  - @backstage/plugin-techdocs-backend@0.6.5
+  - @backstage/plugin-scaffolder-backend@0.9.2
+  - @backstage/backend-common@0.6.0
+  - @backstage/cli@0.6.5
+  - @backstage/plugin-scaffolder@0.8.0
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-api-docs@0.4.9
+  - @backstage/plugin-explore@0.3.2
+  - @backstage/plugin-github-actions@0.4.1
+  - @backstage/plugin-lighthouse@0.2.14
+  - @backstage/plugin-search@0.3.4
+  - @backstage/plugin-auth-backend@0.3.5
+  - @backstage/test-utils@0.1.9
+  - @backstage/plugin-app-backend@0.3.10
+  - @backstage/plugin-proxy-backend@0.2.6
+  - @backstage/plugin-rollbar-backend@0.1.8
+
 ## 0.3.13
 
 ### Patch Changes

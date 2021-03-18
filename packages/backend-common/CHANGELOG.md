@@ -1,5 +1,49 @@
 # @backstage/backend-common
 
+## 0.6.0
+
+### Minor Changes
+
+- 8686eb38c: Encode thrown errors in the backend as a JSON payload. This is technically a breaking change, since the response format even of errors are part of the contract. If you relied on the response being text, you will now have some extra JSON "noise" in it. It should still be readable by end users though.
+
+  Before:
+
+  ```
+  NotFoundError: No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'
+      at eval (webpack-internal:///../../plugins/catalog-backend/src/service/router.ts:117:17)
+  ```
+
+  After:
+
+  ```json
+  {
+    "error": {
+      "name": "NotFoundError",
+      "message": "No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'",
+      "stack": "NotFoundError: No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'\n    at eval (webpack-internal:///../../plugins/catalog-backend/src/service/router.ts:117:17)"
+    },
+    "request": {
+      "method": "GET",
+      "url": "/entities/by-name/user/default/tara.macgovern2"
+    },
+    "response": {
+      "statusCode": 404
+    }
+  }
+  ```
+
+- 8686eb38c: Removed the custom error types (e.g. `NotFoundError`). Those are now instead in the new `@backstage/errors` package. This is a breaking change, and you will have to update your imports if you were using these types.
+
+  ```diff
+  -import { NotFoundError } from '@backstage/backend-common';
+  +import { NotFoundError } from '@backstage/errors';
+  ```
+
+### Patch Changes
+
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
 ## 0.5.6
 
 ### Patch Changes

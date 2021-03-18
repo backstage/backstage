@@ -1,5 +1,21 @@
 # @backstage/plugin-tech-radar
 
+## 0.3.8
+
+### Patch Changes
+
+- 34e6bb409: Map description in API RadarEntry to Entry
+
+  The description in the Entry was mapped to the latest timeline entry, which is a changelog. This
+  change maps the description in the API to the entry. To maintain backwards compatibility it
+  will set the description to the last timeline entry if no description exists at the entry level.
+
+- b56815b40: Fixes issue where radar description dialog is not shown when the entry has an url external to the radar page
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/core@0.7.2
+
 ## 0.3.7
 
 ### Patch Changes
