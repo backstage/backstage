@@ -39,6 +39,7 @@ export function createFetchCookiecutterAction(options: {
     values: JsonObject;
     copyWithoutRender?: string[];
     extensions?: string[];
+    imageName?: string;
   }>({
     id: 'fetch:cookiecutter',
     description:
@@ -83,6 +84,12 @@ export function createFetchCookiecutterAction(options: {
               type: 'string',
             },
           },
+          imageName: {
+            title: 'Cookiecutter Docker image',
+            description:
+              "Specify a custom Docker image to run cookiecutter, to override the default: 'spotify/backstage-cookiecutter'. This can be used to execute cookiecutter with Template Extensions. Used only when a local cookiecutter is not found.",
+            type: 'string',
+          },
         },
       },
     },
@@ -121,6 +128,7 @@ export function createFetchCookiecutterAction(options: {
         ...(ctx.input.values as TemplaterValues),
         _copy_without_render: ctx.input.copyWithoutRender,
         _extensions: ctx.input.extensions,
+        imageName: ctx.input.imageName,
       };
 
       // Will execute the template in ./template and put the result in ./result

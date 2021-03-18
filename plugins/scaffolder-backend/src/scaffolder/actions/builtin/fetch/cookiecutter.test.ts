@@ -117,6 +117,7 @@ describe('fetch:cookiecutter', () => {
         extensions: [
           'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
         ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
       },
     });
 
@@ -130,6 +131,7 @@ describe('fetch:cookiecutter', () => {
         _extensions: [
           'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
         ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
       },
     });
   });

@@ -39,9 +39,19 @@ jinja2_custom_filters_extension==0.0.2
 
 #### Using a Cookiecutter Docker image
 
-If the scaffolder doesn't find a local Cookiecutter, it pulls down the `spotify/backstage-cookiecutter` image. You can create a custom Cookiecutter image based on that, install extensions into it, and use that instead. See for example, the [`Dockerfile`](./Dockerfile) in this directory.
+If the scaffolder doesn't find a local Cookiecutter, it pulls down the `spotify/backstage-cookiecutter` image. You can create a custom Cookiecutter image based on that, install extensions into it, and specify that customised image as an input `imageName` to the `fetch:cookiecutter` action:
 
-**Note:** The [`imageName`](https://github.com/vinayvinay/backstage/blob/37e35b91/plugins/scaffolder-backend/src/scaffolder/stages/templater/cookiecutter.ts#L77) that gets pulled isn't currently configurable. So, for the time being, you might have to customise the `scaffolder-backend` plugin to fetch your customised Cookiecutter Docker image.
+```yaml
+steps:
+  - id: fetch-base
+    name: Fetch Base
+    action: fetch:cookiecutter
+    input:
+      url: https://github.com/spotify/cookiecutter-golang
+      imageName: 'foo/custom-built-cookiecutter-image-with-extensions'
+```
+
+See for example, the [`Dockerfile`](./Dockerfile) in this directory.
 
 ### Instructing Cookiecutter to use the extension
 
