@@ -1,5 +1,21 @@
 # @backstage/plugin-jenkins
 
+## 0.4.0
+
+### Minor Changes
+
+- e8b2ed9cc: Changed the way project slug is extracted from an entity. Up until now, the plugin assumed that the project slug is always of the format "owner/repo". However, this is not something that is enforced by Jenkins and sometimes the project name doesn't contain an owner.
+  Since this split is not used anywhere and the entire project slug is always used as-is, removed this distinction and just read the project slug from the annotation as-is.
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.3.12
 
 ### Patch Changes

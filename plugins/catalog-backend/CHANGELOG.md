@@ -1,5 +1,30 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.6
+
+### Patch Changes
+
+- 010aed784: Add `AnnotateScmSlugEntityProcessor` that automatically adds the
+  `github.com/project-slug` annotation for components coming from GitHub.
+
+  The processor is optional and not automatically registered in the catalog
+  builder. To add it to your instance, add it to your `CatalogBuilder` using
+  `addProcessor()`:
+
+  ```typescript
+  const builder = new CatalogBuilder(env);
+  builder.addProcessor(AnnotateScmSlugEntityProcessor.fromConfig(env.config));
+  ```
+
+- 4bc98a5b9: Refactor CodeOwnersProcessor to use ScmIntegrations
+- d2f4efc5d: Add location to thrown exception when parsing YAML
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
 ## 0.6.5
 
 ### Patch Changes
