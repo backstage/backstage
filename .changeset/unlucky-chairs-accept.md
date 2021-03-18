@@ -2,4 +2,4 @@
 '@backstage/test-utils': patch
 ---
 
-Force a release, forgotten changeset in #4857
+Allow `ExternalRouteRef` bindings in `mountedRoutes` to work with the latest version of core-api.
