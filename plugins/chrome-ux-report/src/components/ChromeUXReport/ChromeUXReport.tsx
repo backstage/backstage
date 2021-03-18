@@ -20,94 +20,37 @@ import {
   Content,
   HeaderLabel,
   Tabs,
-  Table,
-  TableColumn,
   useApi,
-  configApiRef, Progress
+  configApiRef
 } from '@backstage/core';
-import { chromeuxReportApiRef } from "../../api";
-import { useAsync } from "react-use";
-import Alert from "@material-ui/lab/Alert";
 import { Config } from '@backstage/config';
+import { ReportTable } from './ReportTable';
 
 export const ChromeUXReport = () => {
   const configApi = useApi(configApiRef);
-  const chromeUXReportApi = useApi(chromeuxReportApiRef);
   const origins = configApi.getConfigArray('chromeUXReport.origins');
-  const columns: TableColumn[] = [
-    {
-      title: 'Form Factor',
-      field: 'col1',
-      highlight: true,
-    },
-    {
-      title: 'Connection Type',
-      field: 'col2',
-    },
-    {
-      title: 'First Contentful Paint',
-      field: 'col3'
-    },
-    {
-      title: 'Largest Contentful Paint',
-      field: 'col4'
-    },
-    {
-      title: 'Dom Content Loaded',
-      field: 'col5'
-    },
-  ];
-
-  const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const response = await chromeUXReportApi.getChromeUXMetrics(origins[1].getString('site'));
-    return response.metrics;
-  }, []);
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  const {
-    form_factor,
-    connection_type,
-    first_contentful_paint,
-    largest_contentful_paint,
-    dom_content_loaded
-  } = value;
-
-  const table = <Table
-    options={{paging: false, search: false}}
-    data={[{
-      col1: form_factor,
-      col2: connection_type,
-      col3: first_contentful_paint.rates.fast,
-      col4: largest_contentful_paint.rates.fast,
-      col5: dom_content_loaded.rates.fast
-    }]}
-    columns={columns}
-  />;
 
   const tabs = origins && origins.length > 0 ? origins.map(
     (origin: Config) => ({
       label: origin.getString("name"),
-      content: table,
+      content: <ReportTable origin={origin.getString("site")} />,
     }),
   ) : [{
-    label: 'test',
-    content: table,
+    label: 'Chrome UX Report',
+    content: <div>Please add site url to config</div>,
   }];
 
-  return <Page themeId="tool">
-    <Header title="Chrome UX Report" subtitle="Optional subtitle">
-      <HeaderLabel label="Owner" value="Team X"/>
-      <HeaderLabel label="Lifecycle" value="Alpha"/>
-    </Header>
-    <Content>
-      <div>
-        <Tabs tabs={tabs} />
-      </div>
-    </Content>
-  </Page>
+  return (
+    <Page themeId="tool">
+      <Header title="Chrome UX Report" subtitle="Optional subtitle">
+        <HeaderLabel label="Owner" value="Team X"/>
+        <HeaderLabel label="Lifecycle" value="Alpha"/>
+      </Header>
+      <Content>
+        <div>
+          <Tabs tabs={tabs} />
+        </div>
+      </Content>
+    </Page>
+  );
 };
