@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { resolve as resolvePath } from 'path';
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
@@ -40,6 +40,7 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
+    repoPath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:github',
@@ -66,6 +67,10 @@ export function createPublishGithubAction(options: {
             title: 'Repository Visiblity',
             type: 'string',
             enum: ['private', 'public', 'internal'],
+          },
+          repoPath: {
+            title: 'Repository Path',
+            type: 'string',
           },
         },
       },
@@ -158,9 +163,12 @@ export function createPublishGithubAction(options: {
 
       const remoteUrl = data.clone_url;
       const repoContentsUrl = `${data.html_url}/blob/master`;
+      const outputPath = ctx.input.repoPath
+        ? resolvePath(ctx.workspacePath, ctx.input.repoPath)
+        : ctx.workspacePath;
 
       await initRepoAndPush({
-        dir: ctx.workspacePath,
+        dir: outputPath,
         remoteUrl,
         auth: {
           username: 'x-access-token',
