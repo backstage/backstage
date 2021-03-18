@@ -52,6 +52,7 @@ import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { DfdsCapabilityPluginPage } from '@backstage/plugin-dfds-capability-plugin';
 
 const app = createApp({
   apis,
@@ -122,6 +123,14 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    {/* <Route
+      path="/dfds-capability-plugin-v2"
+      element={<DfdsCapabilityPluginV2Page />}
+    /> */}
+    <Route
+      path="/dfds-capability-plugin"
+      element={<DfdsCapabilityPluginPage />}
+    />
   </FlatRoutes>
 );
 
