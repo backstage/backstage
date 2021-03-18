@@ -32,6 +32,9 @@ export interface Config {
     /**
      * origins - The websites whose metrics are requested
      */
-    origins: string[];
+    origins: {
+      site: string
+      name: string
+    }[];
   };
 }

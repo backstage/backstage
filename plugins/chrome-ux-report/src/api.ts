@@ -23,7 +23,7 @@ export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
 });
 
 export type ChromeUXReport = {
-  getChromeUXMetrics(metricShortName: string): Promise<string>;
+  getChromeUXMetrics(origin: string): Promise<string>;
 };
 
 /**

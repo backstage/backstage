@@ -28,11 +28,12 @@ import {
 import { chromeuxReportApiRef } from "../../api";
 import { useAsync } from "react-use";
 import Alert from "@material-ui/lab/Alert";
+import { Config } from '@backstage/config';
 
 export const ChromeUXReport = () => {
   const configApi = useApi(configApiRef);
   const chromeUXReportApi = useApi(chromeuxReportApiRef);
-  const origins = configApi.getStringArray('chromeUXReport.origins');
+  const origins = configApi.getConfigArray('chromeUXReport.origins');
   const columns: TableColumn[] = [
     {
       title: 'Form Factor',
@@ -58,7 +59,7 @@ export const ChromeUXReport = () => {
   ];
 
   const { value, loading, error } = useAsync(async (): Promise<any> => {
-    const response = await chromeUXReportApi.getChromeUXMetrics(origins[1]);
+    const response = await chromeUXReportApi.getChromeUXMetrics(origins[1].getString('site'));
     return response.metrics;
   }, []);
 
@@ -89,8 +90,8 @@ export const ChromeUXReport = () => {
   />;
 
   const tabs = origins && origins.length > 0 ? origins.map(
-    (origin: string) => ({
-      label: origin,
+    (origin: Config) => ({
+      label: origin.getString("name"),
       content: table,
     }),
   ) : [{

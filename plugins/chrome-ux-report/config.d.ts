@@ -29,10 +29,11 @@ export interface Config {
      * @visibility frontend
      */
     keyPath: string;
-    /**
-     * @visibility frontend
-     * @items.visibility frontend
-     */
-    origins: string[];
+    origins: {
+      /** @visibility frontend */
+      site: string;
+      /** @visibility frontend */
+      name: string;
+    }[];
   };
 }
