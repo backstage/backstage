@@ -17,7 +17,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
@@ -47,11 +47,31 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [shadowDomRef, shadowRoot] = useShadowDom();
+  const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
     return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
   }, [techdocsStorageApi, kind, namespace, name, path]);
+
+  useEffect(() => {
+    const updateSidebarPosition = () => {
+      if (!!shadowRoot && !!shadowDomRef.current && !!sidebars) {
+        sidebars!.forEach(sidebar => {
+          const newTop = Math.max(
+            shadowDomRef.current!.getBoundingClientRect().top,
+            0,
+          );
+          sidebar.style.top = `${newTop}px`;
+        });
+      }
+    };
+    updateSidebarPosition();
+    document.addEventListener('scroll', updateSidebarPosition);
+    return () => {
+      document.removeEventListener('scroll', updateSidebarPosition);
+    };
+  }, [shadowDomRef, shadowRoot, sidebars]);
 
   React.useEffect(() => {
     if (!shadowRoot || loading || error) {
@@ -82,10 +102,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
           --md-code-bg-color: ${theme.palette.background.paper};
         }
         .md-main__inner { margin-top: 0; }
-        .md-sidebar { top: 0; width: 20rem; }
+        .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
+        .md-sidebar--secondary { right: 2rem; }
+        .md-content { margin-bottom: 50px }
+        .md-footer { position: fixed; bottom: 0px; width: 100vw; }
+        .md-footer-nav__link { width: 20rem;}
+        .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
-        .md-grid { max-width: 80vw; }
+        .md-grid { max-width: 90vw; margin: 0 }
         `,
       }),
     ]);
@@ -135,6 +160,16 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
         onLoaded: (dom: Element) => {
           (dom as HTMLElement).style.removeProperty('opacity');
+          const sideDivs: HTMLElement[] = Array.from(
+            shadowRoot!.querySelectorAll('.md-sidebar'),
+          );
+          setSidebars(sideDivs);
+          // set sidebar height so they don't initially render in wrong position
+          const docTopPosition = (dom as HTMLElement).getBoundingClientRect()
+            .top;
+          sideDivs!.forEach(sidebar => {
+            sidebar.style.top = `${docTopPosition}px`;
+          });
         },
       }),
     ]);
