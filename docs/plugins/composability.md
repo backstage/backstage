@@ -396,7 +396,7 @@ export const myPlugin = createPlugin({
   },
 });
 
-export const MyPage = plugin.provide(
+export const MyPage = myPlugin.provide(
   createRoutableExtension({
     component: () => import('./components/MyPage').then(m => m.MyPage),
     mountPoint: rootRouteRef,
