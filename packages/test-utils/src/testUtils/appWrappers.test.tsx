@@ -150,7 +150,6 @@ describe('wrapInTestApp', () => {
       mountedRoutes: {
         '/my-a-path': aRouteRef,
         '/my-b-path/:name': bRouteRef,
-        '/my-b-path/:name/:page': subRouteRef,
         '/my-e-path/:name': externalRouteRef,
       },
     });
