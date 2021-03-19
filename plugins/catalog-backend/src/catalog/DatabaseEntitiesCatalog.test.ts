@@ -65,7 +65,7 @@ describe('DatabaseEntitiesCatalog', () => {
 
       db.entities.mockResolvedValue({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.addEntities.mockResolvedValue([
         { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
@@ -102,7 +102,7 @@ describe('DatabaseEntitiesCatalog', () => {
       };
       db.entities.mockResolvedValue({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.addEntities.mockResolvedValue([
         { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
@@ -157,7 +157,7 @@ describe('DatabaseEntitiesCatalog', () => {
       };
       db.entities.mockResolvedValue({
         entities: [{ entity: dbEntity }],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.addEntities.mockResolvedValue([
         { entity: { ...entity, metadata: { ...entity.metadata, uid: 'u' } } },
@@ -211,7 +211,7 @@ describe('DatabaseEntitiesCatalog', () => {
 
       db.entities.mockResolvedValue({
         entities: [existing],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.entityByUid.mockResolvedValue(existing);
       db.updateEntity.mockResolvedValue({ entity });
@@ -289,7 +289,7 @@ describe('DatabaseEntitiesCatalog', () => {
 
       db.entities.mockResolvedValue({
         entities: [existing],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.entityByName.mockResolvedValue(existing);
       db.updateEntity.mockResolvedValue(existing);
@@ -355,7 +355,7 @@ describe('DatabaseEntitiesCatalog', () => {
 
       db.entities.mockResolvedValue({
         entities: [{ entity }],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       db.entityByUid.mockResolvedValue({ entity });
       db.updateEntity.mockResolvedValue({ entity });

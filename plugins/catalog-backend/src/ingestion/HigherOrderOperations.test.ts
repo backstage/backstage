@@ -362,7 +362,7 @@ describe('HigherOrderOperations', () => {
       });
       entitiesCatalog.entities.mockResolvedValue({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([]);
 

@@ -66,7 +66,7 @@ export async function createRouter(
         });
 
         // Add a Link header to the next page
-        if (pageInfo.hasNext) {
+        if (pageInfo.hasNextPage) {
           const url = new URL(`http://ignored${req.url}`);
           url.searchParams.delete('offset');
           url.searchParams.set('after', pageInfo.endCursor);

@@ -71,7 +71,7 @@ describe('createRouter', () => {
 
       entitiesCatalog.entities.mockResolvedValueOnce({
         entities: [entities[0]],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app).get('/entities');
@@ -83,7 +83,7 @@ describe('createRouter', () => {
     it('parses single and multiple request parameters and passes them down', async () => {
       entitiesCatalog.entities.mockResolvedValueOnce({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
       const response = await request(app).get(
         '/entities?filter=a=1,a=2,b=3&filter=c=4',
@@ -118,7 +118,7 @@ describe('createRouter', () => {
       };
       entitiesCatalog.entities.mockResolvedValue({
         entities: [entity],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app).get('/entities/by-uid/zzz');
@@ -134,7 +134,7 @@ describe('createRouter', () => {
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entities.mockResolvedValue({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app).get('/entities/by-uid/zzz');
@@ -160,7 +160,7 @@ describe('createRouter', () => {
       };
       entitiesCatalog.entities.mockResolvedValue({
         entities: [entity],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app).get('/entities/by-name/k/ns/n');
@@ -180,7 +180,7 @@ describe('createRouter', () => {
     it('responds with a 404 for missing entities', async () => {
       entitiesCatalog.entities.mockResolvedValue({
         entities: [],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app).get('/entities/by-name/b/d/c');
@@ -225,7 +225,7 @@ describe('createRouter', () => {
       ]);
       entitiesCatalog.entities.mockResolvedValue({
         entities: [entity],
-        pageInfo: { hasNext: false },
+        pageInfo: { hasNextPage: false },
       });
 
       const response = await request(app)

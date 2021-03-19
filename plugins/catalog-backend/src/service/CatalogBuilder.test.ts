@@ -63,7 +63,7 @@ describe('CatalogBuilder', () => {
     const built = await builder.build();
     await expect(built.entitiesCatalog.entities()).resolves.toEqual({
       entities: [],
-      pageInfo: { hasNext: false },
+      pageInfo: { hasNextPage: false },
     });
     await expect(built.locationsCatalog.locations()).resolves.toEqual([
       expect.objectContaining({
