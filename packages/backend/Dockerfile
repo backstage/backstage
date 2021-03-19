@@ -23,4 +23,6 @@ RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -
 # Then copy the rest of the backend bundle, along with any other files we might want.
 ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
 
+RUN mkdir -p /assets && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > /assets/rds-ca-2019-root.pem
+
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
