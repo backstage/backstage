@@ -193,7 +193,8 @@
     "Tutorials": [
       "tutorials/journey",
       "tutorials/quickstart-app-auth",
-      "tutorials/quickstart-app-plugin"
+      "tutorials/quickstart-app-plugin",
+      "tutorials/switching-sqlite-postgres"
     ],
     "Architecture Decision Records (ADRs)": [
       "architecture-decisions/adrs-overview",
