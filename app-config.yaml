@@ -21,7 +21,7 @@ backend:
   listen:
     port: 7000
   database:
-    client: pg
+    client: PostgreSQL
     connection: 
       $env: BACKSTAGE_DATABASE_CONNECTIONSTRING
   cors:
