@@ -313,6 +313,9 @@ export const EntityPage = () => {
       return <SystemEntityPage entity={entity} />;
     case 'domain':
       return <DomainEntityPage entity={entity} />;
+    case 'location':
+    case 'resource':
+    case 'template':
     default:
       return <DefaultEntityPage entity={entity} />;
   }
