@@ -48,10 +48,10 @@ export type DbEntitiesResponse = {
 
 export type DbPageInfo =
   | {
-      hasNext: false;
+      hasNextPage: false;
     }
   | {
-      hasNext: true;
+      hasNextPage: true;
       endCursor: string;
     };
 

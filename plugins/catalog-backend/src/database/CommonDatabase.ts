@@ -259,11 +259,11 @@ export class CommonDatabase implements Database {
 
     let pageInfo: DbPageInfo;
     if (limit === undefined || rows.length <= limit) {
-      pageInfo = { hasNext: false };
+      pageInfo = { hasNextPage: false };
     } else {
       rows = rows.slice(0, -1);
       pageInfo = {
-        hasNext: true,
+        hasNextPage: true,
         endCursor: stringifyPagination({
           limit,
           offset: (offset ?? 0) + limit,

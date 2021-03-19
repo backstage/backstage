@@ -23,10 +23,10 @@ import { EntityFilter, EntityPagination } from '../database/types';
 
 export type PageInfo =
   | {
-      hasNext: false;
+      hasNextPage: false;
     }
   | {
-      hasNext: true;
+      hasNextPage: true;
       endCursor: string;
     };
 
