@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
+import { InputError, NotAllowedError } from '@backstage/errors';
 import { Request } from 'express';
 import lodash from 'lodash';
 import yup from 'yup';
+import { Mode } from '../../config';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -53,4 +54,10 @@ export async function validateRequestBody<T>(
   }
 
   return (body as unknown) as T;
+}
+
+export function requireReadWriteMode(mode: Mode) {
+  if (mode !== 'readwrite') {
+    throw new NotAllowedError('This operation requires readwrite mode');
+  }
 }

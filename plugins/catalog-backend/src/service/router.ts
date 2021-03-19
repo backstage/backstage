@@ -20,6 +20,7 @@ import {
   analyzeLocationSchema,
   locationSpecSchema,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -27,13 +28,18 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
+import { Mode } from '../../config';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from './request';
-import { requireRequestBody, validateRequestBody } from './util';
+import {
+  requireReadWriteMode,
+  requireRequestBody,
+  validateRequestBody,
+} from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -41,6 +47,7 @@ export interface RouterOptions {
   higherOrderOperation?: HigherOrderOperation;
   locationAnalyzer?: LocationAnalyzer;
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -51,10 +58,16 @@ export async function createRouter(
     locationsCatalog,
     higherOrderOperation,
     locationAnalyzer,
+    config,
+    logger,
   } = options;
 
   const router = Router();
   router.use(express.json());
+
+  const mode: Mode =
+    (config.getOptionalString('catalog.mode') as Mode) || 'readwrite';
+  logger.info(`Catalog is running in ${mode} mode`);
 
   if (entitiesCatalog) {
     router
@@ -87,6 +100,8 @@ export async function createRouter(
          * It stays around in the service for the time being, but may be
          * removed or change semantics at any time without prior notice.
          */
+        requireReadWriteMode(mode);
+
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
@@ -107,6 +122,8 @@ export async function createRouter(
         res.status(200).json(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
+        requireReadWriteMode(mode);
+
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid);
         res.status(204).end();
@@ -133,6 +150,11 @@ export async function createRouter(
     router.post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, locationSpecSchema);
       const dryRun = yn(req.query.dryRun, { default: false });
+
+      // when in dryRun addLocation is effectively a read operation so when in
+      // dryRun we override mode to readwrite to allow the operation
+      requireReadWriteMode(dryRun ? 'readwrite' : mode);
+
       const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).json(output);
     });
@@ -155,6 +177,8 @@ export async function createRouter(
         res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
+        requireReadWriteMode(mode);
+
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);
         res.status(204).end();
