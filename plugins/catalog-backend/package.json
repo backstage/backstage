@@ -33,6 +33,7 @@
     "@backstage/backend-common": "^0.6.0",
     "@backstage/catalog-model": "^0.7.4",
     "@backstage/config": "^0.1.4",
+    "@backstage/core": "^0.7.1",
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@backstage/plugin-search-backend-node": "^0.1.2",
@@ -59,7 +60,8 @@
     "winston": "^3.2.1",
     "yaml": "^1.9.2",
     "yn": "^4.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.6",
