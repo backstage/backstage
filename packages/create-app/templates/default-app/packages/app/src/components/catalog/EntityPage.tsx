@@ -13,27 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiEntity, Entity } from '@backstage/catalog-model';
-import { WarningPanel } from '@backstage/core';
+import React from 'react';
+import { Button, Grid } from '@material-ui/core';
+import {
+  ApiEntity,
+  DomainEntity,
+  Entity,
+  GroupEntity,
+  SystemEntity,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core';
 import {
   ApiDefinitionCard,
   ConsumedApisCard,
   ConsumingComponentsCard,
+  EntityHasApisCard,
   ProvidedApisCard,
-  ProvidingComponentsCard
+  ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
 import {
-  AboutCard, EntityPageLayout,
+  AboutCard,
+  EntityHasComponentsCard,
+  EntityHasSystemsCard,
+  EntityPageLayout,
 } from '@backstage/plugin-catalog';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
-  useEntity
-} from '@backstage/plugin-catalog-react';
-import {
-  isPluginApplicableToEntity as isGitHubActionsAvailable, Router as GitHubActionsRouter
+  isPluginApplicableToEntity as isGitHubActionsAvailable,
+  Router as GitHubActionsRouter,
 } from '@backstage/plugin-github-actions';
+import {
+  GroupProfileCard,
+  MembersListCard,
+  OwnershipCard,
+  UserProfileCard,
+} from '@backstage/plugin-org';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
-import { Grid } from '@material-ui/core';
-import React from 'react';
 
 
 const CICDSwitcher = ({ entity }: { entity: Entity }) => {
@@ -44,17 +60,27 @@ const CICDSwitcher = ({ entity }: { entity: Entity }) => {
       return <GitHubActionsRouter entity={entity} />;
     default:
       return (
-        <WarningPanel title="CI/CD switcher:">
-          No CI/CD is available for this entity. Check corresponding
-          annotations!
-        </WarningPanel>
+        <EmptyState
+          title="No CI/CD available for this entity"
+          missing="info"
+          description="You need to add an annotation to your component if you want to enable CI/CD for it. You can read more about annotations in Backstage by clicking the button below."
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              href="https://backstage.io/docs/features/software-catalog/well-known-annotations"
+            >
+              Read more
+            </Button>
+          }
+        />
       );
   }
 };
 
 const OverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
-    <Grid item>
+    <Grid item md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
   </Grid>
@@ -181,6 +207,96 @@ const ApiEntityPage = ({ entity }: { entity: Entity }) => (
   </EntityPageLayout>
 );
 
+const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <UserProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const UserEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<UserOverviewContent entity={entity as UserEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const GroupOverviewContent = ({ entity }: { entity: GroupEntity }) => (
+  <Grid container spacing={3}>
+    <Grid item xs={12} md={6}>
+      <GroupProfileCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <OwnershipCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item xs={12}>
+      <MembersListCard entity={entity} />
+    </Grid>
+  </Grid>
+);
+
+const GroupEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<GroupOverviewContent entity={entity as GroupEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasComponentsCard variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasApisCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const SystemEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<SystemOverviewContent entity={entity as SystemEntity} />}
+    />
+  </EntityPageLayout>
+);
+
+const DomainOverviewContent = ({ entity }: { entity: DomainEntity }) => (
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <AboutCard entity={entity} variant="gridItem" />
+    </Grid>
+    <Grid item md={6}>
+      <EntityHasSystemsCard variant="gridItem" />
+    </Grid>
+  </Grid>
+);
+
+const DomainEntityPage = ({ entity }: { entity: Entity }) => (
+  <EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/*"
+      title="Overview"
+      element={<DomainOverviewContent entity={entity as DomainEntity} />}
+    />
+  </EntityPageLayout>
+);
+
 export const EntityPage = () => {
   const { entity } = useEntity();
 
@@ -189,6 +305,14 @@ export const EntityPage = () => {
       return <ComponentEntityPage entity={entity} />;
     case 'api':
       return <ApiEntityPage entity={entity} />;
+    case 'group':
+      return <GroupEntityPage entity={entity} />;
+    case 'user':
+      return <UserEntityPage entity={entity} />;
+    case 'system':
+      return <SystemEntityPage entity={entity} />;
+    case 'domain':
+      return <DomainEntityPage entity={entity} />;
     default:
       return <DefaultEntityPage entity={entity} />;
   }
