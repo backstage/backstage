@@ -39,8 +39,8 @@ type EntityOptions = {
    * Path to use for requests via the proxy from the entity catalog entry
    * defined by annotation: `backstage.io/jenkins-proxy-path`
    */
-   proxyPath?: string;
-}
+  proxyPath?: string;
+};
 
 export class JenkinsApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -199,8 +199,8 @@ export class JenkinsApi {
   mapJenkinsBuildToCITable(
     jenkinsResult: any,
     jobScmInfo?: any,
-    options?: EntityOptions    
-    ): CITableBuildInfo {
+    options?: EntityOptions,
+  ): CITableBuildInfo {
     const source =
       jenkinsResult.actions
         .filter(
