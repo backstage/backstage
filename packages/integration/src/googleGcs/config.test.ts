@@ -34,7 +34,7 @@ describe('readGoogleGcsIntegrationConfig', () => {
     );
     expect(output).toEqual({
       privateKey: 'fake-key',
-      token: 'someone@example.com',
+      clientEmail: 'someone@example.com',
     });
   });
 
