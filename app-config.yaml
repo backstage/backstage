@@ -23,7 +23,16 @@ backend:
   database:
     client: pg
     connection: 
-      $env: DATABASE_CONNECTIONSTRING
+      host: 
+        $env: DATABASE_HOST
+      port: 
+        $env: DATABASE_PORT
+      user: 
+        $env: DATABASE_USER
+      password: 
+        $env: DATABASE_PASSWORD
+      name: 
+        $env: DATABASE_NAME
   cors:
     origin: [https://backstage.dfds.cloud, http://localhost:3000]
     methods: [GET, POST, PUT, DELETE]

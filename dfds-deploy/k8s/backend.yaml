@@ -45,10 +45,5 @@ spec:
           valueFrom:
             secretKeyRef:
               name: backstage-third-party-credentials
-              key: azuredevops_token        
-        - name: DATABASE_CONNECTIONSTRING
-          valueFrom:
-            secretKeyRef:
-              name: backstage-credentials
-              key: db_connstring
+              key: azuredevops_token
         resources: {}
