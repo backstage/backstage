@@ -182,8 +182,6 @@ export class Database {
   }
 
   async getUXMetrics(sitesId: number, monthWithYearId: number): Promise<any> {
-    console.log(sitesId);
-    console.log(monthWithYearId);
     const [metrics] = await this.database<UXMetricsRow>(
       'uxMetrics',
     )
@@ -193,6 +191,6 @@ export class Database {
       })
       .select();
 
-    return metrics;
+      return metrics;
   }
 }

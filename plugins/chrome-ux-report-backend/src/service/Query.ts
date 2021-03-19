@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { RateInfo } from './router';
+import { RateInfo } from './types';
 import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
 
 function createBigQueryClient(config: Config) {
