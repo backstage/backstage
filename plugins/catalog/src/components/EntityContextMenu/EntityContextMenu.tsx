@@ -35,10 +35,14 @@ const useStyles = makeStyles({
 });
 
 type Props = {
+  onShowBadgesDialog?: () => void;
   onUnregisterEntity: () => void;
 };
 
-export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
+export const EntityContextMenu = ({
+  onShowBadgesDialog,
+  onUnregisterEntity,
+}: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
 
@@ -70,6 +74,16 @@ export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
+          {onShowBadgesDialog && (
+            <MenuItem
+              onClick={() => {
+                onClose();
+                onShowBadgesDialog();
+              }}
+            >
+              <Typography variant="inherit">Badges</Typography>
+            </MenuItem>
+          )}
           <MenuItem
             onClick={() => {
               onClose();

@@ -44,3 +44,4 @@ export { plugin as Search } from '@backstage/plugin-search';
 export { plugin as Org } from '@backstage/plugin-org';
 export { plugin as Kafka } from '@backstage/plugin-kafka';
 export { todoPlugin } from '@backstage/plugin-todo';
+export { badgesPlugin } from '@backstage/plugin-badges';

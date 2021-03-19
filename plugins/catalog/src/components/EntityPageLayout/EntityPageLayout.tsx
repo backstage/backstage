@@ -40,6 +40,7 @@ import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import { Tabbed } from './Tabbed';
 
 const EntityPageTitle = ({
@@ -108,6 +109,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
     entity!,
   );
 
+  const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const navigate = useNavigate();
   const cleanUpAfterRemoval = async () => {
@@ -128,7 +130,10 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
         {entity && (
           <>
             <EntityLabels entity={entity} />
-            <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
+            <EntityContextMenu
+              onShowBadgesDialog={() => setBadgesDialogOpen(true)}
+              onUnregisterEntity={showRemovalDialog}
+            />
           </>
         )}
       </Header>
@@ -157,6 +162,14 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
             .
           </WarningPanel>
         </Content>
+      )}
+
+      {entity && (
+        <EntityBadgesDialog
+          open={badgesDialogOpen}
+          entity={entity}
+          onClose={() => setBadgesDialogOpen(false)}
+        />
       )}
 
       <UnregisterEntityDialog
