@@ -1,6 +1,6 @@
 app:
-  title: Backstage Example App
-  baseUrl: http://localhost:3000
+  title: DFDS Backstage
+  baseUrl: https://backstage.dfds.cloud
   googleAnalyticsTrackingId: # UA-000000-0
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
@@ -17,14 +17,16 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: https://backstage.dfds.cloud/backend
   listen:
     port: 7000
   database:
-    client: sqlite3
-    connection: ':memory:'
+    client: pg
+    connection: 
+      $secret:
+        env: BACKSTAGE_DATABASE_CONNECTIONSTRING
   cors:
-    origin: http://localhost:3000
+    origin: [https://backstage.dfds.cloud, http://localhost:3000]
     methods: [GET, POST, PUT, DELETE]
     credentials: true
   csp:
@@ -83,7 +85,7 @@ proxy:
         $env: SENTRY_TOKEN
 
 organization:
-  name: My Company
+  name: DFDS
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -97,10 +99,10 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3' or 'azureBlobStorage' or 'openStackSwift'. Read documentation for using alternatives.
 
 sentry:
-  organization: my-company
+  organization: DFDS
 
 rollbar:
-  organization: my-company
+  organization: DFDS
   # NOTE: The rollbar-backend & accountToken key may be deprecated in the future (replaced by a proxy config)
   accountToken: my-rollbar-account-token
 
@@ -307,9 +309,9 @@ auth:
           $env: AUTH_GITLAB_CLIENT_SECRET
         audience:
           $env: GITLAB_BASE_URL
-    saml:
-      entryPoint: 'http://localhost:7001/'
-      issuer: 'passport-saml'
+#    saml:
+#      entryPoint: 'http://localhost:7001/'
+#      issuer: 'passport-saml'
     okta:
       development:
         clientId:
