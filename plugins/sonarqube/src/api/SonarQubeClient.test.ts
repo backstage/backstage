@@ -71,7 +71,7 @@ describe('SonarQubeClient', () => {
 
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/components/show`, (req, res, ctx) => {
-        expect(req.url.searchParams.toString()).toBe('component=our-service');
+        expect(req.url.searchParams.toString()).toBe('component=our%3Aservice');
         return res(
           ctx.json({
             component: {
@@ -85,7 +85,7 @@ describe('SonarQubeClient', () => {
     server.use(
       rest.get(`${mockBaseUrl}/sonarqube/measures/search`, (req, res, ctx) => {
         expect(req.url.searchParams.toString()).toBe(
-          `projectKeys=our-service&metricKeys=${metricKeys.join('%2C')}`,
+          `projectKeys=our%3Aservice&metricKeys=${metricKeys.join('%2C')}`,
         );
 
         return res(
@@ -94,7 +94,7 @@ describe('SonarQubeClient', () => {
               {
                 metric: 'alert_status',
                 value: 'OK',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'alert_status',
@@ -104,52 +104,52 @@ describe('SonarQubeClient', () => {
               {
                 metric: 'bugs',
                 value: '2',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'reliability_rating',
                 value: '3.0',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'vulnerabilities',
                 value: '4',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'security_rating',
                 value: '1.0',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'security_hotspots_reviewed',
                 value: '100',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'security_review_rating',
                 value: '1.0',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'code_smells',
                 value: '100',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'sqale_rating',
                 value: '2.0',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'coverage',
                 value: '55.5',
-                component: 'our-service',
+                component: 'our:service',
               },
               {
                 metric: 'duplicated_lines_density',
                 value: '1.0',
-                component: 'our-service',
+                component: 'our:service',
               },
             ].filter(m => metricKeys.includes(m.metric)),
           } as MeasuresWrapper),
@@ -163,7 +163,7 @@ describe('SonarQubeClient', () => {
 
     const client = new SonarQubeClient({ discoveryApi });
 
-    const summary = await client.getFindingSummary('our-service');
+    const summary = await client.getFindingSummary('our:service');
     expect(summary).toEqual(
       expect.objectContaining({
         lastAnalysis: '2020-01-01T00:00:00Z',
@@ -180,14 +180,14 @@ describe('SonarQubeClient', () => {
           coverage: '55.5',
           duplicated_lines_density: '1.0',
         },
-        projectUrl: 'https://sonarcloud.io/dashboard?id=our-service',
+        projectUrl: 'https://sonarcloud.io/dashboard?id=our%3Aservice',
       }),
     );
     expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
-      'https://sonarcloud.io/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+      'https://sonarcloud.io/project/issues?id=our%3Aservice&types=CODE_SMELL&resolved=false',
     );
     expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
-      'https://sonarcloud.io/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+      'https://sonarcloud.io/component_measures?id=our%3Aservice&metric=coverage&resolved=false&view=list',
     );
   });
 
@@ -199,7 +199,7 @@ describe('SonarQubeClient', () => {
       baseUrl: 'http://a.instance.local',
     });
 
-    const summary = await client.getFindingSummary('our-service');
+    const summary = await client.getFindingSummary('our:service');
 
     expect(summary).toEqual(
       expect.objectContaining({
@@ -217,14 +217,14 @@ describe('SonarQubeClient', () => {
           coverage: '55.5',
           duplicated_lines_density: '1.0',
         },
-        projectUrl: 'http://a.instance.local/dashboard?id=our-service',
+        projectUrl: 'http://a.instance.local/dashboard?id=our%3Aservice',
       }) as FindingSummary,
     );
     expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
-      'http://a.instance.local/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+      'http://a.instance.local/project/issues?id=our%3Aservice&types=CODE_SMELL&resolved=false',
     );
     expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
-      'http://a.instance.local/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+      'http://a.instance.local/component_measures?id=our%3Aservice&metric=coverage&resolved=false&view=list',
     );
   });
 
@@ -236,7 +236,7 @@ describe('SonarQubeClient', () => {
       baseUrl: 'http://a.instance.local',
     });
 
-    const summary = await client.getFindingSummary('our-service');
+    const summary = await client.getFindingSummary('our:service');
 
     expect(summary).toEqual(
       expect.objectContaining({
@@ -245,14 +245,14 @@ describe('SonarQubeClient', () => {
           alert_status: 'OK',
           bugs: '2',
         },
-        projectUrl: 'http://a.instance.local/dashboard?id=our-service',
+        projectUrl: 'http://a.instance.local/dashboard?id=our%3Aservice',
       }) as FindingSummary,
     );
     expect(summary?.getIssuesUrl('CODE_SMELL')).toEqual(
-      'http://a.instance.local/project/issues?id=our-service&types=CODE_SMELL&resolved=false',
+      'http://a.instance.local/project/issues?id=our%3Aservice&types=CODE_SMELL&resolved=false',
     );
     expect(summary?.getComponentMeasuresUrl('COVERAGE')).toEqual(
-      'http://a.instance.local/component_measures?id=our-service&metric=coverage&resolved=false&view=list',
+      'http://a.instance.local/component_measures?id=our%3Aservice&metric=coverage&resolved=false&view=list',
     );
   });
 });
