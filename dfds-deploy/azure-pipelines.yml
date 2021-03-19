@@ -29,28 +29,10 @@ stages:
       - script: yarn install
       - script: yarn tsc
       - script: yarn build
-      - task: Docker@2
-        displayName: 'Build Container Image'
-        inputs:
-          command: 'build'
-          Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
-          buildContext: $(System.DefaultWorkingDirectory)
-          arguments: '-t backstage'
-
-      # Push the image to ECR with a tag based on the current BuildID
-      - task: ECRPushImage@1
-        displayName: 'Push frontend image to Shared ECR'
-        inputs:
-          awsCredentials: 'Shared-Prod ECR-Push'
-          regionName: 'eu-central-1'
-          imageSource: 'imagename'
-          sourceImageName: 'backstage'
-          repositoryName: 'selfservice/backstage'
-          pushTag: '$(Build.BuildId)'
-
+      
       # Use multistage image to compile code and build image
       - task: Docker@2
-        displayName: 'Build Container Image'
+        displayName: 'Build backend image'
         inputs:
           command: 'build'
           Dockerfile: './packages/backend/Dockerfile'
@@ -66,6 +48,25 @@ stages:
           imageSource: 'imagename'
           sourceImageName: 'backstage-backend'
           repositoryName: 'selfservice/backstage-backend'
+          pushTag: '$(Build.BuildId)'
+
+      - task: Docker@2
+        displayName: 'Build frontend image'
+        inputs:
+          command: 'build'
+          Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
+          buildContext: $(System.DefaultWorkingDirectory)
+          arguments: '-t backstage'
+
+      # Push the image to ECR with a tag based on the current BuildID
+      - task: ECRPushImage@1
+        displayName: 'Push frontend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage'
+          repositoryName: 'selfservice/backstage'
           pushTag: '$(Build.BuildId)'
 
       # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
