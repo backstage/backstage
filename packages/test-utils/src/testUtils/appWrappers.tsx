@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, ReactNode, ReactElement } from 'react';
+import privateExports, {
+  attachComponentData,
+  BootErrorPageProps,
+  createRouteRef,
+  defaultSystemIcons,
+  ExternalRouteRef,
+  RouteRef,
+  SubRouteRef,
+} from '@backstage/core-api';
+import { renderWithEffects } from '@backstage/test-utils-core';
+import { lightTheme } from '@backstage/theme';
+import { RenderResult } from '@testing-library/react';
+import React, { ComponentType, ReactElement, ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';
 import { Route } from 'react-router-dom';
-import { lightTheme } from '@backstage/theme';
-import privateExports, {
-  defaultSystemIcons,
-  BootErrorPageProps,
-  RouteRef,
-  ExternalRouteRef,
-  attachComponentData,
-  createRouteRef,
-} from '@backstage/core-api';
-import { RenderResult } from '@testing-library/react';
-import { renderWithEffects } from '@backstage/test-utils-core';
 import { mockApis } from './mockApis';
 
 const { PrivateAppImpl } = privateExports;
@@ -63,11 +64,11 @@ type TestAppOptions = {
    * // ...
    * const link = useRouteRef(myRouteRef)
    */
-  mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
+  mountedRoutes?: { [path: string]: RouteRef | SubRouteRef | ExternalRouteRef };
 };
 
 function isExternalRouteRef(
-  routeRef: RouteRef | ExternalRouteRef,
+  routeRef: RouteRef | SubRouteRef | ExternalRouteRef,
 ): routeRef is ExternalRouteRef {
   // TODO(Rugvip): Least ugly workaround for now, but replace :D
   return String(routeRef).includes('{type=external,');

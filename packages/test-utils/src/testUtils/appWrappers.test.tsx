@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
-import { render } from '@testing-library/react';
-import { wrapInTestApp, renderInTestApp } from './appWrappers';
-import { Route, Routes } from 'react-router';
-import { withLogCollector } from '@backstage/test-utils-core';
 import {
-  useApi,
-  useRouteRef,
-  errorApiRef,
   ApiProvider,
   ApiRegistry,
+  createExternalRouteRef,
   createRouteRef,
+  createSubRouteRef,
+  errorApiRef,
+  useApi,
+  useRouteRef,
 } from '@backstage/core-api';
+import { withLogCollector } from '@backstage/test-utils-core';
+import { render } from '@testing-library/react';
+import React, { useEffect } from 'react';
+import { Route, Routes } from 'react-router';
 import { MockErrorApi } from './apis';
+import { renderInTestApp, wrapInTestApp } from './appWrappers';
 
 describe('wrapInTestApp', () => {
   it('should provide routing and warn about missing act()', async () => {
@@ -117,16 +119,29 @@ describe('wrapInTestApp', () => {
   });
 
   it('should allow route refs to be mounted on specific paths', async () => {
-    const aRouteRef = createRouteRef({ title: 'A' });
-    const bRouteRef = createRouteRef({ title: 'B', params: ['name'] });
+    const aRouteRef = createRouteRef({ id: 'A' });
+    const bRouteRef = createRouteRef({ id: 'B', params: ['name'] });
+    const subRouteRef = createSubRouteRef({
+      id: 'S',
+      parent: bRouteRef,
+      path: '/:page',
+    });
+    const externalRouteRef = createExternalRouteRef({
+      id: 'E',
+      params: ['name'],
+    });
 
     const MyComponent = () => {
       const a = useRouteRef(aRouteRef);
       const b = useRouteRef(bRouteRef);
+      const s = useRouteRef(subRouteRef);
+      const e = useRouteRef(externalRouteRef);
       return (
         <div>
           <div>Link A: {a()}</div>
           <div>Link B: {b({ name: 'x' })}</div>
+          <div>Link S: {s({ name: 'y', page: 'p' })}</div>
+          <div>Link E: {e({ name: 'z' })}</div>
         </div>
       );
     };
@@ -135,9 +150,13 @@ describe('wrapInTestApp', () => {
       mountedRoutes: {
         '/my-a-path': aRouteRef,
         '/my-b-path/:name': bRouteRef,
+        '/my-b-path/:name/:page': subRouteRef,
+        '/my-e-path/:name': externalRouteRef,
       },
     });
     expect(rendered.getByText('Link A: /my-a-path')).toBeInTheDocument();
     expect(rendered.getByText('Link B: /my-b-path/x')).toBeInTheDocument();
+    expect(rendered.getByText('Link S: /my-b-path/y/p')).toBeInTheDocument();
+    expect(rendered.getByText('Link E: /my-e-path/z')).toBeInTheDocument();
   });
 });
