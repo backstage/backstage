@@ -88,8 +88,8 @@ const StepView = ({ step }: { step: Step }) => {
       </TableCell>
       <TableCell>
         <WorkflowRunStatus
-          status={step.status.toUpperCase()}
-          conclusion={step.conclusion?.toUpperCase()}
+          status={step.status.toLocaleUpperCase('en-US')}
+          conclusion={step.conclusion?.toLocaleUpperCase('en-US')}
         />
       </TableCell>
     </TableRow>
@@ -209,6 +209,12 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
                 <Typography noWrap>Commit ID</Typography>
               </TableCell>
               <TableCell>{details.value?.head_commit.id}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>
+                <Typography noWrap>Workflow</Typography>
+              </TableCell>
+              <TableCell>{details.value?.name}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

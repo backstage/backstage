@@ -1,5 +1,32 @@
 # @backstage/plugin-explore
 
+## 0.3.2
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
+## 0.3.1
+
+### Patch Changes
+
+- c9b5c1eca: Standardize the tool cards in explore some more
+- 2089de76b: Make use of the new core `ItemCardGrid` and `ItemCardHeader` instead of the deprecated `ItemCard`.
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore-react@0.0.4
+
 ## 0.3.0
 
 ### Minor Changes

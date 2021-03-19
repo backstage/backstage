@@ -39,10 +39,12 @@ export type PublishResponse = {
 
 /**
  * Type to hold metadata found in techdocs_metadata.json and associated with each site
+ * @param etag ETag of the resource used to generate the site. Usually the latest commit sha of the source repository.
  */
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
+  etag: string;
 };
 
 /**

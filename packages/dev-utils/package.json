@@ -31,6 +31,7 @@
   "dependencies": {
     "@backstage/core": "^0.7.0",
     "@backstage/catalog-model": "^0.7.3",
+    "@backstage/integration-react": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.1.1",
     "@backstage/test-utils": "^0.1.8",
     "@backstage/theme": "^0.2.3",
@@ -49,7 +50,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.6.3",
     "@types/jest": "^26.0.7",
-    "@types/node": "^12.0.0"
+    "@types/node": "^14.14.32"
   },
   "files": [
     "dist"

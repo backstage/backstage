@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import * as deployments from './__fixtures__/2-deployments.json';
+import * as deployments from '../../__fixtures__/2-deployments.json';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { DeploymentDrawer } from './DeploymentDrawer';
 

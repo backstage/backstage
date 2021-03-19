@@ -81,6 +81,7 @@ import {
 } from '@backstage/plugin-rollbar';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import {
   isPluginApplicableToEntity as isBuildkiteAvailable,
@@ -278,6 +279,11 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kafka"
       element={<KafkaRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
+    />
   </EntityPageLayout>
 );
 
@@ -323,6 +329,11 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
     />
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
+    />
   </EntityPageLayout>
 );
 
@@ -337,6 +348,11 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       path="/docs/*"
       title="Docs"
       element={<DocsRouter entity={entity} />}
+    />
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
     />
   </EntityPageLayout>
 );
@@ -484,7 +500,7 @@ const DomainEntityPage = ({ entity }: { entity: Entity }) => (
 export const EntityPage = () => {
   const { entity } = useEntity();
 
-  switch (entity?.kind?.toLowerCase()) {
+  switch (entity?.kind?.toLocaleLowerCase('en-US')) {
     case 'component':
       return <ComponentEntityPage entity={entity} />;
     case 'api':

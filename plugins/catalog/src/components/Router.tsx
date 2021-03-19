@@ -63,7 +63,8 @@ const EntityPageSwitch = ({ EntityPage }: { EntityPage: ComponentType }) => {
 const OldEntityRouteRedirect = () => {
   const { optionalNamespaceAndName, '*': rest } = useParams() as any;
   const [name, namespace] = optionalNamespaceAndName.split(':').reverse();
-  const namespaceLower = namespace?.toLowerCase() ?? ENTITY_DEFAULT_NAMESPACE;
+  const namespaceLower =
+    namespace?.toLocaleLowerCase('en-US') ?? ENTITY_DEFAULT_NAMESPACE;
   const restWithSlash = rest ? `/${rest}` : '';
   return (
     <Navigate

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
+import AWS, { Credentials } from 'aws-sdk';
 import { sign } from 'aws4';
+import { ClusterDetails } from '../types/types';
 import { KubernetesAuthTranslator } from './types';
-import { ClusterDetails } from '..';
 
 const base64 = (str: string) =>
   Buffer.from(str.toString(), 'binary').toString('base64');
@@ -32,8 +32,11 @@ const makeUrlSafe = pipe([replace('+', '-'), replace('/', '_')]);
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
   async getBearerToken(clusterName: string): Promise<string> {
-    const credentialProvider = defaultProvider();
-    const credentials = await credentialProvider();
+    const credentials = AWS.config.credentials;
+    if (!(credentials instanceof Credentials)) {
+      throw new Error('no AWS credentials found.');
+    }
+    await credentials.getPromise();
     const request = {
       host: `sts.amazonaws.com`,
       path: `/?Action=GetCallerIdentity&Version=2011-06-15&X-Amz-Expires=60`,

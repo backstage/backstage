@@ -16,7 +16,8 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath, isAbsolute } from 'path';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonValue } from '@backstage/config';
 

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
+import { getCombinedClusterDetails } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
-import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
   KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  ClusterLocatorMethod,
-  ClusterDetails,
-  KubernetesClustersSupplier,
-} from '..';
-import { getCombinedClusterDetails } from '../cluster-locator';
+  CustomResource,
+} from '../types/types';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 export interface RouterOptions {
   logger: Logger;
@@ -43,7 +43,7 @@ const getServiceLocator = (
   clusterDetails: ClusterDetails[],
 ): KubernetesServiceLocator => {
   const serviceLocatorMethod = config.getString(
-    'kubernetes.serviceLocatorMethod',
+    'kubernetes.serviceLocatorMethod.type',
   ) as ServiceLocatorMethod;
 
   switch (serviceLocatorMethod) {
@@ -61,6 +61,7 @@ const getServiceLocator = (
 export const makeRouter = (
   logger: Logger,
   kubernetesFanOutHandler: KubernetesFanOutHandler,
+  clusterDetails: ClusterDetails[],
 ): express.Router => {
   const router = Router();
   router.use(express.json());
@@ -81,6 +82,14 @@ export const makeRouter = (
     }
   });
 
+  router.get('/clusters', async (_, res) => {
+    res.json({
+      items: clusterDetails.map(cd => ({
+        name: cd.name,
+        authProvider: cd.authProvider,
+      })),
+    });
+  });
   return router;
 };
 
@@ -91,25 +100,37 @@ export async function createRouter(
 
   logger.info('Initializing Kubernetes backend');
 
+  const customResources: CustomResource[] = (
+    options.config.getOptionalConfigArray('kubernetes.customResources') ?? []
+  ).map(
+    c =>
+      ({
+        group: c.getString('group'),
+        apiVersion: c.getString('apiVersion'),
+        plural: c.getString('plural'),
+      } as CustomResource),
+  );
+
+  logger.info(
+    `action=LoadingCustomResources numOfCustomResources=${customResources.length}`,
+  );
+
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
   });
-
-  const clusterLocatorMethods = options.config.getStringArray(
-    'kubernetes.clusterLocatorMethods',
-  ) as ClusterLocatorMethod[];
 
   let clusterDetails: ClusterDetails[];
 
   if (options.clusterSupplier) {
     clusterDetails = await options.clusterSupplier.getClusters();
   } else {
-    clusterDetails = await getCombinedClusterDetails(
-      clusterLocatorMethods,
-      options.config,
-    );
+    clusterDetails = await getCombinedClusterDetails(options.config);
   }
+
+  logger.info(
+    `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
+  );
 
   const serviceLocator = getServiceLocator(options.config, clusterDetails);
 
@@ -117,7 +138,8 @@ export async function createRouter(
     logger,
     fetcher,
     serviceLocator,
+    customResources,
   );
 
-  return makeRouter(logger, kubernetesFanOutHandler);
+  return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);
 }

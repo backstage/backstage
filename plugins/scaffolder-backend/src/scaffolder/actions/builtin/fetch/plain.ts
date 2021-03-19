@@ -15,7 +15,8 @@
  */
 
 import path from 'path';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchContents } from './helpers';
 import { createTemplateAction } from '../../createTemplateAction';
@@ -28,6 +29,8 @@ export function createFetchPlainAction(options: {
 
   return createTemplateAction<{ url: string; targetPath?: string }>({
     id: 'fetch:plain',
+    description:
+      "Downloads content and places it in the workspace, or optionally in a subdirectory specified by the 'targetPath' input option.",
     schema: {
       input: {
         type: 'object',

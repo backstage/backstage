@@ -79,4 +79,20 @@ describe('RadarEntry', () => {
     expect(radarDescription).toBeInTheDocument();
     expect(screen.getByText(String(minProps.value))).toBeInTheDocument();
   });
+
+  it('should render blip with url equal to # if description present', () => {
+    const withUrl = {
+      ...optionalProps,
+      url: 'http://backstage.io',
+    };
+    render(
+      <ThemeProvider theme={lightTheme}>
+        <svg>
+          <RadarEntry {...withUrl} />
+        </svg>
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByRole('button')).toHaveAttribute('href', '#');
+  });
 });

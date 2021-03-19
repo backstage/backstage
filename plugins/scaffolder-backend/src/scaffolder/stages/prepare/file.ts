@@ -16,7 +16,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { PreparerBase, PreparerOptions } from './types';
 
 export class FilePreparer implements PreparerBase {

@@ -184,12 +184,13 @@ describe('publishing with valid credentials', () => {
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json':
-            '{"site_name": "backstage", "site_description": "site_content"}',
+            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag"}',
         },
       });
       const expectedMetadata: TechDocsMetadata = {
         site_name: 'backstage',
         site_description: 'site_content',
+        etag: 'etag',
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
@@ -204,13 +205,14 @@ describe('publishing with valid credentials', () => {
 
       mockFs({
         [entityRootDir]: {
-          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content'}`,
+          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}`,
         },
       });
 
       const expectedMetadata: TechDocsMetadata = {
         site_name: 'backstage',
         site_description: 'site_content',
+        etag: 'etag',
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
@@ -342,12 +344,13 @@ describe('error reporting', () => {
       mockFs({
         [entityRootDir]: {
           'techdocs_metadata.json':
-            '{"site_name": "backstage", "site_description": "site_content"}',
+            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag"}',
         },
       });
       const expectedMetadata: TechDocsMetadata = {
         site_name: 'backstage',
         site_description: 'site_content',
+        etag: 'etag',
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),
@@ -362,13 +365,14 @@ describe('error reporting', () => {
 
       mockFs({
         [entityRootDir]: {
-          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content'}`,
+          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}`,
         },
       });
 
       const expectedMetadata: TechDocsMetadata = {
         site_name: 'backstage',
         site_description: 'site_content',
+        etag: 'etag',
       };
       expect(
         await publisher.fetchTechDocsMetadata(entityNameMock),

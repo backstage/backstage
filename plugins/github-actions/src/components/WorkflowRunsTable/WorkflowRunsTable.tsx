@@ -41,6 +41,7 @@ import { Entity } from '@backstage/catalog-model';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export type WorkflowRun = {
+  workflowName: string;
   id: string;
   message: string;
   url?: string;
@@ -85,6 +86,10 @@ const generatedColumns: TableColumn[] = [
         <p>{row.source?.commit.hash}</p>
       </Typography>
     ),
+  },
+  {
+    title: 'Workflow',
+    field: 'workflowName',
   },
   {
     title: 'Status',
@@ -186,6 +191,8 @@ export const WorkflowRunsTable = ({
     branch,
   });
 
+  const githubHost = hostname || 'github.com';
+
   return !runs ? (
     <EmptyState
       missing="data"
@@ -195,7 +202,7 @@ export const WorkflowRunsTable = ({
         <Button
           variant="contained"
           color="primary"
-          href={`https://github.com/${projectName}/actions/new`}
+          href={`https://${githubHost}/${projectName}/actions/new`}
         >
           Create new Workflow
         </Button>

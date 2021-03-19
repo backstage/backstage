@@ -6,17 +6,17 @@ description: Documentation on Software Catalog Configuration
 
 ## Processors
 
-The catalog makes use of so called processors to perform all kinds of ingestion
-tasks, such as reading raw entity data from a remote source, parsing it,
-transforming it, and validating it. These processors are configured under the
-`catalog.processors` key.
+The catalog has a concept of _processors_ to perform catalog ingestion tasks,
+such as reading raw entity data from a remote source, parsing it, transforming
+it, and validating it. These processors are configured under the
+`catalog.processors` configuration key.
 
 ### Processor: url
 
 The `url` processor is responsible for fetching entity data from files in any
-external provider like GitHub, GitLab, Bitbucket, etc. The configuration of this
-processor lives under the top-level `integrations` key, as it is used by other
-parts of Backstage too.
+external provider like GitHub, GitLab, Bitbucket, etc. Unlike other processors,
+the configuration of this processor lives under the top-level `integrations`
+key, as it is used by other parts of Backstage too.
 
 ```yaml
 integrations:

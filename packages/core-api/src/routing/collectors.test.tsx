@@ -353,24 +353,4 @@ describe('discovery', () => {
       });
     }).toThrow('Mounted routable extension must have a path');
   });
-
-  it('should not visit the same element twice', () => {
-    const element = <Extension3 path="/baz" />;
-
-    expect(() =>
-      traverseElementTree({
-        root: (
-          <MemoryRouter>
-            <Extension1 path="/foo">{element}</Extension1>
-            <Extension2 path="/bar">{element}</Extension2>
-          </MemoryRouter>
-        ),
-        discoverers: [childDiscoverer, routeElementDiscoverer],
-        collectors: {
-          routes: routePathCollector,
-          routeParents: routeParentCollector,
-        },
-      }),
-    ).toThrow(`Visited element Extension(Component) twice`);
-  });
 });

@@ -60,15 +60,18 @@ export function createRoutableExtension<
   });
 }
 
+// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+// making it impossible to make the usage of children type safe.
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element
+  T extends (props: any) => JSX.Element | null
 >(options: { component: ComponentLoader<T> }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
 }
 
 export function createReactExtension<
-  T extends (props: any) => JSX.Element
+  T extends (props: any) => JSX.Element | null
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { CatalogApi } from '@backstage/catalog-client';
 import { getEntityName } from '@backstage/catalog-model';
@@ -31,6 +31,8 @@ export function createCatalogRegisterAction(options: {
     | { repoContentsUrl: string; catalogInfoPath?: string }
   >({
     id: 'catalog:register',
+    description:
+      'Registers entities from a catalog descriptor file in the workspace into the software catalog.',
     schema: {
       input: {
         oneOf: [

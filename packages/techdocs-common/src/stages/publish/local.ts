@@ -141,7 +141,7 @@ export class LocalPublish implements PublisherBase {
 
     // Check if the file exists
     try {
-      fs.access(indexHtmlPath, fs.constants.F_OK);
+      await fs.access(indexHtmlPath, fs.constants.F_OK);
       return true;
     } catch (err) {
       return false;

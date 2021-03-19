@@ -112,23 +112,19 @@ When the installation is complete you can open the app folder and start the app.
 
 ```bash
 cd my-backstage-app
-yarn start
+yarn dev
 ```
 
-_When `yarn start` is ready it should open up a browser window displaying your
-app, if not you can navigate to `http://localhost:3000`._
-
-In most cases you will want to start the backend as well, as it is required for
-the catalog to work, along with many other plugins.
-
-To start the backend, open a separate terminal session and run the following in
-the root directory:
-
-```bash
-yarn workspace backend start
-```
+The `yarn dev` command will run both the frontend and backend as separate
+processes (named `[0]` and `[1]`) in the same window. When the command finishes
+running, it should open up a browser window displaying your app. If not, you can
+open a browser and directly navigate to the frontend at `http://localhost:3000`.
 
 Now you're free to hack away on your own Backstage installation!
+
+As you get more experienced with the app, in future you can run just the
+frontend with `yarn start` in one window, and the backend with
+`yarn start-backend` in a different window.
 
 ## Linking in local Backstage packages
 
@@ -156,7 +152,7 @@ yarn install
 
 With this in place you can now modify the `@backstage/core` package within the
 main repo, and have those changes be reflected and tested in your app. Simply
-run your app using `yarn start` as normal.
+run your app using `yarn dev` (or `yarn start` for just frontend) as normal.
 
 Note that for backend packages you need to make sure that linked packages are
 not dependencies of any non-linked package. If you for example want to work on

@@ -36,6 +36,8 @@ import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as core } from '../../../core/package.json';
+import { version as errors } from '../../../errors/package.json';
+import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
 
@@ -67,6 +69,8 @@ export const packageVersions = {
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core': core,
+  '@backstage/errors': errors,
+  '@backstage/integration-react': integrationReact,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,

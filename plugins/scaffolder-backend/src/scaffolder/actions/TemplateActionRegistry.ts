@@ -15,7 +15,7 @@
  */
 
 import { InputBase, TemplateAction } from './types';
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 
 export class TemplateActionRegistry {
   private readonly actions = new Map<string, TemplateAction<any>>();
@@ -37,5 +37,9 @@ export class TemplateActionRegistry {
       );
     }
     return action;
+  }
+
+  list(): TemplateAction<any>[] {
+    return [...this.actions.values()];
   }
 }

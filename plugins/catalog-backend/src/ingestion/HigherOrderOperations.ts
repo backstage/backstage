@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Location, LocationSpec } from '@backstage/catalog-model';
+import {
+  Location,
+  LocationSpec,
+  stringifyLocationReference,
+} from '@backstage/catalog-model';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
@@ -127,14 +131,18 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     for (const { data: location } of locations) {
       logger.info(
-        `Locations Refresh: Refreshing location ${location.type}:${location.target}`,
+        `Locations Refresh: Refreshing location ${stringifyLocationReference(
+          location,
+        )}`,
       );
       try {
         await this.refreshSingleLocation(location, logger);
         await this.locationsCatalog.logUpdateSuccess(location.id, undefined);
       } catch (e) {
         logger.warn(
-          `Locations Refresh: Failed to refresh location ${location.type}:${location.target}, ${e.stack}`,
+          `Locations Refresh: Failed to refresh location ${stringifyLocationReference(
+            location,
+          )}, ${e.stack}`,
         );
         await this.locationsCatalog.logUpdateFailure(location.id, e);
       }
@@ -162,14 +170,18 @@ export class HigherOrderOperations implements HigherOrderOperation {
 
     for (const item of readerOutput.errors) {
       logger.warn(
-        `Failed item in location ${item.location.type}:${item.location.target}, ${item.error.stack}`,
+        `Failed item in location ${stringifyLocationReference(
+          item.location,
+        )}, ${item.error.stack}`,
       );
     }
 
     logger.info(
-      `Read ${readerOutput.entities.length} entities from location ${
-        location.type
-      }:${location.target} in ${durationText(startTimestamp)}`,
+      `Read ${
+        readerOutput.entities.length
+      } entities from location ${stringifyLocationReference(
+        location,
+      )} in ${durationText(startTimestamp)}`,
     );
 
     startTimestamp = process.hrtime();
@@ -198,9 +210,11 @@ export class HigherOrderOperations implements HigherOrderOperation {
     );
 
     logger.info(
-      `Wrote ${readerOutput.entities.length} entities from location ${
-        location.type
-      }:${location.target} in ${durationText(startTimestamp)}`,
+      `Wrote ${
+        readerOutput.entities.length
+      } entities from location ${stringifyLocationReference(
+        location,
+      )} in ${durationText(startTimestamp)}`,
     );
   }
 }

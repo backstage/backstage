@@ -16,7 +16,7 @@
 
 export type ApiRef<T> = {
   id: string;
-  description: string;
+  description?: string;
   T: T;
 };
 

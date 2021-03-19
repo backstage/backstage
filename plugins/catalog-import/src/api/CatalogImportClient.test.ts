@@ -52,7 +52,10 @@ jest.mock('./GitHub', () => ({
 }));
 
 import { ConfigReader, OAuthApi, UrlPatternDiscovery } from '@backstage/core';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+import {
+  GitHubIntegrationConfig,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { msw } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
@@ -87,7 +90,7 @@ describe('CatalogImportClient', () => {
     },
   };
 
-  const configApi = new ConfigReader({});
+  const scmIntegrationsApi = ScmIntegrations.fromConfig(new ConfigReader({}));
 
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
@@ -105,7 +108,7 @@ describe('CatalogImportClient', () => {
     catalogImportClient = new CatalogImportClient({
       discoveryApi,
       githubAuthApi,
-      configApi,
+      scmIntegrationsApi,
       identityApi,
       catalogApi,
     });
@@ -167,7 +170,11 @@ describe('CatalogImportClient', () => {
         catalogImportClient.analyzeUrl(
           'https://github.com/backstage/backstage',
         ),
-      ).rejects.toThrow(new Error('Invalid url'));
+      ).rejects.toThrow(
+        new Error(
+          'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+        ),
+      );
     });
 
     it('should find locations from github', async () => {
@@ -301,7 +308,7 @@ describe('CatalogImportClient', () => {
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
           fileContent: 'some content',
-          title: 'A title',
+          title: 'A title/message',
           body: 'A body',
         }),
       ).resolves.toEqual({
@@ -325,7 +332,7 @@ describe('CatalogImportClient', () => {
         owner: 'backstage',
         repo: 'backstage',
         path: 'catalog-info.yaml',
-        message: 'Add catalog-info.yaml config file',
+        message: 'A title/message',
         content: 'c29tZSBjb250ZW50',
         branch: 'backstage-integration',
       });
@@ -334,7 +341,7 @@ describe('CatalogImportClient', () => {
       ).toEqual({
         owner: 'backstage',
         repo: 'backstage',
-        title: 'A title',
+        title: 'A title/message',
         head: 'backstage-integration',
         body: 'A body',
         base: 'main',

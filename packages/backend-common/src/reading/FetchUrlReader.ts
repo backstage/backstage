@@ -15,7 +15,7 @@
  */
 
 import fetch from 'cross-fetch';
-import { NotFoundError } from '../errors';
+import { NotFoundError } from '@backstage/errors';
 import {
   ReaderFactory,
   ReadTreeResponse,

@@ -15,11 +15,31 @@
  */
 
 import { Entity, EntityRelationSpec, Location } from '@backstage/catalog-model';
-import type { EntityFilter } from '../database';
+import { EntityFilter, EntityPagination } from '../database/types';
 
 //
 // Entities
 //
+
+export type PageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
+
+export type EntitiesRequest = {
+  filter?: EntityFilter;
+  fields?: (entity: Entity) => Entity;
+  pagination?: EntityPagination;
+};
+
+export type EntitiesResponse = {
+  entities: Entity[];
+  pageInfo: PageInfo;
+};
 
 export type EntityUpsertRequest = {
   entity: Entity;
@@ -35,9 +55,9 @@ export type EntitiesCatalog = {
   /**
    * Fetch entities.
    *
-   * @param filter A filter to apply when reading
+   * @param request Request options
    */
-  entities(filter?: EntityFilter): Promise<Entity[]>;
+  entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
 
   /**
    * Removes a single entity.

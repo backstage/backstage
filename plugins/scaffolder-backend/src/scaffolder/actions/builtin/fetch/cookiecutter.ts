@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import Docker from 'dockerode';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject } from '@backstage/config';
 import { TemplaterBuilder, TemplaterValues } from '../../../stages/templater';
@@ -38,6 +39,8 @@ export function createFetchCookiecutterAction(options: {
     values: JsonObject;
   }>({
     id: 'fetch:cookiecutter',
+    description:
+      'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
     schema: {
       input: {
         type: 'object',

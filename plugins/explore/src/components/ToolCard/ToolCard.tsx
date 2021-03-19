@@ -17,6 +17,7 @@
 import { ExploreTool } from '@backstage/plugin-explore-react';
 import { BackstageTheme } from '@backstage/theme';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -32,14 +33,6 @@ import React from 'react';
 // TODO: Align styling between Domain and ToolCard
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
-  card: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  cardActions: {
-    flexGrow: 1,
-    alignItems: 'flex-end',
-  },
   media: {
     height: 128,
   },
@@ -59,13 +52,6 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
   beta: {
     backgroundColor: theme.palette.status.warning,
   },
-  domains: {
-    position: 'relative',
-    top: theme.spacing(2),
-  },
-  spaceBetween: {
-    justifyContent: 'space-between',
-  },
 }));
 
 type Props = {
@@ -76,10 +62,10 @@ type Props = {
 export const ToolCard = ({ card, objectFit }: Props) => {
   const classes = useStyles();
 
-  const { title, description, url, image, lifecycle, newsTag, tags } = card;
+  const { title, description, url, image, lifecycle, tags } = card;
 
   return (
-    <Card key={title} className={classes.card}>
+    <Card key={title}>
       <CardMedia
         image={image}
         title={title}
@@ -88,35 +74,30 @@ export const ToolCard = ({ card, objectFit }: Props) => {
         })}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5">
+        <Typography paragraph variant="h5">
           {title}{' '}
-          {lifecycle && lifecycle.toLowerCase() !== 'ga' && (
+          {lifecycle && lifecycle.toLocaleLowerCase('en-US') !== 'ga' && (
             <Chip
+              size="small"
               label={lifecycle}
               className={classNames(
                 classes.lifecycle,
-                classes[lifecycle.toLowerCase()],
+                classes[lifecycle.toLocaleLowerCase('en-US')],
               )}
             />
           )}
         </Typography>
-        <Typography paragraph>
-          {description || 'Description missing'}
-        </Typography>
+        <Typography>{description || 'Description missing'}</Typography>
         {tags && (
-          <div className={classes.domains}>
+          <Box marginTop={2}>
             {tags.map((item, idx) => (
-              <Chip key={idx} label={item} />
+              <Chip size="small" key={idx} label={item} />
             ))}
-          </div>
+          </Box>
         )}
       </CardContent>
-      <CardActions
-        className={classNames(classes.cardActions, {
-          [classes.spaceBetween]: newsTag,
-        })}
-      >
-        <Button size="small" color="primary" href={url} disabled={!url}>
+      <CardActions>
+        <Button color="primary" href={url} disabled={!url}>
           Explore
         </Button>
       </CardActions>

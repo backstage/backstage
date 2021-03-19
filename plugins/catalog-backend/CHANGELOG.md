@@ -1,5 +1,55 @@
 # @backstage/plugin-catalog-backend
 
+## 0.6.6
+
+### Patch Changes
+
+- 010aed784: Add `AnnotateScmSlugEntityProcessor` that automatically adds the
+  `github.com/project-slug` annotation for components coming from GitHub.
+
+  The processor is optional and not automatically registered in the catalog
+  builder. To add it to your instance, add it to your `CatalogBuilder` using
+  `addProcessor()`:
+
+  ```typescript
+  const builder = new CatalogBuilder(env);
+  builder.addProcessor(AnnotateScmSlugEntityProcessor.fromConfig(env.config));
+  ```
+
+- 4bc98a5b9: Refactor CodeOwnersProcessor to use ScmIntegrations
+- d2f4efc5d: Add location to thrown exception when parsing YAML
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.6.5
+
+### Patch Changes
+
+- 9ef5a126d: Allow CodeOwnersProcessor to set `spec.owner` for `System`, `Resource`, and `Domain` entity kinds.
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 2ef5bc7ea: Implement proper AWS Credentials precedence with assume-role and explicit credentials
+- 761698831: Bump to the latest version of the Knex library.
+- 93c62c755: Move logic for generating URLs for the view, edit and source links of catalog
+  entities from the catalog frontend into the backend. This is done using the
+  existing support for the `backstage.io/view-url`, `backstage.io/edit-url` and
+  `backstage.io/source-location` annotations that are now filled by the
+  `AnnotateLocationEntityProcessor`. If these annotations are missing or empty,
+  the UI disables the related controls.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.6.4
 
 ### Patch Changes

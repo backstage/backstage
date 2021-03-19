@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ConflictError,
-  InputError,
-  NotFoundError,
-} from '@backstage/backend-common';
+import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import {
   Entity,
   EntityName,
@@ -30,7 +26,7 @@ import {
   Location,
   parseEntityName,
 } from '@backstage/catalog-model';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
 import { buildEntitySearch } from './search';
@@ -39,13 +35,16 @@ import {
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
   DbEntitiesRelationsRow,
+  DbEntitiesRequest,
+  DbEntitiesResponse,
   DbEntitiesRow,
   DbEntitiesSearchRow,
   DbEntityRequest,
   DbEntityResponse,
   DbLocationsRow,
   DbLocationsRowWithStatus,
-  EntityFilter,
+  DbPageInfo,
+  EntityPagination,
   Transaction,
 } from './types';
 
@@ -99,7 +98,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
@@ -149,7 +148,7 @@ export class CommonDatabase implements Database {
     matchingEtag?: string,
     matchingGeneration?: number,
   ): Promise<DbEntityResponse> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const { uid } = request.entity.metadata;
     if (!uid) {
@@ -211,13 +210,13 @@ export class CommonDatabase implements Database {
 
   async entities(
     txOpaque: Transaction,
-    filter?: EntityFilter,
-  ): Promise<DbEntityResponse[]> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    request?: DbEntitiesRequest,
+  ): Promise<DbEntitiesResponse> {
+    const tx = txOpaque as Knex.Transaction;
 
     let entitiesQuery = tx<DbEntitiesRow>('entities');
 
-    for (const singleFilter of filter?.anyOf ?? []) {
+    for (const singleFilter of request?.filter?.anyOf ?? []) {
       entitiesQuery = entitiesQuery.orWhere(function singleFilterFn() {
         for (const { key, matchValueIn } of singleFilter.allOf) {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
@@ -239,24 +238,50 @@ export class CommonDatabase implements Database {
                 }
               }
             });
-
           this.andWhere('id', 'in', matchQuery);
         }
       });
     }
 
-    const rows = await entitiesQuery
+    entitiesQuery = entitiesQuery
       .select('entities.*')
       .orderBy('full_name', 'asc');
 
-    return this.toEntityResponses(tx, rows);
+    const { limit, offset } = parsePagination(request?.pagination);
+    if (limit !== undefined) {
+      entitiesQuery = entitiesQuery.limit(limit + 1);
+    }
+    if (offset !== undefined) {
+      entitiesQuery = entitiesQuery.offset(offset);
+    }
+
+    let rows = await entitiesQuery;
+
+    let pageInfo: DbPageInfo;
+    if (limit === undefined || rows.length <= limit) {
+      pageInfo = { hasNextPage: false };
+    } else {
+      rows = rows.slice(0, -1);
+      pageInfo = {
+        hasNextPage: true,
+        endCursor: stringifyPagination({
+          limit,
+          offset: (offset ?? 0) + limit,
+        }),
+      };
+    }
+
+    return {
+      entities: await this.toEntityResponses(tx, rows),
+      pageInfo,
+    };
   }
 
   async entityByName(
     txOpaque: Transaction,
     name: EntityName,
   ): Promise<DbEntityResponse | undefined> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const rows = await tx<DbEntitiesRow>('entities')
       .where({
@@ -275,7 +300,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     uid: string,
   ): Promise<DbEntityResponse | undefined> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const rows = await tx<DbEntitiesRow>('entities')
       .where({ id: uid })
@@ -289,7 +314,7 @@ export class CommonDatabase implements Database {
   }
 
   async removeEntityByUid(txOpaque: Transaction, uid: string): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
 
@@ -303,7 +328,7 @@ export class CommonDatabase implements Database {
     originatingEntityId: string,
     relations: EntityRelationSpec[],
   ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
     const relationRows = this.toRelationRows(originatingEntityId, relations);
 
     await tx<DbEntitiesRelationsRow>('entities_relations')
@@ -316,7 +341,7 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     location: Location,
   ): Promise<DbLocationsRow> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const row: DbLocationsRow = {
       id: location.id,
@@ -328,7 +353,7 @@ export class CommonDatabase implements Database {
   }
 
   async removeLocation(txOpaque: Transaction, id: string): Promise<void> {
-    const tx = txOpaque as Knex.Transaction<any, any>;
+    const tx = txOpaque as Knex.Transaction;
 
     const locations = await tx<DbLocationsRow>('locations')
       .where({ id })
@@ -467,7 +492,7 @@ export class CommonDatabase implements Database {
   }
 
   private async toEntityResponses(
-    tx: Knex.Transaction<any, any>,
+    tx: Knex.Transaction,
     rows: DbEntitiesRow[],
   ): Promise<DbEntityResponse[]> {
     // TODO(Rugvip): This is here because it's simple for now, but we likely
@@ -501,7 +526,7 @@ export class CommonDatabase implements Database {
   // Returns a mapping from e.g. component:default/foo to the relations whose
   // source_full_name matches that.
   private async getRelationsPerFullName(
-    tx: Knex.Transaction<any, any>,
+    tx: Knex.Transaction,
     sourceFullNames: string[],
   ): Promise<Record<string, DbEntitiesRelationsRow[]>> {
     const batches = lodash.chunk(lodash.uniq(sourceFullNames), 500);
@@ -521,6 +546,46 @@ export class CommonDatabase implements Database {
       r => r.source_full_name,
     );
   }
+}
+
+function parsePagination(
+  input?: EntityPagination,
+): { limit?: number; offset?: number } {
+  if (!input) {
+    return {};
+  }
+
+  let { limit, offset } = input;
+
+  if (input.after !== undefined) {
+    let cursor;
+    try {
+      const json = Buffer.from(input.after, 'base64').toString('utf8');
+      cursor = JSON.parse(json);
+    } catch {
+      throw new InputError('Malformed after cursor, could not be parsed');
+    }
+    if (cursor.limit !== undefined) {
+      if (!Number.isInteger(cursor.limit)) {
+        throw new InputError('Malformed after cursor, limit was not an number');
+      }
+      limit = cursor.limit;
+    }
+    if (cursor.offset !== undefined) {
+      if (!Number.isInteger(cursor.offset)) {
+        throw new InputError('Malformed after cursor, offset was not a number');
+      }
+      offset = cursor.offset;
+    }
+  }
+
+  return { limit, offset };
+}
+
+function stringifyPagination(input: { limit: number; offset: number }) {
+  const json = JSON.stringify({ limit: input.limit, offset: input.offset });
+  const base64 = Buffer.from(json, 'utf8').toString('base64');
+  return base64;
 }
 
 function deduplicateRelations(

@@ -59,7 +59,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CatalogPageContents = () => {
+export type CatalogPageProps = {
+  initiallySelectedFilter?: string;
+};
+
+const CatalogPageContents = (props: CatalogPageProps) => {
   const styles = useStyles();
   const {
     loading,
@@ -74,10 +78,13 @@ const CatalogPageContents = () => {
   const errorApi = useApi(errorApiRef);
   const { isStarredEntity } = useStarredEntities();
   const [selectedTab, setSelectedTab] = useState<string>();
-  const [selectedSidebarItem, setSelectedSidebarItem] = useState<
-    CatalogFilterType
-  >();
+  const [
+    selectedSidebarItem,
+    setSelectedSidebarItem,
+  ] = useState<CatalogFilterType>();
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+  const initiallySelectedFilter =
+    selectedSidebarItem?.id ?? props.initiallySelectedFilter ?? 'owned';
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const addMockData = useCallback(async () => {
     try {
@@ -196,12 +203,13 @@ const CatalogPageContents = () => {
               onChange={({ label, id }) =>
                 setSelectedSidebarItem({ label, id })
               }
-              initiallySelected={selectedSidebarItem?.id ?? 'owned'}
+              initiallySelected={initiallySelectedFilter}
             />
             <ResultsFilter availableTags={availableTags} />
           </div>
           <CatalogTable
             titlePreamble={selectedSidebarItem?.label ?? ''}
+            view={selectedTab}
             entities={matchingEntities}
             loading={loading}
             error={error}
@@ -212,8 +220,8 @@ const CatalogPageContents = () => {
   );
 };
 
-export const CatalogPage = () => (
+export const CatalogPage = (props: CatalogPageProps) => (
   <EntityFilterGroupsProvider>
-    <CatalogPageContents />
+    <CatalogPageContents {...props} />
   </EntityFilterGroupsProvider>
 );

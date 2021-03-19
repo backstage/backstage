@@ -19,15 +19,17 @@ import {
   EntityName,
   Location,
   LOCATION_ANNOTATION,
+  stringifyLocationReference,
 } from '@backstage/catalog-model';
+import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
   AddLocationResponse,
-  CatalogRequestOptions,
   CatalogApi,
   CatalogEntitiesRequest,
   CatalogListResponse,
+  CatalogRequestOptions,
   DiscoveryApi,
 } from './types';
 
@@ -135,7 +137,7 @@ export class CatalogClient implements CatalogApi {
     );
     return all
       .map(r => r.data)
-      .find(l => locationCompound === `${l.type}:${l.target}`);
+      .find(l => locationCompound === stringifyLocationReference(l));
   }
 
   async removeEntityByUid(
@@ -152,10 +154,7 @@ export class CatalogClient implements CatalogApi {
       },
     );
     if (!response.ok) {
-      const payload = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
-      );
+      throw await ResponseError.fromResponse(response);
     }
     return undefined;
   }
@@ -176,9 +175,7 @@ export class CatalogClient implements CatalogApi {
     });
 
     if (!response.ok) {
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();
@@ -199,10 +196,7 @@ export class CatalogClient implements CatalogApi {
       if (response.status === 404) {
         return undefined;
       }
-
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();

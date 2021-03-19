@@ -24,6 +24,7 @@ import privateExports, {
   RouteRef,
   ExternalRouteRef,
   attachComponentData,
+  createRouteRef,
 } from '@backstage/core-api';
 import { RenderResult } from '@testing-library/react';
 import { renderWithEffects } from '@backstage/test-utils-core';
@@ -65,6 +66,13 @@ type TestAppOptions = {
   mountedRoutes?: { [path: string]: RouteRef | ExternalRouteRef };
 };
 
+function isExternalRouteRef(
+  routeRef: RouteRef | ExternalRouteRef,
+): routeRef is ExternalRouteRef {
+  // TODO(Rugvip): Least ugly workaround for now, but replace :D
+  return String(routeRef).includes('{type=external,');
+}
+
 /**
  * Wraps a component inside a Backstage test app, providing a mocked theme
  * and app context, along with mocked APIs.
@@ -77,6 +85,7 @@ export function wrapInTestApp(
   options: TestAppOptions = {},
 ): ReactElement {
   const { routeEntries = ['/'] } = options;
+  const boundRoutes = new Map<ExternalRouteRef, RouteRef>();
 
   const app = new PrivateAppImpl({
     apis: [],
@@ -99,7 +108,16 @@ export function wrapInTestApp(
       },
     ],
     defaultApis: mockApis,
-    bindRoutes: () => {},
+    bindRoutes: ({ bind }) => {
+      for (const [externalRef, absoluteRef] of boundRoutes) {
+        bind(
+          { ref: externalRef },
+          {
+            ref: absoluteRef,
+          },
+        );
+      }
+    },
   });
 
   let Wrapper: ComponentType;
@@ -112,7 +130,16 @@ export function wrapInTestApp(
   const routeElements = Object.entries(options.mountedRoutes ?? {}).map(
     ([path, routeRef]) => {
       const Page = () => <div>Mounted at {path}</div>;
-      attachComponentData(Page, 'core.mountPoint', routeRef);
+
+      // Allow external route refs to be bound to paths as well, for convenience.
+      // We work around it by creating and binding an absolute ref to the external one.
+      if (isExternalRouteRef(routeRef)) {
+        const absoluteRef = createRouteRef({ id: 'id' });
+        boundRoutes.set(routeRef, absoluteRef);
+        attachComponentData(Page, 'core.mountPoint', absoluteRef);
+      } else {
+        attachComponentData(Page, 'core.mountPoint', routeRef);
+      }
       return <Route key={path} path={path} element={<Page />} />;
     },
   );

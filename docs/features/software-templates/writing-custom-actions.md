@@ -16,10 +16,11 @@ alongside your `backend` package in `packages/backend`.
 Let's create a simple action that adds a new file and some contents that are
 passed as `input` to the function.
 
-In `packages/backend/src/actions/custom.ts` we can create a new action.
+In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
+new action.
 
 ```ts
-import { createTemplateAction } from '../../createTemplateAction';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
 import fs from 'fs-extra';
 
 export const createNewFileAction = () => {
@@ -35,7 +36,7 @@ export const createNewFileAction = () => {
             title: 'Contents',
             description: 'The contents of the file',
           },
-          contents: {
+          filename: {
             type: 'string',
             title: 'Filename',
             description: 'The filename of the file that will be created',
@@ -46,7 +47,7 @@ export const createNewFileAction = () => {
     async handler(ctx) {
       await fs.outputFile(
         `${ctx.workspacePath}/${ctx.input.filename}`,
-        ctx.input.content,
+        ctx.input.contents,
       );
     },
   });

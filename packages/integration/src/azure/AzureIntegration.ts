@@ -15,7 +15,7 @@
  */
 
 import parseGitUrl from 'git-url-parse';
-import { basicIntegrations } from '../helpers';
+import { basicIntegrations, isValidUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import { AzureIntegrationConfig, readAzureIntegrationConfigs } from './config';
 
@@ -49,16 +49,16 @@ export class AzureIntegration implements ScmIntegration {
    *
    * Example base URL: https://dev.azure.com/organization/project/_git/repository?path=%2Fcatalog-info.yaml
    */
-  resolveUrl(options: { url: string; base: string }): string {
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
     const { url, base } = options;
 
     // If we can parse the url, it is absolute - then return it verbatim
-    try {
-      // eslint-disable-next-line no-new
-      new URL(url);
+    if (isValidUrl(url)) {
       return url;
-    } catch {
-      // Ignore intentionally - looks like a relative path
     }
 
     const parsed = parseGitUrl(base);
@@ -76,6 +76,19 @@ export class AzureIntegration implements ScmIntegration {
     const newUrl = new URL(base);
     newUrl.searchParams.set('path', updatedPath);
 
+    if (options.lineNumber) {
+      newUrl.searchParams.set('line', String(options.lineNumber));
+      newUrl.searchParams.set('lineEnd', String(options.lineNumber + 1));
+      newUrl.searchParams.set('lineStartColumn', '1');
+      newUrl.searchParams.set('lineEndColumn', '1');
+    }
+
     return newUrl.toString();
+  }
+
+  resolveEditUrl(url: string): string {
+    // TODO: Implement edit URL for Azure, fallback to view url as I don't know
+    // how azure works.
+    return url;
   }
 }

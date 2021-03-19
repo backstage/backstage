@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
@@ -32,6 +32,8 @@ export function createPublishAzureAction(options: {
     description?: string;
   }>({
     id: 'publish:azure',
+    description:
+      'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
     schema: {
       input: {
         type: 'object',

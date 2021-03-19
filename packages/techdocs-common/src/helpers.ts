@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Git, InputError, UrlReader } from '@backstage/backend-common';
-import { Entity } from '@backstage/catalog-model';
+import { Git, UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
+import { Entity, parseLocationReference } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import parseGitUrl from 'git-url-parse';
@@ -36,28 +37,15 @@ export const parseReferenceAnnotation = (
   entity: Entity,
 ): ParsedLocationAnnotation => {
   const annotation = entity.metadata.annotations?.[annotationName];
-
   if (!annotation) {
     throw new InputError(
       `No location annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 
-  // split on the first colon for the protocol and the rest after the first split
-  // is the location.
-  const [type, target] = annotation.split(/:(.+)/) as [
-    RemoteProtocol?,
-    string?,
-  ];
-
-  if (!type || !target) {
-    throw new InputError(
-      `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
-    );
-  }
-
+  const { type, target } = parseLocationReference(annotation);
   return {
-    type,
+    type: type as RemoteProtocol,
     target,
   };
 };
@@ -77,8 +65,9 @@ export const getLocationForEntity = (
     case 'url':
       return { type, target };
     case 'dir':
-      if (path.isAbsolute(target)) return { type, target };
-
+      if (path.isAbsolute(target)) {
+        return { type, target };
+      }
       return parseReferenceAnnotation(
         'backstage.io/managed-by-location',
         entity,

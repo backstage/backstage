@@ -17,9 +17,11 @@
 import React from 'react';
 import { AsyncState } from 'react-use/lib/useAsync';
 import CodeIcon from '@material-ui/icons/Code';
-import { EntityName } from '@backstage/catalog-model';
-import { Header, HeaderLabel, Link } from '@backstage/core';
+import { EntityName, parseEntityName } from '@backstage/catalog-model';
+import { Header, HeaderLabel, Link, useRouteRef } from '@backstage/core';
 import { TechDocsMetadata } from '../../types';
+import { EntityRefLink, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { rootRouteRef } from '../../plugin';
 
 type TechDocsPageHeaderProps = {
   entityId: EntityName;
@@ -41,7 +43,7 @@ export const TechDocsPageHeader = ({
   const { value: techdocsMetadataValues } = techdocsMetadata;
   const { value: entityMetadataValues } = entityMetadata;
 
-  const { kind, name } = entityId;
+  const { name } = entityId;
 
   const { site_name: siteName, site_description: siteDescription } =
     techdocsMetadataValues || {};
@@ -51,19 +53,41 @@ export const TechDocsPageHeader = ({
     spec: { owner, lifecycle },
   } = entityMetadataValues || { spec: {} };
 
-  const componentLink = `/catalog/${kind}/${name}`;
+  const componentLink = useRouteRef(entityRouteRef);
+
+  let ownerEntity;
+  if (owner) {
+    ownerEntity = parseEntityName(owner, { defaultKind: 'group' });
+  }
+
+  const docsRootLink = useRouteRef(rootRouteRef)();
 
   const labels = (
     <>
       <HeaderLabel
         label="Component"
         value={
-          <Link style={{ color: '#fff' }} to={componentLink}>
+          <Link style={{ color: '#fff' }} to={componentLink(entityId)}>
             {name}
           </Link>
         }
       />
-      {owner ? <HeaderLabel label="Site Owner" value={owner} /> : null}
+      {owner ? (
+        <HeaderLabel
+          label="Owner"
+          value={
+            ownerEntity ? (
+              <EntityRefLink
+                style={{ color: '#fff' }}
+                entityRef={ownerEntity}
+                defaultKind="group"
+              />
+            ) : (
+              owner
+            )
+          }
+        />
+      ) : null}
       {lifecycle ? <HeaderLabel label="Lifecycle" value={lifecycle} /> : null}
       {locationMetadata &&
       locationMetadata.type !== 'dir' &&
@@ -91,8 +115,8 @@ export const TechDocsPageHeader = ({
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
-      type={name}
-      typeLink={componentLink}
+      type="Docs"
+      typeLink={docsRootLink}
     >
       {labels}
     </Header>

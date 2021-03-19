@@ -1,5 +1,74 @@
 # example-backend
 
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies [010aed784]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [e7baa0d2e]
+- Updated dependencies [8b4f7e42a]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [4bc98a5b9]
+- Updated dependencies [d2f4efc5d]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [1f98a6ff8]
+- Updated dependencies [8b5e59750]
+- Updated dependencies [8686eb38c]
+  - @backstage/plugin-catalog-backend@0.6.6
+  - @backstage/catalog-client@0.3.8
+  - @backstage/plugin-techdocs-backend@0.6.5
+  - @backstage/plugin-scaffolder-backend@0.9.2
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+  - @backstage/plugin-auth-backend@0.3.5
+  - @backstage/plugin-kubernetes-backend@0.3.1
+  - example-app@0.2.20
+  - @backstage/plugin-app-backend@0.3.10
+  - @backstage/plugin-graphql-backend@0.1.6
+  - @backstage/plugin-kafka-backend@0.2.2
+  - @backstage/plugin-proxy-backend@0.2.6
+  - @backstage/plugin-rollbar-backend@0.1.8
+  - @backstage/plugin-todo-backend@0.1.1
+
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies [5d7834baf]
+- Updated dependencies [9ef5a126d]
+- Updated dependencies [d7245b733]
+- Updated dependencies [393b623ae]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [c532c1682]
+- Updated dependencies [761698831]
+- Updated dependencies [aa095e469]
+- Updated dependencies [761698831]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9581ff0b4]
+- Updated dependencies [93c62c755]
+- Updated dependencies [02d78290a]
+- Updated dependencies [a501128db]
+- Updated dependencies [8de9963f0]
+- Updated dependencies [5f1b7ea35]
+- Updated dependencies [2e57922de]
+- Updated dependencies [e2c1b3fb6]
+  - @backstage/plugin-kubernetes-backend@0.3.0
+  - @backstage/plugin-catalog-backend@0.6.5
+  - @backstage/backend-common@0.5.6
+  - @backstage/plugin-app-backend@0.3.9
+  - @backstage/plugin-scaffolder-backend@0.9.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/plugin-techdocs-backend@0.6.4
+  - @backstage/plugin-auth-backend@0.3.4
+  - example-app@0.2.19
+
 ## 0.2.18
 
 ### Patch Changes

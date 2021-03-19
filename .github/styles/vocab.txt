@@ -5,6 +5,7 @@ Avro
 Balachandran
 Bigtable
 Billett
+Bitrise
 Blackbox
 Chai
 Changesets
@@ -32,6 +33,7 @@ Grafana
 GraphQL
 Gustavsson
 Hackathons
+Haughwout
 Henneke
 Heroku
 Hostname
@@ -41,7 +43,9 @@ JavaScript
 Kaewkasi
 Knex
 Kumar
+Leasot
 Lerna
+Lindgren
 Lundberg
 Luxon
 Malus
@@ -57,6 +61,7 @@ Oldsberg
 Olle
 Onboarding
 Patrik
+Peloton
 Phoen
 Platformize
 Pomaceous
@@ -65,6 +70,7 @@ Protobuf
 Proxying
 Raghunandan
 Readme
+rebase
 Recharts
 Redash
 Repo
@@ -86,6 +92,7 @@ Telenor
 Templater
 Templaters
 Thauer
+todo
 Tolerations
 Tuite
 Trendyol
@@ -237,6 +244,7 @@ ruleset
 sam
 scaffolded
 scaffolder
+seb
 semlas
 semver
 sourcemaps
@@ -250,6 +258,7 @@ stefanalund
 subcomponent
 subcomponents
 subkey
+subroutes
 subtree
 superfences
 superset
@@ -260,6 +269,7 @@ templated
 templater
 templaters
 theia
+thumbsup
 toc
 tolerations
 toolchain

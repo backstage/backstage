@@ -32,6 +32,7 @@
           "getting-started/deployment-other"
         ]
       },
+      "getting-started/keeping-backstage-updated",
       "getting-started/contributors"
     ],
     "CLI": ["cli/index", "cli/commands"],

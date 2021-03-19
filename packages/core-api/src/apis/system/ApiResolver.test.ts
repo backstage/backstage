@@ -19,8 +19,14 @@ import { createApiRef } from './ApiRef';
 import { ApiFactoryRegistry } from './ApiFactoryRegistry';
 
 const aRef = createApiRef<number>({ id: 'a', description: '' });
+const otherARef = createApiRef<number>({ id: 'a', description: 'other' });
 const bRef = createApiRef<string>({ id: 'b', description: '' });
+const otherBRef = createApiRef<string>({ id: 'b', description: 'other' });
 const cRef = createApiRef<{ x: string }>({ id: 'c', description: '' });
+const otherCRef = createApiRef<{ x: string }>({
+  id: 'c',
+  description: 'other',
+});
 
 function createRegistry() {
   const registry = new ApiFactoryRegistry();
@@ -36,28 +42,18 @@ function createRegistry() {
   });
   registry.register('default', {
     api: cRef,
-    deps: { b: bRef },
+    deps: { b: otherBRef },
     factory: ({ b }) => ({ x: 'x', b }),
   });
   return registry;
 }
 
-function createLongCyclicRegistry() {
+function createSelfCyclicRegistry() {
   const registry = new ApiFactoryRegistry();
   registry.register('default', {
     api: aRef,
-    deps: { b: bRef },
-    factory: () => 1,
-  });
-  registry.register('default', {
-    api: bRef,
-    deps: { c: cRef },
-    factory: () => 'b',
-  });
-  registry.register('default', {
-    api: cRef,
     deps: { a: aRef },
-    factory: () => ({ x: 'x' }),
+    factory: () => 1,
   });
   return registry;
 }
@@ -66,7 +62,37 @@ function createShortCyclicRegistry() {
   const registry = new ApiFactoryRegistry();
   registry.register('default', {
     api: aRef,
+    deps: { b: bRef },
+    factory: () => 1,
+  });
+  registry.register('default', {
+    api: bRef,
     deps: { a: aRef },
+    factory: () => 'x',
+  });
+  return registry;
+}
+
+function createShortCyclicRegistryWithOther() {
+  const registry = new ApiFactoryRegistry();
+  registry.register('default', {
+    api: aRef,
+    deps: { b: bRef },
+    factory: () => 1,
+  });
+  registry.register('default', {
+    api: otherBRef,
+    deps: { a: otherARef },
+    factory: () => 'x',
+  });
+  return registry;
+}
+
+function createLongCyclicRegistry() {
+  const registry = new ApiFactoryRegistry();
+  registry.register('default', {
+    api: aRef,
+    deps: { b: otherBRef },
     factory: () => 1,
   });
   registry.register('default', {
@@ -76,7 +102,7 @@ function createShortCyclicRegistry() {
   });
   registry.register('default', {
     api: cRef,
-    deps: { b: bRef },
+    deps: { a: aRef },
     factory: () => ({ x: 'x' }),
   });
   return registry;
@@ -87,15 +113,51 @@ describe('ApiResolver', () => {
     const resolver = new ApiResolver(new ApiFactoryRegistry());
     expect(resolver.get(aRef)).toBe(undefined);
     expect(resolver.get(bRef)).toBe(undefined);
+    expect(resolver.get(otherBRef)).toBe(undefined);
     expect(resolver.get(cRef)).toBe(undefined);
   });
 
   it('should instantiate APIs', () => {
     const resolver = new ApiResolver(createRegistry());
     expect(resolver.get(aRef)).toBe(1);
+    expect(resolver.get(otherARef)).toBe(1);
     expect(resolver.get(bRef)).toBe('b');
+    expect(resolver.get(otherBRef)).toBe('b');
     expect(resolver.get(cRef)).toEqual({ x: 'x', b: 'b' });
-    expect(resolver.get(cRef)).toBe(resolver.get(cRef));
+    expect(resolver.get(cRef)).toBe(resolver.get(otherCRef));
+  });
+
+  it('should detect self dependency cycles', () => {
+    const resolver = new ApiResolver(createSelfCyclicRegistry());
+    expect(() => resolver.get(aRef)).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+  });
+
+  it('should detect short dependency cycles', () => {
+    const resolver = new ApiResolver(createShortCyclicRegistry());
+    expect(() => resolver.get(aRef)).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => resolver.get(bRef)).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
+  });
+
+  it('should detect short dependency cycles with other refs', () => {
+    const resolver = new ApiResolver(createShortCyclicRegistryWithOther());
+    expect(() => resolver.get(aRef)).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => resolver.get(bRef)).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
+    expect(() => resolver.get(otherARef)).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => resolver.get(otherBRef)).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
   });
 
   it('should detect long dependency cycles', () => {
@@ -110,17 +172,7 @@ describe('ApiResolver', () => {
     expect(() => resolver.get(bRef)).toThrow(
       'Circular dependency of api factory for apiRef{b}',
     );
-    expect(() => resolver.get(cRef)).toThrow(
-      'Circular dependency of api factory for apiRef{c}',
-    );
-  });
-
-  it('should detect short dependency cycles', () => {
-    const resolver = new ApiResolver(createShortCyclicRegistry());
-    expect(() => resolver.get(aRef)).toThrow(
-      'Circular dependency of api factory for apiRef{a}',
-    );
-    expect(() => resolver.get(bRef)).toThrow(
+    expect(() => resolver.get(otherBRef)).toThrow(
       'Circular dependency of api factory for apiRef{b}',
     );
     expect(() => resolver.get(cRef)).toThrow(
@@ -130,27 +182,62 @@ describe('ApiResolver', () => {
 
   it('should validate a factory holder', () => {
     expect(() => {
-      ApiResolver.validateFactories(createRegistry(), [aRef, bRef, cRef]);
+      ApiResolver.validateFactories(createRegistry(), [
+        aRef,
+        bRef,
+        otherBRef,
+        cRef,
+      ]);
     }).not.toThrow();
+  });
+
+  it('should find self cycles with validation', () => {
+    const self = createSelfCyclicRegistry();
+    expect(() => ApiResolver.validateFactories(self, [aRef])).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => ApiResolver.validateFactories(self, [otherARef])).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
   });
 
   it('should find dependency cycles with validation', () => {
     const short = createShortCyclicRegistry();
-    expect(() =>
-      ApiResolver.validateFactories(short, short.getAllApis()),
-    ).toThrow('Circular dependency of api factory for apiRef{a}');
+    expect(() => ApiResolver.validateFactories(short, [aRef])).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() => ApiResolver.validateFactories(short, [otherARef])).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
     expect(() => ApiResolver.validateFactories(short, [bRef])).toThrow(
       'Circular dependency of api factory for apiRef{b}',
     );
-    expect(() => ApiResolver.validateFactories(short, [cRef])).toThrow(
-      'Circular dependency of api factory for apiRef{c}',
+    expect(() => ApiResolver.validateFactories(short, [otherBRef])).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
     );
+
+    const shortOther = createShortCyclicRegistryWithOther();
+    expect(() => ApiResolver.validateFactories(shortOther, [aRef])).toThrow(
+      'Circular dependency of api factory for apiRef{a}',
+    );
+    expect(() =>
+      ApiResolver.validateFactories(shortOther, [otherARef]),
+    ).toThrow('Circular dependency of api factory for apiRef{a}');
+    expect(() => ApiResolver.validateFactories(shortOther, [bRef])).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
+    expect(() =>
+      ApiResolver.validateFactories(shortOther, [otherBRef]),
+    ).toThrow('Circular dependency of api factory for apiRef{b}');
 
     const long = createLongCyclicRegistry();
     expect(() =>
       ApiResolver.validateFactories(long, long.getAllApis()),
     ).toThrow('Circular dependency of api factory for apiRef{a}');
     expect(() => ApiResolver.validateFactories(long, [bRef])).toThrow(
+      'Circular dependency of api factory for apiRef{b}',
+    );
+    expect(() => ApiResolver.validateFactories(long, [otherBRef])).toThrow(
       'Circular dependency of api factory for apiRef{b}',
     );
     expect(() => ApiResolver.validateFactories(long, [cRef])).toThrow(
@@ -172,6 +259,8 @@ describe('ApiResolver', () => {
     expect(resolver.get(aRef)).toBe(2);
     expect(factory).toHaveBeenCalledTimes(1);
     expect(resolver.get(aRef)).toBe(2);
+    expect(factory).toHaveBeenCalledTimes(1);
+    expect(resolver.get(otherARef)).toBe(2);
     expect(factory).toHaveBeenCalledTimes(1);
   });
 });

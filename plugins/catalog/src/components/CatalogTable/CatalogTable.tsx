@@ -21,11 +21,11 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  OverflowTooltip,
   Table,
   TableColumn,
   TableProps,
   WarningPanel,
-  OverflowTooltip,
 } from '@backstage/core';
 import {
   EntityRefLink,
@@ -38,7 +38,10 @@ import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import React from 'react';
-import { findViewUrl, findEditUrl } from '../actions';
+import {
+  getEntityMetadataEditUrl,
+  getEntityMetadataViewUrl,
+} from '../../utils';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
@@ -85,6 +88,11 @@ const columns: TableColumn<EntityRow>[] = [
     ),
   },
   {
+    title: 'Type',
+    field: 'entity.spec.type',
+    hidden: true,
+  },
+  {
     title: 'Lifecycle',
     field: 'entity.spec.lifecycle',
   },
@@ -127,6 +135,7 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
+  view?: string;
 };
 
 export const CatalogTable = ({
@@ -134,6 +143,7 @@ export const CatalogTable = ({
   loading,
   error,
   titlePreamble,
+  view,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -152,10 +162,11 @@ export const CatalogTable = ({
 
   const actions: TableProps<EntityRow>['actions'] = [
     ({ entity }) => {
-      const url = findViewUrl(entity);
+      const url = getEntityMetadataViewUrl(entity);
       return {
         icon: () => <OpenInNew fontSize="small" />,
         tooltip: 'View',
+        disabled: !url,
         onClick: () => {
           if (!url) return;
           window.open(url, '_blank');
@@ -163,10 +174,11 @@ export const CatalogTable = ({
       };
     },
     ({ entity }) => {
-      const url = findEditUrl(entity);
+      const url = getEntityMetadataEditUrl(entity);
       return {
         icon: () => <Edit fontSize="small" />,
         tooltip: 'Edit',
+        disabled: !url,
         onClick: () => {
           if (!url) return;
           window.open(url, '_blank');
@@ -211,6 +223,11 @@ export const CatalogTable = ({
       },
     };
   });
+
+  const typeColumn = columns.find(c => c.title === 'Type');
+  if (typeColumn) {
+    typeColumn.hidden = view !== 'Other';
+  }
 
   return (
     <Table<EntityRow>

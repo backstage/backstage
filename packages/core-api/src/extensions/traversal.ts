@@ -37,7 +37,6 @@ export function traverseElementTree<Results>(options: {
   discoverers: Discoverer[];
   collectors: { [name in keyof Results]: Collector<Results[name], any> };
 }): Results {
-  const visited = new Set();
   const collectors: {
     [name in string]: ReturnType<Collector<any, any>>;
   } = {};
@@ -74,14 +73,6 @@ export function traverseElementTree<Results>(options: {
       if (!isValidElement(element)) {
         return;
       }
-      if (visited.has(element)) {
-        const anyType = element?.type as
-          | { displayName?: string; name?: string }
-          | undefined;
-        const name = anyType?.displayName || anyType?.name || String(anyType);
-        throw new Error(`Visited element ${name} twice`);
-      }
-      visited.add(element);
 
       const nextContexts: QueueItem['contexts'] = {};
 

@@ -36,6 +36,25 @@ export type DbEntityRequest = {
   relations: EntityRelationSpec[];
 };
 
+export type DbEntitiesRequest = {
+  filter?: EntityFilter;
+  pagination?: EntityPagination;
+};
+
+export type DbEntitiesResponse = {
+  entities: DbEntityResponse[];
+  pageInfo: DbPageInfo;
+};
+
+export type DbPageInfo =
+  | {
+      hasNextPage: false;
+    }
+  | {
+      hasNextPage: true;
+      endCursor: string;
+    };
+
 export type DbEntityResponse = {
   locationId?: string;
   entity: Entity;
@@ -112,10 +131,19 @@ export type EntityFilter = {
 };
 
 /**
+ * A pagination rule for entities.
+ */
+export type EntityPagination = {
+  limit?: number;
+  offset?: number;
+  after?: string;
+};
+
+/**
  * An abstraction for transactions of the underlying database technology.
  */
 export type Transaction = {
-  rollback(): Promise<void>;
+  rollback(): Promise<unknown>;
 };
 
 /**
@@ -170,7 +198,10 @@ export type Database = {
     matchingGeneration?: number,
   ): Promise<DbEntityResponse>;
 
-  entities(tx: Transaction, filter?: EntityFilter): Promise<DbEntityResponse[]>;
+  entities(
+    tx: Transaction,
+    request?: DbEntitiesRequest,
+  ): Promise<DbEntitiesResponse>;
 
   entityByName(
     tx: Transaction,

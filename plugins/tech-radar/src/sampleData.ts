@@ -49,6 +49,8 @@ entries.push({
   id: 'javascript',
   title: 'JavaScript',
   quadrant: 'languages',
+  description:
+    'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
 });
 entries.push({
   timeline: [
@@ -65,6 +67,8 @@ entries.push({
   id: 'typescript',
   title: 'TypeScript',
   quadrant: 'languages',
+  description:
+    'Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat',
 });
 entries.push({
   timeline: [
@@ -72,9 +76,11 @@ entries.push({
       moved: 1,
       ringId: 'use',
       date: new Date('2020-08-06'),
+      description:
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur',
     },
   ],
-  url: '#',
+  url: 'https://webpack.js.org/',
   key: 'webpack',
   id: 'webpack',
   title: 'Webpack',

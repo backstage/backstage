@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
+import { resolve as resolvePath } from 'path';
 import request from 'supertest';
 import { createRouter } from './router';
 
@@ -68,6 +68,22 @@ describe('createRouter', () => {
     expect(response.status).toBe(200);
     expect(response.text.trim()).toBe('this is index.html');
   });
+
+  it.each(['/index.html', '/other.html', '/missing.html'])(
+    'returns %s with no-store Cache-Control header',
+    async file => {
+      const response = await request(app).get(file);
+      expect(response.header['cache-control']).toBe('no-store, max-age=0');
+    },
+  );
+
+  it.each(['/static/main.txt'])(
+    'returns %s with default Cache-Control header',
+    async file => {
+      const response = await request(app).get(file);
+      expect(response.header['cache-control']).toBe('public, max-age=0');
+    },
+  );
 });
 
 describe('createRouter with static fallback handler', () => {

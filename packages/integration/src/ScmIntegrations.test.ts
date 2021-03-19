@@ -88,4 +88,10 @@ describe('ScmIntegrations', () => {
       }),
     ).toBe('https://absolute.com/path');
   });
+
+  it('can resolveEditUrl using fallback', () => {
+    expect(i.resolveEditUrl('http://example.com/x/a.yaml')).toBe(
+      'http://example.com/x/a.yaml',
+    );
+  });
 });

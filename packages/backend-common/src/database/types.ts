@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import knex from 'knex';
+import { Knex } from 'knex';
 
 /**
  * The PluginDatabaseManager manages access to databases that Plugins get.
@@ -26,5 +26,5 @@ export interface PluginDatabaseManager {
    * The purpose of this method is to allow plugins to get isolated data
    * stores so that plugins are discouraged from database integration.
    */
-  getClient(): Promise<knex>;
+  getClient(): Promise<Knex>;
 }

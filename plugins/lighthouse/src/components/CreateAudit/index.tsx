@@ -13,31 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import {
-  makeStyles,
-  Grid,
+  Content,
+  ContentHeader,
+  errorApiRef,
+  Header,
+  HeaderLabel,
+  InfoCard,
+  Page,
+  useApi,
+} from '@backstage/core';
+import {
   Button,
+  Grid,
   List,
   ListItem,
+  makeStyles,
   MenuItem,
   TextField,
 } from '@material-ui/core';
-import {
-  errorApiRef,
-  useApi,
-  InfoCard,
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-} from '@backstage/core';
-
+import React, { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseSupportButton from '../SupportButton';
+
+// TODO(freben): move all of this out of index
 
 const useStyles = makeStyles(theme => ({
   input: {

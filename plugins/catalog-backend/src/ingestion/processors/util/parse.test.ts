@@ -116,7 +116,7 @@ describe('parseEntityYaml', () => {
   });
 
   it('should handle empty yaml documents', () => {
-    // This happens if the user accidentially adds a "---"
+    // This happens if the user accidentally adds a "---"
     // at the end of a file
     const results = Array.from(
       parseEntityYaml(
@@ -159,7 +159,7 @@ describe('parseEntityYaml', () => {
     expect(results).toEqual([
       result.generalError(
         testLoc,
-        'YAML error, YAMLSemanticError: Plain value cannot start with reserved character `',
+        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Plain value cannot start with reserved character `',
       ),
     ]);
   });
@@ -198,14 +198,14 @@ describe('parseEntityYaml', () => {
       }),
       result.generalError(
         testLoc,
-        'YAML error, YAMLSemanticError: Nested mappings are not allowed in compact mappings',
+        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Nested mappings are not allowed in compact mappings',
       ),
     ]);
   });
 
   it('must be an object at root', () => {
     const results = Array.from(
-      parseEntityYaml(Buffer.from('imma-string', 'utf8'), testLoc),
+      parseEntityYaml(Buffer.from('i-am-a-string', 'utf8'), testLoc),
     );
 
     expect(results).toEqual([

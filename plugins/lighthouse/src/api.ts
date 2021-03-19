@@ -125,9 +125,10 @@ export class LighthouseRestApi implements LighthouseApi {
     return await resp.json();
   }
 
-  async getWebsiteList({ limit, offset }: LASListRequest = {}): Promise<
-    WebsiteListResponse
-  > {
+  async getWebsiteList({
+    limit,
+    offset,
+  }: LASListRequest = {}): Promise<WebsiteListResponse> {
     const params = new URLSearchParams();
     if (typeof limit === 'number') params.append('limit', limit.toString());
     if (typeof offset === 'number') params.append('offset', offset.toString());

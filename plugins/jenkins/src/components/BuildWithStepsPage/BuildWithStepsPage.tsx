@@ -47,10 +47,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const BuildWithStepsView = () => {
-  const { owner, repo } = useProjectSlugFromEntity();
+  const projectName = useProjectSlugFromEntity();
   const { branch, buildNumber } = useParams();
   const classes = useStyles();
-  const buildPath = `${owner}/${repo}/${branch}/${buildNumber}`;
+  const buildPath = `${projectName}/${branch}/${buildNumber}`;
   const [{ value }] = useBuildWithSteps(buildPath);
 
   return (

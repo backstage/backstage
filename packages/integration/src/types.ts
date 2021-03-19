@@ -49,8 +49,26 @@ export interface ScmIntegration {
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens
+   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
-  resolveUrl(options: { url: string; base: string }): string;
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+
+  /**
+   * Resolves the edit URL for a file within the SCM system.
+   *
+   * Most SCM systems have a web interface that allows viewing and editing files
+   * in the repository. The returned URL directly jumps into the edit mode for
+   * the file.
+   * If this is not possible, the integration can fall back to a URL to view
+   * the file in the web interface.
+   *
+   * @param url The absolute URL to the file that should be edited.
+   */
+  resolveEditUrl(url: string): string;
 }
 
 /**
@@ -101,8 +119,26 @@ export interface ScmIntegrationRegistry
    *
    * @param options.url The (absolute or relative) URL or path to resolve
    * @param options.base The base URL onto which this resolution happens
+   * @param options.lineNumber The line number in the target file to link to, starting with 1. Only applicable when linking to files.
    */
-  resolveUrl(options: { url: string; base: string }): string;
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string;
+
+  /**
+   * Resolves the edit URL for a file within the SCM system.
+   *
+   * Most SCM systems have a web interface that allows viewing and editing files
+   * in the repository. The returned URL directly jumps into the edit mode for
+   * the file.
+   * If this is not possible, the integration can fall back to a URL to view
+   * the file in the web interface.
+   *
+   * @param url The absolute URL to the file that should be edited.
+   */
+  resolveEditUrl(url: string): string;
 }
 
 export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {

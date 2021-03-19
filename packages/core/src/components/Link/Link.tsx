@@ -24,6 +24,8 @@ import {
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
 
+export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
+
 export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {
     component?: ElementType<any>;
@@ -35,7 +37,7 @@ export type LinkProps = MaterialLinkProps &
  */
 export const Link = React.forwardRef<any, LinkProps>((props, ref) => {
   const to = String(props.to);
-  return /^https?:\/\//.test(to) ? (
+  return isExternalUri(to) ? (
     // External links
     <MaterialLink ref={ref} href={to} {...props} />
   ) : (

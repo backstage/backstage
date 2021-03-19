@@ -278,6 +278,9 @@ export function Table<T extends object = {}>({
   );
 
   useEffect(() => {
+    if (typeof data === 'function') {
+      return;
+    }
     if (!selectedFilters) {
       setTableData(data as any[]);
       return;
@@ -429,7 +432,7 @@ export function Table<T extends object = {}>({
 
   const Body = useCallback(
     bodyProps => {
-      if (emptyContent && data.length === 0) {
+      if (emptyContent && typeof data !== 'function' && data.length === 0) {
         return (
           <tbody>
             <tr>
@@ -446,7 +449,7 @@ export function Table<T extends object = {}>({
 
   return (
     <div className={tableClasses.root}>
-      {filtersOpen && data && filters?.length && (
+      {filtersOpen && data && typeof data !== 'function' && filters?.length && (
         <Filters
           filters={constructFilters(filters, data as any[])}
           selectedFilters={selectedFilters}
@@ -474,7 +477,7 @@ export function Table<T extends object = {}>({
             )}
           </>
         }
-        data={tableData}
+        data={typeof data === 'function' ? data : tableData}
         style={{ width: '100%' }}
         {...propsWithoutData}
       />

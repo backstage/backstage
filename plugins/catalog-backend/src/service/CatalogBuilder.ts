@@ -309,9 +309,9 @@ export class CatalogBuilder {
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
-        new CodeOwnersProcessor({ reader, logger }),
+        CodeOwnersProcessor.fromConfig(config, { logger, reader }),
         new LocationEntityProcessor({ integrations }),
-        new AnnotateLocationEntityProcessor(),
+        new AnnotateLocationEntityProcessor({ integrations }),
       );
     }
 

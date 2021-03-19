@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { CopyTextButton } from '.';
+import { CopyTextButton } from './CopyTextButton';
 
 export default {
   title: 'Inputs/CopyTextButton',

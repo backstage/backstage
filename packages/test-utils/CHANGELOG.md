@@ -1,5 +1,17 @@
 # @backstage/test-utils
 
+## 0.1.9
+
+### Patch Changes
+
+- 4e0b5055a: Allow `ExternalRouteRef` bindings in `mountedRoutes` to work with the latest version of core-api.
+- Updated dependencies [a51dc0006]
+- Updated dependencies [e7f9b9435]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d88dd219e]
+- Updated dependencies [c8b54c370]
+  - @backstage/core-api@0.2.14
+
 ## 0.1.8
 
 ### Patch Changes

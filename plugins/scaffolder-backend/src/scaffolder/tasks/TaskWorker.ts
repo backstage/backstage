@@ -24,7 +24,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import * as handlebars from 'handlebars';
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 
 type Options = {
   logger: Logger;

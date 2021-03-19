@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { posix as posixPath } from 'path';
+import { InputError } from '@backstage/errors';
 import {
-  TemplateEntityV1alpha1,
   LOCATION_ANNOTATION,
+  parseLocationReference,
+  TemplateEntityV1alpha1,
 } from '@backstage/catalog-model';
-import { InputError } from '@backstage/backend-common';
+import { posix as posixPath } from 'path';
 
 export type ParsedLocationAnnotation = {
   protocol: 'file' | 'url';
@@ -30,29 +31,16 @@ export const parseLocationAnnotation = (
   entity: TemplateEntityV1alpha1,
 ): ParsedLocationAnnotation => {
   const annotation = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-
   if (!annotation) {
     throw new InputError(
       `No location annotation provided in entity: ${entity.metadata.name}`,
     );
   }
 
-  // split on the first colon for the protocol and the rest after the first split
-  // is the location.
-  const [protocol, location] = annotation.split(/:(.+)/) as [
-    ('file' | 'url')?,
-    string?,
-  ];
-
-  if (!protocol || !location) {
-    throw new InputError(
-      `Failure to parse either protocol or location for entity: ${entity.metadata.name}`,
-    );
-  }
-
+  const { type, target } = parseLocationReference(annotation);
   return {
-    protocol,
-    location,
+    protocol: type as 'file' | 'url',
+    location: target,
   };
 };
 

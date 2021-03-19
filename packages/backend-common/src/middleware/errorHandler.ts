@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  AuthenticationError,
+  ConflictError,
+  ErrorResponse,
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  NotModifiedError,
+  serializeError,
+} from '@backstage/errors';
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { Logger } from 'winston';
-import * as errors from '../errors';
 import { getRootLogger } from '../logging';
 
 export type ErrorHandlerOptions = {
@@ -48,14 +57,13 @@ export type ErrorHandlerOptions = {
  * This is commonly the very last middleware in the chain.
  *
  * Its primary purpose is not to do translation of business logic exceptions,
- * but rather to be a gobal catch-all for uncaught "fatal" errors that are
+ * but rather to be a global catch-all for uncaught "fatal" errors that are
  * expected to result in a 500 error. However, it also does handle some common
  * error types (such as http-error exceptions) and returns the enclosed status
  * code accordingly.
  *
  * @returns An Express error request handler
  */
-
 export function errorHandler(
   options: ErrorHandlerOptions = {},
 ): ErrorRequestHandler {
@@ -66,12 +74,12 @@ export function errorHandler(
     type: 'errorHandler',
   });
 
-  return (
-    error: Error,
-    _request: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  return (error: Error, req: Request, res: Response, next: NextFunction) => {
+    const statusCode = getStatusCode(error);
+    if (options.logClientErrors || statusCode >= 500) {
+      logger.error(error);
+    }
+
     if (res.headersSent) {
       // If the headers have already been sent, do not send the response again
       // as this will throw an error in the backend.
@@ -79,16 +87,13 @@ export function errorHandler(
       return;
     }
 
-    const status = getStatusCode(error);
-    const message = showStackTraces ? error.stack : error.message;
+    const body: ErrorResponse = {
+      error: serializeError(error, { includeStack: showStackTraces }),
+      request: { method: req.method, url: req.url },
+      response: { statusCode },
+    };
 
-    if (options.logClientErrors || status >= 500) {
-      logger.error(error);
-    }
-
-    res.status(status);
-    res.setHeader('content-type', 'text/plain');
-    res.send(message);
+    res.status(statusCode).json(body);
   };
 }
 
@@ -109,17 +114,17 @@ function getStatusCode(error: Error): number {
 
   // Handle well-known error types
   switch (error.name) {
-    case errors.NotModifiedError.name:
+    case NotModifiedError.name:
       return 304;
-    case errors.InputError.name:
+    case InputError.name:
       return 400;
-    case errors.AuthenticationError.name:
+    case AuthenticationError.name:
       return 401;
-    case errors.NotAllowedError.name:
+    case NotAllowedError.name:
       return 403;
-    case errors.NotFoundError.name:
+    case NotFoundError.name:
       return 404;
-    case errors.ConflictError.name:
+    case ConflictError.name:
       return 409;
     default:
       break;

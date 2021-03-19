@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import parseGitUrl from 'git-url-parse';
 import { basicIntegrations, defaultScmResolveUrl } from '../helpers';
 import { ScmIntegration, ScmIntegrationsFactory } from '../types';
 import {
@@ -48,7 +49,34 @@ export class BitbucketIntegration implements ScmIntegration {
     return this.integrationConfig;
   }
 
-  resolveUrl(options: { url: string; base: string }): string {
-    return defaultScmResolveUrl(options);
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
+    const resolved = defaultScmResolveUrl(options);
+
+    // Bitbucket line numbers use the syntax #example.txt-42, rather than #L42
+    if (options.lineNumber) {
+      const url = new URL(resolved);
+
+      const filename = url.pathname.split('/').slice(-1)[0];
+      url.hash = `${filename}-${options.lineNumber}`;
+      return url.toString();
+    }
+
+    return resolved;
+  }
+
+  resolveEditUrl(url: string): string {
+    const urlData = parseGitUrl(url);
+    const editUrl = new URL(url);
+
+    editUrl.searchParams.set('mode', 'edit');
+    // TODO: Not sure what spa=0 does, at least bitbucket.org doesn't support it
+    // but this is taken over from the initial implementation.
+    editUrl.searchParams.set('spa', '0');
+    editUrl.searchParams.set('at', urlData.ref);
+    return editUrl.toString();
   }
 }

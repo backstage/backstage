@@ -58,6 +58,7 @@ export function useWorkflowRuns({
           setTotal(workflowRunsData.total_count);
           // Transformation here
           return workflowRunsData.workflow_runs.map(run => ({
+            workflowName: run.name,
             message: run.head_commit.message,
             id: `${run.id}`,
             onReRunClick: async () => {

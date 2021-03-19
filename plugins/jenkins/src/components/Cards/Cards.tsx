@@ -82,8 +82,8 @@ export const LatestRunCard = ({
   branch: string;
   variant?: InfoCardVariants;
 }) => {
-  const { owner, repo } = useProjectSlugFromEntity();
-  const [{ builds, loading }] = useBuilds(owner, repo, branch);
+  const projectName = useProjectSlugFromEntity();
+  const [{ builds, loading }] = useBuilds(projectName, branch);
   const latestRun = builds ?? {};
   return (
     <InfoCard title={`Latest ${branch} build`} variant={variant}>

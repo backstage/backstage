@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import Knex from 'knex';
 import { resolvePackagePath } from '@backstage/backend-common';
-import { AnyJWK, KeyStore, StoredKey } from './types';
+import { Knex } from 'knex';
 import { DateTime } from 'luxon';
+import { AnyJWK, KeyStore, StoredKey } from './types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',

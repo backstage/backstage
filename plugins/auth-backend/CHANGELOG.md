@@ -1,5 +1,35 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.5
+
+### Patch Changes
+
+- 8686eb38c: Use errors from `@backstage/errors`
+- 8b5e59750: expose verifyNonce and readState publicly from auth-backend
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [4e0b5055a]
+- Updated dependencies [8686eb38c]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+  - @backstage/test-utils@0.1.9
+
+## 0.3.4
+
+### Patch Changes
+
+- 761698831: Bump to the latest version of the Knex library.
+- 5f1b7ea35: Change the JWKS url value for the oidc configuration endpoint
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+
 ## 0.3.3
 
 ### Patch Changes
