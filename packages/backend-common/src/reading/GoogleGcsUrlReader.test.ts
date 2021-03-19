@@ -17,12 +17,12 @@
 import { ConfigReader, JsonObject } from '@backstage/config';
 import { getVoidLogger } from '../logging';
 import { ReadTreeResponseFactory } from './tree';
-import { GcsUrlReader } from './GcsUrlReader';
+import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { UrlReaderPredicateTuple } from './types';
 
 describe('GcsUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
-    return GcsUrlReader.factory({
+    return GoogleGcsUrlReader.factory({
       config: new ConfigReader(config),
       logger: getVoidLogger(),
       treeResponseFactory: ReadTreeResponseFactory.create({
@@ -57,43 +57,19 @@ describe('GcsUrlReader', () => {
     expect(entries).toHaveLength(2);
   });
 
-  it('does not create a reader if the privateKey is missing', () => {
+  it('creates a reader with default credentials provider', () => {
     const entries = createReader({
       integrations: {
-        googleGcs: [
-          {
-            clientEmail: 'someone@example.com',
-          },
-        ],
+        googleGcs: [{}],
       },
     });
-    expect(entries).toHaveLength(0);
-  });
-
-  it('does not create a reader if the clientEmail is missing', () => {
-    const entries = createReader({
-      integrations: {
-        googleGcs: [
-          {
-            privateKey:
-              '-----BEGIN PRIVATE KEY----- fakekey -----END PRIVATE KEY-----',
-          },
-        ],
-      },
-    });
-    expect(entries).toHaveLength(0);
+    expect(entries).toHaveLength(1);
   });
 
   describe('predicates', () => {
     const readers = createReader({
       integrations: {
-        googleGcs: [
-          {
-            privateKey:
-              '-----BEGIN PRIVATE KEY----- fakekey -----END PRIVATE KEY-----',
-            clientEmail: 'someone@example.com',
-          },
-        ],
+        googleGcs: [{}],
       },
     });
     const predicate = readers[0].predicate;

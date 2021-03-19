@@ -22,13 +22,17 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
+import {
+  GOOGLE_GCS_HOST,
+  readGoogleGcsIntegrationConfigs,
+} from '@backstage/integration';
 
 const parseURL = (
   url: string,
 ): { host: string; bucket: string; key: string } => {
   const { host, pathname } = new URL(url);
 
-  if (host !== 'storage.cloud.google.com') {
+  if (host !== GOOGLE_GCS_HOST) {
     throw new Error(`not a valid GCS URL: ${url}`);
   }
 
@@ -40,45 +44,33 @@ const parseURL = (
   };
 };
 
-export class GcsUrlReader implements UrlReader {
+export class GoogleGcsUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, logger }) => {
     if (!config.has('integrations.googleGcs')) {
       return [];
     }
-    const configs = config.getOptionalConfigArray('integrations.googleGcs');
-    if (!configs) {
-      return [];
-    }
-    return configs
-      .filter(integration => {
-        if (!integration.has('clientEmail') || !integration.has('privateKey')) {
-          logger.warn(
-            "Skipping gcs integration, Missing required config value at 'integration.gcs.clientEmail' or 'integration.gcs.privateKey'",
-          );
-          return false;
-        }
-        return true;
-      })
-      .map(integration => {
-        const privKey = integration
-          .getOptionalString('privateKey')
-          ?.split('\\n')
-          .join('\n');
-
-        const storage = new Storage({
+    const configs = readGoogleGcsIntegrationConfigs(
+      config.getOptionalConfigArray('integrations.googleGcs') ?? [],
+    );
+    return configs.map(integration => {
+      let storage: Storage;
+      if (!integration.clientEmail || !integration.privateKey) {
+        logger.warn(
+          'googleGcs credentials not found in config. Using default credentials provider.',
+        );
+        storage = new Storage();
+      } else {
+        storage = new Storage({
           credentials: {
-            client_email: integration.getOptionalString('clientEmail'),
-            private_key: privKey,
+            client_email: integration.clientEmail || undefined,
+            private_key: integration.privateKey || undefined,
           },
         });
-        const reader = new GcsUrlReader(storage);
-        const host =
-          integration.getOptionalString('host') || 'storage.cloud.google.com';
-
-        logger.info('Configuring integration, gcs');
-        const predicate = (url: URL) => url.host === host;
-        return { reader, predicate };
-      });
+      }
+      const reader = new GoogleGcsUrlReader(storage);
+      const predicate = (url: URL) => url.host === GOOGLE_GCS_HOST;
+      return { reader, predicate };
+    });
   };
 
   constructor(private readonly storage: Storage) {}
@@ -104,6 +96,6 @@ export class GcsUrlReader implements UrlReader {
   }
 
   toString() {
-    return `gcs{host=storage.cloud.google.com,authed=true}}`;
+    return `gcs{host=${GOOGLE_GCS_HOST},authed=true}}`;
   }
 }
