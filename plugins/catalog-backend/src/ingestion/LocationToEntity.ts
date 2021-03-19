@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export function locationToEntity(type: string, target: string) {
+import { Entity, EntityName } from '@backstage/catalog-model';
+
+export function locationToEntity(type: string, target: string): Entity {
   return {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'Location',
@@ -25,5 +27,13 @@ export function locationToEntity(type: string, target: string) {
     spec: {
       location: { type, target },
     },
+  };
+}
+
+export function locationToEntityName(type: string, target: string): EntityName {
+  return {
+    kind: 'Location',
+    namespace: 'default',
+    name: `${type}:${target}`,
   };
 }
