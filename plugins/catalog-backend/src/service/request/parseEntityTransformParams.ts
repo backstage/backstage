@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
 import { Entity } from '@backstage/catalog-model';
+import { InputError } from '@backstage/errors';
 import lodash from 'lodash';
-import { RecursivePartial } from '../util';
+import { RecursivePartial } from '../../util';
+import { parseStringsParam } from './common';
 
-type FieldMapper = (entity: Entity) => Entity;
-
-export function translateQueryToFieldMapper(
-  query: Record<string, any>,
-): FieldMapper {
-  if (!query.fields) {
-    return x => x;
-  }
-
-  const fieldsStrings = [query.fields].flat() as string[];
-
-  if (fieldsStrings.some(s => typeof s !== 'string')) {
-    throw new InputError(
-      'Only string type fields query parameters are supported',
-    );
+export function parseEntityTransformParams(
+  params: Record<string, unknown>,
+): ((entity: Entity) => Entity) | undefined {
+  const fieldsStrings = parseStringsParam(params.fields, 'fields');
+  if (!fieldsStrings) {
+    return undefined;
   }
 
   const fields = fieldsStrings
@@ -43,13 +35,11 @@ export function translateQueryToFieldMapper(
     .filter(Boolean);
 
   if (!fields.length) {
-    return x => x;
+    return undefined;
   }
 
   if (fields.some(f => f.includes('['))) {
-    throw new InputError(
-      'Array type fields query parameters are not supported',
-    );
+    throw new InputError('invalid fields, array type fields are not supported');
   }
 
   return input => {

@@ -360,7 +360,10 @@ describe('HigherOrderOperations', () => {
         entities: [{ entity: desc, location, relations: [] }],
         errors: [],
       });
-      entitiesCatalog.entities.mockResolvedValue([]);
+      entitiesCatalog.entities.mockResolvedValue({
+        entities: [],
+        pageInfo: { hasNext: false },
+      });
       entitiesCatalog.batchAddOrUpdateEntities.mockResolvedValue([]);
 
       await expect(
