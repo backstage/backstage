@@ -20,34 +20,33 @@ import {
   useApi,
   Progress
 } from '@backstage/core';
-import { chromeuxReportApiRef } from "../../api";
+import { chromeuxReportApiRef } from "../api";
 import { useAsync } from "react-use";
 import Alert from "@material-ui/lab/Alert";
 
-export const ReportTable = ({ origin }: { origin: string; }) => {
+export const ChromeUXReportTable = ({ origin }: { origin: string; }) => {
   const chromeUXReportApi = useApi(chromeuxReportApiRef);
   const columns: TableColumn[] = [
     {
-      title: 'Form Factor',
-      field: 'col1',
+      field: 'metricName',
       highlight: true,
     },
     {
-      title: 'Connection Type',
-      field: 'col2',
+      field: 'metricValue',
+      highlight: true,
     },
     {
-      title: 'First Contentful Paint',
-      field: 'col3'
+      title: 'FAST',
+      field: 'fast',
     },
     {
-      title: 'Largest Contentful Paint',
-      field: 'col4'
+      title: 'AVERAGE',
+      field: 'average'
     },
     {
-      title: 'Dom Content Loaded',
-      field: 'col5'
-    },
+      title: 'SLOW',
+      field: 'slow'
+    }
   ];
 
   const { value, loading, error } = useAsync(async (): Promise<any> => {
@@ -72,11 +71,29 @@ export const ReportTable = ({ origin }: { origin: string; }) => {
   return <Table
     options={{paging: false, search: false}}
     data={[{
-      col1: form_factor,
-      col2: connection_type,
-      col3: first_contentful_paint.rates.fast,
-      col4: largest_contentful_paint.rates.fast,
-      col5: dom_content_loaded.rates.fast
+      metricName: 'FORM FACTOR',
+      metricValue: form_factor,
+      fast: '-',
+      average: '-',
+      slow: '-'
+    }, {
+      metricName: 'CONNECTION TYPE',
+      metricValue: connection_type,
+      fast: '-',
+      average: '-',
+      slow: '-'
+    }, {
+      metricName: 'FIRST CONTENTFUL PAINT',
+      metricValue: '-',
+      fast: first_contentful_paint.rates.fast,
+      average: largest_contentful_paint.rates.fast,
+      slow: dom_content_loaded.rates.fast
+    }, {
+      metricName: 'LARGEST CONTENTFUL PAINT',
+      metricValue: '-',
+      fast: first_contentful_paint.rates.fast,
+      average: largest_contentful_paint.rates.fast,
+      slow: dom_content_loaded.rates.fast
     }]}
     columns={columns}
   />;

@@ -15,41 +15,35 @@
  */
 import React from 'react';
 import {
-  Header,
   Page,
   Content,
-  HeaderLabel,
   Tabs,
   useApi,
-  configApiRef
+  configApiRef,
+  Header
 } from '@backstage/core';
 import { Config } from '@backstage/config';
-import { ReportTable } from './ReportTable';
+import { ChromeUXReportTable } from './ChromeUXReportTable';
 
-export const ChromeUXReport = () => {
+export const ChromeUXReportPage = () => {
   const configApi = useApi(configApiRef);
   const origins = configApi.getConfigArray('chromeUXReport.origins');
 
-  const tabs = origins && origins.length > 0 ? origins.map(
+  const tabs = origins.map(
     (origin: Config) => ({
       label: origin.getString("name"),
-      content: <ReportTable origin={origin.getString("site")} />,
+      content: <ChromeUXReportTable origin={origin.getString("site")} />,
     }),
-  ) : [{
-    label: 'Chrome UX Report',
-    content: <div>Please add site url to config</div>,
-  }];
+  );
 
   return (
     <Page themeId="tool">
-      <Header title="Chrome UX Report" subtitle="Optional subtitle">
-        <HeaderLabel label="Owner" value="Team X"/>
-        <HeaderLabel label="Lifecycle" value="Alpha"/>
-      </Header>
+      <Header
+        title="Chrome UX Report"
+        subtitle="Chrome UX Report is a powerful plugin for analyzing your site’s speed in a variety of different ways."
+      />
       <Content>
-        <div>
-          <Tabs tabs={tabs} />
-        </div>
+        <Tabs tabs={tabs} />
       </Content>
     </Page>
   );
