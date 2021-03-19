@@ -46,7 +46,7 @@ spec:
             secretKeyRef:
               name: backstage-third-party-credentials
               key: azuredevops_token        
-        - name: BACKSTAGE_DATABASE_CONNECTIONSTRING
+        - name: DATABASE_CONNECTIONSTRING
           valueFrom:
             secretKeyRef:
               name: backstage-credentials
