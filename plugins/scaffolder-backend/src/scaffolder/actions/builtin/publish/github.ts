@@ -126,7 +126,7 @@ export function createPublishGithubAction(options: {
           ? client.repos.createInOrg({
               name: repo,
               org: owner,
-              private: repoVisibility !== 'public',
+              private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
             })
