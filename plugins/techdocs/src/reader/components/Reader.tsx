@@ -113,6 +113,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       addLinkClickListener({
         baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
+          window.scroll({ top: 0 });
           const parsedUrl = new URL(url);
           if (parsedUrl.hash) {
             history.pushState(
