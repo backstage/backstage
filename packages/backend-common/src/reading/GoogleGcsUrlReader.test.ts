@@ -41,26 +41,19 @@ describe('GcsUrlReader', () => {
   it('creates a reader with credentials correctly configured', () => {
     const entries = createReader({
       integrations: {
-        googleGcs: [
-          {
-            privateKey: '--- BEGIN KEY ---- fakekey --- END KEY ---',
-            clientEmail: 'someone@example.com',
-          },
-          {
-            host: 'proxy.storage.cloud.google.com',
-            privateKey: '--- BEGIN KEY ---- fakekey2 --- END KEY ---',
-            clientEmail: 'someone2@example.com',
-          },
-        ],
+        googleGcs: {
+          privateKey: '--- BEGIN KEY ---- fakekey --- END KEY ---',
+          clientEmail: 'someone@example.com',
+        },
       },
     });
-    expect(entries).toHaveLength(2);
+    expect(entries).toHaveLength(1);
   });
 
   it('creates a reader with default credentials provider', () => {
     const entries = createReader({
       integrations: {
-        googleGcs: [{}],
+        googleGcs: {},
       },
     });
     expect(entries).toHaveLength(1);
@@ -69,7 +62,7 @@ describe('GcsUrlReader', () => {
   describe('predicates', () => {
     const readers = createReader({
       integrations: {
-        googleGcs: [{}],
+        googleGcs: {},
       },
     });
     const predicate = readers[0].predicate;

@@ -18,7 +18,6 @@ import { Config, ConfigReader } from '@backstage/config';
 import {
   GoogleGcsIntegrationConfig,
   readGoogleGcsIntegrationConfig,
-  readGoogleGcsIntegrationConfigs,
 } from './config';
 
 describe('readGoogleGcsIntegrationConfig', () => {
@@ -38,25 +37,9 @@ describe('readGoogleGcsIntegrationConfig', () => {
       token: 'someone@example.com',
     });
   });
-});
 
-describe('readGoogleGcsIntegrationConfigs', () => {
-  function buildConfig(data: Partial<GoogleGcsIntegrationConfig>[]): Config[] {
-    return data.map(item => new ConfigReader(item));
-  }
-
-  it('reads all values', () => {
-    const output = readGoogleGcsIntegrationConfigs(
-      buildConfig([
-        {
-          privateKey: 'fake-key',
-          clientEmail: 'someone@example.com',
-        },
-      ]),
-    );
-    expect(output).toContainEqual({
-      privateKey: 'fake-key',
-      clientEmail: 'someone@example.com',
-    });
+  it('does not fail when config is not set', () => {
+    const output = readGoogleGcsIntegrationConfig(buildConfig({}));
+    expect(output).toEqual({});
   });
 });

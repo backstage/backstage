@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  readGoogleGcsIntegrationConfig,
-  readGoogleGcsIntegrationConfigs,
-} from './config';
+export { readGoogleGcsIntegrationConfig } from './config';
 export type { GoogleGcsIntegrationConfig } from './config';
 export const GOOGLE_GCS_HOST = 'storage.cloud.google.com';

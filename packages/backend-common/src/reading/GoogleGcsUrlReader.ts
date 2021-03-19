@@ -24,7 +24,7 @@ import {
 import getRawBody from 'raw-body';
 import {
   GOOGLE_GCS_HOST,
-  readGoogleGcsIntegrationConfigs,
+  readGoogleGcsIntegrationConfig,
 } from '@backstage/integration';
 
 const parseURL = (
@@ -49,28 +49,26 @@ export class GoogleGcsUrlReader implements UrlReader {
     if (!config.has('integrations.googleGcs')) {
       return [];
     }
-    const configs = readGoogleGcsIntegrationConfigs(
-      config.getOptionalConfigArray('integrations.googleGcs') ?? [],
+    const gcsConfig = readGoogleGcsIntegrationConfig(
+      config.getConfig('integrations.googleGcs'),
     );
-    return configs.map(integration => {
-      let storage: Storage;
-      if (!integration.clientEmail || !integration.privateKey) {
-        logger.warn(
-          'googleGcs credentials not found in config. Using default credentials provider.',
-        );
-        storage = new Storage();
-      } else {
-        storage = new Storage({
-          credentials: {
-            client_email: integration.clientEmail || undefined,
-            private_key: integration.privateKey || undefined,
-          },
-        });
-      }
-      const reader = new GoogleGcsUrlReader(storage);
-      const predicate = (url: URL) => url.host === GOOGLE_GCS_HOST;
-      return { reader, predicate };
-    });
+    let storage: Storage;
+    if (!gcsConfig.clientEmail || !gcsConfig.privateKey) {
+      logger.warn(
+        'googleGcs credentials not found in config. Using default credentials provider.',
+      );
+      storage = new Storage();
+    } else {
+      storage = new Storage({
+        credentials: {
+          client_email: gcsConfig.clientEmail || undefined,
+          private_key: gcsConfig.privateKey || undefined,
+        },
+      });
+    }
+    const reader = new GoogleGcsUrlReader(storage);
+    const predicate = (url: URL) => url.host === GOOGLE_GCS_HOST;
+    return [{ reader, predicate }];
   };
 
   constructor(private readonly storage: Storage) {}

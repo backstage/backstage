@@ -123,10 +123,10 @@ kafka:
 
 integrations:
   googleGcs:
-    - clientEmail:
-        $env: GCS_CLIENT_EMAIL
-      privateKey:
-        $env: GCS_PRIVATE_KEY
+    clientEmail:
+      $env: GCS_CLIENT_EMAIL
+    privateKey:
+      $env: GCS_PRIVATE_KEY
 
   github:
     - host: github.com

@@ -151,7 +151,7 @@ export interface Config {
     }>;
 
     /** Integration configuration for Google Cloud Storage */
-    googleGcs?: Array<{
+    googleGcs?: {
       /**
        * Service account email used to authenticate requests.
        * @visibility secret
@@ -162,6 +162,6 @@ export interface Config {
        * @visibility secret
        */
       privateKey?: string;
-    }>;
+    };
   };
 }

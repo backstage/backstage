@@ -38,6 +38,10 @@ export type GoogleGcsIntegrationConfig = {
 export function readGoogleGcsIntegrationConfig(
   config: Config,
 ): GoogleGcsIntegrationConfig {
+  if (!config) {
+    return {};
+  }
+
   if (!config.has('clientEmail') || !config.has('privateKey')) {
     return {};
   }
@@ -49,15 +53,4 @@ export function readGoogleGcsIntegrationConfig(
 
   const clientEmail = config.getOptionalString('clientEmail');
   return { clientEmail: clientEmail, privateKey: privateKey };
-}
-
-/**
- * Reads a set of Google Cloud Storage integration configs.
- *
- * @param configs All of the integration config objects
- */
-export function readGoogleGcsIntegrationConfigs(
-  configs: Config[],
-): GoogleGcsIntegrationConfig[] {
-  return configs.map(readGoogleGcsIntegrationConfig);
 }
