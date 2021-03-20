@@ -2,7 +2,8 @@ import { useHotCleanup } from '@backstage/backend-common';
 import {
   CatalogBuilder,
   createRouter,
-  runPeriodically
+  runPeriodically,
+  locationAnalyzer,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -24,6 +25,7 @@ export default async function createPlugin(env: PluginEnvironment): Promise<Rout
     entitiesCatalog,
     locationsCatalog,
     higherOrderOperation,
+    locationAnalyzer,
     logger: env.logger,
   });
 }
