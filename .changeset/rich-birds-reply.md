@@ -5,7 +5,7 @@
 
 Add `readonly` mode to catalog backend
 
-This change adds a `catalog.mode` field in `app-config.yaml` that can be used to configure the catalog in readonly mode which effectively disables the possibilty of adding new components to the catalog after startup.
+This change adds a `catalog.mode` field in `app-config.yaml` that can be used to configure the catalog in readonly mode which effectively disables the possibility of adding new components to the catalog after startup.
 
 When in `readonly` mode only locations configured in `catalog.locations` are loaded and served.
 By default the mode is `readwrite` which represents the current functionality where locations can be added at run-time.
