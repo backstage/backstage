@@ -59,13 +59,18 @@ export async function createRouter(
       }
     }
 
-    const todos = await todoService.listTodos({
-      entity,
-      offset,
-      limit,
-      orderBy,
-      filters,
-    });
+    const todos = await todoService.listTodos(
+      {
+        entity,
+        offset,
+        limit,
+        orderBy,
+        filters,
+      },
+      {
+        token: getBearerToken(req.headers.authorization),
+      },
+    );
     res.json(todos);
   });
 
@@ -156,4 +161,8 @@ export function parseFilterParam<T extends readonly string[]>(
   }
 
   return filters;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }
