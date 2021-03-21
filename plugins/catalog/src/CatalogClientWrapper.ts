@@ -77,11 +77,29 @@ export class CatalogClientWrapper implements CatalogApi {
     });
   }
 
+  async getOriginLocationByEntity(
+    entity: Entity,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined> {
+    return await this.client.getOriginLocationByEntity(entity, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
+
   async getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
     return await this.client.getLocationByEntity(entity, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
+  }
+
+  async removeLocationById(
+    id: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    return await this.client.removeLocationById(id, {
       token: options?.token ?? (await this.identityApi.getIdToken()),
     });
   }

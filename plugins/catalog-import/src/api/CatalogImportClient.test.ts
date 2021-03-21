@@ -95,7 +95,9 @@ describe('CatalogImportClient', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
     getEntityByName: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),

@@ -61,8 +61,10 @@ describe('createRouter', () => {
       addLocation: jest.fn(),
       getEntities: jest.fn(),
       getEntityByName: jest.fn(),
+      getOriginLocationByEntity: jest.fn(),
       getLocationByEntity: jest.fn(),
       getLocationById: jest.fn(),
+      removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
     };
 
