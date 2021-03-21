@@ -46,7 +46,12 @@ export async function createRouter(
 
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
     const { namespace, kind, name } = req.params;
-    const entity = await catalog.getEntityByName({ namespace, kind, name });
+    const entity = await catalog.getEntityByName(
+      { namespace, kind, name },
+      {
+        token: getBearerToken(req.headers.authorization),
+      },
+    );
     if (!entity) {
       throw new NotFoundError(
         `No ${kind} entity in ${namespace} named "${name}"`,
@@ -81,7 +86,12 @@ export async function createRouter(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
-      const entity = await catalog.getEntityByName({ namespace, kind, name });
+      const entity = await catalog.getEntityByName(
+        { namespace, kind, name },
+        {
+          token: getBearerToken(req.headers.authorization),
+        },
+      );
       if (!entity) {
         throw new NotFoundError(
           `No ${kind} entity in ${namespace} named "${name}"`,
@@ -133,4 +143,8 @@ async function getBadgeUrl(
 ): Promise<string> {
   const baseUrl = await options.discovery.getExternalBaseUrl('badges');
   return `${baseUrl}/entity/${namespace}/${kind}/${name}/badge/${badgeId}`;
+}
+
+function getBearerToken(header?: string): string | undefined {
+  return header?.match(/Bearer\s+(\S+)/i)?.[1];
 }
