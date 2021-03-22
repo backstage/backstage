@@ -79,6 +79,38 @@ silently at startup for convenience. So you only have to list it if you want to
 supply a token for it - and if you do, you can also leave out the `apiBaseUrl`
 and `rawBaseUrl` fields.
 
+### Processor: github-discovery
+
+There is a special GitHub discovery processor for discovering catalog entities
+within a GitHub organization. The processor will crawl a given GitHub
+organization and register entities matching the configured path. This can be
+useful as an alternative to static locations or manually adding things to the
+catalog.
+
+To use the discovery processor, you'll need a GitHub integration set up as above
+with a `GITHUB_TOKEN`. Then you can add a location target to the catalog
+configuration:
+
+```yaml
+catalog:
+  locations:
+    - type: github-discovery
+      target: https://github.com/myorg/service-*/blob/main/catalog-info.yaml
+```
+
+Note the `github-discovery` type, as this is not a regular `url` processor.
+
+The target is composed of three parts:
+
+- The base organization URL, `https://github.com/myorg` in this case
+- The repository blob to scan, which accepts \* wildcard tokens. This can simply
+  be `*` to scan all repositories in the organization. This example only looks
+  for repositories prefixed with `service-`.
+- The path within each repository to find the catalog YAML file. This will
+  usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
+  a similar variation for catalog files stored in the root directory of each
+  repository.
+
 ## Static Location Configuration
 
 To enable declarative catalog setups, it is possible to add locations to the
