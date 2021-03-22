@@ -57,7 +57,7 @@ export const createNewFileAction = () => {
 So let's break this down. The `createNewFileAction` is a function that returns a
 `createTemplateAction`, and it's a good place to pass in dependencies which
 close over the `TemplateAction`. Take a look at our
-[built-in actions](https://github.com/backstage/backstage/blob/7f5716081f45a41dc8a4246134b50c893e15c5e1/../plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/github.ts)
+[built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
 for reference.
 
 We set the type generic to `{ contents: string, filename: string}` which is
