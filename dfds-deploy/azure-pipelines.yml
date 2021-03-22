@@ -18,15 +18,15 @@ stages:
 - stage: CI
   displayName: 'Continuous Integration'  
   jobs:    
-  - job: BuildSourceCode
+  - job: InstallYarn
     steps:
       - script: npm install yarn
-      - script: yarn install
-      - script: yarn tsc
       
   - job: BuildBackendImage
     dependsOn: BuildSourceCode
     steps:      
+      - script: yarn install
+      - script: yarn tsc
       - script: yarn build
 
       - task: Docker@2
@@ -50,6 +50,8 @@ stages:
   - job: BuildFrontendImage
     dependsOn: BuildSourceCode
     steps:      
+      - script: yarn install
+      - script: yarn tsc
       - script: yarn build
 
       - task: Docker@2
