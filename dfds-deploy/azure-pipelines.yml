@@ -23,14 +23,16 @@ stages:
 - stage: CI
   displayName: 'Continuous Integration'  
   jobs:    
-  - job: BuildAndPublishImages
+  - job: BuildSourceCode
     steps:
       - script: npm install yarn
       - script: yarn install
       - script: yarn tsc
       - script: yarn build
       
-      # Use multistage image to compile code and build image
+  - job: BuildDockerBackend
+    dependsOn: BuildAndPublishImages
+    steps:
       - task: Docker@2
         displayName: 'Build backend image'
         inputs:
@@ -39,7 +41,6 @@ stages:
           buildContext: $(System.DefaultWorkingDirectory)
           arguments: '-t backstage-backend'
 
-      # Push the image to ECR with a tag based on the current BuildID
       - task: ECRPushImage@1
         displayName: 'Push backend image to Shared ECR'
         inputs:
@@ -50,6 +51,9 @@ stages:
           repositoryName: 'selfservice/backstage-backend'
           pushTag: '$(Build.BuildId)'
 
+  - job: BuildDockerFrontend
+    dependsOn: BuildAndPublishImages
+    steps:
       - task: Docker@2
         displayName: 'Build frontend image'
         inputs:
@@ -58,7 +62,6 @@ stages:
           buildContext: $(System.DefaultWorkingDirectory)
           arguments: '-t backstage'
 
-      # Push the image to ECR with a tag based on the current BuildID
       - task: ECRPushImage@1
         displayName: 'Push frontend image to Shared ECR'
         inputs:
@@ -69,7 +72,9 @@ stages:
           repositoryName: 'selfservice/backstage'
           pushTag: '$(Build.BuildId)'
 
-      # Upload Kubernetes manifests to current artifact Pipeline from folder /k8s
+  - job: PublishArtifacts
+    dependsOn: BuildDockerBackend -and BuildDockerFrontend
+    steps:
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
