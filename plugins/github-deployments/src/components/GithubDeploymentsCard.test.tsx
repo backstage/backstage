@@ -22,11 +22,16 @@ import {
   ConfigReader,
   ConfigApi,
   OAuthApi,
+  TableColumn,
 } from '@backstage/core';
 
 import { fireEvent } from '@testing-library/react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
-import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
+import {
+  GithubDeployment,
+  GithubDeploymentsApiClient,
+  githubDeploymentsApiRef,
+} from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
@@ -127,12 +132,6 @@ describe('github-deployments', () => {
     });
 
     it('should shows new data on reload', async () => {
-      worker.use(
-        graphql.query('deployments', (_, res, ctx) =>
-          res(ctx.data(responseStub)),
-        ),
-      );
-
       const rendered = await renderInTestApp(
         <ApiProvider apis={apis}>
           <GithubDeploymentsCard />
@@ -159,5 +158,28 @@ describe('github-deployments', () => {
       ).toBeInTheDocument();
       expect(await rendered.findByText('failure')).toBeInTheDocument();
     });
+  });
+
+  it('should display extra columns', async () => {
+    worker.use(
+      graphql.query('deployments', (_, res, ctx) =>
+        res(ctx.data(responseStub)),
+      ),
+    );
+
+    const extraColumns: TableColumn<GithubDeployment>[] = [
+      {
+        title: 'Creator',
+        field: 'creator.login',
+      },
+    ];
+
+    const rendered = await renderInTestApp(
+      <ApiProvider apis={apis}>
+        <GithubDeploymentsCard extraColumns={extraColumns} />
+      </ApiProvider>,
+    );
+
+    expect(await rendered.findByText('robot-user-001')).toBeInTheDocument();
   });
 });

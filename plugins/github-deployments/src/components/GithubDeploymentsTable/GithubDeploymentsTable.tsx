@@ -86,18 +86,20 @@ type GithubDeploymentsTableProps = {
   deployments: GithubDeployment[];
   isLoading: boolean;
   reload: () => void;
+  extraColumns: TableColumn<GithubDeployment>[];
 };
 
 const GithubDeploymentsTable = ({
   deployments,
   isLoading,
   reload,
+  extraColumns,
 }: GithubDeploymentsTableProps) => {
   const classes = useStyles();
 
   return (
     <Table
-      columns={columns}
+      columns={[...columns, ...extraColumns]}
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="GitHub Deployments"
       data={deployments}

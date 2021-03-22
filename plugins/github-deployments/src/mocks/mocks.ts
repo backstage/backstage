@@ -49,6 +49,10 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
+          creator: {
+            login: 'robot-user-001',
+          },
+          payload: '',
         },
         {
           state: 'pending',
@@ -58,6 +62,10 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
+          creator: {
+            login: 'robot-user-001',
+          },
+          payload: '',
         },
       ],
     },
@@ -76,6 +84,10 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
+          creator: {
+            login: 'robot-user-001',
+          },
+          payload: '',
         },
         {
           state: 'failure',
@@ -85,6 +97,10 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
+          creator: {
+            login: 'robot-user-001',
+          },
+          payload: '',
         },
       ],
     },
