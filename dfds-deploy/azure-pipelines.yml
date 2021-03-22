@@ -15,7 +15,6 @@ variables:
   kubernetes-namespace: 'backstage'
 
 stages:
-# Continuous Integration steps
 - stage: CI
   displayName: 'Continuous Integration'  
   jobs:    
@@ -77,11 +76,10 @@ stages:
           artifact: 'manifests'
           publishLocation: 'pipeline'   
 
-# Continuous Deployment steps
 - stage: CD
   displayName: 'Continuous Deployment'
   dependsOn: CI
-    condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
+  condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
 
   jobs:  
   - deployment: K8s
@@ -102,7 +100,7 @@ stages:
               targetFiles: '*.yaml'
               tokenPrefix: '$('
               tokenSuffix: ')'
-              
+          
           - task: Kubernetes@1
             displayName: 'Apply manifests'
             inputs:
