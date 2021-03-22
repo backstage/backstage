@@ -73,7 +73,7 @@ stages:
           pushTag: '$(Build.BuildId)'
 
   - job: PublishArtifacts
-    dependsOn: BuildDockerBackend -and BuildDockerFrontend
+    dependsOn: BuildDockerFrontend
     steps:
       - task: PublishPipelineArtifact@1
         inputs:
