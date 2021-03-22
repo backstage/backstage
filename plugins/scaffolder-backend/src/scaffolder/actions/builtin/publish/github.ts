@@ -41,6 +41,9 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     repoVisibility: 'private' | 'internal' | 'public';
+    collaborators: {
+      [team_slug: string]: 'push' | 'pull' | 'admin' | 'maintain' | 'triage';
+    };
   }>({
     id: 'publish:github',
     description:
@@ -67,6 +70,10 @@ export function createPublishGithubAction(options: {
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
+          collaborators: {
+            title: 'Collaborators',
+            type: 'object',
+          },
         },
       },
       output: {
@@ -89,6 +96,7 @@ export function createPublishGithubAction(options: {
         description,
         access,
         repoVisibility = 'private',
+        collaborators,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
@@ -154,6 +162,18 @@ export function createPublishGithubAction(options: {
           username: access,
           permission: 'admin',
         });
+      }
+
+      if (collaborators) {
+        for (const [team_slug, permission] of Object.entries(collaborators)) {
+          await client.teams.addOrUpdateRepoPermissionsInOrg({
+            org: owner,
+            owner,
+            repo,
+            team_slug,
+            permission,
+          });
+        }
       }
 
       const remoteUrl = data.clone_url;
