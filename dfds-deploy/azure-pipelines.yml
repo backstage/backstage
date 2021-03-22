@@ -23,7 +23,7 @@ stages:
       - script: npm install yarn
       
   - job: BuildBackendImage
-    dependsOn: BuildSourceCode
+    dependsOn: InstallYarn
     steps:      
       - script: yarn install
       - script: yarn tsc
@@ -48,7 +48,7 @@ stages:
           pushTag: '$(Build.BuildId)'
 
   - job: BuildFrontendImage
-    dependsOn: BuildSourceCode
+    dependsOn: InstallYarn
     steps:      
       - script: yarn install
       - script: yarn tsc
