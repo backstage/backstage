@@ -65,7 +65,7 @@ export class Database {
 
   static async create(options: Options): Promise<Database> {
     const { database } = options;
-
+    console.log(database)
     await database.migrate.latest({
       directory: migrationsDir,
     });

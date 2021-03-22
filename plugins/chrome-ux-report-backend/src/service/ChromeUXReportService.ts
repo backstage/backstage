@@ -25,6 +25,7 @@ export class ChromeUXReportService {
   private readonly logger: Logger;
   private readonly config: Config;
 
+
   constructor(options: Options) {
     options.logger.debug(`creating chrome ux report client`);
     this.config = options.config;
@@ -32,7 +33,7 @@ export class ChromeUXReportService {
     this.logger = options.logger;
   }
 
-  private async getSiteId(origin: string): Promise<number> {
+  private async getOriginId(origin: string): Promise<number> {
     try {
       return await this.database.getOriginId(origin);
     } catch (error) {
@@ -94,7 +95,7 @@ export class ChromeUXReportService {
         dom_content_loaded: metrics,
         onload: metrics,
         first_input: metrics,
-        layout_instability: metrics,
+        layout_instability: metrics, 
         notifications: metrics,
         time_to_first_byte: metrics,
       });
@@ -109,7 +110,8 @@ export class ChromeUXReportService {
 
   async getUXMetrics(origin: string, period: string): Promise<Metric> {
     try {
-      let originId = await this.getSiteId(origin);
+      let originId = await this.getOriginId(origin);
+      console.log(originId)
       let periodId = await this.getPeriodId(period);
       //let metrics: Metric;
 
@@ -119,7 +121,7 @@ export class ChromeUXReportService {
 
       if (!originId) {
         await this.addOrigin(origin);
-        originId = await this.getSiteId(origin);
+        originId = await this.getOriginId(origin);
       }
 
       if (!periodId) {
