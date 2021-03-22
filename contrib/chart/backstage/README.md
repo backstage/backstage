@@ -236,6 +236,26 @@ Backend failed to start up Error: unable to verify the first certificate
 
 This error happens in the backend when it tries to connect to the configured PostgreSQL database and the specified CA is not correct. The solution is to make sure that the contents of the `configMap` that holds the certificate match the CA for the PostgreSQL instance. A workaround is to set `appConfig.backend.database.connection.ssl.rejectUnauthorized` to `false` in the chart's values.
 
+#### Multi-Platform Kubernetes Services
+
+If you are running a multi-platform Kubernetes service with Windows and Linux nodes then you will need to apply a `nodeSelector` to the Helm chart to ensure that pods are scheduled onto the correct platform nodes.
+
+Add the following to your Helm values file:
+
+```yaml
+global:
+  nodeSelector:
+      kubernetes.io/os: linux
+
+postgresql:
+  master:
+    nodeSelector:
+      kubernetes.io/os: linux
+  slave:
+    nodeSelector:
+      kubernetes.io/os: linux
+```
+
 <!-- TODO Add example command when we know the final name of the charts -->
 
 ## Uninstalling Backstage
