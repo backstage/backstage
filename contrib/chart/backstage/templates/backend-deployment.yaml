@@ -63,6 +63,10 @@ spec:
           configMap:
             name: {{ include "backstage.fullname" . }}-app-config
 
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
+
 {{- if .Values.backend.enabled }}
 ---
 apiVersion: v1
