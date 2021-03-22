@@ -40,7 +40,7 @@ export function createPublishGithubAction(options: {
     repoUrl: string;
     description?: string;
     access?: string;
-    repoPath?: string;
+    sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:github',
@@ -68,7 +68,7 @@ export function createPublishGithubAction(options: {
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
-          repoPath: {
+          sourcePath: {
             title: 'Repository Path',
             type: 'string',
           },
@@ -163,8 +163,8 @@ export function createPublishGithubAction(options: {
 
       const remoteUrl = data.clone_url;
       const repoContentsUrl = `${data.html_url}/blob/master`;
-      const outputPath = ctx.input.repoPath
-        ? resolvePath(ctx.workspacePath, ctx.input.repoPath)
+      const outputPath = ctx.input.sourcePath
+        ? resolvePath(ctx.workspacePath, ctx.input.sourcePath)
         : ctx.workspacePath;
 
       await initRepoAndPush({
