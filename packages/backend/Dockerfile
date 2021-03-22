@@ -11,10 +11,10 @@
 
 FROM node:14-buster-slim
 
-RUN apt-get update && apt-get install -y curl
-RUN mkdir -p /assets && curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > /assets/rds-ca-2019-root.pem
-
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y curl
+RUN curl https://s3.amazonaws.com/rds-downloads/rds-ca-2019-root.pem > rds-ca-2021-root.pem
 
 # Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
 # The skeleton contains the package.json of each package in the monorepo,
