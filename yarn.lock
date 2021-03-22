@@ -17540,9 +17540,9 @@ ldap-filter@^0.3.3:
     assert-plus "^1.0.0"
 
 ldapjs@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/ldapjs/-/ldapjs-2.2.0.tgz#c23846d35bf215b4ba4721ff22f11d3df6391e2f"
-  integrity sha512-9+ekbj97nxRYQMRgEm/HYFhFLWSRKah2PnReUfhfM5f62XBeUSFolB+AQ2Jij5tqowpksTnrdNCZLP6C+V3uag==
+  version "2.2.4"
+  resolved "https://registry.npmjs.org/ldapjs/-/ldapjs-2.2.4.tgz#d4e3f4ae2277b6e760a83ebd61f7f5c4097c446b"
+  integrity sha512-OoeAXPNPPt4D6qva2/p6rkCIHknyYFd42Vp8JhSazBs9BbkEBmoajzj2F0ElD3vR+yAuzIVCjqh1W4uR8dfn0A==
   dependencies:
     abstract-logging "^2.0.0"
     asn1 "^0.2.4"
