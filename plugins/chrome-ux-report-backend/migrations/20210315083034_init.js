@@ -20,53 +20,53 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  await knex.schema.createTable('sites', table => {
-    table.comment('The table of chrome ux report sites');
-    table.increments('id').primary().notNullable();
-    table.text('origin').unique().notNullable();
-  });
+    await knex.schema.createTable('origins', table => {
+        table.comment('The table of chrome ux report sites');
+        table.increments('id').primary().notNullable();
+        table.text('origin').unique().notNullable();
+    });
 
-  await knex.schema.createTable('monthsWithYear', table => {
-    table.comment('The table of chrome ux report monthsWithYear');
-    table.increments('id').primary().notNullable();
-    table.text('date').unique().notNullable();
-  });
+    await knex.schema.createTable('period', table => {
+        table.comment('The table of chrome ux report monthsWithYear');
+        table.increments('id').primary().notNullable();
+        table.text('period').unique().notNullable();
+    });
 
-  await knex.schema.createTable('uxMetrics', table => {
-    table.comment('The table of chrome ux report metrics');
-    table.increments('id').primary().notNullable();
-    table
-      .integer('sites_id')
-      .references('id')
-      .inTable('sites')
-      .notNullable()
-      .onDelete('CASCADE');
-    table
-      .integer('monthsWithYear_id')
-      .references('id')
-      .inTable('monthsWithYear')
-      .notNullable()
-      .onDelete('CASCADE');
-    table.text('form_factor').notNullable();
-    table.text('connection_type').notNullable();
-    table.json('first_contentful_paint').notNullable();
-    table.json('largest_contentful_paint').notNullable();
-    table.json('dom_content_loaded').notNullable();
-    table.json('layout_instability').notNullable();
-    table.json('onload').notNullable();
-    table.json('first_input').notNullable();
-    table.json('notifications').notNullable();
-    table.json('time_to_first_byte').notNullable();
+    await knex.schema.createTable('uxMetrics', table => {
+        table.comment('The table of chrome ux report metrics');
+        table.increments('id').primary().notNullable();
+        table
+            .integer('origin_id')
+            .references('id')
+            .inTable('origins')
+            .notNullable()
+            .onDelete('CASCADE');
+        table
+            .integer('period_id')
+            .references('id')
+            .inTable('periods')
+            .notNullable()
+            .onDelete('CASCADE');
+        table.text('form_factor').notNullable();
+        table.text('connection_type').notNullable();
+        table.json('first_contentful_paint').notNullable();
+        table.json('largest_contentful_paint').notNullable();
+        table.json('dom_content_loaded').notNullable();
+        table.json('layout_instability').notNullable();
+        table.json('onload').notNullable();
+        table.json('first_input').notNullable();
+        table.json('notifications').notNullable();
+        table.json('time_to_first_byte').notNullable();
 
-    table.unique(['sites_id', 'monthsWithYear_id'], 'sites_monthsWithYear_idx');
-  });
+        table.unique(['origin_id', 'period_id'], 'origins_periods_idx');
+    });
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.schema.dropTable('metrics');
-  await knex.schema.dropTable('sites');
-  await knex.schema.dropTable('monthsWithYear');
+    await knex.schema.dropTable('metrics');
+    await knex.schema.dropTable('origins');
+    await knex.schema.dropTable('periods');
 };

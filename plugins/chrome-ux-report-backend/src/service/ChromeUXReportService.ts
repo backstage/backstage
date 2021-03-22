@@ -20,7 +20,7 @@ import { Database } from './database/Database';
 import { queryUXMetrics } from './Query';
 import { Metric, Options } from './types';
 
-export class ChromeUXReport {
+export class ChromeUXReportService {
   private readonly database: Database;
   private readonly logger: Logger;
   private readonly config: Config;
@@ -34,7 +34,7 @@ export class ChromeUXReport {
 
   private async getSiteId(origin: string): Promise<number> {
     try {
-      return await this.database.getSiteId(origin);
+      return await this.database.getOriginId(origin);
     } catch (error) {
       this.logger.error(
         `There is an error while getting origin from database, error ${error.message}`,
@@ -45,7 +45,7 @@ export class ChromeUXReport {
 
   private async getPeriodId(period: string): Promise<number> {
     try {
-      return this.database.getMonthWithYearId(period);
+      return this.database.getPeriodId(period);
     } catch (error) {
       this.logger.error(
         `There is an error while getting period from database, error ${error.message}`,
@@ -56,7 +56,7 @@ export class ChromeUXReport {
 
   private async addOrigin(origin: string): Promise<boolean> {
     try {
-      await this.database.addSite(origin);
+      await this.database.addOrigin(origin);
       return true;
     } catch (error) {
       this.logger.error(
@@ -68,7 +68,7 @@ export class ChromeUXReport {
 
   private async addPeriod(period: string): Promise<boolean> {
     try {
-      await this.database.addMonthWithYear(period);
+      await this.database.addPeriod(period);
       return true;
     } catch (error) {
       this.logger.error(
@@ -85,8 +85,8 @@ export class ChromeUXReport {
   ): Promise<boolean> {
     try {
       await this.database.addUXMetrics({
-        sites_id: originId,
-        monthsWithYear_id: periodId,
+        origin_id: originId,
+        period_id: periodId,
         connection_type: '4G',
         form_factor: 'Desktop',
         first_contentful_paint: metrics,

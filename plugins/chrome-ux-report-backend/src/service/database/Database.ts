@@ -23,20 +23,20 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
-export type SitesRow = {
+export type OriginsRow = {
   id: number;
   origin: string;
 };
 
-export type MonthWithYearRow = {
+export type PeriodRow = {
   id: number;
-  date: string;
+  period: string;
 };
 
 export type UXMetricsRow = {
   id: number;
-  sites_id: number;
-  monthsWithYear_id: number;
+  origin_id: number;
+  period_id: number;
   connection_type: string;
   form_factor: string;
   first_contentful_paint: any;
@@ -73,82 +73,69 @@ export class Database {
     return new Database(options);
   }
 
-  async addSite(origin: string): Promise<void> {
-    try {
-      await this.database<SitesRow>('sites').insert({
-        origin,
-      });
-    } catch (e) {
-      this.logger.error(e.message);
-    }
+  async addOrigin(origin: string): Promise<void> {
+    await this.database<OriginsRow>('origins').insert({
+      origin,
+    });
   }
 
-  async listSites(): Promise<{ sites: any }> {
-    const rows = await this.database<SitesRow>('sites').select();
+  async listOrigins(): Promise<{ origins: any }> {
+    const rows = await this.database<OriginsRow>('origins').select();
 
     return {
-      sites: rows.map(row => ({
+      origins: rows.map(row => ({
         origin: row.origin,
       })),
     };
   }
 
-  async getSiteId(origin: string): Promise<any> {
-    const [site] = await this.database<SitesRow>('sites')
+  async getOriginId(origin: string): Promise<any> {
+    const [originId] = await this.database<OriginsRow>('origins')
       .where({
         origin: origin,
       })
       .select('id');
 
-    return site ? site?.id : undefined;
+    return originId ? originId?.id : undefined;
   }
 
-  async removeSite(sites: string[]): Promise<void> {
-    await this.database('sites').delete().whereIn('id', sites);
+  async removeOrigin(origins: string[]): Promise<void> {
+    await this.database('origins').delete().whereIn('id', origins);
   }
 
-  async addMonthWithYear(date: any): Promise<void> {
-    try {
-      await this.database<MonthWithYearRow>('monthsWithYear').insert({
-        date,
-      });
-    } catch (e) {
-      this.logger.error(e.message);
-    }
+  async addPeriod(period: any): Promise<void> {
+    await this.database<PeriodRow>('periods').insert({
+      period,
+    });
   }
 
-  async getMonthWithYearId(date: string): Promise<any> {
-    const [monthWithYear] = await this.database<MonthWithYearRow>(
-      'monthsWithYear',
-    )
+  async getPeriodId(period: string): Promise<any> {
+    const [periodId] = await this.database<PeriodRow>('periods')
       .where({
-        date: date,
+        period: period,
       })
       .select('id');
 
-    return monthWithYear ? monthWithYear?.id : undefined;
+    return periodId ? periodId?.id : undefined;
   }
-
-  async listMonthWithYear(): Promise<{ dates: any }> {
-    const rows = await this.database<MonthWithYearRow>(
-      'monthsWithYear',
-    ).select();
+  async listPeriod(): Promise<{ periods: any }> {
+    const rows = await this.database<PeriodRow>('periods').select();
 
     return {
-      dates: rows.map(row => ({
-        date: row.date,
+      periods: rows.map(row => ({
+        period: row.period,
       })),
     };
   }
 
-  async removeMonthWithYear(dates: string[]): Promise<void> {
-    await this.database('monthsWithYear').delete().whereIn('id', dates);
+  async removePeriod(dates: string[]): Promise<void> {
+    await this.database('periods').delete().whereIn('id', dates);
   }
 
   async addUXMetrics(metrics: any): Promise<void> {
     const {
-      sites_id,
-      monthsWithYear_id,
+      origin_id,
+      period_id,
       connection_type,
       form_factor,
       first_contentful_paint,
@@ -163,8 +150,8 @@ export class Database {
 
     try {
       await this.database<UXMetricsRow>('uxMetrics').insert({
-        sites_id,
-        monthsWithYear_id,
+        origin_id,
+        period_id,
         connection_type,
         form_factor,
         first_contentful_paint,
@@ -181,16 +168,14 @@ export class Database {
     }
   }
 
-  async getUXMetrics(sitesId: number, monthWithYearId: number): Promise<any> {
-    const [metrics] = await this.database<UXMetricsRow>(
-      'uxMetrics',
-    )
+  async getUXMetrics(originId: number, periodId: number): Promise<any> {
+    const [metrics] = await this.database<UXMetricsRow>('uxMetrics')
       .where({
-        sites_id: sitesId,
-        monthsWithYear_id: monthWithYearId
+        origin_id: originId,
+        period_id: periodId,
       })
       .select();
 
-      return metrics;
+    return metrics;
   }
 }

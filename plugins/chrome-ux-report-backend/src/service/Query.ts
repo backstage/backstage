@@ -69,6 +69,7 @@ export async function queryUXMetrics(
     AND ${shortName}.start <= 1000
   `;
 
+  console.log(query)
   const queryOptions = {
     query,
     // Location must match that of the dataset(s) referenced in the query.

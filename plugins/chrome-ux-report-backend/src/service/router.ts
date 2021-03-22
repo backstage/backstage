@@ -19,7 +19,7 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Database } from './database/Database';
 import { RouterOptions } from './types';
-import { ChromeUXReport } from './ChromeUXReport';
+import { ChromeUXReportService } from './ChromeUXReportService';
 
 export async function createRouter(
   options: RouterOptions,
@@ -31,7 +31,7 @@ export async function createRouter(
     logger,
   });
 
-  const chromeUXReportClient = new ChromeUXReport({
+  const chromeUXReportService = new ChromeUXReportService({
     logger: logger,
     database: databaseClient,
     config: config,
@@ -50,7 +50,7 @@ export async function createRouter(
   router.post('/metrics', async (request, response) => {
     const { origin, month } = request.body;
     
-    const rows = await chromeUXReportClient.getUXMetrics(origin, month);
+    const rows = await chromeUXReportService.getUXMetrics(origin, month);
     response.send({ metrics: rows });
   });
 
