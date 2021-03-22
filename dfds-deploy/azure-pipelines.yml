@@ -70,6 +70,7 @@ stages:
 
   - job: PublishArtifacts
     dependsOn: BuildFrontendImage
+      condition: and(succeeded('BuildBackendImage'))
     steps:
       - task: PublishPipelineArtifact@1
         inputs:
