@@ -24,6 +24,8 @@ import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
+type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
@@ -41,9 +43,7 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     repoVisibility: 'private' | 'internal' | 'public';
-    collaborators: {
-      [team_slug: string]: 'push' | 'pull' | 'admin' | 'maintain' | 'triage';
-    };
+    collaborators: { [Key in Permission]: string[] };
   }>({
     id: 'publish:github',
     description:
@@ -73,6 +73,43 @@ export function createPublishGithubAction(options: {
           collaborators: {
             title: 'Collaborators',
             type: 'object',
+            properties: {
+              pull: {
+                title: 'Teams with Pull access',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              push: {
+                title: 'Teams with Push access',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              admin: {
+                title: 'Teams with Admin access',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              maintain: {
+                title: 'Teams with Maintain access',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+              triage: {
+                title: 'Teams with Triage access',
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
+              },
+            },
           },
         },
       },
@@ -165,14 +202,19 @@ export function createPublishGithubAction(options: {
       }
 
       if (collaborators) {
-        for (const [team_slug, permission] of Object.entries(collaborators)) {
-          await client.teams.addOrUpdateRepoPermissionsInOrg({
-            org: owner,
-            owner,
-            repo,
-            team_slug,
-            permission,
-          });
+        for (const [permission, teams] of Object.entries(collaborators)) {
+          await Promise.all(
+            teams.map(
+              async team =>
+                await client.teams.addOrUpdateRepoPermissionsInOrg({
+                  org: owner,
+                  team_slug: team,
+                  owner,
+                  repo,
+                  permission: permission as Permission,
+                }),
+            ),
+          );
         }
       }
 

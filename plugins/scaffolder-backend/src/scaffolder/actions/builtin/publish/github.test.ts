@@ -249,8 +249,8 @@ describe('publish:github', () => {
       input: {
         ...mockContext.input,
         collaborators: {
-          'robot-1': 'pull',
-          'robot-2': 'push',
+          pull: ['robot-1'],
+          push: ['robot-2'],
         },
       },
     });
