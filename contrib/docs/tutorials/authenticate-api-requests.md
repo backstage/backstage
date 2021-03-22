@@ -6,7 +6,7 @@ API requests from frontend plugins include an authorization header with a Backst
 
 Note that this means Backstage will stop working for guests, as no token is issued for them.
 
-Caveat: as of writing this, Backstage does not refresh the identity token so eventually users will get a 401 response on API calls (not on loading the web page as only the API calls are authenticated) and have to logout/login again to get a new token.
+As techdocs HTML pages load assets without an Authorization header the code below also sets a token cookie when the user logs in (and when the token is about to expire).
 
 ```typescript
 // packages/backend/src/index.ts from a create-app deployment
@@ -82,6 +82,10 @@ async function main() {
   apiRouter.use(cookieParser());
   // The auth route must be publically available as it is used during login
   apiRouter.use('/auth', await auth(authEnv));
+  // Add a simple endpoint to be used when setting a token cookie
+  apiRouter.use('/cookie', authMiddleware, (req, res) => {
+    res.status(200).send(`Coming right up`);
+  });
   // Only authenticated requests are allowed to the routes below
   apiRouter.use('/catalog', authMiddleware, await catalog(catalogEnv));
   apiRouter.use('/techdocs', authMiddleware, await techdocs(techdocsEnv));
@@ -90,4 +94,86 @@ async function main() {
 
   // ...
 }
+```
+
+```typescript
+// packages/app/src/App.tsx from a create-app deployment
+
+import {
+  discoveryApiRef,
+  useApi,
+} from '@backstage/core';
+
+// ...
+
+// Parses supplied JWT token and returns the payload
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join(''),
+  );
+
+  return JSON.parse(jsonPayload);
+}
+
+// Returns milliseconds until the supplied JWT token expires
+function msUntilExpiry(token) {
+  const payload = parseJwt(token);
+  const remaining = new Date(payload.exp * 1000) - new Date();
+  return remaining;
+}
+
+// Calls the specified url regularly using an auth token to set a token cookie
+// to authorize regular HTTP requests when loading techdocs
+async function setAuthCookie(url, getIdToken) {
+  const token = await getIdToken();
+  const response = await fetch(url, {
+    mode: 'cors',
+    credentials: 'include',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  // Call this function again a few minutes before the token expires
+  const ms = msUntilExpiry(token) - 4 * 60 * 1000;
+  setTimeout(
+    () => {
+      setAuthCookie(url, getIdToken);
+    },
+    ms > 0 ? ms : 10000,
+  );
+}
+
+const app = createApp({
+
+  // ...
+
+  components: {
+    SignInPage: props => {
+      const discoveryApi = useApi(discoveryApiRef);
+      return (
+        <SignInPage
+          {...props}
+          providers={['guest', 'custom', ...providers]}
+          title="Select a sign-in method"
+          align="center"
+          onResult={async result => {
+            // When logged in, set a token cookie
+            setAuthCookie(
+              await discoveryApi.getBaseUrl('cookie'),
+              result.getIdToken,
+            );
+            // Forward results
+            props.onResult(result);
+          }}
+        />
+      );
+    },
+  },
 ```
