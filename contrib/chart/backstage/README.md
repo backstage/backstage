@@ -245,8 +245,9 @@ Add the following to your Helm values file:
 ```yaml
 global:
   nodeSelector:
-      kubernetes.io/os: linux
+    kubernetes.io/os: linux
 
+# If using Postgres Chart also add
 postgresql:
   master:
     nodeSelector:
