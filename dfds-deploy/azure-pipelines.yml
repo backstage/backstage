@@ -23,11 +23,12 @@ stages:
       - script: npm install yarn
       - script: yarn install
       - script: yarn tsc
-      - script: yarn build
       
   - job: BuildBackendImage
     dependsOn: BuildSourceCode
-    steps:
+    steps:      
+      - script: yarn build
+
       - task: Docker@2
         displayName: 'Build backend image'
         inputs:
@@ -48,7 +49,9 @@ stages:
 
   - job: BuildFrontendImage
     dependsOn: BuildSourceCode
-    steps:
+    steps:      
+      - script: yarn build
+
       - task: Docker@2
         displayName: 'Build frontend image'
         inputs:
