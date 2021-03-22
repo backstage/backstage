@@ -99,10 +99,7 @@ async function main() {
 ```typescript
 // packages/app/src/App.tsx from a create-app deployment
 
-import {
-  discoveryApiRef,
-  useApi,
-} from '@backstage/core';
+import { discoveryApiRef, useApi } from '@backstage/core';
 
 // ...
 
@@ -151,7 +148,6 @@ async function setAuthCookie(url, getIdToken) {
 }
 
 const app = createApp({
-
   // ...
 
   components: {
@@ -176,4 +172,9 @@ const app = createApp({
       );
     },
   },
+
+  // ...
+});
+
+// ...
 ```
