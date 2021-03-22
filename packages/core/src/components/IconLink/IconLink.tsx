@@ -18,7 +18,6 @@ import React from 'react';
 import { IconComponent } from '@backstage/core-api';
 import { Grid, LinkProps, makeStyles, Typography } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
-import { omit } from 'lodash';
 import { Link } from '../Link';
 
 const useStyles = makeStyles({
