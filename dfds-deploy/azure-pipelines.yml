@@ -68,7 +68,9 @@ stages:
           pushTag: '$(Build.BuildId)'
 
   - job: PublishArtifacts
-    dependsOn: BuildFrontendImage
+    dependsOn: 
+    - BuildBackendImage
+    - BuildFrontendImage  
     steps:
       - task: PublishPipelineArtifact@1
         inputs:
