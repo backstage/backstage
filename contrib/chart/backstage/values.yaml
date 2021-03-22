@@ -70,9 +70,6 @@ global:
     postgresqlUsername: backend-user
     caFilename: ca.crt
   nodeSelector: {}
-  ## Speficy nodeSelector for multi-platform Kubernetes Services
-  ## nodeSelector:
-  ##   kubernetes.io/os: linux
 
 postgresql:
   enabled: true
@@ -85,13 +82,6 @@ postgresql:
   volumePermissions:
     enabled: true
   initdbScriptsSecret: backstage-postgresql-initdb
-  ## Speficy nodeSelector for multi-platform Kubernetes Services
-  ## master:
-  ##   nodeSelector:
-  ##     kubernetes.io/os: linux
-  ## slave:
-  ##   nodeSelector:
-  ##     kubernetes.io/os: linux
 
 appConfig:
   app:
