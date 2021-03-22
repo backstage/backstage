@@ -128,7 +128,7 @@ function msUntilExpiry(token) {
 
 // Calls the specified url regularly using an auth token to set a token cookie
 // to authorize regular HTTP requests when loading techdocs
-async function setAuthCookie(url, getIdToken) {
+async function setTokenCookie(url, getIdToken) {
   const token = await getIdToken();
   const response = await fetch(url, {
     mode: 'cors',
@@ -141,7 +141,7 @@ async function setAuthCookie(url, getIdToken) {
   const ms = msUntilExpiry(token) - 4 * 60 * 1000;
   setTimeout(
     () => {
-      setAuthCookie(url, getIdToken);
+      setTokenCookie(url, getIdToken);
     },
     ms > 0 ? ms : 10000,
   );
@@ -161,7 +161,7 @@ const app = createApp({
           align="center"
           onResult={async result => {
             // When logged in, set a token cookie
-            setAuthCookie(
+            setTokenCookie(
               await discoveryApi.getBaseUrl('cookie'),
               result.getIdToken,
             );
