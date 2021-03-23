@@ -31,50 +31,14 @@ describe('<SystemDiagram />', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  const catalogApi: Partial<CatalogApi> = {
-    getEntities: () =>
-      Promise.resolve({
-        items: [
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'System',
-            metadata: {
-              name: 'my-system',
-              namespace: 'my-namespace',
-            },
-            spec: {
-              owner: 'tools@example.com',
-            },
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Component',
-            metadata: {
-              name: 'my-entity',
-              namespace: 'my-namespace',
-            },
-            spec: {
-              owner: 'not-tools@example.com',
-              type: 'service',
-              system: 'my-system',
-            },
-          },
-          {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'System',
-            metadata: {
-              name: 'my-system2',
-              namespace: 'my-namespace2',
-            },
-            spec: {
-              owner: 'tools@example.com',
-            },
-          },
-        ] as Entity[],
-      }),
-  };
-
   it('shows empty list if no relations', async () => {
+    const catalogApi: Partial<CatalogApi> = {
+      getEntities: () =>
+        Promise.resolve({
+          items: [] as Entity[],
+        }),
+    };
+
     const entity: Entity = {
       apiVersion: 'v1',
       kind: 'System',
@@ -99,6 +63,27 @@ describe('<SystemDiagram />', () => {
   });
 
   it('shows related systems', async () => {
+    const catalogApi: Partial<CatalogApi> = {
+      getEntities: () =>
+        Promise.resolve({
+          items: [
+            {
+              apiVersion: 'backstage.io/v1alpha1',
+              kind: 'Component',
+              metadata: {
+                name: 'my-entity',
+                namespace: 'my-namespace',
+              },
+              spec: {
+                owner: 'not-tools@example.com',
+                type: 'service',
+                system: 'my-system',
+              },
+            },
+          ] as Entity[],
+        }),
+    };
+
     const entity: Entity = {
       apiVersion: 'v1',
       kind: 'System',

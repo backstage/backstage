@@ -62,84 +62,78 @@ function simplifiedEntityName(
  * and relationships of those entities.
  */
 export function SystemDiagram({ entity }: SystemDiagramProps) {
-  const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: catalogResponse } = useAsync(() => {
-    return catalogApi.getEntities({
-      filter: {
-        kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
-      },
-    });
-  }, [catalogApi]);
-
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = simplifiedEntityName(entity);
   const systemNodes = new Array<{ id: string }>();
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
 
+  const catalogApi = useApi(catalogApiRef);
+  const { loading, error, value: catalogResponse } = useAsync(() => {
+    return catalogApi.getEntities({
+      filter: {
+        kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
+        ['spec.system']: currentSystemName,
+      },
+    });
+  }, [catalogApi]);
+
+  // pick out the system itself
+  systemNodes.push({
+    id: currentSystemNode,
+  });
+
+  // check if the system has an assigned domain
+  // even if the domain object doesn't exist in the catalog, display it in the map
+  const catalogItemDomain = getEntityRelations(entity, RELATION_PART_OF, {
+    kind: 'domain',
+  });
+  catalogItemDomain.forEach(foundDomain =>
+    systemNodes.push({
+      id: simplifiedEntityName(foundDomain),
+    }),
+  );
+  catalogItemDomain.forEach(foundDomain =>
+    systemEdges.push({
+      from: currentSystemNode,
+      to: simplifiedEntityName(foundDomain),
+      label: 'part of',
+    }),
+  );
+
   if (catalogResponse && catalogResponse.items) {
     for (const catalogItem of catalogResponse.items) {
-      // pick out the system itself
-      if (catalogItem.metadata.name === currentSystemName) {
-        systemNodes.push({
-          id: currentSystemNode,
-        });
+      systemNodes.push({
+        id: simplifiedEntityName(catalogItem),
+      });
 
-        // check if the system has an assigned domain
-        // even if the domain object doesn't exist in the catalog, display it in the map
-        const catalogItemDomain = getEntityRelations(
-          catalogItem,
-          RELATION_PART_OF,
-          { kind: 'domain' },
-        );
-        catalogItemDomain.forEach(foundDomain =>
-          systemNodes.push({
-            id: simplifiedEntityName(foundDomain),
-          }),
-        );
-        catalogItemDomain.forEach(foundDomain =>
-          systemEdges.push({
-            from: currentSystemNode,
-            to: simplifiedEntityName(foundDomain),
-            label: 'part of',
-          }),
-        );
-      }
+      // Check relations of the entity assigned to this system to see
+      // if it relates to other entities.
+      // Note those relations may, or may not, be explicitly
+      // assigned to the system.
+      const catalogItemRelations_partOf = getEntityRelations(
+        catalogItem,
+        RELATION_PART_OF,
+      );
+      catalogItemRelations_partOf.forEach(foundRelation =>
+        systemEdges.push({
+          from: simplifiedEntityName(catalogItem),
+          to: simplifiedEntityName(foundRelation),
+          label: 'part of',
+        }),
+      );
 
-      // process any entity assigned to the system
-      if (catalogItem.spec?.system === currentSystemName) {
-        systemNodes.push({
-          id: simplifiedEntityName(catalogItem),
-        });
+      const catalogItemRelations_providesApi = getEntityRelations(
+        catalogItem,
+        RELATION_PROVIDES_API,
+      );
 
-        // Check relations of the entity assigned to this system to see
-        // if it relates to other entities.
-        // Note those relations may, or may not, be explicitly
-        // assigned to the system.
-
-        const catalogItemRelations_partOf = getEntityRelations(
-          catalogItem,
-          RELATION_PART_OF,
-        );
-        catalogItemRelations_partOf.forEach(foundRelation =>
-          systemEdges.push({
-            from: simplifiedEntityName(catalogItem),
-            to: simplifiedEntityName(foundRelation),
-            label: 'part of',
-          }),
-        );
-
-        const catalogItemRelations_providesApi = getEntityRelations(
-          catalogItem,
-          RELATION_PROVIDES_API,
-        );
-        catalogItemRelations_providesApi.forEach(foundRelation =>
-          systemEdges.push({
-            from: simplifiedEntityName(catalogItem),
-            to: simplifiedEntityName(foundRelation),
-            label: 'provides API',
-          }),
-        );
-      }
+      catalogItemRelations_providesApi.forEach(foundRelation =>
+        systemEdges.push({
+          from: simplifiedEntityName(catalogItem),
+          to: simplifiedEntityName(foundRelation),
+          label: 'provides API',
+        }),
+      );
     }
   }
 
