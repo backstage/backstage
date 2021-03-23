@@ -38,7 +38,7 @@ import {
   EntityHasSystemsCard,
   EntityLinksCard,
   EntityPageLayout,
-  SystemDiagram,
+  EntitySystemDiagramCard,
 } from '@backstage/plugin-catalog';
 import { EntityProvider, useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -461,7 +461,7 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/diagram/*"
       title="Diagram"
-      element={<SystemDiagram entity={entity} />}
+      element={<EntitySystemDiagramCard entity={entity} />}
     />
   </EntityPageLayout>
 );

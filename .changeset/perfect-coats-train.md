@@ -2,9 +2,9 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Adds a new `SystemDiagram` component to visually map all elements in a system.
+Adds a new `EntitySystemDiagramCard` component to visually map all elements in a system.
 
-To use this new component, you can add a new tab with the component on to the System Entity Page in your `packages/app/src/components/catalog/EntityPage.tsx` file.
+To use this new component with the legacy composability pattern, you can add a new tab with the component on to the System Entity Page in your `packages/app/src/components/catalog/EntityPage.tsx` file.
 
 For example,
 
@@ -19,7 +19,7 @@ For example,
 +    <EntityPageLayout.Content
 +      path="/diagram/*"
 +      title="Diagram"
-+      element={<SystemDiagram entity={entity} />}
++      element={<EntitySystemDiagramCard entity={entity} />}
 +    />
    </EntityPageLayout>
  );

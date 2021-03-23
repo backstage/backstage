@@ -37,7 +37,7 @@ import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
 
-type SystemDiagramProps = {
+type EntitySystemDiagramProps = {
   entity: Entity;
 };
 
@@ -61,7 +61,7 @@ function simplifiedEntityName(
  * Dynamically generates a diagram of a system, its assigned entities,
  * and relationships of those entities.
  */
-export function SystemDiagram({ entity }: SystemDiagramProps) {
+export function EntitySystemDiagramCard({ entity }: EntitySystemDiagramProps) {
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = simplifiedEntityName(entity);
   const systemNodes = new Array<{ id: string }>();

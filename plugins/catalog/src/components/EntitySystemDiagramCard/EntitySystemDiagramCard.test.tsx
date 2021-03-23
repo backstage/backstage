@@ -19,9 +19,9 @@ import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
-import { SystemDiagram } from './SystemDiagram';
+import { EntitySystemDiagramCard } from './EntitySystemDiagramCard';
 
-describe('<SystemDiagram />', () => {
+describe('<EntitySystemDiagramCard />', () => {
   beforeAll(() => {
     Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
       value: () => ({ width: 100, height: 100 }),
@@ -51,7 +51,7 @@ describe('<SystemDiagram />', () => {
 
     const { queryByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
-        <SystemDiagram entity={entity} />
+        <EntitySystemDiagramCard entity={entity} />
       </ApiProvider>,
     );
 
@@ -105,7 +105,7 @@ describe('<SystemDiagram />', () => {
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
-        <SystemDiagram entity={entity} />
+        <EntitySystemDiagramCard entity={entity} />
       </ApiProvider>,
     );
 
