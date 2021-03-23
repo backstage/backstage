@@ -117,23 +117,17 @@
       {
         "type": "subcategory",
         "label": "GitLab",
-        "ids": [
-          "integrations/gitlab/locations"
-        ]
+        "ids": ["integrations/gitlab/locations"]
       },
       {
         "type": "subcategory",
         "label": "BitBucket",
-        "ids": [
-          "integrations/bitbucket/locations"
-        ]
+        "ids": ["integrations/bitbucket/locations"]
       },
       {
         "type": "subcategory",
         "label": "Azure DevOps",
-        "ids": [
-          "integrations/azure/locations"
-        ]
+        "ids": ["integrations/azure/locations"]
       },
       {
         "type": "subcategory",
