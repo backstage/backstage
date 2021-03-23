@@ -124,8 +124,8 @@ export const darkTheme = createTheme({
     errorText: '#CA001B',
     infoText: '#004e8a',
     warningText: '#000000',
-    linkHover: '#2196F3',
-    link: '#0A6EBE',
+    linkHover: '#EFE5A1',
+    link: '#EFE5B1',
     gold: yellow.A700,
     navigation: {
       background: '#424242',
