@@ -11,111 +11,13 @@ such as reading raw entity data from a remote source, parsing it, transforming
 it, and validating it. These processors are configured under the
 `catalog.processors` configuration key.
 
-### Processor: url
+### Static Location Configuration
 
-The `url` processor is responsible for fetching entity data from files in any
-external provider like GitHub, GitLab, Bitbucket, etc. Unlike other processors,
-the configuration of this processor lives under the top-level `integrations`
-key, as it is used by other parts of Backstage too.
+The simplest configuration for the catalog, as shown in the default
+`@backstage/create-app` template, is to declaratively add locations pointing to
+YAML files with [static configuration](../../conf/index.md).
 
-```yaml
-integrations:
-  github:
-    - host: github.com
-      token:
-        $env: GITHUB_TOKEN
-    - host: ghe.example.net
-      apiBaseUrl: https://ghe.example.net/api/v3
-      rawBaseUrl: https://ghe.example.net/raw
-      token:
-        $env: GHE_TOKEN
-  gitlab:
-    - host: gitlab.com
-      token:
-        $env: GITLAB_TOKEN
-  bitbucket:
-    - host: bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
-  azure:
-    - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
-```
-
-Each key under `integrations` is a separate configuration for each external
-provider. The providers each have their own configuration, so let's look at the
-GitHub section as an example.
-
-Directly under the `github` key is a list of provider configurations, where you
-can list the various GitHub compatible providers you want to be able to fetch
-data from. Each entry is a structure with up to four elements:
-
-- `host` (optional): The host of the location target that you want to match on.
-  The default host is `github.com`.
-- `token` (optional): An authentication token as expected by GitHub. If
-  supplied, it will be passed along with all calls to this provider, both API
-  and raw. If it is not supplied, anonymous access will be used.
-- `apiBaseUrl` (optional): If you want to communicate using the APIv3 method
-  with this provider, specify the base URL for its endpoint here, with no
-  trailing slash. Specifically when the target is GitHub, you can leave it out
-  to be inferred automatically. For a GitHub Enterprise installation, it is
-  commonly at `https://api.<host>` or `https://<host>/api/v3`.
-- `rawBaseUrl` (optional): If you want to communicate using the raw HTTP method
-  with this provider, specify the base URL for its endpoint here, with no
-  trailing slash. Specifically when the target is public GitHub, you can leave
-  it out to be inferred automatically. For a GitHub Enterprise installation, it
-  is commonly at `https://api.<host>` or `https://<host>/api/v3`.
-
-You need to supply either `apiBaseUrl` or `rawBaseUrl` or both (except for
-public GitHub, for which we can infer them). The `apiBaseUrl` will always be
-preferred over the other if a `token` is given, otherwise `rawBaseUrl` will be
-preferred.
-
-If you do not supply a public GitHub provider, one will be added automatically,
-silently at startup for convenience. So you only have to list it if you want to
-supply a token for it - and if you do, you can also leave out the `apiBaseUrl`
-and `rawBaseUrl` fields.
-
-### Processor: github-discovery
-
-There is a special GitHub discovery processor for discovering catalog entities
-within a GitHub organization. The processor will crawl a given GitHub
-organization and register entities matching the configured path. This can be
-useful as an alternative to static locations or manually adding things to the
-catalog.
-
-To use the discovery processor, you'll need a GitHub integration set up as above
-with a `GITHUB_TOKEN`. Then you can add a location target to the catalog
-configuration:
-
-```yaml
-catalog:
-  locations:
-    - type: github-discovery
-      target: https://github.com/myorg/service-*/blob/main/catalog-info.yaml
-```
-
-Note the `github-discovery` type, as this is not a regular `url` processor.
-
-The target is composed of three parts:
-
-- The base organization URL, `https://github.com/myorg` in this case
-- The repository blob to scan, which accepts \* wildcard tokens. This can simply
-  be `*` to scan all repositories in the organization. This example only looks
-  for repositories prefixed with `service-`.
-- The path within each repository to find the catalog YAML file. This will
-  usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
-  a similar variation for catalog files stored in the root directory of each
-  repository.
-
-## Static Location Configuration
-
-To enable declarative catalog setups, it is possible to add locations to the
-catalog via [static configuration](../../conf/index.md). Locations are added to
-the catalog under the `catalog.locations` key, for example:
+Locations are added to the catalog under the `catalog.locations` key:
 
 ```yaml
 catalog:
@@ -124,9 +26,34 @@ catalog:
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
 ```
 
-The locations added through static configuration can not be removed through the
-catalog locations API. To remove the locations, you have to remove them from the
+The `url` type locations are handled by a standard processor included with the
+catalog (`UrlReaderProcessor`), so no processor configuration is needed. This
+processor _does however_ need an [integration](../../integrations/index.md) to
+understand how to retrieve a given URL. For the example above, you would need to
+configure the [GitHub integration](../../integrations/github/locations.md) to
+read files from github.com.
+
+The locations added through static configuration cannot be removed through the
+catalog locations API. To remove these locations, you must remove them from the
 configuration.
+
+### Integration Processors
+
+Integrations may simply provide a mechanism to handle `url` location type for an
+external provider, or they may also include additional processors out of the
+box, such as the GitHub [discovery](../../integrations/github/discovery.md)
+processor that scans a GitHub organization for
+[entity descriptor files](descriptor-format.md).
+
+Check the [integrations](../../integrations/index.md) documentation to see what
+is offered by each integration.
+
+### Custom Processors
+
+To ingest entities from an existing system already tracking software, you can
+also write a _custom processor_ to convert between the existing system and
+Backstage's descriptor format. This is documented in
+[External Integrations](external-integrations.md).
 
 ## Catalog Rules
 

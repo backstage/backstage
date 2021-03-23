@@ -104,10 +104,36 @@
       }
     ],
     "Integrations": [
+      "integrations/index",
       {
         "type": "subcategory",
         "label": "GitHub",
-        "ids": ["integrations/github/org"]
+        "ids": [
+          "integrations/github/locations",
+          "integrations/github/discovery",
+          "integrations/github/org"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "GitLab",
+        "ids": [
+          "integrations/gitlab/locations"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "BitBucket",
+        "ids": [
+          "integrations/bitbucket/locations"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "Azure DevOps",
+        "ids": [
+          "integrations/azure/locations"
+        ]
       },
       {
         "type": "subcategory",
