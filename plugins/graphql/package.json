@@ -37,7 +37,7 @@
     "apollo-server": "^2.16.1",
     "apollo-server-express": "^2.16.1",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "graphql": "^15.3.0",
     "helmet": "^4.0.0",
     "reflect-metadata": "^0.1.13",

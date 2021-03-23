@@ -38,7 +38,7 @@
     "compression": "^1.7.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "fs-extra": "^9.0.0",
     "helmet": "^4.0.0",
     "lodash": "^4.17.15",

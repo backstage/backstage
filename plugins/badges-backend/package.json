@@ -40,7 +40,7 @@
     "cors": "^2.8.5",
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
