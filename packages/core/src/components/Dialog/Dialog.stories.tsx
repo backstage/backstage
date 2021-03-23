@@ -101,7 +101,7 @@ export const Default = () => {
   return (
     <>
       <Button color="primary" variant="contained" onClick={openDialog}>
-        Open dialog
+        Open Dialog
       </Button>
       <Dialog
         open={open}
