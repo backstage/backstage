@@ -22,17 +22,17 @@ To define an admonition simply put the following Markdown into your content:
 And they end up looking like this:
 
 !!! warn
-Defining admonitions can be addicting.
+    Defining admonitions can be addicting.
 
 !!! note
-You can learn a lot about TechDocs by just visiting the Backstage web site at
-https://backstage.io/docs.
+    You can learn a lot about TechDocs by just visiting the Backstage web site at
+    https://backstage.io/docs.
 
 !!! info
-TechDocs is the core feature that supports documentation as code in Backstage.
+    TechDocs is the core feature that supports documentation as code in Backstage.
 
 !!! tip
-Don't forget to spell check your documentation.
+    Don't forget to spell check your documentation.
 
 ## PlantUML
 
@@ -54,14 +54,14 @@ Pymdownx (Python Markdown extensions) are a variety of smaller additions.
 ### Details
 
 ??? note "What is the answer to life, the universe, and everything? (click me for the answer)"
-The answer is 42.
+    The answer is 42.
 
 ??? note "What is 4 plus 4?"
-The answer is 8.
+    The answer is 8.
 
 ???+ note "How do I get support?"
-You can get support by opening an issue in this repository. This detail is open by default
-so it's more easily visible without requiring the user to click to open it.
+    You can get support by opening an issue in this repository. This detail is open by default
+    so it's more easily visible without requiring the user to click to open it.
 
 ### Task Lists
 
