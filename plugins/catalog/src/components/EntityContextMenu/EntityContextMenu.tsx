@@ -24,6 +24,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
+import BadgeIcon from '@material-ui/icons/CallToAction';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 
@@ -81,6 +82,9 @@ export const EntityContextMenu = ({
                 onShowBadgesDialog();
               }}
             >
+              <ListItemIcon>
+                <BadgeIcon fontSize="small" />
+              </ListItemIcon>
               <Typography variant="inherit">Badges</Typography>
             </MenuItem>
           )}
