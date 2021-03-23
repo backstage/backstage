@@ -48,7 +48,7 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const templater = new CookieCutter();
     await templater.run({
@@ -72,7 +72,7 @@ describe('CookieCutter Templater', () => {
     jest
       .spyOn(fs, 'readJSON')
       .mockImplementationOnce(() => Promise.resolve(existingJson));
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const values = {
       owner: 'blobby',
@@ -135,12 +135,10 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
     jest
       .spyOn(fs, 'realpath')
-      .mockImplementation((filePath: string | Buffer) =>
-        Promise.resolve(filePath as string),
-      );
+      .mockImplementation(x => Promise.resolve(x.toString()));
 
     const templater = new CookieCutter();
     await templater.run({
@@ -182,7 +180,7 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const templater = new CookieCutter();
     await templater.run({
@@ -226,7 +224,7 @@ describe('CookieCutter Templater', () => {
         },
       };
 
-      jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+      jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
       commandExists.mockImplementationOnce(() => () => true);
 
       const templater = new CookieCutter();
