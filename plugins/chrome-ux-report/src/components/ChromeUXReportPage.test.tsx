@@ -15,30 +15,85 @@
  */
 import React from 'react';
 import { ChromeUXReportPage } from './ChromeUXReportPage';
-import { ThemeProvider } from '@material-ui/core';
-import { lightTheme } from '@backstage/theme';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { msw, renderInTestApp } from '@backstage/test-utils';
+import { wrapInTestApp } from '@backstage/test-utils';
+import { render, waitFor } from "@testing-library/react";
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigApi,
+  configApiRef,
+  ConfigReader
+} from "../../../../packages/core-api";
+import { ChromeUXReportApi, chromeuxReportApiRef } from "../api";
 
-describe('ExampleComponent', () => {
-  const server = setupServer();
-  // Enable sane handlers for network requests
-  msw.setupDefaultHandlers(server);
-
-  // setup mock response
-  beforeEach(() => {
-    server.use(
-      rest.get('/*', (_, res, ctx) => res(ctx.status(200), ctx.json({}))),
-    );
+describe('ChromeUXReportPage', () => {
+  const configApi: ConfigApi = new ConfigReader({
+    chromeUXReport: {
+      origins: [{
+        site: 'backstage',
+        name: 'Backstage'
+      }]
+    },
   });
 
-  it('should render', async () => {
-    const rendered = await renderInTestApp(
-      <ThemeProvider theme={lightTheme}>
-        <ChromeUXReportPage />
-      </ThemeProvider>,
+  const chromeUXReportApi: Partial<ChromeUXReportApi> = {
+    getChromeUXMetrics: async () => ({
+      metrics: {
+        origin_id: 1,
+        period_id: 1,
+        connection_type: '4G',
+        form_factor: 'Desktop',
+        first_contentful_paint: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        largest_contentful_paint: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        dom_content_loaded: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        onload: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        first_input: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        layout_instability: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        notifications: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+        time_to_first_byte: {
+          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
+        },
+      }
+    })
+  };
+
+  const renderWrapped = (children: React.ReactNode) =>
+    render(
+      wrapInTestApp(
+        <ApiProvider
+          apis={ApiRegistry.from([
+            [configApiRef, configApi],
+            [chromeuxReportApiRef, chromeUXReportApi]
+          ])}
+        >
+          {children}
+        </ApiProvider>,
+      ),
     );
-    expect(rendered.getByText('Chrome UX Report')).toBeInTheDocument();
+
+
+  it('render successfully', async () => {
+    const rendered = renderWrapped(<ChromeUXReportPage />);
+    const headerTitle = await rendered.findByText('Chrome UX Report');
+    const headerSubtitle = await rendered.findByText('Chrome UX Report is a powerful plugin for analyzing your site’s speed in a variety of different ways.');
+
+    await waitFor(async () => {
+      expect(headerTitle).toBeInTheDocument();
+      expect(headerSubtitle).toBeInTheDocument();
+    });
   });
 });
