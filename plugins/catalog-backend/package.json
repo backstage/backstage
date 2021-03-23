@@ -43,7 +43,7 @@
     "core-js": "^3.6.5",
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "fs-extra": "^9.0.0",
     "git-url-parse": "^11.4.4",
     "glob": "^7.1.6",
