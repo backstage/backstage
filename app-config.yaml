@@ -296,75 +296,6 @@ auth:
   # session:
   #   secret: custom session secret
   providers:
-    google:
-      development:
-        clientId:
-          $env: AUTH_GOOGLE_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GOOGLE_CLIENT_SECRET
-    github:
-      development:
-        clientId:
-          $env: AUTH_GITHUB_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GITHUB_CLIENT_SECRET
-        enterpriseInstanceUrl:
-          $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
-    gitlab:
-      development:
-        clientId:
-          $env: AUTH_GITLAB_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GITLAB_CLIENT_SECRET
-        audience:
-          $env: GITLAB_BASE_URL
-#    saml:
-#      entryPoint: 'http://localhost:7001/'
-#      issuer: 'passport-saml'
-    okta:
-      development:
-        clientId:
-          $env: AUTH_OKTA_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OKTA_CLIENT_SECRET
-        audience:
-          $env: AUTH_OKTA_AUDIENCE
-    oauth2:
-      development:
-        clientId:
-          $env: AUTH_OAUTH2_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OAUTH2_CLIENT_SECRET
-        authorizationUrl:
-          $env: AUTH_OAUTH2_AUTH_URL
-        tokenUrl:
-          $env: AUTH_OAUTH2_TOKEN_URL
-        ###
-        # provide a list of scopes as needed for your OAuth2 Server:
-        #
-        # scope: saml-login-selector openid profile email
-    oidc:
-      development:
-        metadataUrl:
-          $env: AUTH_OIDC_METADATA_URL
-        clientId:
-          $env: AUTH_OIDC_CLIENT_ID
-        clientSecret:
-          $env: AUTH_OIDC_CLIENT_SECRET
-        authorizationUrl:
-          $env: AUTH_OIDC_AUTH_URL
-        tokenUrl:
-          $env: AUTH_OIDC_TOKEN_URL
-        tokenSignedResponseAlg:
-          $env: AUTH_OIDC_TOKEN_SIGNED_RESPONSE_ALG
-    auth0:
-      development:
-        clientId:
-          $env: AUTH_AUTH0_CLIENT_ID
-        clientSecret:
-          $env: AUTH_AUTH0_CLIENT_SECRET
-        domain:
-          $env: AUTH_AUTH0_DOMAIN
     microsoft:
       development:
         clientId:
@@ -373,14 +304,6 @@ auth:
           $env: AUTH_MICROSOFT_CLIENT_SECRET
         tenantId:
           $env: AUTH_MICROSOFT_TENANT_ID
-    onelogin:
-      development:
-        clientId:
-          $env: AUTH_ONELOGIN_CLIENT_ID
-        clientSecret:
-          $env: AUTH_ONELOGIN_CLIENT_SECRET
-        issuer:
-          $env: AUTH_ONELOGIN_ISSUER
 costInsights:
   engineerCost: 200000
   products:
