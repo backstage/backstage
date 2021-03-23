@@ -22,6 +22,15 @@ import React from 'react';
 import { SystemDiagram } from './SystemDiagram';
 
 describe('<SystemDiagram />', () => {
+  beforeAll(() => {
+    Object.defineProperty(window.SVGElement.prototype, 'getBBox', {
+      value: () => ({ width: 100, height: 100 }),
+      configurable: true,
+    });
+  });
+
+  afterEach(() => jest.resetAllMocks());
+
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
       Promise.resolve({
@@ -41,7 +50,7 @@ describe('<SystemDiagram />', () => {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Component',
             metadata: {
-              name: 'Entity2',
+              name: 'my-entity',
               namespace: 'my-namespace',
             },
             spec: {
@@ -50,35 +59,43 @@ describe('<SystemDiagram />', () => {
               system: 'my-system',
             },
           },
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'System',
+            metadata: {
+              name: 'my-system2',
+              namespace: 'my-namespace2',
+            },
+            spec: {
+              owner: 'tools@example.com',
+            },
+          },
         ] as Entity[],
       }),
-    // need to mock this?
-    // getEntityRelations: (Entity, string) =>
-    //   Promise.resolve({
-
-    //   }),
   };
-
-  afterEach(() => jest.resetAllMocks());
 
   it('shows empty list if no relations', async () => {
     const entity: Entity = {
       apiVersion: 'v1',
       kind: 'System',
       metadata: {
-        name: 'my-system',
+        name: 'my-system2',
+        namespace: 'my-namespace2',
       },
       relations: [],
     };
 
-    const { getByText } = await renderInTestApp(
+    const { queryByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
         <SystemDiagram entity={entity} />
       </ApiProvider>,
     );
 
-    expect(getByText('System Diagram')).toBeInTheDocument();
-    // expect(getByText('my-system')).not.toBeInTheDocument();
+    expect(queryByText(/System Diagram/)).toBeInTheDocument();
+    expect(queryByText(/system:my-namespace2\/my-system2/)).toBeInTheDocument();
+    expect(
+      queryByText(/component:my-namespace\/my-entity/),
+    ).not.toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
@@ -108,6 +125,7 @@ describe('<SystemDiagram />', () => {
     );
 
     expect(getByText('System Diagram')).toBeInTheDocument();
-    expect(getByText('my-system')).toBeInTheDocument();
+    expect(getByText('system:my-namespace/my-system')).toBeInTheDocument();
+    expect(getByText('component:my-namespace/my-entity')).toBeInTheDocument();
   });
 });
