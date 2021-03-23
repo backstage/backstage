@@ -7,3 +7,4 @@ templates
 plugins/scaffolder-backend/sample-templates
 .vscode
 dist-types
+plugins/techdocs-backend/examples/documented-component/docs
