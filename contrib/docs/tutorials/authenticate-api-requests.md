@@ -83,7 +83,7 @@ async function main() {
   // The auth route must be publically available as it is used during login
   apiRouter.use('/auth', await auth(authEnv));
   // Add a simple endpoint to be used when setting a token cookie
-  apiRouter.use('/cookie', authMiddleware, (req, res) => {
+  apiRouter.use('/cookie', authMiddleware, (_req, res) => {
     res.status(200).send(`Coming right up`);
   });
   // Only authenticated requests are allowed to the routes below
@@ -104,7 +104,7 @@ import { discoveryApiRef, useApi } from '@backstage/core';
 // ...
 
 // Parses supplied JWT token and returns the payload
-function parseJwt(token) {
+function parseJwt(token: string): { exp: number } {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonPayload = decodeURIComponent(
@@ -120,17 +120,18 @@ function parseJwt(token) {
 }
 
 // Returns milliseconds until the supplied JWT token expires
-function msUntilExpiry(token) {
+function msUntilExpiry(token: string): number {
   const payload = parseJwt(token);
-  const remaining = new Date(payload.exp * 1000) - new Date();
+  const remaining =
+    new Date(payload.exp * 1000).getTime() - new Date().getTime();
   return remaining;
 }
 
 // Calls the specified url regularly using an auth token to set a token cookie
 // to authorize regular HTTP requests when loading techdocs
-async function setTokenCookie(url, getIdToken) {
+async function setTokenCookie(url: string, getIdToken: () => Promise<string>) {
   const token = await getIdToken();
-  const response = await fetch(url, {
+  await fetch(url, {
     mode: 'cors',
     credentials: 'include',
     headers: {
@@ -161,10 +162,12 @@ const app = createApp({
           align="center"
           onResult={async result => {
             // When logged in, set a token cookie
-            setTokenCookie(
-              await discoveryApi.getBaseUrl('cookie'),
-              result.getIdToken,
-            );
+            if (typeof result.getIdToken !== 'undefined') {
+              setTokenCookie(
+                await discoveryApi.getBaseUrl('cookie'),
+                result.getIdToken,
+              );
+            }
             // Forward results
             props.onResult(result);
           }}
