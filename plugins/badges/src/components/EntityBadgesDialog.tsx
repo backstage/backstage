@@ -33,7 +33,6 @@ import {
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { badgesApiRef } from '../api';
@@ -43,14 +42,6 @@ type Props = {
   onClose?: () => any;
   entity: Entity;
 };
-
-const useStyles = makeStyles({
-  codeBlock: {
-    '& code': {
-      whiteSpace: 'pre-wrap',
-    },
-  },
-});
 
 export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
   const theme = useTheme();
