@@ -49,7 +49,7 @@
     "dockerode": "^3.2.1",
     "example-app": "^0.2.20",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "knex": "^0.95.1",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.3.0",

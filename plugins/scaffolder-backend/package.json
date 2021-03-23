@@ -48,7 +48,7 @@
     "cross-fetch": "^3.0.6",
     "dockerode": "^3.2.1",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "fs-extra": "^9.0.0",
     "git-url-parse": "^11.4.4",
     "globby": "^11.0.0",

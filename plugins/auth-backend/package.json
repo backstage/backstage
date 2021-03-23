@@ -42,7 +42,7 @@
     "cors": "^2.8.5",
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
     "fs-extra": "^9.0.0",
     "got": "^11.5.2",
