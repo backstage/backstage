@@ -56,11 +56,17 @@ export class TodoReaderService implements TodoService {
     this.defaultPageSize = options.defaultPageSize ?? DEFAULT_DEFAULT_PAGE_SIZE;
   }
 
-  async listTodos(req: ListTodosRequest): Promise<ListTodosResponse> {
+  async listTodos(
+    req: ListTodosRequest,
+    options?: { token?: string },
+  ): Promise<ListTodosResponse> {
     if (!req.entity) {
       throw new InputError('Entity filter is required to list TODOs');
     }
-    const entity = await this.catalogClient.getEntityByName(req.entity);
+    const token = options?.token;
+    const entity = await this.catalogClient.getEntityByName(req.entity, {
+      token,
+    });
     if (!entity) {
       throw new NotFoundError(
         `Entity not found, ${serializeEntityRef(req.entity)}`,

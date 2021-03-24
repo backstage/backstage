@@ -42,5 +42,8 @@ export type ListTodosResponse = {
 };
 
 export interface TodoService {
-  listTodos(req: ListTodosRequest): Promise<ListTodosResponse>;
+  listTodos(
+    req: ListTodosRequest,
+    options?: { token?: string },
+  ): Promise<ListTodosResponse>;
 }
