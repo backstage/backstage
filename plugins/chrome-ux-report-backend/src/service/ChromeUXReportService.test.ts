@@ -21,14 +21,6 @@ import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
 import  Knex  from 'knex'
 import { Query } from '../__mocks__/Query';
-/* async function createDB(){
-  const db = newDb();
-
-  const knex = await db.adapters.createKnex()
-
-  return knex;
-}
- */
 
 function createDB() {
   const knex = Knex({
@@ -73,7 +65,6 @@ describe('Chrome UX Report Service', () => {
         query: queryClient,
       },
     );
-
   })
   it('successfully get UXMetrics when database has cache', async () => {
     // adding cache data

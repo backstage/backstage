@@ -38,7 +38,7 @@ export class Query{
 
   async queryUXMetrics(
     origin: string,
-    month: string,
+    period: string,
     rateInfo: RateInfo,
   ) {
     const client = createBigQueryClient(this.config);
@@ -50,7 +50,7 @@ export class Query{
         SELECT
           SUM(${shortName}.density) 
         FROM
-          \`chrome-ux-report.all.${month}\`,
+          \`chrome-ux-report.all.${period}\`,
           UNNEST(${longName}.histogram.bin) AS ${shortName}
         WHERE
           origin = '${origin}'
@@ -61,14 +61,14 @@ export class Query{
         SELECT
           SUM(${shortName}.density) 
         FROM
-          \`chrome-ux-report.all.${month}\`,
+          \`chrome-ux-report.all.${period}\`,
           UNNEST(${longName}.histogram.bin) AS ${shortName}
         WHERE
           origin = '${origin}'
           AND ${shortName}.start > 2500
       ) AS slow
       FROM
-      \`chrome-ux-report.all.${month}\`,
+      \`chrome-ux-report.all.${period}\`,
       UNNEST(${longName}.histogram.bin) AS ${shortName}
       WHERE
       origin = '${origin}'
