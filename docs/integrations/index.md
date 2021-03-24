@@ -8,8 +8,7 @@ description:
 ---
 
 Integrations allow Backstage to read or publish data using external providers
-
-- such as GitHub, GitLab, BitBucket, LDAP, or cloud providers.
+such as GitHub, GitLab, BitBucket, LDAP, or cloud providers.
 
 ## Configuration
 
