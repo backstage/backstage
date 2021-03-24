@@ -18,6 +18,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { Database } from './database/Database';
+import { Query } from './Query';
 
 export interface RouterOptions {
   logger: Logger;
@@ -28,7 +29,7 @@ export interface RouterOptions {
 export interface Options {
     logger: Logger;
     database: Database;
-    config: Config
+    query: Query
   }
 
 export interface RateInfo {

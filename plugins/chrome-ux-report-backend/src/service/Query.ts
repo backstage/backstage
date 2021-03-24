@@ -28,56 +28,65 @@ function createBigQueryClient(config: Config) {
   });
 }
 
-export async function queryUXMetrics(
-  origin: string,
-  month: string,
-  rateInfo: RateInfo,
-  config: Config,
-) {
-  const client = createBigQueryClient(config);
-  const { longName, shortName } = rateInfo;
+export class Query{
 
-  const query = `SELECT
-    SUM(${shortName}.density) AS fast,
-     (
-      SELECT
-        SUM(${shortName}.density) 
+  private readonly config: Config;
+
+  constructor(config: Config){
+    this.config = config;
+  }
+
+  async queryUXMetrics(
+    origin: string,
+    month: string,
+    rateInfo: RateInfo,
+  ) {
+    const client = createBigQueryClient(this.config);
+    const { longName, shortName } = rateInfo;
+  
+    const query = `SELECT
+      SUM(${shortName}.density) AS fast,
+       (
+        SELECT
+          SUM(${shortName}.density) 
+        FROM
+          \`chrome-ux-report.all.${month}\`,
+          UNNEST(${longName}.histogram.bin) AS ${shortName}
+        WHERE
+          origin = '${origin}'
+          AND ${shortName}.start > 1000
+          AND ${shortName}.start <= 2500
+      ) AS average, 
+       (
+        SELECT
+          SUM(${shortName}.density) 
+        FROM
+          \`chrome-ux-report.all.${month}\`,
+          UNNEST(${longName}.histogram.bin) AS ${shortName}
+        WHERE
+          origin = '${origin}'
+          AND ${shortName}.start > 2500
+      ) AS slow
       FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(${longName}.histogram.bin) AS ${shortName}
+      \`chrome-ux-report.all.${month}\`,
+      UNNEST(${longName}.histogram.bin) AS ${shortName}
       WHERE
-        origin = '${origin}'
-        AND ${shortName}.start > 1000
-        AND ${shortName}.start <= 2500
-    ) AS average, 
-     (
-      SELECT
-        SUM(${shortName}.density) 
-      FROM
-        \`chrome-ux-report.all.${month}\`,
-        UNNEST(${longName}.histogram.bin) AS ${shortName}
-      WHERE
-        origin = '${origin}'
-        AND ${shortName}.start > 2500
-    ) AS slow
-    FROM
-    \`chrome-ux-report.all.${month}\`,
-    UNNEST(${longName}.histogram.bin) AS ${shortName}
-    WHERE
-    origin = '${origin}'
-    AND ${shortName}.start >= 0
-    AND ${shortName}.start <= 1000
-  `;
-
-  console.log(query)
-  const queryOptions = {
-    query,
-    // Location must match that of the dataset(s) referenced in the query.
-    location: 'US',
-  };
-
-  const [job] = await client.createQueryJob(queryOptions);
-
-  const [rows] = await job.getQueryResults();
-  return rows;
+      origin = '${origin}'
+      AND ${shortName}.start >= 0
+      AND ${shortName}.start <= 1000
+    `;
+  
+    console.log(query)
+    const queryOptions = {
+      query,
+      // Location must match that of the dataset(s) referenced in the query.
+      location: 'US',
+    };
+  
+    const [job] = await client.createQueryJob(queryOptions);
+  
+    const [rows] = await job.getQueryResults();
+    return rows;
+  }
+  
 }

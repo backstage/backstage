@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { Database } from './database/Database';
-import { queryUXMetrics } from './Query';
+import { Query } from './Query';
 import { Metric, Options } from './types';
 
 export class ChromeUXReportService {
   private readonly database: Database;
   private readonly logger: Logger;
-  private readonly config: Config;
-
+  private readonly queryClient: Query
 
   constructor(options: Options) {
     options.logger.debug(`creating chrome ux report client`);
-    this.config = options.config;
     this.database = options.database;
     this.logger = options.logger;
+    this.queryClient = options.query;
   }
 
   private async getOriginId(origin: string): Promise<number> {
@@ -128,11 +126,10 @@ export class ChromeUXReportService {
         periodId = await this.getPeriodId(period);
       }
 
-      const [rows] = await queryUXMetrics(
+      const [rows] = await this.queryClient.queryUXMetrics(
         origin,
         period,
         { longName: 'first_contentful_paint', shortName: 'fcp' },
-        this.config,
       );
 
       await this.addUXMetrics(originId, periodId, rows);
