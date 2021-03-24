@@ -5,7 +5,7 @@ title: Key Concepts
 description: High level of key concepts used in the Backstage project
 ---
 
-For new users to Backstage, there are certain concepts which are central to it's
+For new users to Backstage, there are certain concepts which are central to its
 design and functionality. Being an expert in each of these concepts is not
 necessary, however having a base understanding of each will make administering,
 configuring, and operating Backstage easier to understand.
@@ -13,6 +13,7 @@ configuring, and operating Backstage easier to understand.
 - CHANGELOG - https://keepachangelog.com
 - Docker - https://www.docker.com/
 - Monorepo - https://semaphoreci.com/blog/what-is-monorepo
+- Node.js - https://nodejs.org
 - React - https://reactjs.org
 - Semantic Versioning - https://semver.org
 - TypeScript - https://www.typescriptlang.org
