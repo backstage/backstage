@@ -67,9 +67,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
       }
     };
     updateSidebarPosition();
-    document.addEventListener('scroll', updateSidebarPosition);
+    window.addEventListener('scroll', updateSidebarPosition);
+    window.addEventListener('resize', updateSidebarPosition);
     return () => {
-      document.removeEventListener('scroll', updateSidebarPosition);
+      window.removeEventListener('scroll', updateSidebarPosition);
+      window.removeEventListener('resize', updateSidebarPosition);
     };
   }, [shadowDomRef, shadowRoot, sidebars]);
 
@@ -111,6 +113,30 @@ export const Reader = ({ entityId, onReady }: Props) => {
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
         .md-grid { max-width: 90vw; margin: 0 }
+        @media screen and (max-width: 76.1875em) {
+          .md-nav { 
+            background-color: ${theme.palette.background.default}; 
+            transition: none !important
+          }
+          .md-sidebar--secondary { display: none; }
+          .md-sidebar--primary { left: 72px; width: 10rem }
+          .md-content { margin-left: 10rem; max-width: 100%; }
+          .md-content__inner { font-size: 0.9rem }
+          .md-footer { 
+            position: static; 
+            margin-left: 10rem; 
+            width: calc(100% - 10rem); 
+          }
+          .md-nav--primary .md-nav__title {  
+            white-space: normal;
+            height: auto;
+            line-height: 1rem;
+            cursor: auto;
+          }
+          .md-nav--primary > .md-nav__title [for="none"] {
+            padding-top: 0;
+          } 
+        }
         `,
       }),
     ]);
@@ -160,6 +186,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
         onLoaded: (dom: Element) => {
           (dom as HTMLElement).style.removeProperty('opacity');
+          // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
+          (dom as HTMLElement)
+            .querySelector('.md-nav__title')
+            ?.removeAttribute('for');
           const sideDivs: HTMLElement[] = Array.from(
             shadowRoot!.querySelectorAll('.md-sidebar'),
           );
