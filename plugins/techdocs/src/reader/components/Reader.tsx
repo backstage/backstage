@@ -17,7 +17,7 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
@@ -47,11 +47,33 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
   const [shadowDomRef, shadowRoot] = useShadowDom();
+  const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const navigate = useNavigate();
 
   const { value, loading, error } = useAsync(async () => {
     return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
   }, [techdocsStorageApi, kind, namespace, name, path]);
+
+  useEffect(() => {
+    const updateSidebarPosition = () => {
+      if (!!shadowRoot && !!shadowDomRef.current && !!sidebars) {
+        sidebars!.forEach(sidebar => {
+          const newTop = Math.max(
+            shadowDomRef.current!.getBoundingClientRect().top,
+            0,
+          );
+          sidebar.style.top = `${newTop}px`;
+        });
+      }
+    };
+    updateSidebarPosition();
+    window.addEventListener('scroll', updateSidebarPosition);
+    window.addEventListener('resize', updateSidebarPosition);
+    return () => {
+      window.removeEventListener('scroll', updateSidebarPosition);
+      window.removeEventListener('resize', updateSidebarPosition);
+    };
+  }, [shadowDomRef, shadowRoot, sidebars]);
 
   React.useEffect(() => {
     if (!shadowRoot || loading || error) {
@@ -82,10 +104,39 @@ export const Reader = ({ entityId, onReady }: Props) => {
           --md-code-bg-color: ${theme.palette.background.paper};
         }
         .md-main__inner { margin-top: 0; }
-        .md-sidebar { top: 0; width: 20rem; }
+        .md-sidebar {  position: fixed; bottom: 100px; width: 20rem; }
+        .md-sidebar--secondary { right: 2rem; }
+        .md-content { margin-bottom: 50px }
+        .md-footer { position: fixed; bottom: 0px; width: 100vw; }
+        .md-footer-nav__link { width: 20rem;}
+        .md-content { margin-left: 20rem; max-width: calc(100% - 20rem * 2 - 3rem); }
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
-        .md-grid { max-width: 80vw; }
+        .md-grid { max-width: 90vw; margin: 0 }
+        @media screen and (max-width: 76.1875em) {
+          .md-nav { 
+            background-color: ${theme.palette.background.default}; 
+            transition: none !important
+          }
+          .md-sidebar--secondary { display: none; }
+          .md-sidebar--primary { left: 72px; width: 10rem }
+          .md-content { margin-left: 10rem; max-width: 100%; }
+          .md-content__inner { font-size: 0.9rem }
+          .md-footer { 
+            position: static; 
+            margin-left: 10rem; 
+            width: calc(100% - 10rem); 
+          }
+          .md-nav--primary .md-nav__title {  
+            white-space: normal;
+            height: auto;
+            line-height: 1rem;
+            cursor: auto;
+          }
+          .md-nav--primary > .md-nav__title [for="none"] {
+            padding-top: 0;
+          } 
+        }
         `,
       }),
     ]);
@@ -135,6 +186,20 @@ export const Reader = ({ entityId, onReady }: Props) => {
         },
         onLoaded: (dom: Element) => {
           (dom as HTMLElement).style.removeProperty('opacity');
+          // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
+          (dom as HTMLElement)
+            .querySelector('.md-nav__title')
+            ?.removeAttribute('for');
+          const sideDivs: HTMLElement[] = Array.from(
+            shadowRoot!.querySelectorAll('.md-sidebar'),
+          );
+          setSidebars(sideDivs);
+          // set sidebar height so they don't initially render in wrong position
+          const docTopPosition = (dom as HTMLElement).getBoundingClientRect()
+            .top;
+          sideDivs!.forEach(sidebar => {
+            sidebar.style.top = `${docTopPosition}px`;
+          });
         },
       }),
     ]);
