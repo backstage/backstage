@@ -19,42 +19,18 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
-import { Client } from 'pg';
+import { newDb } from 'pg-mem';
 
-const knex = jest.mock('knex', () => {
-  const fn = () => {
-    return {
-      select: jest.fn().mockReturnThis(),
-      from: jest.fn().mockReturnThis(),
-      where: jest.fn().mockReturnThis(),
-      first: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnThis(),
-      migrate: {
-          latest: jest.fn().mockReturnThis(),
-      },
-      raw: jest.fn().mockReturnThis(),
-      then: jest.fn( (done) => {
-        done(null);
-      }),
-    };
-  };
-  return fn;
-});
+async function createDB(){
+  const db = newDb();
 
-const db = jest.mock('pg', () => {
-  return { Client: jest.fn(() => knex) };
-});
+  const knex = await db.adapters.createKnex() as import('knex');
+
+  return knex;
+}
 
 describe('Chrome UX Report Service', () => {
-  let client: any;
-  beforeEach(() => {
-    client = new Client();
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('successfully get UX metrics when database has cache', async () => {
+  it('successfully get UXMetrics when database has cache', async () => {
     const config: Config = new ConfigReader({
       chromeUXReport: {
         keyPath: 'file.json',
@@ -67,11 +43,30 @@ describe('Chrome UX Report Service', () => {
         ],
       },
     });
-    console.log(db)
+
     const databaseClient = await Database.create({
-      database: client,
+      database: await createDB(),
       logger: getVoidLogger(),
     });
+
+    // adding cache data
+
+    await databaseClient.addOrigin(config.getConfigArray('chromeUXReport.origins')[0].getString('site'))
+    await databaseClient.addPeriod('202009')
+    await databaseClient.addUXMetrics({
+        origin_id: 1,
+        period_id: 1,
+        connection_type: '4G',
+        form_factor: 'Desktop',
+        first_contentful_paint: {fast:0.25,average:0.25, slow:0.25},
+        largest_contentful_paint: {fast:0.25,average:0.25, slow:0.25},
+        dom_content_loaded: {fast:0.25,average:0.25, slow:0.25},
+        onload: {fast:0.25,average:0.25, slow:0.25},
+        first_input: {fast:0.25,average:0.25, slow:0.25},
+        layout_instability: {fast:0.25,average:0.25, slow:0.25}, 
+        notifications: {fast:0.25,average:0.25, slow:0.25},
+        time_to_first_byte: {fast:0.25,average:0.25, slow:0.25},
+      })
 
     const chromeUXReportService: ChromeUXReportService = new ChromeUXReportService(
       {
@@ -81,9 +76,13 @@ describe('Chrome UX Report Service', () => {
       },
     );
 
-    chromeUXReportService.getUXMetrics(
+    const metrics = await chromeUXReportService.getUXMetrics(
       config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
       '202009',
     );
+
+    expect(metrics).toMatchObject({
+      id:1
+    })
   });
 });
