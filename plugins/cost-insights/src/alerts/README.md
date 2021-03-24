@@ -1,6 +1,6 @@
 # Cost Insights Alerts
 
-Cost Insights currently supports [project growth](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/alerts/ProjectGrowthAlert.tsx) and [unlabeled dataflow](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/alerts/UnlabeledDataflowAlert.tsx) alerts. They do not require any UI or additional configuration but are extendable for custom implementations.
+Cost Insights supports custom and ready-to-use alerts such as [project growth](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/alerts/ProjectGrowthAlert.tsx) and [unlabeled dataflow](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/alerts/UnlabeledDataflowAlert.tsx) alerts. These exported alerts do not require any UI or additional configuration but are extendable for custom implementations.
 
 ### Basic Setup
 
@@ -35,9 +35,7 @@ export class CostInsightsClient extends CostInsightsApi {
 
 ### Custom Setup
 
-Default properties such as the title, subtitle and even the chart itself can be overridden.
-
-Additionally, alerts can be extended to support actions such as snoozing or dismissing.
+Default properties such as the title, subtitle and instructions page url can be overridden - even default UI such as chart itself. Additionally, alerts can be extended to support actions such as snoozing or dismissing.
 
 ![project-growth-alert-custom](../assets/project-growth-alert-custom.png)
 
@@ -71,6 +69,7 @@ export class ProjectGrowthAlert extends DefaultProjectGrowthAlert {
     return 'A custom subtitle for a project growth alert';
   }
 
+  // render a custom component in the Action Items section
   get element(){
     return <MyCustomChart data={this.data} />
   }
@@ -87,7 +86,6 @@ export class ProjectGrowthAlert extends DefaultProjectGrowthAlert {
     ...
   }
 }
-
 ```
 
 ```ts
@@ -116,7 +114,11 @@ export class CostInsightsClient extends CostInsightsApi {
 
 ### Advanced Setup
 
-If the default UI is insufficient, alerts can render their own custom forms for actions such as snoozing or dismissing. Cost Insights exports several core UI components such as the `BarChart` and `LegendItem` to support custom implementations.
+Alerts can render their own custom forms for actions such as snoozing or dismissing if the default UI is insufficient.
+
+Cost Insights exports several core UI components such as the `BarChart` and `LegendItem` to support custom implementations.
+
+**Note**: We recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
 
 For more advanced usage, see example [KubernetesMigrationAlert](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/example/alerts/KubernetesMigrationAlert.tsx).
 
