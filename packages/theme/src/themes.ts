@@ -46,7 +46,7 @@ export const lightTheme = createTheme({
       info: '#2E77D0',
       error: '#E22134',
       text: '#FFFFFF',
-      link: '#000000',
+      link: '#0A6EBE',
     },
     border: '#E6E6E6',
     textContrast: '#000000',
