@@ -4,7 +4,7 @@ Cost Insights currently supports [project growth](https://github.com/backstage/b
 
 ### Basic Setup
 
-Project growth alerts, for example, can be used to alert users to increased cost growth in a project within the past 30 days.
+Project growth alerts, for example, can be used to alert users to increased cost growth in a Google Cloud project within the past 30 days.
 
 ![project-growth-alert-basic](../assets/project-growth-alert-basic.png)
 
