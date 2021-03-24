@@ -111,7 +111,6 @@ export class ChromeUXReportService {
   async getUXMetrics(origin: string, period: string): Promise<Metric> {
     try {
       let originId = await this.getOriginId(origin);
-      console.log(originId)
       let periodId = await this.getPeriodId(period);
       //let metrics: Metric;
 

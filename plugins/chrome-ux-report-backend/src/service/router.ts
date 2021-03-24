@@ -48,9 +48,9 @@ export async function createRouter(
   });
 
   router.post('/metrics', async (request, response) => {
-    const { origin, month } = request.body;
-    
-    const rows = await chromeUXReportService.getUXMetrics(origin, month);
+    const { origin, period } = request.body;
+
+    const rows = await chromeUXReportService.getUXMetrics(origin, period);
     response.send({ metrics: rows });
   });
 

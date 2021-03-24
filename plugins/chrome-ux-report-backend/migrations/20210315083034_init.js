@@ -26,7 +26,7 @@ exports.up = async function up(knex) {
         table.text('origin').unique().notNullable();
     });
 
-    await knex.schema.createTable('period', table => {
+    await knex.schema.createTable('periods', table => {
         table.comment('The table of chrome ux report monthsWithYear');
         table.increments('id').primary().notNullable();
         table.text('period').unique().notNullable();
@@ -66,7 +66,7 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-    await knex.schema.dropTable('metrics');
+    await knex.schema.dropTable('uxMetrics');
     await knex.schema.dropTable('origins');
     await knex.schema.dropTable('periods');
 };

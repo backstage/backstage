@@ -17,10 +17,8 @@
 import '@backstage/backend-common';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
-import Knex from 'knex';
 import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
-import sinon from 'sinon';
 import { Client } from 'pg';
 
 const knex = jest.mock('knex', () => {
@@ -35,7 +33,7 @@ const knex = jest.mock('knex', () => {
           latest: jest.fn().mockReturnThis(),
       },
       raw: jest.fn().mockReturnThis(),
-      then: jest.fn(function (done) {
+      then: jest.fn( (done) => {
         done(null);
       }),
     };
@@ -55,6 +53,7 @@ describe('Chrome UX Report Service', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+
   it('successfully get UX metrics when database has cache', async () => {
     const config: Config = new ConfigReader({
       chromeUXReport: {

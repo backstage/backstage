@@ -93,45 +93,45 @@ export const ChromeUXReportTable = ({ origin }: { origin: string; }) => {
     }, {
       metricName: 'FIRST CONTENTFUL PAINT',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(first_contentful_paint.rates.fast)}%`,
-      average:`${returnRoundOfMetric(first_contentful_paint.rates.average)}%`,
-      slow: `${returnRoundOfMetric(first_contentful_paint.rates.slow)}%`
+      fast: `${returnRoundOfMetric(first_contentful_paint.fast)}%`,
+      average:`${returnRoundOfMetric(first_contentful_paint.average)}%`,
+      slow: `${returnRoundOfMetric(first_contentful_paint.slow)}%`
     }, {
       metricName: 'LARGEST CONTENTFUL PAINT',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(largest_contentful_paint.rates.fast)}%`,
-      average: `${returnRoundOfMetric(largest_contentful_paint.rates.average)}%`,
-      slow: `${returnRoundOfMetric(largest_contentful_paint.rates.slow)}%`
+      fast: `${returnRoundOfMetric(largest_contentful_paint.fast)}%`,
+      average: `${returnRoundOfMetric(largest_contentful_paint.average)}%`,
+      slow: `${returnRoundOfMetric(largest_contentful_paint.slow)}%`
     }, {
       metricName: 'DOM CONTENT LOADED',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(dom_content_loaded.rates.fast)}%`,
-      average: `${returnRoundOfMetric(dom_content_loaded.rates.average)}%`,
-      slow: `${returnRoundOfMetric(dom_content_loaded.rates.slow)}%`
+      fast: `${returnRoundOfMetric(dom_content_loaded.fast)}%`,
+      average: `${returnRoundOfMetric(dom_content_loaded.average)}%`,
+      slow: `${returnRoundOfMetric(dom_content_loaded.slow)}%`
     }, {
       metricName: 'FIRST INPUT',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(first_input.rates.fast)}%`,
-      average: `${returnRoundOfMetric(first_input.rates.average)}%`,
-      slow: `${returnRoundOfMetric(first_input.rates.slow)}%`
+      fast: `${returnRoundOfMetric(first_input.fast)}%`,
+      average: `${returnRoundOfMetric(first_input.average)}%`,
+      slow: `${returnRoundOfMetric(first_input.slow)}%`
     }, {
       metricName: 'ONLOAD',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(onload.rates.fast)}%`,
-      average: `${returnRoundOfMetric(onload.rates.average)}%`,
-      slow: `${returnRoundOfMetric(onload.rates.slow)}%`
+      fast: `${returnRoundOfMetric(onload.fast)}%`,
+      average: `${returnRoundOfMetric(onload.average)}%`,
+      slow: `${returnRoundOfMetric(onload.slow)}%`
     }, {
       metricName: 'LAYOUT INSTABILITY',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(layout_instability.rates.fast)}%`,
-      average: `${returnRoundOfMetric(layout_instability.rates.average)}%`,
-      slow: `${returnRoundOfMetric(layout_instability.rates.slow)}%`
+      fast: `${returnRoundOfMetric(layout_instability.fast)}%`,
+      average: `${returnRoundOfMetric(layout_instability.average)}%`,
+      slow: `${returnRoundOfMetric(layout_instability.slow)}%`
     }, {
       metricName: 'TIME TO FIRST BYTE',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(time_to_first_byte.rates.fast)}%`,
-      average: `${returnRoundOfMetric(time_to_first_byte.rates.average)}%`,
-      slow: `${returnRoundOfMetric(time_to_first_byte.rates.slow)}%`
+      fast: `${returnRoundOfMetric(time_to_first_byte.fast)}%`,
+      average: `${returnRoundOfMetric(time_to_first_byte.average)}%`,
+      slow: `${returnRoundOfMetric(time_to_first_byte.slow)}%`
     }]}
     columns={columns}
   />;
