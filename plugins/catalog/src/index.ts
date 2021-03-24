@@ -17,7 +17,6 @@
 export { AboutCard } from './components/AboutCard';
 export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
-export { EntitySystemDiagramCard } from './components/EntitySystemDiagramCard';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
 export {
@@ -30,4 +29,5 @@ export {
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
+  EntitySystemDiagramCard,
 } from './plugin';

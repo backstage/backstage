@@ -114,3 +114,12 @@ export const EntityHasSubcomponentsCard = catalogPlugin.provide(
     },
   }),
 );
+
+export const EntitySystemDiagramCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SystemDiagramCard').then(m => m.SystemDiagramCard),
+    },
+  }),
+);

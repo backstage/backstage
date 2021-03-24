@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { EntitySystemDiagramCard } from './EntitySystemDiagramCard';
+export { SystemDiagramCard } from './SystemDiagramCard';
