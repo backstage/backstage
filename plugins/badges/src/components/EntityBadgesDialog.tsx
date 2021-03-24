@@ -22,17 +22,16 @@ import {
   useApi,
 } from '@backstage/core';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { badgesApiRef } from '../api';
@@ -43,19 +42,10 @@ type Props = {
   entity: Entity;
 };
 
-const useStyles = makeStyles({
-  codeBlock: {
-    '& code': {
-      whiteSpace: 'pre-wrap',
-    },
-  },
-});
-
 export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const badgesApi = useApi(badgesApiRef);
-  const classes = useStyles();
 
   const { value: badges, loading, error } = useAsync(async () => {
     if (open) {
@@ -67,18 +57,11 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
 
   const content = (badges || []).map(
     ({ badge: { description }, id, url, markdown }) => (
-      <div key={id}>
-        <DialogContentText>
-          {description || `${id} badge`}
-          <br />
-          <img alt={description || id} src={url} />
-        </DialogContentText>
-        <Typography component="div" className={classes.codeBlock}>
-          Copy the following snippet of markdown code for the badge:
-          <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
-        </Typography>
-        <hr />
-      </div>
+      <DialogContentText>
+        <Box m={4} />
+        <img alt={description || id} src={url} />
+        <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
+      </DialogContentText>
     ),
   );
 
@@ -87,6 +70,10 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
       <DialogTitle>Entity Badges</DialogTitle>
 
       <DialogContent>
+        <DialogContentText>
+          Embed badges in other web sites that link back to this entity. Copy
+          the relevant snippet of Markdown code to use the badge.
+        </DialogContentText>
         {loading && <Progress />}
         {error && <ResponseErrorPanel error={error} />}
         {content}
