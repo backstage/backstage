@@ -20,6 +20,7 @@ import Router from 'express-promise-router';
 import { Database } from './database/Database';
 import { RouterOptions } from './types';
 import { ChromeUXReportService } from './ChromeUXReportService';
+import { Query } from './Query';
 
 export async function createRouter(
   options: RouterOptions,
@@ -30,11 +31,11 @@ export async function createRouter(
     database: await database.getClient(),
     logger,
   });
-
+  const queryClient = new Query(config)
   const chromeUXReportService = new ChromeUXReportService({
     logger: logger,
     database: databaseClient,
-    config: config,
+    query: queryClient,
   });
 
   logger.info('Plugin Chrome UX Report has started');
