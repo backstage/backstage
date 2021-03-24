@@ -107,6 +107,16 @@
       "integrations/index",
       {
         "type": "subcategory",
+        "label": "Azure DevOps",
+        "ids": ["integrations/azure/locations"]
+      },
+      {
+        "type": "subcategory",
+        "label": "BitBucket",
+        "ids": ["integrations/bitbucket/locations"]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",
@@ -121,23 +131,13 @@
       },
       {
         "type": "subcategory",
-        "label": "BitBucket",
-        "ids": ["integrations/bitbucket/locations"]
-      },
-      {
-        "type": "subcategory",
-        "label": "Azure DevOps",
-        "ids": ["integrations/azure/locations"]
+        "label": "Google Analytics",
+        "ids": ["integrations/google-analytics/installation"]
       },
       {
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
-      },
-      {
-        "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
       }
     ],
     "Plugins": [
