@@ -4267,15 +4267,15 @@
     "@octokit/types" "^6.0.3"
     universal-user-agent "^6.0.0"
 
-"@octokit/openapi-types@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-2.2.0.tgz#123e0438a0bc718ccdac3b5a2e69b3dd00daa85b"
-  integrity sha512-274lNUDonw10kT8wHg8fCcUc1ZjZHbWv0/TbAwb0ojhBQqZYc1cQ/4yqTVTtPMDeZ//g7xVEYe/s3vURkRghPg==
-
 "@octokit/openapi-types@^4.0.3":
   version "4.0.4"
   resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-4.0.4.tgz#96fcce11e929802898646205ac567e5df592f82b"
   integrity sha512-31zY8JIuz3h6RAFOnyA8FbOwhILILiBu1qD81RyZZWY7oMBhIdBn6MaAmnnptLhB4jk0g50nkQkUVP4kUzppcA==
+
+"@octokit/openapi-types@^5.3.2":
+  version "5.3.2"
+  resolved "https://registry.npmjs.org/@octokit/openapi-types/-/openapi-types-5.3.2.tgz#b8ac43c5c3d00aef61a34cf744e315110c78deb4"
+  integrity sha512-NxF1yfYOUO92rCx3dwvA2onF30Vdlg7YUkMVXkeptqpzA3tRLplThhFleV/UKWFgh7rpKu1yYRbvNDUtzSopKA==
 
 "@octokit/plugin-enterprise-rest@^6.0.1":
   version "6.0.1"
