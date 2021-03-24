@@ -29,7 +29,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Typography,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
