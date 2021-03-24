@@ -2,7 +2,9 @@
 id: index
 title: Integrations
 sidebar_label: Overview
-description: Documentation on Backstage Integrations
+description:
+  Configuring Backstage to read or publish data with external providers using
+  integrations
 ---
 
 Integrations allow Backstage to read or publish data using external providers
@@ -11,7 +13,7 @@ Integrations allow Backstage to read or publish data using external providers
 
 ## Configuration
 
-Integration are configured at the root level of `app-config.yaml` since
+Integrations are configured at the root level of `app-config.yaml` since
 integrations are used by many Backstage core features and other plugins.
 
 Each key under `integrations` is a separate configuration for a single external
@@ -22,14 +24,11 @@ configuration to use both GitHub and BitBucket:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
   bitbucket:
     - host: bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
+      username: ${BITBUCKET_USERNAME}
+      appPassword: ${BITBUCKET_APP_PASSWORD}
 ```
 
 See documentation for each type of integration for full details on

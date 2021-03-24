@@ -2,11 +2,11 @@
 id: locations
 title: GitHub Locations
 sidebar_label: Locations
-description: Documentation on GitHub location integration
+description: Integrating source code stored in GitHub into the Backstage catalog
 ---
 
 The GitHub integration supports loading catalog entities from github.com or
-GitHub Enterprise. Components can be added to
+GitHub Enterprise. Entities can be added to
 [static catalog configuration](../../features/software-catalog/configuration.md),
 registered with the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
@@ -21,13 +21,11 @@ To use this integration, add configuration to your root `app-config.yaml`:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
     - host: ghe.example.net
       apiBaseUrl: https://ghe.example.net/api/v3
       rawBaseUrl: https://ghe.example.net/raw
-      token:
-        $env: GHE_TOKEN
+      token: ${GHE_TOKEN}
 ```
 
 > Note: A public GitHub provider is added automatically at startup for
@@ -52,7 +50,7 @@ data from. Each entry is a structure with up to four elements:
   with this provider, specify the base URL for its endpoint here, with no
   trailing slash. Specifically when the target is public GitHub, you can leave
   it out to be inferred automatically. For a GitHub Enterprise installation, it
-  is commonly at `https://api.<host>` or `https://<host>/api/v3`.
+  is commonly at `https://<host>/raw`.
 
 You need to supply either `apiBaseUrl` or `rawBaseUrl` or both (except for
 public GitHub, for which we can infer them). The `apiBaseUrl` will always be

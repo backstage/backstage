@@ -2,11 +2,12 @@
 id: locations
 title: Azure DevOps Locations
 sidebar_label: Locations
-description: Documentation on Azure DevOps location integration
+description:
+  Integrating source code stored in Azure DevOps into the Backstage catalog
 ---
 
 The Azure integration supports loading catalog entities from Azure DevOps.
-Components can be added to
+Entities can be added to
 [static catalog configuration](../../features/software-catalog/configuration.md),
 or registered with the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
@@ -16,8 +17,7 @@ plugin.
 integrations:
   azure:
     - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
 ```
 
 > Note: An Azure DevOps provider is added automatically at startup for
@@ -27,4 +27,4 @@ integrations:
 The configuration is a structure with two elements:
 
 - `host`: The DevOps host; only `dev.azure.com` is supported.
-- `token` (optional): An personal access token as expected by Azure DevOps.
+- `token` (optional): A personal access token as expected by Azure DevOps.

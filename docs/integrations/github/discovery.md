@@ -2,7 +2,9 @@
 id: discovery
 title: GitHub Discovery
 sidebar_label: Discovery
-description: Documentation on GitHub organization discovery
+description:
+  Automatically discovering catalog entities from repositories in a GitHub
+  organization
 ---
 
 The GitHub integration has a special discovery processor for discovering catalog
