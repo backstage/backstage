@@ -44,6 +44,8 @@ spec:
           value: $(DATABASE_NAME)
         - name: DATABASE_PASSWORD
           value: $(DATABASE_PASSWORD)
+        - name: HELLMAN_SERVICE_ACCOUNT_TOKEN
+          value: $(HELLMAN_SERVICE_ACCOUNT_TOKEN)
         - name: GITHUB_PRIVATE_TOKEN
           valueFrom:
             secretKeyRef:
