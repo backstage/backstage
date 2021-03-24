@@ -71,10 +71,10 @@ export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
       <DialogTitle>Entity Badges</DialogTitle>
 
       <DialogContent>
-        <Typography>
+        <DialogContentText>
           Embed badges in other web sites that link back to this entity. Copy
           the relevant snippet of Markdown code to use the badge.
-        </Typography>
+        </DialogContentText>
         {loading && <Progress />}
         {error && <ResponseErrorPanel error={error} />}
         {content}
