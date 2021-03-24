@@ -48,7 +48,8 @@ request for each discovered location.
 This means if you have more than ~140 catalog entities, you may get throttled by
 rate limiting. This will soon be resolved once catalog refreshes make use of
 ETags; to work around this in the meantime, you can change the refresh rate of
-the catalog in your `packages/backend/src/plugins/catalog.ts` file.
+the catalog in your `packages/backend/src/plugins/catalog.ts` file, or configure
+Backstage to use the [github-apps plugin](../../plugins/github-apps.md).
 
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.

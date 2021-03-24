@@ -56,3 +56,9 @@ You need to supply either `apiBaseUrl` or `rawBaseUrl` or both (except for
 public GitHub, for which we can infer them). The `apiBaseUrl` will always be
 preferred over the other if a `token` is given, otherwise `rawBaseUrl` will be
 preferred.
+
+## Authentication with GitHub Apps
+
+Alternatively, Backstage can use GitHub Apps for backend authentication. This
+has higher rate limits, and a clearer authorization model. See the
+[github-apps plugin](../../plugins/github-apps.md) for how to set this up.
