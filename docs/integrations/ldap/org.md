@@ -6,8 +6,8 @@ sidebar_label: Org Data
 description: Setting up ingestion of organizational data from LDAP
 ---
 
-The Backstage catalog can be set up to ingest organizational data - groups and
-users - directly from an LDAP compatible service. The result is a hierarchy of
+The Backstage catalog can be set up to ingest organizational data - users and
+groups - directly from an LDAP compatible service. The result is a hierarchy of
 [`User`](../../features/software-catalog/descriptor-format.md#kind-user) and
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
@@ -97,7 +97,7 @@ secret:
   $env: LDAP_SECRET
 ```
 
-The `dn` is the full LDAP DN (distinguished name) for the user that the plugin
+The `dn` is the full LDAP Distinguished Name for the user that the plugin
 authenticates itself as. At this point, only regular user based authentication
 is supported.
 
@@ -110,12 +110,12 @@ backend starts.
 The `users` block defines the settings that govern the reading and
 interpretation of users. Its fields are explained in separate sections below.
 
-### users.dn
+#### users.dn
 
 The DN under which users are stored, e.g.
 `ou=people,ou=example,dc=example,dc=net`.
 
-### users.options
+#### users.options
 
 The search options to use when sending the query to the server, when reading all
 users. All of the options are shown below, with their default values, but they
@@ -138,7 +138,7 @@ options:
   paged: false
 ```
 
-### users.set
+#### users.set
 
 This optional piece lets you specify a number of JSON paths (on a.b.c form) and
 hard coded values to set on those paths. This can be useful for example if you
@@ -150,7 +150,7 @@ set:
   metadata.namespace: 'ldap'
 ```
 
-### users.map
+#### users.map
 
 Mappings from well known entity fields, to LDAP attribute names. This is where
 you are able to define how to interpret the attributes of each LDAP result item,
@@ -192,12 +192,12 @@ map:
 The `groups` block defines the settings that govern the reading and
 interpretation of groups. Its fields are explained in separate sections below.
 
-### groups.dn
+#### groups.dn
 
 The DN under which groups are stored, e.g.
 `ou=people,ou=example,dc=example,dc=net`.
 
-### groups.options
+#### groups.options
 
 The search options to use when sending the query to the server, when reading all
 groups. All of the options are shown below, with their default values, but they
@@ -220,7 +220,7 @@ options:
   paged: false
 ```
 
-### groups.set
+#### groups.set
 
 This optional piece lets you specify a number of JSON paths (on a.b.c form) and
 hard coded values to set on those paths. This can be useful for example if you
@@ -232,7 +232,7 @@ set:
   metadata.namespace: 'ldap'
 ```
 
-### groups.map
+#### groups.map
 
 Mappings from well known entity fields, to LDAP attribute names. This is where
 you are able to define how to interpret the attributes of each LDAP result item,
