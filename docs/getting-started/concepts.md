@@ -2,13 +2,13 @@
 id: concepts
 title: Key Concepts
 # prettier-ignore
-description: High level of key concepts used in the Backstage project
+description: High level key concepts used in the Backstage project
 ---
 
-For new users to Backstage, there are certain concepts which are central to its
+For users of Backstage, there are certain concepts which are central to its
 design and functionality. Being an expert in each of these concepts is not
 necessary, however having a base understanding of each will make administering,
-configuring, and operating Backstage easier to understand.
+configuring, and operating Backstage easier.
 
 - CHANGELOG - https://keepachangelog.com
 - Docker - https://www.docker.com/
