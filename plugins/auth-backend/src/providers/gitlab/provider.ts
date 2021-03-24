@@ -122,7 +122,7 @@ export const createGitlabProvider = (
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
-      const audience = envConfig.getString('audience');
+      const audience = envConfig.getOptionalString('audience');
       const baseUrl = audience || 'https://gitlab.com';
       const callbackUrl = `${globalConfig.baseUrl}/${providerId}/handler/frame`;
 
