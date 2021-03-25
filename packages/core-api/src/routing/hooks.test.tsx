@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
+import { render } from '@testing-library/react';
+import { renderHook } from '@testing-library/react-hooks';
 import React, {
+  Context,
   PropsWithChildren,
   ReactElement,
   useContext,
-  Context,
 } from 'react';
-import { MemoryRouter, Routes } from 'react-router-dom';
-import { render } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks';
-import { VersionedValue } from '../lib/versionedValues';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import {
   childDiscoverer,
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
+import { getGlobalSingleton } from '../lib/globalObject';
+import { VersionedValue } from '../lib/versionedValues';
 import { createPlugin } from '../plugin';
 import {
-  routePathCollector,
-  routeParentCollector,
   routeObjectCollector,
+  routeParentCollector,
+  routePathCollector,
 } from './collectors';
-import { validateRoutes } from './validation';
-import { useRouteRef, RoutingProvider } from './hooks';
+import { createExternalRouteRef } from './ExternalRouteRef';
+import { RoutingProvider, useRouteRef, useRouteRefParams } from './hooks';
 import { createRouteRef, RouteRefConfig } from './RouteRef';
 import { RouteResolver } from './RouteResolver';
-import { createExternalRouteRef } from './ExternalRouteRef';
-import { AnyRouteRef, RouteFunc, RouteRef, ExternalRouteRef } from './types';
+import { AnyRouteRef, ExternalRouteRef, RouteFunc, RouteRef } from './types';
+import { validateRoutes } from './validation';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
@@ -368,5 +368,38 @@ describe('v1 consumer', () => {
     expect(renderedHook.result.current?.()).toBe('/foo');
     renderedHook.rerender({ routeRef: routeRef3 });
     expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/bar/my-x');
+  });
+});
+
+describe('useRouteRefParams', () => {
+  it('should provide types params', () => {
+    const routeRef = createRouteRef({
+      id: 'ref1',
+      params: ['a', 'b'],
+    });
+
+    const Page = () => {
+      const params: { a: string; b: string } = useRouteRefParams(routeRef);
+
+      return (
+        <div>
+          <span>{params.a}</span>
+          <span>{params.b}</span>
+        </div>
+      );
+    };
+
+    const { getByText } = render(
+      <MemoryRouter initialEntries={['/foo/bar']}>
+        <Routes>
+          <Route path="/:a/:b">
+            <Page />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(getByText('foo')).toBeInTheDocument();
+    expect(getByText('bar')).toBeInTheDocument();
   });
 });

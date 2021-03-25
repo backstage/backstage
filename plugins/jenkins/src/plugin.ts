@@ -15,14 +15,14 @@
  */
 
 import {
-  createPlugin,
-  createRouteRef,
   createApiFactory,
-  discoveryApiRef,
-  createRoutableExtension,
   createComponentExtension,
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
+  discoveryApiRef,
 } from '@backstage/core';
-import { jenkinsApiRef, JenkinsApi } from './api';
+import { JenkinsApi, jenkinsApiRef } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -31,6 +31,7 @@ export const rootRouteRef = createRouteRef({
 
 export const buildRouteRef = createRouteRef({
   path: 'run/:branch/:buildNumber',
+  params: ['branch', 'buildNumber'],
   title: 'Jenkins run',
 });
 
