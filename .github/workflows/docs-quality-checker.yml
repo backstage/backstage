@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - '**.md'
+      - '!.changeset/**.md'
 
 jobs:
   check-all-files:
