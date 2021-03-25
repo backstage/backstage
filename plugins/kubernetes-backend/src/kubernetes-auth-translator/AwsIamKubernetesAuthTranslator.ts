@@ -32,7 +32,16 @@ const makeUrlSafe = pipe([replace('+', '-'), replace('/', '_')]);
 export class AwsIamKubernetesAuthTranslator
   implements KubernetesAuthTranslator {
   async getBearerToken(clusterName: string): Promise<string> {
-    const credentials = AWS.config.credentials;
+    const credentials = await new Promise((resolve, reject) => {
+      AWS.config.getCredentials(err => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(AWS.config.credentials);
+        }
+      });
+    });
+
     if (!(credentials instanceof Credentials)) {
       throw new Error('no AWS credentials found.');
     }
