@@ -26,6 +26,7 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { readLdapGroups, readLdapUsers, resolveRelations } from './read';
+import { DefaultLdapVendor } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -55,19 +56,20 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
 
 function searchEntry(attributes: Record<string, string[]>): SearchEntry {
   return {
-    attributes: Object.entries(attributes).map(([k, vs]) => ({
-      json: {
-        type: k,
-        vals: vs,
-      },
-    })),
+    raw: Object.entries(attributes).reduce((obj, [key, values]) => {
+      obj[key] = values;
+      return obj;
+    }, {} as any),
   } as any;
 }
 
 describe('readLdapUsers', () => {
   const client: jest.Mocked<LdapClient> = {
     search: jest.fn(),
+    getVendor: jest.fn(),
   } as any;
+
+  beforeEach(() => client.getVendor.mockResolvedValue(DefaultLdapVendor));
 
   afterEach(() => jest.resetAllMocks());
 
@@ -128,7 +130,10 @@ describe('readLdapUsers', () => {
 describe('readLdapGroups', () => {
   const client: jest.Mocked<LdapClient> = {
     search: jest.fn(),
+    getVendor: jest.fn(),
   } as any;
+
+  beforeEach(() => client.getVendor.mockResolvedValue(DefaultLdapVendor));
 
   afterEach(() => jest.resetAllMocks());
 
