@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export type CatalogPageProps = {
-  initiallySelectedFilter?: string;;
+  initiallySelectedFilter?: string;
   customHeaderTitle?: string;
   customHeaderSubtitle?: string;
 };
@@ -169,7 +169,7 @@ const CatalogPageContents = (props: CatalogPageProps) => {
     configApi.has('catalog.exampleEntityLocations') && isCatalogEmpty;
 
   return (
-    <Catalog
+    <CatalogLayout
       customHeaderTitle={props.customHeaderTitle}
       customHeaderSubtitle={props.customHeaderSubtitle}
     >
