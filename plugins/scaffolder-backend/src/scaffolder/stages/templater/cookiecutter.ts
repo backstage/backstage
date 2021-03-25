@@ -52,9 +52,10 @@ export class CookieCutter implements TemplaterBase {
     // First lets grab the default cookiecutter.json file
     const cookieCutterJson = await this.fetchTemplateCookieCutter(templateDir);
 
+    const { imageName, ...valuesForCookieCutterJson } = values;
     const cookieInfo = {
       ...cookieCutterJson,
-      ...values,
+      ...valuesForCookieCutterJson,
     };
 
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
@@ -74,7 +75,7 @@ export class CookieCutter implements TemplaterBase {
       });
     } else {
       await runDockerContainer({
-        imageName: 'spotify/backstage-cookiecutter',
+        imageName: imageName || 'spotify/backstage-cookiecutter',
         args: [
           'cookiecutter',
           '--no-input',
