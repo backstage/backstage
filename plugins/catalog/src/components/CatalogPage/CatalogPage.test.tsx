@@ -142,7 +142,7 @@ describe('CatalogPage', () => {
   });
   it('should set custom titles correctly', async () => {
     const { findByText } = renderWrapped(
-      <CatalogPage customHeaderTitle="title" customHeaderSubitle="subtitle" />,
+      <CatalogPage customHeaderTitle="title" customHeaderSubtitle="subtitle" />,
     );
     expect(await findByText(/title \(2\)/)).toBeInTheDocument();
     expect(await findByText(/subtitle \(2\)/)).toBeInTheDocument();
