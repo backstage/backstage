@@ -46,8 +46,7 @@ catalog:
         - target: ldaps://ds.example.net
           bind:
             dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-            secret:
-              $env: LDAP_SECRET
+            secret: ${LDAP_SECRET}
           users:
             dn: ou=people,ou=example,dc=example,dc=net
             options:
@@ -93,8 +92,7 @@ authenticate) towards the server. It has the following fields.
 
 ```yaml
 dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-secret:
-  $env: LDAP_SECRET
+secret: ${LDAP_SECRET}
 ```
 
 The `dn` is the full LDAP Distinguished Name for the user that the plugin
