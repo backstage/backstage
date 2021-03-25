@@ -32,10 +32,10 @@ catalog:
 
 Additionally, the default app sidebar was updated to parity with the Backstage
 repo. You can see these changes in the template
-[App.tsx](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/App.tsx)
+[App.tsx](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/App.tsx#L70)
 referencing a new `Root` component.
 
 Finally, compare your `packages/app/src/components/catalog/EntityPage.tsx` to
-[EntityPage](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+[EntityPage](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
 from the `@backstage/create-app` default template to pick up additional
 changes there.
