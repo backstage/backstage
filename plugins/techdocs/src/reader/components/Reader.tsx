@@ -17,10 +17,6 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-=======
->>>>>>> 3ab0f7d4f (TechDocs: show outdated docs and asnyc build new)
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import React, { useEffect, useRef, useState } from 'react';
@@ -50,13 +46,9 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const theme = useTheme<BackstageTheme>();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
-<<<<<<< HEAD
-  const [shadowDomRef, shadowRoot] = useShadowDom();
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
-=======
->>>>>>> 3ab0f7d4f (TechDocs: show outdated docs and asnyc build new)
   const navigate = useNavigate();
-  const shadowDomRef = useRef(null);
+  const shadowDomRef = useRef<HTMLDivElement>(null);
   const [loadedPath, setLoadedPath] = useState('');
   const [atInitialLoad, setAtInitialLoad] = useState(true);
   const [newerDocsExist, setNewerDocsExist] = useState(false);
@@ -92,7 +84,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
 
   useEffect(() => {
     const updateSidebarPosition = () => {
-      if (!!shadowRoot && !!shadowDomRef.current && !!sidebars) {
+      if (!!shadowDomRef.current && !!sidebars) {
         sidebars!.forEach(sidebar => {
           const newTop = Math.max(
             shadowDomRef.current!.getBoundingClientRect().top,
@@ -109,7 +101,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       window.removeEventListener('scroll', updateSidebarPosition);
       window.removeEventListener('resize', updateSidebarPosition);
     };
-  }, [shadowDomRef, shadowRoot, sidebars]);
+  }, [shadowDomRef, sidebars]);
 
   useEffect(() => {
     if (rawPage) {
@@ -177,7 +169,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
           }
           .md-sidebar--secondary { display: none; }
           .md-sidebar--primary { left: 72px; width: 10rem }
-          .md-content { margin-left: 10rem; max-width: 100%; }
+          .md-content { margin-left: 10rem; max-width: calc(100% - 10rem); }
           .md-content__inner { font-size: 0.9rem }
           .md-footer { 
             position: static; 
