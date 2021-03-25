@@ -31,9 +31,9 @@ import {
   InfoCard,
   Progress,
   useApi,
+  WarningPanel,
 } from '@backstage/core';
 import { Box, Typography } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
@@ -138,7 +138,11 @@ export function SystemDiagramCard() {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return (
+      <WarningPanel severity="error" title="Could not load system diagram">
+        {error.message}
+      </WarningPanel>
+    );
   }
 
   return (
