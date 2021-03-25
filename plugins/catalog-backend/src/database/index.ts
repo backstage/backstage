@@ -22,5 +22,6 @@ export type {
   DbEntityResponse,
   EntitiesSearchFilter,
   EntityFilter,
+  EntityPagination,
   Transaction,
 } from './types';

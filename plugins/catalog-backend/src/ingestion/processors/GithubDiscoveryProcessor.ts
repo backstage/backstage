@@ -78,16 +78,14 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
     this.logger.info(`Reading GitHub repositories from ${location.target}`);
 
     const { repositories } = await getOrganizationRepositories(client, org);
+    const matching = repositories.filter(r => repoSearchPath.test(r.name));
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
     this.logger.debug(
-      `Read ${repositories.length} GitHub repositories in ${duration} seconds`,
+      `Read ${repositories.length} GitHub repositories (${matching.length} matching the pattern) in ${duration} seconds`,
     );
 
-    for (const repository of repositories) {
-      if (!repoSearchPath.test(repository.name)) {
-        continue;
-      }
+    for (const repository of matching) {
       emit(
         results.location(
           {

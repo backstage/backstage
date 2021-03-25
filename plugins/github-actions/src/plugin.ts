@@ -33,6 +33,7 @@ export const rootRouteRef = createRouteRef({
 
 export const buildRouteRef = createRouteRef({
   path: ':id',
+  params: ['id'],
   title: 'GitHub Actions Workflow Run',
 });
 

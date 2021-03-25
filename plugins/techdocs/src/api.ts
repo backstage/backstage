@@ -18,6 +18,7 @@ import { createApiRef, DiscoveryApi, IdentityApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsMetadata } from './types';
+import { NotFoundError } from '@backstage/errors';
 
 export const techdocsStorageApiRef = createApiRef<TechDocsStorageApi>({
   id: 'plugin.techdocs.storageservice',
@@ -31,6 +32,7 @@ export const techdocsApiRef = createApiRef<TechDocsApi>({
 
 export interface TechDocsStorage {
   getEntityDocs(entityId: EntityName, path: string): Promise<string>;
+  syncEntityDocs(entityId: EntityName): Promise<boolean>;
   getBaseUrl(
     oldBaseUrl: string,
     entityId: EntityName,
@@ -153,6 +155,17 @@ export class TechDocsStorageApi implements TechDocsStorage {
     );
   }
 
+  async getStorageUrl() {
+    return (
+      this.configApi.getOptionalString('techdocs.storageUrl') ??
+      `${await this.discoveryApi.getBaseUrl('techdocs')}/static/docs`
+    );
+  }
+
+  async getBuilder() {
+    return this.configApi.getString('techdocs.builder');
+  }
+
   /**
    * Fetch HTML content as text for an individual docs page in an entity's docs site.
    *
@@ -164,8 +177,8 @@ export class TechDocsStorageApi implements TechDocsStorage {
   async getEntityDocs(entityId: EntityName, path: string) {
     const { kind, namespace, name } = entityId;
 
-    const apiOrigin = await this.getApiOrigin();
-    const url = `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`;
+    const storageUrl = await this.getStorageUrl();
+    const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
     const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
@@ -184,7 +197,7 @@ export class TechDocsStorageApi implements TechDocsStorage {
           errorMessage +=
             'This could be because there is no index.md file in the root of the docs directory of this repository.';
         }
-        throw new Error(errorMessage);
+        throw new NotFoundError(errorMessage);
       case 500:
         errorMessage =
           'Could not generate documentation or an error in the TechDocs backend. ';
@@ -197,6 +210,46 @@ export class TechDocsStorageApi implements TechDocsStorage {
     return request.text();
   }
 
+  /**
+   * Check if docs are on the latest version and trigger rebuild if not
+   *
+   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @returns {boolean} Whether documents are currently synchronized to newest version
+   * @throws {Error} Throws error on error from sync endpoint in Techdocs Backend
+   */
+  async syncEntityDocs(entityId: EntityName) {
+    const { kind, namespace, name } = entityId;
+
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
+    const token = await this.identityApi.getIdToken();
+    let request;
+    let attempts: number = 0;
+    // retry if request times out, up to 5 times
+    // can happen due to docs taking too long to generate
+    while (!request || (request.status === 408 && attempts < 5)) {
+      attempts++;
+      request = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    }
+
+    switch (request.status) {
+      case 404:
+        throw new NotFoundError((await request.json()).error);
+      case 200:
+      case 201:
+      case 304:
+        return true;
+      // for timeout and misc errors, handle without error to allow viewing older docs
+      // if older docs not available,
+      // Reader will show 404 error coming from getEntityDocs
+      case 408:
+      default:
+        return false;
+    }
+  }
+
   async getBaseUrl(
     oldBaseUrl: string,
     entityId: EntityName,
@@ -205,10 +258,9 @@ export class TechDocsStorageApi implements TechDocsStorage {
     const { kind, namespace, name } = entityId;
 
     const apiOrigin = await this.getApiOrigin();
-
     return new URL(
       oldBaseUrl,
-      `${apiOrigin}/docs/${namespace}/${kind}/${name}/${path}`,
+      `${apiOrigin}/static/docs/${namespace}/${kind}/${name}/${path}`,
     ).toString();
   }
 }

@@ -21,6 +21,7 @@ import { EntityName, parseEntityName } from '@backstage/catalog-model';
 import { Header, HeaderLabel, Link, useRouteRef } from '@backstage/core';
 import { TechDocsMetadata } from '../../types';
 import { EntityRefLink, entityRouteRef } from '@backstage/plugin-catalog-react';
+import { rootRouteRef } from '../../plugin';
 
 type TechDocsPageHeaderProps = {
   entityId: EntityName;
@@ -58,6 +59,8 @@ export const TechDocsPageHeader = ({
   if (owner) {
     ownerEntity = parseEntityName(owner, { defaultKind: 'group' });
   }
+
+  const docsRootLink = useRouteRef(rootRouteRef)();
 
   const labels = (
     <>
@@ -112,8 +115,8 @@ export const TechDocsPageHeader = ({
       subtitle={
         siteDescription && siteDescription !== 'None' ? siteDescription : ''
       }
-      type={name}
-      typeLink={componentLink(entityId)}
+      type="Docs"
+      typeLink={docsRootLink}
     >
       {labels}
     </Header>

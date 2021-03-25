@@ -33,6 +33,7 @@ Grafana
 GraphQL
 Gustavsson
 Hackathons
+Haughwout
 Henneke
 Heroku
 Hostname
@@ -42,7 +43,9 @@ JavaScript
 Kaewkasi
 Knex
 Kumar
+Leasot
 Lerna
+Lindgren
 Lundberg
 Luxon
 Malus
@@ -58,6 +61,7 @@ Oldsberg
 Olle
 Onboarding
 Patrik
+Peloton
 Phoen
 Platformize
 Pomaceous
@@ -88,6 +92,7 @@ Telenor
 Templater
 Templaters
 Thauer
+todo
 Tolerations
 Tuite
 Trendyol
@@ -138,6 +143,7 @@ css
 dariddler
 dataflow
 deadnaming
+declaratively
 destructured
 dev
 devops
@@ -239,6 +245,7 @@ ruleset
 sam
 scaffolded
 scaffolder
+seb
 semlas
 semver
 sourcemaps
@@ -263,6 +270,7 @@ templated
 templater
 templaters
 theia
+thumbsup
 toc
 tolerations
 toolchain

@@ -61,7 +61,10 @@ describe('CatalogBuilder', () => {
   it('works with no changes', async () => {
     const builder = new CatalogBuilder(env);
     const built = await builder.build();
-    await expect(built.entitiesCatalog.entities()).resolves.toEqual([]);
+    await expect(built.entitiesCatalog.entities()).resolves.toEqual({
+      entities: [],
+      pageInfo: { hasNextPage: false },
+    });
     await expect(built.locationsCatalog.locations()).resolves.toEqual([
       expect.objectContaining({
         data: expect.objectContaining({ type: 'bootstrap' }),
@@ -166,7 +169,7 @@ describe('CatalogBuilder', () => {
       type: 'github',
       target: 'https://github.com/a/b/x.yaml',
     });
-    const entities = await entitiesCatalog.entities();
+    const { entities } = await entitiesCatalog.entities();
 
     expect(entities).toEqual([
       expect.objectContaining({
@@ -200,7 +203,7 @@ describe('CatalogBuilder', () => {
       type: 'x',
       target: 'y',
     });
-    const entities = await entitiesCatalog.entities();
+    const { entities } = await entitiesCatalog.entities();
 
     expect.assertions(3);
     expect(entities).toEqual([

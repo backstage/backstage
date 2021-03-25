@@ -1,5 +1,17 @@
 # @backstage/core-api
 
+## 0.2.14
+
+### Patch Changes
+
+- a51dc0006: Export `SubRouteRef` type, and allow `SubRouteRef`s to be assigned to `plugin.routes`.
+- e7f9b9435: Allow elements to be used multiple times in the app element tree.
+- 34ff49b0f: Allow extension components to also return `null` in addition to a `JSX.Element`.
+- d88dd219e: Internal refactor to allow for future package splits. As part of this `ApiRef`s are now identified by their ID rather than their reference.
+- c8b54c370: Added new Docs Icon to Core Icons
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
 ## 0.2.13
 
 ### Patch Changes

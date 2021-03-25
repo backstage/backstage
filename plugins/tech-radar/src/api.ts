@@ -38,6 +38,7 @@ export interface RadarEntry {
   title: string;
   url: string;
   timeline: Array<RadarEntrySnapshot>;
+  description?: string;
 }
 
 export interface RadarEntrySnapshot {

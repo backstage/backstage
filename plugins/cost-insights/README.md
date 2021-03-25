@@ -144,6 +144,6 @@ costInsights:
 
 The CostInsightsApi `getAlerts` method may return any type of alert or recommendation (called collectively "Action Items" in Cost Insights) that implements the [Alert type](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/types/Alert.ts). This allows you to deliver any alerts or recommendations specific to your infrastructure or company migrations.
 
-The Alert type includes an `element` field to supply the JSX Element that will be rendered in the Cost Insights "Action Items" section; we recommend using Backstage's [InfoCard](https://backstage.io/storybook/?path=/story/layout-information-card--default) and [Recharts](http://recharts.org/en-US/) to show actionable visualizations.
+To learn more about using Cost Insights' ready-to-use alerts, see the alerts [README](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/alerts/README.md).
 
-The Alert `url` should link to documentation or instructions for resolving the alert. This may be omitted if no external link is needed.
+Example implementations of custom alerts, forms and components can be found in the [examples](https://github.com/backstage/backstage/tree/master/plugins/cost-insights/src/example) directory.

@@ -108,6 +108,58 @@ describe('fetch:cookiecutter', () => {
     });
   });
 
+  it('should execute the cookiecutter templater with optional inputs if they are present and valid', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        copyWithoutRender: ['goreleaser.yml'],
+        extensions: [
+          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
+        ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      },
+    });
+
+    expect(cookiecutterTemplater.run).toHaveBeenCalledWith({
+      workspacePath: mockTmpDir,
+      dockerClient: mockDockerClient,
+      logStream: mockContext.logStream,
+      values: {
+        ...mockContext.input.values,
+        _copy_without_render: ['goreleaser.yml'],
+        _extensions: [
+          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
+        ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      },
+    });
+  });
+
+  it('should throw if copyWithoutRender is not an Array', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          copyWithoutRender: 'xyz',
+        },
+      }),
+    ).rejects.toThrow(/copyWithoutRender must be an Array/);
+  });
+
+  it('should throw if extensions is not an Array', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          extensions: 'xyz',
+        },
+      }),
+    ).rejects.toThrow(/extensions must be an Array/);
+  });
+
   it('should throw if there is no cookiecutter templater initialized', async () => {
     const templatersWithoutCookiecutter = new Templaters();
 

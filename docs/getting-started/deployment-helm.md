@@ -33,7 +33,7 @@ Then use it to run:
 
 ```bash
 git clone https://github.com/backstage/backstage.git
-cd contrib/chart/backstage
+cd backstage/contrib/chart/backstage
 helm dependency update
 helm install -f backstage-mydomain.yaml backstage .
 ```

@@ -31,6 +31,7 @@ import {
   ProvidedApisCard,
   ProvidingComponentsCard,
 } from '@backstage/plugin-api-docs';
+import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   AboutCard,
   EntityHasComponentsCard,
@@ -82,6 +83,7 @@ import {
 } from '@backstage/plugin-rollbar';
 import { Router as SentryRouter } from '@backstage/plugin-sentry';
 import { EmbeddedDocsRouter as DocsRouter } from '@backstage/plugin-techdocs';
+import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
 import {
   isPluginApplicableToEntity as isBuildkiteAvailable,
@@ -104,7 +106,8 @@ import {
   RecentTravisCIBuildsWidget,
   Router as TravisCIRouter,
 } from '@roadiehq/backstage-plugin-travis-ci';
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
+import BadgeIcon from '@material-ui/icons/CallToAction';
 
 export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -178,6 +181,32 @@ export const ErrorsSwitcher = ({ entity }: { entity: Entity }) => {
   }
 };
 
+const EntityPageLayoutWrapper = (props: { children?: React.ReactNode }) => {
+  const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
+
+  const extraMenuItems = useMemo(() => {
+    return [
+      {
+        title: 'Badges',
+        Icon: BadgeIcon,
+        onClick: () => setBadgesDialogOpen(true),
+      },
+    ];
+  }, []);
+
+  return (
+    <>
+      <EntityPageLayout UNSTABLE_extraContextMenuItems={extraMenuItems}>
+        {props.children}
+      </EntityPageLayout>
+      <EntityBadgesDialog
+        open={badgesDialogOpen}
+        onClose={() => setBadgesDialogOpen(false)}
+      />
+    </>
+  );
+};
+
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
     <Grid item md={6}>
@@ -233,7 +262,7 @@ const ComponentApisContent = ({ entity }: { entity: Entity }) => (
 );
 
 const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/"
       title="Overview"
@@ -279,11 +308,16 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
       title="Kafka"
       element={<KafkaRouter entity={entity} />}
     />
-  </EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
+    />
+  </EntityPageLayoutWrapper>
 );
 
 const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/"
       title="Overview"
@@ -324,11 +358,16 @@ const WebsiteEntityPage = ({ entity }: { entity: Entity }) => (
       title="Code Insights"
       element={<GitHubInsightsRouter entity={entity} />}
     />
-  </EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
+    />
+  </EntityPageLayoutWrapper>
 );
 
 const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
@@ -339,7 +378,12 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
       title="Docs"
       element={<DocsRouter entity={entity} />}
     />
-  </EntityPageLayout>
+    <EntityPageLayout.Content
+      path="/todos"
+      title="TODOs"
+      element={<EntityTodoContent />}
+    />
+  </EntityPageLayoutWrapper>
 );
 
 export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
@@ -378,7 +422,7 @@ const ApiDefinitionContent = ({ entity }: { entity: ApiEntity }) => (
 );
 
 const ApiEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
@@ -389,7 +433,7 @@ const ApiEntityPage = ({ entity }: { entity: Entity }) => (
       title="Definition"
       element={<ApiDefinitionContent entity={entity as ApiEntity} />}
     />
-  </EntityPageLayout>
+  </EntityPageLayoutWrapper>
 );
 
 const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
@@ -404,13 +448,13 @@ const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
 );
 
 const UserEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
       element={<UserOverviewContent entity={entity as UserEntity} />}
     />
-  </EntityPageLayout>
+  </EntityPageLayoutWrapper>
 );
 
 const GroupOverviewContent = ({ entity }: { entity: GroupEntity }) => (
@@ -428,13 +472,13 @@ const GroupOverviewContent = ({ entity }: { entity: GroupEntity }) => (
 );
 
 const GroupEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
       element={<GroupOverviewContent entity={entity as GroupEntity} />}
     />
-  </EntityPageLayout>
+  </EntityPageLayoutWrapper>
 );
 
 const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
@@ -452,7 +496,7 @@ const SystemOverviewContent = ({ entity }: { entity: SystemEntity }) => (
 );
 
 const SystemEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
@@ -463,7 +507,7 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
       title="Diagram"
       element={<EntitySystemDiagramCard />}
     />
-  </EntityPageLayout>
+  </EntityPageLayoutWrapper>
 );
 
 const DomainOverviewContent = ({ entity }: { entity: DomainEntity }) => (
@@ -478,19 +522,19 @@ const DomainOverviewContent = ({ entity }: { entity: DomainEntity }) => (
 );
 
 const DomainEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+  <EntityPageLayoutWrapper>
     <EntityPageLayout.Content
       path="/*"
       title="Overview"
       element={<DomainOverviewContent entity={entity as DomainEntity} />}
     />
-  </EntityPageLayout>
+  </EntityPageLayoutWrapper>
 );
 
 export const EntityPage = () => {
   const { entity } = useEntity();
 
-  switch (entity?.kind?.toLowerCase()) {
+  switch (entity?.kind?.toLocaleLowerCase('en-US')) {
     case 'component':
       return <ComponentEntityPage entity={entity} />;
     case 'api':
@@ -503,6 +547,9 @@ export const EntityPage = () => {
       return <SystemEntityPage entity={entity} />;
     case 'domain':
       return <DomainEntityPage entity={entity} />;
+    case 'location':
+    case 'resource':
+    case 'template':
     default:
       return <DefaultEntityPage entity={entity} />;
   }

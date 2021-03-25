@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { searchPlugin, searchPlugin as plugin, SearchPage } from './plugin';
+
+// TODO: export searchApiRef from ./apis once interface is stable and settled.
+export {
+  searchPlugin,
+  searchPlugin as plugin,
+  SearchPage,
+  SearchPageNext,
+} from './plugin';
 export {
   Filters,
   FiltersButton,

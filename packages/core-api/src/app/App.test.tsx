@@ -98,6 +98,12 @@ describe('Integration Test', () => {
 
   const plugin1 = createPlugin({
     id: 'blob',
+    // Both absolute and sub route refs should be assignable to the plugin routes
+    routes: {
+      ref1: plugin1RouteRef,
+      ref2: plugin2RouteRef,
+      ref3: subRouteRef1,
+    },
     externalRoutes: {
       extRouteRef1,
       extRouteRef2,

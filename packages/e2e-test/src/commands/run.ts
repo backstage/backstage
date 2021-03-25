@@ -203,7 +203,7 @@ async function createApp(
 
     await waitFor(() => stdout.includes('Select database for the backend'));
 
-    if (!isPostgres) {
+    if (isPostgres) {
       // Simulate down arrow press
       child.stdin?.write(`\u001B\u005B\u0042`);
     }

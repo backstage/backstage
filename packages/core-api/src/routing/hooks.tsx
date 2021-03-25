@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import React, { createContext, ReactNode, useContext, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useMemo,
+  Context,
+} from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import {
   BackstageRouteObject,
   RouteRef,
@@ -25,8 +31,19 @@ import {
   RouteFunc,
 } from './types';
 import { RouteResolver } from './RouteResolver';
+import {
+  VersionedValue,
+  createVersionedValueMap,
+} from '../lib/versionedValues';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+} from '../lib/globalObject';
 
-const RoutingContext = createContext<RouteResolver | undefined>(undefined);
+type RoutingContextType = VersionedValue<{ 1: RouteResolver }> | undefined;
+const RoutingContext = getOrCreateGlobalSingleton('routing-context', () =>
+  createContext<RoutingContextType>(undefined),
+);
 
 export function useRouteRef<Optional extends boolean, Params extends AnyParams>(
   routeRef: ExternalRouteRef<Params, Optional>,
@@ -41,14 +58,20 @@ export function useRouteRef<Params extends AnyParams>(
     | ExternalRouteRef<Params, any>,
 ): RouteFunc<Params> | undefined {
   const sourceLocation = useLocation();
-  const resolver = useContext(RoutingContext);
+  const versionedContext = useContext(
+    getGlobalSingleton<Context<RoutingContextType>>('routing-context'),
+  );
+  const resolver = versionedContext?.atVersion(1);
   const routeFunc = useMemo(
     () => resolver && resolver.resolve(routeRef, sourceLocation),
     [resolver, routeRef, sourceLocation],
   );
 
-  if (!routeFunc && !resolver) {
-    throw new Error('No route resolver found in context');
+  if (!versionedContext) {
+    throw new Error('useRouteRef used outside of routing context');
+  }
+  if (!resolver) {
+    throw new Error('RoutingContext v1 not available');
   }
 
   const isOptional = 'optional' in routeRef && routeRef.optional;
@@ -80,9 +103,17 @@ export const RoutingProvider = ({
     routeObjects,
     routeBindings,
   );
+
+  const versionedValue = createVersionedValueMap({ 1: resolver });
   return (
-    <RoutingContext.Provider value={resolver}>
+    <RoutingContext.Provider value={versionedValue}>
       {children}
     </RoutingContext.Provider>
   );
 };
+
+export function useRouteRefParams<Params extends AnyParams>(
+  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
+): Params {
+  return useParams() as Params;
+}

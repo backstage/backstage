@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+export { ConfigReader } from './reader';
 export type {
   AppConfig,
   Config,
   JsonArray,
   JsonObject,
+  JsonPrimitive,
   JsonValue,
 } from './types';
-export { ConfigReader } from './reader';

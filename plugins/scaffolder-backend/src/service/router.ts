@@ -288,7 +288,9 @@ export async function createRouter(
           );
         }
 
-        const template = await entityClient.findTemplate(name);
+        const template = await entityClient.findTemplate(name, {
+          token: getBearerToken(req.headers.authorization),
+        });
         if (isBeta2Template(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
@@ -356,7 +358,9 @@ export async function createRouter(
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = req.body.values;
-      const template = await entityClient.findTemplate(templateName);
+      const template = await entityClient.findTemplate(templateName, {
+        token: getBearerToken(req.headers.authorization),
+      });
 
       let taskSpec;
       if (isAlpha1Template(template)) {

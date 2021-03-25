@@ -130,7 +130,8 @@ export const MembersListCard = (_props: {
         member?.relations?.some(
           r =>
             r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLowerCase() === groupName.toLowerCase(),
+            r.target.name.toLocaleLowerCase('en-US') ===
+              groupName.toLocaleLowerCase('en-US'),
         ),
     );
     return groupMembersList;

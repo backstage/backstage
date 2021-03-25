@@ -19,8 +19,7 @@ import {
   parseLocationReference,
   SOURCE_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import { ConfigApi } from '@backstage/core';
-import { ScmIntegrations } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 
 export type EntitySourceLocation = {
   locationTargetUrl: string;
@@ -29,7 +28,7 @@ export type EntitySourceLocation = {
 
 export function getEntitySourceLocation(
   entity: Entity,
-  config: ConfigApi,
+  scmIntegrationsApi: ScmIntegrationRegistry,
 ): EntitySourceLocation | undefined {
   const sourceLocation =
     entity.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION];
@@ -40,9 +39,7 @@ export function getEntitySourceLocation(
 
   try {
     const sourceLocationRef = parseLocationReference(sourceLocation);
-    const scmIntegrations = ScmIntegrations.fromConfig(config);
-    const integration = scmIntegrations.byUrl(sourceLocationRef.target);
-
+    const integration = scmIntegrationsApi.byUrl(sourceLocationRef.target);
     return {
       locationTargetUrl: sourceLocationRef.target,
       integrationType: integration?.type,

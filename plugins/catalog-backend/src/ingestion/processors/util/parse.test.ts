@@ -159,7 +159,7 @@ describe('parseEntityYaml', () => {
     expect(results).toEqual([
       result.generalError(
         testLoc,
-        'YAML error, YAMLSemanticError: Plain value cannot start with reserved character `',
+        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Plain value cannot start with reserved character `',
       ),
     ]);
   });
@@ -198,7 +198,7 @@ describe('parseEntityYaml', () => {
       }),
       result.generalError(
         testLoc,
-        'YAML error, YAMLSemanticError: Nested mappings are not allowed in compact mappings',
+        'YAML error at my-loc-type:my-loc-target, YAMLSemanticError: Nested mappings are not allowed in compact mappings',
       ),
     ]);
   });

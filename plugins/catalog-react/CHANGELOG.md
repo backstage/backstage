@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.2
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/core@0.7.2
+
 ## 0.1.1
 
 ### Patch Changes

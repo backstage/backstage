@@ -53,7 +53,7 @@ import {
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
 import { AnyRoutes } from '../plugin/types';
-import { RouteRef, ExternalRouteRef } from '../routing';
+import { RouteRef, ExternalRouteRef, SubRouteRef } from '../routing';
 import {
   routeObjectCollector,
   routeParentCollector,
@@ -75,10 +75,8 @@ import {
   SignInResult,
 } from './types';
 
-export function generateBoundRoutes(
-  bindRoutes: AppOptions['bindRoutes'],
-): Map<ExternalRouteRef, RouteRef> {
-  const result = new Map<ExternalRouteRef, RouteRef>();
+export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
+  const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
 
   if (bindRoutes) {
     const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {

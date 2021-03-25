@@ -31,6 +31,7 @@
   "dependencies": {
     "@backstage/core": "^0.7.0",
     "@backstage/catalog-model": "^0.7.3",
+    "@backstage/integration-react": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.1.1",
     "@backstage/test-utils": "^0.1.8",
     "@backstage/theme": "^0.2.3",

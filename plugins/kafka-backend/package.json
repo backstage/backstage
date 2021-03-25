@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kafka-backend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -31,18 +31,18 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.5.5",
+    "@backstage/backend-common": "^0.6.0",
     "@backstage/catalog-model": "^0.7.3",
-    "@backstage/config": "^0.1.2",
+    "@backstage/config": "^0.1.4",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
-    "express-promise-router": "^3.0.3",
+    "express-promise-router": "^4.1.0",
     "kafkajs": "^1.16.0-beta.6",
     "lodash": "^4.17.15",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.3",
+    "@backstage/cli": "^0.6.5",
     "@types/jest-when": "^2.7.2",
     "@types/lodash": "^4.14.151",
     "jest-when": "^3.1.0",

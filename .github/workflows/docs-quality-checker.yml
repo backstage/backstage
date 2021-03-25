@@ -1,10 +1,10 @@
 name: Check Markdown files quality
 
-on:
-  pull_request:
-    branches: [master]
-    paths:
-      - '**.md'
+# on:
+#   pull_request:
+#     branches: [master]
+#     paths:
+#       - '**.md'
 
 jobs:
   check-all-files:

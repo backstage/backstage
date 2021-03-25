@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -69,6 +69,7 @@
     "@backstage/plugin-techdocs": "*",
     "@backstage/plugin-techdocs-backend": "*",
     "@backstage/plugin-user-settings": "*",
+    "@backstage/integration-react": "*",
     "@backstage/test-utils": "*",
     "@backstage/theme": "*"
   },

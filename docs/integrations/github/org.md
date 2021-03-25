@@ -3,11 +3,11 @@ id: org
 title: GitHub Organizational Data
 sidebar_label: Org Data
 # prettier-ignore
-description: Setting up ingestion of organizational data from GitHub
+description: Importing users and groups from a GitHub organization into Backstage
 ---
 
-The Backstage catalog can be set up to ingest organizational data - teams and
-users - directly from an organization in GitHub or GitHub Enterprise. The result
+The Backstage catalog can be set up to ingest organizational data - users and
+teams - directly from an organization in GitHub or GitHub Enterprise. The result
 is a hierarchy of
 [`User`](../../features/software-catalog/descriptor-format.md#kind-user) and
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
@@ -46,8 +46,7 @@ catalog:
       providers:
         - target: https://github.com
           apiBaseUrl: https://api.github.com
-          token:
-            $env: GITHUB_TOKEN
+          token: ${GITHUB_TOKEN}
 ```
 
 Locations point out the specific org(s) you want to import. The `type` of these

@@ -110,7 +110,7 @@ export default async (cmd: Command): Promise<void> => {
       name: 'dbType',
       message: chalk.blue('Select database for the backend [required]'),
       // @ts-ignore
-      choices: ['PostgreSQL', 'SQLite'],
+      choices: ['SQLite', 'PostgreSQL'],
     },
   ];
   const answers: Answers = await inquirer.prompt(questions);

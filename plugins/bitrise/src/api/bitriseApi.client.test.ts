@@ -80,6 +80,42 @@ describe('BitriseClientApi', () => {
   });
 
   describe('getApp()', () => {
+    it('should get all apps', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/bitrise/apps?next=slug-2-1`,
+          (_req, res, ctx) => {
+            const next = _req.url.searchParams.get('next');
+            if (next === 'slug-2-1') {
+              return res(
+                ctx.json({
+                  data: [{ title: 'app21', slug: 'slug-2-1' }],
+                }),
+              );
+            }
+            return res(
+              ctx.json({
+                data: [
+                  { title: 'app11', slug: 'slug-1-1' },
+                  { title: 'app12', slug: 'slug-1-2' },
+                ],
+                paging: {
+                  next: 'slug-2-1',
+                  page_item_limit: 0,
+                  total_item_count: 0,
+                },
+              }),
+            );
+          },
+        ),
+      );
+
+      const apps = await client.getApps();
+
+      expect(apps).toBeDefined();
+      expect(apps.length).toBe(3);
+    });
+
     it('should get the app', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/*`, (_req, res, ctx) => {

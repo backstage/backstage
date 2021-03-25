@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog
 
+## 0.5.0
+
+### Minor Changes
+
+- 3385b374b: Use `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+### Patch Changes
+
+- 633a31fec: Add the ability to change the initially selected filter, if not set it still defaults to `owned`.
+
+  ```js
+  <Route
+    path="/catalog"
+    element={<CatalogIndexPage initiallySelectedFilter="all" />}
+  />
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.4.2
 
 ### Patch Changes

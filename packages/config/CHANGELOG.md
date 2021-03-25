@@ -1,5 +1,11 @@
 # @backstage/config
 
+## 0.1.4
+
+### Patch Changes
+
+- 0434853a5: Reformulate the json types to break type recursion
+
 ## 0.1.3
 
 ### Patch Changes

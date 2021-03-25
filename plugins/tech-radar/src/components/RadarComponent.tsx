@@ -68,7 +68,7 @@ const RadarComponent = (props: TechRadarComponentProps): JSX.Element => {
           };
         }),
         moved: entry.timeline[0].moved,
-        description: entry.timeline[0].description,
+        description: entry.description || entry.timeline[0].description,
         url: entry.url,
       };
     });

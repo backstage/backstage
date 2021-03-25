@@ -18,7 +18,8 @@ import React from 'react';
 import { KubernetesDrawer } from '../KubernetesDrawer/KubernetesDrawer';
 import { Typography, Grid } from '@material-ui/core';
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+const capitalize = (str: string) =>
+  str.charAt(0).toLocaleUpperCase('en-US') + str.slice(1);
 
 export const DefaultCustomResourceDrawer = ({
   customResource,
