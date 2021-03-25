@@ -147,7 +147,9 @@ export const MembersListCard = (_props: {
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0})`}
+        title={`Members (${members?.length || 0}) ${
+          members && members.length > 50 ? ' (only first 50 displayed)' : ''
+        }`}
         subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
