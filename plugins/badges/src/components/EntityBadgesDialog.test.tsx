@@ -25,6 +25,7 @@ import {
 import { renderWithEffects } from '@backstage/test-utils';
 import { BadgesApi, badgesApiRef } from '../api';
 import { EntityBadgesDialog } from './EntityBadgesDialog';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
 
 describe('EntityBadgesDialog', () => {
   it('should render', async () => {
@@ -50,7 +51,9 @@ describe('EntityBadgesDialog', () => {
           {} as ErrorApi,
         )}
       >
-        <EntityBadgesDialog open entity={mockEntity} />
+        <EntityProvider entity={mockEntity}>
+          <EntityBadgesDialog open />
+        </EntityProvider>
       </ApiProvider>,
     );
 

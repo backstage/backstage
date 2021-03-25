@@ -14,22 +14,53 @@
  * limitations under the License.
  */
 
-import { render, fireEvent } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
+import SearchIcon from '@material-ui/icons/Search';
+import { fireEvent, screen } from '@testing-library/react';
 import * as React from 'react';
-import { act } from 'react-dom/test-utils';
 import { EntityContextMenu } from './EntityContextMenu';
 
 describe('ComponentContextMenu', () => {
   it('should call onUnregisterEntity on button click', async () => {
-    await act(async () => {
-      const mockCallback = jest.fn();
-      const menu = render(
-        <EntityContextMenu onUnregisterEntity={mockCallback} />,
-      );
-      const button = await menu.findByTestId('menu-button');
-      fireEvent.click(button);
-      const unregister = await menu.findByText('Unregister entity');
-      expect(unregister).toBeInTheDocument();
-    });
+    const mockCallback = jest.fn();
+
+    await renderInTestApp(
+      <EntityContextMenu onUnregisterEntity={mockCallback} />,
+    );
+
+    const button = await screen.findByTestId('menu-button');
+    expect(button).toBeInTheDocument();
+    fireEvent.click(button);
+
+    const unregister = await screen.findByText('Unregister entity');
+    expect(unregister).toBeInTheDocument();
+    fireEvent.click(unregister);
+
+    expect(mockCallback).toBeCalled();
+  });
+
+  it('supports extra items', async () => {
+    const extra = {
+      title: 'HELLO',
+      Icon: SearchIcon,
+      onClick: jest.fn(),
+    };
+
+    await renderInTestApp(
+      <EntityContextMenu
+        onUnregisterEntity={jest.fn()}
+        UNSTABLE_extraContextMenuItems={[extra]}
+      />,
+    );
+
+    const button = await screen.findByTestId('menu-button');
+    expect(button).toBeInTheDocument();
+    fireEvent.click(button);
+
+    const item = await screen.findByText('HELLO');
+    expect(item).toBeInTheDocument();
+    fireEvent.click(item);
+
+    expect(extra.onClick).toBeCalled();
   });
 });

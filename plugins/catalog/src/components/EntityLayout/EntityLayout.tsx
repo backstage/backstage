@@ -19,6 +19,7 @@ import {
   Content,
   Header,
   HeaderLabel,
+  IconComponent,
   Page,
   Progress,
   TabbedLayout,
@@ -29,12 +30,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import {
-  default as React,
-  PropsWithChildren,
-  useContext,
-  useState,
-} from 'react';
+import { default as React, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
@@ -79,6 +75,19 @@ const headerProps = (
   };
 };
 
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
+type EntityLayoutProps = {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  children?: React.ReactNode;
+};
+
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
  * entities using a sub-navigation mechanism.
@@ -94,7 +103,10 @@ const headerProps = (
  * </EntityLayout>
  * ```
  */
-export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
+export const EntityLayout = ({
+  UNSTABLE_extraContextMenuItems,
+  children,
+}: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
@@ -132,7 +144,10 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
               label="Lifecycle"
               value={entity.spec?.lifecycle || 'unknown'}
             />
-            <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
+            <EntityContextMenu
+              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              onUnregisterEntity={showRemovalDialog}
+            />
           </>
         )}
       </Header>

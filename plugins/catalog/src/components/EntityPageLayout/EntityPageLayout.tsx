@@ -27,6 +27,7 @@ import {
   Progress,
   ResponseErrorPanel,
   WarningPanel,
+  IconComponent,
 } from '@backstage/core';
 import {
   EntityContext,
@@ -35,12 +36,11 @@ import {
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
-import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import { Tabbed } from './Tabbed';
 
 const EntityPageTitle = ({
@@ -99,7 +99,23 @@ const headerProps = (
   };
 };
 
-export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
+type EntityPageLayoutProps = {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  children?: React.ReactNode;
+};
+
+export const EntityPageLayout = ({
+  children,
+  UNSTABLE_extraContextMenuItems,
+}: EntityPageLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
   const { headerTitle, headerType } = headerProps(
@@ -109,7 +125,6 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
     entity!,
   );
 
-  const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const navigate = useNavigate();
   const cleanUpAfterRemoval = async () => {
@@ -131,7 +146,7 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
           <>
             <EntityLabels entity={entity} />
             <EntityContextMenu
-              onShowBadgesDialog={() => setBadgesDialogOpen(true)}
+              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               onUnregisterEntity={showRemovalDialog}
             />
           </>
@@ -162,14 +177,6 @@ export const EntityPageLayout = ({ children }: PropsWithChildren<{}>) => {
             .
           </WarningPanel>
         </Content>
-      )}
-
-      {entity && (
-        <EntityBadgesDialog
-          open={badgesDialogOpen}
-          entity={entity}
-          onClose={() => setBadgesDialogOpen(false)}
-        />
       )}
 
       <UnregisterEntityDialog
