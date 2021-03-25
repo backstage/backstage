@@ -1847,12 +1847,12 @@
     yup "^0.29.3"
 
 "@backstage/core@^0.3.0":
-  version "0.7.2"
+  version "0.7.3"
   dependencies:
     "@backstage/config" "^0.1.4"
-    "@backstage/core-api" "^0.2.14"
+    "@backstage/core-api" "^0.2.15"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1889,12 +1889,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.0":
-  version "0.7.2"
+  version "0.7.3"
   dependencies:
     "@backstage/config" "^0.1.4"
-    "@backstage/core-api" "^0.2.14"
+    "@backstage/core-api" "^0.2.15"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1931,12 +1931,12 @@
     zen-observable "^0.8.15"
 
 "@backstage/core@^0.6.1":
-  version "0.7.2"
+  version "0.7.3"
   dependencies:
     "@backstage/config" "^0.1.4"
-    "@backstage/core-api" "^0.2.14"
+    "@backstage/core-api" "^0.2.15"
     "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1973,15 +1973,15 @@
     zen-observable "^0.8.15"
 
 "@backstage/plugin-catalog@^0.2.1":
-  version "0.5.0"
+  version "0.5.1"
   dependencies:
     "@backstage/catalog-client" "^0.3.8"
     "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.2"
+    "@backstage/core" "^0.7.3"
     "@backstage/integration" "^0.5.1"
     "@backstage/integration-react" "^0.1.1"
-    "@backstage/plugin-catalog-react" "^0.1.2"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/plugin-catalog-react" "^0.1.3"
+    "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -1997,15 +1997,15 @@
     swr "^0.3.0"
 
 "@backstage/plugin-catalog@^0.3.1":
-  version "0.5.0"
+  version "0.5.1"
   dependencies:
     "@backstage/catalog-client" "^0.3.8"
     "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.2"
+    "@backstage/core" "^0.7.3"
     "@backstage/integration" "^0.5.1"
     "@backstage/integration-react" "^0.1.1"
-    "@backstage/plugin-catalog-react" "^0.1.2"
-    "@backstage/theme" "^0.2.4"
+    "@backstage/plugin-catalog-react" "^0.1.3"
+    "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -7094,10 +7094,21 @@
   resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
   integrity sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
 
-"@types/webpack-dev-server@*", "@types/webpack-dev-server@^3.11.0":
+"@types/webpack-dev-server@*":
   version "3.11.1"
   resolved "https://registry.npmjs.org/@types/webpack-dev-server/-/webpack-dev-server-3.11.1.tgz#f8f4dac1da226d530bd15a1d5dc34b23ba766ccb"
   integrity sha512-rIb+LtUkKnh7+oIJm3WiMJONd71Q0lZuqGLcSqhZ5qjN9gV/CNmZe7Bai+brnBPZ/KVYOsr+4bFLiNZwjBicLw==
+  dependencies:
+    "@types/connect-history-api-fallback" "*"
+    "@types/express" "*"
+    "@types/http-proxy-middleware" "*"
+    "@types/serve-static" "*"
+    "@types/webpack" "*"
+
+"@types/webpack-dev-server@3.11.0":
+  version "3.11.0"
+  resolved "https://registry.npmjs.org/@types/webpack-dev-server/-/webpack-dev-server-3.11.0.tgz#bcc3b85e7dc6ac2db25330610513f2228c2fcfb2"
+  integrity sha512-3+86AgSzl18n5P1iUP9/lz3G3GMztCp+wxdDvVuNhx1sr1jE79GpYfKHL8k+Vht3N74K2n98CuAEw4YPJCYtDA==
   dependencies:
     "@types/connect-history-api-fallback" "*"
     "@types/express" "*"
@@ -26542,7 +26553,7 @@ webpack-dev-middleware@^3.7.0, webpack-dev-middleware@^3.7.2:
     range-parser "^1.2.1"
     webpack-log "^2.0.0"
 
-webpack-dev-server@^3.11.0:
+webpack-dev-server@3.11.0:
   version "3.11.0"
   resolved "https://registry.npmjs.org/webpack-dev-server/-/webpack-dev-server-3.11.0.tgz#8f154a3bce1bcfd1cc618ef4e703278855e7ff8c"
   integrity sha512-PUxZ+oSTxogFQgkTtFndEtJIPNmml7ExwufBZ9L2/Xyyd5PnOL5UreWe5ZT7IU25DSdykL9p1MLQzmLh2ljSeg==

@@ -1,5 +1,29 @@
 # example-backend
 
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [9f2e51e89]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [449776cd6]
+- Updated dependencies [91e87c055]
+- Updated dependencies [36d933ec5]
+- Updated dependencies [113d3d59e]
+- Updated dependencies [f47e11427]
+- Updated dependencies [c862b3f36]
+  - @backstage/plugin-kubernetes-backend@0.3.2
+  - @backstage/plugin-scaffolder-backend@0.9.3
+  - @backstage/plugin-search-backend@0.1.2
+  - @backstage/plugin-search-backend-node@0.1.2
+  - @backstage/plugin-techdocs-backend@0.7.0
+  - @backstage/plugin-auth-backend@0.3.6
+  - @backstage/plugin-todo-backend@0.1.2
+  - @backstage/plugin-catalog-backend@0.6.7
+  - example-app@0.2.21
+
 ## 0.2.20
 
 ### Patch Changes

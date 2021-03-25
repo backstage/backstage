@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs
 
+## 0.7.0
+
+### Minor Changes
+
+- aaeb7ecf3: When newer documentation available but not built, show older documentation while async building newer
+  TechDocs backend: /sync endpoint added to support above, returns immediate success if docs don't need a build, returns delayed success after build if needed
+  TechDocs backend: /docs endpoint removed as frontend can directly request to techdocs.storageUrl or /static/docs
+- 3139f83af: Add sticky sidebars and footer navigation links to TechDocs Reader
+
+### Patch Changes
+
+- ea9d977e7: Introduce workaround for admonition icons of MkDocs.
+- 2aab54319: TechDocs: links at sidebar and bottom reset scroll position to top
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.6.2
 
 ### Patch Changes

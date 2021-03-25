@@ -1,5 +1,14 @@
 # @backstage/core-api
 
+## 0.2.15
+
+### Patch Changes
+
+- 76deafd31: Changed the signature of `createRoutableExtension` to include null
+- 01ccef4c7: Introduce `useRouteRefParams` to `core-api` to retrieve typed route parameters.
+- Updated dependencies [4618774ff]
+  - @backstage/theme@0.2.5
+
 ## 0.2.14
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/plugin-todo-backend
 
+## 0.1.2
+
+### Patch Changes
+
+- 36d933ec5: Forward authorization on todo backend requests
+
 ## 0.1.1
 
 ### Patch Changes
