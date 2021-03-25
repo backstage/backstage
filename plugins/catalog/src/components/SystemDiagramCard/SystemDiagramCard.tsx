@@ -23,6 +23,7 @@ import {
 import {
   catalogApiRef,
   getEntityRelations,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
   DependencyGraph,
@@ -36,10 +37,6 @@ import { Alert } from '@material-ui/lab';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
-
-type SystemDiagramProps = {
-  entity: Entity;
-};
 
 function simplifiedEntityName(
   ref:
@@ -61,7 +58,8 @@ function simplifiedEntityName(
  * Dynamically generates a diagram of a system, its assigned entities,
  * and relationships of those entities.
  */
-export function SystemDiagramCard({ entity }: SystemDiagramProps) {
+export function SystemDiagramCard() {
+  const { entity } = useEntity();
   const currentSystemName = entity.metadata.name;
   const currentSystemNode = simplifiedEntityName(entity);
   const systemNodes = new Array<{ id: string }>();

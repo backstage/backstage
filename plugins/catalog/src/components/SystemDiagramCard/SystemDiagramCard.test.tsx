@@ -15,7 +15,11 @@
  */
 
 import { ApiProvider, ApiRegistry } from '@backstage/core';
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  CatalogApi,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
@@ -51,7 +55,9 @@ describe('<SystemDiagramCard />', () => {
 
     const { queryByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
-        <SystemDiagramCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <SystemDiagramCard />
+        </EntityProvider>
       </ApiProvider>,
     );
 
@@ -105,7 +111,9 @@ describe('<SystemDiagramCard />', () => {
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={ApiRegistry.from([[catalogApiRef, catalogApi]])}>
-        <SystemDiagramCard entity={entity} />
+        <EntityProvider entity={entity}>
+          <SystemDiagramCard />
+        </EntityProvider>
       </ApiProvider>,
     );
 

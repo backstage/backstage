@@ -461,7 +461,7 @@ const SystemEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/diagram/*"
       title="Diagram"
-      element={<EntitySystemDiagramCard entity={entity} />}
+      element={<EntitySystemDiagramCard />}
     />
   </EntityPageLayout>
 );

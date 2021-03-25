@@ -19,7 +19,7 @@ For example,
 +    <EntityPageLayout.Content
 +      path="/diagram/*"
 +      title="Diagram"
-+      element={<EntitySystemDiagramCard entity={entity} />}
++      element={<EntitySystemDiagramCard />}
 +    />
    </EntityPageLayout>
  );
