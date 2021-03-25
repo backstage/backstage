@@ -132,7 +132,7 @@ export function buildMiddleware(
 
     if (fullConfig?.allowedEndpoints) {
       return (
-        fullConfig.allowedEndpoints?.[pathname]?.includes(req.method) === true
+        fullConfig.allowedEndpoints?.[pathname]?.includes(req.method!) === true
       );
     }
 
