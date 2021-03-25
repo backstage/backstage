@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { resolve as resolvePath } from 'path';
+import { join as joinPath, normalize as normalizePath } from 'path';
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
@@ -69,7 +69,7 @@ export function createPublishGithubAction(options: {
             enum: ['private', 'public', 'internal'],
           },
           sourcePath: {
-            title: 'Repository Path',
+            title: 'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
             type: 'string',
           },
         },
@@ -163,9 +163,11 @@ export function createPublishGithubAction(options: {
 
       const remoteUrl = data.clone_url;
       const repoContentsUrl = `${data.html_url}/blob/master`;
-      const outputPath = ctx.input.sourcePath
-        ? resolvePath(ctx.workspacePath, ctx.input.sourcePath)
-        : ctx.workspacePath;
+      let outputPath = ctx.input.sourcePath;
+      if (ctx.input.sourcePath) {
+        const safeSuffix = normalizePath(ctx.input.sourcePath).replace(/^(\.\.(\/|\\|$))+/, '');
+        outputPath = joinPath(ctx.workspace, safeSuffix);
+      }
 
       await initRepoAndPush({
         dir: outputPath,
