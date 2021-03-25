@@ -28,7 +28,6 @@ import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
 import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
-import { Mode } from '../../config';
 import {
   basicEntityFilter,
   parseEntityFilterParams,
@@ -36,7 +35,7 @@ import {
   parseEntityTransformParams,
 } from './request';
 import {
-  requireReadWriteMode,
+  disallowReadonlyMode,
   requireRequestBody,
   validateRequestBody,
 } from './util';
@@ -65,9 +64,11 @@ export async function createRouter(
   const router = Router();
   router.use(express.json());
 
-  const mode: Mode =
-    (config.getOptionalString('catalog.mode') as Mode) || 'readwrite';
-  logger.info(`Catalog is running in ${mode} mode`);
+  const readonlyEnabled =
+    config.getOptionalBoolean('catalog.readonly') || false;
+  if (readonlyEnabled) {
+    logger.info('Catalog is running in readonly mode');
+  }
 
   if (entitiesCatalog) {
     router
@@ -100,7 +101,7 @@ export async function createRouter(
          * It stays around in the service for the time being, but may be
          * removed or change semantics at any time without prior notice.
          */
-        requireReadWriteMode(mode);
+        disallowReadonlyMode(readonlyEnabled);
 
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
@@ -122,7 +123,7 @@ export async function createRouter(
         res.status(200).json(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
-        requireReadWriteMode(mode);
+        disallowReadonlyMode(readonlyEnabled);
 
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid);
@@ -151,9 +152,11 @@ export async function createRouter(
       const input = await validateRequestBody(req, locationSpecSchema);
       const dryRun = yn(req.query.dryRun, { default: false });
 
-      // when in dryRun addLocation is effectively a read operation so when in
-      // dryRun we override mode to readwrite to allow the operation
-      requireReadWriteMode(dryRun ? 'readwrite' : mode);
+      // when in dryRun addLocation is effectively a read operation so we don't
+      // need to disallow readonly
+      if (!dryRun) {
+        disallowReadonlyMode(readonlyEnabled);
+      }
 
       const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).json(output);
@@ -177,7 +180,7 @@ export async function createRouter(
         res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
-        requireReadWriteMode(mode);
+        disallowReadonlyMode(readonlyEnabled);
 
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);

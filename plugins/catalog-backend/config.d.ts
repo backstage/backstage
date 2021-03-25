@@ -16,8 +16,6 @@
 
 import { JsonValue } from '@backstage/config';
 
-export type Mode = 'readonly' | 'readwrite';
-
 export interface Config {
   /**
    * Configuration options for the catalog plugin.
@@ -45,18 +43,18 @@ export interface Config {
     }>;
 
     /**
-     * Mode defines the overall behaviour mode of the catalog.
+     * Readonly defines whether the catalog allows writes after startup.
      *
-     * Setting the mode to 'readwrite' you allow users to register their own
-     * components. This is the default value.
+     * Setting 'readonly=false' allows users to register their own components.
+     * This is the default value.
      *
-     * Setting the mode to 'readonly' configures catalog to only allow reads.
-     * This can be used in combination with static locations to only serve
-     * operator provided locations. Effectively this removes the ability to
-     * register new components to a running backstage instance.
+     * Setting 'readonly=true' configures catalog to only allow reads. This can
+     * be used in combination with static locations to only serve operator
+     * provided locations. Effectively this removes the ability to register new
+     * components to a running backstage instance.
      *
      */
-    mode?: Mode;
+    readonly?: boolean;
 
     /**
      * A set of static locations that the catalog shall always keep itself

@@ -26,7 +26,7 @@ import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from './request';
 
-describe('createRouter readwrite mode', () => {
+describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
@@ -356,7 +356,7 @@ describe('createRouter readwrite mode', () => {
   });
 });
 
-describe('createRouter readonly mode', () => {
+describe('createRouter readonly enabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
@@ -388,7 +388,7 @@ describe('createRouter readonly mode', () => {
       logger: getVoidLogger(),
       config: new ConfigReader({
         catalog: {
-          mode: 'readonly',
+          readonly: true,
         },
       }),
     });
@@ -435,7 +435,7 @@ describe('createRouter readonly mode', () => {
 
       expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/readwrite/);
+      expect(response.text).toMatch(/not allowed in readonly/);
     });
   });
 
@@ -444,7 +444,7 @@ describe('createRouter readonly mode', () => {
       const response = await request(app).delete('/entities/by-uid/apa');
 
       expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/readwrite/);
+      expect(response.text).toMatch(/not allowed in readonly/);
     });
   });
 
@@ -476,7 +476,7 @@ describe('createRouter readonly mode', () => {
 
       expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/readwrite/);
+      expect(response.text).toMatch(/not allowed in readonly/);
     });
 
     it('supports dry run', async () => {
