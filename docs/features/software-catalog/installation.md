@@ -75,7 +75,7 @@ const app = createApp({
 You may also want to add a link to the catalog index page to your sidebar:
 
 ```tsx
-// packages/app/src/sidebar.tsx
+// packages/app/src/components/Root.tsx
 import HomeIcon from '@material-ui/icons/Home';
 
 // Somewhere within the <Sidebar>

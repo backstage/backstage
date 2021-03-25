@@ -49,7 +49,7 @@ import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { EntityPage } from './components/catalog/EntityPage';
-import Root from './components/Root';
+import { Root } from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
