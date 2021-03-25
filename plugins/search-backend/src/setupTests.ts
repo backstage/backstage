@@ -14,19 +14,4 @@
  * limitations under the License.
  */
 
-// TODO: export searchApiRef from ./apis once interface is stable and settled.
-export {
-  searchPlugin,
-  searchPlugin as plugin,
-  SearchPage,
-  SearchPageNext,
-} from './plugin';
-export {
-  Filters,
-  FiltersButton,
-  SearchBar,
-  SearchPage as Router,
-  SearchResult,
-  SidebarSearch,
-} from './components';
-export type { FiltersState } from './components';
+export {};

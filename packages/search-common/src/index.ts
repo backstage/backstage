@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// TODO: export searchApiRef from ./apis once interface is stable and settled.
-export {
-  searchPlugin,
-  searchPlugin as plugin,
-  SearchPage,
-  SearchPageNext,
-} from './plugin';
-export {
-  Filters,
-  FiltersButton,
-  SearchBar,
-  SearchPage as Router,
-  SearchResult,
-  SidebarSearch,
-} from './components';
-export type { FiltersState } from './components';
+export * from './types';

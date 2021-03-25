@@ -39,7 +39,7 @@ import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { SearchPage } from '@backstage/plugin-search';
+import { SearchPage, SearchPageNext } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
@@ -112,6 +112,10 @@ const routes = (
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
     <Route path="/search" element={<SearchPage />} />
+    <Route
+      path="/search-next"
+      element={<SearchPageNext /* TODO: illustrate customization */ />}
+    />
     <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
       path="/cost-insights/investigating-growth"

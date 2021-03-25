@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { SearchQuery, SearchResultSet } from '@backstage/search-common';
+import qs from 'qs';
+
+export const searchApiRef = createApiRef<SearchApi>({
+  id: 'plugin.search.queryservice',
+  description: 'Used to make requests against the search API',
+});
 
 export type Result = {
   name: string;
@@ -28,11 +37,18 @@ export type Result = {
 
 export type SearchResults = Array<Result>;
 
-class SearchApi {
-  private catalogApi: CatalogApi;
+export interface SearchApi {
+  getSearchResult(): Promise<SearchResults>;
+  _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet>;
+}
 
-  constructor(catalogApi: CatalogApi) {
-    this.catalogApi = catalogApi;
+export class SearchClient implements SearchApi {
+  private readonly catalogApi: CatalogApi;
+  private readonly discoveryApi: DiscoveryApi;
+
+  constructor(options: { catalogApi: CatalogApi; discoveryApi: DiscoveryApi }) {
+    this.catalogApi = options.catalogApi;
+    this.discoveryApi = options.discoveryApi;
   }
 
   private async entities() {
@@ -53,9 +69,17 @@ class SearchApi {
     }));
   }
 
-  public getSearchResult(): Promise<SearchResults> {
+  getSearchResult(): Promise<SearchResults> {
     return this.entities();
   }
-}
 
-export default SearchApi;
+  // TODO: Productionalize as we implement search milestones.
+  async _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet> {
+    const queryString = qs.stringify(query);
+    const url = `${await this.discoveryApi.getBaseUrl(
+      'search/query',
+    )}?${queryString}`;
+    const response = await fetch(url);
+    return response.json();
+  }
+}

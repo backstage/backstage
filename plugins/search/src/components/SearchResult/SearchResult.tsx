@@ -21,12 +21,12 @@ import {
   TableColumn,
   useApi,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
-import SearchApi, { Result, SearchResults } from '../../apis';
+import { Result, SearchResults, searchApiRef } from '../../apis';
+
 import { Filters, FiltersButton, FiltersState } from '../Filters';
 
 const useStyles = makeStyles(theme => ({
@@ -116,7 +116,7 @@ const TableHeader = ({
 };
 
 export const SearchResult = ({ searchQuery }: SearchResultProps) => {
-  const catalogApi = useApi(catalogApiRef);
+  const searchApi = useApi(searchApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<FiltersState>({
@@ -125,8 +125,6 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
   });
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
-
-  const searchApi = new SearchApi(catalogApi);
 
   const { loading, error, value: results } = useAsync(() => {
     return searchApi.getSearchResult();
