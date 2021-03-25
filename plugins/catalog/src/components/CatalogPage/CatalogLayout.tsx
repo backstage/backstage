@@ -26,10 +26,16 @@ import React from 'react';
 import { getTimeBasedGreeting } from './utils/timeUtil';
 
 type Props = {
-  children?: React.ReactNode;
+  children?: React.ReactNode;;
+  customHeaderTitle?: string;
+  customHeaderSubtitle?: string;
 };
 
-const CatalogLayout = ({ children }: Props) => {
+const CatalogLayout = ({ 
+    children,
+    customHeaderTitle,
+    customHeaderSubtitle, 
+  }: Props) => {
   const greeting = getTimeBasedGreeting();
   const profile = useApi(identityApiRef).getProfile();
   const userId = useApi(identityApiRef).getUserId();
@@ -38,9 +44,9 @@ const CatalogLayout = ({ children }: Props) => {
   return (
     <Page themeId="home">
       <Header
-        title={`${greeting.greeting}, ${profile.displayName || userId}!`}
-        subtitle={`${orgName || 'Backstage'} Service Catalog`}
-        tooltip={greeting.language}
+        title={customHeaderTitle ?? `${greeting.greeting}, ${profile.displayName || userId}!`}
+        subtitle={customHeaderSubtitle ?? `${orgName || 'Backstage'} Service Catalog`}
+        tooltip={customHeaderTitle ? undefined : greeting.language}
         pageTitleOverride="Home"
       >
         <HomepageTimer />
