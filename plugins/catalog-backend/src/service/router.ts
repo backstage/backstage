@@ -123,8 +123,6 @@ export async function createRouter(
         res.status(200).json(entities[0]);
       })
       .delete('/entities/by-uid/:uid', async (req, res) => {
-        disallowReadonlyMode(readonlyEnabled);
-
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid);
         res.status(204).end();

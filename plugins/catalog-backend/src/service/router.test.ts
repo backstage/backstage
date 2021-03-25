@@ -440,11 +440,13 @@ describe('createRouter readonly enabled', () => {
   });
 
   describe('DELETE /entities/by-uid/:uid', () => {
-    it('is not allowed', async () => {
+    // this delete is allowed as there is no other way to remove entities
+    it('is allowed', async () => {
       const response = await request(app).delete('/entities/by-uid/apa');
 
-      expect(response.status).toEqual(403);
-      expect(response.text).toMatch(/not allowed in readonly/);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(response.status).toEqual(204);
     });
   });
 
