@@ -102,6 +102,36 @@ describe('buildMiddleware', () => {
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
 
+  it('limits allowedEndpoints', async () => {
+    buildMiddleware('/api/', logger, 'test', {
+      target: 'http://mocked',
+      allowedEndpoints: {
+        allowed: ['GET', 'DELETE'],
+      },
+    });
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
+      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
+      ProxyMiddlewareConfig,
+    ];
+    expect(filter('allowed', { method: 'GET', headers: {} })).toBe(true);
+    expect(filter('allowed', { method: 'POST', headers: {} })).toBe(false);
+    expect(filter('allowed', { method: 'PUT', headers: {} })).toBe(false);
+    expect(filter('allowed', { method: 'PATCH', headers: {} })).toBe(false);
+    expect(filter('allowed', { method: 'DELETE', headers: {} })).toBe(true);
+    expect(filter('notallowed', { method: 'GET', headers: {} })).toBe(false);
+    expect(filter('notallowed', { method: 'POST', headers: {} })).toBe(false);
+    expect(filter('notallowed', { method: 'PUT', headers: {} })).toBe(false);
+    expect(filter('notallowed', { method: 'PATCH', headers: {} })).toBe(false);
+    expect(filter('notallowed', { method: 'DELETE', headers: {} })).toBe(false);
+
+    expect(fullConfig.pathRewrite).toEqual({ '^/api/test/': '/' });
+    expect(fullConfig.changeOrigin).toBe(true);
+    expect(fullConfig.logProvider!(logger)).toBe(logger);
+  });
+
   it('permits default headers', async () => {
     buildMiddleware('/api/', logger, 'test', {
       target: 'http://mocked',

@@ -54,6 +54,7 @@ export interface RouterOptions {
 
 export interface ProxyConfig extends ProxyMiddlewareConfig {
   allowedMethods?: string[];
+  allowedEndpoints?: { [path: string]: string[] };
   allowedHeaders?: string[];
 }
 
@@ -108,15 +109,16 @@ export function buildMiddleware(
     ].map(h => h.toLocaleLowerCase()),
   );
 
-  // Use the custom middleware filter to do two things:
+  // Use the custom middleware filter to do three things:
   //  1. Remove any headers not in the allow list to stop them being forwarded
   //  2. Only permit the allowed HTTP methods if configured
+  //  3. Enforce allowed and disallowed endpoints if configured.
   //
   // We are filtering the proxy request headers here rather than in
   // `onProxyReq` becuase when global-agent is enabled then `onProxyReq`
   // fires _after_ the agent has already sent the headers to the proxy
   // target, causing a ERR_HTTP_HEADERS_SENT crash
-  const filter = (_pathname: string, req: http.IncomingMessage): boolean => {
+  const filter = (pathname: string, req: http.IncomingMessage): boolean => {
     const headerNames = Object.keys(req.headers);
     headerNames.forEach(h => {
       if (!requestHeaderAllowList.has(h.toLocaleLowerCase())) {
@@ -124,7 +126,17 @@ export function buildMiddleware(
       }
     });
 
-    return fullConfig?.allowedMethods?.includes(req.method!) ?? true;
+    if (fullConfig?.allowedMethods?.includes(req.method!) === false) {
+      return false;
+    }
+
+    if (fullConfig?.allowedEndpoints) {
+      return (
+        fullConfig.allowedEndpoints?.[pathname]?.includes(req.method) === true
+      );
+    }
+
+    return true;
   };
 
   // Only forward the allowed HTTP headers to not forward unwanted secret headers
