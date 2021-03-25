@@ -38,14 +38,16 @@ describe('ChromeUXReportApi', () => {
     notifications: { fast: 0.80, average: 0.15, slow: 0.05 },
     time_to_first_byte: { fast: 0.80, average: 0.15, slow: 0.05 },
   };
+  // @ts-ignore Partial<Config> not assignable to Config.
+  const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
 
   it('should return metrics without period', async () => {
     // @ts-ignore Partial<Config> not assignable to Config.
-    const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
     const origin = 'backstage.io';
     const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() - 1);
     const currentYear = currentDate.getFullYear();
-    const currentMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
+    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
 
     nock(mockBaseUrl, {
         reqheaders: {
@@ -54,7 +56,7 @@ describe('ChromeUXReportApi', () => {
       })
       .post("/metrics", {
         origin,
-        period: `${currentYear}${currentMonth}`
+        period: `${currentYear}${previousMonth}`
       })
       .reply(200, metrics);
 
@@ -63,12 +65,11 @@ describe('ChromeUXReportApi', () => {
   });
 
   it('should return empty object without period when status code is 404', async () => {
-    // @ts-ignore Partial<Config> not assignable to Config.
-    const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
     const origin = 'backstage.io';
     const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() - 1);
     const currentYear = currentDate.getFullYear();
-    const currentMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
+    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
 
     nock(mockBaseUrl, {
       reqheaders: {
@@ -77,7 +78,7 @@ describe('ChromeUXReportApi', () => {
     })
       .post("/metrics", {
         origin,
-        period: `${currentYear}${currentMonth}`
+        period: `${currentYear}${previousMonth}`
       })
       .reply(404, {});
 
@@ -86,8 +87,6 @@ describe('ChromeUXReportApi', () => {
   });
 
   it('should return metrics with period', async () => {
-    // @ts-ignore Partial<Config> not assignable to Config.
-    const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
     const origin = 'backstage.io';
     const period = '202009';
 
@@ -107,8 +106,6 @@ describe('ChromeUXReportApi', () => {
   });
 
   it('should return empty object with period when status code is 404', async () => {
-    // @ts-ignore Partial<Config> not assignable to Config.
-    const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
     const origin = 'backstage.io';
     const period = '202009';
 

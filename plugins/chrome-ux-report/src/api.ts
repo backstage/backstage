@@ -57,15 +57,16 @@ export class ChromeUXReportApi implements ChromeUXReport {
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metrics`;
     const currentDate = new Date();
+    currentDate.setMonth(currentDate.getMonth() - 1);
     const currentYear = currentDate.getFullYear();
-    const currentMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth())}`;
+    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
 
     const request = await fetch(`${requestUrl}`, {
       headers: { 'content-type': 'application/json' },
       method: 'POST',
       body: JSON.stringify({
         origin,
-        period: period ? period : `${currentYear}${currentMonth}`,
+        period: period ? period : `${currentYear}${previousMonth}`,
       }),
     });
 

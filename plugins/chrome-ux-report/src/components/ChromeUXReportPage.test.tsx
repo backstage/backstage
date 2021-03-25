@@ -43,30 +43,14 @@ describe('ChromeUXReportPage', () => {
         period_id: 1,
         connection_type: '4G',
         form_factor: 'Desktop',
-        first_contentful_paint: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        largest_contentful_paint: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        dom_content_loaded: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        onload: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        first_input: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        layout_instability: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        notifications: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
-        time_to_first_byte: {
-          rates: { fast: 0.80, average: 0.15, slow: 0.05 }
-        },
+        first_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
+        largest_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
+        dom_content_loaded: { fast: 0.80, average: 0.15, slow: 0.05 },
+        onload: { fast: 0.80, average: 0.15, slow: 0.05 },
+        first_input: { fast: 0.80, average: 0.15, slow: 0.05 },
+        layout_instability: { fast: 0.80, average: 0.15, slow: 0.05 },
+        notifications: { fast: 0.80, average: 0.15, slow: 0.05 },
+        time_to_first_byte: { fast: 0.80, average: 0.15, slow: 0.05 }
       }
     })
   };

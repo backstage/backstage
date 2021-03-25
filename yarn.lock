@@ -1839,6 +1839,13 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
+"@backstage/config@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.npmjs.org/@backstage/config/-/config-0.1.4.tgz#d30d7246552a661a9b0ac08dc8622c108327c671"
+  integrity sha512-CQ0k3inCmAHdHMBmFlIDNijobgKva+bRqZcD7F2rM4BWFNm7T9617QCb2/GkI1yTv75xFbO6QH9LWTqKjv/vSQ==
+  dependencies:
+    lodash "^4.17.15"
+
 "@backstage/core@^0.3.0":
   version "0.7.0"
   dependencies:
