@@ -10,7 +10,7 @@ For example,
 
 ```diff
  const SystemEntityPage = ({ entity }: { entity: Entity }) => (
-   <EntityPageLayout>
+   <EntityPageLayoutWrapper>
      <EntityPageLayout.Content
        path="/*"
        title="Overview"
@@ -21,6 +21,6 @@ For example,
 +      title="Diagram"
 +      element={<EntitySystemDiagramCard />}
 +    />
-   </EntityPageLayout>
+   </EntityPageLayoutWrapper>
  );
 ```
