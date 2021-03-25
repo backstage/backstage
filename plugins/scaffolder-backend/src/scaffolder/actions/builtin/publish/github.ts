@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { join as joinPath, normalize as normalizePath } from 'path';
 import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
@@ -21,7 +20,7 @@ import {
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { parseRepoUrl } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGithubAction(options: {
@@ -69,7 +68,8 @@ export function createPublishGithubAction(options: {
             enum: ['private', 'public', 'internal'],
           },
           sourcePath: {
-            title: 'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
+            title:
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
             type: 'string',
           },
         },
@@ -163,14 +163,9 @@ export function createPublishGithubAction(options: {
 
       const remoteUrl = data.clone_url;
       const repoContentsUrl = `${data.html_url}/blob/master`;
-      let outputPath = ctx.input.sourcePath;
-      if (ctx.input.sourcePath) {
-        const safeSuffix = normalizePath(ctx.input.sourcePath).replace(/^(\.\.(\/|\\|$))+/, '');
-        outputPath = joinPath(ctx.workspace, safeSuffix);
-      }
 
       await initRepoAndPush({
-        dir: outputPath,
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth: {
           username: 'x-access-token',
