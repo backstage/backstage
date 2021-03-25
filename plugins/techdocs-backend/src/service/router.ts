@@ -31,6 +31,7 @@ import { Logger } from 'winston';
 import { DocsBuilder } from '../DocsBuilder';
 import { shouldCheckForUpdate } from '../DocsBuilder/BuildMetadataStorage';
 import { getEntityNameFromUrlPath } from './helpers';
+import { NotFoundError } from '@backstage/errors';
 
 type RouterOptions = {
   preparers: PreparerBuilder;
@@ -105,12 +106,11 @@ export async function createRouter({
     }
   });
 
-  router.get('/docs/:namespace/:kind/:name/*', async (req, res) => {
+  // Check if docs are the latest version and trigger rebuilds if not
+  // Responds with immediate success if rebuild not needed
+  // If a build is required, responds with a success when finished
+  router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const storageUrl =
-      config.getOptionalString('techdocs.storageUrl') ??
-      `${await discovery.getExternalBaseUrl('techdocs')}/static/docs`;
-
     const catalogUrl = await discovery.getBaseUrl('catalog');
     const triple = [kind, namespace, name].map(encodeURIComponent).join('/');
 
@@ -127,6 +127,16 @@ export async function createRouter({
 
     const entity: Entity = await catalogRes.json();
 
+    if (!entity.metadata.uid) {
+      throw new NotFoundError('Entity metadata UID missing');
+    }
+    if (!shouldCheckForUpdate(entity.metadata.uid)) {
+      res.status(200).json({
+        message: `Last check for documentation update is recent, did not retry.`,
+      });
+      return;
+    }
+
     let publisherType = '';
     try {
       publisherType = config.getString('techdocs.publisher.type');
@@ -137,63 +147,61 @@ export async function createRouter({
           'https://backstage.io/docs/features/techdocs/architecture',
       );
     }
-
     // techdocs-backend will only try to build documentation for an entity if techdocs.builder is set to 'local'
-    // If set to 'external', it will only try to fetch and assume that an external process (e.g. CI/CD pipeline
-    // of the repository) is responsible for building and publishing documentation to the storage provider.
-    if (
-      config.getString('techdocs.builder') === 'local' &&
-      entity.metadata.uid &&
-      shouldCheckForUpdate(entity.metadata.uid)
-    ) {
-      const docsBuilder = new DocsBuilder({
-        preparers,
-        generators,
-        publisher,
-        dockerClient,
-        logger,
-        entity,
+    // If set to 'external', it will assume that an external process (e.g. CI/CD pipeline
+    // of the repository) is responsible for building and publishing documentation to the storage provider
+    if (config.getString('techdocs.builder') !== 'local') {
+      res.status(200).json({
+        message:
+          '`techdocs.builder` app config is not set to `local`, so docs will not be generated locally and sync is not required.',
       });
-      let foundDocs = false;
-      switch (publisherType) {
-        case 'local':
-        case 'awsS3':
-        case 'azureBlobStorage':
-        case 'openStackSwift':
-        case 'googleGcs':
-          // This block should be valid for all storage implementations. So no need to duplicate in future,
-          // add the publisher type in the list here.
-          await docsBuilder.build();
-          // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
-          // on the user's page. If not, respond with a message asking them to check back later.
-          // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
-          for (let attempt = 0; attempt < 5; attempt++) {
-            if (await publisher.hasDocsBeenGenerated(entity)) {
-              foundDocs = true;
-              break;
-            }
-            await new Promise(r => setTimeout(r, 1000));
-          }
-          if (!foundDocs) {
-            logger.error(
-              'Published files are taking longer to show up in storage. Something went wrong.',
-            );
-            res.status(408).json({
-              error:
-                'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
-            });
-            return;
-          }
-          break;
-        default:
-          res.status(400).json({
-            error: `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
-          });
-          break;
-      }
+      return;
     }
-
-    res.redirect(`${storageUrl}${req.path.replace('/docs', '')}`);
+    const docsBuilder = new DocsBuilder({
+      preparers,
+      generators,
+      publisher,
+      dockerClient,
+      logger,
+      entity,
+    });
+    let foundDocs = false;
+    switch (publisherType) {
+      case 'local':
+      case 'awsS3':
+      case 'azureBlobStorage':
+      case 'openStackSwift':
+      case 'googleGcs':
+        // This block should be valid for all storage implementations. So no need to duplicate in future,
+        // add the publisher type in the list here.
+        await docsBuilder.build();
+        // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
+        // on the user's page. If not, respond with a message asking them to check back later.
+        // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
+        for (let attempt = 0; attempt < 5; attempt++) {
+          if (await publisher.hasDocsBeenGenerated(entity)) {
+            foundDocs = true;
+            break;
+          }
+          await new Promise(r => setTimeout(r, 1000));
+        }
+        if (!foundDocs) {
+          logger.error(
+            'Published files are taking longer to show up in storage. Something went wrong.',
+          );
+          throw new NotFoundError(
+            'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
+          );
+        }
+        res
+          .status(201)
+          .json({ message: 'Docs updated or did not need updating' });
+        break;
+      default:
+        throw new NotFoundError(
+          `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
+        );
+    }
   });
 
   // Route middleware which serves files from the storage set in the publisher.

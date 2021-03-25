@@ -17,11 +17,11 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert } from '@material-ui/lab';
 import { techdocsStorageApiRef } from '../../api';
-import { useShadowDom } from '../hooks';
 import transformer, {
   addBaseUrl,
   addLinkClickListener,
@@ -46,17 +46,45 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const theme = useTheme<BackstageTheme>();
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
-  const [shadowDomRef, shadowRoot] = useShadowDom();
   const [sidebars, setSidebars] = useState<HTMLElement[]>();
   const navigate = useNavigate();
+  const shadowDomRef = useRef<HTMLDivElement>(null);
+  const [loadedPath, setLoadedPath] = useState('');
+  const [atInitialLoad, setAtInitialLoad] = useState(true);
+  const [newerDocsExist, setNewerDocsExist] = useState(false);
 
-  const { value, loading, error } = useAsync(async () => {
+  const {
+    value: isSynced,
+    loading: syncInProgress,
+    error: syncError,
+  } = useAsync(async () => {
+    // Attempt to sync only if `techdocs.builder` in app config is set to 'local'
+    if ((await techdocsStorageApi.getBuilder()) !== 'local') {
+      return Promise.resolve({
+        value: true,
+        loading: null,
+        error: null,
+      });
+    }
+    return techdocsStorageApi.syncEntityDocs({ kind, namespace, name });
+  });
+
+  const {
+    value: rawPage,
+    loading: docLoading,
+    error: docLoadError,
+  } = useAsync(async () => {
+    // do not automatically load same page again if URL has not changed,
+    // happens when generating new docs finishes
+    if (newerDocsExist && path === loadedPath) {
+      return null;
+    }
     return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
-  }, [techdocsStorageApi, kind, namespace, name, path]);
+  }, [techdocsStorageApi, kind, namespace, name, path, isSynced]);
 
   useEffect(() => {
     const updateSidebarPosition = () => {
-      if (!!shadowRoot && !!shadowDomRef.current && !!sidebars) {
+      if (!!shadowDomRef.current && !!sidebars) {
         sidebars!.forEach(sidebar => {
           const newTop = Math.max(
             shadowDomRef.current!.getBoundingClientRect().top,
@@ -73,17 +101,38 @@ export const Reader = ({ entityId, onReady }: Props) => {
       window.removeEventListener('scroll', updateSidebarPosition);
       window.removeEventListener('resize', updateSidebarPosition);
     };
-  }, [shadowDomRef, shadowRoot, sidebars]);
+  }, [shadowDomRef, sidebars]);
 
-  React.useEffect(() => {
-    if (!shadowRoot || loading || error) {
-      return; // Shadow DOM isn't ready / It's not ready / Docs was not found
+  useEffect(() => {
+    if (rawPage) {
+      setLoadedPath(path);
+    }
+  }, [rawPage, path]);
+
+  useEffect(() => {
+    if (atInitialLoad === false) {
+      return;
+    }
+    setTimeout(() => {
+      setAtInitialLoad(false);
+    }, 5000);
+  });
+
+  useEffect(() => {
+    if (!atInitialLoad && !!rawPage && syncInProgress) {
+      setNewerDocsExist(true);
+    }
+  }, [atInitialLoad, rawPage, syncInProgress]);
+
+  useEffect(() => {
+    if (!rawPage || !shadowDomRef.current) {
+      return;
     }
     if (onReady) {
       onReady();
     }
     // Pre-render
-    const transformedElement = transformer(value as string, [
+    const transformedElement = transformer(rawPage as string, [
       sanitizeDOM(),
       addBaseUrl({
         techdocsStorageApi,
@@ -120,7 +169,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
           }
           .md-sidebar--secondary { display: none; }
           .md-sidebar--primary { left: 72px; width: 10rem }
-          .md-content { margin-left: 10rem; max-width: 100%; }
+          .md-content { margin-left: 10rem; max-width: calc(100% - 10rem); }
           .md-content__inner { font-size: 0.9rem }
           .md-footer { 
             position: static; 
@@ -180,6 +229,9 @@ export const Reader = ({ entityId, onReady }: Props) => {
       return; // An unexpected error occurred
     }
 
+    const shadowDiv: HTMLElement = shadowDomRef.current!;
+    const shadowRoot =
+      shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
     Array.from(shadowRoot.children).forEach(child =>
       shadowRoot.removeChild(child),
     );
@@ -201,17 +253,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
         onClick: (_: MouseEvent, url: string) => {
           window.scroll({ top: 0 });
           const parsedUrl = new URL(url);
+          if (newerDocsExist && isSynced) {
+            // link navigation will load newer docs
+            setNewerDocsExist(false);
+          }
           if (parsedUrl.hash) {
-            history.pushState(
-              null,
-              '',
-              `${parsedUrl.pathname}${parsedUrl.hash}`,
-            );
+            navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
           } else {
             navigate(parsedUrl.pathname);
           }
-
-          shadowRoot?.querySelector(parsedUrl.hash)?.scrollIntoView();
         },
       }),
       onCssReady({
@@ -239,30 +289,49 @@ export const Reader = ({ entityId, onReady }: Props) => {
       }),
     ]);
   }, [
-    name,
-    path,
-    shadowRoot,
-    value,
-    error,
-    loading,
-    namespace,
-    kind,
+    rawPage,
     entityId,
     navigate,
+    onReady,
+    shadowDomRef,
+    path,
     techdocsStorageApi,
     theme,
-    onReady,
+    kind,
+    namespace,
+    name,
+    newerDocsExist,
+    isSynced,
   ]);
 
-  if (error) {
-    // TODO Enhance API call to return customize error objects so we can identify which we ran into
-    // For now this defaults to display error code 404
-    return <TechDocsNotFound statusCode={404} errorMessage={error.message} />;
+  // docLoadError not considered an error state if sync request is still ongoing
+  // or sync just completed and doc is loading again
+  if ((docLoadError && !syncInProgress && !docLoading) || syncError) {
+    let errMessage = '';
+    if (docLoadError) {
+      errMessage += ` Load error: ${docLoadError}`;
+    }
+    if (syncError) errMessage += ` Build error: ${syncError}`;
+    return <TechDocsNotFound errorMessage={errMessage} />;
   }
 
   return (
     <>
-      {loading ? <TechDocsProgressBar /> : null}
+      {newerDocsExist && !isSynced ? (
+        <Alert variant="outlined" severity="info">
+          A newer version of this documentation is being prepared and will be
+          available shortly.
+        </Alert>
+      ) : null}
+      {newerDocsExist && isSynced ? (
+        <Alert variant="outlined" severity="success">
+          A newer version of this documentation is now available, please refresh
+          to view.
+        </Alert>
+      ) : null}
+      {docLoading || (docLoadError && syncInProgress) ? (
+        <TechDocsProgressBar />
+      ) : null}
       <div ref={shadowDomRef} />
     </>
   );
