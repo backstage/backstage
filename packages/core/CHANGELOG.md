@@ -1,5 +1,18 @@
 # @backstage/core
 
+## 0.7.3
+
+### Patch Changes
+
+- fcc3ada24: Reuse ResponseErrorList for non ResponseErrors
+- 4618774ff: Changed color for Add Item, Support & Choose buttons with low contrast/readability in dark mode
+- df59930b3: Fix PropTypes error with OverflowTooltip component
+- Updated dependencies [76deafd31]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4618774ff]
+  - @backstage/core-api@0.2.15
+  - @backstage/theme@0.2.5
+
 ## 0.7.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.3
+
+### Patch Changes
+
+- 9f2e51e89: Fixes bug in the `github:publish` action causing repositories to be set as private even if the visibility is set to internal
+- 91e87c055: Add inputs for action `fetch:cookiecutter`: copyWithoutRender, extensions, imageName
+- 113d3d59e: Added a `publish:file` action to use for local development. The action is not installed by default.
+
 ## 0.9.2
 
 ### Patch Changes

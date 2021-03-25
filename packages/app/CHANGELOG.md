@@ -1,5 +1,37 @@
 # example-app
 
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [687f066e1]
+- Updated dependencies [d10ea17c9]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-kubernetes@0.4.2
+  - @backstage/plugin-badges@0.1.2
+  - @backstage/plugin-cost-insights@0.8.4
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-jenkins@0.4.1
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
 ## 0.2.20
 
 ### Patch Changes

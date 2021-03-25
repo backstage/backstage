@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.6
+
+### Patch Changes
+
+- 449776cd6: The `auth` config types now properly accept any declared auth environment. Previously only `development` was accepted.
+
+  The `audience` configuration is no longer required for GitLab auth; this will default to `https://gitlab.com`
+
 ## 0.3.5
 
 ### Patch Changes

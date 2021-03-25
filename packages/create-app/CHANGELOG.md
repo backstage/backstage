@@ -1,5 +1,108 @@
 # @backstage/create-app
 
+## 1.0.0
+
+### Patch Changes
+
+- 2c525f85e: (fix) Adds locationAnalyzer to default-app template
+
+  The locationAnalyzer was missing from the default-app template.
+  This resulted in 404 errors in newly bootstrapped backstage applications,
+  when adding components without configuration.
+
+  To fix this in an existing backstage application, the locationAnalyzer needs
+  to be carried from the builder to the router in the
+  `packages/backend/src/plugins/catalog.ts` file.
+
+  ```diff
+     const builder = new CatalogBuilder(env);
+     const {
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+     } = await builder.build();
+     // ...
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+       logger: env.logger,
+     });
+  ```
+
+- f88fe9dd9: Adds plugin-org and more capability to the default EntityPage to display Users, Groups and Systems.
+
+  To update an existing application, add the org plugin:
+
+  ```shell
+  cd packages/app
+  yarn add @backstage/plugin-org
+  ```
+
+  Then add the example systems locations to your `app-config.yaml`:
+
+  ```diff
+  catalog:
+    rules:
+  -    - allow: [Component, API, Group, User, Template, Location]
+  +    - allow: [Component, System, API, Group, User, Template, Location]
+    locations:
+      # Backstage example components
+      - type: url
+        target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+  +    # Backstage example systems
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+  +
+      # Backstage example APIs
+  ```
+
+  Additionally, the default app sidebar was updated to parity with the Backstage
+  repo. You can see these changes in the template
+  [App.tsx](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/App.tsx#L70)
+  referencing a new `Root` component.
+
+  Finally, compare your `packages/app/src/components/catalog/EntityPage.tsx` to
+  [EntityPage](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+  from the `@backstage/create-app` default template to pick up additional
+  changes there.
+
+- 4d248725e: Update the create-app template to use the correct latest version of `express-promise-router`.
+
+  To apply the same change in your own repository, update all of your repo's dependencies on `express-promise-router` to `"^4.1.0"`.
+
+- Updated dependencies [9f2e51e89]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [449776cd6]
+- Updated dependencies [91e87c055]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [113d3d59e]
+- Updated dependencies [f47e11427]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [c862b3f36]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-scaffolder-backend@0.9.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/plugin-techdocs-backend@0.7.0
+  - @backstage/plugin-auth-backend@0.3.6
+  - @backstage/core@0.7.3
+  - @backstage/plugin-catalog-backend@0.6.7
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
 ## 0.3.14
 
 ### Patch Changes

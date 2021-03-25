@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.2
+
+### Patch Changes
+
+- a2a3c7803: Bump `@kubernetes/client-node` from `^0.13.2` to `^0.14.0`.
+
 ## 0.3.1
 
 ### Patch Changes

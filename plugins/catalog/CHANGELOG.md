@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog
 
+## 0.5.1
+
+### Patch Changes
+
+- 4d248725e: Temporarily add `UNSTABLE_extraContextMenuItems` to the entity layout, so that we could detach the catalog plugin from the dependency on the badges plugin
+- 687f066e1: Add icon for entity badge menu
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.5.0
 
 ### Minor Changes
