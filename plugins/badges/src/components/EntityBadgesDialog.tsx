@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   Progress,
   ResponseErrorPanel,
   useApi,
 } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Button,
@@ -39,43 +39,44 @@ import { badgesApiRef } from '../api';
 type Props = {
   open: boolean;
   onClose?: () => any;
-  entity: Entity;
 };
 
-export const EntityBadgesDialog = ({ open, onClose, entity }: Props) => {
+export const EntityBadgesDialog = ({ open, onClose }: Props) => {
   const theme = useTheme();
+  const { entity } = useEntity();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const badgesApi = useApi(badgesApiRef);
 
   const { value: badges, loading, error } = useAsync(async () => {
-    if (open) {
+    if (open && entity) {
       return await badgesApi.getEntityBadgeSpecs(entity);
     }
-
     return [];
   }, [badgesApi, entity, open]);
 
   const content = (badges || []).map(
     ({ badge: { description }, id, url, markdown }) => (
-      <DialogContentText>
-        <Box m={4} />
-        <img alt={description || id} src={url} />
-        <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
-      </DialogContentText>
+      <Box marginTop={4} key={id}>
+        <DialogContentText component="div">
+          <img alt={description || id} src={url} />
+          <CodeSnippet language="markdown" text={markdown} showCopyCodeButton />
+        </DialogContentText>
+      </Box>
     ),
   );
 
   return (
     <Dialog fullScreen={fullScreen} open={open} onClose={onClose}>
       <DialogTitle>Entity Badges</DialogTitle>
-
       <DialogContent>
         <DialogContentText>
           Embed badges in other web sites that link back to this entity. Copy
           the relevant snippet of Markdown code to use the badge.
         </DialogContentText>
+
         {loading && <Progress />}
         {error && <ResponseErrorPanel error={error} />}
+
         {content}
       </DialogContent>
 

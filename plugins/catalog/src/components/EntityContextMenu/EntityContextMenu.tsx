@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+import { IconComponent } from '@backstage/core';
 import {
+  Divider,
   IconButton,
   ListItemIcon,
+  ListItemText,
   MenuItem,
   MenuList,
   Popover,
-  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
-import BadgeIcon from '@material-ui/icons/CallToAction';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
 
@@ -35,13 +36,21 @@ const useStyles = makeStyles({
   },
 });
 
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
 type Props = {
-  onShowBadgesDialog?: () => void;
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   onUnregisterEntity: () => void;
 };
 
 export const EntityContextMenu = ({
-  onShowBadgesDialog,
+  UNSTABLE_extraContextMenuItems,
   onUnregisterEntity,
 }: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
@@ -54,6 +63,24 @@ export const EntityContextMenu = ({
   const onClose = () => {
     setAnchorEl(undefined);
   };
+
+  const extraItems = UNSTABLE_extraContextMenuItems && [
+    ...UNSTABLE_extraContextMenuItems.map(item => (
+      <MenuItem
+        key={item.title}
+        onClick={() => {
+          onClose();
+          item.onClick();
+        }}
+      >
+        <ListItemIcon>
+          <item.Icon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={item.title} />
+      </MenuItem>
+    )),
+    <Divider key="the divider is here!" />,
+  ];
 
   return (
     <>
@@ -75,19 +102,7 @@ export const EntityContextMenu = ({
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          {onShowBadgesDialog && (
-            <MenuItem
-              onClick={() => {
-                onClose();
-                onShowBadgesDialog();
-              }}
-            >
-              <ListItemIcon>
-                <BadgeIcon fontSize="small" />
-              </ListItemIcon>
-              <Typography variant="inherit">Badges</Typography>
-            </MenuItem>
-          )}
+          {extraItems}
           <MenuItem
             onClick={() => {
               onClose();
@@ -97,7 +112,7 @@ export const EntityContextMenu = ({
             <ListItemIcon>
               <Cancel fontSize="small" />
             </ListItemIcon>
-            <Typography variant="inherit">Unregister entity</Typography>
+            <ListItemText primary="Unregister entity" />
           </MenuItem>
         </MenuList>
       </Popover>
