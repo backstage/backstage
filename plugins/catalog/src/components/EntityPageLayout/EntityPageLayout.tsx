@@ -22,12 +22,12 @@ import {
   Content,
   Header,
   HeaderLabel,
+  IconComponent,
   Link,
   Page,
   Progress,
   ResponseErrorPanel,
   WarningPanel,
-  IconComponent,
 } from '@backstage/core';
 import {
   EntityContext,
@@ -58,14 +58,17 @@ const EntityPageTitle = ({
 
 const EntityLabels = ({ entity }: { entity: Entity }) => {
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
-
   return (
     <>
       {ownedByRelations.length > 0 && (
         <HeaderLabel
           label="Owner"
           value={
-            <EntityRefLinks entityRefs={ownedByRelations} color="inherit" />
+            <EntityRefLinks
+              entityRefs={ownedByRelations}
+              defaultKind="Group"
+              color="inherit"
+            />
           }
         />
       )}
