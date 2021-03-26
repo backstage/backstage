@@ -135,7 +135,7 @@ export const MembersListCard = (_props: {
         ),
     );
     return groupMembersList;
-  }, [catalogApi]);
+  }, [catalogApi, groupEntity]);
 
   if (loading) {
     return <Progress />;
