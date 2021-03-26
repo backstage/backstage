@@ -184,6 +184,18 @@
     "Auth and identity": [
       "auth/index",
       "auth/add-auth-provider",
+      {
+        "type": "subcategory",
+        "label": "Included providers",
+        "ids": [
+          "auth/auth0/provider",
+          "auth/microsoft/provider",
+          "auth/github/provider",
+          "auth/gitlab/provider",
+          "auth/google/provider",
+          "auth/okta/provider"
+        ]
+      },
       "auth/auth-backend",
       "auth/oauth",
       "auth/glossary",
