@@ -47,6 +47,7 @@
     "json-schema": "^0.2.5",
     "git-url-parse": "^11.4.4",
     "humanize-duration": "^3.25.1",
+    "immer": "^9.0.1",
     "luxon": "^1.25.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -55,7 +56,7 @@
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
     "swr": "^0.3.0",
-    "use-immer": "^0.4.2",
+    "use-immer": "^0.5.1",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {

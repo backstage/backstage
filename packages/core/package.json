@@ -48,7 +48,7 @@
     "d3-shape": "^2.0.0",
     "d3-zoom": "^2.0.0",
     "dagre": "^0.8.5",
-    "immer": "^8.0.1",
+    "immer": "^9.0.1",
     "lodash": "^4.17.15",
     "material-table": "^1.69.1",
     "prop-types": "^15.7.2",
