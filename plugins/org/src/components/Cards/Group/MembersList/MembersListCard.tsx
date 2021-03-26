@@ -19,7 +19,13 @@ import {
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
+import {
+  Avatar,
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+} from '@backstage/core';
 import {
   catalogApiRef,
   entityRouteParams,
@@ -34,7 +40,6 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -110,7 +115,7 @@ export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
 }) => {
-  const groupEntity = useEntity<GroupEntity>().entity;
+  const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
     metadata: { name: groupName },
     spec: { profile },
@@ -138,7 +143,7 @@ export const MembersListCard = (_props: {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

@@ -51,7 +51,7 @@ export const UserProfileCard = ({
   entity?: UserEntity;
   variant?: InfoCardVariants;
 }) => {
-  const user = useEntity<UserEntity>().entity;
+  const { entity: user } = useEntity<UserEntity>();
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
   }

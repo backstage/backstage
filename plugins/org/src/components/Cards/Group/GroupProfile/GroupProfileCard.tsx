@@ -55,9 +55,9 @@ export const GroupProfileCard = ({
   entity?: GroupEntity;
   variant?: InfoCardVariants;
 }) => {
-  const group = useEntity<GroupEntity>().entity;
+  const { entity: group } = useEntity<GroupEntity>();
   if (!group) {
-    return <Alert severity="error">User not found</Alert>;
+    return <Alert severity="error">Group not found</Alert>;
   }
 
   const {

@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const ApiDefinitionCard = (_: Props) => {
-  const entity = useEntity<ApiEntity>().entity;
+  const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
 
