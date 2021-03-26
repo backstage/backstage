@@ -1868,7 +1868,7 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
-    immer "^8.0.1"
+    immer "^9.0.1"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
@@ -1910,7 +1910,7 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
-    immer "^8.0.1"
+    immer "^9.0.1"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
@@ -1952,7 +1952,7 @@
     d3-shape "^2.0.0"
     d3-zoom "^2.0.0"
     dagre "^0.8.5"
-    immer "^8.0.1"
+    immer "^9.0.1"
     lodash "^4.17.15"
     material-table "^1.69.1"
     prop-types "^15.7.2"
@@ -15366,10 +15366,15 @@ immer@1.10.0:
   resolved "https://registry.npmjs.org/immer/-/immer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha512-O3sR1/opvCDGLEVcvrGTMtLac8GJ5IwZC4puPrLuRj3l7ICKvkmA0vGuU9OW8mV9WIBRnaxp5GJh9IEAaNOoYg==
 
-immer@8.0.1, immer@^8.0.1:
+immer@8.0.1:
   version "8.0.1"
   resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
   integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
+
+immer@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.npmjs.org/immer/-/immer-9.0.1.tgz#1116368e051f9a0fd188c5136b6efb74ed69c57f"
+  integrity sha512-7CCw1DSgr8kKYXTYOI1qMM/f5qxT5vIVMeGLDCDX8CSxsggr1Sjdoha4OhsP0AZ1UvWbyZlILHvLjaynuu02Mg==
 
 immutable@>=3.8.2, immutable@^3.8.1, immutable@^3.8.2, immutable@^3.x.x:
   version "3.8.2"
@@ -26221,10 +26226,10 @@ use-composed-ref@^1.0.0:
   dependencies:
     ts-essentials "^2.0.3"
 
-use-immer@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.npmjs.org/use-immer/-/use-immer-0.4.2.tgz#7d7e7d3386cc834d45b2279f37d8974023550f4f"
-  integrity sha512-ONfZHEv/gzt/jyYxrJD3ZFUllKJED8F1mds9Fr9CYj54LmsiuGDg3vkx+R7WHS72p7DbSS1QbM7xNYrVWX+KcA==
+use-immer@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.npmjs.org/use-immer/-/use-immer-0.5.1.tgz#3862ebbb194ebfe66b8eb221082c2fb2585f8fe1"
+  integrity sha512-Orb7PokM+jiLQfA1oJ3B3P7Guq0c2IxUHHmBpLeEMnJiz4ZOMlj9mkqq6D7iXJsnurRX0EOB134annf3RjEWHw==
 
 use-isomorphic-layout-effect@^1.0.0:
   version "1.0.0"
