@@ -16,12 +16,7 @@
 import React from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import {
-  EmptyState,
-  InfoCard,
-  MissingAnnotationEmptyState,
-  useApi,
-} from '@backstage/core';
+import { InfoCard, MissingAnnotationEmptyState, useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
 import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
