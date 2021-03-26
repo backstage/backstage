@@ -180,7 +180,7 @@ describe('publish:azure', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://dev.azure.com/organization/project/_git/repo',
+      'https://dev.azure.com/org/owner/_git/repo',
     );
   });
 });

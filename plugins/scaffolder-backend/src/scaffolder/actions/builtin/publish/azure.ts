@@ -107,9 +107,7 @@ export function createPublishAzureAction(options: {
         );
       }
 
-      // blam: Repo contents is serialized into the path,
-      // so it's just the base path I think
-      const repoContentsUrl = remoteUrl;
+      const repoContentsUrl = `https://${host}/${organization}/${owner}/_git/${repo}`;
 
       await initRepoAndPush({
         dir: ctx.workspacePath,
