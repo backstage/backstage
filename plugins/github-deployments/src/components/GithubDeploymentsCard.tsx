@@ -60,11 +60,6 @@ const GithubDeploymentsComponent = ({
       </InfoCard>
     );
   }
-  if (!value || value.length === 0) {
-    return (
-      <EmptyState title="No GitHub deployments available." missing="info" />
-    );
-  }
 
   return <GithubDeploymentsTable deployments={value || []} />;
 };

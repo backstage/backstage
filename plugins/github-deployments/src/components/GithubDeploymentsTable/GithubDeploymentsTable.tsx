@@ -17,7 +17,15 @@ import React from 'react';
 import { Table, TableColumn } from '@backstage/core';
 import { GithubDeployment } from '../../api';
 import moment from 'moment';
-import { Box, Typography, Link } from '@material-ui/core';
+import { Box, Typography, Link, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+  empty: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    justifyContent: 'center',
+  },
+}));
 
 const lastUpdated = (start: string): string => moment(start).fromNow();
 
@@ -76,12 +84,21 @@ type GithubDeploymentsTableProps = {
 const GithubDeploymentsTable = ({
   deployments,
 }: GithubDeploymentsTableProps) => {
+  const classes = useStyles();
+
   return (
     <Table
       columns={columns}
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="GitHub Deployments"
       data={deployments}
+      emptyContent={
+        <div className={classes.empty}>
+          <Typography variant="body1">
+            No deployments found for this entity.
+          </Typography>
+        </div>
+      }
     />
   );
 };

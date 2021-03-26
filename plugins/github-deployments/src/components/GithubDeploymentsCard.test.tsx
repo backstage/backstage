@@ -113,7 +113,7 @@ describe('github-deployments', () => {
       );
 
       expect(
-        await rendered.findByText('No GitHub deployments available.'),
+        await rendered.findByText('No deployments found for this entity.'),
       ).toBeInTheDocument();
     });
   });
