@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  auth0AuthApiRef,
   githubAuthApiRef,
   gitlabAuthApiRef,
   googleAuthApiRef,
@@ -60,6 +61,14 @@ export const DefaultProviderSettings = ({ configuredProviders }: Props) => (
         title="GitLab"
         description="Provides authentication towards GitLab APIs"
         apiRef={gitlabAuthApiRef}
+        icon={Star}
+      />
+    )}
+    {configuredProviders.includes('auth0') && (
+      <ProviderSettingsItem
+        title="Auth0"
+        description="Provides authentication towards Auth0 APIs"
+        apiRef={auth0AuthApiRef}
         icon={Star}
       />
     )}
