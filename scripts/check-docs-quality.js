@@ -40,7 +40,7 @@ const getFilesToLint = () => {
     command = `git ls-files | .\\node_modules\\.bin\\shx grep ".md"`;
   }
 
-  const ignored = ['', 'ADOPTERS.md'];
+  const ignored = ['', 'ADOPTERS.md', 'OWNERS.md'];
   return execSync(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
   })
