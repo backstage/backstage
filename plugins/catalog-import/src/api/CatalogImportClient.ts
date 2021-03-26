@@ -21,6 +21,7 @@ import {
   GitHubIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { Base64 } from 'js-base64';
 import { Octokit } from '@octokit/rest';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
@@ -300,7 +301,7 @@ export class CatalogImportClient implements CatalogImportApi {
         repo,
         path: fileName,
         message: title,
-        content: btoa(fileContent),
+        content: Base64.encode(fileContent),
         branch: branchName,
       })
       .catch(e => {
