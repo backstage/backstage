@@ -61,8 +61,8 @@ The values referenced are found on the Application page on your Okta site.
 
 ## Adding the provider to the Backstage frontend
 
-To add the provider to the frontend, add the oktaAuthApi reference and
-SignInPage component to `createApp` in `packages/app/src/App.tsx`:
+To add the provider to the frontend, add the `oktaAuthApi` reference and
+`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
 
 ```diff
 + import { oktaAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';

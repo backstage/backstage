@@ -48,8 +48,8 @@ The GitHub provider is a structure with three configuration keys:
 
 ## Adding the provider to the Backstage frontend
 
-To add the provider to the frontend, add the githubAuthApi reference and
-SignInPage component to `createApp` in `packages/app/src/App.tsx`:
+To add the provider to the frontend, add the `githubAuthApi` reference and
+`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
 
 ```diff
 + import { githubAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
