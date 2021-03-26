@@ -76,8 +76,6 @@ Zalando
 Zhou
 abc
 accessors
-adamdmharvey
-andrewthauer
 api
 apis
 args
@@ -85,7 +83,6 @@ asciidoc
 async
 autoscaling
 backrub
-benjdlambert
 bool
 boolean
 builtins
@@ -110,7 +107,6 @@ configs
 const
 cookiecutter
 css
-dariddler
 dataflow
 deadnaming
 declaratively
@@ -118,20 +114,16 @@ destructured
 dev
 devops
 devs
-dhenneke
 discoverability
 dls
 docgen
 dockerode
-dtuite
-dzolotusky
 env
 esbuild
 eslint
 etag
 facto
 failover
-freben
 gitbeaker
 graphql
 graphviz
@@ -210,7 +202,6 @@ rollbar
 routable
 rst
 rsync
-rugvip
 ruleset
 sam
 scaffolded
@@ -225,7 +216,6 @@ sqlite
 squidfunk
 src
 stdout
-stefanalund
 subcomponent
 subcomponents
 subkey
@@ -257,7 +247,6 @@ untracked
 upvote
 url
 utils
-Valdemar
 validators
 varchar
 winston
