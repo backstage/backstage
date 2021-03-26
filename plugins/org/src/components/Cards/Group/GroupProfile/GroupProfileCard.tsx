@@ -15,14 +15,13 @@
  */
 
 import {
-  Entity,
   GroupEntity,
   RELATION_CHILD_OF,
   RELATION_PARENT_OF,
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core';
 import {
-  entityRouteParams,
+  EntityRefLinks,
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -41,34 +40,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
 
-const GroupLink = ({
-  groupName,
-  index = 0,
-}: {
-  groupName: string;
-  index?: number;
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-}) => {
-  const { entity } = useEntity();
-
-  return (
-    <>
-      {index >= 1 ? ', ' : ''}
-      <Link
-        component={RouterLink}
-        to={generatePath(
-          `/catalog/:namespace/group/${groupName}`,
-          entityRouteParams(entity),
-        )}
-      >
-        [{groupName}]
-      </Link>
-    </>
-  );
-};
 const CardTitle = ({ title }: { title: string }) => (
   <Box display="flex" alignItems="center">
     <GroupIcon fontSize="inherit" />
@@ -83,23 +55,25 @@ export const GroupProfileCard = ({
   entity?: GroupEntity;
   variant?: InfoCardVariants;
 }) => {
-  const group = useEntity().entity as GroupEntity;
+  const group = useEntity<GroupEntity>().entity;
+  if (!group) {
+    return <Alert severity="error">User not found</Alert>;
+  }
+
   const {
     metadata: { name, description },
     spec: { profile },
   } = group;
-  const parent = group?.relations
-    ?.filter(r => r.type === RELATION_CHILD_OF)
-    ?.map(groupItem => groupItem.target.name)
-    .toString();
 
   const childRelations = getEntityRelations(group, RELATION_PARENT_OF, {
+    kind: 'Group',
+  });
+  const parentRelations = getEntityRelations(group, RELATION_CHILD_OF, {
     kind: 'group',
   });
 
   const displayName = profile?.displayName ?? name;
-
-  if (!group) return <Alert severity="error">User not found</Alert>;
+  const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
 
   return (
     <InfoCard
@@ -120,10 +94,13 @@ export const GroupProfileCard = ({
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
-                <ListItemText>{profile.email}</ListItemText>
+                <ListItemText>
+                  <Link href={emailHref}>{profile.email}</Link>
+                </ListItemText>
               </ListItem>
             )}
-            {parent ? (
+
+            {parentRelations.length ? (
               <ListItem>
                 <ListItemIcon>
                   <Tooltip title="Parent Group">
@@ -131,11 +108,15 @@ export const GroupProfileCard = ({
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText>
-                  <GroupLink groupName={parent} entity={group} />
+                  <EntityRefLinks
+                    entityRefs={parentRelations}
+                    defaultKind="Group"
+                  />
                 </ListItemText>
               </ListItem>
             ) : null}
-            {childRelations?.length ? (
+
+            {childRelations.length ? (
               <ListItem>
                 <ListItemIcon>
                   <Tooltip title="Child Groups">
@@ -143,13 +124,10 @@ export const GroupProfileCard = ({
                   </Tooltip>
                 </ListItemIcon>
                 <ListItemText>
-                  {childRelations.map((children, index) => (
-                    <GroupLink
-                      groupName={children.name}
-                      entity={group}
-                      index={index}
-                    />
-                  ))}
+                  <EntityRefLinks
+                    entityRefs={childRelations}
+                    defaultKind="Group"
+                  />
                 </ListItemText>
               </ListItem>
             ) : null}

@@ -21,9 +21,9 @@ import {
 } from '@backstage/catalog-model';
 import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
 import {
-  useEntity,
   catalogApiRef,
   entityRouteParams,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -110,7 +110,7 @@ export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
 }) => {
-  const groupEntity = useEntity().entity as GroupEntity;
+  const groupEntity = useEntity<GroupEntity>().entity;
   const {
     metadata: { name: groupName },
     spec: { profile },
@@ -121,11 +121,9 @@ export const MembersListCard = (_props: {
 
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
-      filter: {
-        kind: 'User',
-      },
+      filter: { kind: 'User' },
     });
-    const groupMembersList = ((membersList.items as unknown) as Array<UserEntity>).filter(
+    const groupMembersList = (membersList.items as UserEntity[]).filter(
       member =>
         member?.relations?.some(
           r =>
@@ -150,7 +148,7 @@ export const MembersListCard = (_props: {
         subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
-          {members && members.length ? (
+          {members && members.length > 0 ? (
             members.map(member => (
               <MemberComponent
                 member={member}

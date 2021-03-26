@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  RELATION_MEMBER_OF,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { RELATION_MEMBER_OF, UserEntity } from '@backstage/catalog-model';
 import { Avatar, InfoCard, InfoCardVariants } from '@backstage/core';
-import { entityRouteParams, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import {
   Box,
   Grid,
@@ -35,30 +35,6 @@ import GroupIcon from '@material-ui/icons/Group';
 import PersonIcon from '@material-ui/icons/Person';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import { generatePath, Link as RouterLink } from 'react-router-dom';
-
-const GroupLink = ({
-  groupName,
-  index,
-  entity,
-}: {
-  groupName: string;
-  index: number;
-  entity: Entity;
-}) => (
-  <>
-    {index >= 1 ? ', ' : ''}
-    <Link
-      component={RouterLink}
-      to={generatePath(
-        `/catalog/:namespace/group/${groupName}`,
-        entityRouteParams(entity),
-      )}
-    >
-      [{groupName}]
-    </Link>
-  </>
-);
 
 const CardTitle = ({ title }: { title?: string }) =>
   title ? (
@@ -75,22 +51,20 @@ export const UserProfileCard = ({
   entity?: UserEntity;
   variant?: InfoCardVariants;
 }) => {
-  const user = useEntity().entity as UserEntity;
-  const {
-    metadata: { name: metaName },
-    spec: { profile },
-  } = user;
-  const groupNames =
-    user?.relations
-      ?.filter(r => r.type === RELATION_MEMBER_OF)
-      ?.map(group => group.target.name) || [];
-  const displayName = profile?.displayName ?? metaName;
-
+  const user = useEntity<UserEntity>().entity;
   if (!user) {
     return <Alert severity="error">User not found</Alert>;
   }
 
-  const emailHref = profile?.email ? `mailto:${profile.email}` : '';
+  const {
+    metadata: { name: metaName },
+    spec: { profile },
+  } = user;
+  const displayName = profile?.displayName ?? metaName;
+  const emailHref = profile?.email ? `mailto:${profile.email}` : undefined;
+  const memberOfRelations = getEntityRelations(user, RELATION_MEMBER_OF, {
+    kind: 'Group',
+  });
 
   return (
     <InfoCard title={<CardTitle title={displayName} />} variant={variant}>
@@ -104,7 +78,9 @@ export const UserProfileCard = ({
             {profile?.email && (
               <ListItem>
                 <ListItemIcon>
-                  <EmailIcon />
+                  <Tooltip title="Email">
+                    <EmailIcon />
+                  </Tooltip>
                 </ListItemIcon>
                 <ListItemText>
                   <Link href={emailHref}>{profile.email}</Link>
@@ -119,14 +95,10 @@ export const UserProfileCard = ({
                 </Tooltip>
               </ListItemIcon>
               <ListItemText>
-                {groupNames.map((groupName, index) => (
-                  <GroupLink
-                    groupName={groupName}
-                    index={index}
-                    key={groupName}
-                    entity={user}
-                  />
-                ))}
+                <EntityRefLinks
+                  entityRefs={memberOfRelations}
+                  defaultKind="Group"
+                />
               </ListItemText>
             </ListItem>
           </List>
