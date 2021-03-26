@@ -91,3 +91,28 @@ the catalog:
 catalog:
   rules: []
 ```
+
+## Readonly mode
+
+Processors provides a good way to automate ingestion of entities when combined
+with [Static Location Configuration](#static-location-configuration) or a
+discovery processor like
+[GitHub Discovery](../../integrations/github/discovery.md). To enforce usage of
+processors to locate entities we can configure the catalog into `readonly` mode.
+This configuration disables the mutating backend catalog APIs and disallows
+users from registering new entities at run-time.
+
+```yaml
+catalog:
+  readonly: true
+```
+
+> **Note that any plugin relying on the catalog API for creating, updating and
+> deleting entities will not work in this mode.**
+
+A common use case for this configuration is when organizations have a remote
+source that should be mirrored into backstage. If we want backstage to be a
+mirror of this remote source we cannot allow users to also register entities
+with e.g.
+[catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
+plugin.
