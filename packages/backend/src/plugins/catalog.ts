@@ -45,5 +45,6 @@ export default async function createPlugin(
     higherOrderOperation,
     locationAnalyzer,
     logger: env.logger,
+    config: env.config,
   });
 }
