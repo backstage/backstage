@@ -70,7 +70,7 @@ export function SystemDiagramCard() {
     return catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
-        ['spec.system']: currentSystemName,
+        'spec.system': currentSystemName,
       },
     });
   }, [catalogApi]);
