@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './components/AboutCard';
-export { EntityLayout } from './components/EntityLayout';
-export { EntityPageLayout } from './components/EntityPageLayout';
-export * from './components/EntitySwitch';
-export { Router } from './components/Router';
-export {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  catalogPlugin,
-  catalogPlugin as plugin,
-  EntityAboutCard,
-  EntityHasComponentsCard,
-  EntityHasSubcomponentsCard,
-  EntityHasSystemsCard,
-  EntityLinksCard,
-  EntitySystemDiagramCard,
-} from './plugin';
+export { SystemDiagramCard } from './SystemDiagramCard';
