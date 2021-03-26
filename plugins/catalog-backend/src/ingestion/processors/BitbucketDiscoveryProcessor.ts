@@ -130,7 +130,7 @@ function parseUrl(
   const url = new URL(urlString);
   const path = url.pathname.substr(1).split('/');
 
-  // /backstage/techdocs-*/blob/master/catalog-info.yaml
+  // /projects/backstage/repos/techdocs-*/catalog-info.yaml
   if (path.length > 3 && path[1].length && path[3].length) {
     return {
       projectSearchPath: escapeRegExp(decodeURIComponent(path[1])),
