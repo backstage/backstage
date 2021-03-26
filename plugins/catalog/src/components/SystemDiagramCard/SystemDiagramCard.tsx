@@ -73,7 +73,7 @@ export function SystemDiagramCard() {
         'spec.system': currentSystemName,
       },
     });
-  }, [catalogApi]);
+  }, [catalogApi, currentSystemName]);
 
   // pick out the system itself
   systemNodes.push({
