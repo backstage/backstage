@@ -142,10 +142,10 @@ describe('CatalogPage', () => {
   });
   it('should set custom titles correctly', async () => {
     const { findByText } = renderWrapped(
-      <CatalogPage customHeaderTitle="title" customHeaderSubtitle="subtitle" />,
+      <CatalogPage customHeaderTitle="text1" customHeaderSubtitle="text2" />,
     );
-    expect(await findByText(/title \(2\)/)).toBeInTheDocument();
-    expect(await findByText(/subtitle \(2\)/)).toBeInTheDocument();
+    expect(await findByText(/text1/)).toBeInTheDocument();
+    expect(await findByText(/text2/)).toBeInTheDocument();
   });
   // this test is for fixing the bug after favoriting an entity, the matching entities defaulting
   // to "owned" filter and not based on the selected filter
