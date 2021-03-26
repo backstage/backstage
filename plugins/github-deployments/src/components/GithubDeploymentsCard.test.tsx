@@ -18,7 +18,6 @@ import {
   ApiProvider,
   ApiRegistry,
   errorApiRef,
-  UrlPatternDiscovery,
   configApiRef,
   ConfigReader,
   ConfigApi,
