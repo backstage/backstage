@@ -53,7 +53,6 @@ const columns: TableColumn[] = [
   },
   {
     title: 'Status',
-    field: 'environment',
     render: (row: any): React.ReactNode => <State value={row.state} />,
   },
   {
@@ -81,7 +80,7 @@ const GithubDeploymentsTable = ({
     <Table
       columns={columns}
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
-      title="Github Deployments"
+      title="GitHub Deployments"
       data={deployments}
     />
   );

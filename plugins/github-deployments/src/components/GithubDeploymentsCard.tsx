@@ -16,10 +16,16 @@
 import React from 'react';
 import { LinearProgress } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import { InfoCard, MissingAnnotationEmptyState, useApi } from '@backstage/core';
+import {
+  EmptyState,
+  InfoCard,
+  MissingAnnotationEmptyState,
+  useApi,
+} from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
 import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
+import { useEntity } from '@backstage/plugin-catalog-react';
 
 export const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
 
@@ -27,16 +33,14 @@ export const isGithubDeploymentsAvailable = (entity: Entity) =>
   Boolean(entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION]);
 
 const GithubDeploymentsComponent = ({
-  entity,
+  projectSlug,
   last,
 }: {
-  entity: Entity;
+  projectSlug: string;
   last: number;
 }) => {
   const api = useApi(githubDeploymentsApiRef);
-  const annotation =
-    entity.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] ?? '';
-  const [owner, repo] = annotation.split('/');
+  const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error } = useAsync(
     async () => await api.listDeployments({ owner, repo, last }),
@@ -44,32 +48,38 @@ const GithubDeploymentsComponent = ({
 
   if (loading) {
     return (
-      <InfoCard title="Github Deployments">
+      <InfoCard title="GitHub Deployments">
         <LinearProgress />
       </InfoCard>
     );
   }
   if (error) {
     return (
-      <InfoCard title="Github Deployments">
-        Error occurred while fetching data.
+      <InfoCard title="GitHub Deployments">
+        Error occured while fetching Data
       </InfoCard>
+    );
+  }
+  if (!value || value.length === 0) {
+    return (
+      <EmptyState title="No GitHub deployments available." missing="info" />
     );
   }
 
   return <GithubDeploymentsTable deployments={value || []} />;
 };
 
-export const GithubDeploymentsCard = ({
-  entity,
-  last,
-}: {
-  entity: Entity;
-  last?: number;
-}) => {
+export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
+  const { entity } = useEntity();
+
   return !isGithubDeploymentsAvailable(entity) ? (
     <MissingAnnotationEmptyState annotation={GITHUB_PROJECT_SLUG_ANNOTATION} />
   ) : (
-    <GithubDeploymentsComponent entity={entity} last={last || 10} />
+    <GithubDeploymentsComponent
+      projectSlug={
+        entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
+      }
+      last={last || 10}
+    />
   );
 };

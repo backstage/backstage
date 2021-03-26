@@ -1846,6 +1846,23 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
+"@backstage/core-api@^0.2.15":
+  version "0.2.15"
+  resolved "https://registry.npmjs.org/@backstage/core-api/-/core-api-0.2.15.tgz#24c3e4b1fe0bdee36de26c50b8757f41bb266109"
+  integrity sha512-OQTmvCGM3hkaLV0+JPF85dZk/X1SXoIFkXZi9pO/DzBPZ1Psuptia9xNXrhnEeYJaCazlCnOCTXS/kdoT1zBVg==
+  dependencies:
+    "@backstage/config" "^0.1.4"
+    "@backstage/theme" "^0.2.5"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    prop-types "^15.7.2"
+    react "^16.12.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    zen-observable "^0.8.15"
+
 "@backstage/core@^0.3.0":
   version "0.7.3"
   dependencies:
@@ -1972,6 +1989,65 @@
     remark-gfm "^1.0.0"
     zen-observable "^0.8.15"
 
+"@backstage/core@^0.7.3":
+  version "0.7.3"
+  resolved "https://registry.npmjs.org/@backstage/core/-/core-0.7.3.tgz#a55f094f0aceab4102ea08a75832c2ec5a70e226"
+  integrity sha512-uKTCYYAYVtmdOiJrNKe00N0AKeEhxZ+y3qQVY+H96WN9QDql/56XTmoiyPjDU7wK4nDj+yGV4j+xM5uxSXaOCg==
+  dependencies:
+    "@backstage/config" "^0.1.4"
+    "@backstage/core-api" "^0.2.15"
+    "@backstage/errors" "^0.1.1"
+    "@backstage/theme" "^0.2.5"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@material-ui/lab" "4.0.0-alpha.45"
+    "@testing-library/react-hooks" "^3.4.2"
+    "@types/dagre" "^0.7.44"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    "@types/react-sparklines" "^1.7.0"
+    "@types/react-text-truncate" "^0.14.0"
+    classnames "^2.2.6"
+    clsx "^1.1.0"
+    d3-selection "^2.0.0"
+    d3-shape "^2.0.0"
+    d3-zoom "^2.0.0"
+    dagre "^0.8.5"
+    immer "^8.0.1"
+    lodash "^4.17.15"
+    material-table "^1.69.1"
+    prop-types "^15.7.2"
+    qs "^6.9.4"
+    rc-progress "^3.0.0"
+    react "^16.12.0"
+    react-dom "^16.12.0"
+    react-helmet "6.1.0"
+    react-hook-form "^6.6.0"
+    react-markdown "^5.0.2"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-sparklines "^1.7.0"
+    react-syntax-highlighter "^15.4.3"
+    react-text-truncate "^0.16.0"
+    react-use "^15.3.3"
+    remark-gfm "^1.0.0"
+    zen-observable "^0.8.15"
+
+"@backstage/plugin-catalog-react@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.1.3.tgz#e4cc6c40616976737893cc91d7e373b9397618d1"
+  integrity sha512-nNIz+tc72UtwB66L++xA9drv5VV0SxMPh0BNLOFAHAllcR2RMQyvWpDq4uBupUXx/lr6bzihngkW9Jqr4rfz/Q==
+  dependencies:
+    "@backstage/catalog-client" "^0.3.8"
+    "@backstage/catalog-model" "^0.7.3"
+    "@backstage/core" "^0.7.3"
+    "@material-ui/core" "^4.11.0"
+    "@types/react" "^16.9"
+    react "^16.13.1"
+    react-router "6.0.0-beta.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+
 "@backstage/plugin-catalog@^0.2.1":
   version "0.5.1"
   dependencies:
@@ -2019,6 +2095,13 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
     swr "^0.3.0"
+
+"@backstage/theme@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.npmjs.org/@backstage/theme/-/theme-0.2.5.tgz#657e2ceaaede1b4dbe8abeafa6e168671a27b6da"
+  integrity sha512-GT7Ok9QSiZWXkxka+vcpweMrOg1lgDkRRjh7aSU97Mcoiq77szdO45o0hZtQChz8qay60vCRlu57ADvUn4QxZw==
+  dependencies:
+    "@material-ui/core" "^4.11.0"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -17949,11 +18032,6 @@ lodash.once@^4.0.0, lodash.once@^4.1.1:
   resolved "https://registry.npmjs.org/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha1-DdOXEhPHxW34gJd9UEyI+0cal6w=
 
-lodash.set@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.npmjs.org/lodash.set/-/lodash.set-4.3.2.tgz#d8757b1da807dde24816b0d6a84bea1a76230b23"
-  integrity sha1-2HV7HagH3eJIFrDWqEvqGnYjCyM=
-
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.npmjs.org/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -19291,16 +19369,6 @@ no-case@^3.0.4:
   dependencies:
     lower-case "^2.0.2"
     tslib "^2.0.3"
-
-nock@^13.0.11:
-  version "13.0.11"
-  resolved "https://registry.npmjs.org/nock/-/nock-13.0.11.tgz#ba733252e720897ca50033205c39db0c7470f331"
-  integrity sha512-sKZltNkkWblkqqPAsjYW0bm3s9DcHRPiMOyKO/PkfJ+ANHZ2+LA2PLe22r4lLrKgXaiSaDQwW3qGsJFtIpQIeQ==
-  dependencies:
-    debug "^4.1.0"
-    json-stringify-safe "^5.0.1"
-    lodash.set "^4.3.2"
-    propagate "^2.0.0"
 
 node-abi@^2.7.0:
   version "2.19.3"
@@ -21671,11 +21739,6 @@ prop-types@^15.5.10, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0,
     loose-envify "^1.4.0"
     object-assign "^4.1.1"
     react-is "^16.8.1"
-
-propagate@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/propagate/-/propagate-2.0.1.tgz#40cdedab18085c792334e64f0ac17256d38f9a45"
-  integrity sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==
 
 property-expr@^2.0.2:
   version "2.0.2"

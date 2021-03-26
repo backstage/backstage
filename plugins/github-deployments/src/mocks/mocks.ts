@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 export const entityStub = {
-  metadata: {
-    namespace: 'default',
-    annotations: {
-      'github.com/project-slug': 'org/repo',
+  entity: {
+    metadata: {
+      namespace: 'default',
+      annotations: {
+        'github.com/project-slug': 'org/repo',
+      },
+      name: 'sample-service',
+      description: 'Sample service',
+      uid: 'g0h33dd9-56h7-835b-b63v-7x5da3j64851',
+      generation: 1,
     },
-    name: 'sample-service',
-    description: 'Sample service',
-    uid: 'g0h33dd9-56h7-835b-b63v-7x5da3j64851',
-    generation: 1,
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    spec: {
+      type: 'service',
+      lifecycle: 'experimental',
+    },
+    relations: [],
   },
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  spec: {
-    type: 'service',
-    lifecycle: 'experimental',
-  },
-  relations: [],
 };
 
 export const responseStub = {

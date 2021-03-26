@@ -30,7 +30,14 @@ import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
-import { entityStub, responseStub } from '../mocks/mocks';
+import { entityStub, noDataResponseStub, responseStub } from '../mocks/mocks';
+import { wrapInTestApp } from '@backstage/test-utils';
+
+jest.mock('@backstage/plugin-catalog-react', () => ({
+  useEntity: () => {
+    return entityStub;
+  },
+}));
 
 const discoveryApi = UrlPatternDiscovery.compile('http://exampleapi.com');
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
@@ -62,9 +69,11 @@ describe('github-deployments', () => {
       worker.use(rest.post('*', (_, res, ctx) => res(ctx.json(responseStub))));
 
       const rendered = render(
-        <ApiProvider apis={apis}>
-          <GithubDeploymentsCard entity={entityStub} />
-        </ApiProvider>,
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <GithubDeploymentsCard />
+          </ApiProvider>,
+        ),
       );
 
       expect(await rendered.findByText('active')).toBeInTheDocument();
@@ -80,6 +89,24 @@ describe('github-deployments', () => {
         'href',
         'https://exampleapi.com/543212345',
       );
+    });
+
+    it('should display empty state when no data', async () => {
+      worker.use(
+        rest.post('*', (_, res, ctx) => res(ctx.json(noDataResponseStub))),
+      );
+
+      const rendered = render(
+        wrapInTestApp(
+          <ApiProvider apis={apis}>
+            <GithubDeploymentsCard />
+          </ApiProvider>,
+        ),
+      );
+
+      expect(
+        await rendered.findByText('No GitHub deployments available.'),
+      ).toBeInTheDocument();
     });
   });
 });

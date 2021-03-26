@@ -36,7 +36,7 @@ export interface GithubDeploymentsApi {
 
 export const githubDeploymentsApiRef = createApiRef<GithubDeploymentsApi>({
   id: 'plugin.github-deployments.service',
-  description: 'Used by the Github Deployments plugin to make requests',
+  description: 'Used by the GitHub Deployments plugin to make requests',
 });
 
 export type Options = {

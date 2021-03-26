@@ -1,12 +1,12 @@
-# Github Deployments Plugin
+# GitHub Deployments Plugin
 
-The Github Deployments Plugin displays recent deployments from Github.
+The GitHub Deployments Plugin displays recent deployments from GitHub.
 
 ![github-deployments-card](./docs/github-deployments-card.png)
 
 ## Getting Started
 
-1. Install the Github Deployments Plugin
+1. Install the GitHub Deployments Plugin
 
 ```bash
 # packages/app
@@ -14,7 +14,7 @@ The Github Deployments Plugin displays recent deployments from Github.
 yarn add @backstage/plugin-github-deployments
 ```
 
-2. Add proxy and auth token for Github
+2. Add proxy and auth token for GitHub
 
 ```yaml
 # app-config.yaml
@@ -57,7 +57,7 @@ const OverviewContent = ({ entity }: { entity: Entity }) => (
 );
 ```
 
-5. Add the github.com/project-slug annotation to your catalog-info.yaml file:
+5. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
