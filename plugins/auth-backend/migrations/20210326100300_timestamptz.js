@@ -19,7 +19,7 @@
 /**
  * @param {import('knex').Knex} knex
  */
-exports.up = function (knex, Promise) {
+exports.up = async function up(knex) {
   return knex.schema.alterTable('signing_keys', function (t) {
     t.timestamp('created_at', { useTz: true, precision: 0 })
       .notNullable()
@@ -29,7 +29,10 @@ exports.up = function (knex, Promise) {
   });
 };
 
-exports.down = function (knex, Promise) {
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
   return knex.schema.alterTable('signing_keys', function (t) {
     t.timestamp('created_at', { useTz: false, precision: 0 })
       .notNullable()
