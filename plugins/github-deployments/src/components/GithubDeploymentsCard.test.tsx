@@ -21,6 +21,8 @@ import {
   UrlPatternDiscovery,
   configApiRef,
   ConfigReader,
+  ConfigApi,
+  OAuthApi,
 } from '@backstage/core';
 
 import { render } from '@testing-library/react';
@@ -39,13 +41,20 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
   },
 }));
 
-const discoveryApi = UrlPatternDiscovery.compile('http://exampleapi.com');
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 
+const configApi: ConfigApi = new ConfigReader({});
+const githubAuthApi: OAuthApi = {
+  getAccessToken: async _ => 'access_token',
+};
+
 const apis = ApiRegistry.from([
-  [configApiRef, new ConfigReader({})],
+  [configApiRef, configApi],
   [errorApiRef, errorApiMock],
-  [githubDeploymentsApiRef, new GithubDeploymentsApiClient({ discoveryApi })],
+  [
+    githubDeploymentsApiRef,
+    new GithubDeploymentsApiClient({ configApi, githubAuthApi }),
+  ],
 ]);
 
 describe('github-deployments', () => {

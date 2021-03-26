@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createApiRef, DiscoveryApi } from '@backstage/core';
+import { ConfigApi, createApiRef, OAuthApi } from '@backstage/core';
 import { graphql } from '@octokit/graphql';
 
 export type GithubDeployment = {
@@ -40,8 +40,8 @@ export const githubDeploymentsApiRef = createApiRef<GithubDeploymentsApi>({
 });
 
 export type Options = {
-  discoveryApi: DiscoveryApi;
-  proxyPath?: string;
+  configApi: ConfigApi;
+  githubAuthApi: OAuthApi;
 };
 
 const deploymentsQuery = `
@@ -63,14 +63,19 @@ query lastDeployments($owner: String!, $repo: String!, $last: Int) {
 `;
 
 export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
-  private readonly discoveryApi: DiscoveryApi;
+  private readonly configApi: ConfigApi;
+  private readonly githubAuthApi: OAuthApi;
 
   constructor(options: Options) {
-    this.discoveryApi = options.discoveryApi;
+    this.configApi = options.configApi;
+    this.githubAuthApi = options.githubAuthApi;
   }
 
-  private async getProxyUrl() {
-    return await this.discoveryApi.getBaseUrl('proxy');
+  private getBaseUrl() {
+    const providerConfigs =
+      this.configApi.getOptionalConfigArray('integrations.github') ?? [];
+    const targetProviderConfig = providerConfigs[0];
+    return targetProviderConfig?.getOptionalString('apiBaseUrl');
   }
 
   async listDeployments(options: {
@@ -78,12 +83,17 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
     repo: string;
     last: number;
   }): Promise<GithubDeployment[]> {
-    const proxyUrl = await this.getProxyUrl();
-    const graphQlWithBaseURL = graphql.defaults({
-      baseUrl: `${proxyUrl}/github/api`,
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+    const baseUrl = this.getBaseUrl() || 'https://api.github.com';
+
+    const graphQLWithAuth = graphql.defaults({
+      baseUrl,
+      headers: {
+        authorization: `token ${token}`,
+      },
     });
 
-    const response: any = await graphQlWithBaseURL(deploymentsQuery, options);
+    const response: any = await graphQLWithAuth(deploymentsQuery, options);
     return response.repository?.deployments?.nodes?.reverse() || [];
   }
 }

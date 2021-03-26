@@ -6,7 +6,16 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 
 ## Getting Started
 
-1. Install the GitHub Deployments Plugin
+1. Provide OAuth credentials:
+
+- Create an [OAuth App](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/) and set env variables for ID and Secret.
+
+```bash
+export AUTH_GITHUB_CLIENT_ID={{YOUR_CLIENT_ID}}
+export AUTH_CLIENT_SECRET={{YOUR_CLIENT_SECRET}}
+```
+
+2. Install the GitHub Deployments Plugin.
 
 ```bash
 # packages/app
@@ -14,24 +23,16 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 yarn add @backstage/plugin-github-deployments
 ```
 
-2. Add proxy and auth token for GitHub
+3. If you use GitHub enterprise then set the host in `app-config.yaml`.
 
 ```yaml
 # app-config.yaml
-
-proxy:
-  ...
-  '/github/api':
-    target: https://api.github.com
-    changeOrigin: true
-    secure: true
-    headers:
-      Authorization:
-        # Content: 'token OAUTH-TOKEN'
-        $env: GITHUB_OAUTH_TOKEN
+integrations:
+  github:
+    - host: { { YOUR_GITHUB_HOST_URL } }
 ```
 
-3. Add the plugin to the app
+4. Add the plugin to the app
 
 ```typescript
 // packages/app/src/plugins.ts
@@ -39,25 +40,25 @@ proxy:
 export { plugin as GithubDeployments } from '@backstage/plugin-github-deployments';
 ```
 
-4. Add the ... to the EntityPage:
+5. Add the `EntityGithubDeploymentsCard` to the EntityPage:
 
 ```typescript
 // packages/app/src/components/catalog/EntityPage.tsx
 
 import { EntityGithubDeploymentsCard } from '@backstage/plugin-github-deployments';
 
-const OverviewContent = ({ entity }: { entity: Entity }) => (
+const OverviewContent = () => (
   <Grid container spacing={3} alignItems="stretch">
     // ...
     <Grid item xs={12} sm={6} md={4}>
-      <EntityGithubDeploymentsCard entity={entity} />
+      <EntityGithubDeploymentsCard />
     </Grid>
     // ...
   </Grid>
 );
 ```
 
-5. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
+6. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

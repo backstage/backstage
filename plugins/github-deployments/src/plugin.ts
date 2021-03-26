@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import {
+  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
-  discoveryApiRef,
+  githubAuthApiRef,
 } from '@backstage/core';
 import { githubDeploymentsApiRef, GithubDeploymentsApiClient } from './api';
 
@@ -26,9 +27,9 @@ export const githubDeploymentsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: githubDeploymentsApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) =>
-        new GithubDeploymentsApiClient({ discoveryApi }),
+      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
+      factory: ({ configApi, githubAuthApi }) =>
+        new GithubDeploymentsApiClient({ configApi, githubAuthApi }),
     }),
   ],
 });
