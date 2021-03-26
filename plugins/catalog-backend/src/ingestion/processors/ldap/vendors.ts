@@ -69,7 +69,7 @@ function decode(
 ): string[] {
   const values = entry.raw[attributeName];
   if (Array.isArray(values)) {
-    return (values as Buffer[]).map(v => {
+    return values.map(v => {
       return decoder(v);
     });
   } else if (values) {
@@ -80,8 +80,8 @@ function decode(
 
 // Formats a Microsoft Active Directory binary-encoded uuid to a readable string
 // See https://github.com/ldapjs/node-ldapjs/issues/297#issuecomment-137765214
-function formatGUID(objectGUID: string | Buffer | Buffer[]): string {
-  let data: Buffer | Buffer[];
+function formatGUID(objectGUID: string | Buffer): string {
+  let data: Buffer;
   if (typeof objectGUID === 'string') {
     data = new Buffer(objectGUID, 'binary');
   } else {
@@ -97,7 +97,7 @@ function formatGUID(objectGUID: string | Buffer | Buffer[]): string {
     dataStr = data[i] >= 16 ? dataStr : `0${dataStr}`;
 
     // insert that character into the template
-    template = template.replace(new RegExp(`\\{${i}\\}`, 'g'), dataStr);
+    template = template.replace(`{${i}}`, dataStr);
   }
   return template;
 }
