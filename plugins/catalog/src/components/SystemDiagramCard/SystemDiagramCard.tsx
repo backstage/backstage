@@ -50,7 +50,7 @@ function simplifiedEntityName(
   // Simplify the diagram output by hiding only the default namespace
   return serializeEntityRef(ref)
     .toString()
-    .toLowerCase()
+    .toLocaleLowerCase('en-US')
     .replace(':default/', ':');
 }
 
