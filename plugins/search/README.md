@@ -15,7 +15,7 @@ The above search experience is 100% client-side and only looks at the Software C
 In order to work on this new search platform, you will need to be aware of the following:
 
 - **In-development app search route**: The new search platform will move the primary search page to the App-level, out of the search plugin. For now, to ensure the old experience is still easy to test, you can work on the new platform at `/search-next` instead of `/search`.
-- **App SearchPage Component**: You'll find a new search page under `/packages/app/src/components/search`. When ready, we'll add an equivalent page to the `@backstage/create-app` template.
+- **App SearchPage Component**: You'll find a new search page in this plugin `SearchPageNext`. When sufficiently stable, we'll replace `SearchPage` with `SearchPageNext`
 - **Backend**: Don't forget, a lot of functionality will be made available in backend plugins:
   - `@backstage/plugin-search-backend-node`, which is responsible for the search index management
   - `@backstage/plugin-search-backend`, which is responsible for query processing
