@@ -18,19 +18,17 @@ const pluginMetadata = fs
   .readdirSync(pluginsDirectory)
   .map(file => yaml.load(fs.readFileSync(`./data/plugins/${file}`, 'utf8')))
   .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
-const truncate = text =>
-  text.length > 170 ? text.substr(0, 170) + '...' : text;
-
 const coreFeaturesMetadata = pluginMetadata
   .filter(plugin => plugin.category === 'Core Feature')
   .reduce((acc, plugin) => {
     acc[plugin.title] = plugin;
     return acc;
   }, {});
+const truncate = text =>
+  text.length > 170 ? text.substr(0, 170) + '...' : text;
 
 const addPluginDocsLink = '/docs/plugins/add-to-marketplace';
 const defaultIconUrl = 'img/logo-gradient-on-dark.svg';
-
 
 const Plugins = () => (
   <main className="MainContent">
@@ -58,21 +56,47 @@ const Plugins = () => (
         <div className="PluginCard">
           <div className="PluginCardHeader">
             <div className="PluginCardImage">
-              <img src={coreFeaturesMetadata['Backstage Service Catalog'].iconUrl || defaultIconUrl} alt={coreFeaturesMetadata['Backstage Service Catalog'].title} />
+              <img
+                src={
+                  coreFeaturesMetadata['Backstage Service Catalog'].iconUrl ||
+                  defaultIconUrl
+                }
+                alt={coreFeaturesMetadata['Backstage Service Catalog'].title}
+              />
             </div>
             <div className="PluginCardInfo">
-              <h3 className="PluginCardTitle">{coreFeaturesMetadata['Backstage Service Catalog'].title}</h3>
+              <h3 className="PluginCardTitle">
+                {coreFeaturesMetadata['Backstage Service Catalog'].title}
+              </h3>
               <p className="PluginCardAuthor">
-                by <a href={coreFeaturesMetadata['Backstage Service Catalog'].authorUrl}>{coreFeaturesMetadata['Backstage Service Catalog'].author}</a>
+                by{' '}
+                <a
+                  href={
+                    coreFeaturesMetadata['Backstage Service Catalog'].authorUrl
+                  }
+                >
+                  {coreFeaturesMetadata['Backstage Service Catalog'].author}
+                </a>
               </p>
-              <span className="PluginCardChipOutlined">{coreFeaturesMetadata['Backstage Service Catalog'].category}</span>
+              <span className="PluginCardChipOutlined">
+                {coreFeaturesMetadata['Backstage Service Catalog'].category}
+              </span>
             </div>
           </div>
           <div className="PluginCardBody">
-            <p>{truncate(coreFeaturesMetadata['Backstage Service Catalog'].description)}</p>
+            <p>
+              {truncate(
+                coreFeaturesMetadata['Backstage Service Catalog'].description,
+              )}
+            </p>
           </div>
           <div className="PluginCardFooter">
-            <a className="ButtonFilled" href={coreFeaturesMetadata['Backstage Service Catalog'].documentation}>
+            <a
+              className="ButtonFilled"
+              href={
+                coreFeaturesMetadata['Backstage Service Catalog'].documentation
+              }
+            >
               Explore
             </a>
           </div>
@@ -80,21 +104,50 @@ const Plugins = () => (
         <div className="PluginCard">
           <div className="PluginCardHeader">
             <div className="PluginCardImage">
-              <img src={coreFeaturesMetadata['Backstage Software Templates'].iconUrl || defaultIconUrl} alt={coreFeaturesMetadata['Backstage Software Templates'].title} />
+              <img
+                src={
+                  coreFeaturesMetadata['Backstage Software Templates']
+                    .iconUrl || defaultIconUrl
+                }
+                alt={coreFeaturesMetadata['Backstage Software Templates'].title}
+              />
             </div>
             <div className="PluginCardInfo">
-              <h3 className="PluginCardTitle">{coreFeaturesMetadata['Backstage Software Templates'].title}</h3>
+              <h3 className="PluginCardTitle">
+                {coreFeaturesMetadata['Backstage Software Templates'].title}
+              </h3>
               <p className="PluginCardAuthor">
-                by <a href={coreFeaturesMetadata['Backstage Software Templates'].authorUrl}>{coreFeaturesMetadata['Backstage Software Templates'].author}</a>
+                by{' '}
+                <a
+                  href={
+                    coreFeaturesMetadata['Backstage Software Templates']
+                      .authorUrl
+                  }
+                >
+                  {coreFeaturesMetadata['Backstage Software Templates'].author}
+                </a>
               </p>
-              <span className="PluginCardChipOutlined">{coreFeaturesMetadata['Backstage Software Templates'].category}</span>
+              <span className="PluginCardChipOutlined">
+                {coreFeaturesMetadata['Backstage Software Templates'].category}
+              </span>
             </div>
           </div>
           <div className="PluginCardBody">
-            <p>{truncate(coreFeaturesMetadata['Backstage Software Templates'].description)}</p>
+            <p>
+              {truncate(
+                coreFeaturesMetadata['Backstage Software Templates']
+                  .description,
+              )}
+            </p>
           </div>
           <div className="PluginCardFooter">
-            <a className="ButtonFilled" href={coreFeaturesMetadata['Backstage Software Templates'].documentation}>
+            <a
+              className="ButtonFilled"
+              href={
+                coreFeaturesMetadata['Backstage Software Templates']
+                  .documentation
+              }
+            >
               Explore
             </a>
           </div>
@@ -102,21 +155,39 @@ const Plugins = () => (
         <div className="PluginCard">
           <div className="PluginCardHeader">
             <div className="PluginCardImage">
-              <img src={coreFeaturesMetadata['Backstage TechDocs'].iconUrl || defaultIconUrl} alt={coreFeaturesMetadata['Backstage TechDocs'].title} />
+              <img
+                src={
+                  coreFeaturesMetadata['Backstage TechDocs'].iconUrl ||
+                  defaultIconUrl
+                }
+                alt={coreFeaturesMetadata['Backstage TechDocs'].title}
+              />
             </div>
             <div className="PluginCardInfo">
-              <h3 className="PluginCardTitle">{coreFeaturesMetadata['Backstage TechDocs'].title}</h3>
+              <h3 className="PluginCardTitle">
+                {coreFeaturesMetadata['Backstage TechDocs'].title}
+              </h3>
               <p className="PluginCardAuthor">
-                by <a href={coreFeaturesMetadata['Backstage TechDocs'].authorUrl}>{coreFeaturesMetadata['Backstage TechDocs'].author}</a>
+                by{' '}
+                <a href={coreFeaturesMetadata['Backstage TechDocs'].authorUrl}>
+                  {coreFeaturesMetadata['Backstage TechDocs'].author}
+                </a>
               </p>
-              <span className="PluginCardChipOutlined">{coreFeaturesMetadata['Backstage TechDocs'].category}</span>
+              <span className="PluginCardChipOutlined">
+                {coreFeaturesMetadata['Backstage TechDocs'].category}
+              </span>
             </div>
           </div>
           <div className="PluginCardBody">
-            <p>{truncate(coreFeaturesMetadata['Backstage TechDocs'].description)}</p>
+            <p>
+              {truncate(coreFeaturesMetadata['Backstage TechDocs'].description)}
+            </p>
           </div>
           <div className="PluginCardFooter">
-            <a className="ButtonFilled" href={coreFeaturesMetadata['Backstage TechDocs'].documentation}>
+            <a
+              className="ButtonFilled"
+              href={coreFeaturesMetadata['Backstage TechDocs'].documentation}
+            >
               Explore
             </a>
           </div>
@@ -124,21 +195,43 @@ const Plugins = () => (
         <div className="PluginCard">
           <div className="PluginCardHeader">
             <div className="PluginCardImage">
-              <img src={coreFeaturesMetadata['Backstage Kubernetes'].iconUrl || defaultIconUrl} alt={coreFeaturesMetadata['Backstage Kubernetes'].title} />
+              <img
+                src={
+                  coreFeaturesMetadata['Backstage Kubernetes'].iconUrl ||
+                  defaultIconUrl
+                }
+                alt={coreFeaturesMetadata['Backstage Kubernetes'].title}
+              />
             </div>
             <div className="PluginCardInfo">
-              <h3 className="PluginCardTitle">{coreFeaturesMetadata['Backstage Kubernetes'].title}</h3>
+              <h3 className="PluginCardTitle">
+                {coreFeaturesMetadata['Backstage Kubernetes'].title}
+              </h3>
               <p className="PluginCardAuthor">
-                by <a href={coreFeaturesMetadata['Backstage Kubernetes'].authorUrl}>{coreFeaturesMetadata['Backstage Kubernetes'].author}</a>
+                by{' '}
+                <a
+                  href={coreFeaturesMetadata['Backstage Kubernetes'].authorUrl}
+                >
+                  {coreFeaturesMetadata['Backstage Kubernetes'].author}
+                </a>
               </p>
-              <span className="PluginCardChipOutlined">{coreFeaturesMetadata['Backstage Kubernetes'].category}</span>
+              <span className="PluginCardChipOutlined">
+                {coreFeaturesMetadata['Backstage Kubernetes'].category}
+              </span>
             </div>
           </div>
           <div className="PluginCardBody">
-            <p>{truncate(coreFeaturesMetadata['Backstage Kubernetes'].description)}</p>
+            <p>
+              {truncate(
+                coreFeaturesMetadata['Backstage Kubernetes'].description,
+              )}
+            </p>
           </div>
           <div className="PluginCardFooter">
-            <a className="ButtonFilled" href={coreFeaturesMetadata['Backstage Kubernetes'].documentation}>
+            <a
+              className="ButtonFilled"
+              href={coreFeaturesMetadata['Backstage Kubernetes'].documentation}
+            >
               Explore
             </a>
           </div>
@@ -183,8 +276,7 @@ const Plugins = () => (
                 </div>
               </div>
             ),
-          )
-        }
+          )}
         <div className="PluginCard" id="add-plugin-card">
           <div className="PluginCardBody">
             <p>
