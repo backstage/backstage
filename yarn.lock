@@ -19764,6 +19764,13 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.npmjs.org/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
+octokit-plugin-create-pull-request@^3.9.3:
+  version "3.9.3"
+  resolved "https://registry.npmjs.org/octokit-plugin-create-pull-request/-/octokit-plugin-create-pull-request-3.9.3.tgz#f99f53907ac322a3494cc970514a023d7b659e2b"
+  integrity sha512-lTyNnCRoT4IvCQx2Cb4eFMqg8aIpsaDd59MNwf4OPnWAJM7hT6g7RW/icImvAzZLR4t5ENSLNzWarv2XqLL+Lg==
+  dependencies:
+    "@octokit/types" "^6.8.2"
+
 oidc-token-hash@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/oidc-token-hash/-/oidc-token-hash-5.0.0.tgz#acdfb1f4310f58e64d5d74a4e8671a426986e888"
