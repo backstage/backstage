@@ -519,6 +519,15 @@ consumed by the component, e.g. `artist-api`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
 | [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`consumesApi`, and reverse `apiConsumedBy`](well-known-relations.md#consumesapi-and-apiconsumedby) |
 
+### `spec.dependsOn` [optional]
+
+An array of [entity references](#string-references) to the Resources that the
+component depends on, e.g. `artists-db`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Resource`](#kind-resource) (default)  | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+
 ## Kind: Template
 
 The following describes the following entity kind:
@@ -1000,6 +1009,15 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+
+### `spec.dependencyOf` [optional]
+
+An array of [entity references](#string-references) to the Components that the
+resource is a dependency of, e.g. `artist-lookup`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required)  | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| ---------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component) (default) | Same as this entity, typically `default`   | [`dependencyOf`, and reverse `dependsOn`](well-known-relations.md#dependson-and-dependencyof) |
 
 ## Kind: System
 
