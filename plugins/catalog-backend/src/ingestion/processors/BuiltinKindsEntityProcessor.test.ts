@@ -45,13 +45,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           lifecycle: 'l',
           providesApis: ['b'],
           consumesApis: ['c'],
+          dependsOn: ['r'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(10);
+      expect(emit).toBeCalledTimes(12);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -98,6 +99,22 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
           type: 'consumesApi',
           target: { kind: 'API', namespace: 'default', name: 'c' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'r' },
+          type: 'dependencyOf',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'dependsOn',
+          target: { kind: 'Resource', namespace: 'default', name: 'r' },
         },
       });
       expect(emit).toBeCalledWith({
@@ -193,13 +210,14 @@ describe('BuiltinKindsEntityProcessor', () => {
         spec: {
           type: 'database',
           owner: 'o',
+          dependencyOf: ['c'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(4);
+      expect(emit).toBeCalledTimes(6);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -214,6 +232,22 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
           type: 'ownedBy',
           target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'dependencyOf',
+          target: { kind: 'Component', namespace: 'default', name: 'c' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'c' },
+          type: 'dependsOn',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
         },
       });
       expect(emit).toBeCalledWith({

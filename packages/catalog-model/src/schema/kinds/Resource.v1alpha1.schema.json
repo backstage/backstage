@@ -47,6 +47,14 @@
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
             },
+            "dependencyOf": {
+              "type": "array",
+              "description": "An array of entity references to the components that the resource is a dependency of.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
             "system": {
               "type": "string",
               "description": "An entity reference to the system that the resource belongs to.",

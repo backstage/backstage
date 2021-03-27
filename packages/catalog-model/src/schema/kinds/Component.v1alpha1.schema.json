@@ -84,6 +84,14 @@
                 "type": "string",
                 "minLength": 1
               }
+            },
+            "dependsOn": {
+              "type": "array",
+              "description": "An array of entity references to the resources that the component depends on.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }

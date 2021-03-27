@@ -32,6 +32,8 @@ import {
   RELATION_API_PROVIDED_BY,
   RELATION_CHILD_OF,
   RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
   RELATION_HAS_MEMBER,
   RELATION_HAS_PART,
   RELATION_MEMBER_OF,
@@ -147,6 +149,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_API_CONSUMED_BY,
       );
       doEmit(
+        component.spec.dependsOn,
+        { defaultKind: 'Resource', defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDS_ON,
+        RELATION_DEPENDENCY_OF,
+      );
+      doEmit(
         component.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -185,6 +193,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
+      );
+      doEmit(
+        resource.spec.dependencyOf,
+        { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDENCY_OF,
+        RELATION_DEPENDS_ON,
       );
       doEmit(
         resource.spec.system,
