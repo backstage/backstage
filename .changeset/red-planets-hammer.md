@@ -1,6 +1,6 @@
 ---
-'@backstage/catalog-model': minor
-'@backstage/plugin-catalog-backend': minor
+'@backstage/catalog-model': patch
+'@backstage/plugin-catalog-backend': patch
 '@backstage/plugin-catalog': patch
 ---
 
