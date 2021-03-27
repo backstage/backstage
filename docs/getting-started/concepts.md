@@ -28,31 +28,31 @@ Before commencing work, you may want to ensure the necessary tools are installed
 
 To run Backstage locally you should first ensure the following commands run as expected.
 
-- docker
+```docker```
 
 ```bash
 docker --version
 ```
 
-- node
+```node```
 
 ```bash
 node --version
 ```
 
-- npx
+```npx```
 
 ```bash
 npx --version
 ```
 
-- nvm
+```nvm```
 
 ```bash
 nvm --version
 ```
 
-- yarn
+```yarn```
 
 ```bash
 yarn --version
@@ -68,7 +68,7 @@ yarn
 
 If you want to contribute to Backstage you should also ensure the following command runs as expected.
 
-- TypeScript
+```TypeScript```
 
 ```bash
 tcs -version
