@@ -32,6 +32,4 @@ spec:
   type: service
   lifecycle: experimental
   owner: team-a
-  dependsOn:
-    - artists-db
   system: artist-engagement-portal
