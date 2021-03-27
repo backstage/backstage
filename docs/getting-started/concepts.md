@@ -19,3 +19,57 @@ configuring, and operating Backstage easier.
 - TypeScript - https://www.typescriptlang.org
 - YAML - https://yaml.org
 - Yarn - https://www.pluralsight.com/guides/yarn-a-package-manager-for-node-js
+
+## Environment Validation
+
+Before commencing work, you may want to ensure the necessary tools are installed you can so by running the following commands. If any of this commands fail refer to the relevant link above to install and / or configure.
+
+### Run Backstage
+
+To run Backstage locally you should first ensure the following commands run as expected.
+
+- docker
+
+```bash
+docker --version
+```
+
+- node
+
+```bash
+node --version
+```
+
+- npx
+
+```bash
+npx --version
+```
+
+- nvm
+
+```bash
+nvm --version
+```
+
+- yarn
+
+```bash
+yarn --version
+```
+
+Note: running the following command should display the version number and patch yarn if needed
+
+```bash
+yarn
+```
+
+### Contribute to Backstage
+
+If you want to contribute to Backstage you should also ensure the following command runs as expected.
+
+- TypeScript
+
+```bash
+tcs -version
+```
