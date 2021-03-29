@@ -27,6 +27,7 @@ import { createTheme, lightTheme } from '@backstage/theme';
 const myTheme = createTheme({
   palette: lightTheme.palette,
   fontFamily: 'Comic Sans MS',
+  defaultPageTheme: 'home',
 });
 ```
 

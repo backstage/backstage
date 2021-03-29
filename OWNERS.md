@@ -14,12 +14,13 @@ This page lists all active sponsors and maintainers.
 - Patrik Oldsberg ([rugvip](https://github.com/rugvip)) (Discord: @Rugvip)
 - Fredrik Adelöw ([freben](https://github.com/freben)) (Discord: @freben)
 - Ben Lambert ([benjdlambert](https://github.com/benjdlambert)) (Discord: @blam)
+- Johan Haals ([jhaals](https://github.com/jhaals)) (Discord: @jhaals)
 
 # Emeritus maintainers
 
 - Stefan Ålund ([stefanalund](https://github.com/stefanalund)) (Discord: @stalund)
 
-# Friends of Backstage
+# Hall of Fame
 
 People that have made significant contributions to the project and earned write access.
 

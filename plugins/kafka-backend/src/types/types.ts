@@ -19,5 +19,14 @@ import { ConnectionOptions } from 'tls';
 export interface ClusterDetails {
   name: string;
   brokers: string[];
-  ssl?: ConnectionOptions;
+  ssl?: SslConfig;
+  sasl?: SaslConfig;
 }
+
+export type SslConfig = ConnectionOptions | boolean;
+
+export type SaslConfig = {
+  mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
+  username: string;
+  password: string;
+};

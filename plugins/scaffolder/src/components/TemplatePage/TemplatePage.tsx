@@ -33,7 +33,7 @@ import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { RepoUrlPicker } from '../fields';
+import { RepoUrlPicker, OwnerPicker } from '../fields';
 import { JsonObject } from '@backstage/config';
 
 const useTemplateParameterSchema = (templateName: string) => {
@@ -190,7 +190,7 @@ export const TemplatePage = () => {
           <InfoCard title={schema.title} noPadding>
             <MultistepJsonForm
               formData={formState}
-              fields={{ RepoUrlPicker }}
+              fields={{ RepoUrlPicker, OwnerPicker }}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}

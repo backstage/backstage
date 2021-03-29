@@ -20,6 +20,7 @@ import {
   analyzeLocationSchema,
   locationSpecSchema,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -33,7 +34,11 @@ import {
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from './request';
-import { requireRequestBody, validateRequestBody } from './util';
+import {
+  disallowReadonlyMode,
+  requireRequestBody,
+  validateRequestBody,
+} from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -41,6 +46,7 @@ export interface RouterOptions {
   higherOrderOperation?: HigherOrderOperation;
   locationAnalyzer?: LocationAnalyzer;
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -51,10 +57,18 @@ export async function createRouter(
     locationsCatalog,
     higherOrderOperation,
     locationAnalyzer,
+    config,
+    logger,
   } = options;
 
   const router = Router();
   router.use(express.json());
+
+  const readonlyEnabled =
+    config.getOptionalBoolean('catalog.readonly') || false;
+  if (readonlyEnabled) {
+    logger.info('Catalog is running in readonly mode');
+  }
 
   if (entitiesCatalog) {
     router
@@ -87,6 +101,8 @@ export async function createRouter(
          * It stays around in the service for the time being, but may be
          * removed or change semantics at any time without prior notice.
          */
+        disallowReadonlyMode(readonlyEnabled);
+
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
@@ -133,6 +149,13 @@ export async function createRouter(
     router.post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, locationSpecSchema);
       const dryRun = yn(req.query.dryRun, { default: false });
+
+      // when in dryRun addLocation is effectively a read operation so we don't
+      // need to disallow readonly
+      if (!dryRun) {
+        disallowReadonlyMode(readonlyEnabled);
+      }
+
       const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).json(output);
     });
@@ -155,6 +178,8 @@ export async function createRouter(
         res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
+        disallowReadonlyMode(readonlyEnabled);
+
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);
         res.status(204).end();

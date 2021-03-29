@@ -2,10 +2,7 @@
 
 This plugin is part of a suite of plugins that comprise the Backstage search
 platform, which is still very much under development. This plugin specifically
-is responsible for:
-
-- Exposing a JSON API for querying a search engine
-- Types related to interacting with that API
+is responsible for exposing a JSON API for querying a search engine
 
 Documentation on how to develop and improve the search platform is currently
 centralized in the `search` plugin README.md.
