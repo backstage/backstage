@@ -22,10 +22,9 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import {
-  GOOGLE_GCS_HOST,
-  readGoogleGcsIntegrationConfig,
-} from '@backstage/integration';
+import { readGoogleGcsIntegrationConfig } from '@backstage/integration';
+
+const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
 const parseURL = (
   url: string,
@@ -81,7 +80,7 @@ export class GoogleGcsUrlReader implements UrlReader {
         this.storage.bucket(bucket).file(key).createReadStream(),
       );
     } catch (error) {
-      throw new Error(`unable to read gcs file from ${url}`);
+      throw new Error(`unable to read gcs file from ${url}, ${error}`);
     }
   }
 

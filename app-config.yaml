@@ -122,12 +122,6 @@ kafka:
         - localhost:9092
 
 integrations:
-  googleGcs:
-    clientEmail:
-      $env: GCS_CLIENT_EMAIL
-    privateKey:
-      $env: GCS_PRIVATE_KEY
-
   github:
     - host: github.com
       token:
@@ -156,6 +150,10 @@ integrations:
     - host: dev.azure.com
       token:
         $env: AZURE_TOKEN
+#  googleGcs:
+#    clientEmail:
+#      $env: GCS_CLIENT_EMAIL
+#    privateKey: 'example@example.com'
 
 catalog:
   rules:

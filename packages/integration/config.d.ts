@@ -154,7 +154,7 @@ export interface Config {
     googleGcs?: {
       /**
        * Service account email used to authenticate requests.
-       * @visibility secret
+       * @visibility backend
        */
       clientEmail?: string;
       /**

@@ -16,4 +16,3 @@
 
 export { readGoogleGcsIntegrationConfig } from './config';
 export type { GoogleGcsIntegrationConfig } from './config';
-export const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
