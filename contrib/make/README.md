@@ -22,15 +22,15 @@ Containers, like [Docker](https://www.docker.com/), enable an immutable definiti
 
 * To ensure task execution consistency across a variety of environments, especially across developer workstations and remote DevOps servers
 * For tasks that are particularly fragile and/or complex (e.g. developers consistently reporting setup and environmental issues)
-* Code editors and "Integrated Development Environments" may offer support for containerized development, like Visual Studio Code's Remote Development extension. This pattern can easily be extended to support these scenarios. One important consideration is GUI tooling support. Most task execution shouldn't require a GUI, especially for remote DevOps tasks. However, developers might use GUI tooling that could also be containerized / virtualized. So, consider how to achieve both. For example "Docker in Docker" (DiD) could enable a GUI development container to execute containerized tasks in separate containers.
+* Code editors and "Integrated Development Environments" may offer support for containerized development, like Visual Studio Code's Remote Development extension. This pattern can easily be extended to support these scenarios. One important consideration is GUI tooling support. Most task execution shouldn't require a GUI, especially for remote DevOps tasks. However, developers might use GUI tooling that could also use containerization or virtualization. So, consider how to achieve both. For example "Docker in Docker" (DiD) could enable a GUI development container to execute containerized tasks in separate containers.
 
 ## Example
 
-Backstage is a web application with prerequisites on Node and Yarn. Engineers are encouraged to install a specific version of Node and Yarn. The version of node is partially enforced by the "engines" configuration in "package.json". And, the version of `yarn` was "locked" using the command `yarn set version ...`, resulting in the root project file "./.yarnrc" with the setting "yarn-path" that contains a specific version of Yarn. Engineers are encouraged to deploy with Docker.
+Backstage is a web application with prerequisites on Node and Yarn. Engineers are encouraged to install a specific version of Node and Yarn. The version of node is partially enforced by the "engines" configuration in "package.json". And, the version of `yarn` was "locked" using the command `yarn set version ...`, resulting in the root project yarn configuration file with the setting "yarn-path" that contains a specific version of Yarn. Engineers are encouraged to deploy with Docker.
 
-While local execution of DevOps tasks are defined in the "scripts" section of Node's "package.json" file, the DevOps tasks used during continuous integration and deployment are defined separately in ".github/workflows/*.yml" files to be executed by GitHub Actions using separate task definitions.
+While local execution of DevOps tasks are defined in the "scripts" section of Node's "package.json" file, the DevOps tasks used during continuous integration and deployment are defined separately in GitHub workflow YAML files to be executed by GitHub Actions using separate task definitions.
 
-Docker could be used to unite the execution of local workstation tasks and remote DevOps tasks. With a consistent container image definition, tasks can be executed with certain gaurantees about the OS, tooling and versions and configuration.
+Docker could be used to unite the execution of local workstation tasks and remote DevOps tasks. With a consistent container image definition, tasks can be executed with guarantees about the OS, tooling and versions and configuration.
 
 A simple option might be to build the image as needed. Local development could build the image once and reuse it over time. However, DevOps servers would need to build the image on every execution set. Also, building ad-hoc still introduces some significant variability when tooling is installed into the container and the system is updated.
 
@@ -40,9 +40,9 @@ This example will implement the simple option and leave it to project adopters t
 
 ### Prerequisites
 
-Because the environments are containerized, the only requirement is [Docker](https://docs.docker.com/get-docker/). Please install the latest stable version if possible. Docker is simply one of the more ubiquitous runtimes. However, you might also prefer any runtime that supports building and running docker images. For example, [podman](https://podman.io/). If a pre-built image were build and made available using a standard like the [Open Container Initiative](https://opencontainers.org/), then you could use any OCI runtime.
+Because the environments are containerized, the only requirement is [Docker](https://docs.docker.com/get-docker/). Please install the latest stable version if possible. Docker is simply one of the more ubiquitous runtime options. However, you might also prefer any runtime that supports building and running docker images. If a pre-built image were build and made available using a standard like the [Open Container Initiative](https://opencontainers.org/), then you could use any OCI runtime.
 
-[GNU Make](https://www.gnu.org/software/make/) is highly recommended to ensure the docker commands execute consistently. Microsoft Windows users can install a Linux shell with `make` installed (e.g. Windows Subsystem for Linux, cygwin, etc.). It would also be possible to define shell scripts and remove the `make` dependency. However, GNU Make was built for this very purpose. Without it, each `make` command will need to be understood, built (i.e. manual variable substitution) and executed.
+[GNU Make](https://www.gnu.org/software/make/) is highly recommended to ensure the docker commands execute consistently. Microsoft Windows users can install a Linux shell with `make` installed (e.g. Windows Subsystem for Linux, Cygwin, etc.). It would also be possible to define shell scripts and remove the `make` dependency. However, GNU Make was built for this very purpose. Without it, each `make` command will need to be understood, built (i.e. manual variable substitution) and executed.
 
 ### Steps
 
