@@ -808,6 +808,7 @@ spec:
     picture: https://example.com/groups/bu-infrastructure.jpeg
   parent: ops
   children: [backstage, other]
+  members: [jdoe]
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -864,6 +865,18 @@ The entries of this array are
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
 | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
 | [`Group`](#kind-group) (default)        | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
+
+### `spec.members` [optional]
+
+The users that are direct members of this group. The items are not guaranteed to
+be ordered in any particular way.
+
+The entries of this array are
+[entity references](https://backstage.io/docs/features/software-catalog/references).
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
+| --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`User`](#kind-group) (default)         | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
 
 ## Kind: User
 
