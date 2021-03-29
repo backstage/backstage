@@ -43,41 +43,88 @@ const Plugins = () => (
         </span>
       </div>
       <BulletLine style={{ width: '100% ' }} />
+      <div className="PluginPageHeader">
+        <h2>Core Features</h2>
+      </div>
       <Container wrapped className="PluginGrid">
-        {pluginMetadata.map(
-          ({
-            iconUrl,
-            title,
-            description,
-            author,
-            authorUrl,
-            documentation,
-            category,
-          }) => (
-            <div className="PluginCard">
-              <div className="PluginCardHeader">
-                <div className="PluginCardImage">
-                  <img src={iconUrl || defaultIconUrl} alt={title} />
+        {pluginMetadata
+          .filter(plugin => plugin.category === 'Core Feature')
+          .sort((a, b) => a.order - b.order)
+          .map(
+            ({
+              iconUrl,
+              title,
+              description,
+              author,
+              authorUrl,
+              documentation,
+              category,
+            }) => (
+              <div className="PluginCard">
+                <div className="PluginCardHeader">
+                  <div className="PluginCardImage">
+                    <img src={iconUrl || defaultIconUrl} alt={title} />
+                  </div>
+                  <div className="PluginCardInfo">
+                    <h3 className="PluginCardTitle">{title}</h3>
+                    <p className="PluginCardAuthor">
+                      by <a href={authorUrl}>{author}</a>
+                    </p>
+                    <span className="PluginCardChipOutlined">{category}</span>
+                  </div>
                 </div>
-                <div className="PluginCardInfo">
-                  <h3 className="PluginCardTitle">{title}</h3>
-                  <p className="PluginCardAuthor">
-                    by <a href={authorUrl}>{author}</a>
-                  </p>
-                  <span className="PluginCardChipOutlined">{category}</span>
+                <div className="PluginCardBody">
+                  <p>{truncate(description)}</p>
+                </div>
+                <div className="PluginCardFooter">
+                  <a className="ButtonFilled" href={documentation}>
+                    Explore
+                  </a>
                 </div>
               </div>
-              <div className="PluginCardBody">
-                <p>{truncate(description)}</p>
+            ),
+          )}
+      </Container>
+      <div className="PluginPageHeader">
+        <h2>All Plugins</h2>
+      </div>
+      <Container wrapped className="PluginGrid">
+        {pluginMetadata
+          .filter(plugin => plugin.category !== 'Core Feature')
+          .map(
+            ({
+              iconUrl,
+              title,
+              description,
+              author,
+              authorUrl,
+              documentation,
+              category,
+            }) => (
+              <div className="PluginCard">
+                <div className="PluginCardHeader">
+                  <div className="PluginCardImage">
+                    <img src={iconUrl || defaultIconUrl} alt={title} />
+                  </div>
+                  <div className="PluginCardInfo">
+                    <h3 className="PluginCardTitle">{title}</h3>
+                    <p className="PluginCardAuthor">
+                      by <a href={authorUrl}>{author}</a>
+                    </p>
+                    <span className="PluginCardChipOutlined">{category}</span>
+                  </div>
+                </div>
+                <div className="PluginCardBody">
+                  <p>{truncate(description)}</p>
+                </div>
+                <div className="PluginCardFooter">
+                  <a className="ButtonFilled" href={documentation}>
+                    Explore
+                  </a>
+                </div>
               </div>
-              <div className="PluginCardFooter">
-                <a className="ButtonFilled" href={documentation}>
-                  Explore
-                </a>
-              </div>
-            </div>
-          ),
-        )}
+            ),
+          )}
         <div className="PluginCard" id="add-plugin-card">
           <div className="PluginCardBody">
             <p>
