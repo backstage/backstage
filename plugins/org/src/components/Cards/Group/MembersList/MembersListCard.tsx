@@ -97,7 +97,7 @@ const MemberComponent = ({
                 component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(groupEntity),
+                  entityRouteParams(member),
                 )}
               >
                 {displayName}

@@ -47,10 +47,10 @@ describe('MemberTab Test', () => {
         items: [
           {
             apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Group',
+            kind: 'User',
             metadata: {
               name: 'tara.macgovern',
-              namespace: 'default',
+              namespace: 'foo-bar',
               uid: 'a5gerth56',
             },
             relations: [
@@ -99,7 +99,7 @@ describe('MemberTab Test', () => {
     ).toBeInTheDocument();
     expect(rendered.getByText('Tara MacGovern')).toHaveAttribute(
       'href',
-      '/catalog/default/user/tara.macgovern',
+      '/catalog/foo-bar/user/tara.macgovern',
     );
   });
 });
