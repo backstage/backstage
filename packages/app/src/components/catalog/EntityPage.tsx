@@ -209,42 +209,42 @@ const EntityPageLayoutWrapper = (props: { children?: React.ReactNode }) => {
 
 const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
-    <Grid item md={6}>
+    <Grid item xs={12} md={6}>
       <AboutCard entity={entity} variant="gridItem" />
     </Grid>
     {isPagerDutyAvailable(entity) && (
-      <Grid item md={6}>
+      <Grid item xs={12} md={6}>
         <EntityProvider entity={entity}>
           <PagerDutyCard />
         </EntityProvider>
       </Grid>
     )}
-    <Grid item md={4} sm={6}>
+    <Grid item xs={12} md={6}>
       <EntityLinksCard entity={entity} />
     </Grid>
     <RecentCICDRunsSwitcher entity={entity} />
     {isGitHubAvailable(entity) && (
       <>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <LanguagesCard entity={entity} />
           <ReleasesCard entity={entity} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <ReadMeCard entity={entity} maxHeight={350} />
         </Grid>
       </>
     )}
     {isLighthouseAvailable(entity) && (
-      <Grid item sm={4}>
+      <Grid item xs={12} sm={4}>
         <LastLighthouseAuditCard variant="gridItem" />
       </Grid>
     )}
     {isPullRequestsAvailable(entity) && (
-      <Grid item sm={4}>
+      <Grid item xs={12} sm={4}>
         <PullRequestsStatsCard entity={entity} />
       </Grid>
     )}
-    <Grid item md={6}>
+    <Grid item xs={12} md={6}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
   </Grid>
@@ -252,10 +252,10 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
 
 const ComponentApisContent = ({ entity }: { entity: Entity }) => (
   <Grid container spacing={3} alignItems="stretch">
-    <Grid item md={6}>
+    <Grid item xs={12} md={6}>
       <ProvidedApisCard entity={entity} />
     </Grid>
-    <Grid item md={6}>
+    <Grid item xs={12} md={6}>
       <ConsumedApisCard entity={entity} />
     </Grid>
   </Grid>
