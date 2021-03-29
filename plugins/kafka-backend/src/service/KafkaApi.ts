@@ -16,7 +16,7 @@
 
 import { Kafka, SeekEntry } from 'kafkajs';
 import { Logger } from 'winston';
-import { ConnectionOptions } from 'tls';
+import { SaslConfig, SslConfig } from '../types/types';
 
 export type PartitionOffset = {
   id: number;
@@ -31,7 +31,8 @@ export type TopicOffset = {
 export type Options = {
   clientId: string;
   brokers: string[];
-  ssl?: ConnectionOptions;
+  ssl?: SslConfig;
+  sasl?: SaslConfig;
   logger: Logger;
 };
 
