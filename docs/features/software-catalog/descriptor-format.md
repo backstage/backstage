@@ -876,7 +876,7 @@ The entries of this array are
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                    |
 | --------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
-| [`User`](#kind-group) (default)         | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
+| [`User`](#kind-user) (default)          | Same as this entity, typically `default`   | [`hasMember`, and reverse `memberOf`](well-known-relations.md#memberof-and-hasmember) |
 
 ## Kind: User
 
