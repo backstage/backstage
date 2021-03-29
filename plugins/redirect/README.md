@@ -29,7 +29,7 @@ you wish to redirect from/to:
 redirects:
   patterns:
     - from: '/old-path'
-    - to: '/new-path'
+      to: '/new-path'
 ```
 
 If you wish to redirect all sub-paths from a given path, you can use the `*`
@@ -39,7 +39,7 @@ character at the end of both your `from` and `to` keys, like so:
 redirects:
   patterns:
     - from: '/docs/default/Component/solr-searcher/*'
-    - to: '/docs/default/Component/elastic-searcher/*'
+      to: '/docs/default/Component/elastic-searcher/*'
 ```
 
 You may also use route parameters in your redirect definition if, for example,
@@ -50,5 +50,5 @@ parameters.
 redirects:
   patterns:
     - from: '/catalog/:namespace/:kind/:name/diy-ci'
-    - to: '/catalog/:namespace/:kind/:name/circle-ci'
+      to: '/catalog/:namespace/:kind/:name/circle-ci'
 ```

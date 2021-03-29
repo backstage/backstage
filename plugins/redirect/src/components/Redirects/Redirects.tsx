@@ -42,9 +42,9 @@ export const Redirects = () => {
       {redirects.map(redirect => {
         return (
           <Route
-            key={redirect.get('from')}
-            path={redirect.get('from')}
-            element={<NavigateRedirect to={redirect.get('to')} />}
+            key={redirect.getString('from')}
+            path={redirect.getString('from')}
+            element={<NavigateRedirect to={redirect.getString('to')} />}
           />
         );
       })}
