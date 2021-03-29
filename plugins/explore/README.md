@@ -11,10 +11,19 @@ To install the plugin, include the following import your `plugins.ts`:
 export { explorePlugin } from '@backstage/plugin-explore';
 ```
 
-Register the route in `App.tsx`:
+Register and bind the route in `App.tsx`:
 
 ```typescript
-import { ExplorePage } from '@backstage/plugin-explore';
+import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
+
+...
+
+bindRoutes({ bind }) {
+  ...
+  bind(explorePlugin.externalRoutes, {
+    catalogEntity: catalogPlugin.routes.catalogEntity,
+  });
+},
 
 ...
 
