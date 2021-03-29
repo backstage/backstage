@@ -164,6 +164,7 @@ monorepo
 monorepos
 msw
 namespace
+namespaced
 namespaces
 namespacing
 neuro
