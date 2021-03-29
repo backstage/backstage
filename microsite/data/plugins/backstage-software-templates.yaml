@@ -7,3 +7,4 @@ description: Create new software components in just a few steps, with your stand
 documentation: https://backstage.io/docs/features/software-templates/software-templates-index
 iconUrl: img/backstage-software-templates.svg
 npmPackageName: '@backstage/plugin-scaffolder'
+order: 2
