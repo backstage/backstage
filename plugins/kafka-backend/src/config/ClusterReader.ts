@@ -15,8 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { ConnectionOptions } from 'tls';
-import { ClusterDetails } from '../types/types';
+import { ClusterDetails, SslConfig, SaslConfig } from '../types/types';
 
 export function getClusterDetails(config: Config[]): ClusterDetails[] {
   return config.map(clusterConfig => {
@@ -24,14 +23,13 @@ export function getClusterDetails(config: Config[]): ClusterDetails[] {
       name: clusterConfig.getString('name'),
       brokers: clusterConfig.getStringArray('brokers'),
     };
-    const sslConfig = clusterConfig.getOptional('kafka.ssl');
-    if (sslConfig) {
-      return {
-        ...clusterDetails,
-        ssl: sslConfig as ConnectionOptions,
-      };
-    }
+    const ssl = clusterConfig.getOptional('ssl') as SslConfig;
+    const sasl = clusterConfig.getOptional('sasl') as SaslConfig;
 
-    return clusterDetails;
+    return {
+      ...clusterDetails,
+      ...(ssl ? { ssl } : {}),
+      ...(sasl ? { sasl } : {}),
+    };
   });
 }
