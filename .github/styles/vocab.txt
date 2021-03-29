@@ -148,6 +148,7 @@ kubernetes
 learnings
 lerna
 lockfile
+lunr
 magiclink
 mailto
 maintainership
