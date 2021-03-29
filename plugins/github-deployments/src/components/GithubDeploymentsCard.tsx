@@ -15,17 +15,15 @@
  */
 import React from 'react';
 import { LinearProgress } from '@material-ui/core';
-import { Entity } from '@backstage/catalog-model';
 import { InfoCard, MissingAnnotationEmptyState, useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
-import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
 import { useEntity } from '@backstage/plugin-catalog-react';
-
-export const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
-
-export const isGithubDeploymentsAvailable = (entity: Entity) =>
-  Boolean(entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION]);
+import {
+  GITHUB_PROJECT_SLUG_ANNOTATION,
+  isGithubDeploymentsAvailable,
+} from '../Router';
+import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
 
 const GithubDeploymentsComponent = ({
   projectSlug,

@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  githubDeploymentsPlugin as plugin,
-  EntityGithubDeploymentsCard,
-} from './plugin';
-export { isGithubDeploymentsAvailable as isPluginApplicableToEntity } from './Router';
+import { Entity } from '@backstage/catalog-model';
+
+export const GITHUB_PROJECT_SLUG_ANNOTATION = 'github.com/project-slug';
+
+export const isGithubDeploymentsAvailable = (entity: Entity) =>
+  Boolean(entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION]);
