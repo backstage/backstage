@@ -14,15 +14,15 @@ Containers, like [Docker](https://www.docker.com/), enable an immutable definiti
 
 ## Issues and considerations
 
-* Hosted and sometimes proprietary tasks may be unavoidable, like those offered in the GitHub Actions marketplace or tasks built into products like the core capabilities of Jenkins or through plug-ins. These tasks typically require a "poke the server" approach to debugging end-to-end workflows or containerizing the installation and configuration of the products themselves to be executed as larger containerized tasks. This might introduce the need for guidance on when to define containerized tasks and when to lean on hosted and/or proprietary solutions.
-* Cross-platform presents challenges. Getting consistency across Linux, macOS, and Windows requires knowledge and effort. A quick argument can be to standardize on Linux shell across these three major platforms, but even working across Linux distributions presents some unique challenges too.
-* Consider the balance of developers freedom of choice in tooling with the consistency with standardized tooling that can be achieved with containerized execution environments. Empower developers to "opt-out" and swap tooling choices wherever possible to experiment and innovate.
+- Hosted and sometimes proprietary tasks may be unavoidable, like those offered in the GitHub Actions marketplace or tasks built into products like the core capabilities of Jenkins or through plug-ins. These tasks typically require a "poke the server" approach to debugging end-to-end workflows or containerizing the installation and configuration of the products themselves to be executed as larger containerized tasks. This might introduce the need for guidance on when to define containerized tasks and when to lean on hosted and/or proprietary solutions.
+- Cross-platform presents challenges. Getting consistency across Linux, macOS, and Windows requires knowledge and effort. A quick argument can be to standardize on Linux shell across these three major platforms, but even working across Linux distributions presents some unique challenges too.
+- Consider the balance of developers freedom of choice in tooling with the consistency with standardized tooling that can be achieved with containerized execution environments. Empower developers to "opt-out" and swap tooling choices wherever possible to experiment and innovate.
 
 ## When to use this pattern
 
-* To ensure task execution consistency across a variety of environments, especially across developer workstations and remote DevOps servers
-* For tasks that are particularly fragile and/or complex (e.g. developers consistently reporting setup and environmental issues)
-* Code editors and "Integrated Development Environments" may offer support for containerized development, like Visual Studio Code's Remote Development extension. This pattern can easily be extended to support these scenarios. One important consideration is GUI tooling support. Most task execution shouldn't require a GUI, especially for remote DevOps tasks. However, developers might use GUI tooling that could also use containerization or virtualization. So, consider how to achieve both. For example "Docker in Docker" (DiD) could enable a GUI development container to execute containerized tasks in separate containers.
+- To ensure task execution consistency across a variety of environments, especially across developer workstations and remote DevOps servers
+- For tasks that are particularly fragile and/or complex (e.g. developers consistently reporting setup and environmental issues)
+- Code editors and "Integrated Development Environments" may offer support for containerized development, like Visual Studio Code's Remote Development extension. This pattern can easily be extended to support these scenarios. One important consideration is GUI tooling support. Most task execution shouldn't require a GUI, especially for remote DevOps tasks. However, developers might use GUI tooling that could also use containerization or virtualization. So, consider how to achieve both. For example "Docker in Docker" (DiD) could enable a GUI development container to execute containerized tasks in separate containers.
 
 ## Example
 

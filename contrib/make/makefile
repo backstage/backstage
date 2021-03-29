@@ -82,6 +82,17 @@ check-docs: install
 .PHONY: lint-docs
 lint-docs: check-docs
 
+.PHONY: check-prettier
+check-prettier: install
+	@docker run --rm -it \
+		--name $(docker_name_timestamp_prefix)-$@ \
+		--network host \
+		-v $(project_root_dir_path):/app \
+		-w /app \
+		--entrypoint "" \
+		$(docker_tag) \
+		yarn run prettier:check
+
 # BUG: the frontend seems to run on "$(backend_port)" (7000 default).
 #      The documentation states "This is going to start two things, 
 #      the frontend (:3000) and the backend (:7000)."
