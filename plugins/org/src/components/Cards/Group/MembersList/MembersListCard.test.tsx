@@ -47,10 +47,10 @@ describe('MemberTab Test', () => {
         items: [
           {
             apiVersion: 'backstage.io/v1alpha1',
-            kind: 'Group',
+            kind: 'User',
             metadata: {
               name: 'tara.macgovern',
-              namespace: 'default',
+              namespace: 'foo-bar',
               uid: 'a5gerth56',
             },
             relations: [
@@ -70,6 +70,33 @@ describe('MemberTab Test', () => {
                 picture: 'https://example.com/staff/tara.jpeg',
               },
               memberOf: ['team-d'],
+            },
+          },
+          {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: {
+              name: 'sara.macgovern',
+              namespace: 'default',
+              uid: 'a5gerth57',
+            },
+            relations: [
+              {
+                type: 'memberOf',
+                target: {
+                  kind: 'group',
+                  name: 'team-d',
+                  namespace: 'foo-bar',
+                },
+              },
+            ],
+            spec: {
+              profile: {
+                displayName: 'Sara MacGovern',
+                email: 'sara-macgovern@example.com',
+                picture: 'https://example.com/staff/sara.jpeg',
+              },
+              memberOf: ['foo-bar/team-d'],
             },
           },
         ] as Entity[],
@@ -99,7 +126,9 @@ describe('MemberTab Test', () => {
     ).toBeInTheDocument();
     expect(rendered.getByText('Tara MacGovern')).toHaveAttribute(
       'href',
-      '/catalog/default/user/tara.macgovern',
+      '/catalog/foo-bar/user/tara.macgovern',
     );
+
+    expect(rendered.getByText('Members (1)')).toBeInTheDocument();
   });
 });

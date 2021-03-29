@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
   GroupEntity,
   RELATION_MEMBER_OF,
   UserEntity,
@@ -59,13 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const MemberComponent = ({
-  member,
-  groupEntity,
-}: {
-  member: UserEntity;
-  groupEntity: Entity;
-}) => {
+const MemberComponent = ({ member }: { member: UserEntity }) => {
   const classes = useStyles();
   const {
     metadata: { name: metaName },
@@ -97,7 +91,7 @@ const MemberComponent = ({
                 component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(groupEntity),
+                  entityRouteParams(member),
                 )}
               >
                 {displayName}
@@ -117,12 +111,14 @@ export const MembersListCard = (_props: {
 }) => {
   const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
-    metadata: { name: groupName },
+    metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
 
   const displayName = profile?.displayName ?? groupName;
+
+  const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
 
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
@@ -134,7 +130,9 @@ export const MembersListCard = (_props: {
           r =>
             r.type === RELATION_MEMBER_OF &&
             r.target.name.toLocaleLowerCase('en-US') ===
-              groupName.toLocaleLowerCase('en-US'),
+              groupName.toLocaleLowerCase('en-US') &&
+            r.target.namespace.toLocaleLowerCase('en-US') ===
+              groupNamespace.toLocaleLowerCase('en-US'),
         ),
     );
     return groupMembersList;
@@ -155,11 +153,7 @@ export const MembersListCard = (_props: {
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
             members.map(member => (
-              <MemberComponent
-                member={member}
-                groupEntity={groupEntity}
-                key={member.metadata.uid}
-              />
+              <MemberComponent member={member} key={member.metadata.uid} />
             ))
           ) : (
             <Box p={2}>
