@@ -423,4 +423,91 @@ describe('DatabaseEntitiesCatalog', () => {
       ).toBeDefined();
     }, 10000);
   });
+
+  describe('removeEntityByUid', () => {
+    it('should remove entity including colocated', async () => {
+      const catalog = new DatabaseEntitiesCatalog(db, getVoidLogger());
+
+      const entities: Entity[] = [];
+      entities.push({
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: {
+          uid: `other`,
+          name: `other`,
+          annotations: {
+            'backstage.io/managed-by-location': `url:https://location.local/other`,
+            'backstage.io/managed-by-origin-location':
+              'url:https://location.local/other',
+          },
+        },
+      });
+      for (let i = 0; i < 5; ++i) {
+        entities.push({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            uid: `n${i}`,
+            name: `n${i}`,
+            annotations: {
+              'backstage.io/managed-by-location': `url:https://location.local/${i}`,
+              'backstage.io/managed-by-origin-location':
+                'url:https://location.local/bootstrap',
+            },
+          },
+        });
+      }
+
+      db.entityByUid.mockResolvedValue({
+        locationId: 'l-1337',
+        entity: entities[1],
+      });
+
+      db.entities.mockResolvedValue({
+        entities: entities.slice(1).map(entity => ({ entity })),
+        pageInfo: {
+          hasNextPage: false,
+        },
+      });
+
+      await catalog.removeEntityByUid('e-1337');
+
+      expect(db.entityByUid.mock.calls).toEqual([
+        [expect.anything(), 'e-1337'],
+      ]);
+
+      expect(db.entities.mock.calls).toEqual([
+        [
+          expect.anything(),
+          {
+            filter: {
+              anyOf: [
+                {
+                  allOf: [
+                    {
+                      key:
+                        'metadata.annotations.backstage.io/managed-by-origin-location',
+                      matchValueIn: ['url:https://location.local/bootstrap'],
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      ]);
+
+      expect(db.removeEntityByUid.mock.calls).toEqual([
+        [expect.anything(), 'n0'],
+        [expect.anything(), 'n1'],
+        [expect.anything(), 'n2'],
+        [expect.anything(), 'n3'],
+        [expect.anything(), 'n4'],
+      ]);
+
+      expect(db.removeLocation.mock.calls).toEqual([
+        [expect.anything(), 'l-1337'],
+      ]);
+    });
+  });
 });

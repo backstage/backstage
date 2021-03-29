@@ -20,6 +20,7 @@ import {
   generateUpdatedEntity,
   getEntityName,
   LOCATION_ANNOTATION,
+  ORIGIN_LOCATION_ANNOTATION,
   serializeEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, NotFoundError } from '@backstage/errors';
@@ -91,13 +92,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }
 
       const location =
-        entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
+        entityResponse.entity.metadata.annotations?.[
+          ORIGIN_LOCATION_ANNOTATION
+        ];
 
       const colocatedEntities = location
         ? (
             await this.database.entities(tx, {
               filter: basicEntityFilter({
-                [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
+                [`metadata.annotations.${ORIGIN_LOCATION_ANNOTATION}`]: location,
               }),
             })
           ).entities
