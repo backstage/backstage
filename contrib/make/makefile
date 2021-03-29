@@ -44,7 +44,7 @@ install: container
 		yarn install
 
 .PHONY: tsc
-tsc:
+tsc: install
 	@docker run --rm -it \
 		--name $(docker_name_timestamp_prefix)-$@ \
 		--network host \
@@ -55,7 +55,7 @@ tsc:
 		yarn tsc
 
 .PHONY: build
-build:
+build: tsc
 	@docker run --rm -it \
 		--name $(docker_name_timestamp_prefix)-$@ \
 		--network host \
@@ -64,6 +64,23 @@ build:
 		--entrypoint "" \
 		$(docker_tag) \
 		yarn build
+
+# "check" is a standard make target
+# using make's terminology instead of the project's
+.PHONY: check-docs
+check-docs: install
+	@docker run --rm -it \
+		--name $(docker_name_timestamp_prefix)-$@ \
+		--network host \
+		-v $(project_root_dir_path):/app \
+		-w /app \
+		--entrypoint "" \
+		$(docker_tag) \
+		yarn run lint:docs
+
+# check-docs alias
+.PHONY: lint-docs
+lint-docs: check-docs
 
 # BUG: the frontend seems to run on "$(backend_port)" (7000 default).
 #      The documentation states "This is going to start two things, 
