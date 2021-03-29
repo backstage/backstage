@@ -39,6 +39,7 @@ describe('GroupV1alpha1Validator', () => {
         },
         parent: 'group-a',
         children: ['child-a', 'child-b'],
+        members: ['jdoe'],
       },
     };
   });
