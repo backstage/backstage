@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend': minor
+'@backstage/plugin-catalog-backend': patch
 ---
 
 Add Bitbucket Server discovery processor.

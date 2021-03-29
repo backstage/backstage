@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
 import fetch from 'cross-fetch';
 
 import {
@@ -23,11 +22,9 @@ import {
 
 export class BitbucketClient {
   private readonly config: BitbucketIntegrationConfig;
-  private readonly logger: Logger;
 
-  constructor(options: { config: BitbucketIntegrationConfig; logger: Logger }) {
+  constructor(options: { config: BitbucketIntegrationConfig }) {
     this.config = options.config;
-    this.logger = options.logger;
   }
 
   async listProjects(options?: ListOptions): Promise<PagedResponse<any>> {

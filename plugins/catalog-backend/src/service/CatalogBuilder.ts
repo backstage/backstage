@@ -38,6 +38,7 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
+  BitbucketDiscoveryProcessor,
   BuiltinKindsEntityProcessor,
   CatalogProcessor,
   CatalogProcessorParser,
@@ -304,6 +305,7 @@ export class CatalogBuilder {
     if (!this.processorsReplace) {
       processors.push(
         new FileReaderProcessor(),
+        BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
         GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
         LdapOrgReaderProcessor.fromConfig(config, { logger }),

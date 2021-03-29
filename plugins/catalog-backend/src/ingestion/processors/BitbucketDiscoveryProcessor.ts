@@ -63,7 +63,6 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 
     const client = new BitbucketClient({
       config: bitbucketConfig,
-      logger: this.logger,
     });
     const startTimestamp = Date.now();
     this.logger.info(`Reading Bitbucket repositories from ${location.target}`);
