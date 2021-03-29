@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName } from '@backstage/catalog-model';
 import { Observable } from '@backstage/core';
-import { EntityProvider, LocationStore } from './newthing';
+import { EntityProvider, LocationStore, EntityMessage } from './newthing';
 import ObservableImpl from 'zen-observable';
 import {
   locationToEntity,
   locationToEntityName,
 } from './ingestion/LocationToEntity';
-
-type EntityMessage =
-  | { all: Entity[] }
-  | { added: Entity[]; removed: EntityName[] };
 
 export class DatabaseLocationProvider implements EntityProvider {
   private subscribers = new Set<
@@ -36,19 +31,17 @@ export class DatabaseLocationProvider implements EntityProvider {
     store.location$().subscribe({
       next: locations => {
         if ('all' in locations) {
-          const entities = locations.all.map(l =>
-            locationToEntity(l.type, l.target),
-          );
-          this.notify({ all: entities });
-          return;
+          this.notify({
+            all: locations.all.map(l => locationToEntity(l.type, l.target)),
+          });
+        } else {
+          this.notify({
+            added: locations.added.map(l => locationToEntity(l.type, l.target)),
+            removed: locations.removed.map(l =>
+              locationToEntityName(l.type, l.target),
+            ),
+          });
         }
-
-        this.notify({
-          added: locations.added.map(l => locationToEntity(l.type, l.target)),
-          removed: locations.removed.map(l =>
-            locationToEntityName(l.type, l.target),
-          ),
-        });
       },
     });
   }

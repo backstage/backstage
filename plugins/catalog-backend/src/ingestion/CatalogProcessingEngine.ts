@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { NotAllowedError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { NotAllowedError } from '@backstage/errors';
 import {
   Entity,
   EntityPolicy,

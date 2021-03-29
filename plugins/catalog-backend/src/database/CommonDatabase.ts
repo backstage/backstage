@@ -107,16 +107,25 @@ export class CommonDatabase implements Database {
       if (!entity.spec) {
         throw new InputError('Entity spec is missing');
       }
+
       await tx<DbRefreshStateRow>('refresh_state')
         .insert({
           entity_ref: stringifyEntityRef(entity),
           entity: JSON.stringify(entity.spec),
           refresh_state: '',
           next_update_at: nextRefresh,
-          last_discovery_at: 'now()',
+          last_discovery_at: tx.fn.now(),
         })
         .onConflict('entity_ref')
-        .merge();
+        .ignore();
+
+      // TODO(jhaals): skip this if the insert above did changes.
+      await tx<DbRefreshStateRow>('refresh_state')
+        .update({
+          entity: JSON.stringify(entity.spec),
+          last_discovery_at: tx.fn.now(),
+        })
+        .where({ entity_ref: stringifyEntityRef(entity) });
     }
   }
 
@@ -128,7 +137,7 @@ export class CommonDatabase implements Database {
 
     const items = await tx<DbRefreshStateRow>('refresh_state')
       .select()
-      .where('next_update_at', '<=', 'now()')
+      .where('next_update_at', '<=', tx.fn.now())
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'desc');
 

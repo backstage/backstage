@@ -22,7 +22,7 @@ import {
 import { JsonObject } from '@backstage/config';
 import { Observable } from '@backstage/core'; // << nooo
 
-interface LocationEntity {
+export interface LocationEntity {
   apiVersion: 'backstage.io/v1alpha1';
   kind: 'Location';
   metadata: {
@@ -44,6 +44,10 @@ export interface LocationService {
   deleteLocation(id: string): Promise<void>;
 }
 
+export type EntityMessage =
+  | { all: Entity[] }
+  | { added: Entity[]; removed: EntityName[] };
+
 export interface LocationStore {
   // extends EntityProvider
   createLocation(spec: LocationSpec): Promise<Location>;
@@ -56,15 +60,13 @@ export interface LocationStore {
   >;
 }
 
-interface CatalogProcessingEngine {
+export interface CatalogProcessingEngine {
   start(): Promise<void>;
   stop(): Promise<void>;
 }
 
 export interface EntityProvider {
-  entityChange$(): Observable<
-    { all: Entity[] } | { added: Entity[]; removed: EntityName[] }
-  >;
+  entityChange$(): Observable<EntityMessage>;
 }
 
 // interface CatalogProcessor {}
@@ -74,15 +76,15 @@ type EntityProcessingRequest = {
   state: Map<string, JsonObject>; // Versions for multiple deployments etc
 };
 
-interface EntityProcessingError {
+export type EntityProcessingError = {
   // some error stuff here
-}
+  message: String;
+};
 
 type EntityProcessingResult = {
-  state: JsonObject; // version
-
-  completeEntities: Entity[]; // will it only be one if eager?
-  deferredEntities: Entity[];
+  state: Map<string, JsonObject>;
+  completeEntities: Entity[];
+  deferredEntites: Entity[];
   errors: EntityProcessingError[];
 };
 
@@ -90,12 +92,12 @@ export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
-interface ProcessingStateStorePushRequest {
+export type ProcessingStateStorePushRequest = {
   nextRefresh: string;
   request: EntityProcessingRequest;
-}
+};
 
-interface ProcessingStateStore {
+export interface ProcessingStateStore {
   push(request: ProcessingStateStorePushRequest): Promise<void>;
   pop(): Promise<EntityProcessingRequest>;
 }
