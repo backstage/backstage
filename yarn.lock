@@ -8359,25 +8359,10 @@ autoprefixer@^9.7.2:
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
 
-aws-sdk@^2.382.0:
-  version "2.849.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.849.0.tgz#7fc9863e04f9e97c1f81f204fca84dfb2e4175dd"
-  integrity sha512-CzpK+0TcycRUzYKOdL5AnFcRmLDty+POWR+ZTeqCIY/rho3mM6jBTSseFreZTFiNxj8lIBBrMTsZ45KZ7Xm2Dg==
-  dependencies:
-    buffer "4.9.2"
-    events "1.1.1"
-    ieee754 "1.1.13"
-    jmespath "0.15.0"
-    querystring "0.2.0"
-    sax "1.2.1"
-    url "0.10.3"
-    uuid "3.3.2"
-    xml2js "0.4.19"
-
-aws-sdk@^2.840.0:
-  version "2.840.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.840.0.tgz#f5529c9bd3bf0be7f8e855a23ff9c12b1705418f"
-  integrity sha512-ngesHJqb0PXYjJNnCsAX4yLkR6JFQJB+3eDGwh3mYRjcq9voix5RfbCFQT1lwWu7bcMBPCrRIA2lJkkTMYXq+A==
+aws-sdk@^2.382.0, aws-sdk@^2.840.0:
+  version "2.874.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.874.0.tgz#2f1f1ff232e473ddf2a398b276c44f24e5828e2c"
+  integrity sha512-YF2LYIfIuywFTzojGwwUwAiq+pgSM3IWRF/uDoJa28xRQSfYD1uMeZLCqqMt+L0/yxe2UJDYKTVPhB9eEqOxEQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
