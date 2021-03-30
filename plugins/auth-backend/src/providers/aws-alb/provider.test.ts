@@ -70,7 +70,9 @@ describe('AwsALBAuthProvider', () => {
   const catalogApi = {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
     getEntities: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),

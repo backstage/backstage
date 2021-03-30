@@ -22,7 +22,7 @@ import {
   LOCATION_ANNOTATION,
   serializeEntityRef,
 } from '@backstage/catalog-model';
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError } from '@backstage/errors';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
@@ -84,37 +84,8 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
-    return await this.database.transaction(async tx => {
-      const entityResponse = await this.database.entityByUid(tx, uid);
-      if (!entityResponse) {
-        throw new NotFoundError(`Entity with ID ${uid} was not found`);
-      }
-
-      const location =
-        entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
-
-      const colocatedEntities = location
-        ? (
-            await this.database.entities(tx, {
-              filter: basicEntityFilter({
-                [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
-              }),
-            })
-          ).entities
-        : [entityResponse];
-
-      for (const dbResponse of colocatedEntities) {
-        await this.database.removeEntityByUid(
-          tx,
-          dbResponse?.entity.metadata.uid!,
-        );
-      }
-
-      if (entityResponse.locationId) {
-        await this.database.removeLocation(tx, entityResponse?.locationId!);
-      }
-
-      return undefined;
+    await this.database.transaction(async tx => {
+      await this.database.removeEntityByUid(tx, uid);
     });
   }
 

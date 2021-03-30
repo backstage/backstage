@@ -36,8 +36,10 @@ describe('<StepPrepareCreatePullRequest />', () => {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     getEntityByName: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
+    removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
 
