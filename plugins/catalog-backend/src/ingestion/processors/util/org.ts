@@ -57,7 +57,13 @@ export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {
   users.forEach(user => {
     const transitiveMemberOf = new Set<string>();
 
-    const todo = [...user.spec.memberOf];
+    const todo = [
+      ...user.spec.memberOf,
+      ...groups
+        .filter(g => g.spec.members?.includes(user.metadata.name))
+        .map(g => g.metadata.name),
+    ];
+
     for (;;) {
       const current = todo.pop();
       if (!current) {
