@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export {
-  githubDeploymentsPlugin as plugin,
+  githubDeploymentsPlugin,
   EntityGithubDeploymentsCard,
 } from './plugin';
-export { isGithubDeploymentsAvailable as isPluginApplicableToEntity } from './Router';
+export { isGithubDeploymentsAvailable } from './Router';

@@ -28,7 +28,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@octokit/graphql": "^4.6.1",
-    "moment": "^2.29.1",
+    "luxon": "^1.26.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-use": "^15.3.3"

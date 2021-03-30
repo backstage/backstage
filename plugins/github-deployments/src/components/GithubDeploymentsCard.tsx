@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { LinearProgress } from '@material-ui/core';
-import { InfoCard, MissingAnnotationEmptyState, useApi } from '@backstage/core';
+import { InfoCard, MissingAnnotationEmptyState, Progress, ResponseErrorPanel, useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -42,15 +41,13 @@ const GithubDeploymentsComponent = ({
   if (loading) {
     return (
       <InfoCard title="GitHub Deployments">
-        <LinearProgress />
+        <Progress />
       </InfoCard>
     );
   }
   if (error) {
     return (
-      <InfoCard title="GitHub Deployments">
-        Error occured while fetching Data
-      </InfoCard>
+      <ResponseErrorPanel error={error} />
     );
   }
 

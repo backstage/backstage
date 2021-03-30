@@ -24,14 +24,14 @@ import {
   OAuthApi,
 } from '@backstage/core';
 
-import { render } from '@testing-library/react';
-import { setupServer } from 'msw/node';
+import { msw } from '@backstage/test-utils'
 import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
 import { entityStub, noDataResponseStub, responseStub } from '../mocks/mocks';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
+import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
@@ -55,9 +55,7 @@ const apis = ApiRegistry.from([
 
 describe('github-deployments', () => {
   const worker = setupServer();
-  beforeAll(() => worker.listen());
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
+  msw.setupDefaultHandlers(worker);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -77,12 +75,10 @@ describe('github-deployments', () => {
         ),
       );
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <GithubDeploymentsCard />
-          </ApiProvider>,
-        ),
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard />
+        </ApiProvider>,
       );
 
       expect(await rendered.findByText('active')).toBeInTheDocument();
@@ -107,12 +103,10 @@ describe('github-deployments', () => {
         ),
       );
 
-      const rendered = render(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <GithubDeploymentsCard />
-          </ApiProvider>,
-        ),
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard />
+        </ApiProvider>,
       );
 
       expect(

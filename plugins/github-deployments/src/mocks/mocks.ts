@@ -1,5 +1,3 @@
-import { QueryResponse } from '../api';
-
 /*
  * Copyright 2021 Spotify AB
  *
@@ -15,6 +13,8 @@ import { QueryResponse } from '../api';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { QueryResponse } from '../api';
+
 export const entityStub = {
   entity: {
     metadata: {

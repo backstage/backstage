@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Table, TableColumn } from '@backstage/core';
+import { StatusPending, StatusRunning, StatusOK, Table, TableColumn, StatusAborted, StatusError } from '@backstage/core';
 import { GithubDeployment } from '../../api';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import { Box, Typography, Link, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -27,31 +27,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const lastUpdated = (start: string): string => moment(start).fromNow();
-
-const State = ({ value }: { value: string }) => {
-  const colorMap: Record<string, string> = {
-    PENDING: 'orange',
-    IN_PROGRESS: 'orange',
-    ACTIVE: 'green',
-  };
-
-  return (
-    <Box display="flex" alignItems="center">
-      <span
-        style={{
-          display: 'block',
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          backgroundColor: colorMap[value] || 'grey',
-          marginRight: '5px',
-        }}
-      />
-      <Typography variant="caption">{value}</Typography>
-    </Box>
-  );
-};
+const statusIndicator = (value: string): React.ReactNode => {
+  switch (value) {
+    case 'PENDING':
+      return <StatusPending />;
+    case 'IN_PROGRESS':
+      return <StatusRunning />;
+    case 'ACTIVE':
+      return <StatusOK />;
+    case 'ERROR':
+    case 'FAILURE':
+      return <StatusError />;
+    default:
+      return <StatusAborted />;
+  }
+}
 
 const columns: TableColumn<GithubDeployment>[] = [
   {
@@ -62,7 +52,10 @@ const columns: TableColumn<GithubDeployment>[] = [
   {
     title: 'Status',
     render: (row: GithubDeployment): React.ReactNode => (
-      <State value={row.state} />
+      <Box display="flex" alignItems="center">
+        { statusIndicator(row.state)}
+        <Typography variant="caption">{row.state}</Typography>
+      </Box>
     ),
   },
   {
@@ -76,7 +69,7 @@ const columns: TableColumn<GithubDeployment>[] = [
   {
     title: 'Last Updated',
     render: (row: GithubDeployment): React.ReactNode =>
-      lastUpdated(row.updatedAt),
+      DateTime.fromISO(row.updatedAt).toRelative({ locale: 'en' }),
   },
 ];
 
