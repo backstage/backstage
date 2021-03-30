@@ -23,7 +23,7 @@ yarn add @backstage/plugin-github-deployments
 ```typescript
 // packages/app/src/plugins.ts
 
-import { githubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
+export { githubDeploymentsPlugin as GithubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
 ```
 
 3. Add the `EntityGithubDeploymentsCard` to the EntityPage:
