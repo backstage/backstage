@@ -24,13 +24,13 @@ import {
   OAuthApi,
 } from '@backstage/core';
 
-import { msw } from '@backstage/test-utils';
+import { msw, renderInTestApp } from '@backstage/test-utils';
 import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
 import { entityStub, noDataResponseStub, responseStub } from '../mocks/mocks';
-import { renderInTestApp } from '@backstage/test-utils';
+
 import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
 
