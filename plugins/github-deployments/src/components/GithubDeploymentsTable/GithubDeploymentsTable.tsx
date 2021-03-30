@@ -53,7 +53,7 @@ const columns: TableColumn<GithubDeployment>[] = [
     title: 'Status',
     render: (row: GithubDeployment): React.ReactNode => (
       <Box display="flex" alignItems="center">
-        { statusIndicator(row.state)}
+        {statusIndicator(row.state)}
         <Typography variant="caption">{row.state}</Typography>
       </Box>
     ),
