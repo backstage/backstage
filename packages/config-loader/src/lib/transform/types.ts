@@ -23,13 +23,8 @@ export type ReadFileFunc = (path: string) => Promise<string>;
 export type TransformFunc = (
   value: JsonValue,
   baseDir: string,
-) => Promise<
-  | {
-      applied: false;
-    }
-  | {
-      applied: true;
-      value: JsonValue | undefined;
-      newBaseDir?: string | undefined;
-    }
->;
+) => Promise<{
+  applied: boolean;
+  value?: JsonValue;
+  newBaseDir?: string;
+}>;

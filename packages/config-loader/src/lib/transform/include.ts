@@ -35,6 +35,7 @@ const includeFileParser: {
 export function createIncludeTransform(
   env: EnvFunc,
   readFile: ReadFileFunc,
+  substitute: TransformFunc,
 ): TransformFunc {
   return async (input: JsonValue, baseDir: string) => {
     if (!isObject(input)) {
@@ -53,7 +54,11 @@ export function createIncludeTransform(
       return { applied: false };
     }
 
-    const includeValue = input[includeKey];
+    const rawIncludedValue = input[includeKey];
+    const substituteResults = await substitute(rawIncludedValue!, baseDir);
+    const includeValue = substituteResults.applied
+      ? substituteResults.value
+      : rawIncludedValue;
     if (typeof includeValue !== 'string') {
       throw new Error(`${includeKey} include value is not a string`);
     }

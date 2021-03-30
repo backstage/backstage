@@ -14,17 +14,38 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/config';
 import * as os from 'os';
 import { resolve as resolvePath } from 'path';
 import { createIncludeTransform } from './include';
 
 const root = os.platform() === 'win32' ? 'C:\\' : '/';
+const substituteMe = '${MY_SUBSTITUTION}';
+const mySubstitution = 'fooSubstitution';
 
 const env = jest.fn(async (name: string) => {
   return ({
     SECRET: 'my-secret',
   } as { [name: string]: string })[name];
 });
+
+const substitute = jest.fn(
+  async (
+    value: JsonValue,
+  ): Promise<{ applied: boolean; value?: JsonValue }> => {
+    if (typeof value !== 'string') {
+      return { applied: false };
+    }
+    if (value.includes(substituteMe)) {
+      return {
+        applied: true,
+        value: value.replace(substituteMe, mySubstitution),
+      };
+    }
+
+    return { applied: false };
+  },
+);
 
 const readFile = jest.fn(async (path: string) => {
   const content = ({
@@ -33,6 +54,7 @@ const readFile = jest.fn(async (path: string) => {
     [resolvePath(root, 'my-data.yaml')]: 'some:\n yaml:\n  key: 7',
     [resolvePath(root, 'my-data.yml')]: 'different: { key: hello }',
     [resolvePath(root, 'invalid.yaml')]: 'foo: [}',
+    [resolvePath(root, `${mySubstitution}/my-data.json`)]: '{"foo":"bar"}',
   } as { [key: string]: string })[path];
 
   if (!content) {
@@ -41,7 +63,7 @@ const readFile = jest.fn(async (path: string) => {
   return content;
 });
 
-const includeTransform = createIncludeTransform(env, readFile);
+const includeTransform = createIncludeTransform(env, readFile, substitute);
 
 describe('includeTransform', () => {
   it('should not transform unknown values', async () => {
@@ -135,5 +157,15 @@ describe('includeTransform', () => {
     ).rejects.toThrow(
       'failed to parse included file invalid.yaml, YAMLSyntaxError: Flow sequence contains an unexpected }',
     );
+  });
+
+  it('should call substitute prior to handling includes directive', async () => {
+    await expect(
+      includeTransform({ $include: `${substituteMe}/my-data.json` }, root),
+    ).resolves.toEqual({
+      applied: true,
+      value: { foo: 'bar' },
+      newBaseDir: `/${mySubstitution}`,
+    });
   });
 });
