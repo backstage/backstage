@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: config-schema
+  description: A Backstage config schemas.
+spec:
+  type: jsonschema
+  lifecycle: production
+  owner: team-a
+  definition:
+    $text: https://github.com/backstage/backstage/blob/master/plugins/config-schema/dev/example-schema.json
