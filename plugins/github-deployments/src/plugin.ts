@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
   createApiFactory,
   createComponentExtension,
   createPlugin,
@@ -27,9 +26,9 @@ export const githubDeploymentsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: githubDeploymentsApiRef,
-      deps: { configApi: configApiRef, githubAuthApi: githubAuthApiRef },
-      factory: ({ configApi, githubAuthApi }) =>
-        new GithubDeploymentsApiClient({ configApi, githubAuthApi }),
+      deps: { githubAuthApi: githubAuthApiRef },
+      factory: ({ githubAuthApi }) =>
+        new GithubDeploymentsApiClient({ githubAuthApi }),
     }),
   ],
 });

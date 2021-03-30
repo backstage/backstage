@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigApi, createApiRef, OAuthApi } from '@backstage/core';
+import { createApiRef, OAuthApi } from '@backstage/core';
 import { graphql } from '@octokit/graphql';
 
 export type GithubDeployment = {
@@ -40,7 +40,6 @@ export const githubDeploymentsApiRef = createApiRef<GithubDeploymentsApi>({
 });
 
 export type Options = {
-  configApi: ConfigApi;
   githubAuthApi: OAuthApi;
 };
 
@@ -71,19 +70,10 @@ export type QueryResponse = {
 };
 
 export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
-  private readonly configApi: ConfigApi;
   private readonly githubAuthApi: OAuthApi;
 
   constructor(options: Options) {
-    this.configApi = options.configApi;
     this.githubAuthApi = options.githubAuthApi;
-  }
-
-  private getBaseUrl() {
-    const providerConfigs =
-      this.configApi.getOptionalConfigArray('integrations.github') ?? [];
-    const targetProviderConfig = providerConfigs[0];
-    return targetProviderConfig?.getOptionalString('apiBaseUrl');
   }
 
   async listDeployments(options: {
@@ -92,10 +82,8 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
     last: number;
   }): Promise<GithubDeployment[]> {
     const token = await this.githubAuthApi.getAccessToken(['repo']);
-    const baseUrl = this.getBaseUrl() || 'https://api.github.com';
 
     const graphQLWithAuth = graphql.defaults({
-      baseUrl,
       headers: {
         authorization: `token ${token}`,
       },

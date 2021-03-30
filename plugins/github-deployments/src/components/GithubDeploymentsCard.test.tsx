@@ -50,10 +50,7 @@ const githubAuthApi: OAuthApi = {
 const apis = ApiRegistry.from([
   [configApiRef, configApi],
   [errorApiRef, errorApiMock],
-  [
-    githubDeploymentsApiRef,
-    new GithubDeploymentsApiClient({ configApi, githubAuthApi }),
-  ],
+  [githubDeploymentsApiRef, new GithubDeploymentsApiClient({ githubAuthApi })],
 ]);
 
 describe('github-deployments', () => {

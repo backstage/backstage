@@ -23,16 +23,7 @@ export AUTH_CLIENT_SECRET={{YOUR_CLIENT_SECRET}}
 yarn add @backstage/plugin-github-deployments
 ```
 
-3. If you use GitHub enterprise then set the host in `app-config.yaml`.
-
-```yaml
-# app-config.yaml
-integrations:
-  github:
-    - host: { { YOUR_GITHUB_HOST_URL } }
-```
-
-4. Add the plugin to the app
+3. Add the plugin to the app
 
 ```typescript
 // packages/app/src/plugins.ts
@@ -40,7 +31,7 @@ integrations:
 export { plugin as GithubDeployments } from '@backstage/plugin-github-deployments';
 ```
 
-5. Add the `EntityGithubDeploymentsCard` to the EntityPage:
+4. Add the `EntityGithubDeploymentsCard` to the EntityPage:
 
 ```typescript
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -58,7 +49,7 @@ const OverviewContent = () => (
 );
 ```
 
-6. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
+5. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
