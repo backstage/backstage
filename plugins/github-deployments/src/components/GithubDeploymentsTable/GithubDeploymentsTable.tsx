@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { StatusPending, StatusRunning, StatusOK, Table, TableColumn, StatusAborted, StatusError } from '@backstage/core';
+import {
+  StatusPending,
+  StatusRunning,
+  StatusOK,
+  Table,
+  TableColumn,
+  StatusAborted,
+  StatusError,
+} from '@backstage/core';
 import { GithubDeployment } from '../../api';
 import { DateTime } from 'luxon';
 import { Box, Typography, Link, makeStyles } from '@material-ui/core';
@@ -41,7 +49,7 @@ const statusIndicator = (value: string): React.ReactNode => {
     default:
       return <StatusAborted />;
   }
-}
+};
 
 const columns: TableColumn<GithubDeployment>[] = [
   {

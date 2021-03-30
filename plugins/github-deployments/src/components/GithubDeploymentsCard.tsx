@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { InfoCard, MissingAnnotationEmptyState, Progress, ResponseErrorPanel, useApi } from '@backstage/core';
+import {
+  InfoCard,
+  MissingAnnotationEmptyState,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+} from '@backstage/core';
 import { useAsync } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -46,9 +52,7 @@ const GithubDeploymentsComponent = ({
     );
   }
   if (error) {
-    return (
-      <ResponseErrorPanel error={error} />
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   return <GithubDeploymentsTable deployments={value || []} />;

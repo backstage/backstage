@@ -24,7 +24,7 @@ import {
   OAuthApi,
 } from '@backstage/core';
 
-import { msw } from '@backstage/test-utils'
+import { msw } from '@backstage/test-utils';
 import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
