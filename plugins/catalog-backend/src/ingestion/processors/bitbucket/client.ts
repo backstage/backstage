@@ -46,14 +46,12 @@ export class BitbucketClient {
     options?: ListOptions,
   ): Promise<PagedResponse<any>> {
     const request = new URL(endpoint);
-    if (options) {
-      (Object.keys(options) as Array<keyof typeof options>).forEach(key => {
-        const value: any = options[key] as any;
-        if (value) {
-          request.searchParams.append(key, value);
-        }
-      });
+    for (const key in options) {
+      if (options[key]) {
+        request.searchParams.append(key, options[key]!.toString());
+      }
     }
+
     const response = await fetch(
       request.toString(),
       getBitbucketRequestOptions(this.config),
@@ -72,6 +70,7 @@ export class BitbucketClient {
 }
 
 export type ListOptions = {
+  [key: string]: number | undefined;
   limit?: number | undefined;
   start?: number | undefined;
 };
@@ -85,42 +84,17 @@ export type PagedResponse<T> = {
   nextPageStart: number;
 };
 
-export function pageIterator(
-  pagedRequest: (options: ListOptions) => Promise<PagedResponse<any>>,
+export async function* paginated(
+  request: (options: ListOptions) => Promise<PagedResponse<any>>,
   options?: ListOptions,
-): AsyncIterable<PagedResponse<any>> {
-  return {
-    [Symbol.asyncIterator]: () => {
-      const opts = options || { start: 0 };
-      let finished = false;
-      return {
-        async next() {
-          if (!finished) {
-            try {
-              const response = await pagedRequest(opts);
-              finished = response.isLastPage;
-              opts.start = response.nextPageStart;
-              return Promise.resolve({
-                value: response,
-                done: false,
-              });
-            } catch (error) {
-              return Promise.reject({
-                value: undefined,
-                done: true,
-                error: error,
-              });
-            }
-          } else {
-            opts.start = 0;
-            finished = false;
-            return Promise.resolve({
-              value: undefined,
-              done: true,
-            });
-          }
-        },
-      };
-    },
-  };
+) {
+  const opts = options || { start: 0 };
+  let res;
+  do {
+    res = await request(opts);
+    opts.start = res.nextPageStart;
+    for (const item of res.values) {
+      yield item;
+    }
+  } while (!res.isLastPage);
 }

@@ -1,24 +1,22 @@
 ---
 id: discovery
-title: Bitbucket Server Discovery
+title: Bitbucket Discovery
 sidebar_label: Discovery
 description:
-  Automatically discovering catalog entities from repositories in a Bitbucket
-  Server instance
+  Automatically discovering catalog entities from repositories in Bitbucket
 ---
 
 The Bitbucket integration has a special discovery processor for discovering
-catalog entities within a Bitbucket Server instance. The processor will crawl
-the Bitbucket Server instance and register entities matching the configured
-path. This can be useful as an alternative to static locations or manually
-adding things to the catalog.
+catalog entities located in Bitbucket. The processor will crawl your Bitbucket
+account and register entities matching the configured path. This can be useful
+as an alternative to static locations or manually adding things to the catalog.
 
 > Note: The Bitbucket Discovery Processor currently only supports a self-hosted
 > Bitbucket Server, and not the hosted Bitbucket Cloud product.
 
 To use the discovery processor, you'll need a Bitbucket integration
-[set up](locations.md) with a `BITBUCKET_TOKEN`. Then you can add a location
-target to the catalog configuration:
+[set up](locations.md) with a `BITBUCKET_TOKEN` and a `BITBUCKET_API_BASE_URL`.
+Then you can add a location target to the catalog configuration:
 
 ```yaml
 catalog:
@@ -36,8 +34,8 @@ The target is composed of four parts:
   `*` to scan repositories from all projects. This example only scans for
   repositories in the `my-project` project.
 - The repository blob to scan, which accepts \* wildcard tokens. This can simply
-  be `*` to scan all repositories in the organization. This example only looks
-  for repositories prefixed with `service-`.
+  be `*` to scan all repositories in the project. This example only looks for
+  repositories prefixed with `service-`.
 - The path within each repository to find the catalog YAML file. This will
   usually be `/catalog-info.yaml` or a similar variation for catalog files
   stored in the root directory of each repository.

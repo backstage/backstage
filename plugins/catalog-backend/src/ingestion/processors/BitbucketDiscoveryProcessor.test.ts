@@ -120,12 +120,13 @@ describe('BitbucketDiscoveryProcessor', () => {
       );
 
       const actual = await readBitbucketOrg(client, target);
-      expect(actual).toContainEqual({
+      expect(actual.scanned).toBe(2);
+      expect(actual.matches).toContainEqual({
         type: 'url',
         target:
           'https://bitbucket.mycompany.com/projects/backstage/repos/backstage/browse/catalog.yaml',
       });
-      expect(actual).toContainEqual({
+      expect(actual.matches).toContainEqual({
         type: 'url',
         target:
           'https://bitbucket.mycompany.com/projects/demo/repos/demo/browse/catalog.yaml',
@@ -168,13 +169,13 @@ describe('BitbucketDiscoveryProcessor', () => {
       );
 
       const actual = await readBitbucketOrg(client, target);
-
-      expect(actual).toContainEqual({
+      expect(actual.scanned).toBe(3);
+      expect(actual.matches).toContainEqual({
         type: 'url',
         target:
           'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-cli/browse/catalog.yaml',
       });
-      expect(actual).toContainEqual({
+      expect(actual.matches).toContainEqual({
         type: 'url',
         target:
           'https://bitbucket.mycompany.com/projects/backstage/repos/techdocs-container/browse/catalog.yaml',
@@ -206,8 +207,8 @@ describe('BitbucketDiscoveryProcessor', () => {
       );
 
       const actual = await readBitbucketOrg(client, target);
-
-      expect(actual).toContainEqual({
+      expect(actual.scanned).toBe(3);
+      expect(actual.matches).toContainEqual({
         type: 'url',
         target:
           'https://bitbucket.mycompany.com/projects/backstage/repos/test/catalog.yaml',

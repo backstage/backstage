@@ -16,14 +16,17 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 
-import { ScmIntegrations } from '@backstage/integration';
+import {
+  ScmIntegrationRegistry,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { LocationSpec } from '@backstage/catalog-model';
-import { BitbucketClient, pageIterator } from './bitbucket';
+import { BitbucketClient, paginated } from './bitbucket';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { results } from './index';
 
 export class BitbucketDiscoveryProcessor implements CatalogProcessor {
-  private readonly integrations: ScmIntegrations;
+  private readonly integrations: ScmIntegrationRegistry;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
@@ -35,7 +38,10 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     });
   }
 
-  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
+  constructor(options: {
+    integrations: ScmIntegrationRegistry;
+    logger: Logger;
+  }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
   }
@@ -67,9 +73,9 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     const startTimestamp = Date.now();
     this.logger.info(`Reading Bitbucket repositories from ${location.target}`);
 
-    const repositories = await readBitbucketOrg(client, location.target);
+    const result = await readBitbucketOrg(client, location.target);
 
-    for (const repository of repositories) {
+    for (const repository of result.matches) {
       emit(
         results.location(
           repository,
@@ -82,8 +88,8 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     }
 
     const duration = ((Date.now() - startTimestamp) / 1000).toFixed(1);
-    this.logger.info(
-      `Read ${repositories.length} Bitbucket repositories in ${duration} seconds`,
+    this.logger.debug(
+      `Read ${result.scanned} Bitbucket repositories (${result.matches.length} matching the pattern) in ${duration} seconds`,
     );
 
     return true;
@@ -93,30 +99,29 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 export async function readBitbucketOrg(
   client: BitbucketClient,
   target: string,
-): Promise<LocationSpec[]> {
+): Promise<Result> {
   const { projectSearchPath, repoSearchPath, catalogPath } = parseUrl(target);
-  const projectIterator = pageIterator(options => client.listProjects(options));
-  let result: LocationSpec[] = [];
+  const projects = paginated(options => client.listProjects(options));
+  const result: Result = {
+    scanned: 0,
+    matches: [],
+  };
 
-  for await (const page of projectIterator) {
-    for (const project of page.values) {
-      if (!projectSearchPath.test(project.key)) {
-        continue;
-      }
-      const repoIterator = pageIterator(options =>
-        client.listRepositories(project.key, options),
-      );
-      for await (const repoPage of repoIterator) {
-        result = result.concat(
-          repoPage.values
-            .filter(v => repoSearchPath.test(v.slug))
-            .map(repo => {
-              return {
-                type: 'url',
-                target: `${repo.links.self[0].href}${catalogPath}`,
-              };
-            }),
-        );
+  for await (const project of projects) {
+    if (!projectSearchPath.test(project.key)) {
+      continue;
+    }
+    const repositories = paginated(options =>
+      client.listRepositories(project.key, options),
+    );
+    for await (const repository of repositories) {
+      result.scanned++;
+
+      if (repoSearchPath.test(repository.slug)) {
+        result.matches.push({
+          type: 'url',
+          target: `${repository.links.self[0].href}${catalogPath}`,
+        });
       }
     }
   }
@@ -144,3 +149,8 @@ function parseUrl(
 function escapeRegExp(str: string): RegExp {
   return new RegExp(`^${str.replace(/\*/g, '.*')}$`);
 }
+
+type Result = {
+  scanned: number;
+  matches: LocationSpec[];
+};
