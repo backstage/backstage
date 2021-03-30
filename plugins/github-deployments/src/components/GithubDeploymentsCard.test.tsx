@@ -25,7 +25,6 @@ import {
 } from '@backstage/core';
 
 import { render } from '@testing-library/react';
-import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
@@ -33,6 +32,7 @@ import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
 import { entityStub, noDataResponseStub, responseStub } from '../mocks/mocks';
 import { wrapInTestApp } from '@backstage/test-utils';
+import { graphql } from 'msw';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
@@ -74,7 +74,11 @@ describe('github-deployments', () => {
 
   describe('GithubDeploymentsCard', () => {
     it('should display fetched data', async () => {
-      worker.use(rest.post('*', (_, res, ctx) => res(ctx.json(responseStub))));
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
 
       const rendered = render(
         wrapInTestApp(
@@ -101,7 +105,9 @@ describe('github-deployments', () => {
 
     it('should display empty state when no data', async () => {
       worker.use(
-        rest.post('*', (_, res, ctx) => res(ctx.json(noDataResponseStub))),
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(noDataResponseStub)),
+        ),
       );
 
       const rendered = render(

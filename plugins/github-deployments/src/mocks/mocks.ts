@@ -1,3 +1,5 @@
+import { QueryResponse } from '../api';
+
 /*
  * Copyright 2021 Spotify AB
  *
@@ -35,35 +37,31 @@ export const entityStub = {
   },
 };
 
-export const responseStub = {
-  data: {
-    repository: {
-      deployments: {
-        nodes: [
-          {
-            state: 'active',
-            environment: 'prd',
-            updatedAt: '2021-03-25T12:08:45Z',
-            commit: {
-              commitUrl: 'https://exampleapi.com/123456789',
-              abbreviatedOid: '12345',
-            },
+export const responseStub: QueryResponse = {
+  repository: {
+    deployments: {
+      nodes: [
+        {
+          state: 'active',
+          environment: 'prd',
+          updatedAt: '2021-03-25T12:08:45Z',
+          commit: {
+            commitUrl: 'https://exampleapi.com/123456789',
+            abbreviatedOid: '12345',
           },
-          {
-            state: 'pending',
-            environment: 'lab',
-            updatedAt: '2021-03-25T12:08:47Z',
-            commit: {
-              commitUrl: 'https://exampleapi.com/543212345',
-              abbreviatedOid: '54321',
-            },
+        },
+        {
+          state: 'pending',
+          environment: 'lab',
+          updatedAt: '2021-03-25T12:08:47Z',
+          commit: {
+            commitUrl: 'https://exampleapi.com/543212345',
+            abbreviatedOid: '54321',
           },
-        ],
-      },
+        },
+      ],
     },
   },
 };
 
-export const noDataResponseStub = {
-  data: {},
-};
+export const noDataResponseStub: QueryResponse = {};

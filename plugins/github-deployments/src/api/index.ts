@@ -45,7 +45,7 @@ export type Options = {
 };
 
 const deploymentsQuery = `
-query lastDeployments($owner: String!, $repo: String!, $last: Int) {
+query deployments($owner: String!, $repo: String!, $last: Int) {
   repository(owner: $owner, name: $repo) {
     deployments(last: $last) {
       nodes {
@@ -61,6 +61,14 @@ query lastDeployments($owner: String!, $repo: String!, $last: Int) {
   }
 }
 `;
+
+export type QueryResponse = {
+  repository?: {
+    deployments?: {
+      nodes?: GithubDeployment[];
+    };
+  };
+};
 
 export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
   private readonly configApi: ConfigApi;
@@ -93,7 +101,10 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
       },
     });
 
-    const response: any = await graphQLWithAuth(deploymentsQuery, options);
+    const response: QueryResponse = await graphQLWithAuth(
+      deploymentsQuery,
+      options,
+    );
     return response.repository?.deployments?.nodes?.reverse() || [];
   }
 }
