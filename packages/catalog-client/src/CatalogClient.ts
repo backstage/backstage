@@ -191,9 +191,9 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers = new Headers(
-      options?.token ? { Authorization: `Bearer ${options.token}` } : {},
-    );
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
     const response = await fetch(url, { method, headers });
 
     if (!response.ok) {
@@ -207,9 +207,9 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers = new Headers(
-      options?.token ? { Authorization: `Bearer ${options.token}` } : {},
-    );
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
     const response = await fetch(url, { method, headers });
 
     if (!response.ok) {
@@ -225,9 +225,9 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const headers = new Headers(
-      options?.token ? { Authorization: `Bearer ${options.token}` } : {},
-    );
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
     const response = await fetch(url, { method, headers });
 
     if (!response.ok) {
