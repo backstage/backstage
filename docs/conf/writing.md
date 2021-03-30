@@ -177,3 +177,31 @@ configuration value will evaluate to `undefined`.
 
 The substitution syntax can be escaped using `$${...}`, which will be resolved
 as `${...}`.
+
+## Combining Includes and Environment Variable Substitution
+
+The Includes and Environment Variable Substitutions can be combined to do
+something like read a secrets configuration for a specific environment. For
+example:
+
+```yaml
+integrations:
+  github:
+    - host: github.com
+      apps:
+        - $include: secrets.${BACKSTAGE_ENVIRONMENT}.yaml
+```
+
+Example `secrets.prod.yaml`:
+
+```yaml
+appId: 1
+webhookUrl: https://smee.io/foo
+clientId: someGithubAppClientId
+clientSecret: someGithubAppClientSecret
+webhookSecret: someWebhookSecret
+privateKey: |
+  -----BEGIN RSA PRIVATE KEY-----
+  SomeRsaPrivateKey
+  -----END RSA PRIVATE KEY-----
+```
