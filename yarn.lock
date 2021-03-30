@@ -1648,10 +1648,10 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.13.6":
-  version "7.13.9"
-  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.13.9.tgz#b2fa9a6e5690ef8d4c4f2d30cac3ec1a8bb633ce"
-  integrity sha512-p6WSr71+5u/VBf1KDS/Y4dK3ZwbV+DD6wQO3X2EbUVluEOiyXUk09DzcwSaUH4WomYXrEPC+i2rqzuthhZhOJw==
+"@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.13.10":
+  version "7.13.10"
+  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.13.10.tgz#14c3f4c85de22ba88e8e86685d13e8861a82fe86"
+  integrity sha512-x/XYVQ1h684pp1mJwOV4CyvqZXqbc8CMsMGUnAbuc82ZCdv1U63w5RSUzgDSXQHG5Rps/kiksH6g2D5BuaKyXg==
   dependencies:
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
@@ -11979,10 +11979,10 @@ domhandler@^4.0.0:
   dependencies:
     domelementtype "^2.1.0"
 
-dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.6.tgz#54945dc5c0b45ce5ae228705777e8e59d7b2edc4"
-  integrity sha512-7b7ZArhhH0SP6W2R9cqK6RjaU82FZ2UPM7RO8qN1b1wyvC/NY1FNWcX1Pu00fFOAnzEORtwXe4bPaClg6pUybQ==
+dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.7:
+  version "2.2.7"
+  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.7.tgz#a5f055a2a471638680e779bd08fc334962d11fd8"
+  integrity sha512-jdtDffdGNY+C76jvodNTu9jt5yYj59vuTUyx+wXdzcSwAGTYZDAQkQ7Iwx9zcGrA4ixC1syU4H3RZROqRxokxg==
 
 domutils@1.5.1:
   version "1.5.1"
@@ -24922,11 +24922,11 @@ swagger-client@^3.13.1:
     url "~0.11.0"
 
 swagger-ui-react@^3.37.2:
-  version "3.44.0"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.44.0.tgz#4b553d7af46b45efa3bf96a53a05c58ed3b6e34e"
-  integrity sha512-+OMrm/D/V51XUPdh97RCUFCnomH4wJzR50NdE2ho6ZM0M+EsNaYzPmNLoeEhBupNHbL20NO6buSiVA99B4DjRg==
+  version "3.45.1"
+  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.45.1.tgz#6c8e551c5c1d443e7195acd9614f2f6bc4557daf"
+  integrity sha512-ATXMVIb5YaxxmHJdvPq1nnXxsJ1FCo02fQI2gExEtZCQkouMThZh50DRxdKYNae53Ovz3w8glxxwmsMuWtmKaQ==
   dependencies:
-    "@babel/runtime-corejs3" "^7.13.6"
+    "@babel/runtime-corejs3" "^7.13.10"
     "@braintree/sanitize-url" "^5.0.0"
     "@kyleshockey/object-assign-deep" "^0.4.2"
     "@kyleshockey/xml" "^1.0.2"
@@ -24934,7 +24934,7 @@ swagger-ui-react@^3.37.2:
     classnames "^2.2.6"
     css.escape "1.5.1"
     deep-extend "0.6.0"
-    dompurify "^2.2.6"
+    dompurify "^2.2.7"
     ieee754 "^1.2.1"
     immutable "^3.x.x"
     js-file-download "^0.4.12"
