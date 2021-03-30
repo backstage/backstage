@@ -53,7 +53,7 @@ const State = ({ value }: { value: string }) => {
   );
 };
 
-const columns: TableColumn[] = [
+const columns: TableColumn<GithubDeployment>[] = [
   {
     title: 'Environment',
     field: 'environment',
@@ -61,11 +61,13 @@ const columns: TableColumn[] = [
   },
   {
     title: 'Status',
-    render: (row: any): React.ReactNode => <State value={row.state} />,
+    render: (row: GithubDeployment): React.ReactNode => (
+      <State value={row.state} />
+    ),
   },
   {
     title: 'Commit',
-    render: (row: any): React.ReactNode => (
+    render: (row: GithubDeployment): React.ReactNode => (
       <Link href={row.commit.commitUrl} target="_blank" rel="noopener">
         {row.commit.abbreviatedOid}
       </Link>
@@ -73,7 +75,8 @@ const columns: TableColumn[] = [
   },
   {
     title: 'Last Updated',
-    render: (row: any): React.ReactNode => lastUpdated(row.updatedAt),
+    render: (row: GithubDeployment): React.ReactNode =>
+      lastUpdated(row.updatedAt),
   },
 ];
 
