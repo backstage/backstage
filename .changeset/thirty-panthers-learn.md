@@ -2,4 +2,4 @@
 '@backstage/plugin-github-deployments': minor
 ---
 
-add reload button and functionality
+Add a button to reload the GitHub Deployments card

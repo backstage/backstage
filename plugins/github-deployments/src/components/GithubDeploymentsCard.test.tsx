@@ -151,7 +151,7 @@ describe('github-deployments', () => {
         ),
       );
 
-      const refreshButton = await rendered.findByTitle('Refresh');
+      const refreshButton = await rendered.findByTitle('Reload');
       fireEvent.click(refreshButton);
 
       expect(
