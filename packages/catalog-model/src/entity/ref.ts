@@ -217,11 +217,15 @@ export function serializeEntityRef(
  * Takes an entity or entity name/reference, and returns the string form of an
  * entity ref.
  *
+ * This function creates a canonical and unique reference to the entity, converting
+ * all parts of the name to lowercase and inserts the default namespace if needed.
+ * It is typically not the best way to represent the entity reference to the user.
+ *
  * @param ref The reference to serialize
  * @returns The same reference on either string or compound form
  */
 export function stringifyEntityRef(
-  ref: Entity | { kind?: string; namespace?: string; name: string },
+  ref: Entity | { kind: string; namespace?: string; name: string },
 ): string {
   let kind;
   let namespace;
@@ -229,15 +233,15 @@ export function stringifyEntityRef(
 
   if ('metadata' in ref) {
     kind = ref.kind;
-    namespace = ref.metadata.namespace;
+    namespace = ref.metadata.namespace ?? ENTITY_DEFAULT_NAMESPACE;
     name = ref.metadata.name;
   } else {
     kind = ref.kind;
-    namespace = ref.namespace;
+    namespace = ref.namespace ?? ENTITY_DEFAULT_NAMESPACE;
     name = ref.name;
   }
 
-  return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
+  return `${kind.toLowerCase()}:${namespace.toLowerCase()}/${name.toLowerCase()}`;
 }
 
 /**
