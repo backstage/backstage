@@ -85,13 +85,13 @@ const columns: TableColumn<GithubDeployment>[] = [
 type GithubDeploymentsTableProps = {
   deployments: GithubDeployment[];
   isLoading: boolean;
-  retry: () => void;
+  reload: () => void;
 };
 
 const GithubDeploymentsTable = ({
   deployments,
   isLoading,
-  retry,
+  reload,
 }: GithubDeploymentsTableProps) => {
   const classes = useStyles();
 
@@ -105,9 +105,9 @@ const GithubDeploymentsTable = ({
       actions={[
         {
           icon: () => <SyncIcon />,
-          tooltip: 'Refresh',
+          tooltip: 'Reload',
           isFreeAction: true,
-          onClick: () => retry(),
+          onClick: () => reload(),
         },
       ]}
       emptyContent={

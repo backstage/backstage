@@ -38,7 +38,7 @@ const GithubDeploymentsComponent = ({
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
 
-  const { loading, value, error, retry } = useAsyncRetry(
+  const { loading, value, error, retry: reload } = useAsyncRetry(
     async () => await api.listDeployments({ owner, repo, last }),
   );
 
@@ -50,7 +50,7 @@ const GithubDeploymentsComponent = ({
     <GithubDeploymentsTable
       deployments={value || []}
       isLoading={loading}
-      retry={retry}
+      reload={reload}
     />
   );
 };
