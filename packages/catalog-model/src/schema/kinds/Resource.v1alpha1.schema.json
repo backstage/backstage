@@ -49,7 +49,7 @@
             },
             "dependsOn": {
               "type": "array",
-              "description": "An array of entity references to the components that the resource is a dependency of.",
+              "description": "An array of references to other entities that the resource depends on to function.",
               "items": {
                 "type": "string",
                 "minLength": 1
