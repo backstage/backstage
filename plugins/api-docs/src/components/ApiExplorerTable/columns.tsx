@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,25 @@
  */
 
 import React from 'react';
+import { TableColumn } from '@backstage/core';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
-import { CustomColumn, CustomFilter } from './types';
+import { EntityRow } from './types';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
 
-export const defaultColumns: CustomColumn = {
-  name: {
+export function createApiEntityRefColumn(): TableColumn<EntityRow> {
+  return {
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
     render: ({ entity }) => (
       <EntityRefLink entityRef={entity} defaultKind="API" />
     ),
-  },
-  system: {
+  };
+}
+
+export function createSystemColumn(): TableColumn<EntityRow> {
+  return {
     title: 'System',
     field: 'resolved.partOfSystemRelationTitle',
     render: ({ resolved }) => (
@@ -38,8 +42,11 @@ export const defaultColumns: CustomColumn = {
         defaultKind="system"
       />
     ),
-  },
-  owner: {
+  };
+}
+
+export function createOwnerColumn(): TableColumn<EntityRow> {
+  return {
     title: 'Owner',
     field: 'resolved.ownedByRelationsTitle',
     render: ({ resolved }) => (
@@ -48,21 +55,33 @@ export const defaultColumns: CustomColumn = {
         defaultKind="group"
       />
     ),
-  },
-  lifecycle: {
+  };
+}
+
+export function createLifecycleColumn(): TableColumn<EntityRow> {
+  return {
     title: 'Lifecycle',
     field: 'entity.spec.lifecycle',
-  },
-  type: {
+  };
+}
+
+export function createDescriptionColumn(): TableColumn<EntityRow> {
+  return {
+    title: 'Description',
+    field: 'entity.metadata.description',
+  };
+}
+
+export function createApiTypeColumn(): TableColumn<EntityRow> {
+  return {
     title: 'Type',
     field: 'entity.spec.type',
     render: ({ entity }) => <ApiTypeTitle apiEntity={entity} />,
-  },
-  description: {
-    title: 'Description',
-    field: 'entity.metadata.description',
-  },
-  tags: {
+  };
+}
+
+export function createApiTagsColumn(): TableColumn<EntityRow> {
+  return {
     title: 'Tags',
     field: 'entity.metadata.tags',
     cellStyle: {
@@ -82,24 +101,5 @@ export const defaultColumns: CustomColumn = {
           ))}
       </>
     ),
-  },
-};
-
-export const defaultFilters: CustomFilter = {
-  owner: {
-    column: 'Owner',
-    type: 'select',
-  },
-  type: {
-    column: 'Type',
-    type: 'multiple-select',
-  },
-  lifecycle: {
-    column: 'Lifecycle',
-    type: 'multiple-select',
-  },
-  tags: {
-    column: 'Tags',
-    type: 'checkbox-tree',
-  },
-};
+  };
+}

@@ -17,6 +17,8 @@
 import { ApiEntityV1alpha1, EntityName } from '@backstage/catalog-model';
 import { TableColumn, TableFilter } from '@backstage/core';
 
+// TODO: This is almost exactly the same as the type from CatalogTable
+// with the same name
 export type EntityRow = {
   entity: ApiEntityV1alpha1;
   resolved: {
@@ -26,11 +28,6 @@ export type EntityRow = {
     ownedByRelationsTitle?: string;
     ownedByRelations: EntityName[];
   };
-};
-
-export type CustomizableTableProps = {
-  columns?: CustomColumn;
-  filters?: CustomFilter;
 };
 
 // Column types
@@ -43,7 +40,7 @@ export type DefaultColumnName =
   | 'description'
   | 'tags';
 
-export type CustomColumn = Record<
+export type Columns = Record<
   DefaultColumnName | string,
   TableColumn<EntityRow>
 >;
@@ -52,4 +49,4 @@ export type NullableColumn = TableColumn<EntityRow> | undefined;
 
 // Filter types
 type DefaultFilterName = 'owner' | 'type' | 'lifecycle' | 'tags';
-export type CustomFilter = Record<DefaultFilterName | string, TableFilter>;
+export type Filters = Record<DefaultFilterName | string, TableFilter>;

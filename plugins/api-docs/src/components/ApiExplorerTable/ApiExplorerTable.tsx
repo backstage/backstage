@@ -32,36 +32,11 @@ import {
   formatEntityRefTitle,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { defaultColumns, defaultFilters } from './defaults';
-import { CustomizableTableProps, EntityRow } from './types';
+import { defaultColumns, defaultFilters } from './presets';
+import { EntityRow } from './types';
 
-type ExplorerTableProps = CustomizableTableProps & {
-  entities: Entity[];
-  loading: boolean;
-  error?: any;
-};
-
-export const ApiExplorerTable = ({
-  entities,
-  loading,
-  error,
-  columns = defaultColumns,
-  filters = defaultFilters,
-}: ExplorerTableProps) => {
-  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
-    'apiTable',
-    500,
-  );
-
-  if (error) {
-    return (
-      <WarningPanel severity="error" title="Could not fetch catalog entities.">
-        <CodeSnippet language="text" text={error.toString()} />
-      </WarningPanel>
-    );
-  }
-
-  const rows = entities.map((entity: Entity) => {
+export const getRows = (entities: Entity[]) => {
+  return entities.map((entity: Entity) => {
     const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
       kind: 'system',
     });
@@ -88,14 +63,41 @@ export const ApiExplorerTable = ({
       },
     };
   });
+};
 
-  const columnValues = Object.values(columns);
-  const filterValues = Object.values(filters);
+type ExplorerTableProps = {
+  entities: Entity[];
+  loading: boolean;
+  error?: any;
+};
+
+export const ApiTableError = (error: any) => (
+  <WarningPanel severity="error" title="Could not fetch catalog entities.">
+    <CodeSnippet language="text" text={error.toString()} />
+  </WarningPanel>
+);
+
+export const ApiExplorerTable = ({
+  entities,
+  loading,
+  error,
+}: ExplorerTableProps) => {
+  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
+    'apiTable',
+  );
+
+  if (error) {
+    return <ApiTableError error={error} />;
+  }
+
+  const rows = getRows(entities);
+  const columns = Object.values(defaultColumns);
+  const filters = Object.values(defaultFilters);
 
   return (
     <Table<EntityRow>
       isLoading={loading}
-      columns={columnValues}
+      columns={columns}
       options={{
         paging: false,
         actionsColumnIndex: -1,
@@ -104,7 +106,7 @@ export const ApiExplorerTable = ({
         showEmptyDataSourceMessage: !loading,
       }}
       data={rows}
-      filters={filterValues}
+      filters={filters}
       initialState={queryParamState}
       onStateChange={setQueryParamState}
     />

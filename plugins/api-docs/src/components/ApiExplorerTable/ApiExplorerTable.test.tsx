@@ -22,8 +22,8 @@ import { Chip } from '@material-ui/core';
 import { render } from '@testing-library/react';
 import { apiDocsConfigRef } from '../../config';
 import { ApiExplorerTable } from './ApiExplorerTable';
-import { EntityRow } from './types';
-import { defaultColumns, defaultFilters } from './defaults';
+import { Columns, EntityRow, Filters } from './types';
+import { defaultColumns, defaultFilters } from './presets';
 
 const entities: Entity[] = [
   {
@@ -82,6 +82,7 @@ describe('ApiCatalogTable component', () => {
     expect(rendered.getByText(/api3/)).toBeInTheDocument();
   });
 
+  // TODO: Move to ApiExplorerBasePage test file
   it('should display the specified table columns', async () => {
     const entitiesWithCustomMetadata: Entity[] = entities.map((e, i) => {
       const { metadata } = e;
@@ -113,12 +114,12 @@ describe('ApiCatalogTable component', () => {
       type: defaultColumns.type,
       foo: fooColumn,
       bar: barColumn,
-    };
+    } as Columns;
     const filters = {
       type: defaultFilters.type,
       lifecycle: defaultFilters.lifecycle,
       bar: barFilter,
-    };
+    } as Filters;
 
     const rendered = render(
       wrapInTestApp(

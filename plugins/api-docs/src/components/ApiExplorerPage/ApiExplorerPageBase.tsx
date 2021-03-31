@@ -14,34 +14,57 @@
  * limitations under the License.
  */
 
+import React from 'react';
 import {
   Content,
   ContentHeader,
   SupportButton,
+  TableProps,
+  TableState,
   useApi,
   useRouteRef,
+  useQueryParamState,
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Button } from '@material-ui/core';
-import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { createComponentRouteRef } from '../../routes';
-import { ApiExplorerTable } from '../ApiExplorerTable';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
+import { getRows, ApiTableError } from '../ApiExplorerTable/ApiExplorerTable';
+import { createComponentRouteRef } from '../../routes';
 
-export const ApiExplorerPage = () => {
+type BaseTableProps = Partial<TableProps>;
+
+export interface BaseProps {
+  includeRegisterButton: boolean;
+  showSupportButton: boolean;
+  TableComponent: React.ComponentType<BaseTableProps>;
+}
+
+export const ApiExplorerPageBase = (baseProps: BaseProps) => {
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const catalogApi = useApi(catalogApiRef);
+  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
+    'apiTable',
+  );
+
   const { loading, error, value: catalogResponse } = useAsync(() => {
     return catalogApi.getEntities({ filter: { kind: 'API' } });
   }, [catalogApi]);
+  const {
+    includeRegisterButton = true,
+    showSupportButton = true,
+    TableComponent,
+  } = baseProps;
+
+  const entities = catalogResponse?.items ?? [];
+  const rows = getRows(entities);
 
   return (
     <ApiExplorerLayout>
       <Content>
         <ContentHeader title="">
-          {createComponentLink && (
+          {includeRegisterButton && createComponentLink && (
             <Button
               variant="contained"
               color="primary"
@@ -51,13 +74,27 @@ export const ApiExplorerPage = () => {
               Register Existing API
             </Button>
           )}
-          <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
-        <ApiExplorerTable
-          entities={catalogResponse?.items ?? []}
-          loading={loading}
-          error={error}
-        />
+
+        {showSupportButton && <SupportButton>All your APIs</SupportButton>}
+
+        {error && <ApiTableError error={error} />}
+
+        {!error && TableComponent && (
+          <TableComponent
+            isLoading={loading}
+            data={rows}
+            options={{
+              paging: false,
+              actionsColumnIndex: -1,
+              loadingType: 'linear',
+              padding: 'dense',
+              showEmptyDataSourceMessage: !loading,
+            }}
+            initialState={queryParamState}
+            onStateChange={setQueryParamState}
+          />
+        )}
       </Content>
     </ApiExplorerLayout>
   );

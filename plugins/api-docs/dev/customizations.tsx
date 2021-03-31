@@ -19,11 +19,11 @@ import { Chip } from '@material-ui/core';
 import {
   defaultColumns,
   defaultFilters,
-} from '../src/components/ApiExplorerTable/defaults';
-import { TableFilter } from '@backstage/core';
+} from '../src/components/ApiExplorerTable/presets';
+import { Table, TableFilter } from '@backstage/core';
 import {
-  CustomColumn,
-  CustomFilter,
+  Columns,
+  Filters,
   EntityRow,
 } from '../src/components/ApiExplorerTable/types';
 
@@ -50,7 +50,7 @@ const capabilitiesColumn = {
   ),
 };
 
-const getCustomColumns = (): CustomColumn => {
+const getColumns = (): Columns => {
   const { name, description, owner, lifecycle, type } = defaultColumns;
   const customColumns = {
     name,
@@ -65,7 +65,7 @@ const getCustomColumns = (): CustomColumn => {
   return customColumns;
 };
 
-const getCustomFilters = (): CustomFilter => {
+const getFilters = (): Filters => {
   const { owner, type, lifecycle } = defaultFilters;
   const customFilters = {
     owner,
@@ -77,5 +77,36 @@ const getCustomFilters = (): CustomFilter => {
   return customFilters;
 };
 
-export const customColumns = getCustomColumns();
-export const customFilters = getCustomFilters();
+const customColumns = getColumns();
+const customFilters = getFilters();
+
+export const CustomTable = (props: any) => {
+  const {
+    isLoading = false,
+    data,
+    options: defaultOptions,
+    initialState,
+    onStateChange,
+  } = props;
+  const {
+    columns,
+    filters,
+    options = {},
+  } = CustomTable;
+
+  return (
+    <Table<EntityRow>
+      isLoading={isLoading}
+      columns={columns}
+      filters={filters}
+      options={{ ...defaultOptions, ...options }}
+      data={data}
+      initialState={initialState}
+      onStateChange={onStateChange}
+    />
+  );
+};
+
+CustomTable.options = { paging: true };
+CustomTable.columns = Object.values(customColumns);
+CustomTable.filters = Object.values(customFilters);
