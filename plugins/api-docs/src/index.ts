@@ -15,6 +15,7 @@
  */
 
 export * from './components';
+export { apiDocsConfigRef } from './config';
 export {
   apiDocsPlugin,
   apiDocsPlugin as plugin,
@@ -22,7 +23,7 @@ export {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
   EntityConsumingComponentsCard,
+  EntityHasApisCard,
   EntityProvidedApisCard,
   EntityProvidingComponentsCard,
-  EntityHasApisCard,
 } from './plugin';
