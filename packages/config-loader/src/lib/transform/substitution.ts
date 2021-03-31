@@ -29,8 +29,13 @@ export function createSubstitutionTransform(env: EnvFunc): TransformFunc {
     }
 
     const parts: (string | undefined)[] = input.split(/(?<!\$)\$\{([^{}]+)\}/);
-    for (let i = 1; i < parts.length; i += 2) {
-      parts[i] = await env(parts[i]!.trim());
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        parts[i] = parts[i]!.replace(/\$\${(.*?)\}/, '${$1}');
+      }
+      if (i % 2 === 1) {
+        parts[i] = await env(parts[i]!.trim());
+      }
     }
     if (parts.some(part => part === undefined)) {
       return { applied: true, value: undefined };
