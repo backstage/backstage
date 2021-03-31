@@ -186,7 +186,7 @@ describe('BuiltinKindsEntityProcessor', () => {
       await expect(
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrowError(
-        'Entity reference kind is undefined and has no default',
+        'Entity reference "r" did not specify a kind (e.g. starting with "Component:"), and has no default',
       );
     });
 
@@ -334,14 +334,14 @@ describe('BuiltinKindsEntityProcessor', () => {
         spec: {
           type: 'database',
           owner: 'o',
-          dependsOn: ['r'],
+          dependsOn: ['c'],
           system: 's',
         },
       };
       await expect(
         processor.postProcessEntity(entity, location, emit),
       ).rejects.toThrowError(
-        'Entity reference kind is undefined and has no default',
+        'Entity reference "c" did not specify a kind (e.g. starting with "Component:"), and has no default',
       );
     });
 
