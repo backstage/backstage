@@ -15,13 +15,11 @@
  */
 import React from 'react';
 import {
-  InfoCard,
   MissingAnnotationEmptyState,
-  Progress,
   ResponseErrorPanel,
   useApi,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
+import { useAsyncRetry } from 'react-use';
 import { githubDeploymentsApiRef } from '../api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -40,22 +38,21 @@ const GithubDeploymentsComponent = ({
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
 
-  const { loading, value, error } = useAsync(
+  const { loading, value, error, retry } = useAsyncRetry(
     async () => await api.listDeployments({ owner, repo, last }),
   );
 
-  if (loading) {
-    return (
-      <InfoCard title="GitHub Deployments">
-        <Progress />
-      </InfoCard>
-    );
-  }
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
 
-  return <GithubDeploymentsTable deployments={value || []} />;
+  return (
+    <GithubDeploymentsTable
+      deployments={value || []}
+      isLoading={loading}
+      retry={retry}
+    />
+  );
 };
 
 export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
