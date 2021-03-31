@@ -1,5 +1,45 @@
 # @backstage/create-app
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [676ede643]
+- Updated dependencies [2ab6f3ff0]
+- Updated dependencies [0d55dcc74]
+- Updated dependencies [ee5529268]
+- Updated dependencies [2c29611a0]
+- Updated dependencies [29e1789e1]
+- Updated dependencies [aa58c01e2]
+- Updated dependencies [60bddefce]
+- Updated dependencies [bebd1c4fe]
+- Updated dependencies [f1b2c1d2c]
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8bee6a131]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+- Updated dependencies [6b2d54fd6]
+- Updated dependencies [44590510d]
+- Updated dependencies [dd7fa21e2]
+- Updated dependencies [164cc4c53]
+- Updated dependencies [676ede643]
+  - @backstage/plugin-catalog-backend@0.7.0
+  - @backstage/plugin-scaffolder@0.8.1
+  - @backstage/plugin-scaffolder-backend@0.9.4
+  - @backstage/plugin-auth-backend@0.3.7
+  - @backstage/plugin-api-docs@0.4.10
+  - @backstage/plugin-github-actions@0.4.3
+  - @backstage/plugin-catalog@0.5.2
+  - @backstage/plugin-techdocs@0.7.1
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-import@0.5.1
+  - @backstage/plugin-explore@0.3.3
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+  - @backstage/plugin-user-settings@0.2.9
+
 ## 0.3.15
 
 ### Patch Changes

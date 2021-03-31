@@ -1,5 +1,43 @@
 # @backstage/plugin-catalog
 
+## 0.5.2
+
+### Patch Changes
+
+- aa58c01e2: Adds a new `EntitySystemDiagramCard` component to visually map all elements in a system.
+
+  To use this new component with the legacy composability pattern, you can add a new tab with the component on to the System Entity Page in your `packages/app/src/components/catalog/EntityPage.tsx` file.
+
+  For example,
+
+  ```diff
+   const SystemEntityPage = ({ entity }: { entity: Entity }) => (
+     <EntityPageLayoutWrapper>
+       <EntityPageLayout.Content
+         path="/*"
+         title="Overview"
+         element={<SystemOverviewContent entity={entity} />}
+       />
+  +    <EntityPageLayout.Content
+  +      path="/diagram/*"
+  +      title="Diagram"
+  +      element={<EntitySystemDiagramCard />}
+  +    />
+     </EntityPageLayoutWrapper>
+   );
+  ```
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- 8bee6a131: unify how the owner and lifecycle header labels are made
+- 676ede643: Improve the unregister dialog, to support both unregistration and plain deletion
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.5.1
 
 ### Patch Changes

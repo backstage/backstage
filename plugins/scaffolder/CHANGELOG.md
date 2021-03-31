@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder
 
+## 0.8.1
+
+### Patch Changes
+
+- 2ab6f3ff0: Add OwnerPicker component to scaffolder for specifying a component's owner from users and groups in the catalog.
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.8.0
 
 ### Minor Changes

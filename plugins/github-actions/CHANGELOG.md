@@ -1,5 +1,15 @@
 # @backstage/plugin-github-actions
 
+## 0.4.3
+
+### Patch Changes
+
+- 2c29611a0: Fixed GitHub workflows not appearing when the originating repository for a workflow run was deleted.
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.4.2
 
 ### Patch Changes
