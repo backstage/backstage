@@ -1,5 +1,11 @@
 # @backstage/backend-common
 
+## 0.6.1
+
+### Patch Changes
+
+- 37e3a69f5: Export `ReadTreeResponseFile` and `SearchResponseFile`.
+
 ## 0.6.0
 
 ### Minor Changes
