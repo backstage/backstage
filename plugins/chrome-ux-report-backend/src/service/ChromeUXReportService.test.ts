@@ -51,6 +51,7 @@ const config: Config = new ConfigReader({
 const queryClient = new Query(config);
 let databaseClient: Database;
 let chromeUXReportService: ChromeUXReportService;
+
 describe('Chrome UX Report Service', () => {
   beforeEach(async()=>{
     databaseClient = await Database.create({

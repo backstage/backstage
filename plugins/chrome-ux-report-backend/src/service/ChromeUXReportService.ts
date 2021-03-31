@@ -88,14 +88,14 @@ export class ChromeUXReportService {
         period_id: periodId,
         connection_type: '4G',
         form_factor: 'Desktop',
-        first_contentful_paint: metrics,
-        largest_contentful_paint: metrics,
-        dom_content_loaded: metrics,
-        onload: metrics,
-        first_input: metrics,
-        layout_instability: metrics, 
-        notifications: metrics,
-        time_to_first_byte: metrics,
+        first_contentful_paint: metrics.first_contentful_paint,
+        largest_contentful_paint: metrics.largest_contentful_paint,
+        dom_content_loaded: metrics.dom_content_loaded,
+        onload: metrics.onload,
+        first_input: metrics.dom_content_loaded,
+        layout_instability: metrics.dom_content_loaded, 
+        notifications: metrics.dom_content_loaded,
+        time_to_first_byte: metrics.dom_content_loaded,
       });
       return true;
     } catch (error) {
@@ -112,9 +112,9 @@ export class ChromeUXReportService {
       let periodId = await this.getPeriodId(period);
       //let metrics: Metric;
 
-      if (originId && periodId) {
+      /* if (originId && periodId) {
         return this.database.getUXMetrics(originId, periodId);
-      }
+      } */
 
       if (!originId) {
         await this.addOrigin(origin);
@@ -126,12 +126,12 @@ export class ChromeUXReportService {
         periodId = await this.getPeriodId(period);
       }
 
-      const [rows] = await this.queryClient.queryUXMetrics(
+      const rows = await this.queryClient.queryUXMetrics(
         origin,
-        period,
-        { longName: 'first_contentful_paint', shortName: 'fcp' },
+        period
       );
-
+      
+      console.log(rows)
       await this.addUXMetrics(originId, periodId, rows);
       
       return this.database.getUXMetrics(originId, periodId);

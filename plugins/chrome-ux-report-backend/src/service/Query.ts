@@ -15,8 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { RateInfo } from './types';
-import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
+import { BigQuery, QueryRowsResponse } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
 
 function createBigQueryClient(config: Config) {
   const projectId = config.getString('chromeUXReport.projectId');
@@ -28,65 +27,76 @@ function createBigQueryClient(config: Config) {
   });
 }
 
-export class Query{
-
+export class Query {
   private readonly config: Config;
 
-  constructor(config: Config){
+  constructor(config: Config) {
     this.config = config;
   }
+  metrics = [
+    'first_paint',
+    'first_contentful_paint',
+    'largest_contentful_paint',
+    'dom_content_loaded',
+    'onload',
+  ];
 
-  async queryUXMetrics(
-    origin: string,
-    period: string,
-    rateInfo: RateInfo,
-  ) {
+  async queryUXMetrics(origin: string, period: string) {
     const client = createBigQueryClient(this.config);
-    const { longName, shortName } = rateInfo;
-  
-    const query = `SELECT
-      SUM(${shortName}.density) AS fast,
-       (
-        SELECT
-          SUM(${shortName}.density) 
-        FROM
-          \`chrome-ux-report.all.${period}\`,
-          UNNEST(${longName}.histogram.bin) AS ${shortName}
-        WHERE
-          origin = '${origin}'
-          AND ${shortName}.start > 1000
-          AND ${shortName}.start <= 2500
-      ) AS average, 
-       (
-        SELECT
-          SUM(${shortName}.density) 
-        FROM
-          \`chrome-ux-report.all.${period}\`,
-          UNNEST(${longName}.histogram.bin) AS ${shortName}
-        WHERE
-          origin = '${origin}'
-          AND ${shortName}.start > 2500
-      ) AS slow
+
+    const query = `SELECT *
       FROM
-      \`chrome-ux-report.all.${period}\`,
-      UNNEST(${longName}.histogram.bin) AS ${shortName}
+      \`chrome-ux-report.all.202102\`
       WHERE
-      origin = '${origin}'
-      AND ${shortName}.start >= 0
-      AND ${shortName}.start <= 1000
+      origin = '${origin}' AND 
+      effective_connection_type.name = '4G' AND
+      form_factor.name = 'desktop'
     `;
-  
-    console.log(query)
+
     const queryOptions = {
       query,
       // Location must match that of the dataset(s) referenced in the query.
       location: 'US',
     };
-  
-    const [job] = await client.createQueryJob(queryOptions);
-  
-    const [rows] = await job.getQueryResults();
-    return rows;
+
+    //const [job] = await client.createQueryJob(queryOptions);
+
+    //const [rows] = await job.getQueryResults();
+    const rows: any = [];
+    console.log(rows);
+    const result = this.getMetricResults(rows);
+
+    console.log(result);
+    return result;
   }
-  
+
+  getMetricResults(rows: QueryRowsResponse[]) {
+    const obj = rows[0];
+    const result: any = {};
+
+    this.metrics.forEach((metric: string) => {
+      var fast = 0;
+      var average = 0;
+      var slow = 0;
+/*       var flattedArr: any = obj[`${metric}`].histogram.bin.flat();
+
+      flattedArr.forEach((element: any) => {
+        if (element.start <= 1000) {
+          fast += element.density;
+        } else if (element.start > 1000 && element.start <= 2500) {
+          average += element.density;
+        } else {
+          slow += element.density;
+        }
+      }); */
+
+      result[`${metric}`] = {
+        fast: 0.25,
+        slow: 0.25,
+        average: 0.25,
+      };
+    });
+
+    return result;
+  }
 }
