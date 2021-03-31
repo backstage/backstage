@@ -88,9 +88,9 @@ The badges backend api exposes two main endpoints for entity badges. The
   [BadgeSpec](https://github.com/backstage/backstage/tree/master/plugins/badges/src/api/types.ts)
   from the frontend plugin for a type declaration.
 
-- `/badges/entity/:namespace/:kind/:name/:badgeId` Get the entity badge as an
-  SVG image. If the `accept` request header prefers `application/json` the badge
-  spec as JSON will be returned instead of the image.
+- `/badges/entity/:namespace/:kind/:name/badge/:badgeId` Get the entity badge as
+  an SVG image. If the `accept` request header prefers `application/json` the
+  badge spec as JSON will be returned instead of the image.
 
 ## Links
 
