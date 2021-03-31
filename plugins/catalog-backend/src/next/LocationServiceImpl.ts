@@ -18,7 +18,7 @@ import {
   LocationService,
   LocationStore,
   CatalogProcessingOrchestrator,
-} from './newthing';
+} from './types';
 
 export class LocationServiceImpl implements LocationService {
   constructor(

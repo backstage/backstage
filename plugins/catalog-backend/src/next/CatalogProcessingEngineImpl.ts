@@ -21,10 +21,10 @@ import {
   EntityMessage,
   ProcessingStateStore,
   CatalogProcessingOrchestrator,
-} from './newthing';
+} from './types';
 
 import { JsonObject } from '@backstage/config';
-import { EntitiesCatalog } from './catalog/types';
+import { EntitiesCatalog } from '../catalog/types';
 import { Logger } from 'winston';
 
 export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {

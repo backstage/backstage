@@ -24,14 +24,15 @@ import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
-} from './ingestion/processors';
+  CatalogProcessorResult,
+} from '../ingestion/processors';
 import {
   CatalogProcessingOrchestrator,
   EntityProcessingError,
   LocationEntity,
-} from './newthing';
+} from './types';
 import { Logger } from 'winston';
-import * as result from './ingestion/processors/results';
+import * as result from '../ingestion/processors/results';
 
 export class CatalogProcessingOrchestratorImpl
   implements CatalogProcessingOrchestrator {
@@ -55,18 +56,18 @@ export class CatalogProcessingOrchestratorImpl
   }> {
     const { entity, eager, state } = request;
     const completedEntities: Entity[] = [];
-    const deferredEntites: Entity[] = [];
+    const deferredEntites: CatalogProcessorResult[] = [];
     const errors: EntityProcessingError[] = [];
 
     if (eager) {
       const stack = [entity];
-      const emit = (i: Entity) => stack.push(i);
+      const emit = (i: CatalogProcessorResult) => stack.push(i);
       while (stack.length) {
         const item = stack.pop();
         stack.push();
       }
     } else {
-      const emit = (i: Entity) => {
+      const emit = (i: CatalogProcessorResult) => {
         deferredEntites.push(i);
       };
       if (entity.spec) {

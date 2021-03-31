@@ -32,11 +32,15 @@ exports.up = async function up(knex) {
       .comment('A reference to the entity that the refresh state is tied to');
     // TODO: This should probably be removed, just using it to make it easy to implement
     //       refreshes without having to remodel locations
-    table.text('entity').notNullable().comment('The entity spec');
+    table.text('unprocessed_entity').notNullable().comment('The entity spec');
     table
-      .text('refresh_state')
+      .text('processed_entity')
       .notNullable()
-      .comment('State information tied to refreshing of this entity such etag');
+      .comment('The entity after processing');
+    table
+      .text('cache')
+      .notNullable()
+      .comment('Cache information tied to refreshing of this entity such etag');
     table
       .dateTime('next_update_at')
       .notNullable()

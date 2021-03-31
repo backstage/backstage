@@ -20,6 +20,7 @@ import {
   createRouter,
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
+import { CatalogProcessingEngineImpl } from '@backstage/plugin-catalog-backend/src/CatalogProcessingEngineImpl';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -36,6 +37,7 @@ export default async function createPlugin(
 
   higherOrderOperation.processAllLocations();
 
+  // new CatalogProcessingEngineImpl()
   runPeriodically(async () => {
     console.log('processing refresh state!!!');
     await higherOrderOperation.processRefreshState();

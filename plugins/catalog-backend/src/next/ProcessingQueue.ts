@@ -16,12 +16,9 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { Database } from './database';
-import { DbRefreshStateRow } from './database/types';
-import {
-  ProcessingStateStore,
-  ProcessingStateStorePushRequest,
-} from './newthing';
+import { Database } from '../database';
+import { DbRefreshStateRow } from '../database/types';
+import { ProcessingStateStore, ProcessingStateStorePushRequest } from './types';
 
 export class ProcessingQueue implements ProcessingStateStore {
   constructor(private readonly db: Database) {}

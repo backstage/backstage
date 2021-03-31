@@ -15,12 +15,12 @@
  */
 
 import { Observable } from '@backstage/core';
-import { EntityProvider, LocationStore, EntityMessage } from './newthing';
+import { EntityProvider, LocationStore, EntityMessage } from './types';
 import ObservableImpl from 'zen-observable';
 import {
   locationToEntity,
   locationToEntityName,
-} from './ingestion/LocationToEntity';
+} from '../ingestion/LocationToEntity';
 
 export class DatabaseLocationProvider implements EntityProvider {
   private subscribers = new Set<

@@ -20,8 +20,8 @@ import {
   Entity,
   EntityName,
 } from '@backstage/catalog-model';
-import { CommonDatabase } from './database';
-import { LocationStore } from './newthing';
+import { CommonDatabase } from '../database';
+import { LocationStore } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { ConflictError } from '@backstage/errors';
 import { Observable } from '@backstage/core';
