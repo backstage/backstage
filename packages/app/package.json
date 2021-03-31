@@ -19,6 +19,7 @@
     "@backstage/plugin-explore": "^0.3.2",
     "@backstage/plugin-gcp-projects": "^0.2.5",
     "@backstage/plugin-github-actions": "^0.4.2",
+    "@backstage/plugin-github-deployments": "^0.1.1",
     "@backstage/plugin-gitops-profiles": "^0.2.6",
     "@backstage/plugin-graphiql": "^0.2.9",
     "@backstage/plugin-jenkins": "^0.4.1",
