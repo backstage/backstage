@@ -32,7 +32,7 @@ describe('ResourceV1alpha1Validator', () => {
       spec: {
         type: 'database',
         owner: 'me',
-        dependencyOf: ['component-0'],
+        dependsOn: ['component:component-0', 'resource:resource-0'],
         system: 'system',
       },
     };
@@ -87,23 +87,23 @@ describe('ResourceV1alpha1Validator', () => {
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
   });
 
-  it('accepts missing dependencyOf', async () => {
-    delete (entity as any).spec.dependencyOf;
+  it('accepts missing dependsOn', async () => {
+    delete (entity as any).spec.dependsOn;
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects empty dependencyOf', async () => {
-    (entity as any).spec.dependencyOf = [''];
-    await expect(validator.check(entity)).rejects.toThrow(/dependencyOf/);
+  it('rejects empty dependsOn', async () => {
+    (entity as any).spec.dependsOn = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
   });
 
-  it('rejects undefined dependencyOf', async () => {
-    (entity as any).spec.dependencyOf = [undefined];
-    await expect(validator.check(entity)).rejects.toThrow(/dependencyOf/);
+  it('rejects undefined dependsOn', async () => {
+    (entity as any).spec.dependsOn = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
   });
 
-  it('accepts no dependencyOf', async () => {
-    (entity as any).spec.dependencyOf = [];
+  it('accepts no dependsOn', async () => {
+    (entity as any).spec.dependsOn = [];
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 

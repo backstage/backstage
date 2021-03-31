@@ -92,7 +92,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
     function doEmit(
       targets: string | string[] | undefined,
-      context: { defaultKind: string; defaultNamespace: string },
+      context: { defaultKind?: string; defaultNamespace: string },
       outgoingRelation: string,
       incomingRelation: string,
     ): void {
@@ -101,16 +101,29 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       }
       for (const target of [targets].flat()) {
         const targetRef = parseEntityRef(target, context);
+        if (targetRef.kind === undefined) {
+          throw new Error(
+            'Entity reference kind is undefined and has no default',
+          );
+        }
         emit(
           result.relation({
             source: selfRef,
             type: outgoingRelation,
-            target: targetRef,
+            target: {
+              kind: targetRef.kind,
+              namespace: targetRef.namespace,
+              name: targetRef.name,
+            },
           }),
         );
         emit(
           result.relation({
-            source: targetRef,
+            source: {
+              kind: targetRef.kind,
+              namespace: targetRef.namespace,
+              name: targetRef.name,
+            },
             type: incomingRelation,
             target: selfRef,
           }),
@@ -150,7 +163,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       );
       doEmit(
         component.spec.dependsOn,
-        { defaultKind: 'Resource', defaultNamespace: selfRef.namespace },
+        { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDS_ON,
         RELATION_DEPENDENCY_OF,
       );
@@ -195,10 +208,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_OWNER_OF,
       );
       doEmit(
-        resource.spec.dependencyOf,
-        { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
-        RELATION_DEPENDENCY_OF,
+        resource.spec.dependsOn,
+        { defaultNamespace: selfRef.namespace },
         RELATION_DEPENDS_ON,
+        RELATION_DEPENDENCY_OF,
       );
       doEmit(
         resource.spec.system,

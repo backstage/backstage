@@ -30,7 +30,7 @@ export interface ResourceEntityV1alpha1 extends Entity {
   spec: {
     type: string;
     owner: string;
-    dependencyOf?: string[];
+    dependsOn?: string[];
     system?: string;
   };
 }

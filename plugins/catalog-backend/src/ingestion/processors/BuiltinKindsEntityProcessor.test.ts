@@ -45,14 +45,14 @@ describe('BuiltinKindsEntityProcessor', () => {
           lifecycle: 'l',
           providesApis: ['b'],
           consumesApis: ['c'],
-          dependsOn: ['r'],
+          dependsOn: ['Resource:r', 'Component:d'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(12);
+      expect(emit).toBeCalledTimes(14);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -104,6 +104,14 @@ describe('BuiltinKindsEntityProcessor', () => {
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'n' },
+          type: 'dependsOn',
+          target: { kind: 'Resource', namespace: 'default', name: 'r' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'r' },
           type: 'dependencyOf',
           target: { kind: 'Component', namespace: 'default', name: 'n' },
@@ -114,7 +122,15 @@ describe('BuiltinKindsEntityProcessor', () => {
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'n' },
           type: 'dependsOn',
-          target: { kind: 'Resource', namespace: 'default', name: 'r' },
+          target: { kind: 'Component', namespace: 'default', name: 'd' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Component', namespace: 'default', name: 'd' },
+          type: 'dependencyOf',
+          target: { kind: 'Component', namespace: 'default', name: 'n' },
         },
       });
       expect(emit).toBeCalledWith({
@@ -149,6 +165,29 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'System', namespace: 'default', name: 's' },
         },
       });
+    });
+
+    it('generates an error for component entities with unspecified dependsOn entity reference kinds', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owner: 'o',
+          subcomponentOf: 's',
+          lifecycle: 'l',
+          providesApis: ['b'],
+          consumesApis: ['c'],
+          dependsOn: ['r'],
+          system: 's',
+        },
+      };
+      await expect(
+        processor.postProcessEntity(entity, location, emit),
+      ).rejects.toThrowError(
+        'Entity reference kind is undefined and has no default',
+      );
     });
 
     it('generates relations for api entities', async () => {
@@ -210,14 +249,14 @@ describe('BuiltinKindsEntityProcessor', () => {
         spec: {
           type: 'database',
           owner: 'o',
-          dependencyOf: ['c'],
+          dependsOn: ['Component:c', 'Resource:r'],
           system: 's',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(6);
+      expect(emit).toBeCalledTimes(8);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -234,11 +273,12 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'Group', namespace: 'default', name: 'o' },
         },
       });
+
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
           source: { kind: 'Resource', namespace: 'default', name: 'n' },
-          type: 'dependencyOf',
+          type: 'dependsOn',
           target: { kind: 'Component', namespace: 'default', name: 'c' },
         },
       });
@@ -246,10 +286,28 @@ describe('BuiltinKindsEntityProcessor', () => {
         type: 'relation',
         relation: {
           source: { kind: 'Component', namespace: 'default', name: 'c' },
-          type: 'dependsOn',
+          type: 'dependencyOf',
           target: { kind: 'Resource', namespace: 'default', name: 'n' },
         },
       });
+
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'n' },
+          type: 'dependsOn',
+          target: { kind: 'Resource', namespace: 'default', name: 'r' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Resource', namespace: 'default', name: 'r' },
+          type: 'dependencyOf',
+          target: { kind: 'Resource', namespace: 'default', name: 'n' },
+        },
+      });
+
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -266,6 +324,25 @@ describe('BuiltinKindsEntityProcessor', () => {
           target: { kind: 'System', namespace: 'default', name: 's' },
         },
       });
+    });
+
+    it('generates an error for resource entities with unspecified dependsOn entity reference kinds', async () => {
+      const entity: ResourceEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Resource',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'database',
+          owner: 'o',
+          dependsOn: ['r'],
+          system: 's',
+        },
+      };
+      await expect(
+        processor.postProcessEntity(entity, location, emit),
+      ).rejects.toThrowError(
+        'Entity reference kind is undefined and has no default',
+      );
     });
 
     it('generates relations for system entities', async () => {
