@@ -103,7 +103,9 @@ export function createPublishGithubAction(options: {
       }
 
       const { token } = await credentialsProvider.getCredentials({
-        url: `${host}/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+          repo,
+        )}`,
       });
 
       if (!token) {
