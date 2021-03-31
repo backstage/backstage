@@ -92,7 +92,7 @@
     "react-hot-loader": "^4.12.21",
     "recursive-readdir": "^2.2.2",
     "replace-in-file": "^6.0.0",
-    "rollup": "2.33.x",
+    "rollup": "2.44.x",
     "rollup-plugin-dts": "^2.0.1",
     "rollup-plugin-esbuild": "2.6.x",
     "rollup-plugin-peer-deps-external": "^2.2.2",
