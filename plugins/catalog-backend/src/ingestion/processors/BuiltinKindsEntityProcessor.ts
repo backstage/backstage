@@ -103,7 +103,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         const targetRef = parseEntityRef(target, context);
         if (targetRef.kind === undefined) {
           throw new Error(
-            'Entity reference kind is undefined and has no default',
+            `Entity reference "${target}" did not specify a kind (e.g. starting with "Component:"), and has no default`,
           );
         }
         emit(
