@@ -30,7 +30,7 @@ export const makeProfileInfo = (
   profile: passport.Profile,
   idToken?: string,
 ): ProfileInfo => {
-  const { displayName } = profile;
+  let { displayName } = profile;
 
   let email: string | undefined = undefined;
   if (profile.emails && profile.emails.length > 0) {
@@ -44,7 +44,7 @@ export const makeProfileInfo = (
     picture = firstPhoto.value;
   }
 
-  if ((!email || !picture) && idToken) {
+  if ((!email || !picture || !displayName) && idToken) {
     try {
       const decoded: Record<string, string> = jwtDecoder(idToken);
       if (!email && decoded.email) {
@@ -52,6 +52,9 @@ export const makeProfileInfo = (
       }
       if (!picture && decoded.picture) {
         picture = decoded.picture;
+      }
+      if (!displayName && decoded.name) {
+        displayName = decoded.name;
       }
     } catch (e) {
       throw new Error(`Failed to parse id token and get profile info, ${e}`);
