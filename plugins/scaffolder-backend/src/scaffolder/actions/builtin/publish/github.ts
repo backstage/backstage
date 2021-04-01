@@ -23,6 +23,9 @@ import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
+type Permission = 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
+type Collaborator = { access: Permission; username: string };
+
 export function createPublishGithubAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
@@ -41,6 +44,7 @@ export function createPublishGithubAction(options: {
     access?: string;
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
+    collaborators: Collaborator[];
   }>({
     id: 'publish:github',
     description:
@@ -72,6 +76,21 @@ export function createPublishGithubAction(options: {
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
             type: 'string',
           },
+          collaborators: {
+            title: 'Collaborators',
+            type: 'array',
+            properties: {
+              access: {
+                title: 'The type of access for the user',
+                type: 'string',
+                enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+              },
+              username: {
+                title: 'The username or group',
+                type: 'string',
+              },
+            },
+          },
         },
       },
       output: {
@@ -94,6 +113,7 @@ export function createPublishGithubAction(options: {
         description,
         access,
         repoVisibility = 'private',
+        collaborators,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
@@ -163,6 +183,18 @@ export function createPublishGithubAction(options: {
           username: access,
           permission: 'admin',
         });
+      }
+
+      if (collaborators) {
+        for (const { access, username } of collaborators) {
+          await client.teams.addOrUpdateRepoPermissionsInOrg({
+            org: owner,
+            team_slug: username,
+            owner,
+            repo,
+            permission: access,
+          });
+        }
       }
 
       const remoteUrl = data.clone_url;
