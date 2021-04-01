@@ -7,7 +7,7 @@ description:
 ---
 
 The Bitbucket integration supports loading catalog entities from bitbucket.org
-or a self-hosted BitBucket. Entities can be added to
+or a self-hosted Bitbucket. Entities can be added to
 [static catalog configuration](../../features/software-catalog/configuration.md),
 or registered with the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
@@ -17,7 +17,6 @@ plugin.
 integrations:
   bitbucket:
     - host: bitbucket.org
-      username: ${BITBUCKET_USERNAME}
       token: ${BITBUCKET_TOKEN}
 ```
 

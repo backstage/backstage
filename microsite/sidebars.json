@@ -113,8 +113,11 @@
       },
       {
         "type": "subcategory",
-        "label": "BitBucket",
-        "ids": ["integrations/bitbucket/locations"]
+        "label": "Bitbucket",
+        "ids": [
+          "integrations/bitbucket/locations",
+          "integrations/bitbucket/discovery"
+        ]
       },
       {
         "type": "subcategory",
