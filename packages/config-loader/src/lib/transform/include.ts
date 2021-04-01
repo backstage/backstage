@@ -55,12 +55,18 @@ export function createIncludeTransform(
     }
 
     const rawIncludedValue = input[includeKey];
-    const substituteResults = await substitute(rawIncludedValue!, baseDir);
+    if (typeof rawIncludedValue !== 'string') {
+      throw new Error(`${includeKey} include value is not a string`);
+    }
+
+    const substituteResults = await substitute(rawIncludedValue, baseDir);
     const includeValue = substituteResults.applied
       ? substituteResults.value
       : rawIncludedValue;
-    if (typeof includeValue !== 'string') {
-      throw new Error(`${includeKey} include value is not a string`);
+
+    // The second string check is needed for Typescript to know this is a string.
+    if (includeValue === undefined || typeof includeValue !== 'string') {
+      throw new Error(`${includeKey} substitution value was undefined`);
     }
 
     switch (includeKey) {

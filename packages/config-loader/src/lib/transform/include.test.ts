@@ -29,23 +29,21 @@ const env = jest.fn(async (name: string) => {
   } as { [name: string]: string })[name];
 });
 
-const substitute = jest.fn(
-  async (
-    value: JsonValue,
-  ): Promise<{ applied: boolean; value?: JsonValue }> => {
-    if (typeof value !== 'string') {
-      return { applied: false };
-    }
-    if (value.includes(substituteMe)) {
-      return {
-        applied: true,
-        value: value.replace(substituteMe, mySubstitution),
-      };
-    }
-
+const substitute = async (
+  value: JsonValue,
+): Promise<{ applied: boolean; value?: JsonValue }> => {
+  if (typeof value !== 'string') {
     return { applied: false };
-  },
-);
+  }
+  if (value.includes(substituteMe)) {
+    return {
+      applied: true,
+      value: value.replace(substituteMe, mySubstitution),
+    };
+  }
+
+  return { applied: false };
+};
 
 const readFile = jest.fn(async (path: string) => {
   const content = ({

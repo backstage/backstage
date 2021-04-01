@@ -57,6 +57,12 @@ describe('substituteTransform', () => {
       value: undefined,
     });
     await expect(
+      substituteTransform('empty substitute ${}', '/'),
+    ).resolves.toEqual({
+      applied: true,
+      value: undefined,
+    });
+    await expect(
       substituteTransform('foo ${MISSING} ${SECRET}', '/'),
     ).resolves.toEqual({ applied: true, value: undefined });
     await expect(
@@ -65,5 +71,11 @@ describe('substituteTransform', () => {
     await expect(
       substituteTransform('foo ${SECRET} $$${ESCAPE_ME}', '/'),
     ).resolves.toEqual({ applied: true, value: 'foo my-secret $${ESCAPE_ME}' });
+    await expect(
+      substituteTransform('foo $${ESCAPE_ME} $$${ESCAPE_ME_TOO} $${}', '/'),
+    ).resolves.toEqual({
+      applied: true,
+      value: 'foo ${ESCAPE_ME} $${ESCAPE_ME_TOO} ${}',
+    });
   });
 });
