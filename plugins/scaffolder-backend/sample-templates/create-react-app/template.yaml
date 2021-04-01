@@ -19,6 +19,7 @@ spec:
       - component_id
       - use_typescript
       - description
+      - collaborators
     properties:
       component_id:
         title: Name
@@ -39,4 +40,26 @@ spec:
         type: boolean
         description: Use Github Actions
         default: true
-
+      collaborators:
+        type: array
+        ui:options:
+          orderable: false
+        items:
+          type: object
+          required:
+          - username
+          - access
+          properties:
+            access:
+              type: string
+              description: The type of access for the user
+              default: pull
+              enum:
+              - push
+              - pull
+              - admin
+              - maintain
+              - triage
+            username:
+              type: string
+              description: The username or group
