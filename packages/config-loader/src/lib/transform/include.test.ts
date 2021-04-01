@@ -31,7 +31,16 @@ const env = jest.fn(async (name: string) => {
 
 const substitute = async (
   value: JsonValue,
-): Promise<{ applied: boolean; value?: JsonValue }> => {
+): Promise<
+  | {
+      applied: false;
+    }
+  | {
+      applied: true;
+      value: JsonValue | undefined;
+      newBaseDir?: string | undefined;
+    }
+> => {
   if (typeof value !== 'string') {
     return { applied: false };
   }
