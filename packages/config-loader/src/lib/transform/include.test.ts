@@ -18,6 +18,7 @@ import { JsonValue } from '@backstage/config';
 import * as os from 'os';
 import { resolve as resolvePath } from 'path';
 import { createIncludeTransform } from './include';
+import { TransformFunc } from './types';
 
 const root = os.platform() === 'win32' ? 'C:\\' : '/';
 const substituteMe = '${MY_SUBSTITUTION}';
@@ -29,18 +30,7 @@ const env = jest.fn(async (name: string) => {
   } as { [name: string]: string })[name];
 });
 
-const substitute = async (
-  value: JsonValue,
-): Promise<
-  | {
-      applied: false;
-    }
-  | {
-      applied: true;
-      value: JsonValue | undefined;
-      newBaseDir?: string | undefined;
-    }
-> => {
+const substitute: TransformFunc = async value => {
   if (typeof value !== 'string') {
     return { applied: false };
   }
