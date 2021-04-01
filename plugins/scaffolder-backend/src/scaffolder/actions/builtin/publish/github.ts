@@ -186,13 +186,13 @@ export function createPublishGithubAction(options: {
       }
 
       if (collaborators) {
-        for (const { access, username } of collaborators) {
+        for (const { access: permission, username: team_slug } of collaborators) {
           await client.teams.addOrUpdateRepoPermissionsInOrg({
             org: owner,
-            team_slug: username,
+            team_slug,
             owner,
             repo,
-            permission: access,
+            permission,
           });
         }
       }
