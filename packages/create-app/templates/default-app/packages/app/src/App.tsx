@@ -19,7 +19,7 @@ import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { apis } from './apis';
-import { EntityPage } from './components/catalog/EntityPage';
+import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
 import * as plugins from './plugins';
 
@@ -47,7 +47,7 @@ const routes = (
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
     >
-      <EntityPage />
+      {entityPage}
     </Route>
     <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />} />
