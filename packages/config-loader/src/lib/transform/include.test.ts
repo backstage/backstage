@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
 import * as os from 'os';
 import { resolve as resolvePath } from 'path';
 import { createIncludeTransform } from './include';
