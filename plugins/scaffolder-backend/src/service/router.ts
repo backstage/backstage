@@ -358,8 +358,9 @@ export async function createRouter(
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = req.body.values;
+      const token = getBearerToken(req.headers.authorization);
       const template = await entityClient.findTemplate(templateName, {
-        token: getBearerToken(req.headers.authorization),
+        token,
       });
 
       let taskSpec;
@@ -386,6 +387,7 @@ export async function createRouter(
 
         taskSpec = {
           baseUrl,
+          token,
           values,
           steps: template.spec.steps.map((step, index) => ({
             ...step,
@@ -412,6 +414,8 @@ export async function createRouter(
       if (!task) {
         throw new NotFoundError(`Task with id ${taskId} does not exist`);
       }
+      // Do not disclose token
+      delete task.spec.token;
       res.status(200).json(task);
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
