@@ -129,7 +129,7 @@ const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   );
 };
 
-const cicdContent = (
+export const cicdContent = (
   <EntitySwitch>
     <EntitySwitch.Case if={isJenkinsAvailable}>
       <EntityJenkinsContent />
