@@ -82,39 +82,30 @@ export class ChromeUXReportService {
     periodId: number,
     metrics: Metric,
   ): Promise<boolean> {
-    try {
       await this.database.addUXMetrics({
         origin_id: originId,
         period_id: periodId,
         connection_type: '4G',
         form_factor: 'Desktop',
+        first_paint: metrics.first_paint,
         first_contentful_paint: metrics.first_contentful_paint,
         largest_contentful_paint: metrics.largest_contentful_paint,
         dom_content_loaded: metrics.dom_content_loaded,
         onload: metrics.onload,
-        first_input: metrics.dom_content_loaded,
-        layout_instability: metrics.dom_content_loaded, 
-        notifications: metrics.dom_content_loaded,
-        time_to_first_byte: metrics.dom_content_loaded,
+        first_input_delay: metrics.first_input_delay,
+        time_to_first_byte: metrics.time_to_first_byte,
       });
-      return true;
-    } catch (error) {
-      this.logger.error(
-        `There is an error while adding period to database, error ${error.message}`,
-      );
-      throw error;
-    }
+      return true; 
   }
 
   async getUXMetrics(origin: string, period: string): Promise<Metric> {
     try {
       let originId = await this.getOriginId(origin);
       let periodId = await this.getPeriodId(period);
-      //let metrics: Metric;
 
-      /* if (originId && periodId) {
+       if (originId && periodId) {
         return this.database.getUXMetrics(originId, periodId);
-      } */
+      } 
 
       if (!originId) {
         await this.addOrigin(origin);
@@ -131,7 +122,6 @@ export class ChromeUXReportService {
         period
       );
       
-      console.log(rows)
       await this.addUXMetrics(originId, periodId, rows);
       
       return this.database.getUXMetrics(originId, periodId);

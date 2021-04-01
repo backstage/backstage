@@ -19,6 +19,7 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { Database } from './database/Database';
 import { Query } from './Query';
+import { MockQuery } from '../__mocks__/Query';
 
 export interface RouterOptions {
   logger: Logger;
@@ -29,7 +30,7 @@ export interface RouterOptions {
 export interface Options {
     logger: Logger;
     database: Database;
-    query: Query
+    query: Query;
   }
 
 export interface RateInfo {
@@ -55,16 +56,14 @@ export type Metric = {
   onload: {
     rates: any;
   };
-  first_input: {
+  first_input_delay: {
     rates: any;
   };
-  layout_instability: {
-    rates: any;
-  };
-  notifications: {
+  first_paint: {
     rates: any;
   };
   time_to_first_byte: {
     rates: any;
   };
 };
+

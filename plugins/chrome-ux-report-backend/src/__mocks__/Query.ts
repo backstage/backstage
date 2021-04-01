@@ -14,48 +14,66 @@
  * limitations under the License.
  */
 
-import { Config } from "@backstage/config";
-import { RateInfo } from "../service/types";
+import { Config } from '@backstage/config';
 
 function createBigQueryClient(config: Config) {
-    const projectId = config.getString('chromeUXReport.projectId');
-    const keyPath = config.getString('chromeUXReport.keyPath');
-    
-    if(!projectId || !keyPath){
-        throw Error("You must give project id and key path")
-    }
+  const projectId = config.getString('chromeUXReport.projectId');
+  const keyPath = config.getString('chromeUXReport.keyPath');
 
-    return true;
+  if (!projectId || !keyPath) {
+    throw Error('You must give project id and key path');
+  }
+
+  return true;
 }
 
-export class Query {
+export class MockQuery {
+  private readonly config: Config;
 
-    private readonly config: Config;
+  metrics = [
+    'first_paint',
+    'first_contentful_paint',
+    'largest_contentful_paint',
+    'dom_content_loaded',
+    'onload',
+    'first_input',
+    'experimental',
+  ];
+  
+  constructor(config: Config) {
+    this.config = config;
+  }
 
-    constructor(config: Config){
-      this.config = config;
+  async queryUXMetrics(origin: string, month: string) {
+    if (!origin || !month) {
+      // rate info to be removed.
+      throw Error('Origin or month or rate info not given...');
     }
 
-    async queryUXMetrics(
-        origin: string,
-        month: string,
-        rateInfo: RateInfo,
-        ) {
-        if(!origin || !month || !rateInfo){ // rate info to be removed.
-            throw Error("Origin or month or rate info not given...")
-        }
-
-        if(!createBigQueryClient(this.config)){
-            throw Error("Cannot create BigQuery Client.")
-        }
-
-        return [JSON.stringify({
-            fast:0.25,
-            average:0.25,
-            slow:0.25
-        })]
-
+    if (!createBigQueryClient(this.config)) {
+      throw Error('Cannot create BigQuery Client.');
     }
 
+    return this.getMetrics();
+  }
 
+  getMetrics() {
+    return {
+      first_paint: JSON.stringify(this.calculateMetrics()),
+      first_contentful_paint: JSON.stringify(this.calculateMetrics()),
+      largest_contentful_paint: JSON.stringify(this.calculateMetrics()),
+      dom_content_loaded: JSON.stringify(this.calculateMetrics()),
+      onload: JSON.stringify(this.calculateMetrics()),
+      first_input_delay: JSON.stringify(this.calculateMetrics()),
+      time_to_first_byte: JSON.stringify(this.calculateMetrics()),
+    };
+  }
+
+  calculateMetrics() {
+    return {
+      fast: 0.25,
+      average: 0.25,
+      slow: 0.25,
+    };
+  }
 }

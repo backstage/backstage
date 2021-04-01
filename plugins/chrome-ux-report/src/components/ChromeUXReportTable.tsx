@@ -70,9 +70,9 @@ export const ChromeUXReportTable = ({ origin }: { origin: string; }) => {
     first_contentful_paint,
     largest_contentful_paint,
     dom_content_loaded,
-    first_input,
+    first_input_delay,
     onload,
-    layout_instability,
+    first_paint,
     time_to_first_byte
   } = value;
 
@@ -109,11 +109,11 @@ export const ChromeUXReportTable = ({ origin }: { origin: string; }) => {
       average: `${returnRoundOfMetric(dom_content_loaded.average)}%`,
       slow: `${returnRoundOfMetric(dom_content_loaded.slow)}%`
     }, {
-      metricName: 'FIRST INPUT',
+      metricName: 'FIRST INPUT DELAY',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(first_input.fast)}%`,
-      average: `${returnRoundOfMetric(first_input.average)}%`,
-      slow: `${returnRoundOfMetric(first_input.slow)}%`
+      fast: `${returnRoundOfMetric(first_input_delay.fast)}%`,
+      average: `${returnRoundOfMetric(first_input_delay.average)}%`,
+      slow: `${returnRoundOfMetric(first_input_delay.slow)}%`
     }, {
       metricName: 'ONLOAD',
       metricValue: '-',
@@ -121,11 +121,11 @@ export const ChromeUXReportTable = ({ origin }: { origin: string; }) => {
       average: `${returnRoundOfMetric(onload.average)}%`,
       slow: `${returnRoundOfMetric(onload.slow)}%`
     }, {
-      metricName: 'LAYOUT INSTABILITY',
+      metricName: 'FIRST PAINT',
       metricValue: '-',
-      fast: `${returnRoundOfMetric(layout_instability.fast)}%`,
-      average: `${returnRoundOfMetric(layout_instability.average)}%`,
-      slow: `${returnRoundOfMetric(layout_instability.slow)}%`
+      fast: `${returnRoundOfMetric(first_paint.fast)}%`,
+      average: `${returnRoundOfMetric(first_paint.average)}%`,
+      slow: `${returnRoundOfMetric(first_paint.slow)}%`
     }, {
       metricName: 'TIME TO FIRST BYTE',
       metricValue: '-',

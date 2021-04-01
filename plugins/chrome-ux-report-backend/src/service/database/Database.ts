@@ -43,9 +43,8 @@ export type UXMetricsRow = {
   largest_contentful_paint: any;
   dom_content_loaded: any;
   onload: any;
-  first_input: any;
-  layout_instability: any;
-  notifications: any;
+  first_input_delay: any;
+  first_paint: any;
   time_to_first_byte: any;
 };
 
@@ -142,9 +141,8 @@ export class Database {
       largest_contentful_paint,
       dom_content_loaded,
       onload,
-      first_input,
-      layout_instability,
-      notifications,
+      first_input_delay,
+      first_paint,
       time_to_first_byte,
     } = metrics;
 
@@ -158,9 +156,8 @@ export class Database {
         largest_contentful_paint,
         dom_content_loaded,
         onload,
-        first_input,
-        layout_instability,
-        notifications,
+        first_input_delay,
+        first_paint,
         time_to_first_byte,
       });
     } catch (e) {

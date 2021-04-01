@@ -52,10 +52,9 @@ exports.up = async function up(knex) {
         table.json('first_contentful_paint').notNullable();
         table.json('largest_contentful_paint').notNullable();
         table.json('dom_content_loaded').notNullable();
-        table.json('layout_instability').notNullable();
+        table.json('first_paint').notNullable();
         table.json('onload').notNullable();
-        table.json('first_input').notNullable();
-        table.json('notifications').notNullable();
+        table.json('first_input_delay').notNullable();
         table.json('time_to_first_byte').notNullable();
 
         table.unique(['origin_id', 'period_id'], 'origins_periods_idx');

@@ -20,7 +20,7 @@ import { ConfigReader, Config } from '@backstage/config';
 import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
 import  Knex  from 'knex'
-import { Query } from '../__mocks__/Query';
+import { MockQuery } from '../__mocks__/Query';
 
 function createDB() {
   const knex = Knex({
@@ -48,7 +48,7 @@ const config: Config = new ConfigReader({
 });
 
 
-const queryClient = new Query(config);
+const queryClient = new MockQuery(config);
 let databaseClient: Database;
 let chromeUXReportService: ChromeUXReportService;
 
@@ -81,9 +81,8 @@ describe('Chrome UX Report Service', () => {
         largest_contentful_paint:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
         dom_content_loaded:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
         onload:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        first_input:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        layout_instability:JSON.stringify({fast:0.25,average:0.25, slow:0.25}), 
-        notifications:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+        first_input_delay:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+        first_paint:JSON.stringify({fast:0.25,average:0.25, slow:0.25}), 
         time_to_first_byte:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       })
 
@@ -96,12 +95,11 @@ describe('Chrome UX Report Service', () => {
       connection_type: "4G",
       dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_input: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       form_factor: "Desktop",
       id: 1,
       largest_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      layout_instability: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      notifications: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      first_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       onload: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       origin_id: 1,
       period_id: 1,
@@ -109,7 +107,7 @@ describe('Chrome UX Report Service', () => {
     })
   });
 
-  it('successfully get UXMetrics from big query and adds to databes when database has not cache', async () => {
+  it('successfully get UXMetrics from big query and adds to database when database has not cache', async () => {
     const databaseClient = await Database.create({
       database: createDB(),
       logger: getVoidLogger(),
@@ -132,12 +130,11 @@ describe('Chrome UX Report Service', () => {
       connection_type: "4G",
       dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_input: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       form_factor: "Desktop",
       id: 1,
       largest_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      layout_instability: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      notifications: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      first_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       onload: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       origin_id: 1,
       period_id: 1,

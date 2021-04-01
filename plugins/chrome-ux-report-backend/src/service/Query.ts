@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import { BigQuery, QueryRowsResponse } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
+import { BigQuery } from '@google-cloud/bigquery'; // used Google's official BigQuery SDK.
 
 function createBigQueryClient(config: Config) {
   const projectId = config.getString('chromeUXReport.projectId');
@@ -33,12 +33,15 @@ export class Query {
   constructor(config: Config) {
     this.config = config;
   }
+
   metrics = [
     'first_paint',
     'first_contentful_paint',
     'largest_contentful_paint',
     'dom_content_loaded',
     'onload',
+    'first_input',
+    'experimental',
   ];
 
   async queryUXMetrics(origin: string, period: string) {
@@ -46,7 +49,7 @@ export class Query {
 
     const query = `SELECT *
       FROM
-      \`chrome-ux-report.all.202102\`
+      \`chrome-ux-report.all.${period}\`
       WHERE
       origin = '${origin}' AND 
       effective_connection_type.name = '4G' AND
@@ -59,44 +62,59 @@ export class Query {
       location: 'US',
     };
 
-    //const [job] = await client.createQueryJob(queryOptions);
+    const [job] = await client.createQueryJob(queryOptions);
 
-    //const [rows] = await job.getQueryResults();
-    const rows: any = [];
-    console.log(rows);
-    const result = this.getMetricResults(rows);
+    const [rows] = await job.getQueryResults();
 
-    console.log(result);
+    const result = this.getMetrics(rows[0]);
+
     return result;
   }
 
-  getMetricResults(rows: QueryRowsResponse[]) {
-    const obj = rows[0];
+  getMetrics(rows: any) {
     const result: any = {};
 
-    this.metrics.forEach((metric: string) => {
-      var fast = 0;
-      var average = 0;
-      var slow = 0;
-/*       var flattedArr: any = obj[`${metric}`].histogram.bin.flat();
-
-      flattedArr.forEach((element: any) => {
-        if (element.start <= 1000) {
-          fast += element.density;
-        } else if (element.start > 1000 && element.start <= 2500) {
-          average += element.density;
-        } else {
-          slow += element.density;
-        }
-      }); */
-
-      result[`${metric}`] = {
-        fast: 0.25,
-        slow: 0.25,
-        average: 0.25,
-      };
+    this.metrics.forEach(metric => {
+      switch (metric) {
+        case 'first_input':
+          var flattedArr = rows['first_input']['delay'].histogram.bin.flat();
+          result['first_input_delay'] = this.calculateMetrics(flattedArr);
+          break;
+        case 'experimental':
+          var flattedArr = rows['experimental'][
+            'time_to_first_byte'
+          ].histogram.bin.flat();
+          result['time_to_first_byte'] = this.calculateMetrics(flattedArr);
+          break;
+        default:
+          var flattedArr = rows[`${metric}`].histogram.bin.flat();
+          result[`${metric}`] = this.calculateMetrics(flattedArr);
+          break;
+      }
     });
 
     return result;
+  }
+
+  calculateMetrics(histogramArray: any[]) {
+    let fast = 0;
+    let slow = 0;
+    let average = 0;
+
+    histogramArray.forEach(histogram => {
+      if (histogram.start <= 1000) {
+        fast += histogram.density;
+      } else if (histogram.start > 1000 && histogram.start <= 2500) {
+        average += histogram.density;
+      } else {
+        slow += histogram.density;
+      }
+    });
+
+    return {
+      fast,
+      slow,
+      average,
+    };
   }
 }
