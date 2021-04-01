@@ -161,7 +161,7 @@ describe('includeTransform', () => {
     ).resolves.toEqual({
       applied: true,
       value: { foo: 'bar' },
-      newBaseDir: `/${mySubstitution}`,
+      newBaseDir: resolvePath(root, mySubstitution),
     });
   });
 });
