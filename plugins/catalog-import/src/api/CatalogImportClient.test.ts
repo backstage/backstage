@@ -307,7 +307,7 @@ describe('CatalogImportClient', () => {
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
-          fileContent: 'some content',
+          fileContent: 'some content 🤖',
           title: 'A title/message',
           body: 'A body',
         }),
@@ -333,7 +333,7 @@ describe('CatalogImportClient', () => {
         repo: 'backstage',
         path: 'catalog-info.yaml',
         message: 'A title/message',
-        content: 'c29tZSBjb250ZW50',
+        content: 'c29tZSBjb250ZW50IPCfpJY=',
         branch: 'backstage-integration',
       });
       expect(
