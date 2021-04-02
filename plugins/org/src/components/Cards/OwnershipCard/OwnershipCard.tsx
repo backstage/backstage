@@ -144,7 +144,20 @@ export const OwnershipCard = ({
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const entitiesList = await catalogApi.getEntities();
+    const kinds = ['Component', 'API'];
+    const entitiesList = await catalogApi.getEntities({
+      filter: {
+        kind: kinds,
+      },
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
     const ownedEntitiesList = entitiesList.items.filter(component =>
       isOwnerOf(entity, component),
     );
