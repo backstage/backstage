@@ -29,10 +29,6 @@ import React, { useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    leftAlignButtonsDialog: {
-      justifyContent: 'flex-start',
-      paddingLeft: 24,
-    },
     closeButton: {
       position: 'absolute',
       right: theme.spacing(1),
@@ -88,12 +84,9 @@ export const Default = () => {
           </li>
         </ul>
         <Typography>
-          The color for the secondary button is the same as the primary. For the
-          primary action button, use:
+          The color for the secondary button is the same as the primary.
         </Typography>
-        <pre>variant="contained"</pre>
-        <Typography>For the secondary action button, use:</Typography>
-        <pre>variant="outlined"</pre>
+        <pre>color="primary"</pre>
       </>
     );
   };
@@ -120,12 +113,12 @@ export const Default = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent>{dialogContent()}</DialogContent>
-        <DialogActions classes={{ root: classes.leftAlignButtonsDialog }}>
-          <Button color="primary" variant="contained" onClick={closeDialog}>
-            Primary action
-          </Button>
-          <Button color="primary" variant="outlined" onClick={closeDialog}>
+        <DialogActions>
+          <Button color="primary" onClick={closeDialog}>
             Secondary action
+          </Button>
+          <Button color="primary" onClick={closeDialog}>
+            Primary action
           </Button>
         </DialogActions>
       </Dialog>
