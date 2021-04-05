@@ -107,11 +107,7 @@ export class Database {
   }
 
   async addUXMetrics(metrics: any): Promise<void> {
-    try {
-      await this.database<UXMetricsRow>('uxMetrics').insert(metrics);
-    } catch (e) {
-      this.logger.error(e.message);
-    }
+    await this.database<UXMetricsRow>('uxMetrics').insert(metrics);
   }
 
   async getUXMetrics(originId: number, periodId: number): Promise<any> {

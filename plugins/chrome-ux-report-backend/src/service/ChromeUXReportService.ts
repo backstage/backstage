@@ -82,37 +82,44 @@ export class ChromeUXReportService {
     periodId: number,
     metrics: Metric,
   ): Promise<boolean> {
-    await this.database.addUXMetrics({
-      origin_id: originId,
-      period_id: periodId,
-      connection_type: '4G',
-      form_factor: 'Desktop',
-      fast_fp: metrics.fast_fp,
-      avg_fp: metrics.avg_fp,
-      slow_fp: metrics.slow_fp,
-      fast_fcp: metrics.fast_fcp,
-      avg_fcp: metrics.avg_fcp,
-      slow_fcp: metrics.slow_fcp,
-      fast_dcl: metrics.fast_dcl,
-      avg_dcl: metrics.avg_dcl,
-      slow_dcl: metrics.slow_dcl,
-      fast_ol: metrics.fast_ol,
-      avg_ol: metrics.avg_ol,
-      slow_ol: metrics.slow_ol,
-      fast_fid: metrics.fast_fid,
-      avg_fid: metrics.avg_fid,
-      slow_fid: metrics.slow_fid,
-      fast_ttfb: metrics.fast_ttfb,
-      avg_ttfb: metrics.avg_ttfb,
-      slow_ttfb: metrics.slow_ttfb,
-      small_cls: metrics.small_cls,
-      medium_cls: metrics.medium_cls,
-      large_cls: metrics.large_cls,
-      fast_lcp: metrics.fast_lcp,
-      avg_lcp: metrics.avg_lcp,
-      slow_lcp: metrics.slow_lcp,
-    });
-    return true;
+    try {
+      await this.database.addUXMetrics({
+        origin_id: originId,
+        period_id: periodId,
+        connection_type: '4G',
+        form_factor: 'Desktop',
+        fast_fp: metrics.fast_fp,
+        avg_fp: metrics.avg_fp,
+        slow_fp: metrics.slow_fp,
+        fast_fcp: metrics.fast_fcp,
+        avg_fcp: metrics.avg_fcp,
+        slow_fcp: metrics.slow_fcp,
+        fast_dcl: metrics.fast_dcl,
+        avg_dcl: metrics.avg_dcl,
+        slow_dcl: metrics.slow_dcl,
+        fast_ol: metrics.fast_ol,
+        avg_ol: metrics.avg_ol,
+        slow_ol: metrics.slow_ol,
+        fast_fid: metrics.fast_fid,
+        avg_fid: metrics.avg_fid,
+        slow_fid: metrics.slow_fid,
+        fast_ttfb: metrics.fast_ttfb,
+        avg_ttfb: metrics.avg_ttfb,
+        slow_ttfb: metrics.slow_ttfb,
+        small_cls: metrics.small_cls,
+        medium_cls: metrics.medium_cls,
+        large_cls: metrics.large_cls,
+        fast_lcp: metrics.fast_lcp,
+        avg_lcp: metrics.avg_lcp,
+        slow_lcp: metrics.slow_lcp,
+      });
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `There is an error while getting ux metrics from database, error ${error.message}`,
+      );
+      return false;
+    }
   }
 
   async getUXMetrics(origin: string, period: string): Promise<Metric> {
