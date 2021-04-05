@@ -28,6 +28,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-google-charts": "^3.0.15",
     "react-use": "^15.3.3"
   },
   "devDependencies": {

@@ -68,7 +68,7 @@ Defined by the Paint Timing API and available in Chrome M60+:
 
 ```First Contentful Paint reports the time when the browser first rendered any text, image (including background images), non-white canvas or SVG. This includes text with pending webfonts. This is the first time users could start consuming page content.```
 
-### DOMContentLoaded
+### DOM Content Loaded
 
 Defined by the HTML specification:
 

@@ -47,7 +47,6 @@ const config: Config = new ConfigReader({
   },
 });
 
-
 const queryClient = new MockQuery(config);
 let databaseClient: Database;
 let chromeUXReportService: ChromeUXReportService;
@@ -58,7 +57,7 @@ describe('Chrome UX Report Service', () => {
       database: createDB(),
       logger: getVoidLogger(),
     });
-    
+
     chromeUXReportService = new ChromeUXReportService(
       {
         logger: getVoidLogger(),
@@ -66,10 +65,9 @@ describe('Chrome UX Report Service', () => {
         query: queryClient,
       },
     );
-  })
-  it('successfully get UXMetrics when database has cache', async () => {
-    // adding cache data
+  });
 
+  it('successfully get UXMetrics when database has cache', async () => {
     await databaseClient.addOrigin(config.getConfigArray('chromeUXReport.origins')[0].getString('site'))
     await databaseClient.addPeriod('202009')
     await databaseClient.addUXMetrics({
@@ -91,54 +89,21 @@ describe('Chrome UX Report Service', () => {
       '202009',
     );
 
-    expect(metrics).toMatchObject({
-      connection_type: "4G",
-      dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      form_factor: "Desktop",
+    const result = {
       id: 1,
-      largest_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      onload: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       origin_id: 1,
       period_id: 1,
-      time_to_first_byte: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),       
-    })
-  });
-
-  it('successfully get UXMetrics from big query and adds to database when database has not cache', async () => {
-    const databaseClient = await Database.create({
-      database: createDB(),
-      logger: getVoidLogger(),
-    });
-
-    const chromeUXReportService: ChromeUXReportService = new ChromeUXReportService(
-      {
-        logger: getVoidLogger(),
-        database: databaseClient,
-        query: queryClient,
-      },
-    );
-
-    const metrics = await chromeUXReportService.getUXMetrics(
-      config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
-      '202009',
-    );
-
-    expect(metrics).toMatchObject({
-      connection_type: "4G",
-      dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       form_factor: "Desktop",
-      id: 1,
+      connection_type: "4G",
+      first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       largest_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       first_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
       onload: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      origin_id: 1,
-      period_id: 1,
-      time_to_first_byte: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),       
-    })
+      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      time_to_first_byte: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+    };
+
+    expect(metrics).toMatchObject(result);
   });
 });

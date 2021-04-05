@@ -30,16 +30,6 @@ function createBigQueryClient(config: Config) {
 export class MockQuery {
   private readonly config: Config;
 
-  metrics = [
-    'first_paint',
-    'first_contentful_paint',
-    'largest_contentful_paint',
-    'dom_content_loaded',
-    'onload',
-    'first_input',
-    'experimental',
-  ];
-  
   constructor(config: Config) {
     this.config = config;
   }
@@ -54,26 +44,31 @@ export class MockQuery {
       throw Error('Cannot create BigQuery Client.');
     }
 
-    return this.getMetrics();
-  }
-
-  getMetrics() {
     return {
-      first_paint: JSON.stringify(this.calculateMetrics()),
-      first_contentful_paint: JSON.stringify(this.calculateMetrics()),
-      largest_contentful_paint: JSON.stringify(this.calculateMetrics()),
-      dom_content_loaded: JSON.stringify(this.calculateMetrics()),
-      onload: JSON.stringify(this.calculateMetrics()),
-      first_input_delay: JSON.stringify(this.calculateMetrics()),
-      time_to_first_byte: JSON.stringify(this.calculateMetrics()),
-    };
-  }
-
-  calculateMetrics() {
-    return {
-      fast: 0.25,
-      average: 0.25,
-      slow: 0.25,
+      fast_fp: 0.25,
+      avg_fp: 0.25,
+      slow_fp: 0.25,
+      fast_fcp: 0.25,
+      avg_fcp: 0.25,
+      slow_fcp: 0.25,
+      fast_dcl: 0.25,
+      avg_dcl: 0.25,
+      slow_dcl: 0.25,
+      fast_ol: 0.25,
+      avg_ol: 0.25,
+      slow_ol: 0.25,
+      fast_fid: 0.25,
+      avg_fid: 0.25,
+      slow_fid: 0.25,
+      fast_ttfb: 0.25,
+      avg_ttfb: 0.25,
+      slow_ttfb: 0.25,
+      small_cls: 0.25,
+      medium_cls: 0.25,
+      large_cls: 0.25,
+      fast_lcp: 0.25,
+      avg_lcp: 0.25,
+      slow_lcp: 0.25
     };
   }
 }

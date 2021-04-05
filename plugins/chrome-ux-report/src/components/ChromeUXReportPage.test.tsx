@@ -41,8 +41,6 @@ describe('ChromeUXReportPage', () => {
       metrics: {
         origin_id: 1,
         period_id: 1,
-        connection_type: '4G',
-        form_factor: 'Desktop',
         first_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
         largest_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
         dom_content_loaded: { fast: 0.80, average: 0.15, slow: 0.05 },

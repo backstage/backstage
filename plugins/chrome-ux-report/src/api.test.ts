@@ -17,6 +17,7 @@ import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core';
 import { ChromeUXReportApi } from "./api";
 import nock from 'nock';
+import {getPeriod} from "./utils";
 
 describe('ChromeUXReportApi', () => {
   const mockBaseUrl = 'http://backstage:9191/api/chromeuxreport';
@@ -40,15 +41,12 @@ describe('ChromeUXReportApi', () => {
   };
   // @ts-ignore Partial<Config> not assignable to Config.
   const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
+  const defaultPeriod = getPeriod();
+
 
   it('should return metrics without period', async () => {
     // @ts-ignore Partial<Config> not assignable to Config.
     const origin = 'backstage.io';
-    const currentDate = new Date();
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    const currentYear = currentDate.getFullYear();
-    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
-
     nock(mockBaseUrl, {
         reqheaders: {
           'content-type': 'application/json'
@@ -56,7 +54,7 @@ describe('ChromeUXReportApi', () => {
       })
       .post("/metrics", {
         origin,
-        period: `${currentYear}${previousMonth}`
+        period: `${defaultPeriod}`
       })
       .reply(200, metrics);
 
@@ -66,10 +64,6 @@ describe('ChromeUXReportApi', () => {
 
   it('should return empty object without period when status code is 404', async () => {
     const origin = 'backstage.io';
-    const currentDate = new Date();
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    const currentYear = currentDate.getFullYear();
-    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
 
     nock(mockBaseUrl, {
       reqheaders: {
@@ -78,7 +72,7 @@ describe('ChromeUXReportApi', () => {
     })
       .post("/metrics", {
         origin,
-        period: `${currentYear}${previousMonth}`
+        period: `${defaultPeriod}`
       })
       .reply(404, {});
 

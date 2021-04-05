@@ -16,6 +16,7 @@
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Config } from '@backstage/config';
+import { getPeriod } from './utils';
 
 export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
   id: 'plugin.chromeuxreport.service',
@@ -56,18 +57,15 @@ export class ChromeUXReportApi implements ChromeUXReport {
   async getChromeUXMetrics(origin: string, period?: string): Promise<any> {
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/metrics`;
-    const currentDate = new Date();
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    const currentYear = currentDate.getFullYear();
-    const previousMonth = `${(currentDate.getMonth() + 1) < 10 ? '0' : ''}${(currentDate.getMonth() + 1)}`;
+    const defaultPeriod = getPeriod();
 
     const request = await fetch(`${requestUrl}`, {
       headers: { 'content-type': 'application/json' },
       method: 'POST',
       body: JSON.stringify({
         origin,
-        period: period ? period : `${currentYear}${previousMonth}`,
-      }),
+        period: period ? period : defaultPeriod
+      })
     });
 
     return await request.json();

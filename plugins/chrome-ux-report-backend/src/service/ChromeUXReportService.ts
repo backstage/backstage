@@ -87,13 +87,41 @@ export class ChromeUXReportService {
         period_id: periodId,
         connection_type: '4G',
         form_factor: 'Desktop',
-        first_paint: metrics.first_paint,
-        first_contentful_paint: metrics.first_contentful_paint,
-        largest_contentful_paint: metrics.largest_contentful_paint,
-        dom_content_loaded: metrics.dom_content_loaded,
-        onload: metrics.onload,
-        first_input_delay: metrics.first_input_delay,
-        time_to_first_byte: metrics.time_to_first_byte,
+        first_paint: {
+          fast: metrics.fast_fp,
+          average:metrics.avg_fp,
+          slow: metrics.slow_fp
+        },
+        first_contentful_paint: {
+          fast: metrics.fast_fcp,
+          average:metrics.avg_fcp,
+          slow: metrics.slow_fcp
+        },
+        largest_contentful_paint: {
+          fast: metrics.fast_lcp,
+          average:metrics.avg_lcp,
+          slow: metrics.slow_lcp
+        },
+        dom_content_loaded: {
+          fast: metrics.fast_dcl,
+          average:metrics.avg_dcl,
+          slow: metrics.slow_dcl
+        },
+        onload: {
+          fast: metrics.fast_ol,
+          average:metrics.avg_ol,
+          slow: metrics.slow_ol
+        },
+        first_input_delay: {
+          fast: metrics.fast_fid,
+          average:metrics.avg_fid,
+          slow: metrics.slow_fid
+        },
+        time_to_first_byte: {
+          fast: metrics.fast_ttfb,
+          average:metrics.avg_ttfb,
+          slow: metrics.slow_ttfb
+        },
       });
       return true; 
   }

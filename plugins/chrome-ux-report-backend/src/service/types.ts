@@ -19,7 +19,6 @@ import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 import { Database } from './database/Database';
 import { Query } from './Query';
-import { MockQuery } from '../__mocks__/Query';
 
 export interface RouterOptions {
   logger: Logger;
@@ -28,42 +27,32 @@ export interface RouterOptions {
 }
 
 export interface Options {
-    logger: Logger;
-    database: Database;
-    query: Query;
-  }
-
-export interface RateInfo {
-  longName: string;
-  shortName: string;
+  logger: Logger;
+  database: Database;
+  query: Query;
 }
 
 export type Metric = {
-  id: number;
-  sites_id: number;
-  monthsWithYear_id: number;
-  connection_type: string;
-  form_factor: string;
-  first_contentful_paint: {
-    rates: any;
-  };
-  largest_contentful_paint: {
-    rates: any;
-  };
-  dom_content_loaded: {
-    rates: any;
-  };
-  onload: {
-    rates: any;
-  };
-  first_input_delay: {
-    rates: any;
-  };
-  first_paint: {
-    rates: any;
-  };
-  time_to_first_byte: {
-    rates: any;
-  };
+  fast_fp: number;
+  avg_fp: number;
+  slow_fp: number;
+  fast_fcp: number;
+  avg_fcp: number;
+  slow_fcp: number;
+  fast_dcl: number;
+  avg_dcl: number;
+  slow_dcl: number;
+  fast_ol: number;
+  avg_ol: number;
+  slow_ol: number;
+  fast_fid: number;
+  avg_fid: number;
+  slow_fid: number;
+  fast_ttfb: number;
+  avg_ttfb: number;
+  slow_ttfb: number;
+  fast_lcp: number;
+  avg_lcp: number;
+  slow_lcp: number;
 };
 
