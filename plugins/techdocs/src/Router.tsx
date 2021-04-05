@@ -15,15 +15,9 @@
  */
 
 import React from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Route, Routes } from 'react-router-dom';
 import { MissingAnnotationEmptyState } from '@backstage/core';
-import {
-  rootRouteRef,
-  rootDocsRouteRef,
-  rootCatalogDocsRouteRef,
-} from './plugin';
 import { TechDocsHome } from './home/components/TechDocsHome';
 import { TechDocsPage } from './reader/components/TechDocsPage';
 import { EntityPageDocs } from './EntityPageDocs';
@@ -33,32 +27,23 @@ const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 export const Router = () => {
   return (
     <Routes>
-      <Route path={`/${rootRouteRef.path}`} element={<TechDocsHome />} />
-      <Route path={`/${rootDocsRouteRef.path}`} element={<TechDocsPage />} />
+      <Route path="" element={<TechDocsHome />} />
+      <Route path=":namespace/:kind/:name/*" element={<TechDocsPage />} />
     </Routes>
   );
 };
 
-type Props = {
-  /** @deprecated The entity is now grabbed from context instead */
-  entity?: Entity;
-};
-
-export const EmbeddedDocsRouter = (_props: Props) => {
+export const EmbeddedDocsRouter = () => {
   const { entity } = useEntity();
 
   const projectId = entity.metadata.annotations?.[TECHDOCS_ANNOTATION];
-
   if (!projectId) {
     return <MissingAnnotationEmptyState annotation={TECHDOCS_ANNOTATION} />;
   }
 
   return (
     <Routes>
-      <Route
-        path={`/${rootCatalogDocsRouteRef.path}`}
-        element={<EntityPageDocs entity={entity} />}
-      />
+      <Route path="*" element={<EntityPageDocs entity={entity} />} />
     </Routes>
   );
 };
