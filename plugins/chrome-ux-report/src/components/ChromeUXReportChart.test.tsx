@@ -14,42 +14,48 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ChromeUXReportPage } from './ChromeUXReportPage';
+import { ChromeUXReportChart } from './ChromeUXReportChart';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render, waitFor } from '@testing-library/react';
-import {
-  ApiProvider,
-  ApiRegistry,
-  ConfigApi,
-  configApiRef,
-  ConfigReader,
-} from '@backstage/core-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-api';
 import { ChromeUXReportApi, chromeuxReportApiRef } from '../api';
 
-describe('ChromeUXReportPage', () => {
-  const configApi: ConfigApi = new ConfigReader({
-    chromeUXReport: {
-      origins: [
-        {
-          site: 'backstage',
-          name: 'Backstage',
-        },
-      ],
-    },
-  });
-
+describe('ChromeUXReportChart', () => {
   const chromeUXReportApi: Partial<ChromeUXReportApi> = {
-    getChromeUXMetrics: async () => {},
+    getChromeUXMetrics: async () => ({
+      metrics: {
+        origin_id: 1,
+        period_id: 1,
+        fast_fp: 0.9,
+        avg_fp: 0.08,
+        slow_fp: 0.02,
+        fast_fcp: 0.9,
+        avg_fcp: 0.08,
+        slow_fcp: 0.02,
+        fast_dcl: 0.9,
+        avg_dcl: 0.08,
+        slow_dcl: 0.02,
+        fast_ol: 0.9,
+        avg_ol: 0.08,
+        slow_ol: 0.02,
+        fast_fid: 0.9,
+        avg_fid: 0.08,
+        slow_fid: 0.02,
+        fast_ttfb: 0.9,
+        avg_ttfb: 0.08,
+        slow_ttfb: 0.02,
+        fast_lcp: 0.9,
+        avg_lcp: 0.08,
+        slow_lcp: 0.02,
+      },
+    }),
   };
 
   const renderWrapped = (children: React.ReactNode) =>
     render(
       wrapInTestApp(
         <ApiProvider
-          apis={ApiRegistry.from([
-            [configApiRef, configApi],
-            [chromeuxReportApiRef, chromeUXReportApi],
-          ])}
+          apis={ApiRegistry.from([[chromeuxReportApiRef, chromeUXReportApi]])}
         >
           {children}
         </ApiProvider>,
@@ -57,20 +63,23 @@ describe('ChromeUXReportPage', () => {
     );
 
   it('render snapshot', async () => {
-    const { asFragment } = renderWrapped(<ChromeUXReportPage />);
+    const origin = 'Backstage';
+    const { asFragment } = renderWrapped(
+      <ChromeUXReportChart origin={origin} />,
+    );
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('render successfully', async () => {
-    const rendered = renderWrapped(<ChromeUXReportPage />);
-    const headerTitle = await rendered.findByText('Chrome UX Report');
-    const headerSubtitle = await rendered.findByText(
-      'Chrome UX Report is a powerful plugin for analyzing your site’s speed in a variety of different ways.',
+    const origin = 'Backstage';
+    const { container } = renderWrapped(
+      <ChromeUXReportChart origin={origin} />,
     );
+    const period = container.getElementsByClassName('period');
 
     await waitFor(async () => {
-      expect(headerTitle).toBeInTheDocument();
-      expect(headerSubtitle).toBeInTheDocument();
+      expect(period).toHaveLength(1);
+      expect(period).not.toBeNull();
     });
   });
 });

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChromeUXReportChart render snapshot 1`] = `
+<DocumentFragment>
+  <div
+    style="display: none;"
+  />
+</DocumentFragment>
+`;

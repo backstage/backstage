@@ -1846,6 +1846,23 @@
   dependencies:
     lodash "^4.17.15"
 
+"@backstage/core-api@^0.2.15":
+  version "0.2.15"
+  resolved "https://registry.npmjs.org/@backstage/core-api/-/core-api-0.2.15.tgz#24c3e4b1fe0bdee36de26c50b8757f41bb266109"
+  integrity sha512-OQTmvCGM3hkaLV0+JPF85dZk/X1SXoIFkXZi9pO/DzBPZ1Psuptia9xNXrhnEeYJaCazlCnOCTXS/kdoT1zBVg==
+  dependencies:
+    "@backstage/config" "^0.1.4"
+    "@backstage/theme" "^0.2.5"
+    "@material-ui/core" "^4.11.0"
+    "@material-ui/icons" "^4.9.1"
+    "@types/prop-types" "^15.7.3"
+    "@types/react" "^16.9"
+    prop-types "^15.7.2"
+    react "^16.12.0"
+    react-router-dom "6.0.0-beta.0"
+    react-use "^15.3.3"
+    zen-observable "^0.8.15"
+
 "@backstage/core@^0.3.0":
   version "0.7.0"
   dependencies:
@@ -2014,6 +2031,13 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.3"
     swr "^0.3.0"
+
+"@backstage/theme@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.npmjs.org/@backstage/theme/-/theme-0.2.5.tgz#657e2ceaaede1b4dbe8abeafa6e168671a27b6da"
+  integrity sha512-GT7Ok9QSiZWXkxka+vcpweMrOg1lgDkRRjh7aSU97Mcoiq77szdO45o0hZtQChz8qay60vCRlu57ADvUn4QxZw==
+  dependencies:
+    "@material-ui/core" "^4.11.0"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"

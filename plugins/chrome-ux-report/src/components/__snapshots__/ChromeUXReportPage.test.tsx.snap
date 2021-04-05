@@ -1,0 +1,90 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChromeUXReportPage render snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-root-1"
+  >
+    <header
+      class="makeStyles-header-2"
+    >
+      <div
+        class="makeStyles-leftItemsBox-3"
+      >
+        <h4
+          class="MuiTypography-root-11 makeStyles-title-5 MuiTypography-h4-19"
+        >
+          Chrome UX Report
+        </h4>
+        <h6
+          class="MuiTypography-root-11 makeStyles-subtitle-6 MuiTypography-subtitle2-23"
+        >
+          Chrome UX Report is a powerful plugin for analyzing your site’s speed in a variety of different ways.
+        </h6>
+      </div>
+      <div
+        class="makeStyles-rightItemsBox-4"
+      />
+    </header>
+    <article
+      class="makeStyles-root-41"
+    >
+      <div
+        class="makeStyles-root-44"
+      >
+        <header
+          class="MuiPaper-root-58 MuiAppBar-root-47 MuiAppBar-positionStatic-51 MuiAppBar-colorPrimary-54 makeStyles-appbar-46 MuiPaper-elevation4-65"
+        >
+          <div>
+            <div
+              class="MuiTabs-root-89 makeStyles-root-88"
+            >
+              <div
+                class="MuiTabs-scroller-94 MuiTabs-fixed-95"
+                style="overflow: hidden;"
+              >
+                <div
+                  class="MuiTabs-flexContainer-91 makeStyles-flexContainer-87"
+                  role="tablist"
+                >
+                  <button
+                    aria-selected="true"
+                    class="MuiButtonBase-root-110 MuiTab-root-102 MuiTab-textColorInherit-104 makeStyles-root-100 makeStyles-root-101 Mui-selected"
+                    role="tab"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiTab-wrapper-109"
+                    >
+                      Backstage
+                    </span>
+                  </button>
+                </div>
+                <span
+                  class="PrivateTabIndicator-root-111 PrivateTabIndicator-colorSecondary-113 MuiTabs-indicator-99 makeStyles-indicator-86"
+                  style="left: 0px; width: 0px;"
+                >
+                  <span />
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div
+          aria-labelledby="scrollable-auto-tab-0"
+          role="tabpanel"
+        >
+          <div
+            class="MuiBox-root-115 MuiBox-root-116"
+          >
+            <div
+              style="display: none;"
+            />
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</DocumentFragment>
+`;

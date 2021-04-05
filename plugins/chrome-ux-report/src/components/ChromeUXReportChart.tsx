@@ -19,7 +19,7 @@ import { chromeuxReportApiRef } from '../api';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import { Chart } from 'react-google-charts';
-import { getPeriod } from '../utils';
+import { getPeriod, getRoundOfMetric } from '../utils';
 
 export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
   const chromeUXReportApi = useApi(chromeuxReportApiRef);
@@ -62,6 +62,7 @@ export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
   return (
     <div>
       <div
+        className="period"
         style={{
           display: 'flex',
           position: 'absolute',
@@ -84,13 +85,48 @@ export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
         loader={<Progress />}
         data={[
           ['METRICS', 'FAST', 'AVERAGE', 'SLOW'],
-          ['First Contentful Paint', fast_fcp, avg_fcp, slow_fcp],
-          ['Largest Contentful Paint', fast_lcp, avg_lcp, slow_lcp],
-          ['Dom Content Loaded', fast_dcl, avg_dcl, slow_dcl],
-          ['First Input Delay', fast_fid, avg_fid, slow_fid],
-          ['Onload', fast_ol, avg_ol, slow_ol],
-          ['First Paint', fast_fp, avg_fp, slow_fp],
-          ['Time To First Byte', fast_ttfb, avg_ttfb, slow_ttfb],
+          [
+            'First Contentful Paint',
+            getRoundOfMetric(fast_fcp),
+            getRoundOfMetric(avg_fcp),
+            getRoundOfMetric(slow_fcp),
+          ],
+          [
+            'Largest Contentful Paint',
+            getRoundOfMetric(fast_lcp),
+            getRoundOfMetric(avg_lcp),
+            getRoundOfMetric(slow_lcp),
+          ],
+          [
+            'Dom Content Loaded',
+            getRoundOfMetric(fast_dcl),
+            getRoundOfMetric(avg_dcl),
+            getRoundOfMetric(slow_dcl),
+          ],
+          [
+            'First Input Delay',
+            getRoundOfMetric(fast_fid),
+            getRoundOfMetric(avg_fid),
+            getRoundOfMetric(slow_fid),
+          ],
+          [
+            'Onload',
+            getRoundOfMetric(fast_ol),
+            getRoundOfMetric(avg_ol),
+            getRoundOfMetric(slow_ol),
+          ],
+          [
+            'First Paint',
+            getRoundOfMetric(fast_fp),
+            getRoundOfMetric(avg_fp),
+            getRoundOfMetric(slow_fp),
+          ],
+          [
+            'Time To First Byte',
+            getRoundOfMetric(fast_ttfb),
+            getRoundOfMetric(avg_ttfb),
+            getRoundOfMetric(slow_ttfb),
+          ],
         ]}
         options={{
           isStacked: true,
@@ -103,6 +139,11 @@ export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
             textStyle: {
               color: '#CCCCCC',
               bold: true,
+            },
+            viewWindowMode: 'explicit',
+            viewWindow: {
+              min: 0,
+              max: 100,
             },
           },
           animation: {
