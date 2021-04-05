@@ -43,6 +43,7 @@ OAuth
 Okta
 Onboarding
 Platformize
+Podman
 Preprarer
 Protobuf
 Proxying
@@ -152,6 +153,7 @@ lunr
 magiclink
 mailto
 maintainership
+makefile
 md
 microsite
 middleware
@@ -257,3 +259,4 @@ www
 xyz
 yaml
 zoomable
+zsh
