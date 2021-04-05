@@ -68,7 +68,7 @@ export class Query {
       large_cls: 0.25,
       fast_lcp: 0.25,
       avg_lcp: 0.25,
-      slow_lcp: 0.25
+      slow_lcp: 0.25,
     };
   }
 }

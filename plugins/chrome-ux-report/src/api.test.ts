@@ -15,9 +15,9 @@
  */
 import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core';
-import { ChromeUXReportApi } from "./api";
+import { ChromeUXReportApi } from './api';
 import nock from 'nock';
-import {getPeriod} from "./utils";
+import { getPeriod } from './utils';
 
 describe('ChromeUXReportApi', () => {
   const mockBaseUrl = 'http://backstage:9191/api/chromeuxreport';
@@ -30,31 +30,30 @@ describe('ChromeUXReportApi', () => {
     period_id: 1,
     connection_type: '4G',
     form_factor: 'Desktop',
-    first_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
-    largest_contentful_paint: { fast: 0.80, average: 0.15, slow: 0.05 },
-    dom_content_loaded: { fast: 0.80, average: 0.15, slow: 0.05 },
-    onload: { fast: 0.80, average: 0.15, slow: 0.05 },
-    first_input: { fast: 0.80, average: 0.15, slow: 0.05 },
-    layout_instability: { fast: 0.80, average: 0.15, slow: 0.05 },
-    notifications: { fast: 0.80, average: 0.15, slow: 0.05 },
-    time_to_first_byte: { fast: 0.80, average: 0.15, slow: 0.05 },
+    first_contentful_paint: { fast: 0.8, average: 0.15, slow: 0.05 },
+    largest_contentful_paint: { fast: 0.8, average: 0.15, slow: 0.05 },
+    dom_content_loaded: { fast: 0.8, average: 0.15, slow: 0.05 },
+    onload: { fast: 0.8, average: 0.15, slow: 0.05 },
+    first_input: { fast: 0.8, average: 0.15, slow: 0.05 },
+    layout_instability: { fast: 0.8, average: 0.15, slow: 0.05 },
+    notifications: { fast: 0.8, average: 0.15, slow: 0.05 },
+    time_to_first_byte: { fast: 0.8, average: 0.15, slow: 0.05 },
   };
   // @ts-ignore Partial<Config> not assignable to Config.
   const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
   const defaultPeriod = getPeriod();
 
-
   it('should return metrics without period', async () => {
     // @ts-ignore Partial<Config> not assignable to Config.
     const origin = 'backstage.io';
     nock(mockBaseUrl, {
-        reqheaders: {
-          'content-type': 'application/json'
-        }
-      })
-      .post("/metrics", {
+      reqheaders: {
+        'content-type': 'application/json',
+      },
+    })
+      .post('/metrics', {
         origin,
-        period: `${defaultPeriod}`
+        period: `${defaultPeriod}`,
       })
       .reply(200, metrics);
 
@@ -67,12 +66,12 @@ describe('ChromeUXReportApi', () => {
 
     nock(mockBaseUrl, {
       reqheaders: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
-      .post("/metrics", {
+      .post('/metrics', {
         origin,
-        period: `${defaultPeriod}`
+        period: `${defaultPeriod}`,
       })
       .reply(404, {});
 
@@ -86,12 +85,12 @@ describe('ChromeUXReportApi', () => {
 
     nock(mockBaseUrl, {
       reqheaders: {
-        'content-type': 'application/json'
-      }
-     })
-      .post("/metrics", {
+        'content-type': 'application/json',
+      },
+    })
+      .post('/metrics', {
         origin,
-        period
+        period,
       })
       .reply(200, metrics);
 
@@ -105,12 +104,12 @@ describe('ChromeUXReportApi', () => {
 
     nock(mockBaseUrl, {
       reqheaders: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
-      .post("/metrics", {
+      .post('/metrics', {
         origin,
-        period
+        period,
       })
       .reply(404, {});
 

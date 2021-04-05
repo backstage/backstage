@@ -48,8 +48,7 @@ export const chromeUxReportPlugin = createPlugin({
 
 export const ChromeUxReportPage = chromeUxReportPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components').then(m => m.ChromeUXReportPage),
+    component: () => import('./components').then(m => m.ChromeUXReportPage),
     mountPoint: rootRouteRef,
   }),
 );

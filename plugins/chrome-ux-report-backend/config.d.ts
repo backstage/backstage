@@ -33,8 +33,8 @@ export interface Config {
      * origins - The websites whose metrics are requested
      */
     origins: {
-      site: string
-      name: string
+      site: string;
+      name: string;
     }[];
   };
 }

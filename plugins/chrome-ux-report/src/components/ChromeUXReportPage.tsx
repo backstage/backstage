@@ -20,7 +20,7 @@ import {
   Tabs,
   useApi,
   configApiRef,
-  Header
+  Header,
 } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { ChromeUXReportChart } from './ChromeUXReportChart';
@@ -29,12 +29,10 @@ export const ChromeUXReportPage = () => {
   const configApi = useApi(configApiRef);
   const origins = configApi.getConfigArray('chromeUXReport.origins');
 
-  const tabs = origins.map(
-    (origin: Config) => ({
-      label: origin.getString("name"),
-      content: <ChromeUXReportChart origin={origin.getString("site")} />,
-    }),
-  );
+  const tabs = origins.map((origin: Config) => ({
+    label: origin.getString('name'),
+    content: <ChromeUXReportChart origin={origin.getString('site')} />,
+  }));
 
   return (
     <Page themeId="tool">

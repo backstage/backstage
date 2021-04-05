@@ -20,7 +20,8 @@ import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
 import Knex from 'knex';
 import { Query } from './Query';
-jest.mock("./Query", () => require("../__mocks__/Query"));
+
+jest.mock('./Query');
 
 function createDB() {
   const knex = Knex({

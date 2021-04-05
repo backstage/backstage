@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, PluginDatabaseManager, SingleConnectionDatabaseManager } from '@backstage/backend-common';
+import {
+  getVoidLogger,
+  PluginDatabaseManager,
+  SingleConnectionDatabaseManager,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/core';
 import express from 'express';
 import request from 'supertest';

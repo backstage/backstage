@@ -64,8 +64,8 @@ export class ChromeUXReportApi implements ChromeUXReport {
       method: 'POST',
       body: JSON.stringify({
         origin,
-        period: period ? period : defaultPeriod
-      })
+        period: period ? period : defaultPeriod,
+      }),
     });
 
     return await request.json();
