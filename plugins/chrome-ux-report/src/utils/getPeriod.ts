@@ -15,15 +15,14 @@
  */
 
 export function getPeriod(): string {
-  const currentPeriod = new Date();
-  const currentDate = currentPeriod.getDate();
-  const currentYear = currentPeriod.getFullYear();
-  let month = `${(currentPeriod.getMonth() + 1) < 10 ? '0' : ''}${(currentPeriod.getMonth() + 1)}`;
+  const MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
+  const NOW = new Date();
+  const period = new Date(NOW.getTime() - 45 * MILLIS_PER_DAY);
 
-  if (currentDate < 15) {
-    currentPeriod.setMonth(currentPeriod.getMonth() - 2);
-    month = `${(currentPeriod.getMonth() + 1) < 10 ? '0' : ''}${(currentPeriod.getMonth() + 1)}`;
-  }
+  const month = `${period.getMonth() + 1 < 10 ? '0' : ''}${
+    period.getMonth() + 1
+  }`;
+  const year = period.getFullYear();
 
-  return `${currentYear}${month}`;
+  return `${year}${month}`;
 }
