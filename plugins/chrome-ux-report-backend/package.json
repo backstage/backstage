@@ -33,13 +33,13 @@
         "pg-mem": "1.8.0",
         "sinon": "^9.2.4",
         "winston": "^3.2.1",
-        "yn": "^4.0.0"
+        "yn": "^4.0.0",
+        "@types/supertest": "^2.0.8",
+        "supertest": "^4.0.2"
     },
     "devDependencies": {
         "@backstage/cli": "^0.6.3",
-        "@types/supertest": "^2.0.8",
-        "msw": "^0.21.2",
-        "supertest": "^4.0.2"
+        "msw": "^0.21.2"
     },
     "files": [
         "dist",

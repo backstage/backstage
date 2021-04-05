@@ -14,20 +14,40 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger, PluginDatabaseManager, SingleConnectionDatabaseManager } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/core';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+
+function createDatabase(): PluginDatabaseManager {
+  return SingleConnectionDatabaseManager.fromConfig(
+    new ConfigReader({
+      backend: {
+        database: {
+          client: 'sqlite3',
+          connection: ':memory:',
+        },
+      },
+    }),
+  ).forPlugin('chrome-ux-report');
+}
+
+const workDirConfig = (path: string) => ({
+  backend: {
+    workingDirectory: path,
+  },
+});
 
 describe('createRouter', () => {
   let app: express.Express;
 
   beforeAll(async () => {
     const router = await createRouter({
-      database: {} as any,
+      database: createDatabase(),
       logger: getVoidLogger(),
-      config: {} as any
+      config: new ConfigReader(workDirConfig('/path')),
     });
     app = express().use(router);
   });

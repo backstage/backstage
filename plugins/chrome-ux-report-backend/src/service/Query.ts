@@ -37,6 +37,10 @@ export class Query {
   async queryUXMetrics(origin: string, period: string) {
     const client = createBigQueryClient(this.config);
 
+    if (!client) {
+      throw Error('Cannot create BigQuery Client.');
+    }
+
     const query = `SELECT *
       FROM
       \`chrome-ux-report.materialized.metrics_summary\`

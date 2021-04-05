@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
 import Knex from 'knex';
-import { MockQuery } from '../__mocks__/Query';
+import { Query } from './Query';
+jest.mock("./Query", () => require("../__mocks__/Query"));
 
 function createDB() {
   const knex = Knex({
@@ -47,7 +47,7 @@ const config: Config = new ConfigReader({
   },
 });
 
-const queryClient = new MockQuery(config);
+const queryClient = new Query(config);
 let databaseClient: Database;
 let chromeUXReportService: ChromeUXReportService;
 
@@ -142,19 +142,6 @@ describe('Chrome UX Report Service', () => {
   });
 
   it('successfully get UXMetrics from big query and adds to database when database has not cache', async () => {
-    const databaseClient = await Database.create({
-      database: createDB(),
-      logger: getVoidLogger(),
-    });
-
-    const chromeUXReportService: ChromeUXReportService = new ChromeUXReportService(
-      {
-        logger: getVoidLogger(),
-        database: databaseClient,
-        query: queryClient,
-      },
-    );
-
     const metrics = await chromeUXReportService.getUXMetrics(
       config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
       '202009',

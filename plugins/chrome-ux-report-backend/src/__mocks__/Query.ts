@@ -27,7 +27,7 @@ function createBigQueryClient(config: Config) {
   return true;
 }
 
-export class MockQuery {
+export class Query {
   private readonly config: Config;
 
   constructor(config: Config) {
