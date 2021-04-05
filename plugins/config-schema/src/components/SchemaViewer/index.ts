@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-import { createApiRef, Observable } from '@backstage/core';
-import { Schema } from 'jsonschema';
-
-export interface ConfigSchemaResult {
-  schema?: Schema;
-}
-
-export interface ConfigSchemaApi {
-  schema$(): Observable<ConfigSchemaResult>;
-}
-
-export const configSchemaApiRef = createApiRef<ConfigSchemaApi>({
-  id: 'plugin.config-schema',
-});
+export { SchemaViewer } from './SchemaViewer';

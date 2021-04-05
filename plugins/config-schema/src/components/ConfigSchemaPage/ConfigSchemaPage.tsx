@@ -22,17 +22,17 @@ import {
   ContentHeader,
   HeaderLabel,
   SupportButton,
-  CodeSnippet,
   useApi,
 } from '@backstage/core';
 import { useObservable } from 'react-use';
 import { configSchemaApiRef } from '../../api';
+import { SchemaViewer } from '../SchemaViewer';
 
 export const ConfigSchemaPage = () => {
   const configSchemaApi = useApi(configSchemaApiRef);
   const schema = useObservable(
     useMemo(() => configSchemaApi.schema$(), [configSchemaApi]),
-  );
+  )?.schema;
 
   return (
     <Page themeId="tool">
@@ -46,14 +46,7 @@ export const ConfigSchemaPage = () => {
         </ContentHeader>
         <Grid container spacing={3} direction="column">
           <Grid item>
-            {schema ? (
-              <CodeSnippet
-                language="json"
-                text={JSON.stringify(schema, null, 2)}
-              />
-            ) : (
-              'No schema available'
-            )}
+            {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
           </Grid>
         </Grid>
       </Content>

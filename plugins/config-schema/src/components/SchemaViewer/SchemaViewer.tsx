@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { createApiRef, Observable } from '@backstage/core';
+import React from 'react';
+import { CodeSnippet } from '@backstage/core';
 import { Schema } from 'jsonschema';
 
-export interface ConfigSchemaResult {
-  schema?: Schema;
+export interface SchemaViewerProps {
+  schema: Schema;
 }
 
-export interface ConfigSchemaApi {
-  schema$(): Observable<ConfigSchemaResult>;
-}
-
-export const configSchemaApiRef = createApiRef<ConfigSchemaApi>({
-  id: 'plugin.config-schema',
-});
+export const SchemaViewer = ({ schema }: SchemaViewerProps) => {
+  return <CodeSnippet language="json" text={JSON.stringify(schema, null, 2)} />;
+};
