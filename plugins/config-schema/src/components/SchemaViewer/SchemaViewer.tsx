@@ -168,7 +168,7 @@ export function VisibilityView({ schema }: { schema: Schema }) {
   return null;
 }
 
-const usePropertyTitleStyles = makeStyles(theme => ({
+const useChildViewStyles = makeStyles(theme => ({
   title: {
     marginBottom: 0,
   },
@@ -179,18 +179,20 @@ const usePropertyTitleStyles = makeStyles(theme => ({
   },
 }));
 
-export function PropertyTitle({
+export function ChildView({
   path,
   depth,
   schema,
   required,
+  lastChild,
 }: {
   path: string;
   depth: number;
   schema?: Schema;
   required?: boolean;
+  lastChild?: boolean;
 }) {
-  const classes = usePropertyTitleStyles();
+  const classes = useChildViewStyles();
   const chips = new Array<JSX.Element>();
   const chipProps = { size: 'small' as const, classes: { root: classes.chip } };
 
@@ -212,20 +214,28 @@ export function PropertyTitle({
   }
 
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      marginBottom={2}
-      alignItems="center"
-    >
-      <Typography
-        variant={titleVariant(depth)}
-        classes={{ root: classes.title }}
-      >
-        {path}
-      </Typography>
-      {chips.length > 0 && <Box marginLeft={1} />}
-      {chips}
+    <Box paddingBottom={lastChild ? 4 : 8} display="flex" flexDirection="row">
+      <Divider orientation="vertical" flexItem />
+      <Box paddingLeft={2} flex={1}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          marginBottom={2}
+          alignItems="center"
+        >
+          <Typography
+            variant={titleVariant(depth)}
+            classes={{ root: classes.title }}
+          >
+            {path}
+          </Typography>
+          {chips.length > 0 && <Box marginLeft={1} />}
+          {chips}
+        </Box>
+        {schema && (
+          <SchemaView path={path} depth={depth} schema={schema as Schema} />
+        )}
+      </Box>
     </Box>
   );
 }
@@ -246,23 +256,12 @@ export function ArrayView({ path, depth, schema }: SchemaViewProps) {
         <MetadataView schema={schema} />
       </Box>
       <Typography variant="overline">Items</Typography>
-      <Box paddingBottom={2} display="flex" flexDirection="row">
-        <Divider orientation="vertical" flexItem />
-        <Box paddingLeft={2} flex={1}>
-          <PropertyTitle
-            path={itemPath}
-            depth={itemDepth}
-            schema={itemSchema as Schema | undefined}
-          />
-          {itemSchema && (
-            <SchemaView
-              path={itemPath}
-              depth={itemDepth}
-              schema={itemSchema as Schema}
-            />
-          )}
-        </Box>
-      </Box>
+      <ChildView
+        lastChild
+        path={itemPath}
+        depth={itemDepth}
+        schema={itemSchema as Schema | undefined}
+      />
     </>
   );
 }
@@ -284,42 +283,77 @@ export function ObjectView({ path, depth, schema }: SchemaViewProps) {
       {properties.length > 0 && (
         <>
           {depth > 0 && <Typography variant="overline">Properties</Typography>}
-          {properties.map(([name, propSchema], index) => {
-            const propDepth = depth + 1;
-            const propPath = path ? `${path}.${name}` : name;
-
-            return (
-              <Box
-                paddingBottom={index < properties.length - 1 ? 6 : 2}
-                display="flex"
-                flexDirection="row"
-              >
-                <Divider orientation="vertical" flexItem />
-                <Box paddingLeft={2} flex={1}>
-                  <PropertyTitle
-                    path={propPath}
-                    depth={propDepth}
-                    schema={propSchema}
-                    required={isRequired(name, schema.required)}
-                  />
-                  <SchemaView
-                    path={propPath}
-                    depth={propDepth}
-                    schema={propSchema}
-                  />
-                </Box>
-              </Box>
-            );
-          })}
+          {properties.map(([name, propSchema], index) => (
+            <ChildView
+              path={path ? `${path}.${name}` : name}
+              depth={depth + 1}
+              schema={propSchema}
+              lastChild={index === properties.length - 1}
+              required={isRequired(name, schema.required)}
+            />
+          ))}
         </>
       )}
     </>
   );
 }
 
+export function MatchView({
+  path,
+  depth,
+  schema,
+  label,
+}: {
+  path: string;
+  depth: number;
+  schema: Schema[];
+  label: string;
+}) {
+  return (
+    <>
+      <Typography variant="overline">{label}</Typography>
+      {schema.map((optionSchema, index) => (
+        <ChildView
+          path={`${path}/${index}`}
+          depth={depth + 1}
+          schema={optionSchema}
+          lastChild={index === schema.length - 1}
+        />
+      ))}
+    </>
+  );
+}
+
 export function SchemaView(props: SchemaViewProps) {
-  // TODO(Rugvip): allOf, anyOf, oneOf
-  switch (props.schema.type) {
+  const { schema } = props;
+  if (schema.anyOf) {
+    return (
+      <MatchView
+        {...props}
+        schema={schema.anyOf}
+        label="Any of the following"
+      />
+    );
+  }
+  if (schema.oneOf) {
+    return (
+      <MatchView
+        {...props}
+        schema={schema.oneOf}
+        label="One of the following"
+      />
+    );
+  }
+  if (schema.allOf) {
+    return (
+      <MatchView
+        {...props}
+        schema={schema.allOf}
+        label="All of the following"
+      />
+    );
+  }
+  switch (schema.type) {
     case 'array':
       return <ArrayView {...props} />;
     case 'object':
