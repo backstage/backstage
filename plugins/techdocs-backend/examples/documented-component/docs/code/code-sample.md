@@ -15,7 +15,7 @@ const DefaultEntityPage = ({ entity }: { entity: Entity }) => (
     <EntityPageLayout.Content
       path="/docs/*"
       title="Docs"
-      element={<DocsRouter entity={entity} />}
+      element={<DocsRouter />}
     />
   </EntityPageLayout>
 );

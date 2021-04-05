@@ -46,17 +46,14 @@ import {
 } from './api';
 
 export const rootRouteRef = createRouteRef({
-  path: '',
   title: 'TechDocs Landing Page',
 });
 
 export const rootDocsRouteRef = createRouteRef({
-  path: ':namespace/:kind/:name/*',
   title: 'Docs',
 });
 
 export const rootCatalogDocsRouteRef = createRouteRef({
-  path: '*',
   title: 'Docs',
 });
 
