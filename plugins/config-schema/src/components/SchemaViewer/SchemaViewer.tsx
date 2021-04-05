@@ -19,6 +19,7 @@ import {
   Box,
   Chip,
   Divider,
+  makeStyles,
   Paper,
   Table,
   TableBody,
@@ -46,8 +47,8 @@ export function MetadataViewRow({ label, text, data }: MetadataViewRowProps) {
   }
   return (
     <TableRow>
-      <TableCell variant="head" style={{ width: 160 }}>
-        <Typography variant="body1" noWrap>
+      <TableCell style={{ width: 160 }}>
+        <Typography variant="body1" noWrap style={{ fontWeight: 900 }}>
           {label}
         </Typography>
       </TableCell>
@@ -167,6 +168,68 @@ export function VisibilityView({ schema }: { schema: Schema }) {
   return null;
 }
 
+const usePropertyTitleStyles = makeStyles(theme => ({
+  title: {
+    marginBottom: 0,
+  },
+  chip: {
+    marginLeft: theme.spacing(1),
+    marginRight: 0,
+    marginBottom: 0,
+  },
+}));
+
+export function PropertyTitle({
+  path,
+  depth,
+  schema,
+  required,
+}: {
+  path: string;
+  depth: number;
+  schema?: Schema;
+  required?: boolean;
+}) {
+  const classes = usePropertyTitleStyles();
+  const chips = new Array<JSX.Element>();
+  const chipProps = { size: 'small' as const, classes: { root: classes.chip } };
+
+  if (required) {
+    chips.push(
+      <Chip label="required" color="default" key="required" {...chipProps} />,
+    );
+  }
+
+  const visibility = (schema as { visibility?: string })?.visibility;
+  if (visibility === 'frontend') {
+    chips.push(
+      <Chip label="frontend" color="primary" key="visibility" {...chipProps} />,
+    );
+  } else if (visibility === 'secret') {
+    chips.push(
+      <Chip label="secret" color="secondary" key="visibility" {...chipProps} />,
+    );
+  }
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="row"
+      marginBottom={2}
+      alignItems="center"
+    >
+      <Typography
+        variant={titleVariant(depth)}
+        classes={{ root: classes.title }}
+      >
+        {path}
+      </Typography>
+      {chips.length > 0 && <Box marginLeft={1} />}
+      {chips}
+    </Box>
+  );
+}
+
 export function ArrayView({ path, depth, schema }: SchemaViewProps) {
   const itemDepth = depth + 1;
   const itemPath = path ? `${path}[]` : '[]';
@@ -186,11 +249,11 @@ export function ArrayView({ path, depth, schema }: SchemaViewProps) {
       <Box paddingBottom={2} display="flex" flexDirection="row">
         <Divider orientation="vertical" flexItem />
         <Box paddingLeft={2} flex={1}>
-          <Box marginBottom={2}>
-            <Typography variant={titleVariant(itemDepth)}>
-              {itemPath}
-            </Typography>
-          </Box>
+          <PropertyTitle
+            path={itemPath}
+            depth={itemDepth}
+            schema={itemSchema as Schema | undefined}
+          />
           {itemSchema && (
             <SchemaView
               path={itemPath}
@@ -233,19 +296,12 @@ export function ObjectView({ path, depth, schema }: SchemaViewProps) {
               >
                 <Divider orientation="vertical" flexItem />
                 <Box paddingLeft={2} flex={1}>
-                  <Box display="flex" flexDirection="row" marginBottom={2}>
-                    <Typography variant={titleVariant(propDepth)}>
-                      {propPath}
-                    </Typography>
-                    {isRequired(name, schema.required) && (
-                      <Box marginLeft={1}>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          required
-                        </Typography>
-                      </Box>
-                    )}
-                    <VisibilityView schema={propSchema} />
-                  </Box>
+                  <PropertyTitle
+                    path={propPath}
+                    depth={propDepth}
+                    schema={propSchema}
+                    required={isRequired(name, schema.required)}
+                  />
                   <SchemaView
                     path={propPath}
                     depth={propDepth}
