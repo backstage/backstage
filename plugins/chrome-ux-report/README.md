@@ -49,7 +49,11 @@ chromeUXReport:
 Your Backstage app is now ready to use Google Chrome UX Report Plugin! When you start the
 backend of the app, you should be able to see
 `'Plugin Chrome UX Report has started'`
-in the logs.
+in the logs. And then you can see these screens.
+
+| List of audits                                                                 | Info about metric                                                                                   | Info about period                                                                                  |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| ![Screen shot of the main Lighthouse plugin page](images/chrome-ux-report.png) | ![Screen shot of the resulting audit in the Lighthouse plugin](images/chrome-ux-report-metrics.png) | ![Screen shot of the resulting audit in the Lighthouse plugin](images/chrome-ux-report-period.png) |
 
 ## UXMetrics
 

@@ -23,7 +23,7 @@ import {
   ConfigApi,
   configApiRef,
   ConfigReader,
-} from '@backstage/core-api';
+} from '@backstage/core';
 import { ChromeUXReportApi, chromeuxReportApiRef } from '../api';
 
 describe('ChromeUXReportPage', () => {

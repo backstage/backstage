@@ -17,7 +17,7 @@ import React from 'react';
 import { ChromeUXReportChart } from './ChromeUXReportChart';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render, waitFor } from '@testing-library/react';
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { ChromeUXReportApi, chromeuxReportApiRef } from '../api';
 
 describe('ChromeUXReportChart', () => {

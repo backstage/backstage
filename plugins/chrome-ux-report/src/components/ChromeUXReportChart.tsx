@@ -19,7 +19,8 @@ import { chromeuxReportApiRef } from '../api';
 import { useAsync } from 'react-use';
 import Alert from '@material-ui/lab/Alert';
 import { Chart } from 'react-google-charts';
-import { getPeriod, getRoundOfMetric } from '../utils';
+import { getRoundOfMetric } from '../utils';
+import { ChromeUXReportPeriod } from './ChromeUXReportPeriod';
 
 export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
   const chromeUXReportApi = useApi(chromeuxReportApiRef);
@@ -61,23 +62,7 @@ export const ChromeUXReportChart = ({ origin }: { origin: string }) => {
 
   return (
     <div>
-      <div
-        className="period"
-        style={{
-          display: 'flex',
-          position: 'absolute',
-          zIndex: 99,
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '95%',
-          marginTop: '30px',
-          fontSize: '25px',
-          fontWeight: 'bold',
-          color: 'grey',
-        }}
-      >
-        {getPeriod()}
-      </div>
+      <ChromeUXReportPeriod />
       <Chart
         width="100%"
         height="70vh"

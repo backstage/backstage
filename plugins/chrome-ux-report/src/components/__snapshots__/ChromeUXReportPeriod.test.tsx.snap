@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChromeUXReportPeriod render snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="period"
+    style="display: flex; position: absolute; z-index: 99; align-items: center; justify-content: center; width: 95%; margin-top: 30px; font-size: 25px; font-weight: bold; color: grey;"
+    title="The CrUX dataset on BigQuery is updated on the second Tuesday of every month. Each release is numbered according to the year and calendar month of the data collection period, for example 201912 corresponds to the UX data collected during December 2019 and would be released on the second Tuesday of January 2020 after the data collection period has ended."
+  >
+    202102
+  </div>
+</DocumentFragment>
+`;
