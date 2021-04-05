@@ -1,6 +1,6 @@
 # Using AWS Application Load Balancer with Azure Active Directory to authenticate requests
 
-Backstage allows to offload the responsibility of authenticating users to AWS Application Loadbalancer (**ALB**), leveraging the authentication support on ALB.
+Backstage allows to offload the responsibility of authenticating users to AWS Application Load Balancer (**ALB**), leveraging the authentication support on ALB.
 This tutorial shows how to use authentication on an ALB sitting in front of Backstage.
 Azure Active Directory (**AAD**) is used as identity provider but any identity provider supporting OpenID Connect (OIDC) can be used.
 
@@ -170,10 +170,6 @@ Replace `{TENANT_ID}` with the value of `Directory (tenant) ID` of the AAD App a
 
 Once it's deployed, after going through the AAD authentication flow, Backstage should display the AAD user details.
 
-Special thanks to [@backjo][gh-backjo] for implementing the `auth-backend` provider for AWS ALB on [#4047][pr-4047]
-
 <!-- links -->
 
 [monorepo-app-setup-with-auth-ms]: https://backstage.io/docs/tutorials/quickstart-app-auth#the-auth-configuration
-[gh-backjo]: https://github.com/backjo
-[pr-4047]: https://github.com/backstage/backstage/pull/4047
