@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+
 import { createDevApp } from '@backstage/dev-utils';
-import { configSchemaPlugin, ConfigSchemaPage } from '../src/plugin';
+import React from 'react';
+import Observable from 'zen-observable';
+import { configSchemaApiRef } from '../src/api';
+import { ConfigSchemaResult } from '../src/api/types';
+import { ConfigSchemaPage, configSchemaPlugin } from '../src/plugin';
+import exampleSchema from './example-schema.json';
 
 createDevApp()
   .registerPlugin(configSchemaPlugin)
+  .registerApi({
+    api: configSchemaApiRef,
+    deps: {},
+    factory: () => ({
+      schema$: () =>
+        new Observable<ConfigSchemaResult>(sub =>
+          sub.next({ schema: exampleSchema }),
+        ),
+    }),
+  })
   .addPage({
     element: <ConfigSchemaPage />,
     title: 'Root Page',
