@@ -27,7 +27,7 @@ export const configSchemaPlugin = createPlugin({
 export const ConfigSchemaPage = configSchemaPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/ConfigSchemaPage').then(m => m.ConfigSchemaPage),
     mountPoint: rootRouteRef,
   }),
 );
