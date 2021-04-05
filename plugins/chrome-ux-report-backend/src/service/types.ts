@@ -54,5 +54,49 @@ export type Metric = {
   fast_lcp: number;
   avg_lcp: number;
   slow_lcp: number;
+  small_cls: number;
+  medium_cls: number;
+  large_cls: number;
 };
 
+export type OriginsRow = {
+  id: number;
+  origin: string;
+};
+
+export type PeriodRow = {
+  id: number;
+  period: string;
+};
+
+export type UXMetricsRow = {
+  id: number;
+  origin_id: number;
+  period_id: number;
+  connection_type: string;
+  form_factor: string;
+  fast_fp: number;
+  avg_fp: number;
+  slow_fp: number;
+  fast_fcp: number;
+  avg_fcp: number;
+  slow_fcp: number;
+  fast_dcl: number;
+  avg_dcl: number;
+  slow_dcl: number;
+  fast_ol: number;
+  avg_ol: number;
+  slow_ol: number;
+  fast_fid: number;
+  avg_fid: number;
+  slow_fid: number;
+  fast_ttfb: number;
+  avg_ttfb: number;
+  slow_ttfb: number;
+  small_cls: number;
+  medium_cls: number;
+  large_cls: number;
+  fast_lcp: number;
+  avg_lcp: number;
+  slow_lcp: number;
+};

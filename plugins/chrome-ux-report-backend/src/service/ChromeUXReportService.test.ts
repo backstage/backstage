@@ -19,14 +19,14 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader, Config } from '@backstage/config';
 import { ChromeUXReportService } from './ChromeUXReportService';
 import { Database } from './database/Database';
-import  Knex  from 'knex'
+import Knex from 'knex';
 import { MockQuery } from '../__mocks__/Query';
 
 function createDB() {
   const knex = Knex({
     client: 'sqlite3',
     connection: ':memory:',
-    useNullAsDefault: true
+    useNullAsDefault: true,
   });
   knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
     resource.run('PRAGMA foreign_keys = ON', () => {});
@@ -52,37 +52,54 @@ let databaseClient: Database;
 let chromeUXReportService: ChromeUXReportService;
 
 describe('Chrome UX Report Service', () => {
-  beforeEach(async()=>{
+  beforeEach(async () => {
     databaseClient = await Database.create({
       database: createDB(),
       logger: getVoidLogger(),
     });
 
-    chromeUXReportService = new ChromeUXReportService(
-      {
-        logger: getVoidLogger(),
-        database: databaseClient,
-        query: queryClient,
-      },
-    );
+    chromeUXReportService = new ChromeUXReportService({
+      logger: getVoidLogger(),
+      database: databaseClient,
+      query: queryClient,
+    });
   });
 
   it('successfully get UXMetrics when database has cache', async () => {
-    await databaseClient.addOrigin(config.getConfigArray('chromeUXReport.origins')[0].getString('site'))
-    await databaseClient.addPeriod('202009')
+    await databaseClient.addOrigin(
+      config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
+    );
+    await databaseClient.addPeriod('202009');
     await databaseClient.addUXMetrics({
-        origin_id: 1,
-        period_id: 1,
-        connection_type: '4G',
-        form_factor: 'Desktop',
-        first_contentful_paint:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        largest_contentful_paint:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        dom_content_loaded:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        onload:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        first_input_delay:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-        first_paint:JSON.stringify({fast:0.25,average:0.25, slow:0.25}), 
-        time_to_first_byte:JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      })
+      origin_id: 1,
+      period_id: 1,
+      connection_type: '4G',
+      form_factor: 'Desktop',
+      fast_fp: 0.25,
+      avg_fp: 0.25,
+      slow_fp: 0.25,
+      fast_fcp: 0.25,
+      avg_fcp: 0.25,
+      slow_fcp: 0.25,
+      fast_dcl: 0.25,
+      avg_dcl: 0.25,
+      slow_dcl: 0.25,
+      fast_ol: 0.25,
+      avg_ol: 0.25,
+      slow_ol: 0.25,
+      fast_fid: 0.25,
+      avg_fid: 0.25,
+      slow_fid: 0.25,
+      fast_ttfb: 0.25,
+      avg_ttfb: 0.25,
+      slow_ttfb: 0.25,
+      small_cls: 0.25,
+      medium_cls: 0.25,
+      large_cls: 0.25,
+      fast_lcp: 0.25,
+      avg_lcp: 0.25,
+      slow_lcp: 0.25,
+    });
 
     const metrics = await chromeUXReportService.getUXMetrics(
       config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
@@ -93,17 +110,86 @@ describe('Chrome UX Report Service', () => {
       id: 1,
       origin_id: 1,
       period_id: 1,
-      form_factor: "Desktop",
-      connection_type: "4G",
-      first_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      largest_contentful_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      dom_content_loaded: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_paint: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      onload: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      first_input_delay: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
-      time_to_first_byte: JSON.stringify({fast:0.25,average:0.25, slow:0.25}),
+      form_factor: 'Desktop',
+      connection_type: '4G',
+      fast_fp: 0.25,
+      avg_fp: 0.25,
+      slow_fp: 0.25,
+      fast_fcp: 0.25,
+      avg_fcp: 0.25,
+      slow_fcp: 0.25,
+      fast_dcl: 0.25,
+      avg_dcl: 0.25,
+      slow_dcl: 0.25,
+      fast_ol: 0.25,
+      avg_ol: 0.25,
+      slow_ol: 0.25,
+      fast_fid: 0.25,
+      avg_fid: 0.25,
+      slow_fid: 0.25,
+      fast_ttfb: 0.25,
+      avg_ttfb: 0.25,
+      slow_ttfb: 0.25,
+      small_cls: 0.25,
+      medium_cls: 0.25,
+      large_cls: 0.25,
+      fast_lcp: 0.25,
+      avg_lcp: 0.25,
+      slow_lcp: 0.25,
     };
 
     expect(metrics).toMatchObject(result);
+  });
+
+  it('successfully get UXMetrics from big query and adds to database when database has not cache', async () => {
+    const databaseClient = await Database.create({
+      database: createDB(),
+      logger: getVoidLogger(),
+    });
+
+    const chromeUXReportService: ChromeUXReportService = new ChromeUXReportService(
+      {
+        logger: getVoidLogger(),
+        database: databaseClient,
+        query: queryClient,
+      },
+    );
+
+    const metrics = await chromeUXReportService.getUXMetrics(
+      config.getConfigArray('chromeUXReport.origins')[0].getString('site'),
+      '202009',
+    );
+
+    expect(metrics).toMatchObject({
+      id: 1,
+      origin_id: 1,
+      period_id: 1,
+      form_factor: 'Desktop',
+      connection_type: '4G',
+      fast_fp: 0.25,
+      avg_fp: 0.25,
+      slow_fp: 0.25,
+      fast_fcp: 0.25,
+      avg_fcp: 0.25,
+      slow_fcp: 0.25,
+      fast_dcl: 0.25,
+      avg_dcl: 0.25,
+      slow_dcl: 0.25,
+      fast_ol: 0.25,
+      avg_ol: 0.25,
+      slow_ol: 0.25,
+      fast_fid: 0.25,
+      avg_fid: 0.25,
+      slow_fid: 0.25,
+      fast_ttfb: 0.25,
+      avg_ttfb: 0.25,
+      slow_ttfb: 0.25,
+      small_cls: 0.25,
+      medium_cls: 0.25,
+      large_cls: 0.25,
+      fast_lcp: 0.25,
+      avg_lcp: 0.25,
+      slow_lcp: 0.25,
+    });
   });
 });

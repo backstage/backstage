@@ -22,7 +22,7 @@ import { Metric, Options } from './types';
 export class ChromeUXReportService {
   private readonly database: Database;
   private readonly logger: Logger;
-  private readonly queryClient: Query
+  private readonly queryClient: Query;
 
   constructor(options: Options) {
     options.logger.debug(`creating chrome ux report client`);
@@ -82,48 +82,37 @@ export class ChromeUXReportService {
     periodId: number,
     metrics: Metric,
   ): Promise<boolean> {
-      await this.database.addUXMetrics({
-        origin_id: originId,
-        period_id: periodId,
-        connection_type: '4G',
-        form_factor: 'Desktop',
-        first_paint: {
-          fast: metrics.fast_fp,
-          average:metrics.avg_fp,
-          slow: metrics.slow_fp
-        },
-        first_contentful_paint: {
-          fast: metrics.fast_fcp,
-          average:metrics.avg_fcp,
-          slow: metrics.slow_fcp
-        },
-        largest_contentful_paint: {
-          fast: metrics.fast_lcp,
-          average:metrics.avg_lcp,
-          slow: metrics.slow_lcp
-        },
-        dom_content_loaded: {
-          fast: metrics.fast_dcl,
-          average:metrics.avg_dcl,
-          slow: metrics.slow_dcl
-        },
-        onload: {
-          fast: metrics.fast_ol,
-          average:metrics.avg_ol,
-          slow: metrics.slow_ol
-        },
-        first_input_delay: {
-          fast: metrics.fast_fid,
-          average:metrics.avg_fid,
-          slow: metrics.slow_fid
-        },
-        time_to_first_byte: {
-          fast: metrics.fast_ttfb,
-          average:metrics.avg_ttfb,
-          slow: metrics.slow_ttfb
-        },
-      });
-      return true; 
+    await this.database.addUXMetrics({
+      origin_id: originId,
+      period_id: periodId,
+      connection_type: '4G',
+      form_factor: 'Desktop',
+      fast_fp: metrics.fast_fp,
+      avg_fp: metrics.avg_fp,
+      slow_fp: metrics.slow_fp,
+      fast_fcp: metrics.fast_fcp,
+      avg_fcp: metrics.avg_fcp,
+      slow_fcp: metrics.slow_fcp,
+      fast_dcl: metrics.fast_dcl,
+      avg_dcl: metrics.avg_dcl,
+      slow_dcl: metrics.slow_dcl,
+      fast_ol: metrics.fast_ol,
+      avg_ol: metrics.avg_ol,
+      slow_ol: metrics.slow_ol,
+      fast_fid: metrics.fast_fid,
+      avg_fid: metrics.avg_fid,
+      slow_fid: metrics.slow_fid,
+      fast_ttfb: metrics.fast_ttfb,
+      avg_ttfb: metrics.avg_ttfb,
+      slow_ttfb: metrics.slow_ttfb,
+      small_cls: metrics.small_cls,
+      medium_cls: metrics.medium_cls,
+      large_cls: metrics.large_cls,
+      fast_lcp: metrics.fast_lcp,
+      avg_lcp: metrics.avg_lcp,
+      slow_lcp: metrics.slow_lcp,
+    });
+    return true;
   }
 
   async getUXMetrics(origin: string, period: string): Promise<Metric> {
@@ -131,9 +120,9 @@ export class ChromeUXReportService {
       let originId = await this.getOriginId(origin);
       let periodId = await this.getPeriodId(period);
 
-       if (originId && periodId) {
+      if (originId && periodId) {
         return this.database.getUXMetrics(originId, periodId);
-      } 
+      }
 
       if (!originId) {
         await this.addOrigin(origin);
@@ -145,13 +134,10 @@ export class ChromeUXReportService {
         periodId = await this.getPeriodId(period);
       }
 
-      const rows = await this.queryClient.queryUXMetrics(
-        origin,
-        period
-      );
-      
+      const rows = await this.queryClient.queryUXMetrics(origin, period);
+
       await this.addUXMetrics(originId, periodId, rows);
-      
+
       return this.database.getUXMetrics(originId, periodId);
     } catch (error) {
       this.logger.error(

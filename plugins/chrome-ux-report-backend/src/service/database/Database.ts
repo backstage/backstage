@@ -17,42 +17,17 @@
 import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
+import { OriginsRow, PeriodRow, UXMetricsRow } from '../types';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-chrome-ux-report-backend',
   'migrations',
 );
 
-export type OriginsRow = {
-  id: number;
-  origin: string;
-};
-
-export type PeriodRow = {
-  id: number;
-  period: string;
-};
-
-export type UXMetricsRow = {
-  id: number;
-  origin_id: number;
-  period_id: number;
-  connection_type: string;
-  form_factor: string;
-  first_contentful_paint: any;
-  largest_contentful_paint: any;
-  dom_content_loaded: any;
-  onload: any;
-  first_input_delay: any;
-  first_paint: any;
-  time_to_first_byte: any;
-};
-
 type Options = {
   database: any;
   logger: Logger;
 };
-
 export class Database {
   private readonly database: Knex;
   private readonly logger: Logger;
@@ -132,34 +107,8 @@ export class Database {
   }
 
   async addUXMetrics(metrics: any): Promise<void> {
-    const {
-      origin_id,
-      period_id,
-      connection_type,
-      form_factor,
-      first_contentful_paint,
-      largest_contentful_paint,
-      dom_content_loaded,
-      onload,
-      first_input_delay,
-      first_paint,
-      time_to_first_byte,
-    } = metrics;
-
     try {
-      await this.database<UXMetricsRow>('uxMetrics').insert({
-        origin_id,
-        period_id,
-        connection_type,
-        form_factor,
-        first_contentful_paint,
-        largest_contentful_paint,
-        dom_content_loaded,
-        onload,
-        first_input_delay,
-        first_paint,
-        time_to_first_byte,
-      });
+      await this.database<UXMetricsRow>('uxMetrics').insert(metrics);
     } catch (e) {
       this.logger.error(e.message);
     }
