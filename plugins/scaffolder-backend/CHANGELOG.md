@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.4
+
+### Patch Changes
+
+- 2ab6f3ff0: Add OwnerPicker component to scaffolder for specifying a component's owner from users and groups in the catalog.
+- 164cc4c53: Fix a bug with GitHub Apps support not parsing the URL correctly
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
 ## 0.9.3
 
 ### Patch Changes

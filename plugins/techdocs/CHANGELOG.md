@@ -1,5 +1,15 @@
 # @backstage/plugin-techdocs
 
+## 0.7.1
+
+### Patch Changes
+
+- bebd1c4fe: Remove the `@backstage/techdocs-common` dependency to not pull in backend config schemas in the frontend.
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.7.0
 
 ### Minor Changes

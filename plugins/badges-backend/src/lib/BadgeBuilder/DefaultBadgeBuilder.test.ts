@@ -15,9 +15,10 @@
  */
 
 import { Config, ConfigReader } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import { DefaultBadgeBuilder } from './DefaultBadgeBuilder';
 import { BadgeBuilder, BadgeOptions } from './types';
-import { BadgeContext, BadgeFactories } from '../../types';
+import { Badge, BadgeContext, BadgeFactories, BadgeStyle } from '../../types';
 
 describe('DefaultBadgeBuilder', () => {
   let builder: BadgeBuilder;
@@ -40,6 +41,12 @@ describe('DefaultBadgeBuilder', () => {
       testbadge: {
         createBadge: () => badge,
       },
+      failbadge: {
+        createBadge: () => (undefined as unknown) as Badge, // force a bad return value..
+      },
+      invalidbadge: {
+        createBadge: () => ({ style: 'wrong' as BadgeStyle, ...badge }),
+      },
     };
   });
 
@@ -49,7 +56,11 @@ describe('DefaultBadgeBuilder', () => {
   });
 
   it('getBadges() returns all badge factory ids', async () => {
-    expect(await builder.getBadges()).toEqual([{ id: 'testbadge' }]);
+    expect(await builder.getBadges()).toEqual([
+      { id: 'testbadge' },
+      { id: 'failbadge' },
+      { id: 'invalidbadge' },
+    ]);
   });
 
   describe('createBadge[Json|Svg]', () => {
@@ -100,6 +111,26 @@ describe('DefaultBadgeBuilder', () => {
         url: context.badgeUrl,
         markdown: `![unknown badge: other-id](${context.badgeUrl})`,
       });
+    });
+
+    it('throws InputError when the BadgeFactory.createBadge() fails', async () => {
+      expect.assertions(1);
+      await expect(
+        builder.createBadgeJson({ badgeInfo: { id: 'failbadge' }, context }),
+      ).rejects.toEqual(
+        new InputError(
+          'The badge factory failed to produce a "failbadge" badge with the provided context',
+        ),
+      );
+    });
+
+    it('returns "invalid badge" for bad parameters', async () => {
+      expect(
+        await builder.createBadgeSvg({
+          badgeInfo: { id: 'invalidbadge' },
+          context,
+        }),
+      ).toEqual(expect.stringMatching(/Error: Field `style` must be one of/));
     });
   });
 });

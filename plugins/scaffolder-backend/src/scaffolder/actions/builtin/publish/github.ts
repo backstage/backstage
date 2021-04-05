@@ -102,8 +102,12 @@ export function createPublishGithubAction(options: {
         );
       }
 
+      // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
+      // needless to create URL and then parse again the other side.
       const { token } = await credentialsProvider.getCredentials({
-        url: `${host}/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+          repo,
+        )}`,
       });
 
       if (!token) {

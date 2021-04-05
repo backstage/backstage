@@ -1,5 +1,18 @@
 # @backstage/plugin-api-docs
 
+## 0.4.10
+
+### Patch Changes
+
+- ee5529268: Include the GraphiQL stylesheet
+- 60bddefce: Export `apiDocsConfigRef` from `api-docs` plugin to allow extending it with
+  custom API rendering.
+- 9f48b548c: Make it possible to specify entity type to `useEntity` when it's known
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.4.9
 
 ### Patch Changes

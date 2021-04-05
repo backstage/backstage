@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.3.11
+
+### Patch Changes
+
+- 7c6e1463b: Correctly route to namespaced group members
+- 87171d57d: Correctly include group members via matching namespace relation
+- baa39809e: Fixed MembersList showing members from a previous group when navigating to a new group
+- 9f48b548c: Some cleanup in how types and components are used; leverage `EntityRefLinks`
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.3.10
 
 ### Patch Changes

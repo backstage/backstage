@@ -169,5 +169,41 @@ describe('createRouter', () => {
         },
       });
     });
+
+    it('returns badge spec for entity', async () => {
+      catalog.getEntityByName.mockResolvedValueOnce(entity);
+      badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
+
+      const url = '/entity/default/service/test/badge/test-badge?format=json';
+      const response = await request(app).get(url);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(badge);
+    });
+  });
+
+  describe('Errors', () => {
+    it('returns 404 for unknown entities', async () => {
+      catalog.getEntityByName.mockResolvedValue(undefined);
+      async function testUrl(url: string) {
+        const response = await request(app).get(url);
+        expect(response.status).toEqual(404);
+        expect(response.body).toEqual({
+          error: {
+            message: 'No service entity in default named "missing"',
+            name: 'NotFoundError',
+          },
+          request: {
+            method: 'GET',
+            url,
+          },
+          response: {
+            statusCode: 404,
+          },
+        });
+      }
+      await testUrl('/entity/default/service/missing/badge-specs');
+      await testUrl('/entity/default/service/missing/badge/test-badge');
+    });
   });
 });

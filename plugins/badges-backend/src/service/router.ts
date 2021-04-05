@@ -68,9 +68,7 @@ export async function createRouter(
       };
 
       const badge = await badgeBuilder.createBadgeJson({ badgeInfo, context });
-      if (badge) {
-        specs.push(badge);
-      }
+      specs.push(badge);
     }
 
     res.setHeader('Content-Type', 'application/json');

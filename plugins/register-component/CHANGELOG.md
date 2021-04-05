@@ -1,5 +1,15 @@
 # @backstage/plugin-register-component
 
+## 0.2.13
+
+### Patch Changes
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.2.12
 
 ### Patch Changes

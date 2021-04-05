@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.3
+
+### Patch Changes
+
+- 1ac6a5233: updated entity name to be set through annotations or fallback
+- 60e463c8d: Load credentials properly for AWS Kubernetes Auth Translator
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
 ## 0.3.2
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/catalog-model
 
+## 0.7.5
+
+### Patch Changes
+
+- 8488a1a96: Added support for the "members" field of the Group entity, allowing specification of
+  direct members from the Group side of the relationship. Added support to the
+  `BuiltinKindsEntityProcessor` to generate the appropriate relationships.
+
 ## 0.7.4
 
 ### Patch Changes
