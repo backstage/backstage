@@ -114,11 +114,14 @@ describe('createRouter', () => {
       expect(response.text).toEqual(JSON.stringify([badge], null, 2));
 
       expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith({
-        namespace: 'default',
-        kind: 'service',
-        name: 'test',
-      });
+      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+        {
+          namespace: 'default',
+          kind: 'service',
+          name: 'test',
+        },
+        { token: undefined },
+      );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
       expect(badgeBuilder.createBadgeJson).toHaveBeenCalledTimes(1);
@@ -150,11 +153,14 @@ describe('createRouter', () => {
       expect(response.body).toEqual(Buffer.from(image));
 
       expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith({
-        namespace: 'default',
-        kind: 'service',
-        name: 'test',
-      });
+      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+        {
+          namespace: 'default',
+          kind: 'service',
+          name: 'test',
+        },
+        { token: undefined },
+      );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(0);
       expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledTimes(1);
