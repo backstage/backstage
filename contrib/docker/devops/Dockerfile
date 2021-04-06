@@ -3,6 +3,7 @@ ARG IMAGE_TAG=14-alpine
 FROM node:${IMAGE_TAG}
 
 ARG APK_VIRTUAL_NAME=.backstage
+ARG VALE_INSTALL_URL="https://github.com/errata-ai/vale/releases/download/v2.10.2/vale_2.10.2_Linux_64-bit.tar.gz"
 
 WORKDIR /tmp
 
@@ -40,11 +41,13 @@ RUN apk update \
     jpeg-dev \
     giflib-dev \
     librsvg-dev \
-    libsecret \
+    libsecret-dev \
     py3-docutils \
     asciidoctor
 
-RUN wget -qO- https://github.com/errata-ai/vale/releases/download/v2.10.2/vale_2.10.2_Linux_64-bit.tar.gz \
+# assumes that "./vale" is in the downloaded archive
+# extracts "./vale" and moves it to "/bin" as executable
+RUN wget -qO- ${VALE_INSTALL_URL} \
     | tar xvz -C /bin vale \
     && chmod +x /bin/vale
 
