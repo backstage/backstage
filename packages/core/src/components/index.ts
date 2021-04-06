@@ -26,7 +26,6 @@ export * from './ResponseErrorPanel';
 export * from './FeatureDiscovery';
 export * from './HeaderIconLinkRow';
 export * from './HorizontalScrollGrid';
-export * from './IconLink';
 export * from './Lifecycle';
 export * from './Link';
 export * from './MarkdownContent';

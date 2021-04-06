@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { IconComponent, IconLink } from '@backstage/core';
+import { IconComponent } from '@backstage/core';
 import { GridList, GridListTile } from '@material-ui/core';
 import React from 'react';
+import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';
 import { useDynamicColumns } from './useDynamicColumns';
 
@@ -38,13 +39,7 @@ export const LinksGridList = ({ items, cols = undefined }: Props) => {
     <GridList cellHeight="auto" cols={numOfCols}>
       {items.map(({ text, href, Icon }, i) => (
         <GridListTile key={i}>
-          <IconLink
-            href={href}
-            text={text ?? href}
-            Icon={Icon}
-            target="_blank"
-            rel="noopener"
-          />
+          <IconLink href={href} text={text ?? href} Icon={Icon} />
         </GridListTile>
       ))}
     </GridList>

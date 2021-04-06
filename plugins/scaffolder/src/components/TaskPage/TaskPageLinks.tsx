@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { parseEntityName } from '@backstage/catalog-model';
-import { IconComponent, IconKey, IconLink, useApp } from '@backstage/core';
+import { IconComponent, IconKey, useApp } from '@backstage/core';
+import { IconLink } from './IconLink';
 import { entityRoute } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
