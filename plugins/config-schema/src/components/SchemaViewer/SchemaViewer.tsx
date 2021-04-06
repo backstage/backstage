@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { Schema } from 'jsonschema';
 import {
   Box,
   Chip,
+  createStyles,
   Divider,
+  fade,
   makeStyles,
   Paper,
   Table,
@@ -26,8 +28,12 @@ import {
   TableCell,
   TableRow,
   Typography,
+  withStyles,
 } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { JsonValue } from '@backstage/config';
+import { TreeItem, TreeItemProps, TreeView } from '@material-ui/lab';
 
 interface SchemaViewProps {
   path: string;
@@ -414,6 +420,183 @@ export interface SchemaViewerProps {
   schema: Schema;
 }
 
+const StyledTreeItem = withStyles(theme =>
+  createStyles({
+    label: {
+      userSelect: 'none',
+    },
+    group: {
+      marginLeft: 7,
+      paddingLeft: theme.spacing(1),
+      borderLeft: `1px solid ${fade(theme.palette.text.primary, 0.15)}`,
+    },
+  }),
+)((props: TreeItemProps) => <TreeItem {...props} />);
+
+export function createSchemaBrowserItems(
+  expanded: string[],
+  schema: Schema,
+  path: string = '',
+  depth: number = 0,
+): ReactNode {
+  let matchArr;
+  if (schema.anyOf) {
+    matchArr = schema.anyOf;
+  } else if (schema.oneOf) {
+    matchArr = schema.oneOf;
+  } else if (schema.allOf) {
+    matchArr = schema.allOf;
+  }
+  if (matchArr) {
+    return matchArr.map((childSchema, index) => {
+      const childPath = `${path}/${index}`;
+      if (depth > 0) expanded.push(childPath);
+      return (
+        <StyledTreeItem
+          key={childPath}
+          nodeId={childPath}
+          label={`<Option ${index + 1}>`}
+        >
+          {createSchemaBrowserItems(
+            expanded,
+            childSchema,
+            childPath,
+            depth + 1,
+          )}
+        </StyledTreeItem>
+      );
+    });
+  }
+
+  switch (schema.type) {
+    case 'array': {
+      const childPath = `${path}[]`;
+      if (depth > 0) expanded.push(childPath);
+      return (
+        <StyledTreeItem nodeId={childPath} label="[]">
+          {schema.items &&
+            createSchemaBrowserItems(
+              expanded,
+              schema.items as Schema,
+              childPath,
+              depth + 1,
+            )}
+        </StyledTreeItem>
+      );
+    }
+    case 'object':
+    case undefined: {
+      const children = [];
+
+      if (schema.properties) {
+        children.push(
+          ...Object.entries(schema.properties).map(([name, childSchema]) => {
+            const childPath = path ? `${path}/${name}` : name;
+            if (depth > 0) expanded.push(childPath);
+            return (
+              <StyledTreeItem key={childPath} nodeId={childPath} label={name}>
+                {createSchemaBrowserItems(
+                  expanded,
+                  childSchema,
+                  childPath,
+                  depth + 1,
+                )}
+              </StyledTreeItem>
+            );
+          }),
+        );
+      }
+
+      if (schema.patternProperties) {
+        children.push(
+          ...Object.entries(schema.patternProperties).map(
+            ([name, childSchema]) => {
+              const childPath = `${path}/<${name}>`;
+              if (depth > 0) expanded.push(childPath);
+              return (
+                <StyledTreeItem
+                  key={childPath}
+                  nodeId={childPath}
+                  label={`<${name}>`}
+                >
+                  {createSchemaBrowserItems(
+                    expanded,
+                    childSchema,
+                    childPath,
+                    depth + 1,
+                  )}
+                </StyledTreeItem>
+              );
+            },
+          ),
+        );
+      }
+
+      if (schema.additionalProperties && schema.additionalProperties !== true) {
+        const childPath = `${path}/*`;
+        if (depth > 0) expanded.push(childPath);
+        children.push(
+          <StyledTreeItem key={childPath} nodeId={childPath} label="*">
+            {createSchemaBrowserItems(
+              expanded,
+              schema.additionalProperties,
+              childPath,
+              depth + 1,
+            )}
+          </StyledTreeItem>,
+        );
+      }
+
+      return <>{children}</>;
+    }
+
+    default:
+      return null;
+  }
+}
+
+export function SchemaBrowser({ schema }: { schema: Schema }) {
+  const data = useMemo(() => {
+    const expanded = new Array<string>();
+
+    const items = createSchemaBrowserItems(expanded, schema);
+
+    return { items, expanded };
+  }, [schema]);
+
+  return (
+    <TreeView
+      defaultExpanded={data.expanded}
+      disableSelection
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpandIcon={<ChevronRightIcon />}
+    >
+      {data.items}
+    </TreeView>
+  );
+}
+
 export const SchemaViewer = ({ schema }: SchemaViewerProps) => {
-  return <SchemaView schema={schema} path="" depth={0} />;
+  return (
+    <Box flex="1" position="relative">
+      <Box
+        clone
+        position="absolute"
+        display="flex"
+        flexDirection="row"
+        flexWrap="nowrap"
+        maxHeight="100%"
+      >
+        <Paper elevation={3}>
+          <Box padding={1} overflow="auto" width={300}>
+            <SchemaBrowser schema={schema} />
+          </Box>
+
+          <Box flex="1" overflow="auto">
+            <SchemaView schema={schema} path="" depth={0} />
+          </Box>
+        </Paper>
+      </Box>
+    </Box>
+  );
 };

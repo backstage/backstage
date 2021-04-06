@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useMemo } from 'react';
-import { Grid } from '@material-ui/core';
 import {
   Header,
   Page,
@@ -36,19 +35,15 @@ export const ConfigSchemaPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="Welcome to config-schema!" subtitle="Optional subtitle">
+      <Header title="Welcome to config-schema!">
         <HeaderLabel label="Owner" value="Team X" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
-      <Content>
+      <Content stretch>
         <ContentHeader title="Plugin title">
           <SupportButton>A description of your plugin goes here.</SupportButton>
         </ContentHeader>
-        <Grid container spacing={3} direction="column">
-          <Grid item>
-            {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
-          </Grid>
-        </Grid>
+        {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
       </Content>
     </Page>
   );
