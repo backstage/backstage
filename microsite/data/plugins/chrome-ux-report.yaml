@@ -1,0 +1,14 @@
+---
+title: Chrome UX Report
+author: Trendyol
+authorUrl: https://github.com/trendyol
+category: Quality
+description: Chrome UX Report is a powerful plugin for analyzing your site’s speed in a variety of different ways.
+documentation: https://github.com/backstage/backstage/tree/master/plugins/chrome-ux-report
+iconUrl: https://developers.google.com/web/tools/chrome-user-experience-report/images/logo.png
+npmPackageName: '@backstage/plugin-chrome-ux-report'
+tags:
+  - web
+  - performance
+  - metrics
+  - quality

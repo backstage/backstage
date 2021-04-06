@@ -275,11 +275,11 @@ scaffolder:
     visibility: public # or or 'private'
 
 chromeUXReport:
-  projectId: "example"
-  keyPath: "example.json"
+  projectId: 'example'
+  keyPath: 'example.json'
   origins:
-    - site: "https://www.example.com"
-      name: "Example"
+    - site: 'https://www.example.com'
+      name: 'Example'
 
 auth:
   environment: development
