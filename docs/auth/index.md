@@ -101,7 +101,6 @@ const app = createApp({
 +    SignInPage: props => (
 +      <SignInPage
 +        {...props}
-+        auto
 +        providers={['guest', githubProvider]}
 +      />
 +    ),
