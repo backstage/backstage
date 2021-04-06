@@ -76,5 +76,6 @@ export type TaskOutput = {
   /** @deprecated use the `links` property to link out to relevant resources */
   remoteUrl?: string;
   links?: OutputLink[];
-  [key: string]: any;
+} & {
+  [key: string]: unknown;
 };
