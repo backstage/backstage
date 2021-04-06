@@ -39,6 +39,7 @@ import {
 
 import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
+import { ScmIntegrations } from '@backstage/integration';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
@@ -48,7 +49,20 @@ jest.mock('@backstage/plugin-catalog-react', () => ({
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
 
-const configApi: ConfigApi = new ConfigReader({});
+const configApi: ConfigApi = new ConfigReader({
+  integrations: {
+    github: [
+      {
+        host: 'missing-api-base-url.com',
+      },
+      {
+        host: 'my-github.com',
+        apiBaseUrl: 'https://api.my-github.com',
+      },
+    ],
+  },
+});
+const scmIntegrationsApi = ScmIntegrations.fromConfig(configApi);
 const githubAuthApi: OAuthApi = {
   getAccessToken: async _ => 'access_token',
 };
@@ -56,7 +70,10 @@ const githubAuthApi: OAuthApi = {
 const apis = ApiRegistry.from([
   [configApiRef, configApi],
   [errorApiRef, errorApiMock],
-  [githubDeploymentsApiRef, new GithubDeploymentsApiClient({ githubAuthApi })],
+  [
+    githubDeploymentsApiRef,
+    new GithubDeploymentsApiClient({ scmIntegrationsApi, githubAuthApi }),
+  ],
 ]);
 
 describe('github-deployments', () => {
@@ -158,6 +175,42 @@ describe('github-deployments', () => {
         await rendered.findByText('GitHub Deployments'),
       ).toBeInTheDocument();
       expect(await rendered.findByText('failure')).toBeInTheDocument();
+    });
+
+    it('shows error when host does not exist', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
+
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard host="unknown-host.com" />
+        </ApiProvider>,
+      );
+
+      expect(await rendered.findByText(
+        'Warning: No matching GitHub integration configuration for host unknown-host.com, please check your integrations config',
+      )).toBeInTheDocument();
+    });
+
+    it('shows error when baseApiURL does not exist forr host', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
+
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard host="missing-api-base-url.com" />
+        </ApiProvider>,
+      );
+
+      expect(await rendered.findByText(
+        'Warning: No apiBaseUrl available for host missing-api-base-url.com',
+      )).toBeInTheDocument();
     });
   });
 });

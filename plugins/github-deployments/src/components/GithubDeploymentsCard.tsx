@@ -29,9 +29,11 @@ import {
 import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
 
 const GithubDeploymentsComponent = ({
+  host,
   projectSlug,
   last,
 }: {
+  host?: string;
   projectSlug: string;
   last: number;
 }) => {
@@ -39,7 +41,7 @@ const GithubDeploymentsComponent = ({
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ owner, repo, last }),
+    async () => await api.listDeployments({ host, owner, repo, last }),
   );
 
   if (error) {
@@ -55,7 +57,13 @@ const GithubDeploymentsComponent = ({
   );
 };
 
-export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
+export const GithubDeploymentsCard = ({
+  last,
+  host,
+}: {
+  last?: number;
+  host?: string;
+}) => {
   const { entity } = useEntity();
 
   return !isGithubDeploymentsAvailable(entity) ? (
@@ -66,6 +74,7 @@ export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
       last={last || 10}
+      host={host}
     />
   );
 };

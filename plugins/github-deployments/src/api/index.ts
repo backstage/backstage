@@ -14,7 +14,32 @@
  * limitations under the License.
  */
 import { createApiRef, OAuthApi } from '@backstage/core';
+import { InputError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
+
+const getBaseUrl = (
+  scmIntegrationsApi: ScmIntegrationRegistry,
+  host?: string,
+): string => {
+  if (!host) {
+    return 'https://api.github.com';
+  }
+
+  const integrationConfig = scmIntegrationsApi.github.byHost(host);
+
+  if (!integrationConfig) {
+    throw new InputError(
+      `No matching GitHub integration configuration for host ${host}, please check your integrations config`,
+    );
+  }
+
+  if (!integrationConfig.config.apiBaseUrl) {
+    throw new InputError(`No apiBaseUrl available for host ${host}`);
+  }
+
+  return integrationConfig.config.apiBaseUrl;
+};
 
 export type GithubDeployment = {
   environment: string;
@@ -28,6 +53,7 @@ export type GithubDeployment = {
 
 export interface GithubDeploymentsApi {
   listDeployments(options: {
+    host?: string;
     owner: string;
     repo: string;
     last: number;
@@ -41,6 +67,7 @@ export const githubDeploymentsApiRef = createApiRef<GithubDeploymentsApi>({
 
 export type Options = {
   githubAuthApi: OAuthApi;
+  scmIntegrationsApi: ScmIntegrationRegistry;
 };
 
 const deploymentsQuery = `
@@ -71,19 +98,24 @@ export type QueryResponse = {
 
 export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
   private readonly githubAuthApi: OAuthApi;
+  private readonly scmIntegrationsApi: ScmIntegrationRegistry;
 
   constructor(options: Options) {
     this.githubAuthApi = options.githubAuthApi;
+    this.scmIntegrationsApi = options.scmIntegrationsApi;
   }
 
   async listDeployments(options: {
     owner: string;
     repo: string;
     last: number;
+    host?: string;
   }): Promise<GithubDeployment[]> {
+    const baseUrl = getBaseUrl(this.scmIntegrationsApi, options.host);
     const token = await this.githubAuthApi.getAccessToken(['repo']);
 
     const graphQLWithAuth = graphql.defaults({
+      baseUrl,
       headers: {
         authorization: `token ${token}`,
       },
