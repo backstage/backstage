@@ -63,7 +63,7 @@ export const responseStub: QueryResponse = {
             abbreviatedOid: '54321',
           },
           creator: {
-            login: 'robot-user-001',
+            login: 'robot-user-002',
           },
           payload: '',
         },
@@ -98,7 +98,7 @@ export const refreshedResponseStub: QueryResponse = {
             abbreviatedOid: '54321',
           },
           creator: {
-            login: 'robot-user-001',
+            login: 'robot-user-002',
           },
           payload: '',
         },
