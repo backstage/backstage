@@ -132,6 +132,12 @@ describe('github-deployments', () => {
     });
 
     it('should shows new data on reload', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
+      
       const rendered = await renderInTestApp(
         <ApiProvider apis={apis}>
           <GithubDeploymentsCard />
