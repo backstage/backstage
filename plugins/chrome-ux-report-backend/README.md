@@ -21,7 +21,7 @@ chromeUXReport:
 
 **2. Set `chromeUXReport.keyPath` config in your `app-config.yaml`**
 
-You will get a JSON keyfile from Google Cloud. You can give this keyfile path with environmental variables. You can use the example
+You will get a JSON Key File from Google Cloud. You can give this Key File path with environmental variables. You can use the example
 
 ```yaml
 chromeUXReport:
