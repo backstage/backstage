@@ -16,12 +16,11 @@
 
 import React from 'react';
 import { parseEntityName } from '@backstage/catalog-model';
-import { IconComponent, IconKey, useApp } from '@backstage/core';
+import { IconComponent, IconKey, useApp, useRouteRef } from '@backstage/core';
 import { IconLink } from './IconLink';
-import { entityRoute } from '@backstage/plugin-catalog-react';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
-import { generatePath } from 'react-router';
 import { TaskOutput } from '../../types';
 
 type TaskPageLinksProps = {
@@ -32,6 +31,7 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
   const { entityRef, remoteUrl } = output;
   let { links = [] } = output;
   const app = useApp();
+  const entityRoute = useRouteRef(entityRouteRef);
 
   const iconResolver = (key: IconKey | undefined): IconComponent =>
     key ? app.getSystemIcon(key) ?? LanguageIcon : LanguageIcon;
@@ -41,12 +41,11 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
   }
 
   if (entityRef) {
+    const entityName = parseEntityName(entityRef);
+    const target = entityRoute(entityName);
     links = [
       {
-        url: generatePath(
-          `/catalog/${entityRoute.path}`,
-          parseEntityName(entityRef),
-        ),
+        url: target,
         title: 'Open in catalog',
         icon: 'catalog',
       },

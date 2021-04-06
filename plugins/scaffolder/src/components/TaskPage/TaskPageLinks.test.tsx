@@ -17,6 +17,7 @@
 import React from 'react';
 import { TaskPageLinks } from './TaskPageLinks';
 import { renderInTestApp } from '@backstage/test-utils';
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 describe('TaskPageLinks', () => {
   beforeEach(() => {});
@@ -29,6 +30,11 @@ describe('TaskPageLinks', () => {
     const output = { entityRef: 'Component:default/my-app' };
     const { findByText } = await renderInTestApp(
       <TaskPageLinks output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     const element = await findByText('Open in catalog');
@@ -44,6 +50,11 @@ describe('TaskPageLinks', () => {
     const output = { remoteUrl: 'https://remote.url' };
     const { findByText } = await renderInTestApp(
       <TaskPageLinks output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     const element = await findByText('Repo');
@@ -61,6 +72,11 @@ describe('TaskPageLinks', () => {
     };
     const { findByText } = await renderInTestApp(
       <TaskPageLinks output={output} />,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+        },
+      },
     );
 
     let element = await findByText('Cool link 1');
