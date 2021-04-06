@@ -68,6 +68,12 @@ export function MetadataView({ schema }: { schema: Schema }) {
         <TableBody>
           <MetadataViewRow label="Type" data={schema.type} />
           <MetadataViewRow label="Allowed values" data={schema.enum} />
+          {schema.additionalProperties === true && (
+            <MetadataViewRow label="Additional Properties" text="true" />
+          )}
+          {schema.additionalItems === true && (
+            <MetadataViewRow label="Additional Items" text="true" />
+          )}
           <MetadataViewRow label="Format" text={schema.format} />
           <MetadataViewRow
             label="Pattern"
@@ -262,12 +268,25 @@ export function ArrayView({ path, depth, schema }: SchemaViewProps) {
         depth={itemDepth}
         schema={itemSchema as Schema | undefined}
       />
+      {schema.additionalItems && schema.additionalItems !== true && (
+        <>
+          <Typography variant="overline">Additional Items</Typography>
+          <ChildView
+            path={itemPath}
+            depth={itemDepth}
+            schema={schema.additionalItems}
+            lastChild
+          />
+        </>
+      )}
     </>
   );
 }
 
 export function ObjectView({ path, depth, schema }: SchemaViewProps) {
   const properties = Object.entries(schema.properties ?? {});
+  const patternProperties = Object.entries(schema.patternProperties ?? {});
+
   return (
     <>
       {depth > 0 && (
@@ -292,6 +311,33 @@ export function ObjectView({ path, depth, schema }: SchemaViewProps) {
               required={isRequired(name, schema.required)}
             />
           ))}
+        </>
+      )}
+      {patternProperties.length > 0 && (
+        <>
+          {depth > 0 && (
+            <Typography variant="overline">Pattern Properties</Typography>
+          )}
+          {patternProperties.map(([name, propSchema], index) => (
+            <ChildView
+              path={path ? `${path}.<${name}>` : name}
+              depth={depth + 1}
+              schema={propSchema}
+              lastChild={index === patternProperties.length - 1}
+              required={isRequired(name, schema.required)}
+            />
+          ))}
+        </>
+      )}
+      {schema.additionalProperties && schema.additionalProperties !== true && (
+        <>
+          <Typography variant="overline">Additional Properties</Typography>
+          <ChildView
+            path={`${path}.*`}
+            depth={depth + 1}
+            schema={schema.additionalProperties}
+            lastChild
+          />
         </>
       )}
     </>
