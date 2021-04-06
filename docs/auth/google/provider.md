@@ -53,29 +53,5 @@ The Google provider is a structure with two configuration keys:
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `googleAuthApi` reference and
-`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
-
-```diff
-+ import { googleAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
-
-+ const googleProvider: SignInConfig = {
-+  id: 'google-auth-provider',
-+  title: 'Google',
-+  message: 'Sign in using Google',
-+  apiRef: googleAuthApiRef,
-+};
-+
-const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={googleProvider}
-+      />
-+    ),
-+  },
-  bindRoutes({ bind }) {
-```
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).

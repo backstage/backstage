@@ -186,7 +186,6 @@
     ],
     "Auth and identity": [
       "auth/index",
-      "auth/add-auth-provider",
       {
         "type": "subcategory",
         "label": "Included providers",
@@ -199,10 +198,12 @@
           "auth/okta/provider"
         ]
       },
+      "auth/add-auth-provider",
+      "auth/using-auth",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/glossary",
-      "auth/auth-backend-classes"
+      "auth/auth-backend-classes",
+      "auth/glossary"
     ],
     "Designing for Backstage": [
       "dls/design",
