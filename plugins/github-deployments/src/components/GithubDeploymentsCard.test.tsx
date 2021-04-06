@@ -190,9 +190,11 @@ describe('github-deployments', () => {
         </ApiProvider>,
       );
 
-      expect(await rendered.findByText(
-        'Warning: No matching GitHub integration configuration for host unknown-host.com, please check your integrations config',
-      )).toBeInTheDocument();
+      expect(
+        await rendered.findByText(
+          'Warning: No matching GitHub integration configuration for host unknown-host.com, please check your integrations config',
+        ),
+      ).toBeInTheDocument();
     });
 
     it('shows error when baseApiURL does not exist for host', async () => {
@@ -208,9 +210,11 @@ describe('github-deployments', () => {
         </ApiProvider>,
       );
 
-      expect(await rendered.findByText(
-        'Warning: No apiBaseUrl available for host missing-api-base-url.com',
-      )).toBeInTheDocument();
+      expect(
+        await rendered.findByText(
+          'Warning: No apiBaseUrl available for host missing-api-base-url.com',
+        ),
+      ).toBeInTheDocument();
     });
   });
 });

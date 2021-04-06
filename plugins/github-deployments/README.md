@@ -85,8 +85,9 @@ const OverviewContent = () => (
   <Grid container spacing={3} alignItems="stretch">
     // ...
     <Grid item xs={12} sm={6} md={4}>
-      <EntityGithubDeploymentsCard host='your-github-host.com' />
+      <EntityGithubDeploymentsCard host="your-github-host.com" />
     </Grid>
     // ...
   </Grid>
 );
+```
