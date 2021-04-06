@@ -56,7 +56,6 @@ describe('Chrome UX Report Service', () => {
   beforeEach(async () => {
     databaseClient = await Database.create({
       database: createDB(),
-      logger: getVoidLogger(),
     });
 
     chromeUXReportService = new ChromeUXReportService({

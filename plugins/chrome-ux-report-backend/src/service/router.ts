@@ -29,7 +29,6 @@ export async function createRouter(
 
   const databaseClient = await Database.create({
     database: await database.getClient(),
-    logger,
   });
   const queryClient = new Query(config);
   const chromeUXReportService = new ChromeUXReportService({

@@ -16,7 +16,6 @@
 
 import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { OriginsRow, PeriodRow, UXMetricsRow } from '../types';
 
 const migrationsDir = resolvePackagePath(
@@ -26,15 +25,12 @@ const migrationsDir = resolvePackagePath(
 
 type Options = {
   database: any;
-  logger: Logger;
 };
 export class Database {
   private readonly database: Knex;
-  private readonly logger: Logger;
 
   private constructor(options: Options) {
     this.database = options.database;
-    this.logger = options.logger;
   }
 
   static async create(options: Options): Promise<Database> {
