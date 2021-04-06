@@ -78,16 +78,21 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
+            description: 'Provide users with permissions',
             type: 'array',
-            properties: {
-              access: {
-                title: 'The type of access for the user',
-                type: 'string',
-                enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
-              },
-              username: {
-                title: 'The username or group',
-                type: 'string',
+            items: {
+              type: 'object',
+              required: ['username', 'access'],
+              properties: {
+                access: {
+                  type: 'string',
+                  description: 'The type of access for the user',
+                  enum: ['push', 'pull', 'admin', 'maintain', 'triage'],
+                },
+                username: {
+                  type: 'string',
+                  description: 'The username or group',
+                },
               },
             },
           },
