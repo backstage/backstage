@@ -1,5 +1,15 @@
 # @backstage/plugin-graphiql
 
+## 0.2.9
+
+### Patch Changes
+
+- 09eb54e01: Export `GraphiQLIcon`.
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/core@0.7.2
+
 ## 0.2.8
 
 ### Patch Changes

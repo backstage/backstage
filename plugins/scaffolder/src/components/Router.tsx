@@ -19,11 +19,13 @@ import { Routes, Route } from 'react-router';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
+import { ActionsPage } from './ActionsPage';
 
 export const Router = () => (
   <Routes>
     <Route path="/" element={<ScaffolderPage />} />
     <Route path="/templates/:templateName" element={<TemplatePage />} />
     <Route path="/tasks/:taskId" element={<TaskPage />} />
+    <Route path="/actions" element={<ActionsPage />} />
   </Routes>
 );

@@ -6,19 +6,18 @@ sidebar_label: Installation
 description: Adding Google Analytics to Your App
 ---
 
-There is a basic Google Analytics integration built into Backstage. You can
-enable it by adding the following to your app configuration:
+There is a basic
+[Google Analytics](https://marketingplatform.google.com/about/analytics/)
+integration built into Backstage. You can enable it by adding the following to
+your app configuration:
 
 ```yaml
 app:
   googleAnalyticsTrackingId: UA-000000-0
 ```
 
-Replace the tracking ID with your own.
+Replace the tracking ID with the one generated for you after signing up for the
+Google Analytics service.
 
-For more information, learn about Google Analytics
-[here](https://marketingplatform.google.com/about/analytics/).
-
-The default behavior is only to send a pageview hit to Google Analytics. To
-record more, look at the developer documentation
-[here](https://developers.google.com/analytics/devguides/collection/gtagjs).
+The default behavior is only to send a pageview hit. To record more, review the
+[Google Analytics developer documentation](https://developers.google.com/analytics/devguides/collection/gtagjs).

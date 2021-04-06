@@ -1,5 +1,103 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.2
+
+### Patch Changes
+
+- a2a3c7803: Bump `@kubernetes/client-node` from `^0.13.2` to `^0.14.0`.
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-kubernetes-backend@0.3.2
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
+## 0.4.1
+
+### Patch Changes
+
+- 1df417bd3: Add tests for kubernetes custom hook
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 1f98a6ff8: Filter out k8s cluster with no resources or errors
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [1f98a6ff8]
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+  - @backstage/plugin-kubernetes-backend@0.3.1
+
+## 0.4.0
+
+### Minor Changes
+
+- 9581ff0b4: Restructure configuration; Add GKE cluster locator
+
+  Config migration
+
+  1. `kubernetes.clusters` is now at `kubernetes.clusterLocatorMethods[].clusters` when the `clusterLocatorMethod` is of `type: 'config''`
+  2. `kubernetes.serviceLocatorMethod` is now an object. `multiTenant` is the only valid `type` currently
+
+  Old config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod: 'multiTenant'
+    clusterLocatorMethods:
+      - 'config'
+    clusters:
+      - url: http://127.0.0.1:9999
+        name: minikube
+        authProvider: 'serviceAccount'
+        serviceAccountToken:
+          $env: K8S_MINIKUBE_TOKEN
+      - url: http://127.0.0.2:9999
+        name: aws-cluster-1
+        authProvider: 'aws'
+  ```
+
+  New config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod:
+      type: 'multiTenant'
+    clusterLocatorMethods:
+      - type: 'config'
+        clusters:
+          - url: http://127.0.0.1:9999
+            name: minikube
+            authProvider: 'serviceAccount'
+            serviceAccountToken:
+              $env: K8S_MINIKUBE_TOKEN
+          - url: http://127.0.0.2:9999
+            name: aws-cluster-1
+            authProvider: 'aws'
+  ```
+
+- e2c1b3fb6: Add initial CRD support framework
+
+### Patch Changes
+
+- 763926bc1: Adds a new method `getClusters` to grab cluster configuration in the frontend
+- Updated dependencies [5d7834baf]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [9581ff0b4]
+- Updated dependencies [2089de76b]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [8de9963f0]
+- Updated dependencies [e2c1b3fb6]
+  - @backstage/plugin-kubernetes-backend@0.3.0
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.3.12
 
 ### Patch Changes

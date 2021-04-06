@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { getGlobalSingleton } from './globalObject';
+import {
+  getGlobalSingleton,
+  getOrCreateGlobalSingleton,
+  setGlobalSingleton,
+} from './globalObject';
 
 const anyGlobal = global as any;
 
@@ -25,18 +29,62 @@ describe('getGlobalSingleton', () => {
 
   it('should return an existing value', () => {
     const myThing = {};
+    const myOtherThing = {};
+
+    anyGlobal['__@backstage/my-thing__'] = myThing;
+    expect(getGlobalSingleton('my-thing')).toBe(myThing);
+    expect(getGlobalSingleton('my-thing')).toBe(myThing);
+    anyGlobal['__@backstage/my-thing__'] = myOtherThing;
+    expect(getGlobalSingleton('my-thing')).toBe(myOtherThing);
+  });
+
+  it('should throw if the value is not set', () => {
+    expect(() => getGlobalSingleton('my-thing')).toThrow(
+      'Global my-thing is not set',
+    );
+  });
+});
+
+describe('getOrCreateGlobalSingleton', () => {
+  beforeEach(() => {
+    delete anyGlobal['__@backstage/my-thing__'];
+  });
+
+  it('should return an existing value', () => {
+    const myThing = {};
     anyGlobal['__@backstage/my-thing__'] = myThing;
 
-    expect(getGlobalSingleton('my-thing', () => ({}))).toBe(myThing);
-    expect(getGlobalSingleton('my-thing', () => ({}))).toBe(myThing);
+    expect(getOrCreateGlobalSingleton('my-thing', () => ({}))).toBe(myThing);
+    expect(getOrCreateGlobalSingleton('my-thing', () => ({}))).toBe(myThing);
   });
 
   it('should should create a new value', () => {
     const myNewThing = {};
 
     expect(anyGlobal['__@backstage/my-thing__']).toBe(undefined);
-    expect(getGlobalSingleton('my-thing', () => myNewThing)).toBe(myNewThing);
+    expect(getOrCreateGlobalSingleton('my-thing', () => myNewThing)).toBe(
+      myNewThing,
+    );
     expect(anyGlobal['__@backstage/my-thing__']).toBe(myNewThing);
-    expect(getGlobalSingleton('my-thing', () => ({}))).toBe(myNewThing);
+    expect(getOrCreateGlobalSingleton('my-thing', () => ({}))).toBe(myNewThing);
+  });
+});
+
+describe('setGlobalSingleton', () => {
+  beforeEach(() => {
+    delete anyGlobal['__@backstage/my-thing__'];
+  });
+
+  it('should set a global value', () => {
+    setGlobalSingleton('my-thing', 'global value');
+
+    expect(anyGlobal['__@backstage/my-thing__']).toBe('global value');
+  });
+
+  it('should throw if global value is set', () => {
+    anyGlobal['__@backstage/my-thing__'] = 'already defined';
+    expect(() => setGlobalSingleton('my-thing', () => 'global value')).toThrow(
+      'Global my-thing is already se',
+    );
   });
 });

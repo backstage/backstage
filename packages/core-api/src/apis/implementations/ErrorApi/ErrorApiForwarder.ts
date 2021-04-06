@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext } from '../..';
 import { PublishSubject } from '../../../lib';
 import { Observable } from '../../../types';
+import { ErrorApi, ErrorContext } from '../../definitions';
 
 /**
  * Base implementation for the ErrorApi that simply forwards errors to consumers.

@@ -23,6 +23,8 @@ export * from './onCssReady';
 export * from './sanitizeDOM';
 export * from './injectCss';
 
+// TODO(freben): move all of this out of index
+
 export type Transformer = (dom: Element) => Element;
 
 function transform(

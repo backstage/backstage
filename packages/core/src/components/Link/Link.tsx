@@ -24,7 +24,7 @@ import {
   LinkProps as RouterLinkProps,
 } from 'react-router-dom';
 
-export const isExternalUri = (uri: string) => /^([a-z+.-]+):\/\//.test(uri);
+export const isExternalUri = (uri: string) => /^([a-z+.-]+):/.test(uri);
 
 export type LinkProps = MaterialLinkProps &
   RouterLinkProps & {

@@ -19,7 +19,7 @@ import {
   TemplateEntityV1beta2,
 } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 
 /**
  * A catalog client tailored for reading out entity data from the catalog.

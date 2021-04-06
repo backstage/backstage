@@ -79,15 +79,25 @@ scaffolder:
 
 catalog:
   rules:
-    - allow: [Component, API, Group, User, Template, Location]
+    - allow: [Component, System, API, Group, User, Template, Location]
   locations:
     # Backstage example components
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
 
+    # Backstage example systems
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+
     # Backstage example APIs
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+    # Backstage example organization groups
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+      rules:
+        - allow: [Group, User]
 
     # Backstage example templates
     - type: url

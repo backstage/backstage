@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { IconComponent } from '@backstage/core';
 import {
+  Divider,
   IconButton,
   ListItemIcon,
+  ListItemText,
   MenuItem,
   MenuList,
   Popover,
-  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Cancel from '@material-ui/icons/Cancel';
@@ -34,11 +36,23 @@ const useStyles = makeStyles({
   },
 });
 
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
 type Props = {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   onUnregisterEntity: () => void;
 };
 
-export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
+export const EntityContextMenu = ({
+  UNSTABLE_extraContextMenuItems,
+  onUnregisterEntity,
+}: Props) => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const classes = useStyles();
 
@@ -49,6 +63,24 @@ export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
   const onClose = () => {
     setAnchorEl(undefined);
   };
+
+  const extraItems = UNSTABLE_extraContextMenuItems && [
+    ...UNSTABLE_extraContextMenuItems.map(item => (
+      <MenuItem
+        key={item.title}
+        onClick={() => {
+          onClose();
+          item.onClick();
+        }}
+      >
+        <ListItemIcon>
+          <item.Icon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={item.title} />
+      </MenuItem>
+    )),
+    <Divider key="the divider is here!" />,
+  ];
 
   return (
     <>
@@ -70,6 +102,7 @@ export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
+          {extraItems}
           <MenuItem
             onClick={() => {
               onClose();
@@ -79,7 +112,7 @@ export const EntityContextMenu = ({ onUnregisterEntity }: Props) => {
             <ListItemIcon>
               <Cancel fontSize="small" />
             </ListItemIcon>
-            <Typography variant="inherit">Unregister entity</Typography>
+            <ListItemText primary="Unregister entity" />
           </MenuItem>
         </MenuList>
       </Popover>

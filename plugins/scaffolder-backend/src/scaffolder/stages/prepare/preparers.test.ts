@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Preparers } from '.';
+
 import { GithubPreparer } from './github';
+import { Preparers } from './preparers';
 
 describe('Preparers', () => {
   it('should return the correct preparer based on the hostname', async () => {

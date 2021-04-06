@@ -14,5 +14,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: documentation quality check
         uses: errata-ai/vale-action@v1.3.0
+        # Whitelist excluding ADOPTERS, CHANGELOG and OWNERS (no exclude flag exists)
+        with:
+          files: '[".changeset", ".github", "contrib", "docs", "microsite", "packages", "plugins", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "GOVERNANCE.md", "README.md"]'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

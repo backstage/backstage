@@ -1,5 +1,69 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.4
+
+### Patch Changes
+
+- 2ab6f3ff0: Add OwnerPicker component to scaffolder for specifying a component's owner from users and groups in the catalog.
+- 164cc4c53: Fix a bug with GitHub Apps support not parsing the URL correctly
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.9.3
+
+### Patch Changes
+
+- 9f2e51e89: Fixes bug in the `github:publish` action causing repositories to be set as private even if the visibility is set to internal
+- 91e87c055: Add inputs for action `fetch:cookiecutter`: copyWithoutRender, extensions, imageName
+- 113d3d59e: Added a `publish:file` action to use for local development. The action is not installed by default.
+
+## 0.9.2
+
+### Patch Changes
+
+- 8b4f7e42a: Forward authorization on scaffolder backend requests
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.9.1
+
+### Patch Changes
+
+- d7245b733: Remove runDockerContainer, and start using the utility function provided by @backstage/backend-common
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- c532c1682: Fixes task failures caused by undefined step input
+- 761698831: Bump to the latest version of the Knex library.
+- f98f212e4: Introduce scaffolder actions page which lists all available actions along with documentation about their input/output.
+
+  Allow for actions to be extended with a description.
+
+  The list actions page is by default available at `/create/actions`.
+
+- 2e57922de: Update GitHub publisher to display a more helpful error message when repository access update fails.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+
 ## 0.9.0
 
 ### Minor Changes

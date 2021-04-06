@@ -1,5 +1,53 @@
 # @backstage/plugin-catalog-import
 
+## 0.5.1
+
+### Patch Changes
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
+## 0.5.0
+
+### Minor Changes
+
+- 3385b374b: Use `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+### Patch Changes
+
+- 7d8c4c97c: Update the wording for unknown URLs in the import flow
+- a0dacc184: Use title form field value for the commit message on catalog import PRs. Also allow customization of the pull requests title or body only. For example:
+
+  ```tsx
+  <Route
+    path="/catalog-import"
+    element={
+      <CatalogImportPage
+        pullRequest={{
+          preparePullRequest: () => ({
+            title: 'chore: add backstage catalog file [skip ci]',
+          }),
+        }}
+      />
+    }
+  />
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.4.3
 
 ### Patch Changes

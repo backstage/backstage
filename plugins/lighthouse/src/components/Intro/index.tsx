@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ContentHeader, InfoCard, MarkdownContent } from '@backstage/core';
+import { Button, Grid, makeStyles, Tab, Tabs } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
 import { useLocalStorage } from 'react-use';
-import { ContentHeader, InfoCard, MarkdownContent } from '@backstage/core';
-import { makeStyles, Button, Grid, Tabs, Tab } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-
 import LighthouseSupportButton from '../SupportButton';
+
+// TODO(freben): move all of this out of index
 
 export const LIGHTHOUSE_INTRO_LOCAL_STORAGE =
   '@backstage/lighthouse-plugin/intro-dismissed';

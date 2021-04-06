@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import { configApiRef, discoveryApiRef, identityApiRef } from '@backstage/core';
 import { CatalogClient } from '@backstage/catalog-client';
+import { configApiRef, discoveryApiRef, identityApiRef } from '@backstage/core';
+import { createDevApp } from '@backstage/dev-utils';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import React from 'react';
+import { scaffolderApiRef, ScaffolderClient } from '../src';
 import { ScaffolderPage } from '../src/plugin';
-import { ScaffolderClient, scaffolderApiRef } from '../src';
 
 createDevApp()
   .registerApi({
@@ -34,9 +35,10 @@ createDevApp()
       discoveryApi: discoveryApiRef,
       identityApi: identityApiRef,
       configApi: configApiRef,
+      scmIntegrationsApi: scmIntegrationsApiRef,
     },
-    factory: ({ discoveryApi, identityApi, configApi }) =>
-      new ScaffolderClient({ discoveryApi, identityApi, configApi }),
+    factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+      new ScaffolderClient({ discoveryApi, identityApi, scmIntegrationsApi }),
   })
   .addPage({
     path: '/create',

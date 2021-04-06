@@ -38,6 +38,7 @@ import {
 import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
+  BitbucketDiscoveryProcessor,
   BuiltinKindsEntityProcessor,
   CatalogProcessor,
   CatalogProcessorParser,
@@ -304,12 +305,13 @@ export class CatalogBuilder {
     if (!this.processorsReplace) {
       processors.push(
         new FileReaderProcessor(),
+        BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
         GithubDiscoveryProcessor.fromConfig(config, { logger }),
         GithubOrgReaderProcessor.fromConfig(config, { logger }),
         LdapOrgReaderProcessor.fromConfig(config, { logger }),
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
-        new CodeOwnersProcessor({ reader, logger }),
+        CodeOwnersProcessor.fromConfig(config, { logger, reader }),
         new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor({ integrations }),
       );

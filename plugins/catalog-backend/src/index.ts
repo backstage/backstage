@@ -17,5 +17,6 @@
 export * from './catalog';
 export * from './database';
 export * from './ingestion';
+export * from './search';
 export * from './service';
 export * from './util';

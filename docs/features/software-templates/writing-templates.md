@@ -38,6 +38,14 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds:
+              - Group
     - title: Choose a location
       required:
         - repoUrl
@@ -59,6 +67,7 @@ spec:
         url: ./template
         values:
           name: '{{ parameters.name }}'
+          owner: '{{ parameters.owner }}'
 
     - id: fetch-docs
       name: Fetch Docs
@@ -234,6 +243,26 @@ The `RepoUrlPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. It's currently not possible to create your own fields yet,
 but contributions are welcome! :)
 
+#### The Owner Picker
+
+When the scaffolder needs to add new components to the catalog, it needs to have
+an owner for them. Ideally, users should be able to select an owner when they go
+through the scaffolder form from the users and groups already known to
+Backstage. The `OwnerPicker` is a custom field that generates a searchable list
+of groups and/or users already in the catalog to pick an owner from. You can
+specify which of the two kinds are listed in the `allowedKinds` option:
+
+```yaml
+owner:
+  title: Owner
+  type: string
+  description: Owner of the component
+  ui:field: OwnerPicker
+  ui:options:
+    allowedKinds:
+      - Group
+```
+
 ### `spec.steps` - `Action[]`
 
 The `steps` is an array of the things that you want to happen part of this
@@ -265,7 +294,7 @@ The main two that are used are the following:
 ```yaml
 output:
   remoteUrl: '{{ steps.publish.output.remoteUrl }}' # link to the remote repository
-  entityRef: '{{ steps.register.output.entityRef }}' # link to the entitiy that has been ingested to the catalog
+  entityRef: '{{ steps.register.output.entityRef }}' # link to the entity that has been ingested to the catalog
 ```
 
 ### The templating syntax

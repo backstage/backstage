@@ -19,8 +19,10 @@ import {
   EntityName,
   Location,
   LOCATION_ANNOTATION,
+  ORIGIN_LOCATION_ANNOTATION,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
+import { ResponseError } from '@backstage/errors';
 import fetch from 'cross-fetch';
 import {
   AddLocationRequest,
@@ -43,7 +45,7 @@ export class CatalogClient implements CatalogApi {
     id: String,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.getOptional(`/locations/${id}`, options);
+    return await this.requestOptional('GET', `/locations/${id}`, options);
   }
 
   async getEntities(
@@ -59,6 +61,7 @@ export class CatalogClient implements CatalogApi {
         filterParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
       }
     }
+
     if (filterParts.length) {
       params.push(`filter=${filterParts.join(',')}`);
     }
@@ -68,7 +71,8 @@ export class CatalogClient implements CatalogApi {
     }
 
     const query = params.length ? `?${params.join('&')}` : '';
-    const entities: Entity[] = await this.getRequired(
+    const entities: Entity[] = await this.requestRequired(
+      'GET',
       `/entities${query}`,
       options,
     );
@@ -80,7 +84,8 @@ export class CatalogClient implements CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<Entity | undefined> {
     const { kind, namespace = 'default', name } = compoundName;
-    return this.getOptional(
+    return this.requestOptional(
+      'GET',
       `/entities/by-name/${kind}/${namespace}/${name}`,
       options,
     );
@@ -125,12 +130,17 @@ export class CatalogClient implements CatalogApi {
     };
   }
 
-  async getLocationByEntity(
+  async getOriginLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
-    const all: { data: Location }[] = await this.getRequired(
+    const locationCompound =
+      entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+    if (!locationCompound) {
+      return undefined;
+    }
+    const all: { data: Location }[] = await this.requestRequired(
+      'GET',
       '/locations',
       options,
     );
@@ -139,71 +149,92 @@ export class CatalogClient implements CatalogApi {
       .find(l => locationCompound === stringifyLocationReference(l));
   }
 
+  async getLocationByEntity(
+    entity: Entity,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined> {
+    const locationCompound = entity.metadata.annotations?.[LOCATION_ANNOTATION];
+    if (!locationCompound) {
+      return undefined;
+    }
+    const all: { data: Location }[] = await this.requestRequired(
+      'GET',
+      '/locations',
+      options,
+    );
+    return all
+      .map(r => r.data)
+      .find(l => locationCompound === stringifyLocationReference(l));
+  }
+
+  async removeLocationById(
+    id: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    await this.requestIgnored('DELETE', `/locations/${id}`, options);
+  }
+
   async removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void> {
-    const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-uid/${uid}`,
-      {
-        headers: options?.token
-          ? { Authorization: `Bearer ${options.token}` }
-          : {},
-        method: 'DELETE',
-      },
-    );
-    if (!response.ok) {
-      const payload = await response.text();
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}, ${payload}`,
-      );
-    }
-    return undefined;
+    await this.requestIgnored('DELETE', `/entities/by-uid/${uid}`, options);
   }
 
   //
   // Private methods
   //
 
-  private async getRequired(
+  private async requestIgnored(
+    method: string,
+    path: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void> {
+    const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
+    const response = await fetch(url, { method, headers });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+  }
+
+  private async requestRequired(
+    method: string,
     path: string,
     options?: CatalogRequestOptions,
   ): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url, {
-      headers: options?.token
-        ? { Authorization: `Bearer ${options.token}` }
-        : {},
-    });
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
+    const response = await fetch(url, { method, headers });
 
     if (!response.ok) {
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();
   }
 
-  private async getOptional(
+  private async requestOptional(
+    method: string,
     path: string,
     options?: CatalogRequestOptions,
   ): Promise<any | undefined> {
     const url = `${await this.discoveryApi.getBaseUrl('catalog')}${path}`;
-    const response = await fetch(url, {
-      headers: options?.token
-        ? { Authorization: `Bearer ${options.token}` }
-        : {},
-    });
+    const headers: Record<string, string> = options?.token
+      ? { Authorization: `Bearer ${options.token}` }
+      : {};
+    const response = await fetch(url, { method, headers });
 
     if (!response.ok) {
       if (response.status === 404) {
         return undefined;
       }
-
-      const payload = await response.text();
-      const message = `Request failed with ${response.status} ${response.statusText}, ${payload}`;
-      throw new Error(message);
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();

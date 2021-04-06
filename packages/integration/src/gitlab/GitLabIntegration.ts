@@ -46,7 +46,11 @@ export class GitLabIntegration implements ScmIntegration {
     return this.integrationConfig;
   }
 
-  resolveUrl(options: { url: string; base: string }): string {
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
     return defaultScmResolveUrl(options);
   }
 

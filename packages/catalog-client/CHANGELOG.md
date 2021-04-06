@@ -1,5 +1,30 @@
 # @backstage/catalog-client
 
+## 0.3.9
+
+### Patch Changes
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- b196a4569: Avoid using Headers as it is not supported in the backend
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-model@0.7.5
+
+## 0.3.8
+
+### Patch Changes
+
+- 8686eb38c: Throw the new `ResponseError` from `@backstage/errors`
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
+## 0.3.7
+
+### Patch Changes
+
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- Updated dependencies [0b42fff22]
+  - @backstage/catalog-model@0.7.4
+
 ## 0.3.6
 
 ### Patch Changes

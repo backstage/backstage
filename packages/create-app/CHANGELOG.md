@@ -1,5 +1,326 @@
 # @backstage/create-app
 
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies [676ede643]
+- Updated dependencies [2ab6f3ff0]
+- Updated dependencies [0d55dcc74]
+- Updated dependencies [ee5529268]
+- Updated dependencies [2c29611a0]
+- Updated dependencies [29e1789e1]
+- Updated dependencies [aa58c01e2]
+- Updated dependencies [60bddefce]
+- Updated dependencies [bebd1c4fe]
+- Updated dependencies [f1b2c1d2c]
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8bee6a131]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+- Updated dependencies [6b2d54fd6]
+- Updated dependencies [44590510d]
+- Updated dependencies [dd7fa21e2]
+- Updated dependencies [164cc4c53]
+- Updated dependencies [676ede643]
+  - @backstage/plugin-catalog-backend@0.7.0
+  - @backstage/plugin-scaffolder@0.8.1
+  - @backstage/plugin-scaffolder-backend@0.9.4
+  - @backstage/plugin-auth-backend@0.3.7
+  - @backstage/plugin-api-docs@0.4.10
+  - @backstage/plugin-github-actions@0.4.3
+  - @backstage/plugin-catalog@0.5.2
+  - @backstage/plugin-techdocs@0.7.1
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-import@0.5.1
+  - @backstage/plugin-explore@0.3.3
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+  - @backstage/plugin-user-settings@0.2.9
+
+## 0.3.15
+
+### Patch Changes
+
+- 2c525f85e: (fix) Adds locationAnalyzer to default-app template
+
+  The locationAnalyzer was missing from the default-app template.
+  This resulted in 404 errors in newly bootstrapped backstage applications,
+  when adding components without configuration.
+
+  To fix this in an existing backstage application, the locationAnalyzer needs
+  to be carried from the builder to the router in the
+  `packages/backend/src/plugins/catalog.ts` file.
+
+  ```diff
+     const builder = new CatalogBuilder(env);
+     const {
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+     } = await builder.build();
+     // ...
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+       logger: env.logger,
+     });
+  ```
+
+- f88fe9dd9: Adds plugin-org and more capability to the default EntityPage to display Users, Groups and Systems.
+
+  To update an existing application, add the org plugin:
+
+  ```shell
+  cd packages/app
+  yarn add @backstage/plugin-org
+  ```
+
+  Then add the example systems locations to your `app-config.yaml`:
+
+  ```diff
+  catalog:
+    rules:
+  -    - allow: [Component, API, Group, User, Template, Location]
+  +    - allow: [Component, System, API, Group, User, Template, Location]
+    locations:
+      # Backstage example components
+      - type: url
+        target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+  +    # Backstage example systems
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+  +
+      # Backstage example APIs
+  ```
+
+  Additionally, the default app sidebar was updated to parity with the Backstage
+  repo. You can see these changes in the template
+  [App.tsx](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/App.tsx#L70)
+  referencing a new `Root` component.
+
+  Finally, compare your `packages/app/src/components/catalog/EntityPage.tsx` to
+  [EntityPage](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+  from the `@backstage/create-app` default template to pick up additional
+  changes there.
+
+- 4d248725e: Update the create-app template to use the correct latest version of `express-promise-router`.
+
+  To apply the same change in your own repository, update all of your repo's dependencies on `express-promise-router` to `"^4.1.0"`.
+
+- Updated dependencies [9f2e51e89]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [449776cd6]
+- Updated dependencies [91e87c055]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [113d3d59e]
+- Updated dependencies [f47e11427]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [c862b3f36]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-scaffolder-backend@0.9.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/plugin-techdocs-backend@0.7.0
+  - @backstage/plugin-auth-backend@0.3.6
+  - @backstage/core@0.7.3
+  - @backstage/plugin-catalog-backend@0.6.7
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
+## 0.3.14
+
+### Patch Changes
+
+- 3385b374b: Supply a `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+  This is a new facility that plugins will start to use. You will have to add it to your local `packages/app` as described below. If this is not done, runtime errors will be seen in the frontend, on the form `No API factory available for dependency apiRef{integration.scmintegrations}`.
+
+  In `packages/app/package.json`:
+
+  ```diff
+     "dependencies": {
+  +    "@backstage/integration-react": "^0.1.1",
+  ```
+
+  In `packages/app/src/apis.ts`:
+
+  ```diff
+  +import {
+  +  scmIntegrationsApiRef,
+  +  ScmIntegrationsApi,
+  +} from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  +  createApiFactory({
+  +    api: scmIntegrationsApiRef,
+  +    deps: { configApi: configApiRef },
+  +    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  +  }),
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 028339210: Adds example groups and users to the default app template.
+
+  To apply this change in an existing application, change the following in `app-config.yaml`:
+
+  ```diff
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+  +    # Backstage example organization groups
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+  +      rules:
+  +        - allow: [Group, User]
+  +
+       # Backstage example templates
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+  ```
+
+- Updated dependencies [010aed784]
+- Updated dependencies [633a31fec]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [34e6bb409]
+- Updated dependencies [b56815b40]
+- Updated dependencies [147b4c5b1]
+- Updated dependencies [83bfc98a3]
+- Updated dependencies [7d8c4c97c]
+- Updated dependencies [e7baa0d2e]
+- Updated dependencies [8b4f7e42a]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [84972540b]
+- Updated dependencies [3385b374b]
+- Updated dependencies [0434853a5]
+- Updated dependencies [a0dacc184]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [4bc98a5b9]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d2f4efc5d]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [c8b54c370]
+- Updated dependencies [4e0b5055a]
+- Updated dependencies [8b5e59750]
+- Updated dependencies [8686eb38c]
+  - @backstage/plugin-catalog-backend@0.6.6
+  - @backstage/plugin-catalog@0.5.0
+  - @backstage/catalog-client@0.3.8
+  - @backstage/plugin-tech-radar@0.3.8
+  - @backstage/plugin-user-settings@0.2.8
+  - @backstage/plugin-techdocs@0.6.2
+  - @backstage/plugin-catalog-import@0.5.0
+  - @backstage/plugin-techdocs-backend@0.6.5
+  - @backstage/plugin-scaffolder-backend@0.9.2
+  - @backstage/backend-common@0.6.0
+  - @backstage/cli@0.6.5
+  - @backstage/plugin-scaffolder@0.8.0
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-api-docs@0.4.9
+  - @backstage/plugin-explore@0.3.2
+  - @backstage/plugin-github-actions@0.4.1
+  - @backstage/plugin-lighthouse@0.2.14
+  - @backstage/plugin-search@0.3.4
+  - @backstage/plugin-auth-backend@0.3.5
+  - @backstage/test-utils@0.1.9
+  - @backstage/plugin-app-backend@0.3.10
+  - @backstage/plugin-proxy-backend@0.2.6
+  - @backstage/plugin-rollbar-backend@0.1.8
+
+## 0.3.13
+
+### Patch Changes
+
+- b03fba0dc: Adds "yarn dev" command to simplify local development.
+
+  To add the command to an existing application, first add it to the `scripts`
+  section of your monorepo root `package.json` like so:
+
+  ```diff
+   "scripts": {
+  +    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+       "start": "yarn workspace app start",
+       "start-backend": "yarn workspace backend start",
+  ```
+
+  And then add the `concurrently` package to your monorepo, like so:
+
+  ```sh
+  yarn add concurrently@6.0.0 --dev -W
+  ```
+
+  Notes:
+
+  - This needs to be done to the monorepo root, not your frontend or backend package.
+  - The `--dev -W` will add it only to `devDependencies`, and force it to the monorepo main root.
+
+  You can then run `yarn dev` which will start both the Backstage frontend and backend in a single window.
+
+- Updated dependencies [13fb84244]
+- Updated dependencies [9ef5a126d]
+- Updated dependencies [4f3d0dce0]
+- Updated dependencies [d7245b733]
+- Updated dependencies [393b623ae]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [c532c1682]
+- Updated dependencies [761698831]
+- Updated dependencies [aa095e469]
+- Updated dependencies [761698831]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9f7dc10fb]
+- Updated dependencies [eabe89d38]
+- Updated dependencies [93c62c755]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [868e4cdf2]
+- Updated dependencies [02d78290a]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+- Updated dependencies [5f1b7ea35]
+- Updated dependencies [5ab5864f6]
+- Updated dependencies [4202807bb]
+- Updated dependencies [2e57922de]
+  - @backstage/plugin-github-actions@0.4.0
+  - @backstage/plugin-catalog-backend@0.6.5
+  - @backstage/plugin-catalog@0.4.2
+  - @backstage/backend-common@0.5.6
+  - @backstage/plugin-app-backend@0.3.9
+  - @backstage/plugin-scaffolder-backend@0.9.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/plugin-techdocs-backend@0.6.4
+  - @backstage/plugin-techdocs@0.6.1
+  - @backstage/plugin-auth-backend@0.3.4
+  - @backstage/plugin-scaffolder@0.7.1
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore@0.3.1
+  - @backstage/cli@0.6.4
+
 ## 0.3.12
 
 ### Patch Changes

@@ -50,7 +50,7 @@ export type WorkflowRun = {
     branchName: string;
     commit: {
       hash: string;
-      url: string;
+      url?: string;
     };
   };
   status: string;

@@ -63,9 +63,10 @@ describe('AzureIntegration', () => {
           url: '/a.yaml',
           base:
             'https://dev.azure.com/organization/project/_git/repository?path=%2Ffolder%2Fcatalog-info.yaml',
+          lineNumber: 14,
         }),
       ).toBe(
-        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml',
+        'https://dev.azure.com/organization/project/_git/repository?path=%2Fa.yaml&line=14&lineEnd=15&lineStartColumn=1&lineEndColumn=1',
       );
 
       expect(

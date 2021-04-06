@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 
-export function useBuilds(owner: string, repo: string, branch?: string) {
+export function useBuilds(projectName: string, branch?: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
 
@@ -38,9 +38,9 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
     try {
       let build;
       if (branch) {
-        build = await api.getLastBuild(`${owner}/${repo}/${branch}`);
+        build = await api.getLastBuild(`${projectName}/${branch}`);
       } else {
-        build = await api.getFolder(`${owner}/${repo}`);
+        build = await api.getFolder(`${projectName}`);
       }
 
       const size = Array.isArray(build) ? build?.[0].build_num! : 1;
@@ -51,9 +51,8 @@ export function useBuilds(owner: string, repo: string, branch?: string) {
       errorApi.post(e);
       throw e;
     }
-  }, [api, errorApi, owner, repo, branch]);
+  }, [api, errorApi, projectName, branch]);
 
-  const projectName = `${owner}/${repo}`;
   return [
     {
       page,

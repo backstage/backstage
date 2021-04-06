@@ -15,7 +15,7 @@
  */
 
 import { createTestShadowDom } from '../../test-utils';
-import { addLinkClickListener } from '.';
+import { addLinkClickListener } from './addLinkClickListener';
 
 describe('addLinkClickListener', () => {
   it('calls onClick when a link has been clicked', () => {

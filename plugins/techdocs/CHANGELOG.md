@@ -1,5 +1,81 @@
 # @backstage/plugin-techdocs
 
+## 0.7.1
+
+### Patch Changes
+
+- bebd1c4fe: Remove the `@backstage/techdocs-common` dependency to not pull in backend config schemas in the frontend.
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
+## 0.7.0
+
+### Minor Changes
+
+- aaeb7ecf3: When newer documentation available but not built, show older documentation while async building newer
+  TechDocs backend: /sync endpoint added to support above, returns immediate success if docs don't need a build, returns delayed success after build if needed
+  TechDocs backend: /docs endpoint removed as frontend can directly request to techdocs.storageUrl or /static/docs
+- 3139f83af: Add sticky sidebars and footer navigation links to TechDocs Reader
+
+### Patch Changes
+
+- ea9d977e7: Introduce workaround for admonition icons of MkDocs.
+- 2aab54319: TechDocs: links at sidebar and bottom reset scroll position to top
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
+## 0.6.2
+
+### Patch Changes
+
+- 83bfc98a3: On TechDocs page header, change the breadcrumbs link to be static and point to TechDocs homepage.
+- e7baa0d2e: Separate techdocs-backend and frontend config schema declarations
+- c8b54c370: Extended TechDocs HomePage with owned documents
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [4e0b5055a]
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+  - @backstage/techdocs-common@0.4.5
+  - @backstage/test-utils@0.1.9
+
+## 0.6.1
+
+### Patch Changes
+
+- aa095e469: OpenStack Swift publisher added for tech-docs.
+- 2089de76b: Make use of the new core `ItemCardGrid` and `ItemCardHeader` instead of the deprecated `ItemCard`.
+- 868e4cdf2: - Adds a link to the owner entity
+  - Corrects the link to the component which includes the namespace
+- ca4a904f6: Add an optional configuration option for setting the url endpoint for AWS S3 publisher: `techdocs.publisher.awsS3.endpoint`
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [aa095e469]
+- Updated dependencies [2089de76b]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [bc46435f5]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+  - @backstage/techdocs-common@0.4.4
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.6.0
 
 ### Minor Changes

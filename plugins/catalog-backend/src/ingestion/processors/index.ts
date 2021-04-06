@@ -17,7 +17,9 @@
 import * as results from './results';
 
 export { AnnotateLocationEntityProcessor } from './AnnotateLocationEntityProcessor';
+export { AnnotateScmSlugEntityProcessor } from './AnnotateScmSlugEntityProcessor';
 export { AwsOrganizationCloudAccountProcessor } from './AwsOrganizationCloudAccountProcessor';
+export { BitbucketDiscoveryProcessor } from './BitbucketDiscoveryProcessor';
 export { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';

@@ -1,5 +1,34 @@
 # @backstage/plugin-org
 
+## 0.3.11
+
+### Patch Changes
+
+- 7c6e1463b: Correctly route to namespaced group members
+- 87171d57d: Correctly include group members via matching namespace relation
+- baa39809e: Fixed MembersList showing members from a previous group when navigating to a new group
+- 9f48b548c: Some cleanup in how types and components are used; leverage `EntityRefLinks`
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
+## 0.3.10
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [a51dc0006]
+- Updated dependencies [e7f9b9435]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d88dd219e]
+- Updated dependencies [c8b54c370]
+  - @backstage/core-api@0.2.14
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.3.9
 
 ### Patch Changes

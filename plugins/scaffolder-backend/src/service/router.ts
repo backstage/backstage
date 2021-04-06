@@ -42,12 +42,8 @@ import { templateEntityToSpec } from '../scaffolder/tasks/TemplateConverter';
 import { TemplateActionRegistry } from '../scaffolder/actions/TemplateActionRegistry';
 import { createLegacyActions } from '../scaffolder/stages/legacy';
 import { getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import {
-  InputError,
-  NotFoundError,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   TemplateEntityV1alpha1,
@@ -292,7 +288,9 @@ export async function createRouter(
           );
         }
 
-        const template = await entityClient.findTemplate(name);
+        const template = await entityClient.findTemplate(name, {
+          token: getBearerToken(req.headers.authorization),
+        });
         if (isBeta2Template(template)) {
           const parameters = [template.spec.parameters ?? []].flat();
           res.json({
@@ -347,10 +345,22 @@ export async function createRouter(
         }
       },
     )
+    .get('/v2/actions', async (_req, res) => {
+      const actionsList = actionRegistry.list().map(action => {
+        return {
+          id: action.id,
+          description: action.description,
+          schema: action.schema,
+        };
+      });
+      res.json(actionsList);
+    })
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = req.body.values;
-      const template = await entityClient.findTemplate(templateName);
+      const template = await entityClient.findTemplate(templateName, {
+        token: getBearerToken(req.headers.authorization),
+      });
 
       let taskSpec;
       if (isAlpha1Template(template)) {

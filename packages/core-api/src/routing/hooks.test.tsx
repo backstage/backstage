@@ -15,32 +15,34 @@
  */
 
 import { render } from '@testing-library/react';
-import React, { PropsWithChildren, ReactElement } from 'react';
-import { MemoryRouter, Routes } from 'react-router-dom';
+import { renderHook } from '@testing-library/react-hooks';
+import React, {
+  Context,
+  PropsWithChildren,
+  ReactElement,
+  useContext,
+} from 'react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import {
   childDiscoverer,
   routeElementDiscoverer,
   traverseElementTree,
 } from '../extensions/traversal';
+import { getGlobalSingleton } from '../lib/globalObject';
+import { VersionedValue } from '../lib/versionedValues';
 import { createPlugin } from '../plugin';
 import {
-  routePathCollector,
-  routeParentCollector,
   routeObjectCollector,
+  routeParentCollector,
+  routePathCollector,
 } from './collectors';
-import {
-  useRouteRef,
-  RoutingProvider,
-  validateRoutes,
-  RouteFunc,
-} from './hooks';
-import {
-  createRouteRef,
-  createExternalRouteRef,
-  RouteRefConfig,
-} from './RouteRef';
-import { AnyRouteRef, RouteRef, ExternalRouteRef } from './types';
+import { createExternalRouteRef } from './ExternalRouteRef';
+import { RoutingProvider, useRouteRef, useRouteRefParams } from './hooks';
+import { createRouteRef, RouteRefConfig } from './RouteRef';
+import { RouteResolver } from './RouteResolver';
+import { AnyRouteRef, ExternalRouteRef, RouteFunc, RouteRef } from './types';
+import { validateRoutes } from './validation';
 
 const mockConfig = (extra?: Partial<RouteRefConfig<{}>>) => ({
   path: '/unused',
@@ -314,5 +316,90 @@ describe('discovery', () => {
     expect(() => validateRoutes(routePaths, routeParents)).toThrow(
       'Parameter :id is duplicated in path /foo/:id/bar/:id',
     );
+  });
+});
+
+describe('v1 consumer', () => {
+  const RoutingContext = getGlobalSingleton<
+    Context<VersionedValue<{ 1: RouteResolver }>>
+  >('routing-context');
+
+  function useMockRouteRefV1(
+    routeRef: AnyRouteRef,
+    location: string,
+  ): RouteFunc<any> | undefined {
+    const resolver = useContext(RoutingContext)?.atVersion(1);
+    if (!resolver) {
+      throw new Error('no impl');
+    }
+    return resolver.resolve(routeRef, location);
+  }
+
+  it('should resolve routes', () => {
+    const routeRef1 = createRouteRef({ id: 'ref1' });
+    const routeRef2 = createRouteRef({ id: 'ref2' });
+    const routeRef3 = createRouteRef({ id: 'ref3', params: ['x'] });
+
+    const renderedHook = renderHook(
+      ({ routeRef }) => useMockRouteRefV1(routeRef, '/'),
+      {
+        initialProps: {
+          routeRef: routeRef1 as AnyRouteRef,
+        },
+        wrapper: ({ children }) => (
+          <RoutingProvider
+            routePaths={
+              new Map<RouteRef<any>, string>([
+                [routeRef2, '/foo'],
+                [routeRef3, '/bar/:x'],
+              ])
+            }
+            routeParents={new Map()}
+            routeObjects={[]}
+            routeBindings={new Map()}
+            children={children}
+          />
+        ),
+      },
+    );
+
+    expect(renderedHook.result.current).toBe(undefined);
+    renderedHook.rerender({ routeRef: routeRef2 });
+    expect(renderedHook.result.current?.()).toBe('/foo');
+    renderedHook.rerender({ routeRef: routeRef3 });
+    expect(renderedHook.result.current?.({ x: 'my-x' })).toBe('/bar/my-x');
+  });
+});
+
+describe('useRouteRefParams', () => {
+  it('should provide types params', () => {
+    const routeRef = createRouteRef({
+      id: 'ref1',
+      params: ['a', 'b'],
+    });
+
+    const Page = () => {
+      const params: { a: string; b: string } = useRouteRefParams(routeRef);
+
+      return (
+        <div>
+          <span>{params.a}</span>
+          <span>{params.b}</span>
+        </div>
+      );
+    };
+
+    const { getByText } = render(
+      <MemoryRouter initialEntries={['/foo/bar']}>
+        <Routes>
+          <Route path="/:a/:b">
+            <Page />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(getByText('foo')).toBeInTheDocument();
+    expect(getByText('bar')).toBeInTheDocument();
   });
 });

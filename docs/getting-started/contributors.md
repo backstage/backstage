@@ -15,7 +15,7 @@ your own GitHub account and clone that code to your local machine or you can
 grab the one for the origin like so:
 
 ```bash
-git clone git@github.com/backstage/backstage --depth 1
+git clone git@github.com:backstage/backstage --depth 1
 ```
 
 If you cloned a fork, you can add the upstream dependency like so:

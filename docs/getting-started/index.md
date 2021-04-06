@@ -42,6 +42,13 @@ this process in [Create an app](./create-an-app.md).
 
 ### Contributing to Backstage
 
+If you intend to make changes to the core project's packages, certain plugins,
+or project documentation, then you can fork and clone
+[https://github.com/backstage/backstage](https://github.com/backstage/backstage).
+
+This will let you run the latest code off of the `master` branch, fix bugs or
+contribute new features, run test suites, etc.
+
 You can read more in our
 [CONTRIBUTING](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
 guide, which can help you get setup with a Backstage development environment.

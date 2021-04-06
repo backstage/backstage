@@ -18,16 +18,17 @@ const runDockerContainer = jest.fn();
 const runCommand = jest.fn();
 const commandExists = jest.fn();
 
-jest.mock('./helpers', () => ({ runDockerContainer, runCommand }));
+jest.mock('./helpers', () => ({ runCommand }));
+jest.mock('@backstage/backend-common', () => ({ runDockerContainer }));
 jest.mock('command-exists-promise', () => commandExists);
 jest.mock('fs-extra');
 
-import { CookieCutter } from './cookiecutter';
+import Docker from 'dockerode';
 import fs from 'fs-extra';
+import parseGitUrl from 'git-url-parse';
 import path from 'path';
 import { PassThrough } from 'stream';
-import Docker from 'dockerode';
-import parseGitUrl from 'git-url-parse';
+import { CookieCutter } from './cookiecutter';
 
 describe('CookieCutter Templater', () => {
   const mockDocker = {} as Docker;
@@ -47,7 +48,7 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const templater = new CookieCutter();
     await templater.run({
@@ -71,7 +72,7 @@ describe('CookieCutter Templater', () => {
     jest
       .spyOn(fs, 'readJSON')
       .mockImplementationOnce(() => Promise.resolve(existingJson));
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const values = {
       owner: 'blobby',
@@ -134,7 +135,10 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
+    jest
+      .spyOn(fs, 'realpath')
+      .mockImplementation(x => Promise.resolve(x.toString()));
 
     const templater = new CookieCutter();
     await templater.run({
@@ -149,15 +153,42 @@ describe('CookieCutter Templater', () => {
         'cookiecutter',
         '--no-input',
         '-o',
-        '/result',
-        '/template',
+        '/output',
+        '/input',
         '--verbose',
       ],
-      templateDir: path.join('tempdir', 'template'),
-      resultDir: path.join('tempdir', 'intermediate'),
+      envVars: { HOME: '/tmp' },
+      mountDirs: {
+        [path.join('tempdir', 'template')]: '/input',
+        [path.join('tempdir', 'intermediate')]: '/output',
+      },
+      workingDir: '/input',
       logStream: undefined,
       dockerClient: mockDocker,
     });
+  });
+
+  it('should run the docker container mentioned in configs, overriding the default', async () => {
+    const values = {
+      owner: 'blobby',
+      storePath: 'https://github.com/org/repo',
+      imageName: 'foo/cookiecutter-image-with-extensions',
+    };
+
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
+
+    const templater = new CookieCutter();
+    await templater.run({
+      workspacePath: 'tempdir',
+      values,
+      dockerClient: mockDocker,
+    });
+
+    expect(runDockerContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      }),
+    );
   });
 
   it('should pass through the streamer to the run docker helper', async () => {
@@ -172,7 +203,7 @@ describe('CookieCutter Templater', () => {
       },
     };
 
-    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
 
     const templater = new CookieCutter();
     await templater.run({
@@ -188,12 +219,16 @@ describe('CookieCutter Templater', () => {
         'cookiecutter',
         '--no-input',
         '-o',
-        '/result',
-        '/template',
+        '/output',
+        '/input',
         '--verbose',
       ],
-      templateDir: path.join('tempdir', 'template'),
-      resultDir: path.join('tempdir', 'intermediate'),
+      envVars: { HOME: '/tmp' },
+      mountDirs: {
+        [path.join('tempdir', 'template')]: '/input',
+        [path.join('tempdir', 'intermediate')]: '/output',
+      },
+      workingDir: '/input',
       logStream: stream,
       dockerClient: mockDocker,
     });
@@ -212,7 +247,7 @@ describe('CookieCutter Templater', () => {
         },
       };
 
-      jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing']);
+      jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
       commandExists.mockImplementationOnce(() => () => true);
 
       const templater = new CookieCutter();

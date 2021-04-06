@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams } from 'react-router';
+import { useRouteRefParams } from '@backstage/core';
+import { entityRouteRef } from '../routes';
 
 /**
  * Grabs entity kind, namespace, and name from the location
  */
 export const useEntityCompoundName = () => {
-  const { kind, namespace, name } = useParams();
+  const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   return { kind, namespace, name };
 };

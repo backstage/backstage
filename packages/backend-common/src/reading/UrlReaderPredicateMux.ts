@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NotAllowedError } from '../errors';
+import { NotAllowedError } from '@backstage/errors';
 import {
   ReadTreeOptions,
   ReadTreeResponse,

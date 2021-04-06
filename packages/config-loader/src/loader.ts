@@ -75,9 +75,10 @@ export async function loadConfig(
         fs.readFile(resolvePath(dir, path), 'utf8');
 
       const input = yaml.parse(await readFile(configPath));
+      const substitutionTransform = createSubstitutionTransform(env);
       const data = await applyConfigTransforms(dir, input, [
-        createIncludeTransform(env, readFile),
-        createSubstitutionTransform(env),
+        createIncludeTransform(env, readFile, substitutionTransform),
+        substitutionTransform,
       ]);
 
       configs.push({ data, context: basename(configPath) });

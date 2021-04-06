@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import {
   BitbucketIntegrationConfig,
   ScmIntegrationRegistry,
@@ -167,6 +167,8 @@ export function createPublishBitbucketAction(options: {
     repoVisibility: 'private' | 'public';
   }>({
     id: 'publish:bitbucket',
+    description:
+      'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket.',
     schema: {
       input: {
         type: 'object',

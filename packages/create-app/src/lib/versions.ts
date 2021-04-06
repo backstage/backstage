@@ -36,6 +36,8 @@ import { version as catalogModel } from '../../../catalog-model/package.json';
 import { version as cli } from '../../../cli/package.json';
 import { version as config } from '../../../config/package.json';
 import { version as core } from '../../../core/package.json';
+import { version as errors } from '../../../errors/package.json';
+import { version as integrationReact } from '../../../integration-react/package.json';
 import { version as testUtils } from '../../../test-utils/package.json';
 import { version as theme } from '../../../theme/package.json';
 
@@ -50,6 +52,7 @@ import { version as pluginCircleci } from '../../../../plugins/circleci/package.
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
+import { version as pluginOrg } from '../../../../plugins/org/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
@@ -67,6 +70,8 @@ export const packageVersions = {
   '@backstage/cli': cli,
   '@backstage/config': config,
   '@backstage/core': core,
+  '@backstage/errors': errors,
+  '@backstage/integration-react': integrationReact,
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
@@ -78,6 +83,7 @@ export const packageVersions = {
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
+  '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,

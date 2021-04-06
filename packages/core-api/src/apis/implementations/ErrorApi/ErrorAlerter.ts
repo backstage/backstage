@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ErrorApi, ErrorContext, AlertApi } from '../..';
+import { AlertApi, ErrorApi, ErrorContext } from '../../definitions';
 
 /**
  * Decorates an ErrorApi by also forwarding error messages

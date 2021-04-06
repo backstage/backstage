@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs-extra';
+
+import { runDockerContainer } from '@backstage/backend-common';
 import { JsonValue } from '@backstage/config';
-import { runDockerContainer, runCommand } from './helpers';
-import { TemplaterBase, TemplaterRunOptions } from '.';
+import fs from 'fs-extra';
 import path from 'path';
+import { runCommand } from './helpers';
+import { TemplaterBase, TemplaterRunOptions } from './types';
 
 const commandExists = require('command-exists-promise');
 
@@ -50,12 +52,19 @@ export class CookieCutter implements TemplaterBase {
     // First lets grab the default cookiecutter.json file
     const cookieCutterJson = await this.fetchTemplateCookieCutter(templateDir);
 
+    const { imageName, ...valuesForCookieCutterJson } = values;
     const cookieInfo = {
       ...cookieCutterJson,
-      ...values,
+      ...valuesForCookieCutterJson,
     };
 
     await fs.writeJSON(path.join(templateDir, 'cookiecutter.json'), cookieInfo);
+
+    // Directories to bind on container
+    const mountDirs = {
+      [templateDir]: '/input',
+      [intermediateDir]: '/output',
+    };
 
     const cookieCutterInstalled = await commandExists('cookiecutter');
     if (cookieCutterInstalled) {
@@ -66,17 +75,20 @@ export class CookieCutter implements TemplaterBase {
       });
     } else {
       await runDockerContainer({
-        imageName: 'spotify/backstage-cookiecutter',
+        imageName: imageName || 'spotify/backstage-cookiecutter',
         args: [
           'cookiecutter',
           '--no-input',
           '-o',
-          '/result',
-          '/template',
+          '/output',
+          '/input',
           '--verbose',
         ],
-        templateDir,
-        resultDir: intermediateDir,
+        mountDirs,
+        workingDir: '/input',
+        // Set the home directory inside the container as something that applications can
+        // write to, otherwise they will just fail trying to write to /
+        envVars: { HOME: '/tmp' },
         logStream,
         dockerClient,
       });

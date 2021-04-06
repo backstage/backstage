@@ -1,5 +1,49 @@
 # @backstage/core
 
+## 0.7.3
+
+### Patch Changes
+
+- fcc3ada24: Reuse ResponseErrorList for non ResponseErrors
+- 4618774ff: Changed color for Add Item, Support & Choose buttons with low contrast/readability in dark mode
+- df59930b3: Fix PropTypes error with OverflowTooltip component
+- Updated dependencies [76deafd31]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4618774ff]
+  - @backstage/core-api@0.2.15
+  - @backstage/theme@0.2.5
+
+## 0.7.2
+
+### Patch Changes
+
+- 8686eb38c: Add a `ResponseErrorPanel` to render `ResponseError` from `@backstage/errors`
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 34ff49b0f: Allow extension components to also return `null` in addition to a `JSX.Element`.
+- Updated dependencies [a51dc0006]
+- Updated dependencies [e7f9b9435]
+- Updated dependencies [0434853a5]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d88dd219e]
+- Updated dependencies [c8b54c370]
+  - @backstage/core-api@0.2.14
+  - @backstage/config@0.1.4
+
+## 0.7.1
+
+### Patch Changes
+
+- ff4d666ab: Add support for passing a fetch function instead of data to Table `data` prop.
+- 2089de76b: Deprecated `ItemCard`. Added `ItemCardGrid` and `ItemCardHeader` instead, that can be used to compose functionality around regular Material-UI `Card` components instead.
+- dc1fc92c8: Add support for non external URI's in the Link component to `to` prop. For example `<Link to="slack://channel?team=T0000&id=C0000">Slack</Link>
+- Updated dependencies [13524b80b]
+- Updated dependencies [e74b07578]
+- Updated dependencies [6fb4258a8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [395885905]
+  - @backstage/core-api@0.2.13
+  - @backstage/theme@0.2.4
+
 ## 0.7.0
 
 ### Minor Changes

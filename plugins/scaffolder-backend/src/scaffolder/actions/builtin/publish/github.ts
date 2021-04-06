@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
@@ -43,6 +43,8 @@ export function createPublishGithubAction(options: {
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:github',
+    description:
+      'Initializes a git repository of contents in workspace and publishes it to GitHub.',
     schema: {
       input: {
         type: 'object',
@@ -100,8 +102,12 @@ export function createPublishGithubAction(options: {
         );
       }
 
+      // TODO(blam): Consider changing this API to have owner, repo interface instead of URL as the it's
+      // needless to create URL and then parse again the other side.
       const { token } = await credentialsProvider.getCredentials({
-        url: `${host}/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,
+        url: `https://${host}/${encodeURIComponent(owner)}/${encodeURIComponent(
+          repo,
+        )}`,
       });
 
       if (!token) {
@@ -124,7 +130,7 @@ export function createPublishGithubAction(options: {
           ? client.repos.createInOrg({
               name: repo,
               org: owner,
-              private: repoVisibility !== 'public',
+              private: repoVisibility === 'private',
               visibility: repoVisibility,
               description: description,
             })

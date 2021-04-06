@@ -1,5 +1,18 @@
 # @backstage/plugin-lighthouse
 
+## 0.2.14
+
+### Patch Changes
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
 ## 0.2.13
 
 ### Patch Changes

@@ -40,14 +40,14 @@ const getFilesToLint = () => {
     command = `git ls-files | .\\node_modules\\.bin\\shx grep ".md"`;
   }
 
+  // Note this ignore list only applies locally, CI runs `.github/workflows/docs-quality-checker.yml`
+  const ignored = ['', 'ADOPTERS.md', 'OWNERS.md'];
   return execSync(command, {
     stdio: ['ignore', 'pipe', 'inherit'],
   })
     .toString()
     .split('\n')
-    .filter(function (el) {
-      return el !== '';
-    });
+    .filter(el => !ignored.includes(el));
 };
 
 // Proceed with the script only if Vale linter is installed. Limit the friction and surprises caused by the script.

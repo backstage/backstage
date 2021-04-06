@@ -57,7 +57,7 @@ type DeploymentTablesProps = {
 };
 
 export const PodsTable = ({ pods }: DeploymentTablesProps) => {
-  const tableStyle: React.CSSProperties = {
+  const tableStyle = {
     minWidth: '0',
     width: '100%',
   };

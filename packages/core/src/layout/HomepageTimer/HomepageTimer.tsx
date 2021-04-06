@@ -18,7 +18,10 @@ import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
 import { ConfigApi, useApi, configApiRef } from '@backstage/core-api';
 
-const timeFormat = { hour: '2-digit', minute: '2-digit' };
+const timeFormat: Intl.DateTimeFormatOptions = {
+  hour: '2-digit',
+  minute: '2-digit',
+};
 
 type TimeObj = {
   time: string;
@@ -41,7 +44,7 @@ function getTimes(configApi: ConfigApi) {
     if (clock.has('label') && clock.has('timezone')) {
       let label = clock.getString('label');
 
-      const options = {
+      const options: Intl.DateTimeFormatOptions = {
         timeZone: clock.getString('timezone'),
         ...timeFormat,
       };

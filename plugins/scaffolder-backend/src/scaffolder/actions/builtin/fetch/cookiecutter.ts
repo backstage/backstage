@@ -17,7 +17,8 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import Docker from 'dockerode';
-import { InputError, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { JsonObject } from '@backstage/config';
 import { TemplaterBuilder, TemplaterValues } from '../../../stages/templater';
@@ -36,8 +37,13 @@ export function createFetchCookiecutterAction(options: {
     url: string;
     targetPath?: string;
     values: JsonObject;
+    copyWithoutRender?: string[];
+    extensions?: string[];
+    imageName?: string;
   }>({
     id: 'fetch:cookiecutter',
+    description:
+      'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
     schema: {
       input: {
         type: 'object',
@@ -60,6 +66,30 @@ export function createFetchCookiecutterAction(options: {
             description: 'Values to pass on to cookiecutter for templating',
             type: 'object',
           },
+          copyWithoutRender: {
+            title: 'Copy Without Render',
+            description:
+              'Avoid rendering directories and files in the template',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          extensions: {
+            title: 'Template Extensions',
+            description:
+              "Jinja2 extensions to add filters, tests, globals or extend the parser. Extensions must be installed in the container or on the host where Cookiecutter executes. See the contrib directory in Backstage's repo for more information",
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          imageName: {
+            title: 'Cookiecutter Docker image',
+            description:
+              "Specify a custom Docker image to run cookiecutter, to override the default: 'spotify/backstage-cookiecutter'. This can be used to execute cookiecutter with Template Extensions. Used only when a local cookiecutter is not found.",
+            type: 'string',
+          },
         },
       },
     },
@@ -73,6 +103,18 @@ export function createFetchCookiecutterAction(options: {
       );
       const resultDir = resolvePath(workDir, 'result');
 
+      if (
+        ctx.input.copyWithoutRender &&
+        !Array.isArray(ctx.input.copyWithoutRender)
+      ) {
+        throw new InputError(
+          'Fetch action input copyWithoutRender must be an Array',
+        );
+      }
+      if (ctx.input.extensions && !Array.isArray(ctx.input.extensions)) {
+        throw new InputError('Fetch action input extensions must be an Array');
+      }
+
       await fetchContents({
         reader,
         integrations,
@@ -82,13 +124,19 @@ export function createFetchCookiecutterAction(options: {
       });
 
       const cookiecutter = templaters.get('cookiecutter');
+      const values = {
+        ...(ctx.input.values as TemplaterValues),
+        _copy_without_render: ctx.input.copyWithoutRender,
+        _extensions: ctx.input.extensions,
+        imageName: ctx.input.imageName,
+      };
 
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
         workspacePath: workDir,
         dockerClient,
         logStream: ctx.logStream,
-        values: ctx.input.values as TemplaterValues,
+        values,
       });
 
       // Finally move the template result into the task workspace

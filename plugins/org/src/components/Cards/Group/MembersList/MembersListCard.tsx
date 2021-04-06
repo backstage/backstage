@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 import {
-  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
   GroupEntity,
   RELATION_MEMBER_OF,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Avatar, InfoCard, Progress, useApi } from '@backstage/core';
 import {
-  useEntity,
+  Avatar,
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+} from '@backstage/core';
+import {
   catalogApiRef,
   entityRouteParams,
+  useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
   Box,
@@ -34,7 +40,6 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -54,13 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const MemberComponent = ({
-  member,
-  groupEntity,
-}: {
-  member: UserEntity;
-  groupEntity: Entity;
-}) => {
+const MemberComponent = ({ member }: { member: UserEntity }) => {
   const classes = useStyles();
   const {
     metadata: { name: metaName },
@@ -92,7 +91,7 @@ const MemberComponent = ({
                 component={RouterLink}
                 to={generatePath(
                   `/catalog/:namespace/user/${metaName}`,
-                  entityRouteParams(groupEntity),
+                  entityRouteParams(member),
                 )}
               >
                 {displayName}
@@ -110,36 +109,39 @@ export const MembersListCard = (_props: {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: GroupEntity;
 }) => {
-  const groupEntity = useEntity().entity as GroupEntity;
+  const { entity: groupEntity } = useEntity<GroupEntity>();
   const {
-    metadata: { name: groupName },
+    metadata: { name: groupName, namespace: grpNamespace },
     spec: { profile },
   } = groupEntity;
   const catalogApi = useApi(catalogApiRef);
 
   const displayName = profile?.displayName ?? groupName;
 
+  const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
+
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
-      filter: {
-        kind: 'User',
-      },
+      filter: { kind: 'User' },
     });
-    const groupMembersList = ((membersList.items as unknown) as Array<UserEntity>).filter(
+    const groupMembersList = (membersList.items as UserEntity[]).filter(
       member =>
         member?.relations?.some(
           r =>
             r.type === RELATION_MEMBER_OF &&
-            r.target.name.toLowerCase() === groupName.toLowerCase(),
+            r.target.name.toLocaleLowerCase('en-US') ===
+              groupName.toLocaleLowerCase('en-US') &&
+            r.target.namespace.toLocaleLowerCase('en-US') ===
+              groupNamespace.toLocaleLowerCase('en-US'),
         ),
     );
     return groupMembersList;
-  }, [catalogApi]);
+  }, [catalogApi, groupEntity]);
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (
@@ -149,13 +151,9 @@ export const MembersListCard = (_props: {
         subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
-          {members && members.length ? (
+          {members && members.length > 0 ? (
             members.map(member => (
-              <MemberComponent
-                member={member}
-                groupEntity={groupEntity}
-                key={member.metadata.uid}
-              />
+              <MemberComponent member={member} key={member.metadata.uid} />
             ))
           ) : (
             <Box p={2}>

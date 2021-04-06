@@ -49,8 +49,23 @@ export class BitbucketIntegration implements ScmIntegration {
     return this.integrationConfig;
   }
 
-  resolveUrl(options: { url: string; base: string }): string {
-    return defaultScmResolveUrl(options);
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number;
+  }): string {
+    const resolved = defaultScmResolveUrl(options);
+
+    // Bitbucket line numbers use the syntax #example.txt-42, rather than #L42
+    if (options.lineNumber) {
+      const url = new URL(resolved);
+
+      const filename = url.pathname.split('/').slice(-1)[0];
+      url.hash = `${filename}-${options.lineNumber}`;
+      return url.toString();
+    }
+
+    return resolved;
   }
 
   resolveEditUrl(url: string): string {

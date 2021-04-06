@@ -1,7 +1,7 @@
 {
   "name": "@backstage/create-app",
   "description": "Create app package for Backstage",
-  "version": "0.3.12",
+  "version": "0.3.16",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -33,7 +33,7 @@
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "inquirer": "^7.0.4",
-    "ora": "^4.0.3",
+    "ora": "^5.3.0",
     "recursive-readdir": "^2.2.2"
   },
   "devDependencies": {
@@ -50,6 +50,7 @@
     "@backstage/cli": "*",
     "@backstage/config": "*",
     "@backstage/core": "*",
+    "@backstage/errors": "*",
     "@backstage/plugin-api-docs": "*",
     "@backstage/plugin-app-backend": "*",
     "@backstage/plugin-auth-backend": "*",
@@ -68,6 +69,7 @@
     "@backstage/plugin-techdocs": "*",
     "@backstage/plugin-techdocs-backend": "*",
     "@backstage/plugin-user-settings": "*",
+    "@backstage/integration-react": "*",
     "@backstage/test-utils": "*",
     "@backstage/theme": "*"
   },

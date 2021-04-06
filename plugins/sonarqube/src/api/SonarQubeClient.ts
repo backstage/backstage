@@ -120,17 +120,21 @@ export class SonarQubeClient implements SonarQubeApi {
     return {
       lastAnalysis: component.component.analysisDate,
       metrics,
-      projectUrl: `${this.baseUrl}dashboard?id=${componentKey}`,
+      projectUrl: `${this.baseUrl}dashboard?id=${encodeURIComponent(
+        componentKey,
+      )}`,
       getIssuesUrl: identifier =>
-        `${
-          this.baseUrl
-        }project/issues?id=${componentKey}&types=${identifier.toUpperCase()}&resolved=false`,
+        `${this.baseUrl}project/issues?id=${encodeURIComponent(
+          componentKey,
+        )}&types=${identifier.toUpperCase()}&resolved=false`,
       getComponentMeasuresUrl: identifier =>
-        `${
-          this.baseUrl
-        }component_measures?id=${componentKey}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
+        `${this.baseUrl}component_measures?id=${encodeURIComponent(
+          componentKey,
+        )}&metric=${identifier.toLowerCase()}&resolved=false&view=list`,
       getSecurityHotspotsUrl: () =>
-        `${this.baseUrl}project/security_hotspots?id=${componentKey}`,
+        `${this.baseUrl}project/security_hotspots?id=${encodeURIComponent(
+          componentKey,
+        )}`,
     };
   }
 }

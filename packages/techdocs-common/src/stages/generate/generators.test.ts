@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Generators, TechdocsGenerator } from '.';
 import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { Generators } from './generators';
+import { TechdocsGenerator } from './techdocs';
 
 const logger = getVoidLogger();
 

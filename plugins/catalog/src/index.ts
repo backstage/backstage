@@ -29,4 +29,5 @@ export {
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
+  EntitySystemDiagramCard,
 } from './plugin';

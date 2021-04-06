@@ -117,27 +117,6 @@ through the proxy.
 Learn more about [the different components](overview/what-is-backstage.md) that
 make up Backstage.
 
-### How do I keep my Backstage app up to date?
-
-In many ways one can view Backstage as a library rather than an application or
-service. The `@backstage/create-app` tool that is used to create your own
-Backstage app is similar to
-[`create-react-app`](https://github.com/facebook/create-react-app) in that it
-gives you a starting point. The code you get is meant to be evolved, and most of
-the functionality you get out of the box is brought in via npm dependencies.
-Keeping your app up to date generally means keeping your dependencies up to
-date. The Backstage CLI provides a command to help you with that. Simply run
-`yarn backstage-cli versions:bump` at the root of your repo, and the latest
-versions of all Backstage packages will be installed.
-
-While staying up to date with new releases and changes will keep your app up to
-date, it can often be convenient to use the changes done to the
-`@backstage/create-app` template as another method to stay up to date. For that
-purpose, any changes done to the template are documented along with upgrade
-instructions in the
-[changelog](https://github.com/backstage/backstage/blob/master/packages/create-app/CHANGELOG.md)
-of the `@backstage/create-app` package.
-
 ### Why can't I dynamically install plugins without modifications the app?
 
 This decision is part of the core architecture and development flow of

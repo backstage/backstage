@@ -44,3 +44,6 @@ export { plugin as Search } from '@backstage/plugin-search';
 export { plugin as Org } from '@backstage/plugin-org';
 export { plugin as Kafka } from '@backstage/plugin-kafka';
 export { chromeUxReportPlugin } from '@backstage/plugin-chrome-ux-report';
+export { todoPlugin } from '@backstage/plugin-todo';
+export { badgesPlugin } from '@backstage/plugin-badges';
+export { githubDeploymentsPlugin } from '@backstage/plugin-github-deployments';

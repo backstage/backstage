@@ -15,14 +15,26 @@
  */
 
 import { IconComponent } from '../icons';
-import { getGlobalSingleton } from '../lib/globalObject';
+import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
 export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
   ? []
   : (keyof Params)[];
+export type OptionalParams<
+  Params extends { [param in string]: string }
+> = Params[keyof Params] extends never ? undefined : Params;
 
-export const routeRefType: unique symbol = getGlobalSingleton<any>(
+// The extra TS magic here is to require a single params argument if the RouteRef
+// had at least one param defined, but require 0 arguments if there are no params defined.
+// Without this we'd have to pass in empty object to all parameter-less RouteRefs
+// just to make TypeScript happy, or we would have to make the argument optional in
+// which case you might forget to pass it in when it is actually required.
+export type RouteFunc<Params extends AnyParams> = (
+  ...[params]: Params extends undefined ? readonly [] : readonly [Params]
+) => string;
+
+export const routeRefType: unique symbol = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
@@ -41,6 +53,16 @@ export type RouteRef<Params extends AnyParams = any> = {
   title?: string;
 };
 
+export type SubRouteRef<Params extends AnyParams = any> = {
+  readonly [routeRefType]: 'sub';
+
+  parent: RouteRef;
+
+  path: string;
+
+  params: ParamKeys<Params>;
+};
+
 export type ExternalRouteRef<
   Params extends AnyParams = any,
   Optional extends boolean = any
@@ -52,7 +74,10 @@ export type ExternalRouteRef<
   optional?: Optional;
 };
 
-export type AnyRouteRef = RouteRef<any> | ExternalRouteRef<any, any>;
+export type AnyRouteRef =
+  | RouteRef<any>
+  | SubRouteRef<any>
+  | ExternalRouteRef<any, any>;
 
 // TODO(Rugvip): None of these should be found in the wild anymore, remove in next minor release
 /** @deprecated */
@@ -68,5 +93,5 @@ export interface BackstageRouteObject {
   children?: BackstageRouteObject[];
   element: React.ReactNode;
   path: string;
-  routeRefs: Set<AnyRouteRef>;
+  routeRefs: Set<RouteRef>;
 }

@@ -15,12 +15,11 @@
  */
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
+import { ApiProvider, ApiRegistry, ConfigReader } from '@backstage/core';
 import {
-  ApiProvider,
-  ApiRegistry,
-  configApiRef,
-  ConfigReader,
-} from '@backstage/core';
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
@@ -34,7 +33,7 @@ describe('<AboutCard />', () => {
       kind: 'Component',
       metadata: {
         name: 'software',
-        description: 'This is the decription',
+        description: 'This is the description',
       },
       spec: {
         owner: 'guest',
@@ -53,10 +52,12 @@ describe('<AboutCard />', () => {
       ],
     };
     const apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({
-        integrations: {},
-      }),
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {},
+        }),
+      ),
     );
 
     const { getByText } = await renderInTestApp(
@@ -70,7 +71,7 @@ describe('<AboutCard />', () => {
     expect(getByText('service')).toBeInTheDocument();
     expect(getByText('user:guest')).toBeInTheDocument();
     expect(getByText('production')).toBeInTheDocument();
-    expect(getByText('This is the decription')).toBeInTheDocument();
+    expect(getByText('This is the description')).toBeInTheDocument();
   });
 
   it('renders "view source" link', async () => {
@@ -91,17 +92,19 @@ describe('<AboutCard />', () => {
       },
     };
     const apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({
-        integrations: {
-          github: [
-            {
-              host: 'github.com',
-              token: '...',
-            },
-          ],
-        },
-      }),
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                token: '...',
+              },
+            ],
+          },
+        }),
+      ),
     );
 
     const { getByText } = await renderInTestApp(
@@ -135,17 +138,19 @@ describe('<AboutCard />', () => {
       },
     };
     const apis = ApiRegistry.with(
-      configApiRef,
-      new ConfigReader({
-        integrations: {
-          github: [
-            {
-              host: 'github.com',
-              token: '...',
-            },
-          ],
-        },
-      }),
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(
+        new ConfigReader({
+          integrations: {
+            github: [
+              {
+                host: 'github.com',
+                token: '...',
+              },
+            ],
+          },
+        }),
+      ),
     );
 
     const { getByTitle } = await renderInTestApp(
@@ -180,7 +185,10 @@ describe('<AboutCard />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(configApiRef, new ConfigReader({}));
+    const apis = ApiRegistry.with(
+      scmIntegrationsApiRef,
+      ScmIntegrationsApi.fromConfig(new ConfigReader({})),
+    );
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>

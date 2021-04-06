@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import { Config } from '@backstage/config';
+import { getCombinedClusterDetails } from '../cluster-locator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
-import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
-import { KubernetesClientProvider } from './KubernetesClientProvider';
 import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
   KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
-  ClusterDetails,
-  KubernetesClustersSupplier,
-} from '..';
-import { getCombinedClusterDetails } from '../cluster-locator';
+  CustomResource,
+} from '../types/types';
+import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
+import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 
 export interface RouterOptions {
   logger: Logger;
@@ -99,6 +100,21 @@ export async function createRouter(
 
   logger.info('Initializing Kubernetes backend');
 
+  const customResources: CustomResource[] = (
+    options.config.getOptionalConfigArray('kubernetes.customResources') ?? []
+  ).map(
+    c =>
+      ({
+        group: c.getString('group'),
+        apiVersion: c.getString('apiVersion'),
+        plural: c.getString('plural'),
+      } as CustomResource),
+  );
+
+  logger.info(
+    `action=LoadingCustomResources numOfCustomResources=${customResources.length}`,
+  );
+
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
@@ -122,6 +138,7 @@ export async function createRouter(
     logger,
     fetcher,
     serviceLocator,
+    customResources,
   );
 
   return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);

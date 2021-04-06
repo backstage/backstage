@@ -24,10 +24,6 @@ cd packages/app
 yarn add @backstage/plugin-scaffolder
 ```
 
-Make sure the version of `@backstage/plugin-scaffolder` matches the version of
-other `@backstage` packages. You can update it in `packages/app/package.json` if
-it doesn't.
-
 ### Adding the Plugin to your `packages/app`
 
 Add the following entry to the head of your `packages/app/src/plugins.ts`:
@@ -70,10 +66,6 @@ created as a part of `@backstage/create-app`. To install the package, run:
 cd packages/backend
 yarn add @backstage/plugin-scaffolder-backend
 ```
-
-Make sure the version of `@backstage/plugin-scaffolder-backend` matches the
-version of other `@backstage` packages. You can update it in
-`packages/backend/package.json` if it doesn't.
 
 ### Adding the Plugin to your `packages/backend`
 
@@ -219,7 +211,7 @@ integrations:
         $env: GITLAB_TOKEN
 ```
 
-#### BitBucket
+#### Bitbucket
 
 For Bitbucket there are two authentication methods supported. Either `token` or
 a combination of `appPassword` and `username`. It looks like either of the

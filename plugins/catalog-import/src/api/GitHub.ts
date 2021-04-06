@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core';
-import { ScmIntegrations } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 
 export const getGithubIntegrationConfig = (
-  config: ConfigApi,
+  scmIntegrationsApi: ScmIntegrationRegistry,
   location: string,
 ) => {
-  const { name: repo, owner } = parseGitUrl(location);
-
-  const scmIntegrations = ScmIntegrations.fromConfig(config);
-  const githubIntegrationConfig = scmIntegrations.github.byUrl(location);
-
-  if (!githubIntegrationConfig) {
+  const integration = scmIntegrationsApi.github.byUrl(location);
+  if (!integration) {
     return undefined;
   }
 
+  const { name: repo, owner } = parseGitUrl(location);
   return {
     repo,
     owner,
-    githubIntegrationConfig: githubIntegrationConfig.config,
+    githubIntegrationConfig: integration.config,
   };
 };

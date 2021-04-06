@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { ClusterLocatorMethod } from '@backstage/plugin-kubernetes-backend';
+import {
+  ClusterLocatorMethod,
+  CustomResource,
+} from '@backstage/plugin-kubernetes-backend';
 
 export interface Config {
   kubernetes?: {
@@ -31,5 +34,9 @@ export interface Config {
      * @visibility frontend
      */
     clusterLocatorMethods: ClusterLocatorMethod[];
+    /**
+     * @visibility frontend
+     */
+    customResources?: CustomResource[];
   };
 }

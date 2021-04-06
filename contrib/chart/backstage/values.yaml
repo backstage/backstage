@@ -69,6 +69,7 @@ global:
   postgresql:
     postgresqlUsername: backend-user
     caFilename: ca.crt
+  nodeSelector: {}
 
 postgresql:
   enabled: true

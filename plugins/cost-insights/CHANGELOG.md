@@ -1,5 +1,16 @@
 # @backstage/plugin-cost-insights
 
+## 0.8.4
+
+### Patch Changes
+
+- d10ea17c9: fix missing type exports of public components
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.8.3
 
 ### Patch Changes

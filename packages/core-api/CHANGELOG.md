@@ -1,5 +1,74 @@
 # @backstage/core-api
 
+## 0.2.15
+
+### Patch Changes
+
+- 76deafd31: Changed the signature of `createRoutableExtension` to include null
+- 01ccef4c7: Introduce `useRouteRefParams` to `core-api` to retrieve typed route parameters.
+- Updated dependencies [4618774ff]
+  - @backstage/theme@0.2.5
+
+## 0.2.14
+
+### Patch Changes
+
+- a51dc0006: Export `SubRouteRef` type, and allow `SubRouteRef`s to be assigned to `plugin.routes`.
+- e7f9b9435: Allow elements to be used multiple times in the app element tree.
+- 34ff49b0f: Allow extension components to also return `null` in addition to a `JSX.Element`.
+- d88dd219e: Internal refactor to allow for future package splits. As part of this `ApiRef`s are now identified by their ID rather than their reference.
+- c8b54c370: Added new Docs Icon to Core Icons
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
+## 0.2.13
+
+### Patch Changes
+
+- 13524b80b: Fully deprecate `title` option of `RouteRef`s and introduce `id` instead.
+- e74b07578: Fixed a bug where FlatRoutes didn't handle React Fragments properly.
+- 6fb4258a8: Add `SubRouteRef`s, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you for example have a page that is mounted at a sub route of a routable extension component, and you want other plugins to be able to route to that page.
+
+  For example:
+
+  ```tsx
+  // routes.ts
+  const rootRouteRef = createRouteRef({ id: 'root' });
+  const detailsRouteRef = createSubRouteRef({
+    id: 'root-sub',
+    parent: rootRouteRef,
+    path: '/details',
+  });
+
+  // plugin.ts
+  export const myPlugin = createPlugin({
+    routes: {
+      root: rootRouteRef,
+      details: detailsRouteRef,
+    }
+  })
+
+  export const MyPage = plugin.provide(createRoutableExtension({
+    component: () => import('./components/MyPage').then(m => m.MyPage),
+    mountPoint: rootRouteRef,
+  }))
+
+  // components/MyPage.tsx
+  const MyPage = () => (
+    <Routes>
+      {/* myPlugin.routes.root will take the user to this page */}
+      <Route path='/' element={<IndexPage />}>
+
+      {/* myPlugin.routes.details will take the user to this page */}
+      <Route path='/details' element={<DetailsPage />}>
+    </Routes>
+  )
+  ```
+
+- 395885905: Wait for `configApi` to be ready before using `featureFlagsApi`
+- Updated dependencies [2089de76b]
+  - @backstage/theme@0.2.4
+
 ## 0.2.12
 
 ### Patch Changes

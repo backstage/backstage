@@ -17,6 +17,11 @@
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { BindConfig } from './config';
 import { errorString } from './util';
+import {
+  ActiveDirectoryVendor,
+  DefaultLdapVendor,
+  LdapVendor,
+} from './vendors';
 
 /**
  * Basic wrapper for the ldapjs library.
@@ -24,6 +29,8 @@ import { errorString } from './util';
  * Helps out with promisifying calls, paging, binding etc.
  */
 export class LdapClient {
+  private vendor: Promise<LdapVendor> | undefined;
+
   static async create(target: string, bind?: BindConfig): Promise<LdapClient> {
     const client = ldap.createClient({ url: target });
     if (!bind) {
@@ -87,5 +94,45 @@ export class LdapClient {
     } catch (e) {
       throw new Error(`LDAP search at ${dn} failed, ${e.message}`);
     }
+  }
+
+  /**
+   * Get the Server Vendor.
+   * Currently only detects Microsoft Active Directory Servers.
+   *
+   * @see https://ldapwiki.com/wiki/Determine%20LDAP%20Server%20Vendor
+   */
+  async getVendor(): Promise<LdapVendor> {
+    if (this.vendor) {
+      return this.vendor;
+    }
+    this.vendor = this.getRootDSE()
+      .then(root => {
+        if (root && root.raw?.forestFunctionality) {
+          return ActiveDirectoryVendor;
+        }
+        return DefaultLdapVendor;
+      })
+      .catch(err => {
+        this.vendor = undefined;
+        throw err;
+      });
+    return this.vendor;
+  }
+
+  /**
+   * Get the Root DSE.
+   *
+   * @see https://ldapwiki.com/wiki/RootDSE
+   */
+  async getRootDSE(): Promise<SearchEntry | undefined> {
+    const result = await this.search('', {
+      scope: 'base',
+      filter: '(objectclass=*)',
+    } as SearchOptions);
+    if (result && result.length === 1) {
+      return result[0];
+    }
+    return undefined;
   }
 }

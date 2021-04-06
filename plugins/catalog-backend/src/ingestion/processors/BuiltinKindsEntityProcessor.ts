@@ -226,6 +226,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_PARENT_OF,
         RELATION_CHILD_OF,
       );
+      doEmit(
+        group.spec.members,
+        { defaultKind: 'User', defaultNamespace: selfRef.namespace },
+        RELATION_HAS_MEMBER,
+        RELATION_MEMBER_OF,
+      );
     }
 
     /*

@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export * from './RepoUrlPicker';
+export * from './OwnerPicker';

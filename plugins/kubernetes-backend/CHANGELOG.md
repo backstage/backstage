@@ -1,5 +1,93 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.3
+
+### Patch Changes
+
+- 1ac6a5233: updated entity name to be set through annotations or fallback
+- 60e463c8d: Load credentials properly for AWS Kubernetes Auth Translator
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.3.2
+
+### Patch Changes
+
+- a2a3c7803: Bump `@kubernetes/client-node` from `^0.13.2` to `^0.14.0`.
+
+## 0.3.1
+
+### Patch Changes
+
+- 1f98a6ff8: Filter out k8s cluster with no resources or errors
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.3.0
+
+### Minor Changes
+
+- 9581ff0b4: Restructure configuration; Add GKE cluster locator
+
+  Config migration
+
+  1. `kubernetes.clusters` is now at `kubernetes.clusterLocatorMethods[].clusters` when the `clusterLocatorMethod` is of `type: 'config''`
+  2. `kubernetes.serviceLocatorMethod` is now an object. `multiTenant` is the only valid `type` currently
+
+  Old config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod: 'multiTenant'
+    clusterLocatorMethods:
+      - 'config'
+    clusters:
+      - url: http://127.0.0.1:9999
+        name: minikube
+        authProvider: 'serviceAccount'
+        serviceAccountToken:
+          $env: K8S_MINIKUBE_TOKEN
+      - url: http://127.0.0.2:9999
+        name: aws-cluster-1
+        authProvider: 'aws'
+  ```
+
+  New config example:
+
+  ```yaml
+  kubernetes:
+    serviceLocatorMethod:
+      type: 'multiTenant'
+    clusterLocatorMethods:
+      - type: 'config'
+        clusters:
+          - url: http://127.0.0.1:9999
+            name: minikube
+            authProvider: 'serviceAccount'
+            serviceAccountToken:
+              $env: K8S_MINIKUBE_TOKEN
+          - url: http://127.0.0.2:9999
+            name: aws-cluster-1
+            authProvider: 'aws'
+  ```
+
+- e2c1b3fb6: Add initial CRD support framework
+
+### Patch Changes
+
+- 5d7834baf: Use AWS SDK V2 instead of V3 for Kubernetes authentication
+- 8de9963f0: Remove Kubernetes client caching
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.2.8
 
 ### Patch Changes

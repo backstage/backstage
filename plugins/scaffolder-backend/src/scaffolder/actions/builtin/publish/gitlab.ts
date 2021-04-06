@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
@@ -31,6 +31,8 @@ export function createPublishGitlabAction(options: {
     repoVisibility: 'private' | 'internal' | 'public';
   }>({
     id: 'publish:gitlab',
+    description:
+      'Initializes a git repository of the content in the workspace, and publishes it to GitLab.',
     schema: {
       input: {
         type: 'object',

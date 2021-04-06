@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-import { NotFoundError, UrlReader } from '@backstage/backend-common';
-import {
-  Entity,
-  LocationSpec,
-  stringifyLocationReference,
-} from '@backstage/catalog-model';
-import * as codeowners from 'codeowners-utils';
-import { CodeOwnersEntry } from 'codeowners-utils';
-// NOTE: This can be removed when ES2021 is implemented
-import 'core-js/features/promise';
-import parseGitUrl from 'git-url-parse';
-import { filter, get, head, pipe, reverse } from 'lodash/fp';
+import { UrlReader } from '@backstage/backend-common';
+import { Entity, LocationSpec } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import { Logger } from 'winston';
+import { findCodeOwnerByTarget } from './codeowners';
 import { CatalogProcessor } from './types';
+
+const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 
 const ALLOWED_LOCATION_TYPES = [
   'url',
@@ -39,18 +34,32 @@ const ALLOWED_LOCATION_TYPES = [
   'gitlab/api',
 ];
 
-// TODO(Rugvip): We want to properly detect out repo provider, but for now it's
-//               best to wait for GitHub Apps to be properly introduced and see
-//               what kind of APIs that integrations will expose.
-const KNOWN_LOCATIONS = ['', '/docs', '/.bitbucket', '/.github', '/.gitlab'];
-
-type Options = {
-  reader: UrlReader;
-  logger: Logger;
-};
-
 export class CodeOwnersProcessor implements CatalogProcessor {
-  constructor(private readonly options: Options) {}
+  private readonly integrations: ScmIntegrations;
+  private readonly logger: Logger;
+  private readonly reader: UrlReader;
+
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; reader: UrlReader },
+  ) {
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    return new CodeOwnersProcessor({
+      ...options,
+      integrations,
+    });
+  }
+
+  constructor(options: {
+    integrations: ScmIntegrations;
+    logger: Logger;
+    reader: UrlReader;
+  }) {
+    this.integrations = options.integrations;
+    this.logger = options.logger;
+    this.reader = options.reader;
+  }
 
   async preProcessEntity(
     entity: Entity,
@@ -59,15 +68,28 @@ export class CodeOwnersProcessor implements CatalogProcessor {
     // Only continue if the owner is not set
     if (
       !entity ||
-      !['Component', 'API'].includes(entity.kind) ||
+      !ALLOWED_KINDS.includes(entity.kind) ||
       !ALLOWED_LOCATION_TYPES.includes(location.type) ||
       (entity.spec && entity.spec.owner)
     ) {
       return entity;
     }
 
-    const owner = await resolveCodeOwner(location, this.options);
+    const scmIntegration = this.integrations.byUrl(location.target);
+    if (!scmIntegration) {
+      return entity;
+    }
+
+    const owner = await findCodeOwnerByTarget(
+      this.reader,
+      location.target,
+      scmIntegration,
+    );
+
     if (!owner) {
+      this.logger.debug(
+        `CodeOwnerProcessor could not resolve owner for ${location.target}`,
+      );
       return entity;
     }
 
@@ -75,114 +97,5 @@ export class CodeOwnersProcessor implements CatalogProcessor {
       ...entity,
       spec: { ...entity.spec, owner },
     };
-  }
-}
-
-export async function resolveCodeOwner(
-  location: LocationSpec,
-  options: Options,
-): Promise<string | undefined> {
-  const ownersText = await findRawCodeOwners(location, options);
-  if (!ownersText) {
-    return undefined;
-  }
-
-  const owners = parseCodeOwners(ownersText);
-
-  return findPrimaryCodeOwner(owners);
-}
-
-export async function findRawCodeOwners(
-  location: LocationSpec,
-  options: Options,
-): Promise<string | undefined> {
-  const readOwnerLocation = async (basePath: string): Promise<string> => {
-    const ownerUrl = buildCodeOwnerUrl(
-      location.target,
-      `${basePath}/CODEOWNERS`,
-    );
-    const data = await options.reader.read(ownerUrl);
-    return data.toString();
-  };
-
-  const candidates = KNOWN_LOCATIONS.map(readOwnerLocation);
-  return Promise.any(candidates).catch((aggregateError: AggregateError) => {
-    const hardError = aggregateError.errors.find(
-      error => !(error instanceof NotFoundError),
-    );
-    if (hardError) {
-      options.logger.warn(
-        `Failed to read codeowners for location ${stringifyLocationReference(
-          location,
-        )}, ${hardError}`,
-      );
-    } else {
-      options.logger.debug(
-        `Failed to find codeowners for location ${stringifyLocationReference(
-          location,
-        )}`,
-      );
-    }
-    return undefined;
-  });
-}
-
-export function buildCodeOwnerUrl(
-  basePath: string,
-  codeOwnersPath: string,
-): string {
-  return buildUrl({ ...parseGitUrl(basePath), codeOwnersPath });
-}
-
-export function parseCodeOwners(ownersText: string) {
-  return codeowners.parse(ownersText);
-}
-
-export function findPrimaryCodeOwner(
-  owners: CodeOwnersEntry[],
-): string | undefined {
-  return pipe(
-    filter((e: CodeOwnersEntry) => e.pattern === '*'),
-    reverse,
-    head,
-    get('owners'),
-    head,
-    normalizeCodeOwner,
-  )(owners);
-}
-
-export function normalizeCodeOwner(owner: string) {
-  if (owner.match(/^@.*\/.*/)) {
-    return owner.split('/')[1];
-  } else if (owner.match(/^@.*/)) {
-    return owner.substring(1);
-  } else if (owner.match(/^.*@.*\..*$/)) {
-    return owner.split('@')[0];
-  }
-
-  return owner;
-}
-
-export function buildUrl({
-  protocol = 'https',
-  source = 'github.com',
-  owner,
-  name,
-  ref = 'master',
-  codeOwnersPath = '/CODEOWNERS',
-}: {
-  protocol?: string;
-  source?: string;
-  owner: string;
-  name: string;
-  ref?: string;
-  codeOwnersPath?: string;
-}) {
-  switch (source) {
-    case 'dev.azure.com':
-    case 'azure.com':
-      throw Error('Azure codeowner url builder not implemented');
-    default:
-      return `${protocol}://${source}/${owner}/${name}/blob/${ref}${codeOwnersPath}`;
   }
 }

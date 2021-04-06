@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ClusterDetails, KubernetesClustersSupplier } from '..';
 import { Config } from '@backstage/config';
 import * as container from '@google-cloud/container';
+import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 export class GkeClusterLocator implements KubernetesClustersSupplier {
   private readonly projectId: string;

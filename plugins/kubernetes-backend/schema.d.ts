@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ClusterLocatorMethod } from './src/types';
+import { ClusterLocatorMethod, CustomResource } from './src/types';
 
 export interface Config {
   kubernetes?: {
@@ -22,5 +22,6 @@ export interface Config {
       type: 'multiTenant';
     };
     clusterLocatorMethods: ClusterLocatorMethod[];
+    customResources?: CustomResource[];
   };
 }

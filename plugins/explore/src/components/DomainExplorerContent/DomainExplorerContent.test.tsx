@@ -27,8 +27,10 @@ describe('<DomainExplorerContent />', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     addLocation: jest.fn(_a => new Promise(() => {})),
     getEntities: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
+    removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
   };

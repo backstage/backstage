@@ -21,11 +21,11 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import {
-  configApiRef,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   useApi,
 } from '@backstage/core';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -64,8 +64,11 @@ type AboutCardProps = {
 export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
   const { entity } = useEntity();
-  const configApi = useApi(configApiRef);
-  const entitySourceLocation = getEntitySourceLocation(entity, configApi);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const entitySourceLocation = getEntitySourceLocation(
+    entity,
+    scmIntegrationsApi,
+  );
   const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
   const providesApiRelations = getEntityRelations(
     entity,

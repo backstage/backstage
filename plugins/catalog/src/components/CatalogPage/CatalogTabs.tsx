@@ -48,9 +48,19 @@ type Props = {
  */
 export const CatalogTabs = ({ tabs, onChange }: Props) => {
   const filterGroup = useMemo<FilterGroup>(() => {
+    const otherType = 'other';
+    const wellKnownTypes = tabs.map(t => t.id).filter(t => t !== otherType);
+    const isOtherType = (entity: Entity) =>
+      !wellKnownTypes.includes(entity.spec?.type as string);
+
     return {
       filters: Object.fromEntries(
-        tabs.map(t => [t.id, (entity: Entity) => entity.spec?.type === t.id]),
+        tabs.map(t => [
+          t.id,
+          (entity: Entity) =>
+            (t.id === otherType && isOtherType(entity)) ||
+            entity.spec?.type === t.id,
+        ]),
       ),
     };
   }, [tabs]);

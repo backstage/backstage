@@ -1,5 +1,26 @@
 # @backstage/cli
 
+## 0.6.6
+
+### Patch Changes
+
+- 598f5bcfb: Lock down the version of webpack-dev-server as it's causing some nasty bugs someplace
+- 4d248725e: Make the backend plugin template use the correct latest version of `express-promise-router`
+
+## 0.6.5
+
+### Patch Changes
+
+- 84972540b: Lint storybook files, i.e. `*.stories.*`, as if they were tests.
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
+## 0.6.4
+
+### Patch Changes
+
+- 5ab5864f6: Add support for most TypeScript 4.1 syntax.
+
 ## 0.6.3
 
 ### Patch Changes

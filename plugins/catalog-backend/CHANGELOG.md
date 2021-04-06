@@ -1,5 +1,130 @@
 # @backstage/plugin-catalog-backend
 
+## 0.7.0
+
+### Minor Changes
+
+- 676ede643: DELETE on an entity now just deletes the entity, rather than removing all related entities and the location
+- f1b2c1d2c: Add `readonly` mode to catalog backend
+
+  This change adds a `catalog.readonly` field in `app-config.yaml` that can be used to configure the catalog in readonly mode which effectively disables the possibility of adding new components to the catalog after startup.
+
+  When in `readonly` mode only locations configured in `catalog.locations` are loaded and served.
+  By default `readonly` is disabled which represents the current functionality where locations can be added at run-time.
+
+  This change requires the config API in the router which requires a change to `createRouter`.
+
+  ```diff
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+       locationAnalyzer,
+       logger: env.logger,
+  +    config: env.config,
+     });
+  ```
+
+### Patch Changes
+
+- 29e1789e1: Make sure that Group `spec.members` is taken into account when filling out an org hierarchy
+- 8488a1a96: Added support for the "members" field of the Group entity, allowing specification of
+  direct members from the Group side of the relationship. Added support to the
+  `BuiltinKindsEntityProcessor` to generate the appropriate relationships.
+- 6b2d54fd6: Fix mapping between users and groups for Microsoft Active Directories when using the LdapOrgProcessor
+- 44590510d: Add Bitbucket Server discovery processor.
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.6.7
+
+### Patch Changes
+
+- f47e11427: Log how many repositories were actually matching in `GithubDiscoveryProcessor`
+- c862b3f36: Introduce pagination in the /entities catalog endpoint.
+
+  Pagination is requested using query parameters. Currently supported parameters, all optional, are:
+
+  - `limit` - an integer number of entities to return, at most
+  - `offset` - an integer number of entities to skip over at the start
+  - `after` - an opaque string cursor as returned by a previous paginated request
+
+  Example request:
+
+  `GET /entities?limit=100`
+
+  Example response:
+
+  ```
+  200 OK
+  Content-Type: application/json; charset=utf-8
+  Link: </entities?limit=100&after=eyJsaW1pdCI6Miwib2Zmc2V0IjoyfQ%3D%3D>; rel="next"
+  <more headers>
+
+  [{"metadata":{...
+  ```
+
+  Note the Link header. It contains the URL (path and query part, relative to the catalog root) to use for requesting the next page.
+  It uses the `after` cursor to point out the end of the previous page. If the Link header is not present, there is no more data to read.
+
+  The current implementation is naive and encodes offset/limit in the cursor implementation, so it is not robust in the face of overlapping
+  changes to the catalog. This can be improved separately in the future without having to change the calling patterns.
+
+- Updated dependencies [4d248725e]
+  - @backstage/plugin-search-backend-node@0.1.2
+
+## 0.6.6
+
+### Patch Changes
+
+- 010aed784: Add `AnnotateScmSlugEntityProcessor` that automatically adds the
+  `github.com/project-slug` annotation for components coming from GitHub.
+
+  The processor is optional and not automatically registered in the catalog
+  builder. To add it to your instance, add it to your `CatalogBuilder` using
+  `addProcessor()`:
+
+  ```typescript
+  const builder = new CatalogBuilder(env);
+  builder.addProcessor(AnnotateScmSlugEntityProcessor.fromConfig(env.config));
+  ```
+
+- 4bc98a5b9: Refactor CodeOwnersProcessor to use ScmIntegrations
+- d2f4efc5d: Add location to thrown exception when parsing YAML
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.6.5
+
+### Patch Changes
+
+- 9ef5a126d: Allow CodeOwnersProcessor to set `spec.owner` for `System`, `Resource`, and `Domain` entity kinds.
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 2ef5bc7ea: Implement proper AWS Credentials precedence with assume-role and explicit credentials
+- 761698831: Bump to the latest version of the Knex library.
+- 93c62c755: Move logic for generating URLs for the view, edit and source links of catalog
+  entities from the catalog frontend into the backend. This is done using the
+  existing support for the `backstage.io/view-url`, `backstage.io/edit-url` and
+  `backstage.io/source-location` annotations that are now filled by the
+  `AnnotateLocationEntityProcessor`. If these annotations are missing or empty,
+  the UI disables the related controls.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.6.4
 
 ### Patch Changes

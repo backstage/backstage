@@ -1,5 +1,112 @@
 # @backstage/plugin-catalog
 
+## 0.5.2
+
+### Patch Changes
+
+- aa58c01e2: Adds a new `EntitySystemDiagramCard` component to visually map all elements in a system.
+
+  To use this new component with the legacy composability pattern, you can add a new tab with the component on to the System Entity Page in your `packages/app/src/components/catalog/EntityPage.tsx` file.
+
+  For example,
+
+  ```diff
+   const SystemEntityPage = ({ entity }: { entity: Entity }) => (
+     <EntityPageLayoutWrapper>
+       <EntityPageLayout.Content
+         path="/*"
+         title="Overview"
+         element={<SystemOverviewContent entity={entity} />}
+       />
+  +    <EntityPageLayout.Content
+  +      path="/diagram/*"
+  +      title="Diagram"
+  +      element={<EntitySystemDiagramCard />}
+  +    />
+     </EntityPageLayoutWrapper>
+   );
+  ```
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- 8bee6a131: unify how the owner and lifecycle header labels are made
+- 676ede643: Improve the unregister dialog, to support both unregistration and plain deletion
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
+## 0.5.1
+
+### Patch Changes
+
+- 4d248725e: Temporarily add `UNSTABLE_extraContextMenuItems` to the entity layout, so that we could detach the catalog plugin from the dependency on the badges plugin
+- 687f066e1: Add icon for entity badge menu
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
+## 0.5.0
+
+### Minor Changes
+
+- 3385b374b: Use `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+### Patch Changes
+
+- 633a31fec: Add the ability to change the initially selected filter, if not set it still defaults to `owned`.
+
+  ```js
+  <Route
+    path="/catalog"
+    element={<CatalogIndexPage initiallySelectedFilter="all" />}
+  />
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/core@0.7.2
+  - @backstage/plugin-catalog-react@0.1.2
+
+## 0.4.2
+
+### Patch Changes
+
+- 4f3d0dce0: This is a quick fix (while #2791 is being implemented) to make it possible view non well known component types listed in the catalog index page. It buckets any component entities that are not a `service`, `library`, or `documentation` into the `Other` tab. It also displays a `Type` column when on Other tab.
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 9f7dc10fb: Show a Not Found message when navigating to a nonexistent entity
+- 93c62c755: Move logic for generating URLs for the view, edit and source links of catalog
+  entities from the catalog frontend into the backend. This is done using the
+  existing support for the `backstage.io/view-url`, `backstage.io/edit-url` and
+  `backstage.io/source-location` annotations that are now filled by the
+  `AnnotateLocationEntityProcessor`. If these annotations are missing or empty,
+  the UI disables the related controls.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [2089de76b]
+- Updated dependencies [d4e77ec5f]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/integration@0.5.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/theme@0.2.4
+
 ## 0.4.1
 
 ### Patch Changes
