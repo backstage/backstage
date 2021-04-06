@@ -97,16 +97,32 @@ export function createApp(options?: AppOptions) {
     <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
   );
   const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {
-    let message = '';
-    if (step === 'load-config') {
-      message = `The configuration failed to load, someone should have a look at this error: ${error.message}`;
+    switch (step) {
+      case 'load-config':
+        // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
+        return (
+          <MemoryRouter>
+            <ErrorPage
+              status="501"
+              statusMessage={`The configuration failed to load, someone should have a look at this error: ${error.message}`}
+            />
+          </MemoryRouter>
+        );
+      case 'load-chunk':
+        return (
+          <ErrorPage
+            status="501"
+            statusMessage={`Lazy loaded chunk failed to load, try to reload the page: ${error.message}`}
+          />
+        );
+      default:
+        // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
+        return (
+          <MemoryRouter>
+            <ErrorPage status="501" statusMessage="" />
+          </MemoryRouter>
+        );
     }
-    // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
-    return (
-      <MemoryRouter>
-        <ErrorPage status="501" statusMessage={message} />
-      </MemoryRouter>
-    );
   };
 
   const apis = options?.apis ?? [];
