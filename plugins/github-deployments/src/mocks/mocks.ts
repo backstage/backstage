@@ -64,4 +64,31 @@ export const responseStub: QueryResponse = {
   },
 };
 
+export const refreshedResponseStub: QueryResponse = {
+  repository: {
+    deployments: {
+      nodes: [
+        {
+          state: 'active',
+          environment: 'prd',
+          updatedAt: '2021-03-25T12:08:45Z',
+          commit: {
+            commitUrl: 'https://exampleapi.com/123456789',
+            abbreviatedOid: '12345',
+          },
+        },
+        {
+          state: 'failure',
+          environment: 'lab',
+          updatedAt: '2021-03-25T12:09:47Z',
+          commit: {
+            commitUrl: 'https://exampleapi.com/543212345',
+            abbreviatedOid: '54321',
+          },
+        },
+      ],
+    },
+  },
+};
+
 export const noDataResponseStub: QueryResponse = {};

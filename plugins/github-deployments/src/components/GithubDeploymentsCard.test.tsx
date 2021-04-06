@@ -24,12 +24,18 @@ import {
   OAuthApi,
 } from '@backstage/core';
 
+import { fireEvent } from '@testing-library/react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
 import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
-import { entityStub, noDataResponseStub, responseStub } from '../mocks/mocks';
+import {
+  entityStub,
+  noDataResponseStub,
+  refreshedResponseStub,
+  responseStub,
+} from '../mocks/mocks';
 
 import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
@@ -81,6 +87,9 @@ describe('github-deployments', () => {
         </ApiProvider>,
       );
 
+      expect(
+        await rendered.findByText('GitHub Deployments'),
+      ).toBeInTheDocument();
       expect(await rendered.findByText('active')).toBeInTheDocument();
       expect(await rendered.findByText('prd')).toBeInTheDocument();
       expect(await rendered.findByText('12345')).toHaveAttribute(
@@ -110,8 +119,45 @@ describe('github-deployments', () => {
       );
 
       expect(
+        await rendered.findByText('GitHub Deployments'),
+      ).toBeInTheDocument();
+      expect(
         await rendered.findByText('No deployments found for this entity.'),
       ).toBeInTheDocument();
+    });
+
+    it('should shows new data on reload', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
+
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard />
+        </ApiProvider>,
+      );
+
+      expect(
+        await rendered.findByText('GitHub Deployments'),
+      ).toBeInTheDocument();
+      expect(await rendered.findByText('pending')).toBeInTheDocument();
+
+      worker.resetHandlers();
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(refreshedResponseStub)),
+        ),
+      );
+
+      const refreshButton = await rendered.findByTitle('Reload');
+      fireEvent.click(refreshButton);
+
+      expect(
+        await rendered.findByText('GitHub Deployments'),
+      ).toBeInTheDocument();
+      expect(await rendered.findByText('failure')).toBeInTheDocument();
     });
   });
 });

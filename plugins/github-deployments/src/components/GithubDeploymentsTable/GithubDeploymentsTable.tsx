@@ -26,6 +26,7 @@ import {
 import { GithubDeployment } from '../../api';
 import { DateTime } from 'luxon';
 import { Box, Typography, Link, makeStyles } from '@material-ui/core';
+import SyncIcon from '@material-ui/icons/Sync';
 
 const useStyles = makeStyles(theme => ({
   empty: {
@@ -83,10 +84,14 @@ const columns: TableColumn<GithubDeployment>[] = [
 
 type GithubDeploymentsTableProps = {
   deployments: GithubDeployment[];
+  isLoading: boolean;
+  reload: () => void;
 };
 
 const GithubDeploymentsTable = ({
   deployments,
+  isLoading,
+  reload,
 }: GithubDeploymentsTableProps) => {
   const classes = useStyles();
 
@@ -96,6 +101,15 @@ const GithubDeploymentsTable = ({
       options={{ padding: 'dense', paging: true, search: false, pageSize: 5 }}
       title="GitHub Deployments"
       data={deployments}
+      isLoading={isLoading}
+      actions={[
+        {
+          icon: () => <SyncIcon />,
+          tooltip: 'Reload',
+          isFreeAction: true,
+          onClick: () => reload(),
+        },
+      ]}
       emptyContent={
         <div className={classes.empty}>
           <Typography variant="body1">
