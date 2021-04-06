@@ -86,8 +86,6 @@ export class ChromeUXReportService {
       await this.database.addUXMetrics({
         origin_id: originId,
         period_id: periodId,
-        connection_type: '4G',
-        form_factor: 'Desktop',
         fast_fp: metrics.fast_fp,
         avg_fp: metrics.avg_fp,
         slow_fp: metrics.slow_fp,

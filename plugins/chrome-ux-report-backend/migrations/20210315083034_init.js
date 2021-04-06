@@ -47,8 +47,6 @@ exports.up = async function up(knex) {
       .inTable('periods')
       .notNullable()
       .onDelete('CASCADE');
-    table.text('form_factor').notNullable();
-    table.text('connection_type').notNullable();
     table.float('fast_fp').notNullable();
     table.float('avg_fp').notNullable();
     table.float('slow_fp').notNullable();

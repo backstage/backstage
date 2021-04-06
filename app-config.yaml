@@ -275,13 +275,12 @@ scaffolder:
     visibility: public # or or 'private'
 
 chromeUXReport:
-  projectId:
-    $env: GOOGLE_PROJECT_ID
-  keyPath:
-    $env: GOOGLE_APPLICATION_CREDENTIALS
+  projectId: "example"
+  keyPath: "example.json"
   origins:
-    - site: 'https://www.example.com'
-      name: 'Example'
+    - site: "https://www.example.com"
+      name: "Example"
+
 auth:
   environment: development
   ### Providing an auth.session.secret will enable session support in the auth-backend
