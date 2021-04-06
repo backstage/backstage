@@ -195,7 +195,7 @@ describe('github-deployments', () => {
       )).toBeInTheDocument();
     });
 
-    it('shows error when baseApiURL does not exist forr host', async () => {
+    it('shows error when baseApiURL does not exist for host', async () => {
       worker.use(
         graphql.query('deployments', (_, res, ctx) =>
           res(ctx.data(responseStub)),
