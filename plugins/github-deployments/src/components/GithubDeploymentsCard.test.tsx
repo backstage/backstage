@@ -137,7 +137,7 @@ describe('github-deployments', () => {
           res(ctx.data(responseStub)),
         ),
       );
-      
+
       const rendered = await renderInTestApp(
         <ApiProvider apis={apis}>
           <GithubDeploymentsCard />
