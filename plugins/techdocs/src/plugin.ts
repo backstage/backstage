@@ -37,6 +37,7 @@ import {
   discoveryApiRef,
   identityApiRef,
   createRoutableExtension,
+  createComponentExtension,
 } from '@backstage/core';
 import {
   techdocsStorageApiRef,
@@ -109,5 +110,43 @@ export const EntityTechdocsContent = techdocsPlugin.provide(
   createRoutableExtension({
     component: () => import('./Router').then(m => m.EmbeddedDocsRouter),
     mountPoint: rootCatalogDocsRouteRef,
+  }),
+);
+
+// takes a list of entities and renders documentation cards
+export const DocsCardGrid = techdocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./home/components/DocsCardGrid').then(m => m.DocsCardGrid),
+    },
+  }),
+);
+
+// takes a list of entities and renders table listing documentation
+export const DocsTable = techdocsPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./home/components/DocsTable').then(m => m.DocsTable),
+    },
+  }),
+);
+
+// takes a custom tabs config object and renders a documentation landing page
+export const TechDocsCustomHome = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./home/components/TechDocsCustomHome').then(
+        m => m.TechDocsCustomHome,
+      ),
+    mountPoint: rootRouteRef,
+  }),
+);
+
+export const TechDocsReaderPage = techdocsPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./reader/components/TechDocsPage').then(m => m.TechDocsPage),
+    mountPoint: rootDocsRouteRef,
   }),
 );

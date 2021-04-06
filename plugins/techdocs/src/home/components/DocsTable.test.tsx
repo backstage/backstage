@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,37 +16,13 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { OwnedContent } from './OwnedContent';
+import { DocsTable } from './DocsTable';
 
-jest.mock('../hooks', () => ({
-  useOwnUser: () => {
-    return {
-      value: {
-        apiVersion: 'version',
-        kind: 'User',
-        metadata: {
-          name: 'owned',
-          namespace: 'default',
-        },
-        relations: [
-          {
-            target: {
-              kind: 'TestKind',
-              name: 'testName',
-            },
-            type: 'ownerOf',
-          },
-        ],
-      },
-    };
-  },
-}));
-
-describe('TechDocs Owned Content', () => {
-  it('should render TechDocs Owned Documents', async () => {
-    const { findByText, queryByText } = render(
+describe('DocsTable test', () => {
+  it('should render documents passed', async () => {
+    const { findByText } = render(
       wrapInTestApp(
-        <OwnedContent
+        <DocsTable
           entities={[
             {
               apiVersion: 'version',
@@ -93,16 +69,12 @@ describe('TechDocs Owned Content', () => {
       ),
     );
 
-    expect(await findByText('Owned documents')).toBeInTheDocument();
-    expect(await findByText(/Access your documentation./i)).toBeInTheDocument();
     expect(await findByText('testName')).toBeInTheDocument();
-    expect(await queryByText('testName2')).not.toBeInTheDocument();
+    expect(await findByText('testName2')).toBeInTheDocument();
   });
 
   it('should render empty state if no owned documents exist', async () => {
-    const { findByText } = render(
-      wrapInTestApp(<OwnedContent entities={[]} />),
-    );
+    const { findByText } = render(wrapInTestApp(<DocsTable entities={[]} />));
 
     expect(await findByText('No documents to show')).toBeInTheDocument();
   });

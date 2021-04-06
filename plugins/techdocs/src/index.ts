@@ -19,7 +19,12 @@ export {
   techdocsPlugin as plugin,
   TechdocsPage,
   EntityTechdocsContent,
+  DocsCardGrid,
+  DocsTable,
+  TechDocsCustomHome,
+  TechDocsReaderPage,
 } from './plugin';
 export { Router, EmbeddedDocsRouter } from './Router';
 export * from './reader';
 export * from './api';
+export type { WidgetType } from './home/components/TechDocsCustomHome';

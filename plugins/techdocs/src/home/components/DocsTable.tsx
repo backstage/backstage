@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,46 +20,34 @@ import { generatePath } from 'react-router-dom';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import ShareIcon from '@material-ui/icons/Share';
-import {
-  Content,
-  ContentHeader,
-  SupportButton,
-  Table,
-  EmptyState,
-  Button,
-  SubvalueCell,
-  Link,
-} from '@backstage/core';
+import { Table, EmptyState, Button, SubvalueCell, Link } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { isOwnerOf } from '@backstage/plugin-catalog-react';
 import { rootDocsRouteRef } from '../../plugin';
-import { useOwnUser } from '../hooks';
 
-export const OwnedContent = ({
+export const DocsTable = ({
   entities,
+  title,
 }: {
   entities: Entity[] | undefined;
+  title?: string | undefined;
 }) => {
   const [, copyToClipboard] = useCopyToClipboard();
-  const { value: user } = useOwnUser();
 
-  if (!entities || !user) return null;
+  if (!entities) return null;
 
-  const ownedDocuments = entities
-    .filter((entity: Entity) => isOwnerOf(user, entity))
-    .map(entity => {
-      return {
+  const documents = entities.map(entity => {
+    return {
+      name: entity.metadata.name,
+      description: entity.metadata.description,
+      owner: entity?.spec?.owner,
+      type: entity?.spec?.type,
+      docsUrl: generatePath(rootDocsRouteRef.path, {
+        namespace: entity.metadata.namespace ?? 'default',
+        kind: entity.kind,
         name: entity.metadata.name,
-        description: entity.metadata.description,
-        owner: entity?.spec?.owner,
-        type: entity?.spec?.type,
-        docsUrl: generatePath(rootDocsRouteRef.path, {
-          namespace: entity.metadata.namespace ?? 'default',
-          kind: entity.kind,
-          name: entity.metadata.name,
-        }),
-      };
-    });
+      }),
+    };
+  });
 
   const columns = [
     {
@@ -99,19 +87,17 @@ export const OwnedContent = ({
   ];
 
   return (
-    <Content>
-      <ContentHeader
-        title="Owned documents"
-        description="Access your documentation."
-      >
-        <SupportButton>Discover documentation you own.</SupportButton>
-      </ContentHeader>
-      {ownedDocuments && ownedDocuments.length > 0 ? (
+    <>
+      {documents && documents.length > 0 ? (
         <Table
           options={{ paging: true, pageSize: 20, search: true }}
-          data={ownedDocuments}
+          data={documents}
           columns={columns}
-          title={`Owned (${ownedDocuments.length})`}
+          title={
+            title
+              ? `${title} (${documents.length})`
+              : `All (${documents.length})`
+          }
         />
       ) : (
         <EmptyState
@@ -130,6 +116,6 @@ export const OwnedContent = ({
           }
         />
       )}
-    </Content>
+    </>
   );
 };

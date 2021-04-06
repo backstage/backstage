@@ -82,3 +82,80 @@ Caveat: Currently TechDocs sites built using URL Reader will be cached for 30
 minutes which means they will not be re-built if new changes are made within 30
 minutes. This cache invalidation will be replaced by commit timestamp based
 implementation very soon.
+
+## How to use a custom TechDocs home page?
+
+### 1st way: TechDocsCustomHome with a custom configuration
+
+In your main App.tsx:
+
+```
+import {
+  TechDocsCustomHome,
+  WidgetType,
+  TechDocsReaderPage,
+} from '@backstage/plugin-techdocs';
+import { Entity } from '@backstage/catalog-model';
+
+const tabsConfig = [
+  {
+    label: 'Custom Tab',
+    widgets: [
+      {
+        title: 'Custom Documents Cards 1',
+        description:
+          'Explore your internal technical ecosystem through documentation.',
+        // sets maximum height of widget, as CSS maxHeight attribute
+        widgetMaxHeight: '400px'
+        widgetType: 'DocsCardGrid' as WidgetType,
+        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationOne'];
+    },
+      {
+        title: 'Custom Documents Cards 2',
+        description:
+          'Explore your internal technical ecosystem through documentation.',
+        widgetMaxHeight: '400px'
+        widgetType: 'DocsCardGrid' as WidgetType,
+        filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationTwo'];
+      },
+    ],
+  },
+  {
+    label: 'Overview',
+    widgets: [
+      {
+        title: 'Overview',
+        description:
+          'Explore your internal technical ecosystem through documentation.',
+        widgetType: 'DocsTable' as WidgetType,
+        filterPredicate: () => true,
+      },
+    ],
+  },
+];
+
+const routes = (
+  <FlatRoutes>
+    <Route
+      path="/docs"
+      element={<TechDocsCustomHome tabsConfig={tabsConfig} />}
+    />
+    <Route
+      path="/docs/:namespace/:kind/:name/*"
+      element={<TechDocsReaderPage />}
+    />
+  </FlatRoutes>
+```
+
+An example of tabsConfig that corresponds to the default documentation home page
+can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
+
+### 2nd way: custom home page plugin
+
+A custom home page plugin can be built that uses the components extensions
+DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
+array of documentation entities ( have 'backstage.io/techdocs-ref' annotation )
+as an 'entities' attribute.
+
+For an reference to the React structure of the default home page, please refer
+to `plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
