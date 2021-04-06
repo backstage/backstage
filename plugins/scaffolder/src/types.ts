@@ -73,6 +73,7 @@ type OutputLink = {
 
 export type TaskOutput = {
   entityRef?: string;
+  /** @deprecated use the `links` property to link out to relevant resources */
   remoteUrl?: string;
   links?: OutputLink[];
   [key: string]: any;
