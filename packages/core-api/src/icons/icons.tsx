@@ -15,6 +15,7 @@
  */
 
 import { SvgIconProps } from '@material-ui/core';
+import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
 import MuiChatIcon from '@material-ui/icons/Chat';
 import MuiDashboardIcon from '@material-ui/icons/Dashboard';
@@ -32,6 +33,8 @@ import { IconComponent, IconComponentMap, SystemIconKey } from './types';
 
 export const defaultSystemIcons: IconComponentMap = {
   brokenImage: MuiBrokenImageIcon,
+  // To be confirmed: see https://github.com/backstage/backstage/issues/4970
+  catalog: MuiMenuBookIcon,
   chat: MuiChatIcon,
   dashboard: MuiDashboardIcon,
   email: MuiEmailIcon,
