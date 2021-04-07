@@ -2,7 +2,7 @@
 # Variables
 #==========================
 
-variable "backstage" {
+variable "backstage-bucket" {
   default = "backstage_bucket_for_my_corp"
 }
 
@@ -19,7 +19,7 @@ variable "shared-managed-tag-value" {
 #==========================
 
 resource "aws_s3_bucket" "backstage" {
-  bucket = var.backstage
+  bucket = var.backstage-bucket
   acl    = "private"
   provider = aws
 
@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "backstage" {
   }
 
   tags = {
-    Name                   = var.backstage
+    Name                   = var.backstage-bucket
     "Managed By Terraform" = var.shared-managed-tag-value
   }
 }
