@@ -142,6 +142,11 @@
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       }
     ],
     "Plugins": [

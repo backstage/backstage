@@ -14,15 +14,5 @@
  * limitations under the License.
  */
 
-export * from './azure';
-export * from './bitbucket';
-export * from './github';
-export * from './gitlab';
-export * from './googleGcs';
-export { defaultScmResolveUrl } from './helpers';
-export { ScmIntegrations } from './ScmIntegrations';
-export type {
-  ScmIntegration,
-  ScmIntegrationRegistry,
-  ScmIntegrationsGroup,
-} from './types';
+export { readGoogleGcsIntegrationConfig } from './config';
+export type { GoogleGcsIntegrationConfig } from './config';
