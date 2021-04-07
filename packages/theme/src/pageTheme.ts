@@ -63,4 +63,9 @@ export const pageTheme: Record<string, PageTheme> = {
   library: genPageTheme(colorVariants.rubyRed, shapes.wave),
   other: genPageTheme(colorVariants.darkGrey, shapes.wave),
   app: genPageTheme(colorVariants.toastyOrange, shapes.wave),
+  apis: genPageTheme(colorVariants.eveningSea, shapes.wave2),
+  grpc: genPageTheme(colorVariants.marineBlue, shapes.wave2),
+  asyncapi: genPageTheme(colorVariants.rubyRed, shapes.wave2),
+  graphql: genPageTheme(colorVariants.purpleSky, shapes.wave2),
+  openapi: genPageTheme(colorVariants.toastyOrange, shapes.wave2),
 };
