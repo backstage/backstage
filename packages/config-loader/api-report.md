@@ -61,11 +61,6 @@ export function readEnvConfig(env: {
 // src/lib/schema/types.ts:105:3 - (ae-forgotten-export) The symbol "ConfigProcessingOptions" needs to be exported by the entry point index.d.ts
 // src/loader.ts:42:6 - (tsdoc-unsupported-tag) The TSDoc tag "@experimental" is not supported by this tool
 // src/loader.ts:44:3 - (ae-forgotten-export) The symbol "EnvFunc" needs to be exported by the entry point index.d.ts
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:18:31 - (TS2307) Cannot find module './assets/missingAnnotation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:19:27 - (TS2307) Cannot find module './assets/noInformation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:20:29 - (TS2307) Cannot find module './assets/createComponent.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:21:21 - (TS2307) Cannot find module './assets/noBuild.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/layout/ErrorPage/MicDrop.tsx:19:27 - (TS2307) Cannot find module './mic-drop.svg' or its corresponding type declarations.
 
 // (No @packageDocumentation comment for this package)
 

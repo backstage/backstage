@@ -94,11 +94,6 @@ export type CatalogListResponse<T> = {
 // Warnings were encountered during analysis:
 //
 // src/CatalogClient.ts:40:26 - (ae-forgotten-export) The symbol "DiscoveryApi" needs to be exported by the entry point index.d.ts
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:18:31 - (TS2307) Cannot find module './assets/missingAnnotation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:19:27 - (TS2307) Cannot find module './assets/noInformation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:20:29 - (TS2307) Cannot find module './assets/createComponent.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:21:21 - (TS2307) Cannot find module './assets/noBuild.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/layout/ErrorPage/MicDrop.tsx:19:27 - (TS2307) Cannot find module './mic-drop.svg' or its corresponding type declarations.
 
 // (No @packageDocumentation comment for this package)
 

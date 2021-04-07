@@ -132,7 +132,8 @@ async function runApiExtraction({
           compilerMessageReporting: {
             default: {
               logLevel: 'warning' as ExtractorLogLevel.Warning,
-              addToApiReportFile: true,
+              // These contain absolute file paths, so can't be included in the report
+              // addToApiReportFile: true,
             },
           },
           extractorMessageReporting: {

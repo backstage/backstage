@@ -242,11 +242,6 @@ export class UrlPreparer implements PreparerBase {
 
 // Warnings were encountered during analysis:
 //
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:18:31 - (TS2307) Cannot find module './assets/missingAnnotation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:19:27 - (TS2307) Cannot find module './assets/noInformation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:20:29 - (TS2307) Cannot find module './assets/createComponent.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:21:21 - (TS2307) Cannot find module './assets/noBuild.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/layout/ErrorPage/MicDrop.tsx:19:27 - (TS2307) Cannot find module './mic-drop.svg' or its corresponding type declarations.
 // src/stages/generate/types.ts:42:3 - (ae-forgotten-export) The symbol "GeneratorRunOptions" needs to be exported by the entry point index.d.ts
 // src/stages/generate/types.ts:54:3 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
 // src/stages/prepare/types.ts:35:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

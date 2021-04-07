@@ -99,14 +99,6 @@ export type JsonPrimitive = number | string | boolean | null;
 export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 
 
-// Warnings were encountered during analysis:
-//
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:18:31 - (TS2307) Cannot find module './assets/missingAnnotation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:19:27 - (TS2307) Cannot find module './assets/noInformation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:20:29 - (TS2307) Cannot find module './assets/createComponent.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:21:21 - (TS2307) Cannot find module './assets/noBuild.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/layout/ErrorPage/MicDrop.tsx:19:27 - (TS2307) Cannot find module './mic-drop.svg' or its corresponding type declarations.
-
 // (No @packageDocumentation comment for this package)
 
 ```

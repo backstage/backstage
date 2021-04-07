@@ -800,11 +800,6 @@ export const VIEW_URL_ANNOTATION = "backstage.io/view-url";
 // src/EntityPolicies.ts:57:3 - (ae-forgotten-export) The symbol "AnyEntityPolicy" needs to be exported by the entry point index.d.ts
 // src/entity/policies/types.ts:27:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/kinds/types.ts:26:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:18:31 - (TS2307) Cannot find module './assets/missingAnnotation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:19:27 - (TS2307) Cannot find module './assets/noInformation.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:20:29 - (TS2307) Cannot find module './assets/createComponent.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/components/EmptyState/EmptyStateImage.tsx:21:21 - (TS2307) Cannot find module './assets/noBuild.svg' or its corresponding type declarations.
-// /Users/patriko/dev/backstage/packages/core/src/layout/ErrorPage/MicDrop.tsx:19:27 - (TS2307) Cannot find module './mic-drop.svg' or its corresponding type declarations.
 
 // (No @packageDocumentation comment for this package)
 
