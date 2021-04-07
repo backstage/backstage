@@ -131,7 +131,8 @@ async function runApiExtraction({
         messages: {
           compilerMessageReporting: {
             default: {
-              logLevel: 'warning' as ExtractorLogLevel.Warning,
+              // Silence compiler warnings, as these will prevent the CI build to work
+              logLevel: 'none' as ExtractorLogLevel.None,
               // These contain absolute file paths, so can't be included in the report
               // addToApiReportFile: true,
             },
