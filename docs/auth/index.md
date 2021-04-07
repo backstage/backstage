@@ -22,7 +22,7 @@ Backstage comes with many common authentication providers in the core library:
 - [GitLab](gitlab/provider.md)
 - [Google](google/provider.md)
 - [Okta](okta/provider.md)
-- OneLogin
+- [OneLogin](onelogin/provider.md)
 
 These built-in providers handle the authentication flow for a particular service
 including required scopes, callbacks, etc. These providers are each added to a
