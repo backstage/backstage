@@ -16,6 +16,7 @@
 
 import { HelpIcon, useApp } from '@backstage/core-api';
 import {
+  Box,
   Button,
   List,
   ListItem,
@@ -127,6 +128,11 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
           {items &&
             items.map((item, i) => <SupportListItem item={item} key={i} />)}
         </List>
+        <Box display="flex" justifyContent="flex-end">
+          <Button color="primary" onClick={popoverCloseHandler}>
+            Close
+          </Button>
+        </Box>
       </Popover>
     </Fragment>
   );
