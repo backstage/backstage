@@ -171,6 +171,28 @@ async function runApiExtraction({
       localBuild: isLocalBuild,
       showVerboseMessages: false,
       showDiagnostics: false,
+      messageCallback(message) {
+        if (
+          message.text.includes(
+            'You have changed the public API signature for this project.',
+          )
+        ) {
+          console.log('');
+          console.log(
+            '*************************************************************************************',
+          );
+          console.log(
+            '* You have uncommitted changes to the public API of a package.                      *',
+          );
+          console.log(
+            '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+          );
+          console.log(
+            '*************************************************************************************',
+          );
+          console.log('');
+        }
+      },
       compilerState,
     });
 
