@@ -196,7 +196,7 @@ export class ScaffolderClient implements ScaffolderApi {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
-          const eventSource = new EventSource(url);
+          const eventSource = new EventSource(url, { withCredentials: true });
           eventSource.addEventListener('log', (event: any) => {
             if (event.data) {
               try {
