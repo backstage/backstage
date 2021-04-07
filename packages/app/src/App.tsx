@@ -27,7 +27,11 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+
+import {
+  CatalogImportPage,
+  catalogImportPlugin,
+} from '@backstage/plugin-catalog-import';
 import {
   CostInsightsLabelDataflowInstructionsPage,
   CostInsightsPage,
@@ -81,6 +85,9 @@ const app = createApp({
     });
     bind(explorePlugin.externalRoutes, {
       catalogEntity: catalogPlugin.routes.catalogEntity,
+    });
+    bind(scaffolderPlugin.externalRoutes, {
+      registerComponent: catalogImportPlugin.routes.importPage,
     });
   },
 });
