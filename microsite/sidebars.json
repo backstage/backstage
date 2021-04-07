@@ -195,7 +195,8 @@
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
-          "auth/okta/provider"
+          "auth/okta/provider",
+          "auth/onelogin/provider"
         ]
       },
       "auth/add-auth-provider",
