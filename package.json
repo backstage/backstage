@@ -9,6 +9,8 @@
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
     "build": "lerna run build",
+    "build:api-reports": "tsc && ts-node -T -P scripts/tsconfig.json scripts/api-extractor.ts",
+    "build:api-docs": "yarn build:api-reports --docs",
     "tsc": "tsc",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
     "clean": "backstage-cli clean && lerna run clean",
