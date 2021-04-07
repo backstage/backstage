@@ -1,7 +1,7 @@
 ---
-id: googlegcs
-title: Google Cloud Storage
-sidebar_label: Google Cloud Storage Data
+id: locations
+sidebar_label: Locations
+title: Google Cloud Storage Locations
 # prettier-ignore
 description: Setting up an integration with Google Cloud Storage
 ---
