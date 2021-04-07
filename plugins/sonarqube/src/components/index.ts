@@ -15,3 +15,4 @@
  */
 
 export * from './SonarQubeCard';
+export { isSonarQubeAvailable as isPluginApplicableToEntity } from './useProjectKey';
