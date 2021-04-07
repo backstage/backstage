@@ -3,4 +3,4 @@
 'storybook': patch
 ---
 
-exposes undocumented pagetheme
+exposes undocumented PageTheme
