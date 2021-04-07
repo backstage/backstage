@@ -166,6 +166,8 @@ async function runApiExtraction({
     // Message verbosity can't be configured, so just skip the check instead
     (Extractor as any)._checkCompilerCompatibility = () => {};
 
+    let shouldLogInstructions = false;
+
     // Invoke API Extractor
     const extractorResult = Extractor.invoke(extractorConfig, {
       localBuild: isLocalBuild,
@@ -177,26 +179,29 @@ async function runApiExtraction({
             'You have changed the public API signature for this project.',
           )
         ) {
-          console.log('');
-          console.log(
-            '*************************************************************************************',
-          );
-          console.log(
-            '* You have uncommitted changes to the public API of a package.                      *',
-          );
-          console.log(
-            '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
-          );
-          console.log(
-            '*************************************************************************************',
-          );
-          console.log('');
+          shouldLogInstructions = true;
         }
       },
       compilerState,
     });
 
     if (!extractorResult.succeeded) {
+      if (shouldLogInstructions) {
+        console.log('');
+        console.log(
+          '*************************************************************************************',
+        );
+        console.log(
+          '* You have uncommitted changes to the public API of a package.                      *',
+        );
+        console.log(
+          '* To solve this, run `yarn build:api-reports` and commit all api-report.md changes. *',
+        );
+        console.log(
+          '*************************************************************************************',
+        );
+        console.log('');
+      }
       throw new Error(
         `API Extractor completed with ${extractorResult.errorCount} errors` +
           ` and ${extractorResult.warningCount} warnings`,
