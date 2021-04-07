@@ -75,7 +75,9 @@ export const MultistepJsonForm = ({
           return (
             <StepUI key={title}>
               <StepLabel>
-                <Typography variant="h6">{title}</Typography>
+                <Typography variant="h6" component="h3">
+                  {title}
+                </Typography>
               </StepLabel>
               <StepContent key={title}>
                 <Form

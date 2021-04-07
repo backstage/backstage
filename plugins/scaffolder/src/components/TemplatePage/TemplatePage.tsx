@@ -187,7 +187,11 @@ export const TemplatePage = () => {
       <Content>
         {loading && <LinearProgress data-testid="loading-progress" />}
         {schema && (
-          <InfoCard title={schema.title} noPadding>
+          <InfoCard
+            title={schema.title}
+            noPadding
+            titleTypographyProps={{ component: 'h2' }}
+          >
             <MultistepJsonForm
               formData={formState}
               fields={{ RepoUrlPicker, OwnerPicker }}
