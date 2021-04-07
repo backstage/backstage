@@ -22,7 +22,10 @@ import {
   UrlReader,
 } from './types';
 import getRawBody from 'raw-body';
-import { readGoogleGcsIntegrationConfig } from '@backstage/integration';
+import {
+  GoogleGcsIntegrationConfig,
+  readGoogleGcsIntegrationConfig,
+} from '@backstage/integration';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -53,7 +56,7 @@ export class GoogleGcsUrlReader implements UrlReader {
     );
     let storage: Storage;
     if (!gcsConfig.clientEmail || !gcsConfig.privateKey) {
-      logger.warn(
+      logger.info(
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
       storage = new Storage();
@@ -65,12 +68,15 @@ export class GoogleGcsUrlReader implements UrlReader {
         },
       });
     }
-    const reader = new GoogleGcsUrlReader(storage);
+    const reader = new GoogleGcsUrlReader(gcsConfig, storage);
     const predicate = (url: URL) => url.host === GOOGLE_GCS_HOST;
     return [{ reader, predicate }];
   };
 
-  constructor(private readonly storage: Storage) {}
+  constructor(
+    private readonly integration: GoogleGcsIntegrationConfig,
+    private readonly storage: Storage,
+  ) {}
 
   async read(url: string): Promise<Buffer> {
     try {
@@ -93,6 +99,7 @@ export class GoogleGcsUrlReader implements UrlReader {
   }
 
   toString() {
-    return `gcs{host=${GOOGLE_GCS_HOST},authed=true}}`;
+    const key = this.integration.privateKey;
+    return `googleGcs{host=${GOOGLE_GCS_HOST},authed=${Boolean(key)}}`;
   }
 }

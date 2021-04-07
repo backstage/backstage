@@ -151,9 +151,9 @@ integrations:
       token:
         $env: AZURE_TOKEN
 #  googleGcs:
-#    clientEmail:
-#      $env: GCS_CLIENT_EMAIL
-#    privateKey: 'example@example.com'
+#    clientEmail: 'example@example.com'
+#    privateKey:
+#      $env: GCS_PRIVATE_KEY
 
 catalog:
   rules:

@@ -42,15 +42,12 @@ export function readGoogleGcsIntegrationConfig(
     return {};
   }
 
-  if (!config.has('clientEmail') || !config.has('privateKey')) {
+  if (!config.has('clientEmail') && !config.has('privateKey')) {
     return {};
   }
 
-  const privateKey = config
-    .getOptionalString('privateKey')
-    ?.split('\\n')
-    .join('\n');
+  const privateKey = config.getString('privateKey').split('\\n').join('\n');
 
-  const clientEmail = config.getOptionalString('clientEmail');
+  const clientEmail = config.getString('clientEmail');
   return { clientEmail: clientEmail, privateKey: privateKey };
 }
