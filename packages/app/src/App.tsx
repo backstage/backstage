@@ -48,8 +48,8 @@ import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
-import { EntityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
+import { entityPage } from './components/catalog/EntityPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -96,7 +96,7 @@ const routes = (
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
     >
-      <EntityPage />
+      {entityPage}
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
