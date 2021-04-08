@@ -25,6 +25,7 @@ import os from 'os';
 import path from 'path';
 import { Logger } from 'winston';
 import {
+  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
   PublishResponse,
@@ -63,6 +64,12 @@ export class LocalPublish implements PublisherBase {
     this.config = config;
     this.logger = logger;
     this.discovery = discovery;
+  }
+
+  async validateConfiguration(): Promise<ConfigurationValidationResponse> {
+    return {
+      isValid: true,
+    };
   }
 
   publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
   ENTITY_DEFAULT_NAMESPACE,
+  EntityName,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
-import * as winston from 'winston';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
 
@@ -59,9 +59,7 @@ const getEntityRootDir = (entity: Entity) => {
   return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = winston.createLogger();
-jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const logger = getVoidLogger();
 
 let publisher: PublisherBase;
 
@@ -89,6 +87,43 @@ beforeEach(() => {
 });
 
 describe('OpenStackSwiftPublish', () => {
+  describe('validateConfiguration', () => {
+    it('should validate correct config', async () => {
+      expect(await publisher.validateConfiguration()).toEqual({
+        isValid: true,
+      });
+    });
+
+    it('should reject incorrect config', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'openStackSwift',
+            openStackSwift: {
+              credentials: {
+                username: 'mockuser',
+                password: 'verystrongpass',
+              },
+              authUrl: 'mockauthurl',
+              region: 'mockregion',
+              containerName: 'errorBucket',
+            },
+          },
+        },
+      });
+
+      const errorPublisher = OpenStackSwiftPublish.fromConfig(
+        mockConfig,
+        logger,
+      );
+
+      expect(await errorPublisher.validateConfiguration()).toEqual({
+        isValid: false,
+      });
+    });
+  });
+
   describe('publish', () => {
     beforeEach(() => {
       const entity = createMockEntity();
