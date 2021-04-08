@@ -1,5 +1,13 @@
 # @backstage/backend-common
 
+## 0.6.2
+
+### Patch Changes
+
+- b779b5fee: Add UrlReader for Google Cloud Storage
+- Updated dependencies [82c66b8cd]
+  - @backstage/config-loader@0.6.0
+
 ## 0.6.1
 
 ### Patch Changes
