@@ -1,6 +1,5 @@
---
+---
 '@backstage/create-app': patch
-
 ---
 
 **Fully migrated the template to the new composability API**
