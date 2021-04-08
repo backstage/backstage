@@ -23,7 +23,7 @@ Instead of `localhost` addresses, use the following values.
 
 ### ALB
 
-In AWS console configure ALB Authentication as described below:
+In the AWS console, configure ALB Authentication:
 
 - Edit the ALB rule used to forward the traffic to Backstage and add a new `Authenticate` action. The action will have higher priority compared to the existing `Forward to`.
 - Select `OIDC` under `Authenticate`
