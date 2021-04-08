@@ -97,6 +97,19 @@ describe('Bitbucket Publisher', () => {
   });
 
   describe('publish: createRemoteInBitbucketServer', () => {
+    it('should throw an error if no username present', async () => {
+      await expect(
+        BitbucketPublisher.fromConfig(
+          {
+            host: 'bitbucket.mycompany.com',
+            token: 'fake-token',
+          },
+          { repoVisibility: 'private' },
+        ),
+      ).rejects.toThrow(
+        'Bitbucket server requires the username to be set in your config',
+      );
+    });
     it('should create repo in bitbucket server', async () => {
       server.use(
         rest.post(
@@ -128,6 +141,7 @@ describe('Bitbucket Publisher', () => {
       const publisher = await BitbucketPublisher.fromConfig(
         {
           host: 'bitbucket.mycompany.com',
+          username: 'foo',
           token: 'fake-token',
         },
         { repoVisibility: 'private' },
@@ -151,7 +165,7 @@ describe('Bitbucket Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-        auth: { username: 'x-token-auth', password: 'fake-token' },
+        auth: { username: 'foo', password: 'fake-token' },
         logger: logger,
       });
     });
