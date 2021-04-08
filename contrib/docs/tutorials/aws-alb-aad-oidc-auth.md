@@ -41,7 +41,7 @@ Use the following advanced settings:
 - `Scope` = `openid profile offline_access`
 - `Action on unauthenticated request` = `Autenticate (client reattempt)`
 
-Once you've saved the action, you should see an authentication flow be triggered against AAD when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as Backstage app isn't yet configured properly.
+Once you've saved the action, you should see an authentication flow be triggered against AAD when visiting Backstage address at `https://backstage.yourdomain.com`. The flow will not complete successfully as the Backstage app isn't yet configured properly.
 
 ## Backstage changes
 
