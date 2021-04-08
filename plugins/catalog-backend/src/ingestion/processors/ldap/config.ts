@@ -182,7 +182,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     }
     return {
       scope: c.getOptionalString('scope') as SearchOptions['scope'],
-      filter: c.getOptionalString('filter'),
+      filter: formatFilter(c.getOptionalString('filter')),
       attributes: c.getOptionalStringArray('attributes'),
       paged: c.getOptionalBoolean('paged'),
     };
@@ -258,6 +258,11 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       set: readSetConfig(c.getOptionalConfigArray('set')),
       map: readGroupMapConfig(c.getOptionalConfig('map')),
     };
+  }
+
+  function formatFilter(filter?: string): string | undefined {
+    // Remove extra whitespaces between blocks to support multiline filters from the configuration
+    return filter?.replace(/\s*(\(|\))/g, '$1')?.trim();
   }
 
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
