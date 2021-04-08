@@ -38,3 +38,6 @@ a structure with up to four elements:
 - `apiBaseUrl` (optional): The URL of the Bitbucket API. For self-hosted
   installations, it is commonly at `https://<host>/rest/api/1.0`. For
   bitbucket.org, this configuration is not needed as it can be inferred.
+
+> Note: If you are using Bitbucket server you MUST set the username as well as
+> the token or appPassword.
