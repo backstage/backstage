@@ -68,7 +68,6 @@ const DummySignInComponent: any = (props: any) => {
         });
       });
   } else {
-    // when running locally we default user identity to `Local User`
     props.onResult({
       userId: 'guest',
       profile: {
@@ -83,23 +82,16 @@ const DummySignInComponent: any = (props: any) => {
 };
 ```
 
-- use `DummySignInComponent` as `SignInPage` by changing the `createApp` call:
+- add `DummySignInComponent` as `SignInPage`:
 
 ```ts
 const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
+  ...
   components: {
     SignInPage: DummySignInComponent,
+    ...
   },
-  bindRoutes({ bind }) {
-    bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-    });
-    bind(apiDocsPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-    });
-  },
+  ...
 });
 ```
 
