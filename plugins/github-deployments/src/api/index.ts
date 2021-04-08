@@ -60,16 +60,20 @@ export type GithubDeployment = {
   };
 };
 
-type QueryOptions = {
+type QueryParams = {
   owner: string;
   repo: string;
   last: number;
 };
 
+type QueryOptions = {
+  locations: string[];
+};
+
 export interface GithubDeploymentsApi {
   listDeployments(
+    params: QueryParams,
     options: QueryOptions,
-    location: string[],
   ): Promise<GithubDeployment[]>;
 }
 
@@ -119,10 +123,10 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
   }
 
   async listDeployments(
+    params: QueryParams,
     options: QueryOptions,
-    locations: string[],
   ): Promise<GithubDeployment[]> {
-    const baseUrl = getBaseUrl(this.scmIntegrationsApi, locations);
+    const baseUrl = getBaseUrl(this.scmIntegrationsApi, options.locations);
     const token = await this.githubAuthApi.getAccessToken(['repo']);
 
     const graphQLWithAuth = graphql.defaults({
@@ -134,7 +138,7 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
 
     const response: QueryResponse = await graphQLWithAuth(
       deploymentsQuery,
-      options,
+      params,
     );
     return response.repository?.deployments?.nodes?.reverse() || [];
   }

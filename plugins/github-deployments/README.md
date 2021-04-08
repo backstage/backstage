@@ -63,6 +63,9 @@ spec:
 
 ### Self-hosted / Enterprise GitHub
 
+The plugin will try to use `backstage.io/source-location` or `backstage.io/managed-by-location`
+annotations to figure out the location of the source code.
+
 1. Add the `host` and `apiBaseUrl` to your `app-config.yaml`
 
 ```yaml
@@ -72,22 +75,4 @@ integrations:
   github:
     - host: 'your-github-host.com'
       apiBaseUrl: 'https://api.your-github-host.com'
-```
-
-2. Pass the host into the `EntityGithubDeploymentsCard`
-
-```typescript
-// packages/app/src/components/catalog/EntityPage.tsx
-
-import { EntityGithubDeploymentsCard } from '@backstage/plugin-github-deployments';
-
-const OverviewContent = () => (
-  <Grid container spacing={3} alignItems="stretch">
-    // ...
-    <Grid item xs={12} sm={6} md={4}>
-      <EntityGithubDeploymentsCard host="your-github-host.com" />
-    </Grid>
-    // ...
-  </Grid>
-);
 ```

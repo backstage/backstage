@@ -45,7 +45,7 @@ const GithubDeploymentsComponent = ({
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ owner, repo, last }, locations),
+    async () => await api.listDeployments({ owner, repo, last }, { locations }),
   );
 
   if (error) {
