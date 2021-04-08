@@ -70,10 +70,10 @@ const DummySignInComponent: any = (props: any) => {
   } else {
     // when running locally we default user identity to `Local User`
     props.onResult({
-      userId: 'local user',
+      userId: 'guest',
       profile: {
-        email: 'local.user@yourdomain.com',
-        displayName: 'Local User',
+        email: 'guest@example.com',
+        displayName: 'Guest',
         picture: '',
       },
     });
