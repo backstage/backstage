@@ -32,6 +32,11 @@ export class BitbucketPublisher implements PublisherBase {
     config: BitbucketIntegrationConfig,
     { repoVisibility }: { repoVisibility: RepoVisibilityOptions },
   ) {
+    if (config.host !== 'bitbucket.org' && !config.username)
+      throw new Error(
+        'Bitbucket server requires the username to be set in your config',
+      );
+
     return new BitbucketPublisher({
       host: config.host,
       token: config.token,
