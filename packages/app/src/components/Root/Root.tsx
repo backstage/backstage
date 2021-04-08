@@ -73,7 +73,7 @@ const SidebarLogo = () => {
   );
 };
 
-const Root = ({ children }: PropsWithChildren<{}>) => (
+export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -98,5 +98,3 @@ const Root = ({ children }: PropsWithChildren<{}>) => (
     {children}
   </SidebarPage>
 );
-
-export default Root;

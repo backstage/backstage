@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { Breadcrumbs, Content, Link } from '@backstage/core';
+import { Breadcrumbs, Content, Link, useRouteRefParams } from '@backstage/core';
 import {
   Box,
-  Typography,
-  Paper,
-  TableContainer,
-  Table,
-  TableRow,
-  TableCell,
-  TableBody,
   Link as MaterialLink,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import ExternalLinkIcon from '@material-ui/icons/Launch';
+import React from 'react';
+import { buildRouteRef } from '../../plugin';
+import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import { useBuildWithSteps } from '../useBuildWithSteps';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
-import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
-import ExternalLinkIcon from '@material-ui/icons/Launch';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -48,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 const BuildWithStepsView = () => {
   const projectName = useProjectSlugFromEntity();
-  const { branch, buildNumber } = useParams();
+  const { branch, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
   const buildPath = `${projectName}/${branch}/${buildNumber}`;
   const [{ value }] = useBuildWithSteps(buildPath);

@@ -211,7 +211,7 @@ integrations:
         $env: GITLAB_TOKEN
 ```
 
-#### BitBucket
+#### Bitbucket
 
 For Bitbucket there are two authentication methods supported. Either `token` or
 a combination of `appPassword` and `username`. It looks like either of the

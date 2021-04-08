@@ -73,4 +73,22 @@ describe('buildMemberOf', () => {
     buildMemberOf(groups, [u]);
     expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
   });
+
+  it('takes group spec.members into account', () => {
+    const a = g('a', undefined, []);
+    const b = g('b', 'a', []);
+    const c = g('c', 'b', []);
+    c.spec.members = ['n'];
+    const u: UserEntity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: { name: 'n' },
+      spec: { profile: {}, memberOf: [] },
+    };
+
+    const groups = [a, b, c];
+    buildOrgHierarchy(groups);
+    buildMemberOf(groups, [u]);
+    expect(u.spec.memberOf).toEqual(expect.arrayContaining(['a', 'b', 'c']));
+  });
 });

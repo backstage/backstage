@@ -1,8 +1,8 @@
 ---
 id: switching-sqlite-postgres
 title: Switching Backstage from SQLite to PostgreSQL
-description:
-  How to get ready for deploying Backstage to production with PostgreSQL
+# prettier-ignore
+description: How to get ready for deploying Backstage to production with PostgreSQL
 ---
 
 The default `@backstage/create-app` database is SQLite, an in-memory database

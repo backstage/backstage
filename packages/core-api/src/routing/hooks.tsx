@@ -21,7 +21,7 @@ import React, {
   useMemo,
   Context,
 } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import {
   BackstageRouteObject,
   RouteRef,
@@ -111,3 +111,9 @@ export const RoutingProvider = ({
     </RoutingContext.Provider>
   );
 };
+
+export function useRouteRefParams<Params extends AnyParams>(
+  _routeRef: RouteRef<Params> | SubRouteRef<Params>,
+): Params {
+  return useParams() as Params;
+}

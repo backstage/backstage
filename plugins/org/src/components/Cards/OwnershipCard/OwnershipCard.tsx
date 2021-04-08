@@ -15,7 +15,13 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { InfoCard, InfoCardVariants, Progress, useApi } from '@backstage/core';
+import {
+  InfoCard,
+  InfoCardVariants,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+} from '@backstage/core';
 import {
   catalogApiRef,
   isOwnerOf,
@@ -29,7 +35,6 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useAsync } from 'react-use';
 
@@ -139,7 +144,20 @@ export const OwnershipCard = ({
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const entitiesList = await catalogApi.getEntities();
+    const kinds = ['Component', 'API'];
+    const entitiesList = await catalogApi.getEntities({
+      filter: {
+        kind: kinds,
+      },
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
     const ownedEntitiesList = entitiesList.items.filter(component =>
       isOwnerOf(entity, component),
     );
@@ -180,12 +198,12 @@ export const OwnershipCard = ({
         name: 'Tools',
       },
     ] as Array<{ counter: number; className: EntitiesTypes; name: string }>;
-  }, [catalogApi]);
+  }, [catalogApi, entity]);
 
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (

@@ -52,6 +52,7 @@ import { version as pluginCircleci } from '../../../../plugins/circleci/package.
 import { version as pluginExplore } from '../../../../plugins/explore/package.json';
 import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
 import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
+import { version as pluginOrg } from '../../../../plugins/org/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
 import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
@@ -82,6 +83,7 @@ export const packageVersions = {
   '@backstage/plugin-explore': pluginExplore,
   '@backstage/plugin-github-actions': pluginGithubActions,
   '@backstage/plugin-lighthouse': pluginLighthouse,
+  '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,

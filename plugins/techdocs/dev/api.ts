@@ -17,6 +17,7 @@ import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName } from '@backstage/catalog-model';
 import { TechDocsStorage } from '../src/api';
+import { NotFoundError } from '@backstage/errors';
 
 export class TechDocsDevStorageApi implements TechDocsStorage {
   public configApi: Config;
@@ -44,11 +45,29 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
     );
   }
 
-  async getEntityDocs(entityId: EntityName, path: string) {
-    const { name } = entityId;
+  async getStorageUrl() {
+    return (
+      this.configApi.getOptionalString('techdocs.storageUrl') ??
+      `${await this.discoveryApi.getBaseUrl('techdocs')}/static/docs`
+    );
+  }
 
-    const apiOrigin = await this.getApiOrigin();
-    const url = `${apiOrigin}/${name}/${path}`;
+  async getBuilder() {
+    return this.configApi.getString('techdocs.builder');
+  }
+
+  async fetchUrl(url: string) {
+    const token = await this.identityApi.getIdToken();
+    return fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+  }
+
+  async getEntityDocs(entityId: EntityName, path: string) {
+    const { kind, namespace, name } = entityId;
+
+    const storageUrl = await this.getStorageUrl();
+    const url = `${storageUrl}/${namespace}/${kind}/${name}/${path}`;
     const token = await this.identityApi.getIdToken();
 
     const request = await fetch(
@@ -58,11 +77,64 @@ export class TechDocsDevStorageApi implements TechDocsStorage {
       },
     );
 
-    if (request.status === 404) {
-      throw new Error('Page not found');
+    let errorMessage = '';
+    switch (request.status) {
+      case 404:
+        errorMessage = 'Page not found. ';
+        // path is empty for the home page of an entity's docs site
+        if (!path) {
+          errorMessage +=
+            'This could be because there is no index.md file in the root of the docs directory of this repository.';
+        }
+        throw new NotFoundError(errorMessage);
+      case 500:
+        errorMessage =
+          'Could not generate documentation or an error in the TechDocs backend. ';
+        throw new Error(errorMessage);
+      default:
+        // Do nothing
+        break;
     }
 
     return request.text();
+  }
+
+  /**
+   * Check if docs are the latest version and trigger rebuilds if not
+   *
+   * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
+   * @returns {boolean} Whether documents are currently synchronized to newest version
+   * @throws {Error} Throws error on error from sync endpoint
+   */
+  async syncEntityDocs(entityId: EntityName) {
+    const { kind, namespace, name } = entityId;
+
+    const apiOrigin = await this.getApiOrigin();
+    const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
+    let request;
+    let attempts: number = 0;
+    // retry if request times out, up to 5 times
+    // can happen due to docs taking too long to generate
+    while (!request || (request.status === 408 && attempts < 5)) {
+      attempts++;
+      request = await this.fetchUrl(
+        `${url.endsWith('/') ? url : `${url}/`}index.html`,
+      );
+    }
+
+    switch (request.status) {
+      case 404:
+        throw (await request.json()).error;
+      case 200:
+      case 201:
+        return true;
+      // for timeout and misc errors, handle without error to allow viewing older docs
+      // if older docs not available,
+      // Reader will show 404 error coming from getEntityDocs
+      case 408:
+      default:
+        return false;
+    }
   }
 
   async getBaseUrl(

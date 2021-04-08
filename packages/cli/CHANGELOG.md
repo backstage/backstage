@@ -1,5 +1,19 @@
 # @backstage/cli
 
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [82c66b8cd]
+  - @backstage/config-loader@0.6.0
+
+## 0.6.6
+
+### Patch Changes
+
+- 598f5bcfb: Lock down the version of webpack-dev-server as it's causing some nasty bugs someplace
+- 4d248725e: Make the backend plugin template use the correct latest version of `express-promise-router`
+
 ## 0.6.5
 
 ### Patch Changes

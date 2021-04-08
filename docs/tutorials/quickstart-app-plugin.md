@@ -49,7 +49,7 @@ title: Adding Custom Plugin to Existing Monorepo App
 
 Let's add a shortcut.
 
-1. Open and modify `root: packages > app > src > sidebar.tsx` with the
+1. Open and modify `root: packages > app > src > components > Root.tsx` with the
    following:
 
 ```tsx

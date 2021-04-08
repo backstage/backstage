@@ -19,7 +19,7 @@ import { InputError } from '@backstage/errors';
 import { Badge, BadgeContext, BadgeFactories } from './types';
 
 function appTitle(context: BadgeContext): string {
-  return context.config.getString('app.title') || 'Backstage';
+  return context.config.getOptionalString('app.title') || 'Backstage';
 }
 
 function entityUrl(context: BadgeContext): string {

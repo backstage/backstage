@@ -1,5 +1,80 @@
 # @backstage/plugin-catalog-backend
 
+## 0.7.0
+
+### Minor Changes
+
+- 676ede643: DELETE on an entity now just deletes the entity, rather than removing all related entities and the location
+- f1b2c1d2c: Add `readonly` mode to catalog backend
+
+  This change adds a `catalog.readonly` field in `app-config.yaml` that can be used to configure the catalog in readonly mode which effectively disables the possibility of adding new components to the catalog after startup.
+
+  When in `readonly` mode only locations configured in `catalog.locations` are loaded and served.
+  By default `readonly` is disabled which represents the current functionality where locations can be added at run-time.
+
+  This change requires the config API in the router which requires a change to `createRouter`.
+
+  ```diff
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+       locationAnalyzer,
+       logger: env.logger,
+  +    config: env.config,
+     });
+  ```
+
+### Patch Changes
+
+- 29e1789e1: Make sure that Group `spec.members` is taken into account when filling out an org hierarchy
+- 8488a1a96: Added support for the "members" field of the Group entity, allowing specification of
+  direct members from the Group side of the relationship. Added support to the
+  `BuiltinKindsEntityProcessor` to generate the appropriate relationships.
+- 6b2d54fd6: Fix mapping between users and groups for Microsoft Active Directories when using the LdapOrgProcessor
+- 44590510d: Add Bitbucket Server discovery processor.
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.6.7
+
+### Patch Changes
+
+- f47e11427: Log how many repositories were actually matching in `GithubDiscoveryProcessor`
+- c862b3f36: Introduce pagination in the /entities catalog endpoint.
+
+  Pagination is requested using query parameters. Currently supported parameters, all optional, are:
+
+  - `limit` - an integer number of entities to return, at most
+  - `offset` - an integer number of entities to skip over at the start
+  - `after` - an opaque string cursor as returned by a previous paginated request
+
+  Example request:
+
+  `GET /entities?limit=100`
+
+  Example response:
+
+  ```
+  200 OK
+  Content-Type: application/json; charset=utf-8
+  Link: </entities?limit=100&after=eyJsaW1pdCI6Miwib2Zmc2V0IjoyfQ%3D%3D>; rel="next"
+  <more headers>
+
+  [{"metadata":{...
+  ```
+
+  Note the Link header. It contains the URL (path and query part, relative to the catalog root) to use for requesting the next page.
+  It uses the `after` cursor to point out the end of the previous page. If the Link header is not present, there is no more data to read.
+
+  The current implementation is naive and encodes offset/limit in the cursor implementation, so it is not robust in the face of overlapping
+  changes to the catalog. This can be improved separately in the future without having to change the calling patterns.
+
+- Updated dependencies [4d248725e]
+  - @backstage/plugin-search-backend-node@0.1.2
+
 ## 0.6.6
 
 ### Patch Changes

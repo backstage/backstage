@@ -109,6 +109,17 @@ export const routeParentCollector = createCollector(
   },
 );
 
+// We always add a child that matches all subroutes but without any route refs. This makes
+// sure that we're always able to match each route no matter how deep the navigation goes.
+// The route resolver then takes care of selecting the most specific match in order to find
+// mount points that are as deep in the routing tree as possible.
+export const MATCH_ALL_ROUTE: BackstageRouteObject = {
+  caseSensitive: false,
+  path: '/*',
+  element: 'match-all', // These elements aren't used, so we add in a bit of debug information
+  routeRefs: new Set(),
+};
+
 export const routeObjectCollector = createCollector(
   () => Array<BackstageRouteObject>(),
   (acc, node, parent, parentObj: BackstageRouteObject | undefined) => {
@@ -126,9 +137,9 @@ export const routeObjectCollector = createCollector(
         const newObject: BackstageRouteObject = {
           caseSensitive,
           path,
-          element: null,
+          element: 'mounted',
           routeRefs: new Set([routeRef]),
-          children: [],
+          children: [MATCH_ALL_ROUTE],
         };
         parentChildren.push(newObject);
         return newObject;
@@ -148,9 +159,9 @@ export const routeObjectCollector = createCollector(
       const newObject: BackstageRouteObject = {
         caseSensitive,
         path,
-        element: null,
+        element: 'gathered',
         routeRefs: new Set(),
-        children: [],
+        children: [MATCH_ALL_ROUTE],
       };
       parentChildren.push(newObject);
       return newObject;

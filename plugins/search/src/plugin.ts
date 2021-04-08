@@ -14,24 +14,45 @@
  * limitations under the License.
  */
 import {
+  createApiFactory,
   createPlugin,
   createRouteRef,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core';
+import { SearchClient, searchApiRef } from './apis';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { SearchPage as SearchPageComponent } from './components/SearchPage';
+import { SearchPageNext as SearchPageNextComponent } from './components/SearchPageNext';
 
 export const rootRouteRef = createRouteRef({
   path: '/search',
   title: 'search',
 });
 
+export const rootNextRouteRef = createRouteRef({
+  path: '/search-next',
+  title: 'search',
+});
+
 export const searchPlugin = createPlugin({
   id: 'search',
+  apis: [
+    createApiFactory({
+      api: searchApiRef,
+      deps: { catalogApi: catalogApiRef, discoveryApi: discoveryApiRef },
+      factory: ({ catalogApi, discoveryApi }) => {
+        return new SearchClient({ catalogApi, discoveryApi });
+      },
+    }),
+  ],
   register({ router }) {
     router.addRoute(rootRouteRef, SearchPageComponent);
+    router.addRoute(rootNextRouteRef, SearchPageNextComponent);
   },
   routes: {
     root: rootRouteRef,
+    nextRoot: rootNextRouteRef,
   },
 });
 
@@ -39,5 +60,13 @@ export const SearchPage = searchPlugin.provide(
   createRoutableExtension({
     component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const SearchPageNext = searchPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/SearchPageNext').then(m => m.SearchPageNext),
+    mountPoint: rootNextRouteRef,
   }),
 );

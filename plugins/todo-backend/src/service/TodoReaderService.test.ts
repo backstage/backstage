@@ -45,8 +45,10 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
     getEntityByName: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
+    removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
   if (entity) {
@@ -89,7 +91,9 @@ describe('TodoReaderService', () => {
       offset: 0,
       limit: 10,
     });
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName);
+    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+      token: undefined,
+    });
   });
 
   it('should list, order, and filter todos', async () => {
@@ -298,7 +302,9 @@ describe('TodoReaderService', () => {
         message: 'Entity not found, Component:default/my-component',
       }),
     );
-    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName);
+    expect(catalogClient.getEntityByName).toHaveBeenCalledWith(entityName, {
+      token: undefined,
+    });
   });
 
   it('should throw if entity does not have a location', async () => {

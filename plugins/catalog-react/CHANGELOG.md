@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.4
+
+### Patch Changes
+
+- 9f48b548c: Make it possible to specify entity type to `useEntity` when it's known
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+
+## 0.1.3
+
+### Patch Changes
+
+- 01ccef4c7: Introduce `useRouteRefParams` to `core-api` to retrieve typed route parameters.
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/core@0.7.3
+
 ## 0.1.2
 
 ### Patch Changes

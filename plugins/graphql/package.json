@@ -49,7 +49,7 @@
     "@types/supertest": "^2.0.8",
     "eslint-plugin-graphql": "^4.0.0",
     "msw": "^0.20.5",
-    "supertest": "^4.0.2"
+    "supertest": "^6.1.3"
   },
   "files": [
     "dist",

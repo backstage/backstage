@@ -1,5 +1,38 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.5
+
+### Patch Changes
+
+- 802b41b65: Allow custom directory to be specified for GitHub publish action
+- Updated dependencies [97b60de98]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/catalog-model@0.7.6
+  - @backstage/backend-common@0.6.2
+
+## 0.9.4
+
+### Patch Changes
+
+- 2ab6f3ff0: Add OwnerPicker component to scaffolder for specifying a component's owner from users and groups in the catalog.
+- 164cc4c53: Fix a bug with GitHub Apps support not parsing the URL correctly
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.9.3
+
+### Patch Changes
+
+- 9f2e51e89: Fixes bug in the `github:publish` action causing repositories to be set as private even if the visibility is set to internal
+- 91e87c055: Add inputs for action `fetch:cookiecutter`: copyWithoutRender, extensions, imageName
+- 113d3d59e: Added a `publish:file` action to use for local development. The action is not installed by default.
+
 ## 0.9.2
 
 ### Patch Changes

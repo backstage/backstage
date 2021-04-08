@@ -63,7 +63,9 @@ import { Router as KafkaRouter } from '@backstage/plugin-kafka';
 />;
 ```
 
-5. Add broker configs for the backend in your `app-config.yaml`:
+5. Add broker configs for the backend in your `app-config.yaml` (see
+   [kafka-backend](https://github.com/backstage/backstage/blob/master/plugins/kafka-backend/README.md)
+   for more options):
 
 ```yaml
 kafka:

@@ -24,7 +24,7 @@ import { AppConfig } from '@backstage/config';
 import { SubRouteRef } from '../routing/types';
 
 export type BootErrorPageProps = {
-  step: 'load-config';
+  step: 'load-config' | 'load-chunk';
   error: Error;
 };
 

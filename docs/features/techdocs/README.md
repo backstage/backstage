@@ -43,7 +43,7 @@ providers are used.
 | ---------------------------- | -------------- |
 | GitHub                       | Yes ✅         |
 | GitHub Enterprise            | Yes ✅         |
-| BitBucket                    | Yes ✅         |
+| Bitbucket                    | Yes ✅         |
 | Azure DevOps                 | Yes ✅         |
 | GitLab                       | Yes ✅         |
 | GitLab Enterprise            | Yes ✅         |

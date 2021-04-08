@@ -69,11 +69,32 @@ describe('createRouter', () => {
       const response = await request(app).get('/v1/todos');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith({
-        entity: undefined,
-        offset: undefined,
-        limit: undefined,
-      });
+      expect(mockService.listTodos).toHaveBeenCalledWith(
+        {
+          entity: undefined,
+          offset: undefined,
+          limit: undefined,
+        },
+        { token: undefined },
+      );
+    });
+
+    it('forwards auth token', async () => {
+      mockService.listTodos.mockResolvedValueOnce(mockListBody);
+
+      const response = await request(app)
+        .get('/v1/todos')
+        .set('Authorization', 'Bearer secret');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(mockListBody);
+      expect(mockService.listTodos).toHaveBeenCalledWith(
+        {
+          entity: undefined,
+          offset: undefined,
+          limit: undefined,
+        },
+        { token: 'secret' },
+      );
     });
 
     it('forwards pagination query', async () => {
@@ -82,11 +103,14 @@ describe('createRouter', () => {
       const response = await request(app).get('/v1/todos?offset=5&limit=3');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith({
-        entity: undefined,
-        offset: 5,
-        limit: 3,
-      });
+      expect(mockService.listTodos).toHaveBeenCalledWith(
+        {
+          entity: undefined,
+          offset: 5,
+          limit: 3,
+        },
+        { token: undefined },
+      );
     });
 
     it('forwards entity query', async () => {
@@ -97,15 +121,18 @@ describe('createRouter', () => {
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(mockListBody);
-      expect(mockService.listTodos).toHaveBeenCalledWith({
-        entity: {
-          name: 'my-component',
-          kind: 'component',
-          namespace: 'default',
+      expect(mockService.listTodos).toHaveBeenCalledWith(
+        {
+          entity: {
+            name: 'my-component',
+            kind: 'component',
+            namespace: 'default',
+          },
+          offset: undefined,
+          limit: undefined,
         },
-        offset: undefined,
-        limit: undefined,
-      });
+        { token: undefined },
+      );
     });
 
     it('rejects invalid queries', async () => {

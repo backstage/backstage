@@ -317,7 +317,6 @@ export class CommonDatabase implements Database {
     const tx = txOpaque as Knex.Transaction;
 
     const result = await tx<DbEntitiesRow>('entities').where({ id: uid }).del();
-
     if (!result) {
       throw new NotFoundError(`Found no entity with ID ${uid}`);
     }

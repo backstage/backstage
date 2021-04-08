@@ -68,8 +68,8 @@ proxy:
 
 In a standard Backstage app created with
 [@backstage/create-app](./create-an-app.md), the sidebar is managed inside
-`packages/app/src/sidebar.tsx`. The file exports the entire `Sidebar` element of
-your app, which you can extend with additional entries by adding new
+`packages/app/src/components/Root.tsx`. The file exports the entire `Sidebar`
+element of your app, which you can extend with additional entries by adding new
 `SidebarItem` elements.
 
 For example, if you install the `api-docs` plugin, a matching `SidebarItem`

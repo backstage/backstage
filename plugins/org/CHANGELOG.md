@@ -1,5 +1,32 @@
 # @backstage/plugin-org
 
+## 0.3.12
+
+### Patch Changes
+
+- 97d53f686: Optimize data fetched for the `OwnershipCard`.
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [b051e770c]
+- Updated dependencies [98dd5da71]
+  - @backstage/core@0.7.4
+  - @backstage/core-api@0.2.16
+  - @backstage/catalog-model@0.7.6
+
+## 0.3.11
+
+### Patch Changes
+
+- 7c6e1463b: Correctly route to namespaced group members
+- 87171d57d: Correctly include group members via matching namespace relation
+- baa39809e: Fixed MembersList showing members from a previous group when navigating to a new group
+- 9f48b548c: Some cleanup in how types and components are used; leverage `EntityRefLinks`
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
 ## 0.3.10
 
 ### Patch Changes

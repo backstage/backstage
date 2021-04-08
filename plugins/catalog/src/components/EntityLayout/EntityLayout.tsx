@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import {
   Content,
   Header,
   HeaderLabel,
+  IconComponent,
   Page,
   Progress,
   TabbedLayout,
 } from '@backstage/core';
 import {
   EntityContext,
+  EntityRefLinks,
+  getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import {
-  default as React,
-  PropsWithChildren,
-  useContext,
-  useState,
-} from 'react';
+import { default as React, useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
@@ -79,6 +81,42 @@ const headerProps = (
   };
 };
 
+const EntityLabels = ({ entity }: { entity: Entity }) => {
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  return (
+    <>
+      {ownedByRelations.length > 0 && (
+        <HeaderLabel
+          label="Owner"
+          value={
+            <EntityRefLinks
+              entityRefs={ownedByRelations}
+              defaultKind="Group"
+              color="inherit"
+            />
+          }
+        />
+      )}
+      {entity.spec?.lifecycle && (
+        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+      )}
+    </>
+  );
+};
+
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
+type EntityLayoutProps = {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  children?: React.ReactNode;
+};
+
 /**
  * EntityLayout is a compound component, which allows you to define a layout for
  * entities using a sub-navigation mechanism.
@@ -94,7 +132,10 @@ const headerProps = (
  * </EntityLayout>
  * ```
  */
-export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
+export const EntityLayout = ({
+  UNSTABLE_extraContextMenuItems,
+  children,
+}: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
@@ -121,18 +162,13 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {/* TODO: fix after catalog page customization is added */}
-        {entity && kind !== 'user' && (
+        {entity && (
           <>
-            <HeaderLabel
-              label="Owner"
-              value={entity.spec?.owner || 'unknown'}
+            <EntityLabels entity={entity} />
+            <EntityContextMenu
+              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              onUnregisterEntity={showRemovalDialog}
             />
-            <HeaderLabel
-              label="Lifecycle"
-              value={entity.spec?.lifecycle || 'unknown'}
-            />
-            <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
           </>
         )}
       </Header>

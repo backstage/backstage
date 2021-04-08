@@ -120,11 +120,11 @@ export function wrapInTestApp(
     },
   });
 
-  let Wrapper: ComponentType;
+  let wrappedElement: React.ReactElement;
   if (Component instanceof Function) {
-    Wrapper = Component;
+    wrappedElement = <Component />;
   } else {
-    Wrapper = () => Component as React.ReactElement;
+    wrappedElement = Component as React.ReactElement;
   }
 
   const routeElements = Object.entries(options.mountedRoutes ?? {}).map(
@@ -153,7 +153,7 @@ export function wrapInTestApp(
         {routeElements}
         {/* The path of * here is needed to be set as a catch all, so it will render the wrapper element
          *  and work with nested routes if they exist too */}
-        <Route path="*" element={<Wrapper />} />
+        <Route path="*" element={wrappedElement} />
       </AppRouter>
     </AppProvider>
   );

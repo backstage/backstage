@@ -168,6 +168,29 @@ describe('CookieCutter Templater', () => {
     });
   });
 
+  it('should run the docker container mentioned in configs, overriding the default', async () => {
+    const values = {
+      owner: 'blobby',
+      storePath: 'https://github.com/org/repo',
+      imageName: 'foo/cookiecutter-image-with-extensions',
+    };
+
+    jest.spyOn(fs, 'readdir').mockResolvedValueOnce(['newthing'] as any);
+
+    const templater = new CookieCutter();
+    await templater.run({
+      workspacePath: 'tempdir',
+      values,
+      dockerClient: mockDocker,
+    });
+
+    expect(runDockerContainer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      }),
+    );
+  });
+
   it('should pass through the streamer to the run docker helper', async () => {
     const stream = new PassThrough();
 

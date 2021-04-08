@@ -353,12 +353,13 @@ describe('BuiltinKindsEntityProcessor', () => {
           type: 't',
           parent: 'p',
           children: ['c'],
+          members: ['m'],
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toBeCalledTimes(4);
+      expect(emit).toBeCalledTimes(6);
       expect(emit).toBeCalledWith({
         type: 'relation',
         relation: {
@@ -389,6 +390,22 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Group', namespace: 'default', name: 'n' },
           type: 'parentOf',
           target: { kind: 'Group', namespace: 'default', name: 'c' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'User', namespace: 'default', name: 'm' },
+          type: 'memberOf',
+          target: { kind: 'Group', namespace: 'default', name: 'n' },
+        },
+      });
+      expect(emit).toBeCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Group', namespace: 'default', name: 'n' },
+          type: 'hasMember',
+          target: { kind: 'User', namespace: 'default', name: 'm' },
         },
       });
     });

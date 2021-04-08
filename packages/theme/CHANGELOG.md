@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.5
+
+### Patch Changes
+
+- 4618774ff: Changed color for Add Item, Support & Choose buttons with low contrast/readability in dark mode
+
 ## 0.2.4
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.2
+
+### Patch Changes
+
+- a2a3c7803: Bump `@kubernetes/client-node` from `^0.13.2` to `^0.14.0`.
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-kubernetes-backend@0.3.2
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.4.1
 
 ### Patch Changes

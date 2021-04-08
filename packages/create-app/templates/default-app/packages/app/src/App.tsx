@@ -1,9 +1,10 @@
+import React from 'react';
+import { Navigate, Route } from 'react-router';
 import {
   AlertDisplay,
   createApp,
   FlatRoutes,
   OAuthRequestDialog,
-  SidebarPage,
 } from '@backstage/core';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -11,18 +12,16 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-import';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
-import React from 'react';
-import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
-import { EntityPage } from './components/catalog/EntityPage';
+import { entityPage } from './components/catalog/EntityPage';
+import { Root } from './components/Root';
 import * as plugins from './plugins';
-import { AppSidebar } from './sidebar';
 
 const app = createApp({
   apis,
@@ -34,40 +33,44 @@ const app = createApp({
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
     });
+    bind(scaffolderPlugin.externalRoutes, {
+      registerComponent: catalogImportPlugin.routes.importPage,
+    });
   },
 });
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
 
+const routes = (
+  <FlatRoutes>
+    <Navigate key="/" to="/catalog" />
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route
+      path="/catalog/:namespace/:kind/:name"
+      element={<CatalogEntityPage />}
+    >
+      {entityPage}
+    </Route>
+    <Route path="/docs" element={<TechdocsPage />} />
+    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/api-docs" element={<ApiExplorerPage />} />
+    <Route
+      path="/tech-radar"
+      element={<TechRadarPage width={1500} height={800} />}
+    />
+    <Route path="/catalog-import" element={<CatalogImportPage />} />
+    <Route path="/search" element={<SearchPage />} />
+    <Route path="/settings" element={<UserSettingsPage />} />
+  </FlatRoutes>
+);
+
 const App = () => (
   <AppProvider>
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <SidebarPage>
-        <AppSidebar />
-        <FlatRoutes>
-          <Navigate key="/" to="/catalog" />
-          <Route path="/catalog" element={<CatalogIndexPage />} />
-          <Route
-            path="/catalog/:namespace/:kind/:name"
-            element={<CatalogEntityPage />}
-          >
-            <EntityPage />
-          </Route>
-          <Route path="/docs" element={<TechdocsPage />} />
-          <Route path="/create" element={<ScaffolderPage />} />
-          <Route path="/api-docs" element={<ApiExplorerPage />} />
-          <Route
-            path="/tech-radar"
-            element={<TechRadarPage width={1500} height={800} />}
-          />
-          <Route path="/catalog-import" element={<CatalogImportPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/settings" element={<UserSettingsPage />} />
-        </FlatRoutes>
-      </SidebarPage>
+      <Root>{routes}</Root>
     </AppRouter>
   </AppProvider>
 );

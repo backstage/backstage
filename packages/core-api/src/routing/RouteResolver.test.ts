@@ -19,9 +19,10 @@ import { createSubRouteRef } from './SubRouteRef';
 import { createExternalRouteRef } from './ExternalRouteRef';
 import { RouteResolver } from './RouteResolver';
 import { ExternalRouteRef, RouteRef, SubRouteRef } from './types';
+import { MATCH_ALL_ROUTE } from './collectors';
 
 const element = () => null;
-const rest = { element, caseSensitive: false };
+const rest = { element, caseSensitive: false, children: [MATCH_ALL_ROUTE] };
 
 const ref1 = createRouteRef({ id: 'rr1' });
 const ref2 = createRouteRef({ id: 'rr2', params: ['x'] });
@@ -107,6 +108,7 @@ describe('RouteResolver', () => {
           path: '/my-parent/:x',
           ...rest,
           children: [
+            MATCH_ALL_ROUTE,
             { routeRefs: new Set([ref1]), path: '/my-route', ...rest },
           ],
         },
@@ -138,6 +140,59 @@ describe('RouteResolver', () => {
     );
   });
 
+  it('should resolve the most specific match', () => {
+    const r = new RouteResolver(
+      new Map<RouteRef, string>([
+        [ref1, '/deep'],
+        [ref2, '/root/:x'],
+        [ref3, '/sub/:y'],
+      ]),
+      new Map<RouteRef, RouteRef>([
+        [ref3, ref2],
+        [ref1, ref3],
+      ]),
+      [
+        {
+          routeRefs: new Set([ref2]),
+          path: '/root/:x',
+          ...rest,
+          children: [
+            MATCH_ALL_ROUTE,
+            {
+              routeRefs: new Set([ref3]),
+              path: '/sub/:y',
+              ...rest,
+              children: [
+                MATCH_ALL_ROUTE,
+                {
+                  routeRefs: new Set([ref1]),
+                  path: '/deep',
+                  ...rest,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      new Map<ExternalRouteRef, RouteRef | SubRouteRef>(),
+    );
+
+    expect(r.resolve(ref2, '/')?.({ x: 'x' })).toBe('/root/x');
+    expect(r.resolve(ref3, '/root/x')?.({ y: 'y' })).toBe('/root/x/sub/y');
+
+    expect(() => r.resolve(ref1, '/')?.()).toThrow(
+      /^Cannot route.*with parent.*as it has parameters$/,
+    );
+    expect(() => r.resolve(ref1, '/root/x')?.()).toThrow(
+      /^Cannot route.*with parent.*as it has parameters$/,
+    );
+    expect(r.resolve(ref1, '/root/x/sub/y')?.()).toBe('/root/x/sub/y/deep');
+    // Without the MATCH_ALL_ROUTE, we wouldn't properly match the route here
+    expect(r.resolve(ref1, '/root/x/sub/y/any/nested/path/here')?.()).toBe(
+      '/root/x/sub/y/deep',
+    );
+  });
+
   it('should resolve an absolute route with multiple parents', () => {
     const r = new RouteResolver(
       new Map<RouteRef, string>([
@@ -155,11 +210,13 @@ describe('RouteResolver', () => {
           path: '/my-grandparent/:y',
           ...rest,
           children: [
+            MATCH_ALL_ROUTE,
             {
               routeRefs: new Set([ref2]),
               path: '/my-parent/:x',
               ...rest,
               children: [
+                MATCH_ALL_ROUTE,
                 { routeRefs: new Set([ref1]), path: '/my-route', ...rest },
               ],
             },

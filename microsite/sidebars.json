@@ -33,6 +33,7 @@
         ]
       },
       "getting-started/keeping-backstage-updated",
+      "getting-started/concepts",
       "getting-started/contributors"
     ],
     "CLI": ["cli/index", "cli/commands"],
@@ -104,10 +105,38 @@
       }
     ],
     "Integrations": [
+      "integrations/index",
+      {
+        "type": "subcategory",
+        "label": "Azure DevOps",
+        "ids": ["integrations/azure/locations"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Bitbucket",
+        "ids": [
+          "integrations/bitbucket/locations",
+          "integrations/bitbucket/discovery"
+        ]
+      },
       {
         "type": "subcategory",
         "label": "GitHub",
-        "ids": ["integrations/github/org"]
+        "ids": [
+          "integrations/github/locations",
+          "integrations/github/discovery",
+          "integrations/github/org"
+        ]
+      },
+      {
+        "type": "subcategory",
+        "label": "GitLab",
+        "ids": ["integrations/gitlab/locations"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Google Analytics",
+        "ids": ["integrations/google-analytics/installation"]
       },
       {
         "type": "subcategory",
@@ -116,8 +145,8 @@
       },
       {
         "type": "subcategory",
-        "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       }
     ],
     "Plugins": [
@@ -162,11 +191,25 @@
     ],
     "Auth and identity": [
       "auth/index",
+      {
+        "type": "subcategory",
+        "label": "Included providers",
+        "ids": [
+          "auth/auth0/provider",
+          "auth/microsoft/provider",
+          "auth/github/provider",
+          "auth/gitlab/provider",
+          "auth/google/provider",
+          "auth/okta/provider",
+          "auth/onelogin/provider"
+        ]
+      },
       "auth/add-auth-provider",
+      "auth/using-auth",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/glossary",
-      "auth/auth-backend-classes"
+      "auth/auth-backend-classes",
+      "auth/glossary"
     ],
     "Designing for Backstage": [
       "dls/design",

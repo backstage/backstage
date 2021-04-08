@@ -47,7 +47,7 @@
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^8.0.0",
     "@types/yup": "^0.29.8",
-    "supertest": "^4.0.2"
+    "supertest": "^6.1.3"
   },
   "files": [
     "dist",

@@ -1,5 +1,15 @@
 # @backstage/plugin-kafka-backend
 
+## 0.2.3
+
+### Patch Changes
+
+- f03a52f5b: Add support for SASL authentication & SSL boolean config.
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
 ## 0.2.2
 
 ### Patch Changes

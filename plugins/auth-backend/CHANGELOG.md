@@ -1,5 +1,40 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.8
+
+### Patch Changes
+
+- 2b2b31186: When using OAuth2 authentication the name is now taken from the name property of the JWT instead of the email property
+- Updated dependencies [97b60de98]
+- Updated dependencies [ae6250ce3]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/catalog-model@0.7.6
+  - @backstage/test-utils@0.1.10
+  - @backstage/backend-common@0.6.2
+
+## 0.3.7
+
+### Patch Changes
+
+- 0d55dcc74: Fixes timezone bug for auth signing keys
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.3.6
+
+### Patch Changes
+
+- 449776cd6: The `auth` config types now properly accept any declared auth environment. Previously only `development` was accepted.
+
+  The `audience` configuration is no longer required for GitLab auth; this will default to `https://gitlab.com`
+
 ## 0.3.5
 
 ### Patch Changes
