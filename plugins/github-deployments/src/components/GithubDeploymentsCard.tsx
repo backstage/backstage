@@ -27,16 +27,16 @@ import {
   GITHUB_PROJECT_SLUG_ANNOTATION,
   isGithubDeploymentsAvailable,
 } from '../Router';
-import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
+import { GithubDeploymentsTable } from './GithubDeploymentsTable/GithubDeploymentsTable';
 
 const GithubDeploymentsComponent = ({
   projectSlug,
   last,
-  extraColumns,
+  columns,
 }: {
   projectSlug: string;
   last: number;
-  extraColumns: TableColumn<GithubDeployment>[];
+  columns: TableColumn<GithubDeployment>[];
 }) => {
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
@@ -54,17 +54,17 @@ const GithubDeploymentsComponent = ({
       deployments={value || []}
       isLoading={loading}
       reload={reload}
-      extraColumns={extraColumns}
+      columns={columns}
     />
   );
 };
 
 export const GithubDeploymentsCard = ({
   last,
-  extraColumns,
+  columns,
 }: {
   last?: number;
-  extraColumns?: TableColumn<GithubDeployment>[];
+  columns?: TableColumn<GithubDeployment>[];
 }) => {
   const { entity } = useEntity();
 
@@ -76,7 +76,7 @@ export const GithubDeploymentsCard = ({
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
       last={last || 10}
-      extraColumns={extraColumns || []}
+      columns={columns || GithubDeploymentsTable.defaultDeploymentColumns}
     />
   );
 };

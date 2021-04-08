@@ -52,7 +52,7 @@ export const responseStub: QueryResponse = {
           creator: {
             login: 'robot-user-001',
           },
-          payload: '',
+          payload: '{"target":"moon"}',
         },
         {
           state: 'pending',
@@ -65,7 +65,7 @@ export const responseStub: QueryResponse = {
           creator: {
             login: 'robot-user-002',
           },
-          payload: '',
+          payload: '{"target":"sun"}',
         },
       ],
     },

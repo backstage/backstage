@@ -22,16 +22,11 @@ import {
   ConfigReader,
   ConfigApi,
   OAuthApi,
-  TableColumn,
 } from '@backstage/core';
 
 import { fireEvent } from '@testing-library/react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
-import {
-  GithubDeployment,
-  GithubDeploymentsApiClient,
-  githubDeploymentsApiRef,
-} from '../api';
+import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
@@ -44,6 +39,7 @@ import {
 
 import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
+import { GithubDeploymentsTable } from './GithubDeploymentsTable';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
@@ -164,28 +160,35 @@ describe('github-deployments', () => {
       ).toBeInTheDocument();
       expect(await rendered.findByText('failure')).toBeInTheDocument();
     });
-  });
 
-  it('should display extra columns', async () => {
-    worker.use(
-      graphql.query('deployments', (_, res, ctx) =>
-        res(ctx.data(responseStub)),
-      ),
-    );
+    it('should display extra columns', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
 
-    const extraColumns: TableColumn<GithubDeployment>[] = [
-      {
-        title: 'Creator',
-        field: 'creator.login',
-      },
-    ];
+      const renderTargetFromPayload = (payload: string) => {
+        const parsedPayload = JSON.parse(payload);
+        return parsedPayload?.target || 'unknown';
+      };
 
-    const rendered = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <GithubDeploymentsCard extraColumns={extraColumns} />
-      </ApiProvider>,
-    );
+      const columns = [
+        ...GithubDeploymentsTable.defaultDeploymentColumns,
+        GithubDeploymentsTable.columns.createPayloadColumn(
+          'Target',
+          renderTargetFromPayload,
+        ),
+      ];
 
-    expect(await rendered.findByText('robot-user-001')).toBeInTheDocument();
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard columns={columns} />
+        </ApiProvider>,
+      );
+
+      expect(await rendered.findByText('moon')).toBeInTheDocument();
+      expect(await rendered.findByText('sun')).toBeInTheDocument();
+    });
   });
 });
