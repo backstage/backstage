@@ -1,5 +1,14 @@
 # @backstage/core-api
 
+## 0.2.16
+
+### Patch Changes
+
+- 1279a3325: Introduce a `load-chunk` step in the `BootErrorPage` to show make chunk loading
+  errors visible to the user.
+- 4a4681b1b: Improved error messaging for routable extension errors, making it easier to identify the component and mount point that caused the error.
+- b051e770c: Fixed a bug with `useRouteRef` where navigating from routes beneath a mount point would often fail.
+
 ## 0.2.15
 
 ### Patch Changes
