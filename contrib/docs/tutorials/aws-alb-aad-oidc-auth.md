@@ -56,29 +56,32 @@ When using ALB authentication Backstage will only be loaded once the user has su
 
 ```ts
 const DummySignInComponent: any = (props: any) => {
-  const config = useApi(configApiRef);
-  const shouldAuth = !!config.getOptionalConfig('auth.providers.awsalb');
-  if (shouldAuth) {
-    fetch(`${window.location.origin}/api/auth/awsalb/refresh`)
-      .then(data => data.json())
-      .then(data => {
-        props.onResult({
-          userId: data.backstageIdentity.id,
-          profile: data.profile,
+  try {
+    const config = useApi(configApiRef);
+    const shouldAuth = !!config.getOptionalConfig('auth.providers.awsalb');
+    if (shouldAuth) {
+      fetch(`${window.location.origin}/api/auth/awsalb/refresh`)
+        .then(data => data.json())
+        .then(data => {
+          props.onResult({
+            userId: data.backstageIdentity.id,
+            profile: data.profile,
+          });
         });
+    } else {
+      props.onResult({
+        userId: 'guest',
+        profile: {
+          email: 'guest@example.com',
+          displayName: 'Guest',
+          picture: '',
+        },
       });
-  } else {
-    props.onResult({
-      userId: 'guest',
-      profile: {
-        email: 'guest@example.com',
-        displayName: 'Guest',
-        picture: '',
-      },
-    });
+    }
+    return <div />;
+  } catch (err) {
+    return <div>{err.message}</div>;
   }
-
-  return <div />;
 };
 ```
 
