@@ -131,11 +131,7 @@ const themeOptions = createThemeOptions({
     library: genPageTheme(['#123456','#123456'] shapes.wave),
     other: genPageTheme(['#123456','#123456'], shapes.wave),
     app: genPageTheme(['#123456','#123456'], shapes.wave),
-    apis: genPageTheme(['#123456','#123456'], shapes.wave),
-    grpc: genPageTheme(['#123456','#123456'], shapes.wave2),
-    asyncapi: genPageTheme(['#123456','#123456'], shapes.wave2),
-    graphql: genPageTheme(['#123456','#123456'], shapes.wave2),
-    openapi: genPageTheme(['#123456','#123456'], shapes.wave2),
+    apis: genPageTheme(['#123456','#123456'],
   },
 });
 ```

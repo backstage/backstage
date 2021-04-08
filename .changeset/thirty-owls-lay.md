@@ -1,6 +1,5 @@
 ---
 '@backstage/core': patch
-'storybook': patch
 ---
 
-exposes undocumented PageTheme
+# exposes undocumented `PageTheme`
