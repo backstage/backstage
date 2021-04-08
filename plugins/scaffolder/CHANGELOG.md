@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder
 
+## 0.8.2
+
+### Patch Changes
+
+- 3f96a9d5a: Support auth by sending cookies in event stream request
+- 98dd5da71: Add support for multiple links to post-scaffold task summary page
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [b051e770c]
+- Updated dependencies [98dd5da71]
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+
 ## 0.8.1
 
 ### Patch Changes

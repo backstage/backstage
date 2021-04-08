@@ -106,6 +106,12 @@ The install process may also fail if no Python installation is available. Python
 is commonly available in most systems already, but if it isn't you can head for
 example [here](https://www.python.org/downloads/) to install it.
 
+#### Could not execute command yarn install
+
+Install yarn on your system with `npm install --global yarn` or for more details
+refer to the
+[prerequisites](https://backstage.io/docs/getting-started/running-backstage-locally#prerequisites)
+
 ## Run the app
 
 When the installation is complete you can open the app folder and start the app.

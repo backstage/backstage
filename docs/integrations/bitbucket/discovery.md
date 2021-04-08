@@ -2,8 +2,8 @@
 id: discovery
 title: Bitbucket Discovery
 sidebar_label: Discovery
-description:
-  Automatically discovering catalog entities from repositories in Bitbucket
+# prettier-ignore
+description: Automatically discovering catalog entities from repositories in Bitbucket
 ---
 
 The Bitbucket integration has a special discovery processor for discovering

@@ -1,5 +1,15 @@
 # @backstage/test-utils
 
+## 0.1.10
+
+### Patch Changes
+
+- ae6250ce3: Remove unnecessary wrapping of elements rendered by `wrapInTestApp` and `renderInTestApp`, which was breaking mount discovery.
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [b051e770c]
+  - @backstage/core-api@0.2.16
+
 ## 0.1.9
 
 ### Patch Changes
