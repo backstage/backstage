@@ -83,7 +83,7 @@ const DummySignInComponent: any = (props: any) => {
 };
 ```
 
-- use `DummySingInComponent` as `SignInPage` by changing `createApp` statement as follow:
+- use `DummySignInComponent` as `SignInPage` by changing the `createApp` call:
 
 ```ts
 const app = createApp({
