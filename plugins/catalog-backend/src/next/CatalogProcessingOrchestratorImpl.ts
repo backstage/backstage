@@ -19,14 +19,18 @@ import {
   LocationSpec,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
   CatalogProcessorParser,
   CatalogProcessorResult,
 } from '../ingestion/processors';
-import { CatalogProcessingOrchestrator, EntityProcessingError } from './types';
+import {
+  CatalogProcessingOrchestrator,
+  EntityProcessingError,
+  EntityProcessingRequest,
+  EntityProcessingResult,
+} from './types';
 import { Logger } from 'winston';
 import * as result from '../ingestion/processors/results';
 import { locationToEntity } from './LocationToEntity';
@@ -41,18 +45,10 @@ export class CatalogProcessingOrchestratorImpl
     },
   ) {}
 
-  async process(request: {
-    entity: Entity;
-    eager?: boolean | undefined;
-    state: Map<string, JsonObject>;
-  }): Promise<{
-    state: Map<string, JsonObject>;
-    completeEntities: Entity[];
-    deferredEntites: Entity[];
-    errors: EntityProcessingError[];
-  }> {
+  async process(
+    request: EntityProcessingRequest,
+  ): Promise<EntityProcessingResult> {
     const { entity, eager, state } = request;
-    const completedEntities: Entity[] = [];
     const deferredEntites: Entity[] = [];
     const errors: EntityProcessingError[] = [];
 
@@ -89,7 +85,7 @@ export class CatalogProcessingOrchestratorImpl
 
     return {
       deferredEntites,
-      completeEntities: completedEntities,
+      completedEntity,
       errors,
       state,
     };

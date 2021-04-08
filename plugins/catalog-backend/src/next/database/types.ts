@@ -26,24 +26,24 @@ export type AddUnprocessedEntitiesResult = {};
 
 export type UpdateProcessedEntityOptions = {
   id: string;
-  processedEntity?: string;
-  cache?: string;
+  processedEntity?: Entity;
+  state?: Map<string, JsonObject>;
   errors?: string;
 };
 
 export type RefreshStateItem = {
   id: string;
   entityRef: string;
-  unprocessedEntity: string;
-  processedEntity: string;
+  unprocessedEntity: Entity;
+  processedEntity: Entity;
   nextUpdateAt: string;
   lastDiscoveryAt: string; // remove?
-  cache: JsonObject;
+  state: Map<string, JsonObject>;
   errors: string;
 };
 
-export type GetProcessedEntitiesResult = {
-  items: RefreshStateItem;
+export type GetProcessableEntitiesResult = {
+  items: RefreshStateItem[];
 };
 
 export interface ProcessingDatabase {
@@ -56,7 +56,7 @@ export interface ProcessingDatabase {
   getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
-  ): Promise<GetProcessedEntitiesResult>;
+  ): Promise<GetProcessableEntitiesResult>;
 
   /**
    * Updates the

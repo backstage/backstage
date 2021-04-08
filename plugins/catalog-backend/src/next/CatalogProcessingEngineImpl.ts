@@ -23,7 +23,6 @@ import {
   CatalogProcessingOrchestrator,
 } from './types';
 
-import { JsonObject } from '@backstage/config';
 import { EntitiesCatalog } from '../catalog/types';
 import { Logger } from 'winston';
 
@@ -50,42 +49,33 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
     this.running = true;
 
     while (this.running) {
-      const { entity, state, eager } = await this.stateManager.pop();
+      const {
+        id,
+        entity,
+        state: intialState,
+      } = await this.stateManager.getNextProccessingItem();
 
       const {
-        completeEntities,
+        completedEntity,
         deferredEntites,
         errors,
+        state,
       } = await this.orchestrator.process({
         entity,
-        state,
-        eager,
+        state: intialState,
       });
 
       for (const error of errors) {
         this.logger.warn(error.message);
       }
 
-      for (const deferred of deferredEntites) {
-        this.stateManager.setResult({
-          request: { entity: deferred, state: new Map<string, JsonObject>() },
-          nextRefresh: 'now()',
-        });
-      }
-
-      if (completeEntities.length) {
-        await this.entitiesCatalog.batchAddOrUpdateEntities(
-          completeEntities.map(e => ({
-            entity: e,
-            relations: [],
-          })),
-          {
-            locationId: 'xyz',
-            dryRun: false,
-            outputEntities: true,
-          },
-        );
-      }
+      await this.stateManager.setProcessingItemResult({
+        id,
+        entity: completedEntity,
+        state,
+        errors,
+      });
+      await this.stateManager.addProcessingItems({ entities: deferredEntites });
     }
   }
 
@@ -96,28 +86,19 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
       subscription.unsubscribe();
     }
   }
+
   private async onNext(message: EntityMessage) {
     if ('all' in message) {
       // TODO unhandled rejection
-      await Promise.all(
-        message.all.map(entity =>
-          this.stateManager.setResult({
-            request: { entity, state: new Map() },
-            nextRefresh: 'now()',
-          }),
-        ),
-      );
+      await this.stateManager.addProcessingItems({
+        entities: message.all,
+      });
     }
 
     if ('added' in message) {
-      await Promise.all(
-        message.added.map(entity =>
-          this.stateManager.setResult({
-            request: { entity, state: new Map() },
-            nextRefresh: 'now()',
-          }),
-        ),
-      );
+      await this.stateManager.addProcessingItems({
+        entities: message.added,
+      });
 
       // TODO deletions of message.removed
     }

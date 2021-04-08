@@ -69,8 +69,7 @@ export interface EntityProvider {
   entityChange$(): Observable<EntityMessage>;
 }
 
-// interface CatalogProcessor {}
-type EntityProcessingRequest = {
+export type EntityProcessingRequest = {
   entity: Entity;
   eager?: boolean;
   state: Map<string, JsonObject>; // Versions for multiple deployments etc
@@ -81,9 +80,9 @@ export type EntityProcessingError = {
   message: String;
 };
 
-type EntityProcessingResult = {
+export type EntityProcessingResult = {
   state: Map<string, JsonObject>;
-  completeEntities: Entity[];
+  completedEntity: Entity;
   deferredEntites: Entity[];
   errors: EntityProcessingError[];
 };
@@ -92,12 +91,24 @@ export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
 
-export type ProcessingResult = {
-  nextRefresh: string;
-  request: EntityProcessingRequest;
+export type ProcessingItemResult = {
+  id: string;
+  entity: Entity;
+  state: Map<string, JsonObject>;
+  errors: EntityProcessingError[];
 };
 
+export type AddProcessingItemRequest = {
+  entities: Entity[];
+};
+
+export type ProccessingItem = {
+  id: string;
+  entity: Entity;
+  state: Map<string, JsonObject>;
+};
 export interface ProcessingStateManager {
-  setResult(result: ProcessingResult): Promise<void>;
-  pop(): Promise<EntityProcessingRequest>;
+  setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
+  getNextProccessingItem(): Promise<ProccessingItem>;
+  addProcessingItems(request: AddProcessingItemRequest): Promise<void>;
 }

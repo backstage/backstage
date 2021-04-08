@@ -21,10 +21,10 @@ import {
   ProcessingDatabase,
   AddUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
-  GetProcessedEntitiesResult,
+  GetProcessableEntitiesResult,
 } from './types';
 import type { Logger } from 'winston';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 
 export type DbRefreshStateRequest = {
@@ -54,11 +54,11 @@ class ProcessingDatabaseImpl implements ProcessingDatabase {
     options: UpdateProcessedEntityOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const { id, processedEntity, cache, errors } = options;
+    const { id, processedEntity, state, errors } = options;
     const result = await tx<DbRefreshStateRow>('refresh_state')
       .update({
-        processed_entity: processedEntity,
-        cache,
+        processed_entity: JSON.stringify(processedEntity),
+        cache: JSON.stringify(state),
         errors,
       })
       .where('id', id);
@@ -93,7 +93,7 @@ class ProcessingDatabaseImpl implements ProcessingDatabase {
   async getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },
-  ): Promise<GetProcessedEntitiesResult> {
+  ): Promise<GetProcessableEntitiesResult> {
     const tx = txOpaque as Knex.Transaction;
 
     const items = await tx<DbRefreshStateRow>('refresh_state')
@@ -114,7 +114,18 @@ class ProcessingDatabaseImpl implements ProcessingDatabase {
             : tx.raw(`now() + interval '30 seconds'`),
       });
 
-    return items;
+    return {
+      items: items.map(i => ({
+        id: i.id,
+        entityRef: i.entity_ref,
+        unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
+        processedEntity: JSON.parse(i.processed_entity) as Entity,
+        nextUpdateAt: i.next_update_at,
+        lastDiscoveryAt: i.last_discovery_at,
+        state: JSON.parse(i.cache),
+        errors: i.errors,
+      })),
+    };
   }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
@@ -147,10 +158,4 @@ class ProcessingDatabaseImpl implements ProcessingDatabase {
       throw e;
     }
   }
-}
-
-function stringifyEntityRef(
-  entity: Entity,
-): Knex.MaybeRawColumn<string> | undefined {
-  throw new Error('Function not implemented.');
 }

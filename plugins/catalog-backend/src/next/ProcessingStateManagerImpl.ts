@@ -14,52 +14,61 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
-import { DbRefreshStateRow, ProcessingDatabase } from './database/types';
-import { ProcessingResult, ProcessingStateManager } from './types';
+import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import {
+  AddProcessingItemRequest,
+  ProccessingItem,
+  ProcessingItemResult,
+  ProcessingStateManager,
+} from './types';
 
 export class ProcessingStateManagerImpl implements ProcessingStateManager {
   constructor(private readonly db: ProcessingDatabase) {}
 
-  async setResult(result: ProcessingResult) {
-    await this.db.transaction(async tx => {
-      this.db.addEntityRefreshState(tx, [
-        {
-          entity: result.request.entity,
-          nextRefresh: result.nextRefresh,
-        },
-      ]);
+  async setProcessingItemResult(result: ProcessingItemResult) {
+    return this.db.transaction(async tx => {
+      await this.db.updateProcessedEntity(tx, {
+        id: result.id,
+        processedEntity: result.entity,
+        errors: JSON.stringify(result.errors),
+        state: result.state,
+      });
     });
   }
 
-  async pop(): Promise<{
-    entity: Entity;
-    eager?: boolean | undefined;
-    state: Map<string, JsonObject>;
-  }> {
-    const entities = await new Promise<DbRefreshStateRow[]>(resolve =>
+  async addProcessingItems(request: AddProcessingItemRequest) {
+    return this.db.transaction(async tx => {
+      await this.db.addUnprocessedEntities(tx, {
+        unprocessedEntities: request.entities,
+      });
+    });
+  }
+
+  async getNextProccessingItem(): Promise<ProccessingItem> {
+    const entities = await new Promise<RefreshStateItem[]>(resolve =>
       this.popFromQueue(resolve),
     );
-    const result = entities[0];
+    const { id, state, unprocessedEntity } = entities[0];
     return {
-      entity: JSON.parse(result.unproccessed_entity) as Entity,
-      state: new Map<string, JsonObject>(JSON.parse(result.cache)),
+      id,
+      entity: unprocessedEntity,
+      state,
     };
   }
 
-  async popFromQueue(resolve: (rows: DbRefreshStateRow[]) => void) {
+  async popFromQueue(resolve: (rows: RefreshStateItem[]) => void) {
     const entities = await this.db.transaction(async tx => {
       return this.db.getProcessableEntities(tx, {
         processBatchSize: 1,
       });
     });
 
-    if (!entities.length) {
+    // No entities require refresh, wait and try again.
+    if (!entities.items.length) {
       setTimeout(() => this.popFromQueue(resolve), 1000);
       return;
     }
 
-    resolve(entities);
+    resolve(entities.items);
   }
 }
