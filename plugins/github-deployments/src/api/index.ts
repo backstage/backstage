@@ -21,15 +21,19 @@ import { graphql } from '@octokit/graphql';
 
 const getBaseUrl = (
   scmIntegrationsApi: ScmIntegrationRegistry,
-  location?: string,
+  locations: string[],
 ): string => {
-  if (!location) {
+  const targets = locations
+    .map(parseLocationReference)
+    .filter(location => location.type === 'url')
+    .map(location => location.target);
+
+  if (targets.length === 0) {
     return 'https://api.github.com';
   }
 
-  const config = scmIntegrationsApi.github.byUrl(
-    parseLocationReference(location).target,
-  );
+  const location = targets[0];
+  const config = scmIntegrationsApi.github.byUrl(location);
 
   if (!config) {
     throw new InputError(
@@ -65,7 +69,7 @@ type QueryOptions = {
 export interface GithubDeploymentsApi {
   listDeployments(
     options: QueryOptions,
-    location?: string,
+    location: string[],
   ): Promise<GithubDeployment[]>;
 }
 
@@ -116,9 +120,9 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
 
   async listDeployments(
     options: QueryOptions,
-    location?: string,
+    locations: string[],
   ): Promise<GithubDeployment[]> {
-    const baseUrl = getBaseUrl(this.scmIntegrationsApi, location);
+    const baseUrl = getBaseUrl(this.scmIntegrationsApi, locations);
     const token = await this.githubAuthApi.getAccessToken(['repo']);
 
     const graphQLWithAuth = graphql.defaults({

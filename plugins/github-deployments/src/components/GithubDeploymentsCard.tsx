@@ -35,17 +35,17 @@ import {
 const GithubDeploymentsComponent = ({
   projectSlug,
   last,
-  location,
+  locations,
 }: {
   projectSlug: string;
   last: number;
-  location?: string;
+  locations: string[];
 }) => {
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ owner, repo, last }, location),
+    async () => await api.listDeployments({ owner, repo, last }, locations),
   );
 
   if (error) {
@@ -63,9 +63,10 @@ const GithubDeploymentsComponent = ({
 
 export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
   const { entity } = useEntity();
-  const location =
-    entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION] ||
-    entity?.metadata.annotations?.[LOCATION_ANNOTATION];
+  const locations = [
+    entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
+    entity?.metadata.annotations?.[LOCATION_ANNOTATION],
+  ].filter(location => location !== undefined) as string[];
 
   return !isGithubDeploymentsAvailable(entity) ? (
     <MissingAnnotationEmptyState annotation={GITHUB_PROJECT_SLUG_ANNOTATION} />
@@ -75,7 +76,7 @@ export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
       last={last || 10}
-      location={location}
+      locations={locations}
     />
   );
 };

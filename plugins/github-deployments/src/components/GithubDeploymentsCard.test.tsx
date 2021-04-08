@@ -71,8 +71,12 @@ const configApi: ConfigApi = new ConfigReader({
 });
 
 const GRAPHQL_GITHUB_API = graphql.link('https://api.github.com/graphql');
-const GRAPHQL_CUSTOM_API_1 = graphql.link('https://api.github-1.com/graphql');
-const GRAPHQL_CUSTOM_API_2 = graphql.link('https://api.github-2.com/graphql');
+const GRAPHQL_CUSTOM_API_1 = graphql.link(
+  'https://api.my-github-1.com/graphql',
+);
+const GRAPHQL_CUSTOM_API_2 = graphql.link(
+  'https://api.my-github-2.com/graphql',
+);
 
 const scmIntegrationsApi = ScmIntegrations.fromConfig(configApi);
 const githubAuthApi: OAuthApi = {
@@ -167,7 +171,7 @@ describe('github-deployments', () => {
       ).toBeInTheDocument();
     });
 
-    it('should shows new data on reload', async () => {
+    it('should show new data on reload', async () => {
       worker.use(
         GRAPHQL_GITHUB_API.query('deployments', (_, res, ctx) =>
           res(ctx.data(responseStub)),
@@ -212,10 +216,8 @@ describe('github-deployments', () => {
       });
 
       it('should fetch data using custom api', async () => {
-        const customAPI = graphql.link('https://api.my-github-1.com/graphql');
-
         worker.use(
-          customAPI.query('deployments', (_, res, ctx) =>
+          GRAPHQL_CUSTOM_API_1.query('deployments', (_, res, ctx) =>
             res(ctx.data(responseStub)),
           ),
         );
@@ -236,10 +238,8 @@ describe('github-deployments', () => {
       });
 
       it('should fetch data using custom api', async () => {
-        const customAPI = graphql.link('https://api.my-github-2.com/graphql');
-
         worker.use(
-          customAPI.query('deployments', (_, res, ctx) =>
+          GRAPHQL_CUSTOM_API_2.query('deployments', (_, res, ctx) =>
             res(ctx.data(responseStub)),
           ),
         );
@@ -259,7 +259,7 @@ describe('github-deployments', () => {
         };
       });
 
-      it('shows error when no matching github host', async () => {
+      it('shows no apiBaseUrl error', async () => {
         const rendered = await renderInTestApp(
           <ApiProvider apis={apis}>
             <GithubDeploymentsCard />
@@ -268,7 +268,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No apiBaseUrl available for location url:https://my-github-3.com/org/repo, please check your integrations config',
+            'Warning: No apiBaseUrl available for location https://my-github-3.com/org/repo, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
@@ -284,7 +284,7 @@ describe('github-deployments', () => {
         };
       });
 
-      it('shows error when no matching github host', async () => {
+      it('shows no matching host error', async () => {
         const rendered = await renderInTestApp(
           <ApiProvider apis={apis}>
             <GithubDeploymentsCard />
@@ -293,9 +293,33 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No matching GitHub integration configuration for location url:https://my-github-unknown.com/org/repo, please check your integrations config',
+            'Warning: No matching GitHub integration configuration for location https://my-github-unknown.com/org/repo, please check your integrations config',
           ),
         ).toBeInTheDocument();
+      });
+    });
+
+    describe('entity with non url location', () => {
+      beforeEach(() => {
+        entity = entityStub;
+        entity.entity.metadata.annotations = {
+          'github.com/project-slug': 'org/repo',
+          'backstage.io/source-location':
+            'some-other-managed-location:my-favourite-location/org/repo',
+          'backstage.io/managed-by-location':
+            'file:my-favourite-file/org/repo.yaml',
+        };
+      });
+
+      it('displays fetched data using default github api', async () => {
+        worker.use(
+          GRAPHQL_GITHUB_API.query('deployments', (_, res, ctx) =>
+            res(ctx.data(responseStub)),
+          ),
+        );
+
+        await assertFetchedData();
+        expect.assertions(7);
       });
     });
   });
