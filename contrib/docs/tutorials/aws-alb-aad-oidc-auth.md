@@ -105,7 +105,7 @@ const app = createApp({
 
 ### Backend
 
-When using ALB auth it is not possible to leverage the built-in auth config discovery mechanism implemented in the app created by default: a bespoke logic needs to be implemented.
+When using ALB auth it is not possible to leverage the built-in auth config discovery mechanism implemented in the app created by default; bespoke logic needs to be implemented.
 
 - replace the content of `packages/backend/plugin/auth.ts` with the below
 
