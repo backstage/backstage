@@ -47,7 +47,7 @@ Once you've saved the action, you should see an authentication flow be triggered
 
 ### Frontend
 
-The Backstage App needs a SingInPage when authentication is required.
+The Backstage App needs a SignInPage when authentication is required.
 When using ALB authentication Backstage will only be loaded once the user has successfully authenticated; we won't need to display a SignIn page, however we will need to create a dummy SignIn component that can refresh the token.
 
 - edit `packages/app/src/App.tsx`
