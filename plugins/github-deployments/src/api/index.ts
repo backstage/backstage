@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { parseLocationReference } from '@backstage/catalog-model';
 import { createApiRef, OAuthApi } from '@backstage/core';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -20,25 +21,29 @@ import { graphql } from '@octokit/graphql';
 
 const getBaseUrl = (
   scmIntegrationsApi: ScmIntegrationRegistry,
-  host?: string,
+  location?: string,
 ): string => {
-  if (!host) {
+  if (!location) {
     return 'https://api.github.com';
   }
 
-  const integrationConfig = scmIntegrationsApi.github.byHost(host);
+  const config = scmIntegrationsApi.github.byUrl(
+    parseLocationReference(location).target,
+  );
 
-  if (!integrationConfig) {
+  if (!config) {
     throw new InputError(
-      `No matching GitHub integration configuration for host ${host}, please check your integrations config`,
+      `No matching GitHub integration configuration for location ${location}, please check your integrations config`,
     );
   }
 
-  if (!integrationConfig.config.apiBaseUrl) {
-    throw new InputError(`No apiBaseUrl available for host ${host}`);
+  if (!config.config.apiBaseUrl) {
+    throw new InputError(
+      `No apiBaseUrl available for location ${location}, please check your integrations config`,
+    );
   }
 
-  return integrationConfig.config.apiBaseUrl;
+  return config?.config.apiBaseUrl;
 };
 
 export type GithubDeployment = {
@@ -51,13 +56,17 @@ export type GithubDeployment = {
   };
 };
 
+type QueryOptions = {
+  owner: string;
+  repo: string;
+  last: number;
+};
+
 export interface GithubDeploymentsApi {
-  listDeployments(options: {
-    host?: string;
-    owner: string;
-    repo: string;
-    last: number;
-  }): Promise<GithubDeployment[]>;
+  listDeployments(
+    options: QueryOptions,
+    location?: string,
+  ): Promise<GithubDeployment[]>;
 }
 
 export const githubDeploymentsApiRef = createApiRef<GithubDeploymentsApi>({
@@ -105,13 +114,11 @@ export class GithubDeploymentsApiClient implements GithubDeploymentsApi {
     this.scmIntegrationsApi = options.scmIntegrationsApi;
   }
 
-  async listDeployments(options: {
-    owner: string;
-    repo: string;
-    last: number;
-    host?: string;
-  }): Promise<GithubDeployment[]> {
-    const baseUrl = getBaseUrl(this.scmIntegrationsApi, options.host);
+  async listDeployments(
+    options: QueryOptions,
+    location?: string,
+  ): Promise<GithubDeployment[]> {
+    const baseUrl = getBaseUrl(this.scmIntegrationsApi, location);
     const token = await this.githubAuthApi.getAccessToken(['repo']);
 
     const graphQLWithAuth = graphql.defaults({

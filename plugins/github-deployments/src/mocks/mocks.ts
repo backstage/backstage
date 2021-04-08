@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity } from '@backstage/catalog-model';
 import { QueryResponse } from '../api';
 
-export const entityStub = {
+export const entityStub: { entity: Entity } = {
   entity: {
     metadata: {
       namespace: 'default',
-      annotations: {
-        'github.com/project-slug': 'org/repo',
-      },
+      annotations: {},
       name: 'sample-service',
       description: 'Sample service',
       uid: 'g0h33dd9-56h7-835b-b63v-7x5da3j64851',

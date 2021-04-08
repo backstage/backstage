@@ -27,21 +27,25 @@ import {
   isGithubDeploymentsAvailable,
 } from '../Router';
 import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
+import {
+  LOCATION_ANNOTATION,
+  SOURCE_LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 
 const GithubDeploymentsComponent = ({
-  host,
   projectSlug,
   last,
+  location,
 }: {
-  host?: string;
   projectSlug: string;
   last: number;
+  location?: string;
 }) => {
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ host, owner, repo, last }),
+    async () => await api.listDeployments({ owner, repo, last }, location),
   );
 
   if (error) {
@@ -57,14 +61,11 @@ const GithubDeploymentsComponent = ({
   );
 };
 
-export const GithubDeploymentsCard = ({
-  last,
-  host,
-}: {
-  last?: number;
-  host?: string;
-}) => {
+export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
   const { entity } = useEntity();
+  const location =
+    entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION] ||
+    entity?.metadata.annotations?.[LOCATION_ANNOTATION];
 
   return !isGithubDeploymentsAvailable(entity) ? (
     <MissingAnnotationEmptyState annotation={GITHUB_PROJECT_SLUG_ANNOTATION} />
@@ -74,7 +75,7 @@ export const GithubDeploymentsCard = ({
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
       last={last || 10}
-      host={host}
+      location={location}
     />
   );
 };
