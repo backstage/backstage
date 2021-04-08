@@ -76,7 +76,9 @@ describe('Publishers', () => {
     const publishers = await Publishers.fromConfig(
       new ConfigReader({
         integrations: {
-          bitbucket: [{ host: 'bitbucket.com', token: 'blob' }],
+          bitbucket: [
+            { host: 'bitbucket.com', username: 'foo', token: 'blob' },
+          ],
         },
       }),
       {
