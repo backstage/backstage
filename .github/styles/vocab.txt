@@ -43,7 +43,6 @@ Namespaces
 OAuth
 Okta
 Onboarding
-PageTheme
 Platformize
 Podman
 Preprarer
