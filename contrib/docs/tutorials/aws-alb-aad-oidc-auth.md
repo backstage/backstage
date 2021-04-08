@@ -1,6 +1,6 @@
 # Using AWS Application Load Balancer with Azure Active Directory to authenticate requests
 
-Backstage allows to offload the responsibility of authenticating users to AWS Application Load Balancer (**ALB**), leveraging the authentication support on ALB.
+Backstage allows offloading the responsibility of authenticating users to an AWS Application Load Balancer (**ALB**), leveraging the authentication support on ALB.
 This tutorial shows how to use authentication on an ALB sitting in front of Backstage.
 Azure Active Directory (**AAD**) is used as identity provider but any identity provider supporting OpenID Connect (OIDC) can be used.
 
