@@ -195,13 +195,19 @@ export function createPublishGithubAction(options: {
           access: permission,
           username: team_slug,
         } of collaborators) {
-          await client.teams.addOrUpdateRepoPermissionsInOrg({
-            org: owner,
-            team_slug,
-            owner,
-            repo,
-            permission,
-          });
+          try {
+            await client.teams.addOrUpdateRepoPermissionsInOrg({
+              org: owner,
+              team_slug,
+              owner,
+              repo,
+              permission,
+            });
+          } catch (e) {
+            ctx.logger.warn(
+              `Skipping ${permission} access for ${team_slug}, ${e.message}`,
+            );
+          }
         }
       }
 

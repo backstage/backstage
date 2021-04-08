@@ -55,6 +55,7 @@
     "handlebars": "^4.7.6",
     "helmet": "^4.0.0",
     "isomorphic-git": "^1.8.0",
+    "jest-when": "^3.1.0",
     "jsonschema": "^1.2.6",
     "knex": "^0.95.1",
     "luxon": "^1.26.0",
