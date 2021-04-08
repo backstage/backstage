@@ -292,7 +292,7 @@ class Index extends React.Component {
             Build your own software templates
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/extending/index.md`}
+            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/index.md`}
           >
             Contribute
           </ActionBlock.Link>
