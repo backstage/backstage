@@ -75,17 +75,18 @@ export type EntityProcessingRequest = {
   state: Map<string, JsonObject>; // Versions for multiple deployments etc
 };
 
-export type EntityProcessingError = {
-  // some error stuff here
-  message: String;
-};
-
-export type EntityProcessingResult = {
-  state: Map<string, JsonObject>;
-  completedEntity: Entity;
-  deferredEntites: Entity[];
-  errors: EntityProcessingError[];
-};
+export type EntityProcessingResult =
+  | {
+      ok: true;
+      state: Map<string, JsonObject>;
+      completedEntity: Entity;
+      deferredEntites: Entity[];
+      errors: Error[];
+    }
+  | {
+      ok: false;
+      errors: Error[];
+    };
 
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
@@ -95,7 +96,7 @@ export type ProcessingItemResult = {
   id: string;
   entity: Entity;
   state: Map<string, JsonObject>;
-  errors: EntityProcessingError[];
+  errors: Error[];
 };
 
 export type AddProcessingItemRequest = {

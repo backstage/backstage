@@ -43,7 +43,7 @@ export type DbRefreshStateRow = {
   errors: string;
 };
 
-class ProcessingDatabaseImpl implements ProcessingDatabase {
+export class ProcessingDatabaseImpl implements ProcessingDatabase {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,
@@ -82,6 +82,7 @@ class ProcessingDatabaseImpl implements ProcessingDatabase {
           id: uuid(),
           entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
+          errors: '',
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
         })

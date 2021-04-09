@@ -55,27 +55,28 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
         state: intialState,
       } = await this.stateManager.getNextProccessingItem();
 
-      const {
-        completedEntity,
-        deferredEntites,
-        errors,
-        state,
-      } = await this.orchestrator.process({
+      const result = await this.orchestrator.process({
         entity,
         state: intialState,
       });
 
-      for (const error of errors) {
+      for (const error of result.errors) {
         this.logger.warn(error.message);
+      }
+
+      if (!result.ok) {
+        return;
       }
 
       await this.stateManager.setProcessingItemResult({
         id,
-        entity: completedEntity,
-        state,
-        errors,
+        entity: result.completedEntity,
+        state: result.state,
+        errors: result.errors,
       });
-      await this.stateManager.addProcessingItems({ entities: deferredEntites });
+      await this.stateManager.addProcessingItems({
+        entities: result.deferredEntites,
+      });
     }
   }
 

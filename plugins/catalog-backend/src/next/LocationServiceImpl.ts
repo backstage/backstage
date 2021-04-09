@@ -50,7 +50,7 @@ export class LocationServiceImpl implements LocationService {
 
       return {
         location: { ...spec, id: `${spec.type}:${spec.target}` },
-        entities: processed.completeEntities,
+        entities: [processed.completedEntity],
       };
     }
 
