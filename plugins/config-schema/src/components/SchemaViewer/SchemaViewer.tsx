@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode, useMemo } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { Schema } from 'jsonschema';
 import {
   Box,
@@ -34,6 +41,26 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { JsonValue } from '@backstage/config';
 import { TreeItem, TreeItemProps, TreeView } from '@material-ui/lab';
+
+class ScrollForwarder {
+  private readonly listeners = new Map<string, () => void>();
+
+  setScrollListener(id: string, listener: () => void): () => void {
+    this.listeners.set(id, listener);
+
+    return () => {
+      if (this.listeners.get(id) === listener) {
+        this.listeners.delete(id);
+      }
+    };
+  }
+
+  scrollTo(id: string) {
+    this.listeners.get(id)?.();
+  }
+}
+
+const ScrollContext = createContext<ScrollForwarder | undefined>(undefined);
 
 interface SchemaViewProps {
   path: string;
@@ -205,6 +232,15 @@ export function ChildView({
   lastChild?: boolean;
 }) {
   const classes = useChildViewStyles();
+  const titleRef = useRef<HTMLElement>(null);
+  const scroll = useContext(ScrollContext);
+
+  useEffect(() => {
+    return scroll?.setScrollListener(path, () => {
+      titleRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }, [scroll, path]);
+
   const chips = new Array<JSX.Element>();
   const chipProps = { size: 'small' as const, classes: { root: classes.chip } };
 
@@ -236,6 +272,7 @@ export function ChildView({
           alignItems="center"
         >
           <Typography
+            ref={titleRef}
             variant={titleVariant(depth)}
             classes={{ root: classes.title }}
           >
@@ -449,7 +486,7 @@ export function createSchemaBrowserItems(
   }
   if (matchArr) {
     return matchArr.map((childSchema, index) => {
-      const childPath = `${path}/${index}`;
+      const childPath = `${path}.${index}`;
       if (depth > 0) expanded.push(childPath);
       return (
         <StyledTreeItem
@@ -491,7 +528,7 @@ export function createSchemaBrowserItems(
       if (schema.properties) {
         children.push(
           ...Object.entries(schema.properties).map(([name, childSchema]) => {
-            const childPath = path ? `${path}/${name}` : name;
+            const childPath = path ? `${path}.${name}` : name;
             if (depth > 0) expanded.push(childPath);
             return (
               <StyledTreeItem key={childPath} nodeId={childPath} label={name}>
@@ -511,7 +548,7 @@ export function createSchemaBrowserItems(
         children.push(
           ...Object.entries(schema.patternProperties).map(
             ([name, childSchema]) => {
-              const childPath = `${path}/<${name}>`;
+              const childPath = `${path}.<${name}>`;
               if (depth > 0) expanded.push(childPath);
               return (
                 <StyledTreeItem
@@ -533,7 +570,7 @@ export function createSchemaBrowserItems(
       }
 
       if (schema.additionalProperties && schema.additionalProperties !== true) {
-        const childPath = `${path}/*`;
+        const childPath = `${path}.*`;
         if (depth > 0) expanded.push(childPath);
         children.push(
           <StyledTreeItem key={childPath} nodeId={childPath} label="*">
@@ -556,6 +593,8 @@ export function createSchemaBrowserItems(
 }
 
 export function SchemaBrowser({ schema }: { schema: Schema }) {
+  const scroll = useContext(ScrollContext);
+  const expandedRef = useRef<string[]>([]);
   const data = useMemo(() => {
     const expanded = new Array<string>();
 
@@ -564,12 +603,27 @@ export function SchemaBrowser({ schema }: { schema: Schema }) {
     return { items, expanded };
   }, [schema]);
 
+  if (!scroll) {
+    throw new Error('No scroll handler available');
+  }
+
+  const handleToggle = (_event: unknown, expanded: string[]) => {
+    expandedRef.current = expanded;
+  };
+
+  const handleSelect = (_event: unknown, nodeId: string) => {
+    if (expandedRef.current.includes(nodeId)) {
+      scroll.scrollTo(nodeId);
+    }
+  };
+
   return (
     <TreeView
       defaultExpanded={data.expanded}
-      disableSelection
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
+      onNodeToggle={handleToggle}
+      onNodeSelect={handleSelect}
     >
       {data.items}
     </TreeView>
@@ -588,13 +642,15 @@ export const SchemaViewer = ({ schema }: SchemaViewerProps) => {
         maxHeight="100%"
       >
         <Paper elevation={3}>
-          <Box padding={1} overflow="auto" width={300}>
-            <SchemaBrowser schema={schema} />
-          </Box>
+          <ScrollContext.Provider value={new ScrollForwarder()}>
+            <Box padding={1} overflow="auto" width={300}>
+              <SchemaBrowser schema={schema} />
+            </Box>
 
-          <Box flex="1" overflow="auto">
-            <SchemaView schema={schema} path="" depth={0} />
-          </Box>
+            <Box flex="1" overflow="auto">
+              <SchemaView schema={schema} path="" depth={0} />
+            </Box>
+          </ScrollContext.Provider>
         </Paper>
       </Box>
     </Box>
