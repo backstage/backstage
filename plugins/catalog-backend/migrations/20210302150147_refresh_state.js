@@ -25,7 +25,7 @@ exports.up = async function up(knex) {
     table.text('id').primary().notNullable().comment('Primary id');
     table
       .text('entity_ref')
-      .primary()
+      .unique()
       .notNullable()
       .comment('A reference to the entity that the refresh state is tied to');
     table
