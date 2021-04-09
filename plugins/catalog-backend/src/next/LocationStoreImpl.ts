@@ -15,7 +15,7 @@
  */
 
 import { LocationSpec, Location } from '@backstage/catalog-model';
-import { CommonDatabase } from '../database';
+import { Database } from '../database';
 import { LocationStore } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { ConflictError } from '@backstage/errors';
@@ -31,7 +31,7 @@ export class LocationStoreImpl implements LocationStore {
     ZenObservable.SubscriptionObserver<LocationMessage>
   >();
 
-  constructor(private readonly db: CommonDatabase) {}
+  constructor(private readonly db: Database) {}
 
   createLocation(spec: LocationSpec): Promise<Location> {
     return this.db.transaction(async tx => {
