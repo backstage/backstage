@@ -265,3 +265,15 @@ GITHUB_TOKEN=<token> yarn start
 
 If you've also set up the frontend plugin, so you should be ready to go browse
 the templates at [localhost:3000/create](http://localhost:3000/create) now!
+
+### Disabling Docker in Docker situation (Optional)
+
+Software Templates use
+[Cookiecutter](https://github.com/cookiecutter/cookiecutter) as templating
+library. By default it will use the
+[spotify/backstage-cookiecutter](<[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)>)
+docker image.
+
+If you are running backstage from a Docker container and you want to avoid
+calling a container inside a container, you can set up Cookiecutter in your own
+image, this will use the local installation instead.
