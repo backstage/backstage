@@ -131,7 +131,7 @@ const themeOptions = createThemeOptions({
     library: genPageTheme(['#123456','#123456'] shapes.wave),
     other: genPageTheme(['#123456','#123456'], shapes.wave),
     app: genPageTheme(['#123456','#123456'], shapes.wave),
-    apis: genPageTheme(['#123456','#123456'],
+    apis: genPageTheme(['#123456','#123456'], shapes.wave),
   },
 });
 ```
