@@ -31,6 +31,7 @@ export type DbTaskRow = {
   status: Status;
   createdAt: string;
   lastHeartbeatAt?: string;
+  secrets?: TaskSecrets;
 };
 
 export type TaskEventType = 'completion' | 'log';
@@ -44,7 +45,6 @@ export type DbTaskEventRow = {
 
 export type TaskSpec = {
   baseUrl?: string;
-  token?: string | undefined;
   values: JsonObject;
   steps: Array<{
     id: string;
@@ -55,12 +55,17 @@ export type TaskSpec = {
   output: { [name: string]: string };
 };
 
+export type TaskSecrets = {
+  identityToken: string | undefined;
+};
+
 export type DispatchResult = {
   taskId: string;
 };
 
 export interface Task {
   spec: TaskSpec;
+  secrets?: TaskSecrets;
   done: boolean;
   emitLog(message: string, metadata?: JsonValue): Promise<void>;
   complete(result: CompletedTaskState, metadata?: JsonValue): Promise<void>;
@@ -69,7 +74,7 @@ export interface Task {
 
 export interface TaskBroker {
   claim(): Promise<Task>;
-  dispatch(spec: TaskSpec): Promise<DispatchResult>;
+  dispatch(spec: TaskSpec, secrets?: TaskSecrets): Promise<DispatchResult>;
   vacuumTasks(timeoutS: { timeoutS: number }): Promise<void>;
   observe(
     options: {
@@ -94,7 +99,10 @@ export type TaskStoreGetEventsOptions = {
 };
 
 export interface TaskStore {
-  createTask(task: TaskSpec): Promise<{ taskId: string }>;
+  createTask(
+    task: TaskSpec,
+    secrets?: TaskSecrets,
+  ): Promise<{ taskId: string }>;
   getTask(taskId: string): Promise<DbTaskRow>;
   claimTask(): Promise<DbTaskRow | undefined>;
   completeTask(options: {

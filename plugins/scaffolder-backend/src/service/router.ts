@@ -387,7 +387,6 @@ export async function createRouter(
 
         taskSpec = {
           baseUrl,
-          token,
           values,
           steps: template.spec.steps.map((step, index) => ({
             ...step,
@@ -404,7 +403,9 @@ export async function createRouter(
         );
       }
 
-      const result = await taskBroker.dispatch(taskSpec);
+      const result = await taskBroker.dispatch(taskSpec, {
+        identityToken: token,
+      });
 
       res.status(201).json({ id: result.taskId });
     })
@@ -414,8 +415,8 @@ export async function createRouter(
       if (!task) {
         throw new NotFoundError(`Task with id ${taskId} does not exist`);
       }
-      // Do not disclose token
-      delete task.spec.token;
+      // Do not disclose secrets
+      delete task.secrets;
       res.status(200).json(task);
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
