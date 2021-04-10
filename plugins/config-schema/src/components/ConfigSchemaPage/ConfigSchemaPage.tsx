@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 import React, { useMemo } from 'react';
-import {
-  Header,
-  Page,
-  Content,
-  ContentHeader,
-  HeaderLabel,
-  SupportButton,
-  useApi,
-} from '@backstage/core';
+import { Header, Page, Content, useApi } from '@backstage/core';
 import { useObservable } from 'react-use';
 import { configSchemaApiRef } from '../../api';
 import { SchemaViewer } from '../SchemaViewer';
@@ -35,14 +27,8 @@ export const ConfigSchemaPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="Welcome to config-schema!">
-        <HeaderLabel label="Owner" value="Team X" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
-      </Header>
+      <Header title="Configuration Documentation" />
       <Content stretch>
-        <ContentHeader title="Plugin title">
-          <SupportButton>A description of your plugin goes here.</SupportButton>
-        </ContentHeader>
         {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
       </Content>
     </Page>

@@ -403,7 +403,7 @@ export function MatchView({
       <Typography variant="overline">{label}</Typography>
       {schema.map((optionSchema, index) => (
         <ChildView
-          path={`${path}/${index}`}
+          path={`${path}/${index + 1}`}
           depth={depth + 1}
           schema={optionSchema}
           lastChild={index === schema.length - 1}
@@ -486,7 +486,7 @@ export function createSchemaBrowserItems(
   }
   if (matchArr) {
     return matchArr.map((childSchema, index) => {
-      const childPath = `${path}.${index}`;
+      const childPath = `${path}/${index + 1}`;
       if (depth > 0) expanded.push(childPath);
       return (
         <StyledTreeItem
