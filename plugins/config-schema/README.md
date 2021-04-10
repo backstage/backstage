@@ -1,13 +1,19 @@
 # config-schema
 
-Welcome to the config-schema plugin!
+The `config-schema` plugin lets you browse a documentation reference of the configuration schema of a particular Backstage installation. It is intended as a tool for integrators rather than something that is useful to end users of Backstage.
 
-_This plugin was created through the Backstage CLI_
+## Usage
 
-## Getting started
+The plugin exports a single full-page extension, the `ConfigSchemaPage`, which you add to an app like a usual top-level tool on a dedicated route.
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/config-schema](http://localhost:3000/config-schema).
+It also exports a `configSchemaApiRef` without any default implementation, meaning that an API needs to be registered in the app for the plugin to work. An implementation of the API that is provided out of the box is the `StaticSchemaLoader`, which loads the schema from a URL. It can be added to the app by adding the following to your app's `api.ts`:
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+```ts
+createApiFactory(configSchemaApiRef, new StaticSchemaLoader());
+```
+
+The configuration schema consumed by the `StaticSchemaLoader` can be generated using the following command:
+
+```shell
+yarn --silent backstage-cli config:schema --format=json
+```
