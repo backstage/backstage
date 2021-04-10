@@ -162,6 +162,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
         .md-grid { max-width: 90vw; margin: 0 }
+        .md-typeset table:not([class]) { font-size: 1rem; }
         @media screen and (max-width: 76.1875em) {
           .md-nav { 
             background-color: ${theme.palette.background.default}; 
