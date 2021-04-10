@@ -162,6 +162,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
         .md-grid { max-width: 90vw; margin: 0 }
+        .md-typeset table:not([class]) {
+          border: 1px solid ${theme.palette.text.primary};
+          border-bottom: none;
+          border-collapse: collapse;
+        }
+        .md-typeset table:not([class]) td, .md-typeset table:not([class]) th {
+          border-bottom: 1px solid ${theme.palette.text.primary};
+        }
+        .md-typeset table:not([class]) th { font-weight: bold; }
         @media screen and (max-width: 76.1875em) {
           .md-nav { 
             background-color: ${theme.palette.background.default}; 
