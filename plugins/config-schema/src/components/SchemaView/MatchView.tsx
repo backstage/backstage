@@ -34,6 +34,7 @@ export function MatchView({
       <Typography variant="overline">{label}</Typography>
       {schema.map((optionSchema, index) => (
         <ChildView
+          key={index}
           path={`${path}/${index + 1}`}
           depth={depth + 1}
           schema={optionSchema}

@@ -51,6 +51,7 @@ export function ObjectView({ path, depth, schema }: SchemaViewProps) {
           {depth > 0 && <Typography variant="overline">Properties</Typography>}
           {properties.map(([name, propSchema], index) => (
             <ChildView
+              key={name}
               path={path ? `${path}.${name}` : name}
               depth={depth + 1}
               schema={propSchema}
@@ -67,6 +68,7 @@ export function ObjectView({ path, depth, schema }: SchemaViewProps) {
           )}
           {patternProperties.map(([name, propSchema], index) => (
             <ChildView
+              key={name}
               path={path ? `${path}.<${name}>` : name}
               depth={depth + 1}
               schema={propSchema}
