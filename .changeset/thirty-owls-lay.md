@@ -2,4 +2,4 @@
 '@backstage/core': patch
 ---
 
-# exposes undocumented `PageTheme`
+exposes undocumented `PageTheme`
