@@ -27,7 +27,7 @@ export const ConfigSchemaPage = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="Configuration Documentation" />
+      <Header title="Configuration Reference" />
       <Content stretch>
         {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
       </Content>

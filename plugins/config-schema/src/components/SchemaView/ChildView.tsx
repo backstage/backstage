@@ -18,7 +18,7 @@ import { JsonValue } from '@backstage/config';
 import { Box, Chip, Divider, makeStyles, Typography } from '@material-ui/core';
 import { Schema } from 'jsonschema';
 import React, { useEffect, useRef } from 'react';
-import { useScrollTargets } from '../SchemaViewer/ScrollContext';
+import { useScrollTargets } from '../ScrollTargetsContext/ScrollTargetsContext';
 import { SchemaView } from './SchemaView';
 
 export interface MetadataViewRowProps {
