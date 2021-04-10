@@ -14,23 +14,35 @@
  * limitations under the License.
  */
 import React, { useMemo } from 'react';
-import { Header, Page, Content, useApi } from '@backstage/core';
+import { Header, Page, Content, useApi, Progress } from '@backstage/core';
 import { useObservable } from 'react-use';
 import { configSchemaApiRef } from '../../api';
 import { SchemaViewer } from '../SchemaViewer';
+import { Typography } from '@material-ui/core';
 
 export const ConfigSchemaPage = () => {
   const configSchemaApi = useApi(configSchemaApiRef);
-  const schema = useObservable(
+  const schemaResult = useObservable(
     useMemo(() => configSchemaApi.schema$(), [configSchemaApi]),
-  )?.schema;
+  );
+
+  let content;
+  if (schemaResult) {
+    if (schemaResult.schema) {
+      content = <SchemaViewer schema={schemaResult.schema} />;
+    } else {
+      content = (
+        <Typography variant="h4">No configuration schema available</Typography>
+      );
+    }
+  } else {
+    content = <Progress />;
+  }
 
   return (
     <Page themeId="tool">
       <Header title="Configuration Reference" />
-      <Content stretch>
-        {schema ? <SchemaViewer schema={schema} /> : 'No schema available'}
-      </Content>
+      <Content stretch>{content}</Content>
     </Page>
   );
 };
