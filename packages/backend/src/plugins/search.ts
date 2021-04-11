@@ -15,7 +15,10 @@
  */
 import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import {
+  IndexBuilder,
+  LunrSearchEngine,
+} from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
@@ -38,6 +41,7 @@ export default async function createPlugin({
   useHotCleanup(module, () => clearInterval(timerId));
 
   return await createRouter({
+    engine: indexBuilder.getSearchEngine(),
     logger,
   });
 }

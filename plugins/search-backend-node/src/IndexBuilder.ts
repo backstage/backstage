@@ -16,9 +16,11 @@
 
 import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 import { Logger } from 'winston';
+import { LunrSearchEngine } from './LunrSearchEngine';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
 } from './types';
 
 interface CollatorEnvelope {
@@ -33,12 +35,22 @@ type IndexBuilderOptions = {
 export class IndexBuilder {
   private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecorator[]>;
+  private searchEngine: SearchEngine;
   private logger: Logger;
 
   constructor({ logger }: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
     this.logger = logger;
+    this.searchEngine = new LunrSearchEngine({ logger });
+  }
+
+  setSearchEngine(searchEngine: SearchEngine) {
+    this.searchEngine = searchEngine;
+  }
+
+  getSearchEngine(): SearchEngine {
+    return this.searchEngine;
   }
 
   /**
@@ -106,7 +118,8 @@ export class IndexBuilder {
           documents = await decorators[i].execute(documents);
         }
 
-        // TODO: push documents to a configured search engine.
+        // pushing documents to a configured search engine.
+        this.searchEngine.index(type, documents);
       }),
     );
   }

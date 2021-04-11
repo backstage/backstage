@@ -30,15 +30,15 @@ type ConcreteLunrQuery = {
 
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
+  protected docStore: any;
   protected logger: Logger;
 
-  constructor({ logger }) {
+  constructor({ logger }: { logger: Logger }) {
     this.logger = logger;
+    this.docStore = {};
   }
 
-  protected translator: QueryTranslator = (
-    query: SearchQuery,
-  ): ConcreteLunrQuery => {
+  translator: QueryTranslator = (query: SearchQuery): ConcreteLunrQuery => {
     return {
       lunrQueryString: query.term,
       documentTypes: ['*'],
@@ -47,36 +47,57 @@ export class LunrSearchEngine implements SearchEngine {
 
   index(documentType: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
-    documents.forEach(document => lunrBuilder.add(document));
+
+    // Make this lunr index aware of all relevant fields.
+    Object.keys(documents[0]).forEach(field => {
+      lunrBuilder.field(field);
+    });
+
+    // Set "location" field as reference field
+    lunrBuilder.ref('location');
+
+    documents.forEach(document => {
+      // Add document to Lunar index
+      lunrBuilder.add(document);
+      // Store documents in memory to be able to look up document using the ref during query time
+      // This is not how you should implement your SearchEngine implementation! Do not copy!
+      this.docStore[document.location] = document;
+    });
+
     this.lunrIndices[documentType] = lunrBuilder.build();
   }
 
   query(query: SearchQuery): Promise<SearchResultSet> {
     const { lunrQueryString, documentTypes } = this.translator(query);
+
     const results: lunr.Index.Result[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
       // Iterate over all this.lunrIndex keys.
       Object.keys(this.lunrIndices).forEach(d => {
-        results.concat(this.lunrIndices[d].search(lunrQueryString));
+        results.push(...this.lunrIndices[d].search(lunrQueryString));
       });
     } else {
       // Iterate over the filtered list of this.lunrIndex keys.
       Object.keys(this.lunrIndices)
         .filter(d => documentTypes.includes(d))
         .forEach(d => {
-          results.concat(this.lunrIndices[d].search(lunrQueryString));
+          results.push(...this.lunrIndices[d].search(lunrQueryString));
         });
     }
 
     // Sort results.
     results.sort((doc1, doc2) => {
-      return doc1.score - doc2.score;
+      return doc2.score - doc1.score;
     });
 
     // Translate results into SearchResultSet
+    const resultSet: SearchResultSet = {
+      results: results.map(d => {
+        return this.docStore[d.ref];
+      }),
+    };
 
-    this.lunrIndices['*'].search(lunrQueryString);
-    throw new Error('Method not implemented.');
+    return Promise.resolve(resultSet);
   }
 }
