@@ -44,10 +44,7 @@ export async function createRouter({
       );
 
       try {
-        // TODO: Actually query search engine.
-        // TODO: And actually transform results into frontend-readable result
         const results = await engine.query(req.query);
-
         res.send(results);
       } catch (err) {
         throw new Error(`There was a problem performing the search query.`);
