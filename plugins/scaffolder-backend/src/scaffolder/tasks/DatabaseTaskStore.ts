@@ -127,7 +127,7 @@ export class DatabaseTaskStore implements TaskStore {
 
       try {
         const spec = JSON.parse(task.spec);
-        const secrets = task.secrets ? JSON.parse(task.spec) : undefined;
+        const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
         return {
           id: task.id,
           spec,
@@ -219,7 +219,7 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .update({
           status,
-          secrets: undefined,
+          secrets: null as any,
         });
       if (updateCount !== 1) {
         throw new ConflictError(

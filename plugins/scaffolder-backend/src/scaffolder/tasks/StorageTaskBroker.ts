@@ -49,6 +49,10 @@ export class TaskAgent implements Task {
     return this.state.spec;
   }
 
+  get secrets() {
+    return this.state.secrets;
+  }
+
   async getWorkspaceName() {
     return this.state.taskId;
   }
@@ -102,6 +106,7 @@ export class TaskAgent implements Task {
 interface TaskState {
   spec: TaskSpec;
   taskId: string;
+  secrets?: TaskSecrets;
 }
 
 function defer() {
@@ -127,6 +132,7 @@ export class StorageTaskBroker implements TaskBroker {
           {
             taskId: pendingTask.id,
             spec: pendingTask.spec,
+            secrets: pendingTask.secrets,
           },
           this.storage,
           this.logger,
