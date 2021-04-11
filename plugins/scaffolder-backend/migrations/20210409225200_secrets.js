@@ -22,7 +22,7 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('tasks', table => {
     table
-      .string('secrets')
+      .text('secrets')
       .nullable()
       .comment('JSON encoded secrets to authenticate tasks with');
   });
