@@ -21,11 +21,11 @@ import {
   discoveryApiRef,
 } from '@backstage/core';
 
-import { chromeuxReportApiRef, ChromeUXReportApi } from './api';
+import { chromeuxReportApiRef, ChromeUXReportClient } from './api';
 
 import { rootRouteRef } from './routes';
 
-export const chromeUxReportPlugin = createPlugin({
+export const chromeUXReport = createPlugin({
   id: 'chrome-ux-report',
   apis: [
     createApiFactory({
@@ -35,7 +35,7 @@ export const chromeUxReportPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
       },
       factory: ({ configApi, discoveryApi }) =>
-        new ChromeUXReportApi({
+        new ChromeUXReportClient({
           configApi,
           discoveryApi,
         }),
@@ -46,7 +46,7 @@ export const chromeUxReportPlugin = createPlugin({
   },
 });
 
-export const ChromeUxReportPage = chromeUxReportPlugin.provide(
+export const ChromeUXReportPage = chromeUXReport.provide(
   createRoutableExtension({
     component: () => import('./components').then(m => m.ChromeUXReportPage),
     mountPoint: rootRouteRef,

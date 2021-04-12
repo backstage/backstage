@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { chromeUxReportPlugin } from './plugin';
+import { chromeUXReport } from './plugin';
 
 describe('chrome-ux-report', () => {
   it('should export plugin', () => {
-    expect(chromeUxReportPlugin).toBeDefined();
+    expect(chromeUXReport).toBeDefined();
   });
 });

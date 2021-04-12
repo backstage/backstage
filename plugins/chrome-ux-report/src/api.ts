@@ -23,8 +23,8 @@ export const chromeuxReportApiRef = createApiRef<ChromeUXReportApi>({
   description: 'Used to make requests towards ChromeUXReport API',
 });
 
-export type ChromeUXReport = {
-  getChromeUXMetrics(origin: string): Promise<string>;
+export type ChromeUXReportApi = {
+  getChromeUXMetrics(origin: string): Promise<any>;
 };
 
 /**
@@ -32,7 +32,7 @@ export type ChromeUXReport = {
  *
  * @property {string} apiOrigin Set to chromeuxreport.requestUrl as the URL for chrome-ux-report-backend API
  */
-export class ChromeUXReportApi implements ChromeUXReport {
+export class ChromeUXReportClient implements ChromeUXReportApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
 

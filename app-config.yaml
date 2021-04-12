@@ -275,11 +275,12 @@ scaffolder:
     visibility: public # or or 'private'
 
 chromeUXReport:
-  projectId: 'example'
-  keyPath: 'example.json'
+  projectId: projectId # Project id of your project in Google Cloud
+  keyPath:
+    $env: GOOGLE_APPLICATION_CREDENTIALS
   origins:
-    - site: 'https://www.example.com'
-      name: 'Example'
+    - site: siteUrl # Any site url e.g. 'https://backstage.io'
+      name: siteName # Name of the relevant site
 
 auth:
   environment: development

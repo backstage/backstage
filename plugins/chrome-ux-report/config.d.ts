@@ -21,14 +21,6 @@ export interface Config {
    * @visibility frontend
    */
   chromeUXReport: {
-    /**
-     * @visibility frontend
-     */
-    projectId: string;
-    /**
-     * @visibility frontend
-     */
-    keyPath: string;
     origins: {
       /** @visibility frontend */
       site: string;

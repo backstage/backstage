@@ -16,7 +16,7 @@ Set `chromeUXReport.projectId` to project ID of your project in Google Cloud.
 
 ```yaml
 chromeUXReport:
-  projectId: 'example'
+  projectId: projectId
 ```
 
 **2. Set `chromeUXReport.keyPath` config in your `app-config.yaml`**
@@ -25,7 +25,7 @@ You will get a JSON Key File from Google Cloud. You can give this Key File path 
 
 ```yaml
 chromeUXReport:
-  projectId: 'example'
+  projectId: projectId
   keyPath:
     $env: GOOGLE_APPLICATION_CREDENTIALS
 ```
@@ -36,12 +36,12 @@ You can set the origins like example.
 
 ```yaml
 chromeUXReport:
-  projectId: 'example'
+  projectId: projectId # Project id of your project in Google Cloud
   keyPath:
     $env: GOOGLE_APPLICATION_CREDENTIALS
   origins:
-    - site: 'Example'
-      name: 'https://example.com'
+    - site: siteUrl # Any site url e.g. 'https://backstage.io'
+      name: siteName # Name of the relevant site
 ```
 
 **4. That's it!**

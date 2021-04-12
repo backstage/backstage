@@ -1,100 +1,96 @@
-# Chrome UX Report
-
-Welcome to the Chrome UX Report plugin!
-
 ## What is Chrome UX Report?
 
-The Chrome User Experience Report is powered by real user measurement of key user experience metrics across the public web, aggregated from users who have opted-in to syncing their browsing history, have not set up a Sync passphrase, and have usage statistic reporting enabled. If you are curious of what is the metrics, you can go to [UX Metrics](#UXMetrics).
+The Chrome User Experience Report is powered by real user measurement of key user experience metrics across the public web, aggregated from users who have opted-in to syncing their browsing history, have not set up a Sync passphrase, and have usage statistic reporting enabled. If you are curious of what is the metrics, you can go to [UX Metrics](https://developers.google.com/web/tools/chrome-user-experience-report).
 
 ## Configuring the Plugin
 
-You need to create a service account and get a JSON key from [Google Cloud Console](https://console.cloud.google.com)
+You can add this plugin to the project follow these steps.
 
-**1. Set `chromeUXReport.projectId` config in your `app-config.yaml`**
+1. Run:
 
-Set `chromeUXReport.projectId` to project ID of your project in Google Cloud.
-
-```yaml
-chromeUXReport:
-  projectId: 'example'
+```sh
+$ yarn add @backstage/plugin-chrome-ux-report @backstage/plugin-chrome-ux-report-backend
 ```
 
-**2. Set `chromeUXReport.keyPath` config in your `app-config.yaml`**
+2. Add the plugin backend:
 
-You will get a JSON keyfile from Google Cloud. You can give this keyfile path with environmental variables. You can use the example
+In a new file named `chromeuxreport.ts` under `backend/src/plugins`:
 
-```yaml
-chromeUXReport:
-  projectId: 'example'
-  keyPath:
-    $env: GOOGLE_APPLICATION_CREDENTIALS
+```ts
+import { createRouter } from '@backstage/plugin-chrome-ux-report-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin({
+  logger,
+  config,
+  database,
+}: PluginEnvironment): Promise<Router> {
+  return await createRouter({ logger, config, database });
+}
 ```
 
-**3. Set the Origins that you want to track UX Metrics**
+And then add to `packages/backend/src/index.ts`:
 
-You can set the origins like example.
+```ts
+// ...
+import chromeuxreport from './plugins/chromeuxreport';
+// ...
+async function main() {
+  // ...
+  const chromeuxreportEnv = useHotMemoize(module, () =>
+    createEnv('chromeuxreport'),
+  );
+  // ...
+
+  const apiRouter = Router();
+  // ...
+  apiRouter.use('/chromeuxreport', await chromeuxreport(chromeuxreportEnv));
+  // ...
+}
+```
+
+3. Add the plugin frontend to `packages/app/src/plugin.ts`:
+
+```ts
+export { plugin as chromeUXReport } from '@backstage/plugin-chrome-ux-report';
+```
+
+4. Register the plugin frontend router in `packages/app/src/App.tsx`:
+
+```tsx
+// At the top imports
+import { ChromeUXReportPage } from '@backstage/plugin-chrome-ux-report';
+
+// Inside App component
+<Routes>
+  // ...
+  <Route path="/chrome-ux-report" element={<ChromeUXReportPage />} />
+  // ...
+</Routes>;
+```
+
+5. Add chrome ux report configs for the backend in your `app-config.yaml` (see
+   [chrome-ux-report-backend](https://github.com/backstage/backstage/blob/master/plugins/chrome-ux-report-backend/README.md)
+   for more options):
 
 ```yaml
 chromeUXReport:
-  projectId: 'example'
+  projectId: projectId # Project id of your project in Google Cloud
   keyPath:
     $env: GOOGLE_APPLICATION_CREDENTIALS
   origins:
-    - site: 'Example'
-      name: 'https://example.com'
+    - site: siteUrl # Any site url e.g. 'https://backstage.io'
+      name: siteName # Name of the relevant site
 ```
 
-**4. That's it!**
+## That's it!
 
 Your Backstage app is now ready to use Google Chrome UX Report Plugin! When you start the
 backend of the app, you should be able to see
 `'Plugin Chrome UX Report has started'`
 in the logs. And then you can see these screens.
 
-| List of audits                                                                 | Info about metric                                                                                   | Info about period                                                                                  |
+| List of metrics                                                                | Info about metric                                                                                   | Info about period                                                                                  |
 | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | ![Screen shot of the main Lighthouse plugin page](images/chrome-ux-report.png) | ![Screen shot of the resulting audit in the Lighthouse plugin](images/chrome-ux-report-metrics.png) | ![Screen shot of the resulting audit in the Lighthouse plugin](images/chrome-ux-report-period.png) |
-
-## UXMetrics
-
-Metrics provided by the public Chrome User Experience Report hosted on Google BigQuery are powered by standard web platform APIs exposed by modern browsers and aggregated to origin-resolution.
-
-### First Paint
-
-Defined by the Paint Timing API and available in Chrome M60+:
-
-`First Paint reports the time when the browser first rendered after navigation. This excludes the default background paint, but includes non-default background paint. This is the first key moment developers care about in page load – when the browser has started to render the page.`
-
-### First Contentful Paint
-
-Defined by the Paint Timing API and available in Chrome M60+:
-
-`First Contentful Paint reports the time when the browser first rendered any text, image (including background images), non-white canvas or SVG. This includes text with pending webfonts. This is the first time users could start consuming page content.`
-
-### DOM Content Loaded
-
-Defined by the HTML specification:
-
-`The DOMContentLoaded reports the time when the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading.`
-
-### Onload
-
-Defined by the HTML specification:
-
-`“The load event is fired when the page and its dependent resources have finished loading.”`
-
-### First Input Delay
-
-`“First Input Delay (FID) is an important, user-centric metric for measuring load responsiveness because it quantifies the experience users feel when trying to interact with unresponsive pages—a low FID helps ensure that the page is usable.”`
-
-### Largest Contentful Paint
-
-`“Largest Contentful Paint (LCP) is an important, user-centric metric for measuring perceived load speed because it marks the point in the page load timeline when the page's main content has likely loaded—a fast LCP helps reassure the user that the page is useful.”`
-
-### Cumulative Layout Shift
-
-`“Cumulative Layout Shift (CLS) is an important, user-centric metric for measuring visual stability because it helps quantify how often users experience unexpected layout shifts—a low CLS helps ensure that the page is delightful.”`
-
-### Time to First Byte
-
-`“Time to first byte (TTFB) is a measurement used as an indication of the responsiveness of a webserver or other network resource. TTFB measures the duration from the user or client making an HTTP request to the first byte of the page being received by the client's browser. This time is made up of the socket connection time, the time taken to send the HTTP request, and the time taken to get the first byte of the page.”`
