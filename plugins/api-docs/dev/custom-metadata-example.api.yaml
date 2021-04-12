@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: streetlights
+  name: streetlights-custom
   description: The Smartylighting Streetlights API allows you to remotely manage the city lights.
   domain: retail
   capabilities:
