@@ -87,10 +87,10 @@ beforeEach(() => {
 });
 
 describe('OpenStackSwiftPublish', () => {
-  describe('validateConfiguration', () => {
+  describe('getReadiness', () => {
     it('should validate correct config', async () => {
-      expect(await publisher.validateConfiguration()).toEqual({
-        isValid: true,
+      expect(await publisher.getReadiness()).toEqual({
+        isAvailable: true,
       });
     });
 
@@ -118,8 +118,8 @@ describe('OpenStackSwiftPublish', () => {
         logger,
       );
 
-      expect(await errorPublisher.validateConfiguration()).toEqual({
-        isValid: false,
+      expect(await errorPublisher.getReadiness()).toEqual({
+        isAvailable: false,
       });
     });
   });

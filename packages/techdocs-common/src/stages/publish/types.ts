@@ -40,9 +40,9 @@ export type PublishResponse = {
 /**
  * Result for the validation check.
  */
-export type ConfigurationValidationResponse = {
-  /** Tells whether the configuration is valid.   */
-  isValid: boolean;
+export type ReadinessResponse = {
+  /** If true, the publisher is able to interact with the backing storage. */
+  isAvailable: boolean;
 };
 
 /**
@@ -62,12 +62,12 @@ export type TechDocsMetadata = {
  */
 export interface PublisherBase {
   /**
-   * Check if the configuration is valid. This check tries to perform certain checks to see if the
+   * Check if the publisher is ready. This check tries to perform certain checks to see if the
    * publisher is configured correctly and can be used to publish or read documentations.
    * The different implementations might e.g. use the provided service credentials to access the
    * target or check if a folder/bucket is available.
    */
-  validateConfiguration(): Promise<ConfigurationValidationResponse>;
+  getReadiness(): Promise<ReadinessResponse>;
 
   /**
    * Store the generated static files onto a storage service (either local filesystem or external service).

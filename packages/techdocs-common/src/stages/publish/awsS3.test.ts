@@ -85,10 +85,10 @@ beforeEach(() => {
 });
 
 describe('AwsS3Publish', () => {
-  describe('validateConfiguration', () => {
+  describe('getReadiness', () => {
     it('should validate correct config', async () => {
-      expect(await publisher.validateConfiguration()).toEqual({
-        isValid: true,
+      expect(await publisher.getReadiness()).toEqual({
+        isAvailable: true,
       });
     });
 
@@ -112,8 +112,8 @@ describe('AwsS3Publish', () => {
 
       const errorPublisher = AwsS3Publish.fromConfig(mockConfig, logger);
 
-      expect(await errorPublisher.validateConfiguration()).toEqual({
-        isValid: false,
+      expect(await errorPublisher.getReadiness()).toEqual({
+        isAvailable: false,
       });
     });
   });

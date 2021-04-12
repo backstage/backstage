@@ -27,9 +27,9 @@ import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 import {
-  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -134,7 +134,7 @@ export class AwsS3Publish implements PublisherBase {
    * Check if the defined bucket exists. Being able to connect means the configuration is good
    * and the storage client will work.
    */
-  async validateConfiguration(): Promise<ConfigurationValidationResponse> {
+  async getReadiness(): Promise<ReadinessResponse> {
     try {
       await this.storageClient
         .headBucket({ Bucket: this.bucketName })
@@ -144,7 +144,7 @@ export class AwsS3Publish implements PublisherBase {
         `Successfully connected to the AWS S3 bucket ${this.bucketName}.`,
       );
 
-      return { isValid: true };
+      return { isAvailable: true };
     } catch (error) {
       this.logger.error(
         `Could not retrieve metadata about the AWS S3 bucket ${this.bucketName}. ` +
@@ -154,7 +154,7 @@ export class AwsS3Publish implements PublisherBase {
       );
       this.logger.error(`from AWS client library`, error);
       return {
-        isValid: false,
+        isAvailable: false,
       };
     }
   }

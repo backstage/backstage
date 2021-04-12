@@ -27,9 +27,9 @@ import path from 'path';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 import {
-  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -84,7 +84,7 @@ export class GoogleGCSPublish implements PublisherBase {
    * Check if the defined bucket exists. Being able to connect means the configuration is good
    * and the storage client will work.
    */
-  async validateConfiguration(): Promise<ConfigurationValidationResponse> {
+  async getReadiness(): Promise<ReadinessResponse> {
     try {
       await this.storageClient.bucket(this.bucketName).getMetadata();
       this.logger.info(
@@ -92,7 +92,7 @@ export class GoogleGCSPublish implements PublisherBase {
       );
 
       return {
-        isValid: true,
+        isAvailable: true,
       };
     } catch (err) {
       this.logger.error(
@@ -103,7 +103,7 @@ export class GoogleGCSPublish implements PublisherBase {
       );
       this.logger.error(`from GCS client library: ${err.message}`);
 
-      return { isValid: false };
+      return { isAvailable: false };
     }
   }
 

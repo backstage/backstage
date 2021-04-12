@@ -25,9 +25,9 @@ import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 import {
-  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -92,7 +92,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
    * Check if the defined container exists. Being able to connect means the configuration is good
    * and the storage client will work.
    */
-  validateConfiguration(): Promise<ConfigurationValidationResponse> {
+  getReadiness(): Promise<ReadinessResponse> {
     return new Promise(resolve => {
       this.storageClient.getContainer(this.containerName, (err, container) => {
         if (container) {
@@ -100,7 +100,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
             `Successfully connected to the OpenStack Swift container ${this.containerName}.`,
           );
           resolve({
-            isValid: true,
+            isAvailable: true,
           });
         } else {
           this.logger.error(
@@ -112,7 +112,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
 
           this.logger.error(`from OpenStack client library: ${err.message}`);
           resolve({
-            isValid: false,
+            isAvailable: false,
           });
         }
       });

@@ -25,10 +25,10 @@ import os from 'os';
 import path from 'path';
 import { Logger } from 'winston';
 import {
-  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
   PublishResponse,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -66,9 +66,9 @@ export class LocalPublish implements PublisherBase {
     this.discovery = discovery;
   }
 
-  async validateConfiguration(): Promise<ConfigurationValidationResponse> {
+  async getReadiness(): Promise<ReadinessResponse> {
     return {
-      isValid: true,
+      isAvailable: true,
     };
   }
 

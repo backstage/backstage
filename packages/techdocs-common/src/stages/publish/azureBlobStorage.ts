@@ -27,9 +27,9 @@ import { default as path, default as platformPath } from 'path';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 import {
-  ConfigurationValidationResponse,
   PublisherBase,
   PublishRequest,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -93,7 +93,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
     this.logger = logger;
   }
 
-  async validateConfiguration(): Promise<ConfigurationValidationResponse> {
+  async getReadiness(): Promise<ReadinessResponse> {
     try {
       const response = await this.storageClient
         .getContainerClient(this.containerName)
@@ -101,7 +101,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
 
       if (response._response.status === 200) {
         return {
-          isValid: true,
+          isAvailable: true,
         };
       }
 
@@ -121,7 +121,7 @@ export class AzureBlobStoragePublish implements PublisherBase {
         'Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
     );
 
-    return { isValid: false };
+    return { isAvailable: false };
   }
 
   /**
