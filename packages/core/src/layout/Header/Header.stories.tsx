@@ -45,6 +45,46 @@ export const HomeWithSubtitle = () => (
   </Header>
 );
 
+export const Apis = () => (
+  <Page themeId="apis">
+    <Header title="API catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
+export const Grpc = () => (
+  <Page themeId="grpc">
+    <Header title="Grpc catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
+export const AsyncApi = () => (
+  <Page themeId="asyncapi">
+    <Header title="Async API catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
+export const Graphql = () => (
+  <Page themeId="graphql">
+    <Header title="GraphQL API catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
+export const OpenApi = () => (
+  <Page themeId="openapi">
+    <Header title="OpenAPI catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
 export const Tool = () => (
   <Page themeId="tool">
     <Header title="Stand-alone tool" type="tool">
