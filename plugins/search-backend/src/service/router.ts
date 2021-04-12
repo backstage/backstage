@@ -21,7 +21,7 @@ import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 type RouterOptions = {
-  engine: SearchEngine;
+  engine?: SearchEngine;
   logger: Logger;
 };
 
@@ -44,7 +44,7 @@ export async function createRouter({
       );
 
       try {
-        const results = await engine.query(req.query);
+        const results = await engine?.query(req.query);
         res.send(results);
       } catch (err) {
         throw new Error(`There was a problem performing the search query.`);

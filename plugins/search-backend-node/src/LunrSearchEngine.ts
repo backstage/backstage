@@ -30,7 +30,7 @@ type ConcreteLunrQuery = {
 
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
-  protected docStore: any;
+  protected docStore: Record<string, IndexableDocument>;
   protected logger: Logger;
 
   constructor({ logger }: { logger: Logger }) {
@@ -56,7 +56,7 @@ export class LunrSearchEngine implements SearchEngine {
     // Set "location" field as reference field
     lunrBuilder.ref('location');
 
-    documents.forEach(document => {
+    documents.forEach((document: IndexableDocument) => {
       // Add document to Lunar index
       lunrBuilder.add(document);
       // Store documents in memory to be able to look up document using the ref during query time
@@ -94,7 +94,7 @@ export class LunrSearchEngine implements SearchEngine {
     // Translate results into SearchResultSet
     const resultSet: SearchResultSet = {
       results: results.map(d => {
-        return this.docStore[d.ref];
+        return { document: this.docStore[d.ref] };
       }),
     };
 

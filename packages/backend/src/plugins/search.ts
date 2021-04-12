@@ -15,10 +15,7 @@
  */
 import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
-import {
-  IndexBuilder,
-  LunrSearchEngine,
-} from '@backstage/plugin-search-backend-node';
+import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
