@@ -118,7 +118,12 @@ export class IndexBuilder {
           documents = await decorators[i].execute(documents);
         }
 
-        // pushing documents to a configured search engine.
+        if (!documents || documents.length === 0) {
+          this.logger.info(`No documents for type "${type}" to index`);
+          return;
+        }
+
+        // pushing documents to index to a configured search engine.
         this.searchEngine.index(type, documents);
       }),
     );
