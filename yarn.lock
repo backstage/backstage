@@ -4375,14 +4375,15 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.1.tgz#b0dedff8877b114147e298966ca3faba895a7a62"
   integrity sha512-pZaWL5Dw+km8S0hFLIK1lRHaeNtheMxTF2mZrWhf6HlGWCTGkQJnXta2UgshJN/nKtZPgO1L4FKz42Eun9nnhg==
 
-"@roadiehq/backstage-plugin-buildkite@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-0.3.0.tgz#60db5e712b88bc9cf3476737a1835f4fc26ae616"
-  integrity sha512-YeATwsR9G93/l3zZmzDN2k0vZzo0Tw0G0pp16B6p1Tz4lBUxiQ40D0anSsVrzep4NR3rxbzqzh7OGZ8Pihfcpw==
+"@roadiehq/backstage-plugin-buildkite@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-1.0.0.tgz#0c00352eb7a204ac45f55bc5dd4c17c9c1cfdf9e"
+  integrity sha512-R6pxMSOeTK+4OBBhSktEEEIkaVTcOWTsgnpB5FEZ748YZ3Ul4dp4H2S3bup2OnMIL79xY2oAxYt1iRmAe69Bng==
   dependencies:
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.3"
     "@backstage/plugin-catalog" "^0.5.1"
+    "@backstage/plugin-catalog-react" "^0.1.4"
     "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
@@ -4396,13 +4397,14 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.6"
 
-"@roadiehq/backstage-plugin-github-insights@^0.3.3":
-  version "0.3.3"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-0.3.3.tgz#f2b4aeff76930d4ea4f5ca80bf1ad6f407dd6b74"
-  integrity sha512-sRczrC4JRli8Po1FXL5M6qiCJiUUWpin+kH7XSlo5JJoK5+UdNP05l1qFkMkeCyPdkJp/iVvXArkHPyWnm361g==
+"@roadiehq/backstage-plugin-github-insights@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.0.0.tgz#8b30bd3c4979aab8cd145c4c0b28488badd8e662"
+  integrity sha512-KynUXVGb+lpMoDoGrolOtsY9roFuPaMre92g1/DZBoLU2BXFpdmnhJXf1YaDHVuBIITP0AhtQfZpu8KNXm/Cmg==
   dependencies:
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.3"
+    "@backstage/plugin-catalog-react" "^0.1.4"
     "@backstage/theme" "^0.2.5"
     "@date-io/core" "2.10.7"
     "@material-ui/core" "^4.11.0"
@@ -4416,13 +4418,14 @@
     react-router "^6.0.0-beta.0"
     react-use "^17.2.1"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^0.7.9":
-  version "0.7.9"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-0.7.9.tgz#61ea6bc6a50defe0223ef8dff124379673f54c55"
-  integrity sha512-qUyCShhtV4x3QaZewiw13lQBmWLTjybOTsy7x+j4iY6IXkOhol5E2uWVTWifJLxDXg76FsXKWw9eRIqBSOrTRQ==
+"@roadiehq/backstage-plugin-github-pull-requests@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-1.0.0.tgz#5103d9ff65ed38a752ceb8ac1c7369fd0724388f"
+  integrity sha512-HAi3X0kto/xMNaMzy9f4t142MGvxwuxDfiLN+bZUsWwta4iI3CgK/9fZAd5kU9+E04EFxkRXmg72FXxG64H6Zg==
   dependencies:
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.3"
+    "@backstage/plugin-catalog-react" "^0.1.4"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@octokit/rest" "^18.1.1"
@@ -4436,14 +4439,15 @@
     react-router "6.0.0-beta.0"
     react-use "^15.3.6"
 
-"@roadiehq/backstage-plugin-travis-ci@^0.4.7":
-  version "0.4.7"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-0.4.7.tgz#ce37ff8b3124975999f0cfe01170b8b5aee55fb3"
-  integrity sha512-hDyOND6/gpCy0GpHLwTDXwNfVWVIBpjh5Ipac0bBa7Yyyj0MKI4UVmLu1K99fRZk1aI6n6TIyLYAJTabLmuYuQ==
+"@roadiehq/backstage-plugin-travis-ci@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-travis-ci/-/backstage-plugin-travis-ci-1.0.0.tgz#5aa29f4ba2086b6341a903a22c843d898808f503"
+  integrity sha512-JjMDwbou1iY0sSoit8ttpzXEP6lhmLmxf/Pj6Am/1rcia5KLdeMUqpilkzQ33LeHiMXXxu95gp4r6aJ5vC9wGg==
   dependencies:
     "@backstage/catalog-model" "^0.7.4"
     "@backstage/core" "^0.7.3"
     "@backstage/plugin-catalog" "^0.5.1"
+    "@backstage/plugin-catalog-react" "^0.1.4"
     "@backstage/theme" "^0.2.5"
     "@material-ui/core" "^4.9.1"
     "@material-ui/icons" "^4.9.1"
