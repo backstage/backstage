@@ -23,7 +23,8 @@ You can fix it by adding the following to the root `package.json`.
 ```json
 ...
 "resolutions": {
-    "graphql-language-service-interface": "2.8.2"
+  "graphql-language-service-interface": "2.8.2",
+  "graphql-language-service-parser": "1.9.0"
  },
 ...
 ```
