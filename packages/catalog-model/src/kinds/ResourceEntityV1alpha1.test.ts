@@ -32,6 +32,7 @@ describe('ResourceV1alpha1Validator', () => {
       spec: {
         type: 'database',
         owner: 'me',
+        dependsOn: ['component:component-0', 'resource:resource-0'],
         system: 'system',
       },
     };
@@ -84,6 +85,26 @@ describe('ResourceV1alpha1Validator', () => {
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('accepts missing dependsOn', async () => {
+    delete (entity as any).spec.dependsOn;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty dependsOn', async () => {
+    (entity as any).spec.dependsOn = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+  });
+
+  it('rejects undefined dependsOn', async () => {
+    (entity as any).spec.dependsOn = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+  });
+
+  it('accepts no dependsOn', async () => {
+    (entity as any).spec.dependsOn = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 
   it('accepts missing system', async () => {

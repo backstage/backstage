@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.8
+
+### Patch Changes
+
+- 2b2b31186: When using OAuth2 authentication the name is now taken from the name property of the JWT instead of the email property
+- Updated dependencies [97b60de98]
+- Updated dependencies [ae6250ce3]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/catalog-model@0.7.6
+  - @backstage/test-utils@0.1.10
+  - @backstage/backend-common@0.6.2
+
 ## 0.3.7
 
 ### Patch Changes

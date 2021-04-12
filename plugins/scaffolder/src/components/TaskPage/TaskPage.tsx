@@ -22,28 +22,24 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { generatePath, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useTaskEventStream } from '../hooks/useEventStream';
 import LazyLog from 'react-lazylog/build/LazyLog';
-import { Link } from 'react-router-dom';
 import {
-  Box,
-  Button,
   CircularProgress,
   Paper,
   StepButton,
   StepIconProps,
 } from '@material-ui/core';
-import { Status } from '../../types';
+import { Status, TaskOutput } from '../../types';
 import { DateTime, Interval } from 'luxon';
 import { useInterval } from 'react-use';
 import Check from '@material-ui/icons/Check';
 import Cancel from '@material-ui/icons/Cancel';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import { entityRoute } from '@backstage/plugin-catalog-react';
-import { parseEntityName } from '@backstage/catalog-model';
 import classNames from 'classnames';
 import { BackstageTheme } from '@backstage/theme';
+import { TaskPageLinks } from './TaskPageLinks';
 
 // typings are wrong for this library, so fallback to not parsing types.
 const humanizeDuration = require('humanize-duration');
@@ -211,6 +207,9 @@ const TaskLogger = memo(({ log }: { log: string }) => {
   );
 });
 
+const hasLinks = ({ entityRef, remoteUrl, links = [] }: TaskOutput): boolean =>
+  !!(entityRef || remoteUrl || links.length > 0);
+
 export const TaskPage = () => {
   const [userSelectedStepId, setUserSelectedStepId] = useState<
     string | undefined
@@ -261,8 +260,8 @@ export const TaskPage = () => {
     taskStream.loading === false &&
     !taskStream.task;
 
-  const entityRef = taskStream.output?.entityRef;
-  const remoteUrl = taskStream.output?.remoteUrl;
+  const { output } = taskStream;
+
   return (
     <Page themeId="home">
       <Header
@@ -291,38 +290,8 @@ export const TaskPage = () => {
                     currentStepId={currentStepId}
                     onUserStepChange={setUserSelectedStepId}
                   />
-                  {(entityRef || remoteUrl) && (
-                    <Box
-                      px={3}
-                      pb={3}
-                      display="flex"
-                      flex={1}
-                      justifyContent="space-between"
-                      flexDirection="row"
-                    >
-                      {entityRef && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          component={Link}
-                          to={generatePath(
-                            `/catalog/${entityRoute.path}`,
-                            parseEntityName(entityRef),
-                          )}
-                        >
-                          Open in catalog
-                        </Button>
-                      )}
-                      {remoteUrl && (
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          href={remoteUrl}
-                        >
-                          Repo
-                        </Button>
-                      )}
-                    </Box>
+                  {output && hasLinks(output) && (
+                    <TaskPageLinks output={output} />
                   )}
                 </Paper>
               </Grid>

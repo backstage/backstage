@@ -38,6 +38,7 @@
     "@backstage/plugin-graphql-backend": "^0.1.6",
     "@backstage/plugin-kubernetes-backend": "^0.3.3",
     "@backstage/plugin-kafka-backend": "^0.2.3",
+    "@backstage/plugin-chrome-ux-report-backend": "^0.1.1",
     "@backstage/plugin-proxy-backend": "^0.2.6",
     "@backstage/plugin-rollbar-backend": "^0.1.8",
     "@backstage/plugin-scaffolder-backend": "^0.9.4",

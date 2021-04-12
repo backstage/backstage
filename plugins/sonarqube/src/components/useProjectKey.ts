@@ -18,6 +18,9 @@ import { Entity } from '@backstage/catalog-model';
 
 export const SONARQUBE_PROJECT_KEY_ANNOTATION = 'sonarqube.org/project-key';
 
+export const isSonarQubeAvailable = (entity: Entity) =>
+  Boolean(entity.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION]);
+
 export const useProjectKey = (entity: Entity) => {
   return entity?.metadata.annotations?.[SONARQUBE_PROJECT_KEY_ANNOTATION] ?? '';
 };

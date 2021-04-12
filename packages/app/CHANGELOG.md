@@ -1,5 +1,29 @@
 # example-app
 
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies [d0b4ebf22]
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [3f96a9d5a]
+- Updated dependencies [b051e770c]
+- Updated dependencies [f9c75f7a9]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [97d53f686]
+- Updated dependencies [64d2ce700]
+  - @backstage/plugin-badges@0.2.0
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+  - @backstage/plugin-scaffolder@0.8.2
+  - @backstage/plugin-catalog-import@0.5.2
+  - @backstage/plugin-catalog@0.5.3
+  - @backstage/plugin-org@0.3.12
+  - @backstage/plugin-github-deployments@0.1.2
+  - @backstage/cli@0.6.7
+
 ## 0.2.21
 
 ### Patch Changes

@@ -31,7 +31,7 @@ describe('File preparer', () => {
     const targetPath = path.resolve(workspacePath, 'template');
 
     await preparer.prepare({
-      url: `file:///${root}path/to/template`,
+      url: `file://${root}path/to/template`,
       logger,
       workspacePath,
     });
@@ -46,12 +46,34 @@ describe('File preparer', () => {
 
     await expect(
       preparer.prepare({
-        url: 'file://not/full/path',
+        url: 'http://not/file/path',
         logger,
         workspacePath,
       }),
     ).rejects.toThrow(
-      "Wrong location protocol, should be 'file', file://not/full/path",
+      "Wrong location protocol, should be 'file', http://not/file/path",
     );
+
+    if (os.platform() === 'win32') {
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        preparer.prepare({
+          url: 'file:///unix/file/path',
+          logger,
+          workspacePath,
+        }),
+      ).rejects.toThrow('File URL path must be absolute');
+    } else {
+      // eslint-disable-next-line jest/no-conditional-expect
+      await expect(
+        preparer.prepare({
+          url: 'file://not/full/path',
+          logger,
+          workspacePath,
+        }),
+      ).rejects.toThrow(
+        `File URL host must be "localhost" or empty on ${os.platform()}`,
+      );
+    }
   });
 });

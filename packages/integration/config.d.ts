@@ -149,5 +149,19 @@ export interface Config {
        */
       baseUrl?: string;
     }>;
+
+    /** Integration configuration for Google Cloud Storage */
+    googleGcs?: {
+      /**
+       * Service account email used to authenticate requests.
+       * @visibility backend
+       */
+      clientEmail?: string;
+      /**
+       * Service account private key used to authenticate requests.
+       * @visibility secret
+       */
+      privateKey?: string;
+    };
   };
 }

@@ -49,29 +49,5 @@ The GitHub provider is a structure with three configuration keys:
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `githubAuthApi` reference and
-`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
-
-```diff
-+ import { githubAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
-
-+ const githubProvider: SignInConfig = {
-+  id: 'github-auth-provider',
-+  title: 'GitHub',
-+  message: 'Sign in using GitHub',
-+  apiRef: githubAuthApiRef,
-+};
-+
-const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={githubProvider}
-+      />
-+    ),
-+  },
-  bindRoutes({ bind }) {
-```
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).

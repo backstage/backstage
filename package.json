@@ -38,7 +38,9 @@
   "resolutions": {
     "**/@roadiehq/**/@backstage/core": "*",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
-    "**/@roadiehq/**/@backstage/catalog-model": "*"
+    "**/@roadiehq/**/@backstage/catalog-model": "*",
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
   },
   "version": "1.0.0",
   "devDependencies": {

@@ -9,9 +9,11 @@ Blackbox
 Chai
 Changesets
 Chanwit
+Cloudformation
 Codecov
 Codehilite
 Config
+Debounce
 Discoverability
 Dockerfile
 Dockerize
@@ -110,6 +112,7 @@ cookiecutter
 css
 dataflow
 deadnaming
+debounce
 declaratively
 destructured
 dev
