@@ -43,3 +43,7 @@ Looking at the flow above, a common release lifecycle could be:
   - Your CI
     1. Detects the new tag by matching the git reference `refs/tags/version-.*`
     1. Builds and deploys to production for testing
+
+## Usage
+
+The plugin exports a single full-page extension `ReleaseManagerAsAServicePage`, which one can add to an app like a usual top-level tool on a dedicated route.
