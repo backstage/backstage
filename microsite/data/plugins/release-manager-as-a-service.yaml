@@ -1,0 +1,9 @@
+---
+title: Release Manager as a Service
+author: '@erikengervall'
+authorUrl: https://github.com/erikengervall
+category: Release management
+description: Manage releases without having to juggle git commands
+documentation: https://github.com/backstage/backstage/tree/master/plugins/release-manager-as-a-service
+iconUrl: img/release-manager-as-a-service.svg
+npmPackageName: '@backstage/plugin-release-manager-as-a-service'

@@ -30,6 +30,7 @@
     "@backstage/plugin-org": "^0.3.10",
     "@backstage/plugin-pagerduty": "0.3.2",
     "@backstage/plugin-register-component": "^0.2.12",
+    "@backstage/plugin-release-manager-as-a-service": "^0.1.1",
     "@backstage/plugin-rollbar": "^0.3.3",
     "@backstage/plugin-scaffolder": "^0.8.0",
     "@backstage/plugin-search": "^0.3.4",
