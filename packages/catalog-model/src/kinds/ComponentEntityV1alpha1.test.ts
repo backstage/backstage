@@ -36,6 +36,7 @@ describe('ComponentV1alpha1Validator', () => {
         subcomponentOf: 'monolith',
         providesApis: ['api-0'],
         consumesApis: ['api-0'],
+        dependsOn: ['resource:resource-0', 'component:component-0'],
         system: 'system',
       },
     };
@@ -157,6 +158,26 @@ describe('ComponentV1alpha1Validator', () => {
 
   it('accepts no consumesApis', async () => {
     (entity as any).spec.consumesApis = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts missing dependsOn', async () => {
+    delete (entity as any).spec.dependsOn;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty dependsOn', async () => {
+    (entity as any).spec.dependsOn = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+  });
+
+  it('rejects undefined dependsOn', async () => {
+    (entity as any).spec.dependsOn = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/dependsOn/);
+  });
+
+  it('accepts no dependsOn', async () => {
+    (entity as any).spec.dependsOn = [];
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 

@@ -16,6 +16,7 @@
 
 import {
   Entity,
+  RELATION_DEPENDS_ON,
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
   serializeEntityRef,
@@ -124,12 +125,23 @@ export function SystemDiagramCard() {
         catalogItem,
         RELATION_PROVIDES_API,
       );
-
       catalogItemRelations_providesApi.forEach(foundRelation =>
         systemEdges.push({
           from: simplifiedEntityName(catalogItem),
           to: simplifiedEntityName(foundRelation),
           label: 'provides API',
+        }),
+      );
+
+      const catalogItemRelations_dependsOn = getEntityRelations(
+        catalogItem,
+        RELATION_DEPENDS_ON,
+      );
+      catalogItemRelations_dependsOn.forEach(foundRelation =>
+        systemEdges.push({
+          from: simplifiedEntityName(catalogItem),
+          to: simplifiedEntityName(foundRelation),
+          label: 'depends on',
         }),
       );
     }
