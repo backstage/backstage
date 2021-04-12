@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { chromeUxReportPlugin, ChromeUxReportPage } from '../src/plugin';
+import { chromeUXReport, ChromeUXReportPage } from '../src/plugin';
 
 createDevApp()
-  .registerPlugin(chromeUxReportPlugin)
+  .registerPlugin(chromeUXReport)
   .addPage({
-    element: <ChromeUxReportPage />,
+    element: <ChromeUXReportPage />,
     title: 'Root Page',
   })
   .render();

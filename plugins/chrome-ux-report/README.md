@@ -70,7 +70,7 @@ import { ChromeUXReportPage } from '@backstage/plugin-chrome-ux-report';
 </Routes>;
 ```
 
-5. Add chrome ux report configs for the backend in your `app-config.yaml` (see
+5. Add chrome user experience report configs for the backend in your `app-config.yaml` (see
    [chrome-ux-report-backend](https://github.com/backstage/backstage/blob/master/plugins/chrome-ux-report-backend/README.md)
    for more options):
 
@@ -89,7 +89,7 @@ chromeUXReport:
 Your Backstage app is now ready to use Google Chrome UX Report Plugin! When you start the
 backend of the app, you should be able to see
 `'Plugin Chrome UX Report has started'`
-in the logs. And then you can see these screens.
+in the logs and then you can see these screens.
 
 | List of metrics                                                                | Info about metric                                                                                   | Info about period                                                                                  |
 | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |

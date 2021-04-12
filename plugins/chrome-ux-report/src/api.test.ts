@@ -15,11 +15,11 @@
  */
 import { Config } from '@backstage/config';
 import { UrlPatternDiscovery } from '@backstage/core';
-import { ChromeUXReportApi } from './api';
+import { ChromeUXReportClient } from './api';
 import nock from 'nock';
 import { getPeriod } from './utils';
 
-describe('ChromeUXReportApi', () => {
+describe('ChromeUXReportClient', () => {
   const mockBaseUrl = 'http://backstage:9191/api/chromeuxreport';
   const configApi = {
     getOptionalString: () => mockBaseUrl,
@@ -51,7 +51,10 @@ describe('ChromeUXReportApi', () => {
     slow_lcp: 0.02,
   };
   // @ts-ignore Partial<Config> not assignable to Config.
-  const chromeUXReportApi = new ChromeUXReportApi({ configApi, discoveryApi });
+  const chromeUXReportClient = new ChromeUXReportClient({
+    configApi,
+    discoveryApi,
+  });
   const defaultPeriod = getPeriod();
 
   it('should return metrics without period', async () => {
@@ -68,7 +71,7 @@ describe('ChromeUXReportApi', () => {
       })
       .reply(200, metrics);
 
-    const result = await chromeUXReportApi.getChromeUXMetrics(origin);
+    const result = await chromeUXReportClient.getChromeUXMetrics(origin);
     expect(result).toEqual(metrics);
   });
 
@@ -86,7 +89,7 @@ describe('ChromeUXReportApi', () => {
       })
       .reply(404, {});
 
-    const result = await chromeUXReportApi.getChromeUXMetrics(origin);
+    const result = await chromeUXReportClient.getChromeUXMetrics(origin);
     expect(result).toEqual({});
   });
 
@@ -105,7 +108,10 @@ describe('ChromeUXReportApi', () => {
       })
       .reply(200, metrics);
 
-    const result = await chromeUXReportApi.getChromeUXMetrics(origin, period);
+    const result = await chromeUXReportClient.getChromeUXMetrics(
+      origin,
+      period,
+    );
     expect(result).toEqual(metrics);
   });
 
@@ -124,7 +130,10 @@ describe('ChromeUXReportApi', () => {
       })
       .reply(404, {});
 
-    const result = await chromeUXReportApi.getChromeUXMetrics(origin, period);
+    const result = await chromeUXReportClient.getChromeUXMetrics(
+      origin,
+      period,
+    );
     expect(result).toEqual({});
   });
 });
