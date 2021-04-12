@@ -50,6 +50,7 @@ describe('ChromeUXReportClient', () => {
     avg_lcp: 0.08,
     slow_lcp: 0.02,
   };
+
   // @ts-ignore Partial<Config> not assignable to Config.
   const chromeUXReportClient = new ChromeUXReportClient({
     configApi,
