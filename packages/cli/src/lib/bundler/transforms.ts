@@ -74,7 +74,7 @@ export const transforms = (options: TransformOptions): Transforms => {
         /\.jpe?g$/,
         /\.png$/,
         /\.frag/,
-        { test: /\.svg/, not: [/\.icon\.svg/] },
+        { and: [/\.svg/, { not: [/\.icon\.svg/] }] },
         /\.xml/,
       ],
       loader: require.resolve('url-loader'),
