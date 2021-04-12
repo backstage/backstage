@@ -38,6 +38,11 @@ describe('Integrations', () => {
       cy.get('input[name=url]').type(
         'https://github.com/backstage-verification/test-repo',
       );
+      cy.request('/api/catalog/locations', {
+        target:
+          'https://github.com/backstage-verification/test-repo/blob/main/**/*',
+        type: 'url',
+      });
 
       cy.contains('Analyze').click();
     });
