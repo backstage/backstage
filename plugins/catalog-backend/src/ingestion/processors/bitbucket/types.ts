@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { BitbucketClient, paginated } from './client';
-export type { PagedResponse } from './client';
-export * from './types';
-export type { BitbucketRepositoryParser } from './BitbucketRepositoryParser';
-export { defaultRepositoryParser } from './BitbucketRepositoryParser';
+export type Project = {
+  key: string;
+};
+
+export type Repository = {
+  project: Project;
+  slug: string;
+  links: Record<string, Link[]>;
+};
+
+export type Link = {
+  href: string;
+};
