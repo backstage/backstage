@@ -87,24 +87,26 @@ export async function buildBundle(options: BuildOptions) {
 }
 
 async function build(compiler: webpack.Compiler, isCi: boolean) {
-  const stats = await new Promise<webpack.Stats>((resolve, reject) => {
-    compiler.run((err, buildStats) => {
-      if (err) {
-        if (err.message) {
-          const { errors } = formatWebpackMessages({
-            errors: [err.message],
-            warnings: new Array<string>(),
-          } as webpack.Stats.ToJsonOutput);
+  const stats = await new Promise<webpack.Stats | undefined>(
+    (resolve, reject) => {
+      compiler.run((err, buildStats) => {
+        if (err) {
+          if (err.message) {
+            const { errors } = formatWebpackMessages({
+              errors: [err.message],
+              warnings: new Array<string>(),
+            });
 
-          throw new Error(errors[0]);
+            throw new Error(errors[0]);
+          } else {
+            reject(err);
+          }
         } else {
-          reject(err);
+          resolve(buildStats);
         }
-      } else {
-        resolve(buildStats);
-      }
-    });
-  });
+      });
+    },
+  );
 
   const { errors, warnings } = formatWebpackMessages(
     stats.toJson({ all: false, warnings: true, errors: true }),

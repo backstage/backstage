@@ -19,7 +19,7 @@ import { resolve as resolvePath } from 'path';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleScopePlugin from 'react-dev-utils/ModuleScopePlugin';
-import StartServerPlugin from 'start-server-webpack-plugin';
+import { RunScriptWebpackPlugin } from 'run-script-webpack-plugin';
 import webpack from 'webpack';
 import nodeExternals from 'webpack-node-externals';
 import { isChildPath } from '@backstage/cli-common';
@@ -300,7 +300,7 @@ export async function createBackendConfig(
         : {}),
     },
     plugins: [
-      new StartServerPlugin({
+      new RunScriptWebpackPlugin({
         name: 'main.js',
         nodeArgs: options.inspectEnabled ? ['--inspect'] : undefined,
       }),
@@ -346,11 +346,7 @@ function nodeExternalsWithResolve(
     },
   });
 
-  return (
-    context: string,
-    request: string,
-    callback: webpack.ExternalsFunctionCallback,
-  ) => {
+  return (context: string, request: string, callback: webpack.Externa) => {
     currentContext = context;
     return externals(context, request, callback);
   };
