@@ -22,6 +22,7 @@ import React from 'react';
 import {
   apiDocsConfigRef,
   ApiExplorerPage,
+  ApiExplorerPageBase,
   defaultDefinitionWidgets,
   EntityApiDefinitionCard,
 } from '../src';
@@ -29,6 +30,7 @@ import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
+import customMetadataApiEntity from './custom-metadata-example.api.yaml';
 import { CustomTable } from './customizations';
 
 createDevApp()
@@ -44,6 +46,7 @@ createDevApp()
               asyncapiApiEntity,
               graphqlApiEntity,
               otherApiEntity,
+              customMetadataApiEntity,
             ],
           };
         },
@@ -115,7 +118,7 @@ createDevApp()
     ),
   })
   .addPage({
-    path: '/api-docs/custom',
+    title: 'With Custom Table',
     element: (
       <ApiExplorerPageBase
         includeRegisterButton={false}

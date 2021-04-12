@@ -15,3 +15,4 @@
  */
 
 export { ApiExplorerPage } from './ApiExplorerPage';
+export { ApiExplorerPageBase } from './ApiExplorerPageBase';
