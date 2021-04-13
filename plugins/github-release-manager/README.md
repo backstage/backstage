@@ -46,4 +46,4 @@ Looking at the flow above, a common release lifecycle could be:
 
 ## Usage
 
-The plugin exports a single full-page extension `ReleaseManagerAsAServicePage`, which one can add to an app like a usual top-level tool on a dedicated route.
+The plugin exports a single full-page extension `GitHubReleaseManagerPage`, which one can add to an app like a usual top-level tool on a dedicated route.

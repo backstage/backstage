@@ -41,7 +41,7 @@ import {
 } from './components/ProjectContext';
 import { ApiClient } from './api/ApiClient';
 
-interface ReleaseManagerAsAServiceProps {
+interface GitHubReleaseManagerProps {
   project: Project;
   components?: {
     default?: {
@@ -71,10 +71,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function ReleaseManagerAsAService({
+export function GitHubReleaseManager({
   project,
   components,
-}: ReleaseManagerAsAServiceProps) {
+}: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const apiClient = new ApiClient({
     pluginApiClient,
@@ -93,7 +93,7 @@ export function ReleaseManagerAsAService({
   );
 }
 
-function Cards({ project, components }: ReleaseManagerAsAServiceProps) {
+function Cards({ project, components }: GitHubReleaseManagerProps) {
   const apiClient = useApiClientContext();
   const [refetch, setRefetch] = useState(0);
   const gitHubBatchInfo = useAsync(getGitHubBatchInfo({ apiClient }), [

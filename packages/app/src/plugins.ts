@@ -46,4 +46,4 @@ export { plugin as Kafka } from '@backstage/plugin-kafka';
 export { todoPlugin } from '@backstage/plugin-todo';
 export { badgesPlugin } from '@backstage/plugin-badges';
 export { githubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
-export { releaseManagerAsAServicePlugin } from '@backstage/plugin-github-release-manager';
+export { gitHubReleaseManagerPlugin } from '@backstage/plugin-github-release-manager';

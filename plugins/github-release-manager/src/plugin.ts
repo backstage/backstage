@@ -46,7 +46,7 @@ export const gitHubReleaseManagerPlugin = createPlugin({
 export const GitHubReleaseManagerPage = gitHubReleaseManagerPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./GitHubReleaseManager').then(m => m.ReleaseManagerAsAService),
+      import('./GitHubReleaseManager').then(m => m.GitHubReleaseManager),
     mountPoint: rootRouteRef,
   }),
 );
