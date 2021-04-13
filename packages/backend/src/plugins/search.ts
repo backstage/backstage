@@ -19,16 +19,14 @@ import { IndexBuilder } from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
-export default async function createPlugin({
-  logger,
-  discovery,
-}: PluginEnvironment) {
+export default async function createPlugin(env: PluginEnvironment) {
+  const { logger } = env;
   const indexBuilder = new IndexBuilder({ logger });
 
   indexBuilder.addCollator({
     type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator(discovery),
+    collator: await DefaultCatalogCollator.fromEnv(env),
   });
 
   // TODO: Move refresh loop logic into the builder.

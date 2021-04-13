@@ -18,6 +18,8 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { IndexableDocument, DocumentCollator } from '@backstage/search-common';
 import fetch from 'cross-fetch';
+import { EntitiesCatalog } from '../catalog';
+import { CatalogBuilder, CatalogEnvironment } from '../service/CatalogBuilder';
 
 export interface CatalogEntityDocument extends IndexableDocument {
   componentType: string;
@@ -25,17 +27,40 @@ export interface CatalogEntityDocument extends IndexableDocument {
   kind: string;
 }
 
-export class DefaultCatalogCollator implements DocumentCollator {
-  protected discovery: PluginEndpointDiscovery;
+type PluginEnv = CatalogEnvironment & {
+  discovery: PluginEndpointDiscovery;
+};
 
-  constructor(discovery: PluginEndpointDiscovery) {
+type CatalogCollatorArgs = {
+  discovery?: PluginEndpointDiscovery;
+  entitiesCatalog?: EntitiesCatalog;
+};
+
+export class DefaultCatalogCollator implements DocumentCollator {
+  protected discovery?: PluginEndpointDiscovery;
+  protected entitiesCatalog?: EntitiesCatalog;
+
+  private constructor({ discovery, entitiesCatalog }: CatalogCollatorArgs) {
     this.discovery = discovery;
+    this.entitiesCatalog = entitiesCatalog;
+  }
+
+  static async fromEnv(env: PluginEnv) {
+    const { config, discovery } = env;
+
+    // If configs exist for the catalog, the catalog is deployed in the same
+    // process. Return a Collator configured to pull directly from the catalog.
+    if (config.get('catalog')) {
+      const builder = new CatalogBuilder(env);
+      const { entitiesCatalog } = await builder.build();
+      return new DefaultCatalogCollator({ entitiesCatalog });
+    }
+
+    return new DefaultCatalogCollator({ discovery });
   }
 
   async execute() {
-    const baseUrl = await this.discovery.getBaseUrl('catalog');
-    const res = await fetch(`${baseUrl}/entities`);
-    const entities: Entity[] = await res.json();
+    const entities = await this.getEntities();
     return entities.map(
       (entity): CatalogEntityDocument => {
         return {
@@ -51,5 +76,16 @@ export class DefaultCatalogCollator implements DocumentCollator {
         };
       },
     );
+  }
+
+  protected async getEntities() {
+    if (this.entitiesCatalog) {
+      return (await this.entitiesCatalog.entities()).entities;
+    } else if (this.discovery) {
+      const baseUrl = await this.discovery.getBaseUrl('catalog');
+      const res = await fetch(`${baseUrl}/entities`);
+      return (await res.json()) as Entity[];
+    }
+    return [];
   }
 }
