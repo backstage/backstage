@@ -55,18 +55,7 @@ function serializeFormData(data: {
   if (!data.host) {
     return undefined;
   }
-  const params = new URLSearchParams();
-  if (data.owner) {
-    params.set('owner', data.owner);
-  }
-  if (data.repo) {
-    params.set('repo', data.repo);
-  }
-  if (data.organization) {
-    params.set('organization', data.organization);
-  }
-
-  return `${data.host}?${params.toString()}`;
+  return JSON.stringify(data);
 }
 
 export const RepoUrlPicker: Field = ({
