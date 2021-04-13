@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
+import fs from 'fs';
+import knexFactory, { Knex } from 'knex';
+import path from 'path';
 import { mergeDatabaseConfig } from './config';
 
 /**
@@ -29,6 +31,20 @@ export function createSqliteDatabaseClient(
   overrides?: Knex.Config,
 ) {
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
+
+  // If storage on disk is used, ensure that the directory exists
+  if (
+    typeof knexConfig.connection === 'object' &&
+    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename
+  ) {
+    const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
+    const directory = path.dirname(filename);
+
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory, { recursive: true });
+    }
+  }
+
   const database = knexFactory(knexConfig);
 
   database.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
@@ -47,12 +63,33 @@ export function createSqliteDatabaseClient(
 export function buildSqliteDatabaseConfig(
   dbConfig: Config,
   overrides?: Knex.Config,
-) {
-  return mergeDatabaseConfig(
-    dbConfig.get(),
+): Knex.Config {
+  const baseConfig = dbConfig.get<Knex.Config>();
+
+  // Normalize config to always contain a connection object
+  if (typeof baseConfig.connection === 'string') {
+    baseConfig.connection = { filename: baseConfig.connection };
+  }
+
+  const config: Knex.Config = mergeDatabaseConfig(
+    baseConfig,
     {
       useNullAsDefault: true,
     },
     overrides,
   );
+
+  // If we don't create an in-memory database, interpret the connection string
+  // as a directory that contains multiple sqlite files based on the database
+  // name.
+  if (config.connection && typeof config.connection === 'object') {
+    const database = (config.connection as Knex.ConnectionConfig).database;
+    const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
+
+    if (database && sqliteConnection.filename !== ':memory:') {
+      sqliteConnection.filename = `${sqliteConnection.filename}/${database}.sqlite`;
+    }
+  }
+
+  return config;
 }

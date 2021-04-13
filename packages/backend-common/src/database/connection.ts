@@ -37,7 +37,7 @@ export function createDatabaseClient(
   if (client === 'pg') {
     return createPgDatabaseClient(dbConfig, overrides);
   } else if (client === 'sqlite3') {
-    return createSqliteDatabaseClient(dbConfig);
+    return createSqliteDatabaseClient(dbConfig, overrides);
   }
 
   return knexFactory(mergeDatabaseConfig(dbConfig.get(), overrides));

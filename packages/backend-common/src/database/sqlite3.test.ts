@@ -25,15 +25,23 @@ describe('sqlite3', () => {
     new ConfigReader({ client: 'sqlite3', connection });
 
   describe('buildSqliteDatabaseConfig', () => {
-    it('buidls a string connection', () => {
+    it('builds an in memory connection', () => {
       expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
         client: 'sqlite3',
-        connection: ':memory:',
+        connection: { filename: ':memory:' },
         useNullAsDefault: true,
       });
     });
 
-    it('builds a filename connection', () => {
+    it('builds a persistent connection, normalize config with filename', () => {
+      expect(buildSqliteDatabaseConfig(createConfig('/path/to/foo'))).toEqual({
+        client: 'sqlite3',
+        connection: { filename: '/path/to/foo' },
+        useNullAsDefault: true,
+      });
+    });
+
+    it('builds a persistent connection', () => {
       expect(
         buildSqliteDatabaseConfig(
           createConfig({
@@ -44,6 +52,28 @@ describe('sqlite3', () => {
         client: 'sqlite3',
         connection: {
           filename: '/path/to/foo',
+        },
+        useNullAsDefault: true,
+      });
+    });
+
+    it('builds a persistent connection per database', () => {
+      expect(
+        buildSqliteDatabaseConfig(
+          createConfig({
+            filename: '/path/to/foo',
+          }),
+          {
+            connection: {
+              database: 'my-database',
+            },
+          },
+        ),
+      ).toEqual({
+        client: 'sqlite3',
+        connection: {
+          filename: '/path/to/foo/my-database.sqlite',
+          database: 'my-database',
         },
         useNullAsDefault: true,
       });
