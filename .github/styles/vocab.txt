@@ -112,6 +112,7 @@ css
 dataflow
 deadnaming
 declaratively
+deps
 destructured
 dev
 devops
