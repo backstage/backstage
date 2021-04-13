@@ -34,6 +34,7 @@ export type DbEntityRequest = {
   locationId?: string;
   entity: Entity;
   relations: EntityRelationSpec[];
+  attachments: DbAttachmentRequest[];
 };
 
 export type DbEntitiesRequest = {
@@ -97,6 +98,26 @@ export type DatabaseLocationUpdateLogEvent = {
   entity_name: string;
   created_at?: string;
   message?: string;
+};
+
+export type DbAttachmentRequest = {
+  key: string;
+  data?: Buffer;
+  contentType: string;
+};
+
+export type DbAttachmentResponse = {
+  entityUid: string;
+  key: string;
+  data: Buffer;
+  contentType: string;
+};
+
+export type DbAttachmentRow = {
+  originating_entity_id: string;
+  key: string;
+  data: Buffer;
+  content_type: string;
 };
 
 /**
@@ -214,6 +235,12 @@ export type Database = {
   ): Promise<DbEntityResponse | undefined>;
 
   removeEntityByUid(tx: Transaction, uid: string): Promise<void>;
+
+  attachmentByUidAndKey(
+    tx: Transaction,
+    entityUid: string,
+    key: string,
+  ): Promise<DbAttachmentResponse | undefined>;
 
   /**
    * Remove current relations for the entity and replace them with the new

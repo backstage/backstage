@@ -30,10 +30,11 @@ import type { Database, DbEntityResponse, Transaction } from '../database';
 import { DbEntitiesRequest } from '../database/types';
 import { basicEntityFilter } from '../service/request';
 import { durationText } from '../util/timing';
-import type {
+import {
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
+  EntityAttachment,
   EntityUpsertRequest,
   EntityUpsertResponse,
 } from './types';
@@ -81,6 +82,25 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       entities,
       pageInfo: dbResponse.pageInfo,
     };
+  }
+
+  async attachment(
+    uid: string,
+    key: string,
+  ): Promise<EntityAttachment | undefined> {
+    return await this.database.transaction(async tx => {
+      const response = await this.database.attachmentByUidAndKey(tx, uid, key);
+
+      if (!response) {
+        return undefined;
+      }
+
+      return {
+        key: response.key,
+        data: response.data,
+        contentType: response.contentType,
+      };
+    });
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
@@ -295,10 +315,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
 
     const res = await this.database.addEntities(
       tx,
-      requests.map(({ entity, relations }) => ({
+      requests.map(({ entity, relations, attachments }) => ({
         locationId,
         entity,
         relations,
+        attachments: attachments.map(({ key, data, contentType }) => ({
+          key,
+          data,
+          contentType,
+        })),
       })),
     );
 
@@ -340,7 +365,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   // TODO(freben): Incorporate this into batchUpdate which is the only caller
   private async addOrUpdateEntity(
     tx: Transaction,
-    { entity, relations }: EntityUpsertRequest,
+    { entity, relations, attachments }: EntityUpsertRequest,
     locationId?: string,
   ): Promise<Entity> {
     // Find a matching (by uid, or by compound name, depending on the given
@@ -356,13 +381,31 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       const updated = generateUpdatedEntity(existing.entity, entity);
       response = await this.database.updateEntity(
         tx,
-        { locationId, entity: updated, relations },
+        {
+          locationId,
+          entity: updated,
+          relations,
+          attachments: attachments.map(({ key, data, contentType }) => ({
+            key,
+            data,
+            contentType,
+          })),
+        },
         existing.entity.metadata.etag,
         existing.entity.metadata.generation,
       );
     } else {
       const added = await this.database.addEntities(tx, [
-        { locationId, entity, relations },
+        {
+          locationId,
+          entity,
+          relations,
+          attachments: attachments.map(({ key, data, contentType }) => ({
+            key,
+            data,
+            contentType,
+          })),
+        },
       ]);
       response = added[0];
     }

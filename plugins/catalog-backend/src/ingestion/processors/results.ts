@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { InputError, NotFoundError } from '@backstage/errors';
 import {
   Entity,
   EntityRelationSpec,
   LocationSpec,
 } from '@backstage/catalog-model';
+import { InputError, NotFoundError } from '@backstage/errors';
 import { CatalogProcessorResult } from './types';
 
 export function notFoundError(
@@ -67,4 +67,15 @@ export function entity(
 
 export function relation(spec: EntityRelationSpec): CatalogProcessorResult {
   return { type: 'relation', relation: spec };
+}
+
+export function attachment(
+  key: string,
+  data: Buffer,
+  contentType: string,
+): CatalogProcessorResult {
+  // TODO: Consider allowing to pass an optional etag to configure caching
+  // We could also make it required in CatalogProcessorResult and generate a
+  // fallback here (e.g. sha256)
+  return { type: 'attachment', key, data, contentType };
 }

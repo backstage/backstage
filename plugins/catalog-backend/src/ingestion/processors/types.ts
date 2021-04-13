@@ -133,6 +133,13 @@ export type CatalogProcessorRelationResult = {
   entityRef?: string;
 };
 
+export type CatalogProcessorAttachmentResult = {
+  type: 'attachment';
+  key: string;
+  data: Buffer;
+  contentType: string;
+};
+
 export type CatalogProcessorErrorResult = {
   type: 'error';
   error: Error;
@@ -143,4 +150,5 @@ export type CatalogProcessorResult =
   | CatalogProcessorLocationResult
   | CatalogProcessorEntityResult
   | CatalogProcessorRelationResult
+  | CatalogProcessorAttachmentResult
   | CatalogProcessorErrorResult;

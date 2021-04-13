@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import {
   Entity,
   EntityName,
@@ -26,6 +25,7 @@ import {
   Location,
   parseEntityName,
 } from '@backstage/catalog-model';
+import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
@@ -34,6 +34,9 @@ import {
   Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
+  DbAttachmentRequest,
+  DbAttachmentResponse,
+  DbAttachmentRow,
   DbEntitiesRelationsRow,
   DbEntitiesRequest,
   DbEntitiesResponse,
@@ -99,13 +102,13 @@ export class CommonDatabase implements Database {
     request: DbEntityRequest[],
   ): Promise<DbEntityResponse[]> {
     const tx = txOpaque as Knex.Transaction;
-
     const result: DbEntityResponse[] = [];
     const entityRows: DbEntitiesRow[] = [];
     const relationRows: DbEntitiesRelationsRow[] = [];
     const searchRows: DbEntitiesSearchRow[] = [];
+    const attachmentRows: DbAttachmentRow[] = [];
 
-    for (const { entity, relations, locationId } of request) {
+    for (const { entity, relations, locationId, attachments } of request) {
       if (entity.metadata.uid !== undefined) {
         throw new InputError('May not specify uid for new entities');
       } else if (entity.metadata.etag !== undefined) {
@@ -133,11 +136,13 @@ export class CommonDatabase implements Database {
       entityRows.push(this.toEntityRow(locationId, newEntity));
       relationRows.push(...this.toRelationRows(uid, relations));
       searchRows.push(...buildEntitySearch(uid, newEntity));
+      attachmentRows.push(...this.toAttachmendRows(uid, attachments));
     }
 
     await tx.batchInsert('entities', entityRows, BATCH_SIZE);
     await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
     await tx.batchInsert('entities_search', searchRows, BATCH_SIZE);
+    await tx.batchInsert('entities_attachments', attachmentRows, BATCH_SIZE);
 
     return result;
   }
@@ -193,6 +198,17 @@ export class CommonDatabase implements Database {
       .where({ originating_entity_id: uid })
       .del();
     await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
+
+    // Only keep attachments that are still emitted and we don't want to update
+    const attachmentKeys = request.attachments
+      .filter(({ data }) => !data)
+      .map(({ key }) => key);
+    await tx<DbEntitiesRelationsRow>('entities_attachments')
+      .where({ originating_entity_id: uid })
+      .whereNotIn('key', attachmentKeys)
+      .del();
+    const attachmentRows = this.toAttachmendRows(uid, request.attachments);
+    await tx.batchInsert('entities_attachments', attachmentRows, BATCH_SIZE);
 
     try {
       const entries = buildEntitySearch(uid, request.entity);
@@ -334,6 +350,31 @@ export class CommonDatabase implements Database {
       .where({ originating_entity_id: originatingEntityId })
       .del();
     await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
+  }
+
+  // TODO: Do we have the need to query all attachment metadatas?
+
+  async attachmentByUidAndKey(
+    txOpaque: Transaction,
+    entityUid: string,
+    key: string,
+  ): Promise<DbAttachmentResponse | undefined> {
+    const tx = txOpaque as Knex.Transaction;
+
+    const [result] = await tx<DbAttachmentRow>('entities_attachments')
+      .where({ originating_entity_id: entityUid, key })
+      .select();
+
+    if (!result) {
+      return undefined;
+    }
+
+    return {
+      key: result.key,
+      entityUid: result.originating_entity_id,
+      contentType: result.content_type,
+      data: result.data,
+    };
   }
 
   async addLocation(
@@ -488,6 +529,26 @@ export class CommonDatabase implements Database {
     }));
 
     return deduplicateRelations(rows);
+  }
+
+  private toAttachmendRows(
+    originatingEntityId: string,
+    attachments: DbAttachmentRequest[],
+  ): DbAttachmentRow[] {
+    const rows = attachments.map(({ key, data, contentType }) => {
+      if (!data) {
+        throw new InputError('Require attachment data for store operations');
+      }
+
+      return {
+        originating_entity_id: originatingEntityId,
+        key,
+        data,
+        content_type: contentType,
+      };
+    });
+
+    return rows;
   }
 
   private async toEntityResponses(

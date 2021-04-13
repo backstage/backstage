@@ -105,7 +105,7 @@ export async function createRouter(
 
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
-          { entity: body as Entity, relations: [] },
+          { entity: body as Entity, relations: [], attachments: [] },
         ]);
         const response = await entitiesCatalog.entities({
           filter: basicEntityFilter({ 'metadata.uid': result.entityId }),
@@ -142,7 +142,45 @@ export async function createRouter(
           );
         }
         res.status(200).json(entities[0]);
-      });
+      })
+      // TODO: Alternative API: If we don't want to have a top level attachments
+      // endpoint, we could go with a
+      // /entities/by-name/:kind/:namespace/:name/attachments/:key endpoint instead.
+      // In that case, do we also want to offer the /by-uid/ variant?
+      .get(
+        '/attachments/by-name/:kind/:namespace/:name/:key',
+        async (req, res) => {
+          const { kind, namespace, name, key } = req.params;
+          const { entities } = await entitiesCatalog.entities({
+            filter: basicEntityFilter({
+              kind: kind,
+              'metadata.namespace': namespace,
+              'metadata.name': name,
+            }),
+          });
+          if (!entities.length) {
+            throw new NotFoundError(
+              `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+            );
+          }
+
+          const attachment = await entitiesCatalog.attachment(
+            entities[0].metadata.uid!,
+            key,
+          );
+
+          if (!attachment) {
+            throw new NotFoundError(
+              `No attachment with key '${key}' found for entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+            );
+          }
+
+          res
+            .status(200)
+            .contentType(attachment.contentType)
+            .send(attachment.data);
+        },
+      );
   }
 
   if (higherOrderOperation) {

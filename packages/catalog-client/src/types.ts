@@ -47,6 +47,10 @@ export interface CatalogApi {
     options?: CatalogRequestOptions,
   ): Promise<void>;
 
+  // Attachments
+  getAttachment(name: EntityName, key: string): Promise<Blob>;
+  getAttachmentUrl(name: EntityName, key: string): Promise<string>;
+
   // Locations
   getLocationById(
     id: string,

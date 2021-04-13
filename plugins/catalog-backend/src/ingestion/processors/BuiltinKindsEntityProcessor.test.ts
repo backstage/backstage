@@ -25,6 +25,8 @@ import {
 } from '@backstage/catalog-model';
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
+// TODO: Add tests for emitting attachments
+
 describe('BuiltinKindsEntityProcessor', () => {
   describe('postProcessEntity', () => {
     const processor = new BuiltinKindsEntityProcessor();

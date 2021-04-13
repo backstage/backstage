@@ -21,6 +21,8 @@ import { basicEntityFilter } from '../service/request';
 import { DatabaseEntitiesCatalog } from './DatabaseEntitiesCatalog';
 import { EntityUpsertRequest } from './types';
 
+// TODO: Tests...
+
 describe('DatabaseEntitiesCatalog', () => {
   let db: jest.Mocked<Database>;
   let transaction: jest.Mocked<Transaction>;

@@ -68,6 +68,19 @@ export class CatalogClientWrapper implements CatalogApi {
     });
   }
 
+  async getAttachment(name: EntityName, key: string): Promise<Blob> {
+    // TODO: Here we could set the header, but I think most of the use cases
+    // won't use the function, e.g. if I embed the url into an image like
+    // <img src={getAttachmentUrl(...)} ...
+    return await this.client.getAttachment(name, key);
+  }
+
+  async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
+    // TODO: Auth headers doesn't work well together with these urls...
+    // cookies would be better here. For now we skip this topic completly.
+    return await this.client.getAttachmentUrl(name, key);
+  }
+
   async addLocation(
     request: AddLocationRequest,
     options?: CatalogRequestOptions,

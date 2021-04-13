@@ -44,6 +44,7 @@ import {
   RELATION_PROVIDES_API,
   ResourceEntity,
   resourceEntityV1alpha1Validator,
+  stringifyLocationReference,
   SystemEntity,
   systemEntityV1alpha1Validator,
   templateEntityV1alpha1Validator,
@@ -176,7 +177,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     }
 
     /*
-     * Emit relations for the API kind
+     * Emit relations and attachments for the API kind
      */
 
     if (entity.kind === 'API') {
@@ -193,6 +194,29 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_PART_OF,
         RELATION_HAS_PART,
       );
+
+      // TODO: Consider building a helper around this, but it's a bit difficult
+      // with "deleting" the previous field.
+
+      // TODO: Emitting the attachment from the definition field for now. That
+      // still requires that the definition is filled with the full data and we
+      // we can do any special caching around it for now. Later we can read it
+      // form a definitionLocation field instead.
+      const key = 'definition';
+      // TODO: Also support directly reading from a location in the future, this
+      // avoid that we bload our memory with all definitions.
+      const data = Buffer.from(api.spec.definition!, 'utf8');
+      // TODO: Actually a hard question, depends either on the use case or data,
+      // but for api definitions plain should be a fine choice.
+      const contentType = 'text/plain';
+      emit(result.attachment('definition', data, contentType));
+
+      // TODO: How to migrate from "definition" to "definition?", it's a breaking change?
+      delete api.spec.definition;
+      api.spec.definitionLocation = stringifyLocationReference({
+        type: 'attachment',
+        target: key,
+      });
     }
 
     /*
@@ -233,6 +257,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_MEMBER_OF,
         RELATION_HAS_MEMBER,
       );
+
+      // TODO: Create an attachment for the photo by downloading the URL.
     }
 
     /*
@@ -259,6 +285,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_HAS_MEMBER,
         RELATION_MEMBER_OF,
       );
+
+      // TODO: Create an attachment for the photo by downloading the URL.
     }
 
     /*

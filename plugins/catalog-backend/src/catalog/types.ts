@@ -41,9 +41,19 @@ export type EntitiesResponse = {
   pageInfo: PageInfo;
 };
 
+// TODO: Think a bit more about this type! We might want to split it into
+// metadata and the actual data. For reading we might only want to return the
+// metadata except the data itself is requested explicitly!
+export type EntityAttachment = {
+  key: string;
+  data: Buffer;
+  contentType: string;
+};
+
 export type EntityUpsertRequest = {
   entity: Entity;
   relations: EntityRelationSpec[];
+  attachments: EntityAttachment[];
 };
 
 export type EntityUpsertResponse = {
@@ -58,6 +68,13 @@ export type EntitiesCatalog = {
    * @param request Request options
    */
   entities(request?: EntitiesRequest): Promise<EntitiesResponse>;
+
+  /**
+   * Get a single entity attachment
+   *
+   * @param uid
+   */
+  attachment(uid: string, key: string): Promise<EntityAttachment | undefined>;
 
   /**
    * Removes a single entity.

@@ -106,6 +106,24 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
+  // TODO: These need tests!
+  async getAttachment(name: EntityName, key: string): Promise<Blob> {
+    const url = await this.getAttachmentUrl(name, key);
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.blob();
+  }
+
+  async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
+    return `${await this.discoveryApi.getBaseUrl(
+      'catalog',
+    )}/attachments/by-name/${name.kind}/${name.namespace}/${name.name}/${key}`;
+  }
+
   async addLocation(
     { type = 'url', target, dryRun, presence }: AddLocationRequest,
     options?: CatalogRequestOptions,
