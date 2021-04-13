@@ -52,10 +52,7 @@ describe('ChromeUXReportClient', () => {
   };
 
   // @ts-ignore Partial<Config> not assignable to Config.
-  const chromeUXReportClient = new ChromeUXReportClient({
-    configApi,
-    discoveryApi,
-  });
+  const uxReportClient = new ChromeUXReportClient({ configApi, discoveryApi });
   const defaultPeriod = getPeriod();
 
   it('should return metrics without period', async () => {
@@ -72,7 +69,7 @@ describe('ChromeUXReportClient', () => {
       })
       .reply(200, metrics);
 
-    const result = await chromeUXReportClient.getChromeUXMetrics(origin);
+    const result = await uxReportClient.getChromeUXMetrics(origin);
     expect(result).toEqual(metrics);
   });
 
@@ -90,7 +87,7 @@ describe('ChromeUXReportClient', () => {
       })
       .reply(404, {});
 
-    const result = await chromeUXReportClient.getChromeUXMetrics(origin);
+    const result = await uxReportClient.getChromeUXMetrics(origin);
     expect(result).toEqual({});
   });
 
@@ -109,10 +106,7 @@ describe('ChromeUXReportClient', () => {
       })
       .reply(200, metrics);
 
-    const result = await chromeUXReportClient.getChromeUXMetrics(
-      origin,
-      period,
-    );
+    const result = await uxReportClient.getChromeUXMetrics(origin, period);
     expect(result).toEqual(metrics);
   });
 
@@ -131,10 +125,7 @@ describe('ChromeUXReportClient', () => {
       })
       .reply(404, {});
 
-    const result = await chromeUXReportClient.getChromeUXMetrics(
-      origin,
-      period,
-    );
+    const result = await uxReportClient.getChromeUXMetrics(origin, period);
     expect(result).toEqual({});
   });
 });
