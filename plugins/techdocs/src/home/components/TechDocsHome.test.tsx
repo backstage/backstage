@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { 
-  ApiProvider, 
-  ApiRegistry, 
-  ConfigApi, 
-  configApiRef, 
+import {
+  ApiProvider,
+  ApiRegistry,
+  ConfigApi,
+  configApiRef,
   ConfigReader,
 } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -38,7 +38,10 @@ describe('TechDocs Home', () => {
     },
   });
 
-  const apiRegistry = ApiRegistry.with(catalogApiRef, catalogApi).with(configApiRef, configApi);
+  const apiRegistry = ApiRegistry.with(catalogApiRef, catalogApi).with(
+    configApiRef,
+    configApi,
+  );
 
   it('should render a TechDocs home page', async () => {
     await renderInTestApp(

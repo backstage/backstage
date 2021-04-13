@@ -49,7 +49,6 @@ export const TechDocsHome = () => {
     });
   });
 
-  
   const generatedSubtitle = `Documentation available in ${
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   }`;
@@ -57,10 +56,7 @@ export const TechDocsHome = () => {
   if (loading) {
     return (
       <Page themeId="documentation">
-        <Header
-          title="Documentation"
-          subtitle={generatedSubtitle}
-        />
+        <Header title="Documentation" subtitle={generatedSubtitle} />
         <Content>
           <Progress />
         </Content>
@@ -71,10 +67,7 @@ export const TechDocsHome = () => {
   if (error) {
     return (
       <Page themeId="documentation">
-        <Header
-          title="Documentation"
-          subtitle={generatedSubtitle}
-        />
+        <Header title="Documentation" subtitle={generatedSubtitle} />
         <Content>
           <WarningPanel
             severity="error"
@@ -89,10 +82,7 @@ export const TechDocsHome = () => {
 
   return (
     <Page themeId="documentation">
-      <Header
-        title="Documentation"
-        subtitle={generatedSubtitle}
-      />
+      <Header title="Documentation" subtitle={generatedSubtitle} />
       <HeaderTabs
         selectedIndex={selectedTab}
         onChange={index => setSelectedTab(index)}
