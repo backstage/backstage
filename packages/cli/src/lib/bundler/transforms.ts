@@ -51,7 +51,6 @@ export const transforms = (options: TransformOptions): Transforms => {
         production: !isDev,
       },
     },
-
     {
       test: /\.m?js/,
       resolve: {
