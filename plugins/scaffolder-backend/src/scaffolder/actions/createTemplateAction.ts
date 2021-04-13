@@ -18,7 +18,7 @@ import { InputBase, TemplateAction } from './types';
 
 export const createTemplateAction = <Input extends InputBase>(
   templateAction: TemplateAction<Input>,
-): TemplateAction<any> => {
+) => {
   // TODO(blam): Can add some more validation here to validate the action later on
   return templateAction;
 };
