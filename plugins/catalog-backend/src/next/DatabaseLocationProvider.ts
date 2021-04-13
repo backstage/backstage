@@ -15,9 +15,13 @@
  */
 
 import { Observable } from '@backstage/core';
+import { ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { EntityProvider, LocationStore, EntityMessage } from './types';
 import ObservableImpl from 'zen-observable';
-import { locationToEntity, locationToEntityName } from './LocationToEntity';
+import {
+  locationSpecToLocationEntity,
+  locationSpecToMetadataName,
+} from './util';
 
 export class DatabaseLocationProvider implements EntityProvider {
   private subscribers = new Set<
@@ -29,14 +33,16 @@ export class DatabaseLocationProvider implements EntityProvider {
       next: locations => {
         if ('all' in locations) {
           this.notify({
-            all: locations.all.map(l => locationToEntity(l.type, l.target)),
+            all: locations.all.map(l => locationSpecToLocationEntity(l)),
           });
         } else {
           this.notify({
-            added: locations.added.map(l => locationToEntity(l.type, l.target)),
-            removed: locations.removed.map(l =>
-              locationToEntityName(l.type, l.target),
-            ),
+            added: locations.added.map(l => locationSpecToLocationEntity(l)),
+            removed: locations.removed.map(l => ({
+              kind: 'Location',
+              namespace: ENTITY_DEFAULT_NAMESPACE,
+              name: locationSpecToMetadataName(l),
+            })),
           });
         }
       },
@@ -53,7 +59,7 @@ export class DatabaseLocationProvider implements EntityProvider {
     return new ObservableImpl(subscriber => {
       this.store.listLocations().then(locations => {
         subscriber.next({
-          all: locations.map(l => locationToEntity(l.type, l.target)),
+          all: locations.map(l => locationSpecToLocationEntity(l)),
         });
         this.subscribers.add(subscriber);
       });

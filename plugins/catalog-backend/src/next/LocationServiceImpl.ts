@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LocationSpec, Location, Entity } from '@backstage/catalog-model';
+import {
+  LocationSpec,
+  Location,
+  Entity,
+  LOCATION_ANNOTATION,
+  ORIGIN_LOCATION_ANNOTATION,
+} from '@backstage/catalog-model';
 import {
   LocationService,
   LocationStore,
@@ -37,6 +43,10 @@ export class LocationServiceImpl implements LocationService {
         metadata: {
           name: `${spec.type}:${spec.target}`,
           namespace: 'default',
+          annotations: {
+            [LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
+            [ORIGIN_LOCATION_ANNOTATION]: `${spec.type}:${spec.target}`,
+          },
         },
         spec: {
           location: { type: spec.type, target: spec.target },

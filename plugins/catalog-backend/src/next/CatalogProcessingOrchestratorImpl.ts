@@ -19,7 +19,12 @@ import {
   EntityRelationSpec,
   stringifyEntityRef,
   LOCATION_ANNOTATION,
+  LocationSpec,
+  LocationEntity,
   EntityPolicy,
+  ORIGIN_LOCATION_ANNOTATION,
+  stringifyLocationReference,
+  parseLocationReference,
 } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
@@ -33,12 +38,56 @@ import {
 } from './types';
 import { Logger } from 'winston';
 import { InputError } from '@backstage/errors';
+import { locationSpecToLocationEntity } from './util';
+import path from 'path';
+import * as results from '../ingestion/processors/results';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+
+function isLocationEntity(entity: Entity): entity is LocationEntity {
+  return entity.kind === 'Location';
+}
+
+function getEntityOriginLocationRef(entity: Entity): string {
+  const ref = entity.metadata.annotations?.[ORIGIN_LOCATION_ANNOTATION];
+  if (!ref) {
+    const entityRef = stringifyEntityRef(entity);
+    throw new InputError(
+      `Entity '${entityRef}' does not have an origin location`,
+    );
+  }
+  return ref;
+}
+
+function toAbsoluteUrl(
+  integrations: ScmIntegrationRegistry,
+  base: LocationSpec,
+  type: string,
+  target: string,
+): string {
+  if (base.type !== type) {
+    return target;
+  }
+  try {
+    if (type === 'file') {
+      if (target.startsWith('.')) {
+        return path.join(path.dirname(base.target), target);
+      }
+      return target;
+    } else if (type === 'url') {
+      return integrations.resolveUrl({ url: target, base: base.target });
+    }
+    return target;
+  } catch (e) {
+    return target;
+  }
+}
 
 export class CatalogProcessingOrchestratorImpl
   implements CatalogProcessingOrchestrator {
   constructor(
     private readonly options: {
       processors: CatalogProcessor[];
+      integrations: ScmIntegrationRegistry;
       logger: Logger;
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
@@ -52,7 +101,7 @@ export class CatalogProcessingOrchestratorImpl
 
     const result = await this.processSingleEntity(entity);
 
-    console.log('result', JSON.stringify(result));
+    console.log('result', JSON.stringify(result, undefined, 2));
     return result;
   }
 
@@ -64,19 +113,27 @@ export class CatalogProcessingOrchestratorImpl
     // TODO: which one do we actually use here? source-location? - maybe probably doesn't exist yet?
     const locationRef =
       unprocessedEntity.metadata?.annotations?.[LOCATION_ANNOTATION];
+    if (!locationRef) {
+      throw new InputError(`Entity '${entityRef}' does not have a location`);
+    }
+    const location = parseLocationReference(locationRef);
+    const originLocation = parseLocationReference(
+      getEntityOriginLocationRef(unprocessedEntity),
+    );
 
-    const emitter = createEmitter(this.options.logger);
-
+    const emitter = createEmitter(this.options.logger, unprocessedEntity);
     try {
       // Pre-process phase, used to populate entities with data that is required during main processing step
       let entity = unprocessedEntity;
       for (const processor of this.options.processors) {
         if (processor.preProcessEntity) {
           try {
-            entity = await processor.preProcessEntity({
+            entity = await processor.preProcessEntity(
               entity,
-              emit: emitter.emit,
-            });
+              location,
+              emitter.emit,
+              originLocation,
+            );
           } catch (e) {
             throw new Error(
               `Processor ${processor.constructor.name} threw an error while preprocessing entity ${entityRef} at ${locationRef}, ${e}`,
@@ -123,14 +180,69 @@ export class CatalogProcessingOrchestratorImpl
         );
       }
 
+      // Backwards compatible processing of location entites
+      if (isLocationEntity(entity)) {
+        const { type = location.type, optional = false } = entity.spec;
+        const targets = new Array<string>();
+        if (entity.spec.target) {
+          targets.push(entity.spec.target);
+        }
+        if (entity.spec.targets) {
+          targets.push(...entity.spec.targets);
+        }
+
+        for (const maybeRelativeTarget of targets) {
+          if (type === 'file' && maybeRelativeTarget.endsWith(path.sep)) {
+            emitter.emit(
+              results.inputError(
+                location,
+                `LocationEntityProcessor cannot handle ${type} type location with target ${location.target} that ends with a path separator`,
+              ),
+            );
+            continue;
+          }
+          const target = toAbsoluteUrl(
+            this.options.integrations,
+            location,
+            type,
+            maybeRelativeTarget,
+          );
+
+          for (const processor of this.options.processors) {
+            if (processor.readLocation) {
+              try {
+                handled = await processor.readLocation(
+                  {
+                    type,
+                    target,
+                    presence: optional ? 'optional' : 'required',
+                  },
+                  Boolean(entity.spec?.optional),
+                  emitter.emit,
+                  this.options.parser,
+                );
+                if (handled) {
+                  break;
+                }
+              } catch (e) {
+                throw new Error(
+                  `Processor ${processor.constructor.name} threw an error while postprocessing entity ${entityRef} at ${locationRef}, ${e}`,
+                );
+              }
+            }
+          }
+        }
+      }
+
       // Main processing step of the entity
       for (const processor of this.options.processors) {
-        if (processor.processEntity) {
+        if (processor.postProcessEntity) {
           try {
-            entity = await processor.processEntity({
+            entity = await processor.postProcessEntity(
               entity,
-              emit: emitter.emit,
-            });
+              location,
+              emitter.emit,
+            );
           } catch (e) {
             throw new Error(
               `Processor ${processor.constructor.name} threw an error while postprocessing entity ${entityRef} at ${locationRef}, ${e}`,
@@ -152,7 +264,7 @@ export class CatalogProcessingOrchestratorImpl
   }
 }
 
-function createEmitter(logger: Logger) {
+function createEmitter(logger: Logger, parentEntity: Entity) {
   let done = false;
 
   const errors = new Array<Error>();
@@ -170,7 +282,23 @@ function createEmitter(logger: Logger) {
       return;
     }
     if (i.type === 'entity') {
-      deferredEntites.push(i.entity);
+      const originLocation = getEntityOriginLocationRef(parentEntity);
+
+      deferredEntites.push({
+        ...i.entity,
+        metadata: {
+          ...i.entity.metadata,
+          annotations: {
+            ...i.entity.metadata.annotations,
+            [ORIGIN_LOCATION_ANNOTATION]: originLocation,
+            [LOCATION_ANNOTATION]: stringifyLocationReference(i.location),
+          },
+        },
+      });
+    } else if (i.type === 'location') {
+      deferredEntites.push(
+        locationSpecToLocationEntity(i.location, parentEntity),
+      );
     } else if (i.type === 'relation') {
       relations.push(i.relation);
     } else if (i.type === 'error') {
