@@ -31,6 +31,7 @@ export interface LocationEntityV1alpha1 extends Entity {
     type?: string;
     target?: string;
     targets?: string[];
+    optional?: boolean;
   };
 }
 
