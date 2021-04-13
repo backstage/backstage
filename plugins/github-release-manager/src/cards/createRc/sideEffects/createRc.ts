@@ -22,7 +22,7 @@ import {
   ResponseStep,
 } from '../../../types/types';
 import { ApiClient } from '../../../api/ApiClient';
-import { ReleaseManagerAsAServiceError } from '../../../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 
 interface CreateRC {
   apiClient: ApiClient;
@@ -67,7 +67,7 @@ export async function createRc({
     ).createdRef;
   } catch (error) {
     if (error.body.message === 'Reference already exists') {
-      throw new ReleaseManagerAsAServiceError(
+      throw new GitHubReleaseManagerError(
         `Branch "${nextGitHubInfo.rcBranch}" already exists: .../tree/${nextGitHubInfo.rcBranch}`,
       );
     }

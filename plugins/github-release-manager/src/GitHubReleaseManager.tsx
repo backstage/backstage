@@ -114,7 +114,9 @@ function Cards({ project, components }: ReleaseManagerAsAServiceProps) {
   }
 
   if (gitHubBatchInfo.value === undefined) {
-    return <Alert severity="error">Failed to fetch latest GHE release</Alert>;
+    return (
+      <Alert severity="error">Failed to fetch latest GitHub release</Alert>
+    );
   }
 
   if (!gitHubBatchInfo.value.repository.permissions.push) {

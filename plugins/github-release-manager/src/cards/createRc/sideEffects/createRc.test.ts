@@ -21,7 +21,7 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { createRc } from './createRc';
 
-describe('createGheRc', () => {
+describe('createRc', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should work', async () => {

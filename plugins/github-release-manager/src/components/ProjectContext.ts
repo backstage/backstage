@@ -16,7 +16,7 @@
 import { createContext, useContext } from 'react';
 
 import { ApiClient } from '../api/ApiClient';
-import { ReleaseManagerAsAServiceError } from '../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
 export const ApiClientContext = createContext<ApiClient | undefined>(undefined);
 
@@ -24,7 +24,7 @@ export const useApiClientContext = () => {
   const apiClient = useContext(ApiClientContext);
 
   if (!apiClient) {
-    throw new ReleaseManagerAsAServiceError('apiClient not found');
+    throw new GitHubReleaseManagerError('apiClient not found');
   }
 
   return apiClient;

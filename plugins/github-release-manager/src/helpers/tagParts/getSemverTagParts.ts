@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReleaseManagerAsAServiceError } from '../../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 
 export type SemverTagParts = {
   prefix: string;
@@ -26,7 +26,7 @@ export function getSemverTagParts(tag: string) {
   const result = tag.match(/(rc|version)-([0-9]+)\.([0-9]+)\.([0-9]+)/);
 
   if (result === null || result.length < 4) {
-    throw new ReleaseManagerAsAServiceError('Invalid semver tag');
+    throw new GitHubReleaseManagerError('Invalid semver tag');
   }
 
   const tagParts: SemverTagParts = {

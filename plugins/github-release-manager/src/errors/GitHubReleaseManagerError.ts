@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getNewDate } from './date';
+export class GitHubReleaseManagerError extends Error {
+  constructor(message: string) {
+    super(message);
 
-describe('getNewDate', () => {
-  it('should get a date', () => {
-    const newDate = getNewDate();
-
-    expect(newDate.toISOString()).toMatch(
-      /[\d]{4}-[\d]{2}-[\d]{2}T[\d]{2}:[\d]{2}:[\d]{2}.[\d]{3}Z/,
-    );
-  });
-});
+    this.name = 'GitHubReleaseManagerError';
+  }
+}

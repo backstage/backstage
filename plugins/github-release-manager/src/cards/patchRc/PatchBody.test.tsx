@@ -37,7 +37,7 @@ describe('PatchBody', () => {
 
   it('should render error', async () => {
     mockApiClient.getBranch.mockImplementationOnce(() => {
-      throw new Error('lmao hehe');
+      throw new Error('banana');
     });
 
     const { getByTestId } = render(

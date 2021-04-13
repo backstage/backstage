@@ -43,7 +43,7 @@ export const gitHubReleaseManagerPlugin = createPlugin({
   ],
 });
 
-export const ReleaseManagerAsAServicePage = gitHubReleaseManagerPlugin.provide(
+export const GitHubReleaseManagerPage = gitHubReleaseManagerPlugin.provide(
   createRoutableExtension({
     component: () =>
       import('./GitHubReleaseManager').then(m => m.ReleaseManagerAsAService),

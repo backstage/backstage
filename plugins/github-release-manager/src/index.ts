@@ -13,7 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  gitHubReleaseManagerPlugin as releaseManagerAsAServicePlugin,
-  ReleaseManagerAsAServicePage,
-} from './plugin';
+export { gitHubReleaseManagerPlugin, GitHubReleaseManagerPage } from './plugin';

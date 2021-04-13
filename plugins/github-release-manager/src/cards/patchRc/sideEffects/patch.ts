@@ -20,7 +20,7 @@ import {
   ResponseStep,
 } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
-import { ReleaseManagerAsAServiceError } from '../../../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { ApiClient } from '../../../api/ApiClient';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 
@@ -33,9 +33,7 @@ interface Patch {
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
-/**
- * Inspo: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
- */
+// Inspo: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
 export async function patch({
   apiClient,
   bumpedTag,
@@ -47,7 +45,7 @@ export async function patch({
   const responseSteps: ResponseStep[] = [];
 
   if (!selectedPatchCommit || !selectedPatchCommit.sha) {
-    throw new ReleaseManagerAsAServiceError('Invalid commit');
+    throw new GitHubReleaseManagerError('Invalid commit');
   }
 
   const releaseBranchName = latestRelease.target_commitish;

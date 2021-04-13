@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReleaseManagerAsAServiceError } from '../../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 
 export type CalverTagParts = {
   prefix: string;
@@ -27,7 +27,7 @@ export function getCalverTagParts(tag: string) {
   );
 
   if (result === null || result.length < 4) {
-    throw new ReleaseManagerAsAServiceError('Invalid calver tag');
+    throw new GitHubReleaseManagerError('Invalid calver tag');
   }
 
   const tagParts: CalverTagParts = {

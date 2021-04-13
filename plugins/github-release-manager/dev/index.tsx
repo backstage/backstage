@@ -15,41 +15,42 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
+
 import {
   gitHubReleaseManagerPlugin,
-  ReleaseManagerAsAServicePage,
+  GitHubReleaseManagerPage,
 } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
+    title: 'Page 1',
     element: (
-      <ReleaseManagerAsAServicePage
+      <GitHubReleaseManagerPage
         project={{
           github: {
             org: 'erikengervall',
             repo: 'playground',
           },
-          name: 'ReleaseManagerAsAService (semver)',
+          name: 'GitHub Release Manager (semver)',
           versioningStrategy: 'semver',
         }}
       />
     ),
-    title: 'Root Page',
   })
   .addPage({
+    title: 'Page 2',
     element: (
-      <ReleaseManagerAsAServicePage
+      <GitHubReleaseManagerPage
         project={{
           github: {
             org: 'erikengervall',
             repo: 'playground-2',
           },
-          name: 'ReleaseManagerAsAService (calver)',
+          name: 'GitHub Release Manager (calver)',
           versioningStrategy: 'calver',
         }}
       />
     ),
-    title: 'Another page',
   })
   .render();

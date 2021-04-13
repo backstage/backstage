@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ReleaseManagerAsAServiceError } from '../errors/ReleaseManagerAsAServiceError';
+import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
 export function getShortCommitHash(hash: string) {
   const shortCommitHash = hash.substr(0, 7);
 
   if (shortCommitHash.length < 7) {
-    throw new ReleaseManagerAsAServiceError(
+    throw new GitHubReleaseManagerError(
       'Invalid shortCommitHash: less than 7 characters',
     );
   }
