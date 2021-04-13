@@ -187,7 +187,7 @@ export async function createConfig(
         path: false,
         https: false,
         http: false,
-        util: false,
+        util: require.resolve('util/'),
       },
       plugins: [
         new LinkedPackageResolvePlugin(paths.rootNodeModules, externalPkgs),

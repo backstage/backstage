@@ -51,6 +51,13 @@ export const transforms = (options: TransformOptions): Transforms => {
         production: !isDev,
       },
     },
+
+    {
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
+      },
+    },
     {
       test: [/\.icon\.svg$/],
       use: [

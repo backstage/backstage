@@ -110,6 +110,7 @@
     "ts-loader": "^8.0.17",
     "typescript": "^4.0.3",
     "url-loader": "^4.1.0",
+    "util": "^0.12.3",
     "webpack": "^5.0.0",
     "webpack-dev-server": "^3.11.2",
     "webpack-node-externals": "^3.0.0",
