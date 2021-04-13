@@ -2,4 +2,4 @@
 '@backstage/core': patch
 ---
 
-Pass `inverse` prop to Guage from GuageCard
+Pass `inverse` prop to Gauge from GaugeCard
