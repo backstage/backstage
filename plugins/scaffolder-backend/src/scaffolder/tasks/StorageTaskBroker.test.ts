@@ -114,7 +114,7 @@ describe('StorageTaskBroker', () => {
     expect(taskRow.status).toBe('failed');
   });
 
-  it('should remove secrets afteer failing a task', async () => {
+  it('should remove secrets after failing a task', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch({} as TaskSpec, fakeSecrets);
     const task = await broker.claim();
