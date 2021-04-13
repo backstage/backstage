@@ -53,7 +53,7 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
         id,
         entity,
         state: intialState,
-      } = await this.stateManager.getNextProccessingItem();
+      } = await this.stateManager.getNextProcessingItem();
 
       const result = await this.orchestrator.process({
         entity,

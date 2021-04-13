@@ -44,7 +44,7 @@ export class ProcessingStateManagerImpl implements ProcessingStateManager {
     });
   }
 
-  async getNextProccessingItem(): Promise<ProccessingItem> {
+  async getNextProcessingItem(): Promise<ProccessingItem> {
     const entities = await new Promise<RefreshStateItem[]>(resolve =>
       this.popFromQueue(resolve),
     );

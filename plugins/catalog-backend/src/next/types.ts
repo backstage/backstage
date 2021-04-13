@@ -110,6 +110,6 @@ export type ProccessingItem = {
 };
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
-  getNextProccessingItem(): Promise<ProccessingItem>;
+  getNextProcessingItem(): Promise<ProccessingItem>;
   addProcessingItems(request: AddProcessingItemRequest): Promise<void>;
 }

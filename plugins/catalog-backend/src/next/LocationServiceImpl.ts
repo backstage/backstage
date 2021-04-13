@@ -57,11 +57,14 @@ export class LocationServiceImpl implements LocationService {
         eager: true,
         state: new Map(),
       });
+      if (processed.ok) {
+        return {
+          location: { ...spec, id: `${spec.type}:${spec.target}` },
+          entities: [processed.completedEntity],
+        };
+      }
 
-      return {
-        location: { ...spec, id: `${spec.type}:${spec.target}` },
-        entities: [processed.completedEntity],
-      };
+      throw Error('error handling not implemented.');
     }
 
     const location = await this.store.createLocation(spec);

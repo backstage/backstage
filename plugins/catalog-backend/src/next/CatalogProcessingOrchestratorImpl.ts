@@ -272,7 +272,6 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
   const deferredEntites = new Array<Entity>();
 
   const emit = (i: CatalogProcessorResult) => {
-    console.log('CatalogProcessorResult', i);
     if (done) {
       logger.warn(
         `Item if type ${i.type} was emitted after processing had completed at ${
