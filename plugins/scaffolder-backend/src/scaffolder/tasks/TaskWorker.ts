@@ -25,7 +25,6 @@ import path from 'path';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import * as handlebars from 'handlebars';
 import { InputError } from '@backstage/errors';
-import gitUrlParse from 'git-url-parse';
 
 type Options = {
   logger: Logger;
@@ -35,13 +34,7 @@ type Options = {
 };
 
 export class TaskWorker {
-  constructor(private readonly options: Options) {
-    // TODO(blam): Can't think of a nice place to put this
-    // It's not great as helpers are global. Would be nice to make the localized somehow.
-    handlebars.registerHelper('gitUrlParse', (url: string) => {
-      return JSON.stringify(gitUrlParse(url));
-    });
-  }
+  constructor(private readonly options: Options) {}
 
   start() {
     (async () => {
