@@ -85,7 +85,7 @@ export function ReleaseManagerAsAService({
   return (
     <ApiClientContext.Provider value={RMaaSApi}>
       <div className={classes.root}>
-        <ContentHeader title="Release Manager as a Service (RMaaS™️)" />
+        <ContentHeader title="Release Manager as a Service (RMaaS)" />
 
         <Cards project={project} components={components} />
       </div>

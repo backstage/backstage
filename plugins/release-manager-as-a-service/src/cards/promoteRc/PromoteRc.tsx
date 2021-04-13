@@ -53,7 +53,9 @@ export const PromoteRc = ({
           className={classes.paragraph}
           severity="warning"
         >
-          <AlertTitle>Latest GHE release is not a Release Candidate</AlertTitle>
+          <AlertTitle>
+            Latest GitHub release is not a Release Candidate
+          </AlertTitle>
           One can only promote Release Candidates to Release Versions
         </Alert>
       );

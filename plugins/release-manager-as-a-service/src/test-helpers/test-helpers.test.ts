@@ -73,7 +73,7 @@ describe('testHelpers', () => {
           "versioningStrategy": "calver",
         },
         "mockDefaultBranch": "mock_defaultBranch",
-        "mockNextGheInfo": Object {
+        "mockNextGitHubInfo": Object {
           "rcBranch": "rc/1.2.3",
           "rcReleaseTag": "rc-1.2.3",
           "releaseName": "Version 1.2.3",

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
-import { getRcGheInfo } from '../cards/createRc/getRcGheInfo';
+import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import {
   GhCompareCommitsResponse,
   GhCreateCommitResponse,
@@ -50,7 +50,7 @@ export const mockCalverProject: Project = {
 
 export const mockDefaultBranch = 'mock_defaultBranch';
 
-export const mockNextGheInfo: ReturnType<typeof getRcGheInfo> = {
+export const mockNextGitHubInfo: ReturnType<typeof getRcGitHubInfo> = {
   rcBranch: 'rc/1.2.3',
   rcReleaseTag: 'rc-1.2.3',
   releaseName: 'Version 1.2.3',

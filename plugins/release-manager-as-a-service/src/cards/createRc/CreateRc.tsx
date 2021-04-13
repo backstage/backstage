@@ -25,9 +25,9 @@ import {
 } from '@material-ui/core';
 import { useAsyncFn } from 'react-use';
 
-import { createGheRc } from './sideEffects/createGheRc';
+import { createRc } from './sideEffects/createRc';
 import { Differ } from '../../components/Differ';
-import { getRcGheInfo } from './getRcGheInfo';
+import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import {
   ComponentConfigCreateRc,
@@ -66,37 +66,37 @@ export const CreateRc = ({
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(
     SEMVER_PARTS.minor,
   );
-  const [nextGheInfo, setNextGheInfo] = useState(
-    getRcGheInfo({ latestRelease, project, semverBumpLevel }),
+  const [nextGitHubInfo, setNextGitHubInfo] = useState(
+    getRcGitHubInfo({ latestRelease, project, semverBumpLevel }),
   );
 
   useEffect(() => {
-    setNextGheInfo(getRcGheInfo({ latestRelease, project, semverBumpLevel }));
-  }, [semverBumpLevel, setNextGheInfo, latestRelease, project]);
+    setNextGitHubInfo(
+      getRcGitHubInfo({ latestRelease, project, semverBumpLevel }),
+    );
+  }, [semverBumpLevel, setNextGitHubInfo, latestRelease, project]);
 
-  const [createReleaseResponse, callCreateGheRc] = useAsyncFn(
-    async (...args) => {
-      const createGheRcResponseSteps = await createGheRc({
+  const [createGitHubReleaseResponse, createGitHubReleaseFn] = useAsyncFn(
+    (...args) =>
+      createRc({
         apiClient,
         defaultBranch,
         latestRelease,
-        nextGheInfo: args[0],
+        nextGitHubInfo: args[0],
         successCb,
-      });
-
-      return createGheRcResponseSteps;
-    },
+      }),
   );
-
-  if (createReleaseResponse.error) {
+  if (createGitHubReleaseResponse.error) {
     return (
-      <Alert severity="error">{createReleaseResponse.error.message}</Alert>
+      <Alert severity="error">
+        {createGitHubReleaseResponse.error.message}
+      </Alert>
     );
   }
 
   const tagAlreadyExists =
     latestRelease !== null &&
-    latestRelease.tag_name === nextGheInfo.rcReleaseTag;
+    latestRelease.tag_name === nextGitHubInfo.rcReleaseTag;
   const conflictingPreRelease =
     latestRelease !== null && latestRelease.prerelease;
 
@@ -113,7 +113,7 @@ export const CreateRc = ({
       return (
         <Alert className={classes.paragraph} severity="warning">
           There's already a tag named{' '}
-          <strong>{nextGheInfo.rcReleaseTag}</strong>
+          <strong>{nextGitHubInfo.rcReleaseTag}</strong>
         </Alert>
       );
     }
@@ -124,7 +124,7 @@ export const CreateRc = ({
           <Differ
             icon="branch"
             prev={releaseBranch?.name}
-            next={nextGheInfo.rcBranch}
+            next={nextGitHubInfo.rcBranch}
           />
         </Typography>
 
@@ -132,7 +132,7 @@ export const CreateRc = ({
           <Differ
             icon="tag"
             prev={latestRelease?.tag_name}
-            next={nextGheInfo.rcReleaseTag}
+            next={nextGitHubInfo.rcReleaseTag}
           />
         </Typography>
       </div>
@@ -140,11 +140,14 @@ export const CreateRc = ({
   }
 
   function CTA() {
-    if (createReleaseResponse.loading || createReleaseResponse.value) {
+    if (
+      createGitHubReleaseResponse.loading ||
+      createGitHubReleaseResponse.value
+    ) {
       return (
         <ResponseStepList
-          responseSteps={createReleaseResponse.value}
-          loading={createReleaseResponse.loading}
+          responseSteps={createGitHubReleaseResponse.value}
+          loading={createGitHubReleaseResponse.loading}
           title="Create RC result"
           setRefetch={setRefetch}
         />
@@ -157,7 +160,7 @@ export const CreateRc = ({
         disabled={conflictingPreRelease || tagAlreadyExists}
         variant="contained"
         color="primary"
-        onClick={() => callCreateGheRc(nextGheInfo)}
+        onClick={() => createGitHubReleaseFn(nextGitHubInfo)}
       >
         Create RC
       </Button>

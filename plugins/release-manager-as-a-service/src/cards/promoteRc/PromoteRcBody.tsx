@@ -24,7 +24,7 @@ import {
   GhGetReleaseResponse,
   SetRefetch,
 } from '../../types/types';
-import { promoteGheRc } from './sideEffects/promoteGheRc';
+import { promoteRc } from './sideEffects/promoteRc';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { useApiClientContext } from '../../components/ProjectContext';
 import { useStyles } from '../../styles/styles';
@@ -44,12 +44,14 @@ export const PromoteRcBody = ({
   const apiClient = useApiClientContext();
   const classes = useStyles();
   const releaseVersion = rcRelease.tag_name.replace('rc-', 'version-');
-  const [promoteGheRcResponse, promoseGheRcFn] = useAsyncFn(
-    promoteGheRc({ apiClient, rcRelease, releaseVersion, successCb }),
+  const [promoteGitHubRcResponse, promoseGitHubRcFn] = useAsyncFn(
+    promoteRc({ apiClient, rcRelease, releaseVersion, successCb }),
   );
 
-  if (promoteGheRcResponse.error) {
-    return <Alert severity="error">{promoteGheRcResponse.error.message}</Alert>;
+  if (promoteGitHubRcResponse.error) {
+    return (
+      <Alert severity="error">{promoteGitHubRcResponse.error.message}</Alert>
+    );
   }
 
   function Description() {
@@ -67,13 +69,13 @@ export const PromoteRcBody = ({
   }
 
   function CTA() {
-    if (promoteGheRcResponse.loading || promoteGheRcResponse.value) {
+    if (promoteGitHubRcResponse.loading || promoteGitHubRcResponse.value) {
       return (
         <ResponseStepList
-          responseSteps={promoteGheRcResponse.value}
+          responseSteps={promoteGitHubRcResponse.value}
           title="Promote RC result"
           setRefetch={setRefetch}
-          loading={promoteGheRcResponse.loading}
+          loading={promoteGitHubRcResponse.loading}
         />
       );
     }
@@ -83,7 +85,7 @@ export const PromoteRcBody = ({
         data-testid={TEST_IDS.promoteRc.cta}
         variant="contained"
         color="primary"
-        onClick={() => promoseGheRcFn()}
+        onClick={() => promoseGitHubRcFn()}
       >
         Promote Release Candidate
       </Button>

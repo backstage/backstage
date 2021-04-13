@@ -25,7 +25,7 @@ import {
 } from '../../types/types';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import rmaasFlowImage from './rmaas-flow.png';
+import flowImage from './flow.png';
 
 interface InfoCardProps {
   releaseBranch: GhGetBranchResponse | null;
@@ -46,26 +46,26 @@ export const Info = ({
         <Typography variant="h6">Terminology</Typography>
 
         <Typography>
-          <strong>GitHub Enterprise (GHE)</strong>: The source control system
-          where releases reside in a practical sense. Read more about GitHub
-          releases{' '}
+          <strong>GitHub</strong>: The source control system where releases
+          reside in a practical sense. Read more about GitHub releases{' '}
           <Link
             href="https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
           >
             here
           </Link>
-          . Note that this plugin works just as well with a non-enterprise
-          account.
+          . Note that this plugin works just as well with GitHub Enterprise
+          (GHE)
         </Typography>
 
         <Typography>
-          <strong>Release Candidate</strong>: A GHE <i>pre-release</i> intended
-          primarily for internal testing
+          <strong>Release Candidate</strong>: A GitHub <i>prerelease</i>{' '}
+          intended primarily for internal testing
         </Typography>
 
         <Typography>
-          <strong>Release Version</strong>: A GHE release intended for end users
+          <strong>Release Version</strong>: A GitHub release intended for end
+          users
         </Typography>
       </div>
 
@@ -82,7 +82,7 @@ export const Info = ({
           Here's an overview of the flow:
         </Typography>
 
-        <img alt="rmaas-flow" src={rmaasFlowImage} style={{ width: '100%' }} />
+        <img alt="flow" src={flowImage} style={{ width: '100%' }} />
       </div>
 
       <div style={{ marginBottom: '1em' }}>
@@ -91,7 +91,7 @@ export const Info = ({
         <Typography>
           Repository:{' '}
           <Differ
-            icon="ghe"
+            icon="github"
             next={`${project.github.org}/${project.github.repo}`}
           />
         </Typography>

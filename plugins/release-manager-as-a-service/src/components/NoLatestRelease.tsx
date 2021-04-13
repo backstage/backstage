@@ -28,7 +28,7 @@ export const NoLatestRelease = () => {
       className={classes.paragraph}
       severity="warning"
     >
-      Unable to find any GHE releases
+      Unable to find any GitHub release
     </Alert>
   );
 };

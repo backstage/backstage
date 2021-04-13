@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRcGheInfo } from '../getRcGheInfo';
+import { getRcGitHubInfo } from '../getRcGitHubInfo';
 import {
   ComponentConfigCreateRc,
   GhCreateReferenceResponse,
@@ -24,21 +24,21 @@ import {
 import { RMaaSApiClient } from '../../../api/RMaaSApiClient';
 import { ReleaseManagerAsAServiceError } from '../../../errors/ReleaseManagerAsAServiceError';
 
-interface CreateGheRC {
+interface CreateRC {
   apiClient: RMaaSApiClient;
   defaultBranch: GhGetRepositoryResponse['default_branch'];
   latestRelease: GhGetReleaseResponse | null;
-  nextGheInfo: ReturnType<typeof getRcGheInfo>;
+  nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 
-export async function createGheRc({
+export async function createRc({
   apiClient,
   defaultBranch,
   latestRelease,
-  nextGheInfo,
+  nextGitHubInfo,
   successCb,
-}: CreateGheRC) {
+}: CreateRC) {
   const responseSteps: ResponseStep[] = [];
 
   /**
@@ -62,13 +62,13 @@ export async function createGheRc({
     createdRef = (
       await apiClient.createRc.createRef({
         mostRecentSha,
-        targetBranch: nextGheInfo.rcBranch,
+        targetBranch: nextGitHubInfo.rcBranch,
       })
     ).createdRef;
   } catch (error) {
     if (error.body.message === 'Reference already exists') {
       throw new ReleaseManagerAsAServiceError(
-        `Branch "${nextGheInfo.rcBranch}" already exists: .../tree/${nextGheInfo.rcBranch}`,
+        `Branch "${nextGitHubInfo.rcBranch}" already exists: .../tree/${nextGitHubInfo.rcBranch}`,
       );
     }
     throw error;
@@ -84,7 +84,7 @@ export async function createGheRc({
   const previousReleaseBranch = latestRelease
     ? latestRelease.target_commitish
     : defaultBranch;
-  const nextReleaseBranch = nextGheInfo.rcBranch;
+  const nextReleaseBranch = nextGitHubInfo.rcBranch;
   const { comparison } = await apiClient.createRc.getComparison({
     previousReleaseBranch,
     nextReleaseBranch,
@@ -105,15 +105,15 @@ export async function createGheRc({
   });
 
   /**
-   * 4. Creates the release itself in GHE
+   * 4. Creates the release itself in GitHub
    */
   const { createReleaseResponse } = await apiClient.createRc.createRelease({
-    nextGheInfo,
+    nextGitHubInfo: nextGitHubInfo,
     releaseBody,
   });
   responseSteps.push({
     message: `Created Release Candidate "${createReleaseResponse.name}"`,
-    secondaryMessage: `with tag "${nextGheInfo.rcReleaseTag}"`,
+    secondaryMessage: `with tag "${nextGitHubInfo.rcReleaseTag}"`,
     link: createReleaseResponse.html_url,
   });
 

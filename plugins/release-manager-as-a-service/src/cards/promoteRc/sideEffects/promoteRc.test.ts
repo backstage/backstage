@@ -17,13 +17,13 @@ import {
   mockRcRelease,
   mockApiClient,
 } from '../../../test-helpers/test-helpers';
-import { promoteGheRc } from './promoteGheRc';
+import { promoteRc } from './promoteRc';
 
-describe('promoteGheRc', () => {
+describe('promoteRc', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should work', async () => {
-    const result = await promoteGheRc({
+    const result = await promoteRc({
       apiClient: mockApiClient,
       rcRelease: mockRcRelease,
       releaseVersion: 'version-1.2.3',

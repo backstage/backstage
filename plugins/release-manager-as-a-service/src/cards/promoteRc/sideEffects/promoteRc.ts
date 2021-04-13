@@ -20,19 +20,19 @@ import {
 } from '../../../types/types';
 import { RMaaSApiClient } from '../../../api/RMaaSApiClient';
 
-interface PromoteGheRc {
+interface PromoteRc {
   apiClient: RMaaSApiClient;
   rcRelease: GhGetReleaseResponse;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
-export function promoteGheRc({
+export function promoteRc({
   apiClient,
   rcRelease,
   releaseVersion,
   successCb,
-}: PromoteGheRc) {
+}: PromoteRc) {
   return async (): Promise<ResponseStep[]> => {
     const responseSteps: ResponseStep[] = [];
 

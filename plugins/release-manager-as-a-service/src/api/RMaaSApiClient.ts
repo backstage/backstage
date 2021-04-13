@@ -28,7 +28,7 @@ import {
   GhUpdateReleaseResponse,
 } from '../types/types';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
-import { getRcGheInfo } from '../cards/createRc/getRcGheInfo';
+import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import { PluginApiClientConfig } from './PluginApiClientConfig';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 
@@ -165,10 +165,10 @@ export class RMaaSApiClient {
     },
 
     createRelease: async ({
-      nextGheInfo,
+      nextGitHubInfo,
       releaseBody,
     }: {
-      nextGheInfo: ReturnType<typeof getRcGheInfo>;
+      nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
       releaseBody: string;
     }) => {
       const { octokit } = await this.pluginApiClient.getOctokit();
@@ -177,9 +177,9 @@ export class RMaaSApiClient {
         await octokit.request(`${this.githubCommonPath}/releases`, {
           method: 'POST',
           data: {
-            tag_name: nextGheInfo.rcReleaseTag,
-            name: nextGheInfo.releaseName,
-            target_commitish: nextGheInfo.rcBranch,
+            tag_name: nextGitHubInfo.rcReleaseTag,
+            name: nextGitHubInfo.releaseName,
+            target_commitish: nextGitHubInfo.rcBranch,
             body: releaseBody,
             prerelease: true,
           },

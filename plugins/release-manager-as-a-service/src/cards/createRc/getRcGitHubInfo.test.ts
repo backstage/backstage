@@ -20,19 +20,19 @@ import {
   mockSemverProject,
   mockCalverProject,
 } from '../../test-helpers/test-helpers';
-import { getRcGheInfo } from './getRcGheInfo';
+import { getRcGitHubInfo } from './getRcGitHubInfo';
 
 const injectedDate = format(1611869955783, 'yyyy.MM.dd');
 
-describe('getRCGheInfo', () => {
+describe('getRcGitHubInfo', () => {
   describe('calver', () => {
     const latestRelease = {
       tag_name: 'rc-2020.01.01_0',
     } as GhGetReleaseResponse;
 
-    it('should return correct Ghe info', () => {
+    it('should return correct GitHub info', () => {
       expect(
-        getRcGheInfo({
+        getRcGitHubInfo({
           project: mockCalverProject,
           latestRelease,
           semverBumpLevel: 'minor',
@@ -53,9 +53,9 @@ describe('getRCGheInfo', () => {
       tag_name: 'rc-1.1.1',
     } as GhGetReleaseResponse;
 
-    it("should return correct Ghe info when there's previous releases", () => {
+    it("should return correct GitHub info when there's previous releases", () => {
       expect(
-        getRcGheInfo({
+        getRcGitHubInfo({
           project: mockSemverProject,
           latestRelease,
           semverBumpLevel: 'minor',
@@ -69,9 +69,9 @@ describe('getRCGheInfo', () => {
       `);
     });
 
-    it("should return correct Ghe info when there's no previous release", () => {
+    it("should return correct GitHub info when there's no previous release", () => {
       expect(
-        getRcGheInfo({
+        getRcGitHubInfo({
           project: mockSemverProject,
           latestRelease: null,
           semverBumpLevel: 'minor',

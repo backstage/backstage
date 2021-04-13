@@ -20,7 +20,7 @@ import { getSemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { Project, GhGetReleaseResponse } from '../../types/types';
 import { SEMVER_PARTS } from '../../constants/constants';
 
-export const getRcGheInfo = ({
+export const getRcGitHubInfo = ({
   project,
   latestRelease,
   semverBumpLevel,

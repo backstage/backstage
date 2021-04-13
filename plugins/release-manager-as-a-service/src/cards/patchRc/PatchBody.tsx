@@ -69,7 +69,7 @@ export const PatchBody = ({
   const apiClient = useApiClientContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 
-  const gheDataResponse = useAsync(async () => {
+  const githubDataResponse = useAsync(async () => {
     const [
       { branch: releaseBranchResponse },
       { recentCommits },
@@ -91,7 +91,7 @@ export const PatchBody = ({
     };
   });
 
-  const [patchGheRcResponse, patchGheRcFn] = useAsyncFn(async (...args) => {
+  const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
     const selectedPatchCommit: GhGetCommitResponse = args[0];
     const patchResponseSteps = await patch({
       apiClient,
@@ -105,17 +105,17 @@ export const PatchBody = ({
     return patchResponseSteps;
   });
 
-  if (gheDataResponse.error) {
+  if (githubDataResponse.error) {
     return (
       <Alert data-testid={TEST_IDS.patch.error} severity="error">
-        {gheDataResponse.error.message}
+        {githubDataResponse.error.message}
       </Alert>
     );
   }
-  if (patchGheRcResponse.error) {
-    return <Alert severity="error">{patchGheRcResponse.error.message}</Alert>;
+  if (patchReleaseResponse.error) {
+    return <Alert severity="error">{patchReleaseResponse.error.message}</Alert>;
   }
-  if (gheDataResponse.loading) {
+  if (githubDataResponse.loading) {
     return <CircularProgress data-testid={TEST_IDS.patch.loading} />;
   }
 
@@ -131,7 +131,7 @@ export const PatchBody = ({
             severity="info"
           >
             <AlertTitle>
-              The current GHE release is a <b>Release Version</b>
+              The current GitHub release is a <b>Release Version</b>
             </AlertTitle>
             It's still possible to patch it, but be extra mindful of changes
           </Alert>
@@ -145,14 +145,14 @@ export const PatchBody = ({
   }
 
   function CommitList() {
-    if (!gheDataResponse.value?.recentCommits) {
+    if (!githubDataResponse.value?.recentCommits) {
       return null;
     }
 
     return (
       <List>
-        {gheDataResponse.value.recentCommits.map((commit, index) => {
-          const commitExistsOnReleaseBranch = !!gheDataResponse.value?.recentReleaseBranchCommits.find(
+        {githubDataResponse.value.recentCommits.map((commit, index) => {
+          const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentReleaseBranchCommits.find(
             ({ sha }) => {
               return sha === commit.sha;
             },
@@ -185,9 +185,9 @@ export const PatchBody = ({
 
               <ListItem
                 disabled={
-                  patchGheRcResponse.loading ||
-                  (patchGheRcResponse.value &&
-                    patchGheRcResponse.value.length > 0) ||
+                  patchReleaseResponse.loading ||
+                  (patchReleaseResponse.value &&
+                    patchReleaseResponse.value.length > 0) ||
                   commitExistsOnReleaseBranch
                 }
                 role={undefined}
@@ -252,11 +252,11 @@ export const PatchBody = ({
   }
 
   function CTA() {
-    if (patchGheRcResponse.loading || patchGheRcResponse.value) {
+    if (patchReleaseResponse.loading || patchReleaseResponse.value) {
       return (
         <ResponseStepList
-          responseSteps={patchGheRcResponse.value}
-          loading={patchGheRcResponse.loading}
+          responseSteps={patchReleaseResponse.value}
+          loading={patchReleaseResponse.loading}
           title="Patch result"
           setRefetch={setRefetch}
           closeable
@@ -264,7 +264,7 @@ export const PatchBody = ({
       );
     }
 
-    if (!gheDataResponse.value?.recentCommits[checkedCommitIndex]) {
+    if (!githubDataResponse.value?.recentCommits[checkedCommitIndex]) {
       return (
         <Button disabled variant="contained" color="primary">
           Patch Release Candidate
@@ -279,8 +279,8 @@ export const PatchBody = ({
         color="primary"
         onClick={() => {
           // FIXME: Optional chaining shouldn't be needed here due to the if-statement above
-          patchGheRcFn(
-            gheDataResponse.value?.recentCommits[checkedCommitIndex],
+          patchReleaseFn(
+            githubDataResponse.value?.recentCommits[checkedCommitIndex],
           );
         }}
       >

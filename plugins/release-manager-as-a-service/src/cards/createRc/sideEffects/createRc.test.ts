@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 import {
-  mockDefaultBranch,
-  mockReleaseVersion,
-  mockNextGheInfo,
   mockApiClient,
+  mockDefaultBranch,
+  mockNextGitHubInfo,
+  mockReleaseVersion,
 } from '../../../test-helpers/test-helpers';
-import { createGheRc } from './createGheRc';
+import { createRc } from './createRc';
 
 describe('createGheRc', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should work', async () => {
-    const result = await createGheRc({
+    const result = await createRc({
       apiClient: mockApiClient,
       defaultBranch: mockDefaultBranch,
       latestRelease: mockReleaseVersion,
-      nextGheInfo: mockNextGheInfo,
+      nextGitHubInfo: mockNextGitHubInfo,
     });
 
     expect(result).toMatchInlineSnapshot(`

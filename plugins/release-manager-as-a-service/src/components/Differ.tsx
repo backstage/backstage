@@ -25,7 +25,7 @@ interface DifferProps {
   next?: string | ReactNode;
   prev?: string;
   prefix?: string;
-  icon?: 'tag' | 'branch' | 'ghe' | 'slack' | 'versioning';
+  icon?: 'tag' | 'branch' | 'github' | 'slack' | 'versioning';
 }
 
 const Icon = ({ icon }: { icon: DifferProps['icon'] }) => {
@@ -40,7 +40,7 @@ const Icon = ({ icon }: { icon: DifferProps['icon'] }) => {
         <CallSplitIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
       );
 
-    case 'ghe':
+    case 'github':
       return (
         <GitHubIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
       );

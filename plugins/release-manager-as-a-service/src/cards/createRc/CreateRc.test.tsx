@@ -18,7 +18,7 @@ import { render } from '@testing-library/react';
 
 import {
   mockCalverProject,
-  mockNextGheInfo,
+  mockNextGitHubInfo,
   mockRcRelease,
   mockReleaseBranch,
   mockReleaseVersion,
@@ -30,8 +30,8 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 jest.mock('../../components/ProjectContext', () => ({
   useApiClientContext: () => mockApiClient,
 }));
-jest.mock('./getRcGheInfo', () => ({
-  getRcGheInfo: () => mockNextGheInfo,
+jest.mock('./getRcGitHubInfo', () => ({
+  getRcGitHubInfo: () => mockNextGitHubInfo,
 }));
 
 import { CreateRc } from './CreateRc';

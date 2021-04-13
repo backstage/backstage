@@ -4,19 +4,19 @@
 
 `RMaaS` enables developers to manage their releases without having to juggle git commands.
 
-Does it bundle and ship your code? **No**.
+Does it build and ship your code? **No**.
 
 What `RMaaS` does is manage your **[releases](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/managing-releases-in-a-repository)** on GitHub, building and shipping is entirely up to you as a developer to handle in your CI.
 
-`RMaaS` is build with industry standards in mind and the flow is as follows:
+`RMaaS` is built with industry standards in mind and the flow is as follows:
 
-![](./src/cards/info/rmaas-flow.png)
+![](./src/cards/info/flow.png)
 
-> **GitHub Enterprise (GHE)**: The source control system where releases reside in a practical sense. Read more about GitHub releases here. Note that this plugin works just as well with a non-enterprise account.
+> **GitHub**: The source control system where releases reside in a practical sense. Read more about GitHub releases [here](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/. Note that this plugin works just as well with GitHub Enterprise)
 >
-> **Release Candidate (RC)**: A GHE pre-release intended primarily for internal testing
+> **Release Candidate (RC)**: A GitHub pre-release intended primarily for internal testing
 >
-> **Release Version**: A GHE release intended for end users
+> **Release Version**: A GitHub release intended for end users
 
 Looking at the flow above, a common release lifecycle could be:
 
