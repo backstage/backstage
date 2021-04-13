@@ -19,7 +19,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import { getRepoSourceDirectory, Destination } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishAzureAction(options: {
@@ -28,7 +28,7 @@ export function createPublishAzureAction(options: {
   const { integrations } = options;
 
   return createTemplateAction<{
-    repoUrl: string;
+    destination: Destination;
     description?: string;
     sourcePath?: string;
   }>({
@@ -38,11 +38,32 @@ export function createPublishAzureAction(options: {
     schema: {
       input: {
         type: 'object',
-        required: ['repoUrl'],
+        required: ['destination'],
         properties: {
-          repoUrl: {
+          destination: {
             title: 'Repository Location',
-            type: 'string',
+            type: 'object',
+            required: ['host', 'owner', 'repo', 'organization'],
+            properties: {
+              host: {
+                type: 'string',
+                description:
+                  'The hostname where the repository is located, e.g azuredevops.com',
+              },
+              owner: {
+                type: 'string',
+                description:
+                  'The owner of the repository, either organization or user',
+              },
+              repo: {
+                type: 'string',
+                description: 'The repository name',
+              },
+              organization: {
+                type: 'string',
+                description: 'The Azure DevOps Organization',
+              },
+            },
           },
           description: {
             title: 'Repository Description',
@@ -70,15 +91,7 @@ export function createPublishAzureAction(options: {
       },
     },
     async handler(ctx) {
-      const { owner, repo, host, organization } = parseRepoUrl(
-        ctx.input.repoUrl,
-      );
-
-      if (!organization) {
-        throw new InputError(
-          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing organization`,
-        );
-      }
+      const { owner, repo, host, organization } = ctx.input.destination;
 
       const integrationConfig = integrations.azure.byHost(host);
 

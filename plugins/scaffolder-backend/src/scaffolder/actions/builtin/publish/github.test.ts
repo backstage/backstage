@@ -38,9 +38,13 @@ describe('publish:github', () => {
   const action = createPublishGithubAction({ integrations });
   const mockContext = {
     input: {
-      repoUrl: 'github.com?repo=repo&owner=owner',
+      destination: {
+        host: 'github.com',
+        owner: 'owner',
+        repo: 'repo',
+      },
       description: 'description',
-      repoVisibility: 'private',
+      repoVisibility: 'private' as any,
       access: 'owner/blam',
     },
     workspacePath: 'lol',
@@ -56,27 +60,18 @@ describe('publish:github', () => {
     jest.resetAllMocks();
   });
 
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'github.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-  });
-
   it('should throw if there is no integration config provided', async () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
+        input: {
+          ...mockContext.input,
+          destination: {
+            host: 'missing.com',
+            owner: 'owner',
+            repo: 'repo',
+          },
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -86,7 +81,12 @@ describe('publish:github', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'ghe.github.com?repo=bob&owner=owner',
+          ...mockContext.input,
+          destination: {
+            host: 'ghe.github.com',
+            owner: 'owner',
+            repo: 'repo',
+          },
         },
       }),
     ).rejects.toThrow(/No token available for host/);

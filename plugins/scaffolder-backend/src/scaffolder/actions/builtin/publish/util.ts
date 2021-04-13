@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
 import { join as joinPath, normalize as normalizePath } from 'path';
+
+export type Destination = {
+  host: string;
+  owner: string;
+  repo: string;
+  organization?: string;
+};
 
 export const getRepoSourceDirectory = (
   workspacePath: string,
@@ -29,33 +35,4 @@ export const getRepoSourceDirectory = (
     return joinPath(workspacePath, safeSuffix);
   }
   return workspacePath;
-};
-
-export const parseRepoUrl = (repoUrl: string) => {
-  let parsed;
-  try {
-    parsed = new URL(`https://${repoUrl}`);
-  } catch (error) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher, got ${repoUrl}, ${error}`,
-    );
-  }
-  const host = parsed.host;
-  const owner = parsed.searchParams.get('owner');
-
-  if (!owner) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher: ${repoUrl}, missing owner`,
-    );
-  }
-  const repo = parsed.searchParams.get('repo');
-  if (!repo) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher: ${repoUrl}, missing repo`,
-    );
-  }
-
-  const organization = parsed.searchParams.get('organization');
-
-  return { host, owner, repo, organization };
 };

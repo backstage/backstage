@@ -20,7 +20,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import { getRepoSourceDirectory, Destination } from './util';
 import fetch from 'cross-fetch';
 import { createTemplateAction } from '../../createTemplateAction';
 
@@ -162,7 +162,7 @@ export function createPublishBitbucketAction(options: {
   const { integrations } = options;
 
   return createTemplateAction<{
-    repoUrl: string;
+    destination: Destination;
     description: string;
     repoVisibility: 'private' | 'public';
     sourcePath?: string;
@@ -173,18 +173,35 @@ export function createPublishBitbucketAction(options: {
     schema: {
       input: {
         type: 'object',
-        required: ['repoUrl'],
+        required: ['destination'],
         properties: {
-          repoUrl: {
+          destination: {
             title: 'Repository Location',
-            type: 'string',
+            type: 'object',
+            required: ['host', 'owner', 'repo'],
+            properties: {
+              host: {
+                type: 'string',
+                description:
+                  'The hostname where the repository is located, e.g bitbucket.org',
+              },
+              owner: {
+                type: 'string',
+                description:
+                  'The owner of the repository, either organization or user',
+              },
+              repo: {
+                type: 'string',
+                description: 'The repository name',
+              },
+            },
           },
           description: {
             title: 'Repository Description',
             type: 'string',
           },
           repoVisibility: {
-            title: 'Repository Visiblity',
+            title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public'],
           },
@@ -210,9 +227,11 @@ export function createPublishBitbucketAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, description, repoVisibility = 'private' } = ctx.input;
-
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const {
+        destination: { owner, repo, host },
+        description,
+        repoVisibility = 'private',
+      } = ctx.input;
 
       const integrationConfig = integrations.bitbucket.byHost(host);
 

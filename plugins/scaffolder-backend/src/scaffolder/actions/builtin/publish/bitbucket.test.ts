@@ -48,8 +48,13 @@ describe('publish:bitbucket', () => {
   const action = createPublishBitbucketAction({ integrations });
   const mockContext = {
     input: {
-      repoUrl: 'bitbucket.org?repo=repo&owner=owner',
-      repoVisibility: 'private',
+      destination: {
+        host: 'bitbucket.com',
+        repo: 'repo',
+        owner: 'owner',
+      },
+      description: 'im a description',
+      repoVisibility: 'private' as any,
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -64,27 +69,14 @@ describe('publish:bitbucket', () => {
     jest.resetAllMocks();
   });
 
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'bitbucket.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'bitbucket.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-  });
-
   it('should throw if there is no integration config provided', async () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'missing.com?repo=bob&owner=owner' },
+        input: {
+          ...mockContext.input,
+          destination: { host: 'missing.com', repo: 'bob', owner: 'owner' },
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -94,7 +86,12 @@ describe('publish:bitbucket', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'notoken.bitbucket.com?repo=bob&owner=owner',
+          ...mockContext.input,
+          destination: {
+            host: 'notoken.bitbucket.com',
+            repo: 'bob',
+            owner: 'owner',
+          },
         },
       }),
     ).rejects.toThrow(/Authorization has not been provided for Bitbucket/);
@@ -168,7 +165,11 @@ describe('publish:bitbucket', () => {
       ...mockContext,
       input: {
         ...mockContext.input,
-        repoUrl: 'hosted.bitbucket.com?owner=owner&repo=repo',
+        destination: {
+          host: 'hosted.bitbucket.com',
+          owner: 'owner',
+          repo: 'repo',
+        },
       },
     });
   });

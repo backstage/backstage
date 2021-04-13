@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { Gitlab } from '@gitbeaker/node';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
+import { getRepoSourceDirectory, Destination } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishGitlabAction(options: {
@@ -27,7 +27,7 @@ export function createPublishGitlabAction(options: {
   const { integrations } = options;
 
   return createTemplateAction<{
-    repoUrl: string;
+    destination: Destination;
     repoVisibility: 'private' | 'internal' | 'public';
     sourcePath?: string;
   }>({
@@ -37,20 +37,37 @@ export function createPublishGitlabAction(options: {
     schema: {
       input: {
         type: 'object',
-        required: ['repoUrl'],
+        required: ['destination'],
         properties: {
-          repoUrl: {
+          destination: {
             title: 'Repository Location',
-            type: 'string',
+            type: 'object',
+            required: ['host', 'owner', 'repo'],
+            properties: {
+              host: {
+                type: 'string',
+                description:
+                  'The hostname where the repository is located, e.g gitlab.com',
+              },
+              owner: {
+                type: 'string',
+                description:
+                  'The owner of the repository, either organization or user',
+              },
+              repo: {
+                type: 'string',
+                description: 'The repository name',
+              },
+            },
           },
           repoVisibility: {
-            title: 'Repository Visiblity',
+            title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
           sourcePath: {
             title:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the Repository.',
             type: 'string',
           },
         },
@@ -70,9 +87,10 @@ export function createPublishGitlabAction(options: {
       },
     },
     async handler(ctx) {
-      const { repoUrl, repoVisibility = 'private' } = ctx.input;
-
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const {
+        destination: { owner, repo, host },
+        repoVisibility = 'private',
+      } = ctx.input;
 
       const integrationConfig = integrations.gitlab.byHost(host);
 

@@ -41,7 +41,12 @@ describe('publish:azure', () => {
   const action = createPublishAzureAction({ integrations });
   const mockContext = {
     input: {
-      repoUrl: 'dev.azure.com?repo=repo&owner=owner&organization=org',
+      destination: {
+        host: 'dev.azure.com',
+        repo: 'repo',
+        owner: 'owner',
+        organization: 'org',
+      },
     },
     workspacePath: 'lol',
     logger: getVoidLogger(),
@@ -63,34 +68,18 @@ describe('publish:azure', () => {
     jest.restoreAllMocks();
   });
 
-  it('should throw an error when the repoUrl is not well formed', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob' },
-      }),
-    ).rejects.toThrow(/missing owner/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner' },
-      }),
-    ).rejects.toThrow(/missing repo/);
-
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: { repoUrl: 'azure.com?owner=owner&repo=repo' },
-      }),
-    ).rejects.toThrow(/missing organization/);
-  });
-
   it('should throw if there is no integration config provided', async () => {
     await expect(
       action.handler({
         ...mockContext,
-        input: { repoUrl: 'azure.com?repo=bob&owner=owner&organization=org' },
+        input: {
+          destination: {
+            host: 'azure.com',
+            repo: 'bob',
+            owner: 'owner',
+            organization: 'org',
+          },
+        },
       }),
     ).rejects.toThrow(/No matching integration configuration/);
   });
@@ -100,22 +89,15 @@ describe('publish:azure', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl:
-            'myazurehostnotoken.com?repo=bob&owner=owner&organization=org',
+          destination: {
+            host: 'myazurehostnotoken.com',
+            repo: 'bob',
+            owner: 'owner',
+            organization: 'org',
+          },
         },
       }),
     ).rejects.toThrow(/No token provided for Azure Integration/);
-  });
-
-  it('should throw when no repo is returned', async () => {
-    await expect(
-      action.handler({
-        ...mockContext,
-        input: {
-          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
-        },
-      }),
-    ).rejects.toThrow(/Unable to create the repository/);
   });
 
   it('should throw if there is no remoteUrl returned', async () => {
@@ -126,7 +108,12 @@ describe('publish:azure', () => {
       action.handler({
         ...mockContext,
         input: {
-          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+          destination: {
+            host: 'dev.azure.com',
+            repo: 'bob',
+            owner: 'owner',
+            organization: 'org',
+          },
         },
       }),
     ).rejects.toThrow(/No remote URL returned/);
