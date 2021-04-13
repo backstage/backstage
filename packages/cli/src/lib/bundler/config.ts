@@ -156,16 +156,6 @@ export async function createConfig(
   return {
     mode: isDev ? 'development' : 'production',
     profile: false,
-    node: {
-      module: 'empty',
-      dgram: 'empty',
-      dns: 'mock',
-      fs: 'empty',
-      http2: 'empty',
-      net: 'empty',
-      tls: 'empty',
-      child_process: 'empty',
-    },
     optimization: optimization(options),
     bail: false,
     performance: {
@@ -182,7 +172,7 @@ export async function createConfig(
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
-        ),
+        ) as any,
       ],
       alias: {
         'react-dom': '@hot-loader/react-dom',
@@ -237,7 +227,7 @@ export async function createBackendConfig(
       ? {
           watch: true,
           watchOptions: {
-            ignored: [/node_modules\/(?!\@backstage)/],
+            ignored: /node_modules\/(?!\@backstage)/,
           },
         }
       : {}),
@@ -246,7 +236,7 @@ export async function createBackendConfig(
         modulesDir: paths.rootNodeModules,
         additionalModuleDirs: moduleDirs,
         allowlist: ['webpack/hot/poll?100', ...localPackageNames],
-      }),
+      }) as any,
     ],
     target: 'node' as const,
     node: {
@@ -274,7 +264,7 @@ export async function createBackendConfig(
         new ModuleScopePlugin(
           [paths.targetSrc, paths.targetDev],
           [paths.targetPackageJson],
-        ),
+        ) as any,
       ],
       alias: {
         'react-dom': '@hot-loader/react-dom',
@@ -346,7 +336,7 @@ function nodeExternalsWithResolve(
     },
   });
 
-  return (context: string, request: string, callback: webpack.Externa) => {
+  return (context: string, request: string, callback: any) => {
     currentContext = context;
     return externals(context, request, callback);
   };
