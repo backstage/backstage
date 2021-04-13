@@ -102,13 +102,25 @@ export class TaskWorker {
             step.input &&
             JSON.parse(JSON.stringify(step.input), (_key, value) => {
               if (typeof value === 'string') {
-                return handlebars.compile(value, {
+                const templated = handlebars.compile(value, {
                   noEscape: true,
                   strict: true,
                   data: false,
                   preventIndent: true,
                 })(templateCtx);
+
+                // If it smells like a JSON object then give it a parse as an object and if it fails return the string
+                if (templated.startsWith('{') && templated.endsWith('}')) {
+                  try {
+                    // Don't recursively JSON parse the values of this string. Shouldn't need to, don't want to encourage the use of returning handlebars from somewhere else
+                    return JSON.parse(templated);
+                  } catch {
+                    return templated;
+                  }
+                }
+                return templated;
               }
+
               return value;
             });
 

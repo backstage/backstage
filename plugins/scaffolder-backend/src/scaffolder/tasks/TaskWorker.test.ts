@@ -41,19 +41,23 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
 describe('TaskWorker', () => {
   let storage: DatabaseTaskStore;
+  let actionRegistry = new TemplateActionRegistry();
 
   beforeAll(async () => {
     storage = await createStore();
   });
 
-  const logger = getVoidLogger();
-  const actionRegistry = new TemplateActionRegistry();
-  actionRegistry.register({
-    id: 'test-action',
-    handler: async ctx => {
-      ctx.output('testOutput', 'winning');
-    },
+  beforeEach(() => {
+    actionRegistry = new TemplateActionRegistry();
+    actionRegistry.register({
+      id: 'test-action',
+      handler: async ctx => {
+        ctx.output('testOutput', 'winning');
+      },
+    });
   });
+
+  const logger = getVoidLogger();
 
   it('should fail when action does not exist', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -165,5 +169,84 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should parse strings as objects if possible', async () => {
+    const inputAction = createTemplateAction<{
+      address: { line1: string };
+      address2: string;
+    }>({
+      id: 'test-input',
+      schema: {
+        input: {
+          type: 'object',
+          required: ['address'],
+          properties: {
+            address: {
+              title: 'address',
+              description: 'Enter name',
+              type: 'object',
+              properties: {
+                line1: {
+                  type: 'string',
+                },
+              },
+            },
+            address2: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      async handler(ctx) {
+        if (ctx.input.address.line1 !== 'line 1') {
+          throw new Error(
+            `expected address.line1 to be "line 1" got ${ctx.input.address.line1}`,
+          );
+        }
+
+        if (ctx.input.address2 !== '{"not valid"}') {
+          throw new Error(
+            `expected address2 to be "{"not valid"}" got ${ctx.input.address2}`,
+          );
+        }
+        ctx.output('address', ctx.input.address.line1);
+      },
+    });
+    actionRegistry.register(inputAction);
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        {
+          id: 'test-input',
+          name: 'test-input',
+          action: 'test-input',
+          input: {
+            address: JSON.stringify({ line1: 'line 1' }),
+            address2: '{"not valid"}',
+          },
+        },
+      ],
+      output: {
+        result: '{{ steps.test-input.output.address }}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+
+    expect((event?.body?.output as JsonObject).result).toBe('line 1');
   });
 });
