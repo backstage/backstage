@@ -46,3 +46,5 @@ export const EntitySonarQubeCard = sonarQubePlugin.provide(
     },
   }),
 );
+
+export { isSonarQubeAvailable } from './components';
