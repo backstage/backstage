@@ -16,6 +16,8 @@
 
 import mockFs from 'mock-fs';
 import { Writable } from 'stream';
+import os from 'os';
+import { resolve as resolvePath } from 'path';
 import {
   PullRequestCreator,
   GithubPullRequestActionInput,
@@ -28,7 +30,8 @@ import { getRootLogger } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
-const id = 'createPublishGithubPullRequestAction';
+const root = os.platform() === 'win32' ? 'C:\\root' : '/root';
+const workspacePath = resolvePath(root, 'my-workspace');
 
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput>;
@@ -72,7 +75,7 @@ describe('createPublishGithubPullRequestAction', () => {
       };
 
       mockFs({
-        [id]: { 'file.txt': 'Hello there!' },
+        [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
       ctx = {
@@ -81,7 +84,7 @@ describe('createPublishGithubPullRequestAction', () => {
         logger: getRootLogger(),
         logStream: new Writable(),
         input,
-        workspacePath: id,
+        workspacePath,
       };
     });
     it('creates a pull request', async () => {
@@ -133,7 +136,7 @@ describe('createPublishGithubPullRequestAction', () => {
       };
 
       mockFs({
-        [id]: {
+        [workspacePath]: {
           source: { 'foo.txt': 'Hello there!' },
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
@@ -145,7 +148,7 @@ describe('createPublishGithubPullRequestAction', () => {
         logger: getRootLogger(),
         logStream: new Writable(),
         input,
-        workspacePath: id,
+        workspacePath,
       };
     });
 
@@ -188,7 +191,7 @@ describe('createPublishGithubPullRequestAction', () => {
       };
 
       mockFs({
-        [id]: { 'file.txt': 'Hello there!' },
+        [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
       ctx = {
@@ -197,7 +200,7 @@ describe('createPublishGithubPullRequestAction', () => {
         logger: getRootLogger(),
         logStream: new Writable(),
         input,
-        workspacePath: id,
+        workspacePath,
       };
     });
     it('creates a pull request', async () => {
