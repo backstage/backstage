@@ -21,6 +21,8 @@ import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
+  ConfigApi,
+  configApiRef,
   Content,
   Header,
   HeaderTabs,
@@ -36,6 +38,7 @@ import { OwnedContent } from './OwnedContent';
 export const TechDocsHome = () => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const configApi: ConfigApi = useApi(configApiRef);
 
   const tabs = [{ label: 'Overview' }, { label: 'Owned Documents' }];
 
@@ -46,12 +49,17 @@ export const TechDocsHome = () => {
     });
   });
 
+  
+  const generatedSubtitle = `Documentation available in ${
+    configApi.getOptionalString('organization.name') ?? 'Backstage'
+  }`;
+
   if (loading) {
     return (
       <Page themeId="documentation">
         <Header
           title="Documentation"
-          subtitle="Documentation available in Backstage"
+          subtitle={generatedSubtitle}
         />
         <Content>
           <Progress />
@@ -65,7 +73,7 @@ export const TechDocsHome = () => {
       <Page themeId="documentation">
         <Header
           title="Documentation"
-          subtitle="Documentation available in Backstage"
+          subtitle={generatedSubtitle}
         />
         <Content>
           <WarningPanel
@@ -83,7 +91,7 @@ export const TechDocsHome = () => {
     <Page themeId="documentation">
       <Header
         title="Documentation"
-        subtitle="Documentation available in Backstage"
+        subtitle={generatedSubtitle}
       />
       <HeaderTabs
         selectedIndex={selectedTab}
