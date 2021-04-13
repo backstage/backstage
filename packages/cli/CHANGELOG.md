@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [82c66b8cd]
+  - @backstage/config-loader@0.6.0
+
 ## 0.6.6
 
 ### Patch Changes

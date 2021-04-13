@@ -150,6 +150,10 @@ integrations:
     - host: dev.azure.com
       token:
         $env: AZURE_TOKEN
+#  googleGcs:
+#    clientEmail: 'example@example.com'
+#    privateKey:
+#      $env: GCS_PRIVATE_KEY
 
 catalog:
   rules:

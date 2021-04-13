@@ -22,6 +22,7 @@ import { ConfigReader } from '@backstage/config';
 import { getVoidLogger } from '@backstage/backend-common';
 import { PassThrough } from 'stream';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
+import { when } from 'jest-when';
 
 describe('publish:github', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -230,6 +231,114 @@ describe('publish:github', () => {
       repo: 'repo',
       permission: 'admin',
     });
+  });
+
+  it('should add multiple collaborators when provided', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        collaborators: [
+          {
+            access: 'pull',
+            username: 'robot-1',
+          },
+          {
+            access: 'push',
+            username: 'robot-2',
+          },
+        ],
+      },
+    });
+
+    const commonProperties = {
+      org: 'owner',
+      owner: 'owner',
+      repo: 'repo',
+    };
+
+    expect(
+      mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[1],
+    ).toEqual([
+      {
+        ...commonProperties,
+        team_slug: 'robot-1',
+        permission: 'pull',
+      },
+    ]);
+
+    expect(
+      mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
+    ).toEqual([
+      {
+        ...commonProperties,
+        team_slug: 'robot-2',
+        permission: 'push',
+      },
+    ]);
+  });
+
+  it('should ignore failures when adding multiple collaborators', async () => {
+    mockGithubClient.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    when(mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg)
+      .calledWith({
+        org: 'owner',
+        owner: 'owner',
+        repo: 'repo',
+        team_slug: 'robot-1',
+        permission: 'pull',
+      })
+      .mockRejectedValueOnce(new Error('Something bad happened') as never);
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        collaborators: [
+          {
+            access: 'pull',
+            username: 'robot-1',
+          },
+          {
+            access: 'push',
+            username: 'robot-2',
+          },
+        ],
+      },
+    });
+
+    expect(
+      mockGithubClient.teams.addOrUpdateRepoPermissionsInOrg.mock.calls[2],
+    ).toEqual([
+      {
+        org: 'owner',
+        owner: 'owner',
+        repo: 'repo',
+        team_slug: 'robot-2',
+        permission: 'push',
+      },
+    ]);
   });
 
   it('should call output with the remoteUrl and the repoContentsUrl', async () => {

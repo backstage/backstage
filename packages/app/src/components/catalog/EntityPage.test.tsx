@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { CICDSwitcher } from './EntityPage';
-import { UrlPatternDiscovery, ApiProvider, ApiRegistry } from '@backstage/core';
-import {
-  buildKiteApiRef,
-  BuildkiteApi,
-} from '@roadiehq/backstage-plugin-buildkite';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+import { EntityLayout } from '@backstage/plugin-catalog';
+import { EntityProvider } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
+import { cicdContent } from './EntityPage';
+import { githubActionsApiRef } from '@backstage/plugin-github-actions';
 
 describe('EntityPage Test', () => {
   const entity = {
@@ -29,7 +29,7 @@ describe('EntityPage Test', () => {
     metadata: {
       name: 'ExampleComponent',
       annotations: {
-        'buildkite.com/project-slug': 'exampleProject/examplePipeline',
+        'github.com/project-slug': 'example/project',
       },
     },
     spec: {
@@ -39,24 +39,36 @@ describe('EntityPage Test', () => {
     },
   };
 
-  const discoveryApi = UrlPatternDiscovery.compile('http://exampleapi.com');
+  const mockedApi = {
+    listWorkflowRuns: jest.fn().mockResolvedValue([]),
+    getWorkflow: jest.fn(),
+    getWorkflowRun: jest.fn(),
+    reRunWorkflow: jest.fn(),
+    downloadJobLogsForWorkflowRun: jest.fn(),
+  } as jest.Mocked<typeof githubActionsApiRef.T>;
 
-  const apis = ApiRegistry.from([
-    [buildKiteApiRef, new BuildkiteApi({ discoveryApi })],
-  ]);
+  const apis = ApiRegistry.with(githubActionsApiRef, mockedApi);
 
-  describe('CICDSwitcher Test', () => {
-    it('Should render Buildkite View', async () => {
-      const renderedComponent = await renderWithEffects(
-        wrapInTestApp(
-          <ApiProvider apis={apis}>
-            <CICDSwitcher entity={entity} />
-          </ApiProvider>,
-        ),
+  describe('cicdContent', () => {
+    it('Should render GitHub Actions View', async () => {
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityProvider entity={entity}>
+            <EntityLayout>
+              <EntityLayout.Route path="/ci-cd" title="CI-CD">
+                {cicdContent}
+              </EntityLayout.Route>
+            </EntityLayout>
+          </EntityProvider>
+        </ApiProvider>,
       );
-      expect(
-        renderedComponent.getByText(/exampleProject\/examplePipeline/),
-      ).toBeInTheDocument();
+
+      expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();
+
+      await expect(
+        rendered.findByText('No Workflow Data'),
+      ).resolves.toBeInTheDocument();
+      expect(rendered.getByText('Create new Workflow')).toBeInTheDocument();
     });
   });
 });

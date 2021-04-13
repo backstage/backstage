@@ -13,14 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getEntityNameFromUrlPath } from './helpers';
 
-describe('getEntityNameFromUrlPath', () => {
-  it('should parse correctly', () => {
-    const path = 'default/Component/documented-component';
-    const parsedEntity = getEntityNameFromUrlPath(path);
-    expect(parsedEntity).toHaveProperty('namespace', 'default');
-    expect(parsedEntity).toHaveProperty('kind', 'Component');
-    expect(parsedEntity).toHaveProperty('name', 'documented-component');
-  });
-});
+export { readGoogleGcsIntegrationConfig } from './config';
+export type { GoogleGcsIntegrationConfig } from './config';

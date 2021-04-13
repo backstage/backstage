@@ -23,6 +23,7 @@ import {
   createPublishAzureAction,
   createPublishBitbucketAction,
   createPublishGithubAction,
+  createPublishGithubPullRequestAction,
   createPublishGitlabAction,
 } from './publish';
 import Docker from 'dockerode';
@@ -55,6 +56,9 @@ export const createBuiltinActions = (options: {
       templaters,
     }),
     createPublishGithubAction({
+      integrations,
+    }),
+    createPublishGithubPullRequestAction({
       integrations,
     }),
     createPublishGitlabAction({

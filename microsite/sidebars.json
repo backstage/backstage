@@ -142,6 +142,11 @@
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       }
     ],
     "Plugins": [
@@ -195,7 +200,8 @@
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
-          "auth/okta/provider"
+          "auth/okta/provider",
+          "auth/onelogin/provider"
         ]
       },
       "auth/add-auth-provider",
