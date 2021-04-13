@@ -49,7 +49,7 @@ export const GaugeCard = (props: Props) => {
         deepLink={deepLink}
         variant={variant}
       >
-        <Gauge value={progress} inverse={inverse}/>
+        <Gauge value={progress} inverse={inverse} />
       </InfoCard>
     </div>
   );
