@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { format } from 'date-fns';
+import { DateTime } from 'luxon';
 
 import { getBumpedSemverTagParts } from '../../helpers/getBumpedTag';
 import { getSemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
@@ -24,7 +24,7 @@ export const getRcGitHubInfo = ({
   project,
   latestRelease,
   semverBumpLevel,
-  injectedDate = format(new Date(), 'yyyy.MM.dd'), // '0012-01-01T13:37:00.000Z'
+  injectedDate = DateTime.now().toFormat('yyyy.MM.dd'),
 }: {
   project: Project;
   latestRelease: GhGetReleaseResponse | null;

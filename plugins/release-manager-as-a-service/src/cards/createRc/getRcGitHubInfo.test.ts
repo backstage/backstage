@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { format } from 'date-fns';
+import { DateTime } from 'luxon';
 
 import { GhGetReleaseResponse } from '../../types/types';
 import {
@@ -22,9 +22,15 @@ import {
 } from '../../test-helpers/test-helpers';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 
-const injectedDate = format(1611869955783, 'yyyy.MM.dd');
-
 describe('getRcGitHubInfo', () => {
+  describe('DateTime', () => {
+    it('should format dates as expected', () => {
+      const formattedDate = DateTime.now().toFormat('yyyy.MM.dd');
+
+      expect(formattedDate).toMatch(/^\d{4}.\d{2}.\d{2}$/);
+    });
+  });
+
   describe('calver', () => {
     const latestRelease = {
       tag_name: 'rc-2020.01.01_0',
@@ -36,7 +42,7 @@ describe('getRcGitHubInfo', () => {
           project: mockCalverProject,
           latestRelease,
           semverBumpLevel: 'minor',
-          injectedDate,
+          injectedDate: '2021.01.28',
         }),
       ).toMatchInlineSnapshot(`
         Object {
