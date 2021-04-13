@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import webpack, { Module, Plugin } from 'webpack';
+import webpack, { ModuleOptions, WebpackPluginInstance } from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { svgrTemplate } from '../svgrTemplate';
 
 type Transforms = {
-  loaders: Module['rules'];
-  plugins: Plugin[];
+  loaders: ModuleOptions['rules'];
+  plugins: WebpackPluginInstance[];
 };
 
 type TransformOptions = {
@@ -105,7 +105,7 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<Plugin>();
+  const plugins = new Array<WebpackPluginInstance>();
 
   if (isDev) {
     plugins.push(new webpack.HotModuleReplacementPlugin());

@@ -45,8 +45,8 @@ export async function serveBundle(options: ServeOptions) {
   const server = new WebpackDevServer(compiler, {
     hot: !process.env.CI,
     contentBase: paths.targetPublic,
-    contentBasePublicPath: config.output?.publicPath,
-    publicPath: config.output?.publicPath,
+    contentBasePublicPath: config.output?.publicPath as string,
+    publicPath: config.output?.publicPath as string,
     historyApiFallback: {
       // Paths with dots should still use the history fallback.
       // See https://github.com/facebookincubator/create-react-app/issues/387.

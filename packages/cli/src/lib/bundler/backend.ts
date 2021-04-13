@@ -32,7 +32,7 @@ export async function serveBackend(options: BackendServeOptions) {
     {
       poll: true,
     },
-    (err: Error) => {
+    (err: Error | undefined) => {
       if (err) {
         console.error(err);
       } else console.log('Build succeeded');
