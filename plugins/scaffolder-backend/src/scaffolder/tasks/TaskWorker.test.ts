@@ -24,7 +24,6 @@ import { ConfigReader, JsonObject } from '@backstage/config';
 import { StorageTaskBroker } from './StorageTaskBroker';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
-import gitUrlParse, { GitUrl } from 'git-url-parse';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = SingleConnectionDatabaseManager.fromConfig(
