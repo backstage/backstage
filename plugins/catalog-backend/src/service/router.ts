@@ -150,7 +150,7 @@ export async function createRouter(
 
         if (!attachment) {
           throw new NotFoundError(
-            `No attachment with key '${key}' found for entity with uid ${uid}, with kind '${kind}' in namespace '${namespace}'`,
+            `No attachment with key '${key}' found for entity with uid ${uid}'`,
           );
         }
 

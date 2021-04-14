@@ -23,14 +23,15 @@ exports.up = async function up(knex) {
   await knex.schema.createTable('entities_attachments', table => {
     table.comment('Binary attachments to a entity');
     table
-      .string('originating_entity_id')
+      .text('originating_entity_id')
       .references('id')
       .inTable('entities')
       .onDelete('CASCADE')
       .notNullable()
+      .index('originating_entity_id_idx')
       .comment('The uid of the related entity');
     table
-      .string('key')
+      .text('key')
       .notNullable()
       .comment('The name of the attachment, unique for a single entity');
     table
@@ -38,7 +39,7 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The binary data of the attachment');
     table
-      .string('content_type')
+      .text('content_type')
       .notNullable()
       .comment('The content type of the attachment for serving over HTTP');
     // TODO: Store etag?

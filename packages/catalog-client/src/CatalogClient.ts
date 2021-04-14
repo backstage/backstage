@@ -28,6 +28,7 @@ import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
+  CatalogAttachmentResponse,
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
@@ -107,7 +108,10 @@ export class CatalogClient implements CatalogApi {
   }
 
   // TODO: These need tests!
-  async getAttachment(name: EntityName, key: string): Promise<Blob> {
+  async getAttachment(
+    name: EntityName,
+    key: string,
+  ): Promise<CatalogAttachmentResponse> {
     const url = await this.getAttachmentUrl(name, key);
     const response = await fetch(url);
 
@@ -115,13 +119,15 @@ export class CatalogClient implements CatalogApi {
       throw await ResponseError.fromResponse(response);
     }
 
-    return await response.blob();
+    return { data: await response.blob() };
   }
 
   async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
-    return `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-name/${
-      name.kind
-    }/${name.namespace}/${name.name}/attachments/${key}`;
+    return `${await this.discoveryApi.getBaseUrl(
+      'catalog',
+    )}/entities/by-name/${encodeURIComponent(name.kind)}/${encodeURIComponent(
+      name.namespace,
+    )}/${encodeURIComponent(name.name)}/attachments/${encodeURIComponent(key)}`;
   }
 
   async addLocation(

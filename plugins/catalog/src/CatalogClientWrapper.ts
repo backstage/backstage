@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { Entity, EntityName, Location } from '@backstage/catalog-model';
 import {
   AddLocationRequest,
   AddLocationResponse,
   CatalogApi,
+  CatalogAttachmentResponse,
+  CatalogClient,
   CatalogEntitiesRequest,
   CatalogListResponse,
-  CatalogClient,
 } from '@backstage/catalog-client';
+import { Entity, EntityName, Location } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/core';
 
 type CatalogRequestOptions = {
@@ -68,7 +69,10 @@ export class CatalogClientWrapper implements CatalogApi {
     });
   }
 
-  async getAttachment(name: EntityName, key: string): Promise<Blob> {
+  async getAttachment(
+    name: EntityName,
+    key: string,
+  ): Promise<CatalogAttachmentResponse> {
     // TODO: Here we could set the header, but I think most of the use cases
     // won't use the function, e.g. if I embed the url into an image like
     // <img src={getAttachmentUrl(...)} ...

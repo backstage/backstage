@@ -48,11 +48,11 @@ export const ApiDefinitionCard = (_: Props) => {
       return entity.spec.definition;
     }
 
-    const data = await catalogClient.getAttachment(
+    const response = await catalogClient.getAttachment(
       getEntityName(entity),
       'definition',
     );
-    return await data.text();
+    return await response.data.text();
   }, [catalogClient, entity]);
 
   if (!entity) {
