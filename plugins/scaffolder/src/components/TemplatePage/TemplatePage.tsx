@@ -84,12 +84,8 @@ export const createValidator = (rootSchema: JsonObject) => {
           propSchema['ui:field'] === 'RepoUrlPicker'
         ) {
           try {
-            const { host, searchParams } = new URL(`https://${propData}`);
-            if (
-              !host ||
-              !searchParams.get('owner') ||
-              !searchParams.get('repo')
-            ) {
+            const { host, owner, repo } = JSON.parse(propData as string);
+            if (!host || !owner || !repo) {
               propErrors.addError('Incomplete repository location provided');
             }
           } catch {

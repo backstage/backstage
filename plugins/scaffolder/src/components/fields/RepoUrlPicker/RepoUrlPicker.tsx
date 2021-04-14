@@ -24,20 +24,20 @@ import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-function splitFormData(url: string | undefined) {
+function splitFormData(inputJson: string | undefined) {
   let host = undefined;
   let owner = undefined;
   let repo = undefined;
   let organization = undefined;
 
   try {
-    if (url) {
-      const parsed = new URL(`https://${url}`);
+    if (inputJson) {
+      const parsed = JSON.parse(inputJson);
       host = parsed.host;
-      owner = parsed.searchParams.get('owner') || undefined;
-      repo = parsed.searchParams.get('repo') || undefined;
+      owner = parsed.owner || undefined;
+      repo = parsed.repo || undefined;
       // This is azure dev ops specific. not used for any other provider.
-      organization = parsed.searchParams.get('organization') || undefined;
+      organization = parsed.organization || undefined;
     }
   } catch {
     /* ok */
