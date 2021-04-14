@@ -30,9 +30,9 @@ spec:
           description: Name of the directory to create in the repository
     - title: Choose a location
       required:
-        - repoUrl
+        - destination
       properties:
-        repoUrl:
+        destination:
           title: Repository Location
           type: string
           ui:field: RepoUrlPicker
@@ -60,7 +60,7 @@ spec:
       name: Publish
       action: publish:github:pull-request
       input:
-        repoUrl: '{{ parameters.repoUrl }}'
+        destination: '{{ parameters.destination }}'
         title: 'Create new project: {{parameters.name}}'
         branchName: 'create-{{parameters.name}}'
         description: |

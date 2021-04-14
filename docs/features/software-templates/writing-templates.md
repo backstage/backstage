@@ -48,9 +48,9 @@ spec:
               - Group
     - title: Choose a location
       required:
-        - repoUrl
+        - destination
       properties:
-        repoUrl:
+        destination:
           title: Repository Location
           type: string
           ui:field: RepoUrlPicker
@@ -82,7 +82,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        destination: '{{ parameters.destination }}'
 
     - id: register
       name: Register
@@ -224,9 +224,9 @@ little like this:
 ```yaml
    - title: Choose a location
       required:
-        - repoUrl
+        - destination
       properties:
-        repoUrl:
+        destination:
           title: Repository Location
           type: string
           ui:field: RepoUrlPicker
