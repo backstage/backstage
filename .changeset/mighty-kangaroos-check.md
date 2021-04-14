@@ -31,7 +31,6 @@ Now:
 Deprecates the `repoUrl` parameters and has been replaced in favour of `destination` which means that you'll need to update your templates where you use the `RepoUrlPicker`. Firstly, updating the `parameters` section:
 
 ```diff
-diff --git a/test.yaml b/fileb.yaml
   parameters:
     - title: Choose a location
       required:
@@ -51,7 +50,6 @@ diff --git a/test.yaml b/fileb.yaml
 And then updating the steps as follows:
 
 ```diff
-diff --git a/test.yaml b/fileb.yaml
   steps
     - id: publish
       name: Publish
