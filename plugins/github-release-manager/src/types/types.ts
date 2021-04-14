@@ -14,44 +14,31 @@
  * limitations under the License.
  */
 
-export interface Project {
-  /** A unique (in the context of GitHub Release Manager) project name */
-  name: string;
+// export interface Project {
+//   /**
+//    * Repository's owner (user or organisation)
+//    *
+//    * @example erikengervall
+//    */
+//   owner: string;
 
-  /** GitHub details */
-  github: {
-    /**
-     * Repository's organization
-     *
-     * @example erikengervall
-     */
-    org: string;
-    /**
-     * Repository's name
-     *
-     * @example dockest
-     */
-    repo: string;
-  };
+//   /**
+//    * Repository's name
+//    *
+//    * @example dockest
+//    */
+//   repo: string;
 
-  /** Slack details */
-  slack?: {
-    /** Relevant slack channel for the project */
-    channel: string;
-    /** Link to slack channel */
-    link?: string;
-  };
-
-  /**
-   * Declares the versioning strategy of the project
-   *
-   * semver: `1.2.3` (major.minor.patch)
-   * calver: `2020.01.01_0` (YYYY.0M.0D_patch)
-   *
-   * Default: false
-   */
-  versioningStrategy: 'calver' | 'semver';
-}
+//   /**
+//    * Declares the versioning strategy of the project
+//    *
+//    * semver: `1.2.3` (major.minor.patch)
+//    * calver: `2020.01.01_0` (YYYY.0M.0D_patch)
+//    *
+//    * Default: false
+//    */
+//   versioningStrategy: 'calver' | 'semver';
+// }
 
 interface ComponentConfig<Args = void> {
   successCb?: (args: Args) => Promise<void> | void;

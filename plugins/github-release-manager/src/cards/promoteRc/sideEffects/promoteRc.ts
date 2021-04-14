@@ -20,9 +20,11 @@ import {
   ResponseStep,
 } from '../../../types/types';
 import { PluginApiClient } from '../../../api/PluginApiClient';
+import { Project } from '../../../contexts/ProjectContext';
 
 interface PromoteRc {
   pluginApiClient: PluginApiClient;
+  project: Project;
   rcRelease: GhGetReleaseResponse;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
@@ -30,6 +32,7 @@ interface PromoteRc {
 
 export function promoteRc({
   pluginApiClient,
+  project,
   rcRelease,
   releaseVersion,
   successCb,
@@ -38,6 +41,7 @@ export function promoteRc({
     const responseSteps: ResponseStep[] = [];
 
     const { release } = await pluginApiClient.promoteRc.promoteRelease({
+      ...project,
       releaseId: rcRelease.id,
       releaseVersion,
     });

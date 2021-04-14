@@ -17,7 +17,7 @@
 import { CalverTagParts } from './tagParts/getCalverTagParts';
 import { getTagParts } from './tagParts/getTagParts';
 import { isCalverTagParts } from './isCalverTagParts';
-import { Project } from '../types/types';
+import { Project } from '../contexts/ProjectContext';
 import { SEMVER_PARTS } from '../constants/constants';
 import { SemverTagParts } from './tagParts/getSemverTagParts';
 

@@ -24,15 +24,14 @@ import {
   ComponentConfigPatch,
   GhGetBranchResponse,
   GhGetReleaseResponse,
-  Project,
   SetRefetch,
 } from '../../types/types';
-import { useStyles } from '../../styles/styles';
 import { PatchBody } from './PatchBody';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 
 interface PatchProps {
   latestRelease: GhGetReleaseResponse | null;
-  project: Project;
   releaseBranch: GhGetBranchResponse | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
@@ -40,11 +39,11 @@ interface PatchProps {
 
 export const Patch = ({
   latestRelease,
-  project,
   releaseBranch,
   setRefetch,
   successCb,
 }: PatchProps) => {
+  const project = useProjectContext();
   const classes = useStyles();
 
   function Body() {

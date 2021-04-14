@@ -15,9 +15,9 @@
  */
 
 import React from 'react';
+import { useAsyncFn } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { Button, Typography } from '@material-ui/core';
-import { useAsyncFn } from 'react-use';
 
 import { Differ } from '../../components/Differ';
 import {
@@ -27,9 +27,10 @@ import {
 } from '../../types/types';
 import { promoteRc } from './sideEffects/promoteRc';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
-import { usePluginApiClientContext } from '../../components/ProjectContext';
-import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 
 interface PromoteRcBodyProps {
   rcRelease: GhGetReleaseResponse;
@@ -43,11 +44,13 @@ export const PromoteRcBody = ({
   successCb,
 }: PromoteRcBodyProps) => {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const classes = useStyles();
   const releaseVersion = rcRelease.tag_name.replace('rc-', 'version-');
   const [promoteGitHubRcResponse, promoseGitHubRcFn] = useAsyncFn(
     promoteRc({
       pluginApiClient,
+      project,
       rcRelease,
       releaseVersion,
       successCb,

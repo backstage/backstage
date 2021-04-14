@@ -18,27 +18,20 @@ import React from 'react';
 import { Link, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
+import { GhGetBranchResponse, GhGetReleaseResponse } from '../../types/types';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import {
-  GhGetBranchResponse,
-  GhGetReleaseResponse,
-  Project,
-} from '../../types/types';
-import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 import flowImage from './flow.png';
 
 interface InfoCardProps {
   releaseBranch: GhGetBranchResponse | null;
   latestRelease: GhGetReleaseResponse | null;
-  project: Project;
 }
 
-export const Info = ({
-  releaseBranch,
-  latestRelease,
-  project,
-}: InfoCardProps) => {
+export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
+  const project = useProjectContext();
   const classes = useStyles();
 
   return (
@@ -91,29 +84,8 @@ export const Info = ({
 
         <Typography>
           Repository:{' '}
-          <Differ
-            icon="github"
-            next={`${project.github.org}/${project.github.repo}`}
-          />
+          <Differ icon="github" next={`${project.owner}/${project.repo}`} />
         </Typography>
-
-        {project.slack && (
-          <Typography>
-            Slack channel:{' '}
-            <Differ
-              icon="slack"
-              next={
-                project.slack.link ? (
-                  <Link href={project.slack.link} target="_blank">
-                    #{project.slack.channel}
-                  </Link>
-                ) : (
-                  <>(#{project.slack.channel})</>
-                )
-              }
-            />
-          </Typography>
-        )}
 
         <Typography>
           Versioning strategy:{' '}

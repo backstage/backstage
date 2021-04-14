@@ -26,32 +26,10 @@ createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
     title: 'Page 1',
-    element: (
-      <GitHubReleaseManagerPage
-        project={{
-          github: {
-            org: 'erikengervall',
-            repo: 'playground',
-          },
-          name: 'GitHub Release Manager (semver)',
-          versioningStrategy: 'semver',
-        }}
-      />
-    ),
+    element: <GitHubReleaseManagerPage />,
   })
   .addPage({
     title: 'Page 2',
-    element: (
-      <GitHubReleaseManagerPage
-        project={{
-          github: {
-            org: 'erikengervall',
-            repo: 'playground-2',
-          },
-          name: 'GitHub Release Manager (calver)',
-          versioningStrategy: 'calver',
-        }}
-      />
-    ),
+    element: <GitHubReleaseManagerPage />,
   })
   .render();

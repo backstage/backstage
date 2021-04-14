@@ -24,11 +24,13 @@ import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { PluginApiClient } from '../../../api/PluginApiClient';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
+import { Project } from '../../../contexts/ProjectContext';
 
 interface Patch {
-  pluginApiClient: PluginApiClient;
   bumpedTag: string;
   latestRelease: GhGetReleaseResponse;
+  pluginApiClient: PluginApiClient;
+  project: Project;
   selectedPatchCommit: GhGetCommitResponse;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
@@ -36,9 +38,10 @@ interface Patch {
 
 // Inspo: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
 export async function patch({
-  pluginApiClient,
   bumpedTag,
   latestRelease,
+  pluginApiClient,
+  project,
   selectedPatchCommit,
   successCb,
   tagParts,
@@ -57,6 +60,7 @@ export async function patch({
    * > branchTree = branch.commit.commit.tree.sha
    */
   const { branch: releaseBranch } = await pluginApiClient.getBranch({
+    ...project,
     branchName: releaseBranchName,
   });
   const releaseBranchSha = releaseBranch.commit.sha;
@@ -73,6 +77,7 @@ export async function patch({
    *  > tempCommit = POST /repos/$owner/$repo/git/commits { "message": "temp", "tree": branchTree, "parents": [parentSha] }
    */
   const { tempCommit } = await pluginApiClient.patch.createTempCommit({
+    ...project,
     releaseBranchTree,
     selectedPatchCommit,
     tagParts,
@@ -87,6 +92,7 @@ export async function patch({
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = tempCommit.sha, force = true }
    */
   await pluginApiClient.patch.forceBranchHeadToTempCommit({
+    ...project,
     tempCommit,
     releaseBranchName,
   });
@@ -96,6 +102,7 @@ export async function patch({
    * > merge = POST /repos/$owner/$repo/merges { "base": branchName, "head": commit.sha }
    */
   const { merge } = await pluginApiClient.patch.merge({
+    ...project,
     base: releaseBranchName,
     head: selectedPatchCommit.sha,
   });
@@ -119,6 +126,7 @@ export async function patch({
   const {
     cherryPickCommit,
   } = await pluginApiClient.patch.createCherryPickCommit({
+    ...project,
     bumpedTag,
     mergeTree,
     releaseBranchSha,
@@ -134,6 +142,7 @@ export async function patch({
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = cherry.sha, force = true }
    */
   const { updatedReference } = await pluginApiClient.patch.replaceTempCommit({
+    ...project,
     cherryPickCommit,
     releaseBranchName,
   });
@@ -146,6 +155,7 @@ export async function patch({
    * > POST /repos/:owner/:repo/git/tags
    */
   const { tagObjectResponse } = await pluginApiClient.patch.createTagObject({
+    ...project,
     bumpedTag,
     updatedReference,
   });
@@ -159,6 +169,7 @@ export async function patch({
    * > POST /repos/:owner/:repo/git/refs
    */
   const { reference } = await pluginApiClient.patch.createReference({
+    ...project,
     bumpedTag,
     tagObjectResponse,
   });
@@ -170,14 +181,15 @@ export async function patch({
   /**
    * 9. Update release
    */
-  const { release: updatedRelease } = await pluginApiClient.patch.updateRelease(
-    {
-      bumpedTag,
-      latestRelease,
-      selectedPatchCommit,
-      tagParts,
-    },
-  );
+  const {
+    release: updatedRelease,
+  } = await pluginApiClient.patch.updateRelease({
+    ...project,
+    bumpedTag,
+    latestRelease,
+    selectedPatchCommit,
+    tagParts,
+  });
   responseSteps.push({
     message: `Updated release "${updatedRelease.name}"`,
     secondaryMessage: `with tag ${updatedRelease.tag_name}`,

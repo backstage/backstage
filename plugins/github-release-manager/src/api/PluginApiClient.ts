@@ -27,7 +27,6 @@ import {
   GhGetBranchResponse,
   GhGetCommitResponse,
   GhGetReleaseResponse,
-  GhGetRepositoryResponse,
   GhMergeResponse,
   GhUpdateReferenceResponse,
   GhUpdateReleaseResponse,
@@ -35,12 +34,135 @@ import {
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
-import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
+import { Project } from '../contexts/ProjectContext';
 
-export class PluginApiClient {
+// export type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
+//   ? U
+//   : never;
+
+type Todo = any;
+type PartialProject = Omit<Project, 'versioningStrategy'>;
+
+export interface IPluginApiClient {
+  getHost: () => string;
+
+  getRecentCommits: (
+    args: { releaseBranchName?: string } & PartialProject,
+  ) => Promise<Todo>;
+  getReleases: (args: { releaseId: number } & PartialProject) => Promise<Todo>;
+  getRelease: (args: { releaseId: number } & PartialProject) => Promise<Todo>;
+  getRepository: (
+    args: PartialProject,
+  ) => Promise<{
+    repository: {
+      pushPermissions: boolean | undefined;
+      defaultBranch: string;
+    };
+  }>;
+  getLatestCommit: (
+    args: { defaultBranch: string } & PartialProject,
+  ) => Promise<Todo>;
+  getBranch: (args: { branchName: string } & PartialProject) => Promise<Todo>;
+
+  createRc: {
+    createRef: (
+      args: {
+        mostRecentSha: string;
+        targetBranch: string;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    getComparison: (
+      args: {
+        previousReleaseBranch: string;
+        nextReleaseBranch: string;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    createRelease: (
+      args: {
+        nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
+        releaseBody: string;
+      } & PartialProject,
+    ) => Promise<Todo>;
+  };
+
+  patch: {
+    createTempCommit: (
+      args: {
+        tagParts: SemverTagParts | CalverTagParts;
+        releaseBranchTree: string;
+        selectedPatchCommit: GhGetCommitResponse;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    forceBranchHeadToTempCommit: (
+      args: {
+        releaseBranchName: string;
+        tempCommit: GhCreateCommitResponse;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    merge: ({
+      base,
+      head,
+    }: { base: string; head: string } & PartialProject) => Promise<Todo>;
+
+    createCherryPickCommit: (
+      args: {
+        bumpedTag: string;
+        selectedPatchCommit: GhGetCommitResponse;
+        mergeTree: string;
+        releaseBranchSha: string;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    replaceTempCommit: (
+      args: {
+        releaseBranchName: string;
+        cherryPickCommit: GhCreateCommitResponse;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    createTagObject: ({
+      bumpedTag,
+      updatedReference,
+    }: {
+      bumpedTag: string;
+      updatedReference: GhUpdateReferenceResponse;
+    } & PartialProject) => Promise<Todo>;
+
+    createReference: (
+      args: {
+        bumpedTag: string;
+        tagObjectResponse: GhCreateTagObjectResponse;
+      } & PartialProject,
+    ) => Promise<Todo>;
+
+    updateRelease: (
+      args: {
+        bumpedTag: string;
+        latestRelease: GhGetReleaseResponse;
+        tagParts: SemverTagParts | CalverTagParts;
+        selectedPatchCommit: GhGetCommitResponse;
+      } & PartialProject,
+    ) => Promise<Todo>;
+  };
+
+  promoteRc: {
+    promoteRelease: (
+      args: {
+        releaseId: GhGetReleaseResponse['id'];
+        releaseVersion: string;
+      } & PartialProject,
+    ) => Promise<Todo>;
+  };
+}
+
+export class PluginApiClient implements IPluginApiClient {
+  // private readonly getAccessToken: any;
   private readonly githubAuthApi: OAuthApi;
   private readonly baseUrl: string;
-  private repoPath?: string;
   readonly host: string;
 
   constructor({
@@ -51,6 +173,8 @@ export class PluginApiClient {
     githubAuthApi: OAuthApi;
   }) {
     this.githubAuthApi = githubAuthApi;
+
+    // this.getAccessToken = () => this.githubAuthApi.getAccessToken();
 
     const githubIntegrationConfig = this.getGithubIntegrationConfig({
       configApi,
@@ -88,81 +212,102 @@ export class PluginApiClient {
     return this.host;
   }
 
-  public setRepoPath({ repoPath }: { repoPath: string }) {
-    this.repoPath = repoPath;
-  }
-
-  public getRepoPath() {
-    if (!this.repoPath) {
-      throw new GitHubReleaseManagerError('Could not find repoPath');
-    }
-
-    return this.repoPath;
+  public getRepoPath({ owner, repo }: PartialProject) {
+    return `${owner}/${repo}`;
   }
 
   async getRecentCommits({
+    owner,
+    repo,
     releaseBranchName,
-  }: { releaseBranchName?: string } = {}) {
+  }: {
+    releaseBranchName?: string;
+  } & PartialProject) {
     const { octokit } = await this.getOctokit();
     const sha = releaseBranchName ? `?sha=${releaseBranchName}` : '';
 
     const recentCommits: GhGetCommitResponse[] = (
-      await octokit.request(`/repos/${this.getRepoPath()}/commits${sha}`)
+      await octokit.request(
+        `/repos/${this.getRepoPath({ owner, repo })}/commits${sha}`,
+      )
     ).data;
 
     return { recentCommits };
   }
 
-  async getReleases() {
+  async getReleases({ owner, repo }: PartialProject) {
     const { octokit } = await this.getOctokit();
 
     const releases: GhGetReleaseResponse[] = (
-      await octokit.request(`/repos/${this.getRepoPath()}/releases`)
+      await octokit.request(
+        `/repos/${this.getRepoPath({ owner, repo })}/releases`,
+      )
     ).data;
 
     return { releases };
   }
 
-  async getRelease({ releaseId }: { releaseId: number }) {
+  async getRelease({
+    owner,
+    repo,
+    releaseId,
+  }: { releaseId: number } & PartialProject) {
     const { octokit } = await this.getOctokit();
 
     const latestRelease: GhGetReleaseResponse = (
       await octokit.request(
-        `/repos/${this.getRepoPath()}/releases/${releaseId}`,
+        `/repos/${this.getRepoPath({ owner, repo })}/releases/${releaseId}`,
       )
     ).data;
 
     return { latestRelease };
   }
 
-  async getRepository() {
+  async getRepository({ owner, repo }: PartialProject) {
     const { octokit } = await this.getOctokit();
 
-    const repository: GhGetRepositoryResponse = (
-      await octokit.request(`/repos/${this.getRepoPath()}`)
-    ).data;
+    const { data: repository } = await octokit.repos.get({
+      owner: owner,
+      repo,
+    });
 
-    return { repository };
+    return {
+      repository: {
+        pushPermissions: repository.permissions?.push,
+        defaultBranch: repository.default_branch,
+      },
+    };
   }
 
-  async getLatestCommit({ defaultBranch }: { defaultBranch: string }) {
+  async getLatestCommit({
+    owner,
+    repo,
+    defaultBranch,
+  }: { defaultBranch: string } & PartialProject) {
     const { octokit } = await this.getOctokit();
 
     const latestCommit: GhGetCommitResponse = (
       await octokit.request(
-        `/repos/${this.getRepoPath()}/commits/refs/heads/${defaultBranch}`,
+        `/repos/${this.getRepoPath({
+          owner,
+          repo,
+        })}/commits/refs/heads/${defaultBranch}`,
       )
     ).data;
 
     return { latestCommit };
   }
 
-  async getBranch({ branchName }: { branchName: string }) {
+  async getBranch({
+    owner,
+    repo,
+    branchName,
+  }: { branchName: string } & PartialProject) {
     const { octokit } = await this.getOctokit();
 
     const branch: GhGetBranchResponse = (
       await octokit.request(
-        `/repos/${this.getRepoPath()}/branches/${branchName}`,
+        `/repos/${this.getRepoPath({ owner, repo })}/branches/${branchName}`,
       )
     ).data;
 
@@ -171,39 +316,49 @@ export class PluginApiClient {
 
   createRc = {
     createRef: async ({
+      owner,
+      repo,
       mostRecentSha,
       targetBranch,
     }: {
       mostRecentSha: string;
       targetBranch: string;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const createdRef: GhCreateReferenceResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/git/refs`, {
-          method: 'POST',
-          data: {
-            ref: `refs/heads/${targetBranch}`,
-            sha: mostRecentSha,
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/git/refs`,
+          {
+            method: 'POST',
+            data: {
+              ref: `refs/heads/${targetBranch}`,
+              sha: mostRecentSha,
+            },
           },
-        })
+        )
       ).data;
 
       return { createdRef };
     },
 
     getComparison: async ({
+      owner,
+      repo,
       previousReleaseBranch,
       nextReleaseBranch,
     }: {
       previousReleaseBranch: string;
       nextReleaseBranch: string;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const comparison: GhCompareCommitsResponse = (
         await octokit.request(
-          `/repos/${this.getRepoPath()}/compare/${previousReleaseBranch}...${nextReleaseBranch}`,
+          `/repos/${this.getRepoPath({
+            owner,
+            repo,
+          })}/compare/${previousReleaseBranch}...${nextReleaseBranch}`,
         )
       ).data;
 
@@ -211,25 +366,30 @@ export class PluginApiClient {
     },
 
     createRelease: async ({
+      owner,
+      repo,
       nextGitHubInfo,
       releaseBody,
     }: {
       nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
       releaseBody: string;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const createReleaseResponse: GhCreateReleaseResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/releases`, {
-          method: 'POST',
-          data: {
-            tag_name: nextGitHubInfo.rcReleaseTag,
-            name: nextGitHubInfo.releaseName,
-            target_commitish: nextGitHubInfo.rcBranch,
-            body: releaseBody,
-            prerelease: true,
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/releases`,
+          {
+            method: 'POST',
+            data: {
+              tag_name: nextGitHubInfo.rcReleaseTag,
+              name: nextGitHubInfo.releaseName,
+              target_commitish: nextGitHubInfo.rcBranch,
+              body: releaseBody,
+              prerelease: true,
+            },
           },
-        })
+        )
       ).data;
 
       return { createReleaseResponse };
@@ -238,6 +398,8 @@ export class PluginApiClient {
 
   patch = {
     createTempCommit: async ({
+      owner,
+      repo,
       tagParts,
       releaseBranchTree,
       selectedPatchCommit,
@@ -245,34 +407,42 @@ export class PluginApiClient {
       tagParts: SemverTagParts | CalverTagParts;
       releaseBranchTree: string;
       selectedPatchCommit: GhGetCommitResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const tempCommit: GhCreateCommitResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/git/commits`, {
-          method: 'POST',
-          data: {
-            message: `Temporary commit for patch ${tagParts.patch}`,
-            tree: releaseBranchTree,
-            parents: [selectedPatchCommit.parents[0].sha],
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/git/commits`,
+          {
+            method: 'POST',
+            data: {
+              message: `Temporary commit for patch ${tagParts.patch}`,
+              tree: releaseBranchTree,
+              parents: [selectedPatchCommit.parents[0].sha],
+            },
           },
-        })
+        )
       ).data;
 
       return { tempCommit };
     },
 
     forceBranchHeadToTempCommit: async ({
+      owner,
+      repo,
       releaseBranchName,
       tempCommit,
     }: {
       releaseBranchName: string;
       tempCommit: GhCreateCommitResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       await octokit.request(
-        `/repos/${this.getRepoPath()}/git/refs/heads/${releaseBranchName}`,
+        `/repos/${this.getRepoPath({
+          owner,
+          repo,
+        })}/git/refs/heads/${releaseBranchName}`,
         {
           method: 'PATCH',
           data: {
@@ -283,20 +453,30 @@ export class PluginApiClient {
       );
     },
 
-    merge: async ({ base, head }: { base: string; head: string }) => {
+    merge: async ({
+      owner,
+      repo,
+      base,
+      head,
+    }: { base: string; head: string } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const merge: GhMergeResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/merges`, {
-          method: 'POST',
-          data: { base, head },
-        })
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/merges`,
+          {
+            method: 'POST',
+            data: { base, head },
+          },
+        )
       ).data;
 
       return { merge };
     },
 
     createCherryPickCommit: async ({
+      owner,
+      repo,
       bumpedTag,
       selectedPatchCommit,
       mergeTree,
@@ -306,35 +486,43 @@ export class PluginApiClient {
       selectedPatchCommit: GhGetCommitResponse;
       mergeTree: string;
       releaseBranchSha: string;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const cherryPickCommit: GhCreateCommitResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/git/commits`, {
-          method: 'POST',
-          data: {
-            message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
-            tree: mergeTree,
-            parents: [releaseBranchSha],
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/git/commits`,
+          {
+            method: 'POST',
+            data: {
+              message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
+              tree: mergeTree,
+              parents: [releaseBranchSha],
+            },
           },
-        })
+        )
       ).data;
 
       return { cherryPickCommit };
     },
 
     replaceTempCommit: async ({
+      owner,
+      repo,
       releaseBranchName,
       cherryPickCommit,
     }: {
       releaseBranchName: string;
       cherryPickCommit: GhCreateCommitResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const updatedReference: GhUpdateReferenceResponse = (
         await octokit.request(
-          `/repos/${this.getRepoPath()}/git/refs/heads/${releaseBranchName}`,
+          `/repos/${this.getRepoPath({
+            owner,
+            repo,
+          })}/git/refs/heads/${releaseBranchName}`,
           {
             method: 'PATCH',
             data: {
@@ -349,53 +537,65 @@ export class PluginApiClient {
     },
 
     createTagObject: async ({
+      owner,
+      repo,
       bumpedTag,
       updatedReference,
     }: {
       bumpedTag: string;
       updatedReference: GhUpdateReferenceResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const tagObjectResponse: GhCreateTagObjectResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/git/tags`, {
-          method: 'POST',
-          data: {
-            type: 'commit',
-            message:
-              'Tag generated by your friendly neighborhood GitHub Release Manager',
-            tag: bumpedTag,
-            object: updatedReference.object.sha,
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/git/tags`,
+          {
+            method: 'POST',
+            data: {
+              type: 'commit',
+              message:
+                'Tag generated by your friendly neighborhood GitHub Release Manager',
+              tag: bumpedTag,
+              object: updatedReference.object.sha,
+            },
           },
-        })
+        )
       ).data;
 
       return { tagObjectResponse };
     },
 
     createReference: async ({
+      owner,
+      repo,
       bumpedTag,
       tagObjectResponse,
     }: {
       bumpedTag: string;
       tagObjectResponse: GhCreateTagObjectResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const reference: GhCreateReferenceResponse = (
-        await octokit.request(`/repos/${this.getRepoPath()}/git/refs`, {
-          method: 'POST',
-          data: {
-            ref: `refs/tags/${bumpedTag}`,
-            sha: tagObjectResponse.sha,
+        await octokit.request(
+          `/repos/${this.getRepoPath({ owner, repo })}/git/refs`,
+          {
+            method: 'POST',
+            data: {
+              ref: `refs/tags/${bumpedTag}`,
+              sha: tagObjectResponse.sha,
+            },
           },
-        })
+        )
       ).data;
 
       return { reference };
     },
 
     updateRelease: async ({
+      owner,
+      repo,
       bumpedTag,
       latestRelease,
       tagParts,
@@ -405,12 +605,14 @@ export class PluginApiClient {
       latestRelease: GhGetReleaseResponse;
       tagParts: SemverTagParts | CalverTagParts;
       selectedPatchCommit: GhGetCommitResponse;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const release: GhUpdateReleaseResponse = (
         await octokit.request(
-          `/repos/${this.getRepoPath()}/releases/${latestRelease.id}`,
+          `/repos/${this.getRepoPath({ owner, repo })}/releases/${
+            latestRelease.id
+          }`,
           {
             method: 'PATCH',
             data: {
@@ -431,17 +633,19 @@ export class PluginApiClient {
 
   promoteRc = {
     promoteRelease: async ({
+      owner,
+      repo,
       releaseId,
       releaseVersion,
     }: {
       releaseId: GhGetReleaseResponse['id'];
       releaseVersion: string;
-    }) => {
+    } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
       const release: GhGetReleaseResponse = (
         await octokit.request(
-          `/repos/${this.getRepoPath()}/releases/${releaseId}`,
+          `/repos/${this.getRepoPath({ owner, repo })}/releases/${releaseId}`,
           {
             method: 'PATCH',
             data: {

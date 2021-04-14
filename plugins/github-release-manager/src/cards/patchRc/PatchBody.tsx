@@ -45,10 +45,11 @@ import {
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { usePluginApiClientContext } from '../../components/ProjectContext';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { patch } from './sideEffects/patch';
+import { useProjectContext } from '../../contexts/ProjectContext';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -68,6 +69,7 @@ export const PatchBody = ({
   tagParts,
 }: PatchBodyProps) => {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 
   const githubDataResponse = useAsync(async () => {
@@ -75,13 +77,17 @@ export const PatchBody = ({
       { branch: releaseBranchResponse },
       { recentCommits },
     ] = await Promise.all([
-      pluginApiClient.getBranch({ branchName: latestRelease.target_commitish }),
-      pluginApiClient.getRecentCommits(),
+      pluginApiClient.getBranch({
+        ...project,
+        branchName: latestRelease.target_commitish,
+      }),
+      pluginApiClient.getRecentCommits({ ...project }),
     ]);
 
     const {
       recentCommits: recentReleaseBranchCommits,
     } = await pluginApiClient.getRecentCommits({
+      ...project,
       releaseBranchName: releaseBranchResponse.name,
     });
 
@@ -95,6 +101,7 @@ export const PatchBody = ({
   const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
     const selectedPatchCommit: GhGetCommitResponse = args[0];
     const patchResponseSteps = await patch({
+      project,
       pluginApiClient,
       bumpedTag,
       latestRelease,
@@ -232,7 +239,9 @@ export const PatchBody = ({
                     aria-label="commit"
                     disabled={commitExistsOnReleaseBranch || !releaseBranch}
                     onClick={() => {
-                      const repoPath = pluginApiClient.getRepoPath();
+                      const repoPath = pluginApiClient.getRepoPath({
+                        ...project,
+                      });
                       const host = pluginApiClient.getHost();
 
                       const newTab = window.open(

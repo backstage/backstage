@@ -35,19 +35,18 @@ import {
   GhGetBranchResponse,
   GhGetReleaseResponse,
   GhGetRepositoryResponse,
-  Project,
   SetRefetch,
 } from '../../types/types';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
-import { useStyles } from '../../styles/styles';
-import { usePluginApiClientContext } from '../../components/ProjectContext';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 
 interface CreateRcProps {
   defaultBranch: GhGetRepositoryResponse['default_branch'];
   latestRelease: GhGetReleaseResponse | null;
-  project: Project;
   releaseBranch: GhGetBranchResponse | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigCreateRc['successCb'];
@@ -56,12 +55,12 @@ interface CreateRcProps {
 export const CreateRc = ({
   defaultBranch,
   latestRelease,
-  project,
   releaseBranch,
   setRefetch,
   successCb,
 }: CreateRcProps) => {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const classes = useStyles();
 
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(
@@ -80,10 +79,11 @@ export const CreateRc = ({
   const [createGitHubReleaseResponse, createGitHubReleaseFn] = useAsyncFn(
     (...args) =>
       createRc({
-        pluginApiClient,
         defaultBranch,
         latestRelease,
         nextGitHubInfo: args[0],
+        pluginApiClient,
+        project,
         successCb,
       }),
   );

@@ -18,8 +18,9 @@ import { DateTime } from 'luxon';
 
 import { getBumpedSemverTagParts } from '../../helpers/getBumpedTag';
 import { getSemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { Project, GhGetReleaseResponse } from '../../types/types';
+import { GhGetReleaseResponse } from '../../types/types';
 import { SEMVER_PARTS } from '../../constants/constants';
+import { Project } from '../../contexts/ProjectContext';
 
 export const getRcGitHubInfo = ({
   project,

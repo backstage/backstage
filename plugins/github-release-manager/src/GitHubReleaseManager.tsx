@@ -28,40 +28,26 @@ import {
   ComponentConfigCreateRc,
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
-  GhGetBranchResponse,
-  GhGetReleaseResponse,
-  GhGetRepositoryResponse,
-  Project,
-  SetRefetch,
 } from './types/types';
 import { PromoteRc } from './cards/promoteRc/PromoteRc';
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import {
   PluginApiClientContext,
   usePluginApiClientContext,
-} from './components/ProjectContext';
+} from './contexts/PluginApiClientContext';
+import {
+  ProjectContext,
+  useProjectContext,
+  Project,
+} from './contexts/ProjectContext';
 
 interface GitHubReleaseManagerProps {
-  project: Project;
   components?: {
     default?: {
       createRc?: ComponentConfigCreateRc;
       promoteRc?: ComponentConfigPromoteRc;
       patch?: ComponentConfigPatch;
     };
-    custom?: ({
-      project,
-      setRefetch,
-      latestRelease,
-      releaseBranch,
-      repository,
-    }: {
-      project: Project;
-      setRefetch: SetRefetch;
-      latestRelease: GhGetReleaseResponse | null;
-      releaseBranch: GhGetBranchResponse | null;
-      repository: GhGetRepositoryResponse;
-    }) => JSX.Element[];
   };
 }
 
@@ -72,31 +58,37 @@ const useStyles = makeStyles(() => ({
 }));
 
 export function GitHubReleaseManager({
-  project,
   components,
 }: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
-  pluginApiClient.setRepoPath({
-    repoPath: `${project.github.org}/${project.github.repo}`,
-  });
   const classes = useStyles();
 
-  return (
-    <PluginApiClientContext.Provider value={pluginApiClient}>
-      <div className={classes.root}>
-        <ContentHeader title="GitHub Release Manager" />
+  const project: Project = {
+    owner: 'erikengervall',
+    repo: 'playground',
+    versioningStrategy: 'semver',
+  };
 
-        <Cards project={project} components={components} />
-      </div>
-    </PluginApiClientContext.Provider>
+  return (
+    <ProjectContext.Provider value={project}>
+      {/* @ts-ignore-error TODO: Update interface for PluginApiClient */}
+      <PluginApiClientContext.Provider value={pluginApiClient}>
+        <div className={classes.root}>
+          <ContentHeader title="GitHub Release Manager" />
+
+          <Cards components={components} />
+        </div>
+      </PluginApiClientContext.Provider>
+    </ProjectContext.Provider>
   );
 }
 
-function Cards({ project, components }: GitHubReleaseManagerProps) {
+function Cards({ components }: GitHubReleaseManagerProps) {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const [refetch, setRefetch] = useState(0);
   const gitHubBatchInfo = useAsync(
-    getGitHubBatchInfo({ pluginApiClient: pluginApiClient }),
+    getGitHubBatchInfo({ project, pluginApiClient }),
     [project, refetch],
   );
 
@@ -118,11 +110,11 @@ function Cards({ project, components }: GitHubReleaseManagerProps) {
     );
   }
 
-  if (!gitHubBatchInfo.value.repository.permissions.push) {
+  if (!gitHubBatchInfo.value.repository.pushPermissions) {
     return (
       <Alert severity="error">
-        You lack push permissions for repository "{project.github.org}/
-        {project.github.repo}"
+        You lack push permissions for repository "{project.owner}/{project.repo}
+        "
       </Alert>
     );
   }
@@ -132,15 +124,13 @@ function Cards({ project, components }: GitHubReleaseManagerProps) {
       <Info
         latestRelease={gitHubBatchInfo.value.latestRelease}
         releaseBranch={gitHubBatchInfo.value.releaseBranch}
-        project={project}
       />
 
       {components?.default?.createRc?.omit !== true && (
         <CreateRc
           latestRelease={gitHubBatchInfo.value.latestRelease}
           releaseBranch={gitHubBatchInfo.value.releaseBranch}
-          defaultBranch={gitHubBatchInfo.value.repository.default_branch}
-          project={project}
+          defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
           setRefetch={setRefetch}
           successCb={components?.default?.createRc?.successCb}
         />
@@ -158,23 +148,10 @@ function Cards({ project, components }: GitHubReleaseManagerProps) {
         <Patch
           latestRelease={gitHubBatchInfo.value.latestRelease}
           releaseBranch={gitHubBatchInfo.value.releaseBranch}
-          project={project}
           setRefetch={setRefetch}
           successCb={components?.default?.patch?.successCb}
         />
       )}
-
-      {components
-        ?.custom?.({
-          project,
-          setRefetch,
-          latestRelease: gitHubBatchInfo.value.latestRelease,
-          releaseBranch: gitHubBatchInfo.value.releaseBranch,
-          repository: gitHubBatchInfo.value.repository,
-        })
-        .map((customElement, index) => (
-          <div key={`grm-custom-element-${index}`}>{customElement}</div>
-        ))}
     </ErrorBoundary>
   );
 }

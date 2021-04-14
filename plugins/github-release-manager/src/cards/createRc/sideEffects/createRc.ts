@@ -24,20 +24,23 @@ import {
 } from '../../../types/types';
 import { PluginApiClient } from '../../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
+import { Project } from '../../../contexts/ProjectContext';
 
 interface CreateRC {
-  pluginApiClient: PluginApiClient;
   defaultBranch: GhGetRepositoryResponse['default_branch'];
   latestRelease: GhGetReleaseResponse | null;
   nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
+  pluginApiClient: PluginApiClient;
+  project: Project;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 
 export async function createRc({
-  pluginApiClient,
   defaultBranch,
   latestRelease,
   nextGitHubInfo,
+  pluginApiClient,
+  project,
   successCb,
 }: CreateRC) {
   const responseSteps: ResponseStep[] = [];
@@ -46,6 +49,7 @@ export async function createRc({
    * 1. Get the default branch's most recent commit
    */
   const { latestCommit } = await pluginApiClient.getLatestCommit({
+    ...project,
     defaultBranch,
   });
   responseSteps.push({
@@ -62,6 +66,7 @@ export async function createRc({
   try {
     createdRef = (
       await pluginApiClient.createRc.createRef({
+        ...project,
         mostRecentSha,
         targetBranch: nextGitHubInfo.rcBranch,
       })
@@ -87,6 +92,7 @@ export async function createRc({
     : defaultBranch;
   const nextReleaseBranch = nextGitHubInfo.rcBranch;
   const { comparison } = await pluginApiClient.createRc.getComparison({
+    ...project,
     previousReleaseBranch,
     nextReleaseBranch,
   });
@@ -111,6 +117,7 @@ export async function createRc({
   const {
     createReleaseResponse,
   } = await pluginApiClient.createRc.createRelease({
+    ...project,
     nextGitHubInfo: nextGitHubInfo,
     releaseBody,
   });

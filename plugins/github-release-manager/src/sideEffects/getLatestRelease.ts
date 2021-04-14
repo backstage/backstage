@@ -15,19 +15,25 @@
  */
 
 import { PluginApiClient } from '../api/PluginApiClient';
+import { Project } from '../contexts/ProjectContext';
 
 interface GetLatestRelease {
   pluginApiClient: PluginApiClient;
+  project: Project;
 }
 
-export async function getLatestRelease({ pluginApiClient }: GetLatestRelease) {
-  const { releases } = await pluginApiClient.getReleases();
+export async function getLatestRelease({
+  pluginApiClient,
+  project,
+}: GetLatestRelease) {
+  const { releases } = await pluginApiClient.getReleases({ ...project });
 
   if (releases.length === 0) {
     return null;
   }
 
   const { latestRelease } = await pluginApiClient.getRelease({
+    ...project,
     releaseId: releases[0].id,
   });
 
