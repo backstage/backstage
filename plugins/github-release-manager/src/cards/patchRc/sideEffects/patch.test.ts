@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   mockBumpedTag,
   mockReleaseVersion,
@@ -27,7 +28,7 @@ describe('patch', () => {
 
   it('should work', async () => {
     const result = await patch({
-      apiClient: mockApiClient,
+      pluginApiClient: mockApiClient,
       latestRelease: mockReleaseVersion,
       bumpedTag: mockBumpedTag,
       selectedPatchCommit: mockSelectedPatchCommit,

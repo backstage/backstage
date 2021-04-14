@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useState } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useAsync, useAsyncFn } from 'react-use';
@@ -44,7 +45,7 @@ import {
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { useApiClientContext } from '../../components/ProjectContext';
+import { usePluginApiClientContext } from '../../components/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { patch } from './sideEffects/patch';
@@ -66,7 +67,7 @@ export const PatchBody = ({
   successCb,
   tagParts,
 }: PatchBodyProps) => {
-  const apiClient = useApiClientContext();
+  const pluginApiClient = usePluginApiClientContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 
   const githubDataResponse = useAsync(async () => {
@@ -74,13 +75,13 @@ export const PatchBody = ({
       { branch: releaseBranchResponse },
       { recentCommits },
     ] = await Promise.all([
-      apiClient.getBranch({ branchName: latestRelease.target_commitish }),
-      apiClient.getRecentCommits(),
+      pluginApiClient.getBranch({ branchName: latestRelease.target_commitish }),
+      pluginApiClient.getRecentCommits(),
     ]);
 
     const {
       recentCommits: recentReleaseBranchCommits,
-    } = await apiClient.getRecentCommits({
+    } = await pluginApiClient.getRecentCommits({
       releaseBranchName: releaseBranchResponse.name,
     });
 
@@ -94,7 +95,7 @@ export const PatchBody = ({
   const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
     const selectedPatchCommit: GhGetCommitResponse = args[0];
     const patchResponseSteps = await patch({
-      apiClient,
+      pluginApiClient,
       bumpedTag,
       latestRelease,
       selectedPatchCommit,
@@ -231,8 +232,8 @@ export const PatchBody = ({
                     aria-label="commit"
                     disabled={commitExistsOnReleaseBranch || !releaseBranch}
                     onClick={() => {
-                      const repoPath = apiClient.getRepoPath();
-                      const host = apiClient.getHost();
+                      const repoPath = pluginApiClient.getRepoPath();
+                      const host = pluginApiClient.getHost();
 
                       const newTab = window.open(
                         `https://${host}/${repoPath}/compare/${releaseBranch?.name}...${commit.sha}`,

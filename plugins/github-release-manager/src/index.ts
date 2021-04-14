@@ -13,4 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { gitHubReleaseManagerPlugin, GitHubReleaseManagerPage } from './plugin';
+
+export {
+  gitHubReleaseManagerPlugin,
+  GitHubReleaseManagerPage,
+  githubReleaseManagerApiRef,
+} from './plugin';

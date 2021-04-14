@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { mockApiClient } from '../test-helpers/test-helpers';
 import { getLatestRelease } from './getLatestRelease';
 
@@ -20,7 +21,7 @@ describe('getLatestRelease', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should return the latest release with id=1', async () => {
-    const result = await getLatestRelease({ apiClient: mockApiClient });
+    const result = await getLatestRelease({ pluginApiClient: mockApiClient });
 
     expect(result).toMatchInlineSnapshot(`
       Object {
@@ -35,7 +36,7 @@ describe('getLatestRelease', () => {
   it('should return early with `null` if no releases found', async () => {
     mockApiClient.getReleases.mockImplementationOnce(() => ({ releases: [] }));
 
-    const result = await getLatestRelease({ apiClient: mockApiClient });
+    const result = await getLatestRelease({ pluginApiClient: mockApiClient });
 
     expect(result).toMatchInlineSnapshot(`null`);
   });

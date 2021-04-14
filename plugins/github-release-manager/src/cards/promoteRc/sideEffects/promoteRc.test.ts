@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   mockRcRelease,
   mockApiClient,
@@ -24,7 +25,7 @@ describe('promoteRc', () => {
 
   it('should work', async () => {
     const result = await promoteRc({
-      apiClient: mockApiClient,
+      pluginApiClient: mockApiClient,
       rcRelease: mockRcRelease,
       releaseVersion: 'version-1.2.3',
     })();

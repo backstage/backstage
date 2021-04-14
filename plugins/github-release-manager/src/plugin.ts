@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   configApiRef,
   createPlugin,
@@ -22,8 +23,10 @@ import {
 } from '@backstage/core';
 
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
-import { PluginApiClientConfig } from './api/PluginApiClientConfig';
+import { PluginApiClient } from './api/PluginApiClient';
 import { rootRouteRef } from './routes';
+
+export { githubReleaseManagerApiRef };
 
 export const gitHubReleaseManagerPlugin = createPlugin({
   id: 'github-release-manager',
@@ -37,8 +40,9 @@ export const gitHubReleaseManagerPlugin = createPlugin({
         configApi: configApiRef,
         githubAuthApi: githubAuthApiRef,
       },
-      factory: ({ configApi, githubAuthApi }) =>
-        new PluginApiClientConfig({ configApi, githubAuthApi }),
+      factory: ({ configApi, githubAuthApi }) => {
+        return new PluginApiClient({ configApi, githubAuthApi });
+      },
     }),
   ],
 });

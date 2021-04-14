@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React, { useState, useEffect } from 'react';
 import { Alert } from '@material-ui/lab';
 import {
@@ -39,7 +40,7 @@ import {
 } from '../../types/types';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { useStyles } from '../../styles/styles';
-import { useApiClientContext } from '../../components/ProjectContext';
+import { usePluginApiClientContext } from '../../components/ProjectContext';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -60,7 +61,7 @@ export const CreateRc = ({
   setRefetch,
   successCb,
 }: CreateRcProps) => {
-  const apiClient = useApiClientContext();
+  const pluginApiClient = usePluginApiClientContext();
   const classes = useStyles();
 
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(
@@ -79,7 +80,7 @@ export const CreateRc = ({
   const [createGitHubReleaseResponse, createGitHubReleaseFn] = useAsyncFn(
     (...args) =>
       createRc({
-        apiClient,
+        pluginApiClient,
         defaultBranch,
         latestRelease,
         nextGitHubInfo: args[0],

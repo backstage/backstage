@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ApiClient } from '../api/ApiClient';
+
+import { PluginApiClient } from '../api/PluginApiClient';
 
 interface GetLatestRelease {
-  apiClient: ApiClient;
+  pluginApiClient: PluginApiClient;
 }
 
-export async function getLatestRelease({ apiClient }: GetLatestRelease) {
-  const { releases } = await apiClient.getReleases();
+export async function getLatestRelease({ pluginApiClient }: GetLatestRelease) {
+  const { releases } = await pluginApiClient.getReleases();
 
   if (releases.length === 0) {
     return null;
   }
 
-  const { latestRelease } = await apiClient.getRelease({
+  const { latestRelease } = await pluginApiClient.getRelease({
     releaseId: releases[0].id,
   });
 

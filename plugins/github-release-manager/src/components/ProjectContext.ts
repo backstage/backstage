@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createContext, useContext } from 'react';
 
-import { ApiClient } from '../api/ApiClient';
+import { PluginApiClient } from '../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
-export const ApiClientContext = createContext<ApiClient | undefined>(undefined);
+export const PluginApiClientContext = createContext<
+  PluginApiClient | undefined
+>(undefined);
 
-export const useApiClientContext = () => {
-  const apiClient = useContext(ApiClientContext);
+export const usePluginApiClientContext = () => {
+  const pluginApiClient = useContext(PluginApiClientContext);
 
-  if (!apiClient) {
-    throw new GitHubReleaseManagerError('apiClient not found');
+  if (!pluginApiClient) {
+    throw new GitHubReleaseManagerError('pluginApiClient not found');
   }
 
-  return apiClient;
+  return pluginApiClient;
 };

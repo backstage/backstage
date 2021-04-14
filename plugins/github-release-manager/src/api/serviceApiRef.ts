@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createApiRef } from '@backstage/core';
 
-import { PluginApiClientConfig } from './PluginApiClientConfig';
+import { PluginApiClient } from './PluginApiClient';
 
-export const githubReleaseManagerApiRef = createApiRef<PluginApiClientConfig>({
+export const githubReleaseManagerApiRef = createApiRef<PluginApiClient>({
   id: 'plugin.github-release-manager.service',
   description: 'Used by the GitHub Release Manager plugin to make requests',
 });

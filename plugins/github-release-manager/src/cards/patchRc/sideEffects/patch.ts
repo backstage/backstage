@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ComponentConfigPatch,
   GhGetCommitResponse,
@@ -21,11 +22,11 @@ import {
 } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
-import { ApiClient } from '../../../api/ApiClient';
+import { PluginApiClient } from '../../../api/PluginApiClient';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 
 interface Patch {
-  apiClient: ApiClient;
+  pluginApiClient: PluginApiClient;
   bumpedTag: string;
   latestRelease: GhGetReleaseResponse;
   selectedPatchCommit: GhGetCommitResponse;
@@ -35,7 +36,7 @@ interface Patch {
 
 // Inspo: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
 export async function patch({
-  apiClient,
+  pluginApiClient,
   bumpedTag,
   latestRelease,
   selectedPatchCommit,
@@ -55,7 +56,7 @@ export async function patch({
    * > branchSha = branch.commit.sha
    * > branchTree = branch.commit.commit.tree.sha
    */
-  const { branch: releaseBranch } = await apiClient.getBranch({
+  const { branch: releaseBranch } = await pluginApiClient.getBranch({
     branchName: releaseBranchName,
   });
   const releaseBranchSha = releaseBranch.commit.sha;
@@ -71,7 +72,7 @@ export async function patch({
    *  > parentSha = commit.parents.head // first parent -- there should only be one
    *  > tempCommit = POST /repos/$owner/$repo/git/commits { "message": "temp", "tree": branchTree, "parents": [parentSha] }
    */
-  const { tempCommit } = await apiClient.patch.createTempCommit({
+  const { tempCommit } = await pluginApiClient.patch.createTempCommit({
     releaseBranchTree,
     selectedPatchCommit,
     tagParts,
@@ -85,7 +86,7 @@ export async function patch({
    * 3. Now temporarily force the branch over to that commit:
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = tempCommit.sha, force = true }
    */
-  await apiClient.patch.forceBranchHeadToTempCommit({
+  await pluginApiClient.patch.forceBranchHeadToTempCommit({
     tempCommit,
     releaseBranchName,
   });
@@ -94,7 +95,7 @@ export async function patch({
    * 4. Merge the commit we want into this mess:
    * > merge = POST /repos/$owner/$repo/merges { "base": branchName, "head": commit.sha }
    */
-  const { merge } = await apiClient.patch.merge({
+  const { merge } = await pluginApiClient.patch.merge({
     base: releaseBranchName,
     head: selectedPatchCommit.sha,
   });
@@ -115,7 +116,9 @@ export async function patch({
    * Note that branchSha is the original from up at the top.
    * > cherry = POST /repos/$owner/$repo/git/commits { "message": "looks good!", "tree": mergeTree, "parents": [branchSha] }
    */
-  const { cherryPickCommit } = await apiClient.patch.createCherryPickCommit({
+  const {
+    cherryPickCommit,
+  } = await pluginApiClient.patch.createCherryPickCommit({
     bumpedTag,
     mergeTree,
     releaseBranchSha,
@@ -130,7 +133,7 @@ export async function patch({
    * 6. Replace the temp commit with the real commit:
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = cherry.sha, force = true }
    */
-  const { updatedReference } = await apiClient.patch.replaceTempCommit({
+  const { updatedReference } = await pluginApiClient.patch.replaceTempCommit({
     cherryPickCommit,
     releaseBranchName,
   });
@@ -142,7 +145,7 @@ export async function patch({
    * 7. Create tag object: https://developer.github.com/v3/git/tags/#create-a-tag-object
    * > POST /repos/:owner/:repo/git/tags
    */
-  const { tagObjectResponse } = await apiClient.patch.createTagObject({
+  const { tagObjectResponse } = await pluginApiClient.patch.createTagObject({
     bumpedTag,
     updatedReference,
   });
@@ -155,7 +158,7 @@ export async function patch({
    * 8. Create a reference: https://developer.github.com/v3/git/refs/#create-a-reference
    * > POST /repos/:owner/:repo/git/refs
    */
-  const { reference } = await apiClient.patch.createReference({
+  const { reference } = await pluginApiClient.patch.createReference({
     bumpedTag,
     tagObjectResponse,
   });
@@ -167,12 +170,14 @@ export async function patch({
   /**
    * 9. Update release
    */
-  const { release: updatedRelease } = await apiClient.patch.updateRelease({
-    bumpedTag,
-    latestRelease,
-    selectedPatchCommit,
-    tagParts,
-  });
+  const { release: updatedRelease } = await pluginApiClient.patch.updateRelease(
+    {
+      bumpedTag,
+      latestRelease,
+      selectedPatchCommit,
+      tagParts,
+    },
+  );
   responseSteps.push({
     message: `Updated release "${updatedRelease.name}"`,
     secondaryMessage: `with tag ${updatedRelease.tag_name}`,

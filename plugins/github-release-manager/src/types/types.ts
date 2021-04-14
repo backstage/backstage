@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 export interface Project {
   /** A unique (in the context of GitHub Release Manager) project name */
   name: string;

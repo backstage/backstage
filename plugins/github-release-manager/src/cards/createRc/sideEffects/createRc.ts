@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getRcGitHubInfo } from '../getRcGitHubInfo';
 import {
   ComponentConfigCreateRc,
@@ -21,11 +22,11 @@ import {
   GhGetRepositoryResponse,
   ResponseStep,
 } from '../../../types/types';
-import { ApiClient } from '../../../api/ApiClient';
+import { PluginApiClient } from '../../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 
 interface CreateRC {
-  apiClient: ApiClient;
+  pluginApiClient: PluginApiClient;
   defaultBranch: GhGetRepositoryResponse['default_branch'];
   latestRelease: GhGetReleaseResponse | null;
   nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
@@ -33,7 +34,7 @@ interface CreateRC {
 }
 
 export async function createRc({
-  apiClient,
+  pluginApiClient,
   defaultBranch,
   latestRelease,
   nextGitHubInfo,
@@ -44,7 +45,7 @@ export async function createRc({
   /**
    * 1. Get the default branch's most recent commit
    */
-  const { latestCommit } = await apiClient.getLatestCommit({
+  const { latestCommit } = await pluginApiClient.getLatestCommit({
     defaultBranch,
   });
   responseSteps.push({
@@ -60,7 +61,7 @@ export async function createRc({
   let createdRef: GhCreateReferenceResponse;
   try {
     createdRef = (
-      await apiClient.createRc.createRef({
+      await pluginApiClient.createRc.createRef({
         mostRecentSha,
         targetBranch: nextGitHubInfo.rcBranch,
       })
@@ -85,7 +86,7 @@ export async function createRc({
     ? latestRelease.target_commitish
     : defaultBranch;
   const nextReleaseBranch = nextGitHubInfo.rcBranch;
-  const { comparison } = await apiClient.createRc.getComparison({
+  const { comparison } = await pluginApiClient.createRc.getComparison({
     previousReleaseBranch,
     nextReleaseBranch,
   });
@@ -107,7 +108,9 @@ export async function createRc({
   /**
    * 4. Creates the release itself in GitHub
    */
-  const { createReleaseResponse } = await apiClient.createRc.createRelease({
+  const {
+    createReleaseResponse,
+  } = await pluginApiClient.createRc.createRelease({
     nextGitHubInfo: nextGitHubInfo,
     releaseBody,
   });

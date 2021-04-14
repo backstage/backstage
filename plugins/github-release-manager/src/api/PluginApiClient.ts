@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ConfigApi, OAuthApi } from '@backstage/core';
+import { Octokit } from '@octokit/rest';
+import { readGitHubIntegrationConfigs } from '@backstage/integration';
+
 import {
   GhCompareCommitsResponse,
   GhCreateCommitResponse,
@@ -29,88 +34,123 @@ import {
 } from '../types/types';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
-import { PluginApiClientConfig } from './PluginApiClientConfig';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
+import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
-/**
- * Docs
- * https://github.com/octokit/request.js/#the-data-parameter--set-request-body-directly
- */
-
-export class ApiClient {
-  private readonly pluginApiClient: PluginApiClientConfig;
-  private readonly repoPath: string;
-  private readonly githubCommonPath: string;
+export class PluginApiClient {
+  private readonly githubAuthApi: OAuthApi;
+  private readonly baseUrl: string;
+  private repoPath?: string;
+  readonly host: string;
 
   constructor({
-    pluginApiClient,
-    repoPath,
+    configApi,
+    githubAuthApi,
   }: {
-    pluginApiClient: PluginApiClientConfig;
-    repoPath: string;
+    configApi: ConfigApi;
+    githubAuthApi: OAuthApi;
   }) {
-    this.pluginApiClient = pluginApiClient;
-    this.repoPath = repoPath;
-    this.githubCommonPath = `/repos/${this.repoPath}`;
+    this.githubAuthApi = githubAuthApi;
+
+    const githubIntegrationConfig = this.getGithubIntegrationConfig({
+      configApi,
+    });
+
+    this.host = githubIntegrationConfig?.host ?? 'github.com';
+    this.baseUrl =
+      githubIntegrationConfig?.apiBaseUrl ?? 'https://api.github.com';
+  }
+
+  private getGithubIntegrationConfig({ configApi }: { configApi: ConfigApi }) {
+    const configs = readGitHubIntegrationConfigs(
+      configApi.getOptionalConfigArray('integrations.github') ?? [],
+    );
+
+    const githubIntegrationConfig = configs.find(
+      v => v.host === 'github.com' || v.host.startsWith('ghe.'),
+    );
+
+    return githubIntegrationConfig;
+  }
+
+  private async getOctokit() {
+    const token = await this.githubAuthApi.getAccessToken(['repo']);
+
+    return {
+      octokit: new Octokit({
+        auth: token,
+        baseUrl: this.baseUrl,
+      }),
+    };
   }
 
   public getHost() {
-    return this.pluginApiClient.host;
+    return this.host;
+  }
+
+  public setRepoPath({ repoPath }: { repoPath: string }) {
+    this.repoPath = repoPath;
   }
 
   public getRepoPath() {
+    if (!this.repoPath) {
+      throw new GitHubReleaseManagerError('Could not find repoPath');
+    }
+
     return this.repoPath;
   }
 
   async getRecentCommits({
     releaseBranchName,
   }: { releaseBranchName?: string } = {}) {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
     const sha = releaseBranchName ? `?sha=${releaseBranchName}` : '';
 
     const recentCommits: GhGetCommitResponse[] = (
-      await octokit.request(`${this.githubCommonPath}/commits${sha}`)
+      await octokit.request(`/repos/${this.getRepoPath()}/commits${sha}`)
     ).data;
 
     return { recentCommits };
   }
 
   async getReleases() {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
 
     const releases: GhGetReleaseResponse[] = (
-      await octokit.request(`${this.githubCommonPath}/releases`)
+      await octokit.request(`/repos/${this.getRepoPath()}/releases`)
     ).data;
 
     return { releases };
   }
 
   async getRelease({ releaseId }: { releaseId: number }) {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
 
     const latestRelease: GhGetReleaseResponse = (
-      await octokit.request(`${this.githubCommonPath}/releases/${releaseId}`)
+      await octokit.request(
+        `/repos/${this.getRepoPath()}/releases/${releaseId}`,
+      )
     ).data;
 
     return { latestRelease };
   }
 
   async getRepository() {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
 
     const repository: GhGetRepositoryResponse = (
-      await octokit.request(this.githubCommonPath)
+      await octokit.request(`/repos/${this.getRepoPath()}`)
     ).data;
 
     return { repository };
   }
 
   async getLatestCommit({ defaultBranch }: { defaultBranch: string }) {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
 
     const latestCommit: GhGetCommitResponse = (
       await octokit.request(
-        `${this.githubCommonPath}/commits/refs/heads/${defaultBranch}`,
+        `/repos/${this.getRepoPath()}/commits/refs/heads/${defaultBranch}`,
       )
     ).data;
 
@@ -118,10 +158,12 @@ export class ApiClient {
   }
 
   async getBranch({ branchName }: { branchName: string }) {
-    const { octokit } = await this.pluginApiClient.getOctokit();
+    const { octokit } = await this.getOctokit();
 
     const branch: GhGetBranchResponse = (
-      await octokit.request(`${this.githubCommonPath}/branches/${branchName}`)
+      await octokit.request(
+        `/repos/${this.getRepoPath()}/branches/${branchName}`,
+      )
     ).data;
 
     return { branch };
@@ -135,10 +177,10 @@ export class ApiClient {
       mostRecentSha: string;
       targetBranch: string;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const createdRef: GhCreateReferenceResponse = (
-        await octokit.request(`${this.githubCommonPath}/git/refs`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/git/refs`, {
           method: 'POST',
           data: {
             ref: `refs/heads/${targetBranch}`,
@@ -157,11 +199,11 @@ export class ApiClient {
       previousReleaseBranch: string;
       nextReleaseBranch: string;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const comparison: GhCompareCommitsResponse = (
         await octokit.request(
-          `${this.githubCommonPath}/compare/${previousReleaseBranch}...${nextReleaseBranch}`,
+          `/repos/${this.getRepoPath()}/compare/${previousReleaseBranch}...${nextReleaseBranch}`,
         )
       ).data;
 
@@ -175,10 +217,10 @@ export class ApiClient {
       nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
       releaseBody: string;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const createReleaseResponse: GhCreateReleaseResponse = (
-        await octokit.request(`${this.githubCommonPath}/releases`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/releases`, {
           method: 'POST',
           data: {
             tag_name: nextGitHubInfo.rcReleaseTag,
@@ -204,10 +246,10 @@ export class ApiClient {
       releaseBranchTree: string;
       selectedPatchCommit: GhGetCommitResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const tempCommit: GhCreateCommitResponse = (
-        await octokit.request(`${this.githubCommonPath}/git/commits`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/git/commits`, {
           method: 'POST',
           data: {
             message: `Temporary commit for patch ${tagParts.patch}`,
@@ -227,10 +269,10 @@ export class ApiClient {
       releaseBranchName: string;
       tempCommit: GhCreateCommitResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       await octokit.request(
-        `${this.githubCommonPath}/git/refs/heads/${releaseBranchName}`,
+        `/repos/${this.getRepoPath()}/git/refs/heads/${releaseBranchName}`,
         {
           method: 'PATCH',
           data: {
@@ -242,10 +284,10 @@ export class ApiClient {
     },
 
     merge: async ({ base, head }: { base: string; head: string }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const merge: GhMergeResponse = (
-        await octokit.request(`${this.githubCommonPath}/merges`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/merges`, {
           method: 'POST',
           data: { base, head },
         })
@@ -265,10 +307,10 @@ export class ApiClient {
       mergeTree: string;
       releaseBranchSha: string;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const cherryPickCommit: GhCreateCommitResponse = (
-        await octokit.request(`${this.githubCommonPath}/git/commits`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/git/commits`, {
           method: 'POST',
           data: {
             message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
@@ -288,11 +330,11 @@ export class ApiClient {
       releaseBranchName: string;
       cherryPickCommit: GhCreateCommitResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const updatedReference: GhUpdateReferenceResponse = (
         await octokit.request(
-          `${this.githubCommonPath}/git/refs/heads/${releaseBranchName}`,
+          `/repos/${this.getRepoPath()}/git/refs/heads/${releaseBranchName}`,
           {
             method: 'PATCH',
             data: {
@@ -313,10 +355,10 @@ export class ApiClient {
       bumpedTag: string;
       updatedReference: GhUpdateReferenceResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const tagObjectResponse: GhCreateTagObjectResponse = (
-        await octokit.request(`${this.githubCommonPath}/git/tags`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/git/tags`, {
           method: 'POST',
           data: {
             type: 'commit',
@@ -338,10 +380,10 @@ export class ApiClient {
       bumpedTag: string;
       tagObjectResponse: GhCreateTagObjectResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const reference: GhCreateReferenceResponse = (
-        await octokit.request(`${this.githubCommonPath}/git/refs`, {
+        await octokit.request(`/repos/${this.getRepoPath()}/git/refs`, {
           method: 'POST',
           data: {
             ref: `refs/tags/${bumpedTag}`,
@@ -364,11 +406,11 @@ export class ApiClient {
       tagParts: SemverTagParts | CalverTagParts;
       selectedPatchCommit: GhGetCommitResponse;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const release: GhUpdateReleaseResponse = (
         await octokit.request(
-          `${this.githubCommonPath}/releases/${latestRelease.id}`,
+          `/repos/${this.getRepoPath()}/releases/${latestRelease.id}`,
           {
             method: 'PATCH',
             data: {
@@ -395,11 +437,11 @@ export class ApiClient {
       releaseId: GhGetReleaseResponse['id'];
       releaseVersion: string;
     }) => {
-      const { octokit } = await this.pluginApiClient.getOctokit();
+      const { octokit } = await this.getOctokit();
 
       const release: GhGetReleaseResponse = (
         await octokit.request(
-          `${this.githubCommonPath}/releases/${releaseId}`,
+          `/repos/${this.getRepoPath()}/releases/${releaseId}`,
           {
             method: 'PATCH',
             data: {

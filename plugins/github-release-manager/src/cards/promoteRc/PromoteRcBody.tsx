@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 import { Button, Typography } from '@material-ui/core';
@@ -26,7 +27,7 @@ import {
 } from '../../types/types';
 import { promoteRc } from './sideEffects/promoteRc';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
-import { useApiClientContext } from '../../components/ProjectContext';
+import { usePluginApiClientContext } from '../../components/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -41,11 +42,16 @@ export const PromoteRcBody = ({
   setRefetch,
   successCb,
 }: PromoteRcBodyProps) => {
-  const apiClient = useApiClientContext();
+  const pluginApiClient = usePluginApiClientContext();
   const classes = useStyles();
   const releaseVersion = rcRelease.tag_name.replace('rc-', 'version-');
   const [promoteGitHubRcResponse, promoseGitHubRcFn] = useAsyncFn(
-    promoteRc({ apiClient, rcRelease, releaseVersion, successCb }),
+    promoteRc({
+      pluginApiClient,
+      rcRelease,
+      releaseVersion,
+      successCb,
+    }),
   );
 
   if (promoteGitHubRcResponse.error) {

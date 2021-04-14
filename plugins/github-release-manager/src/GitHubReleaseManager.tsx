@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Alert } from '@material-ui/lab';
 import { CircularProgress, makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
@@ -36,10 +37,9 @@ import {
 import { PromoteRc } from './cards/promoteRc/PromoteRc';
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import {
-  ApiClientContext,
-  useApiClientContext,
+  PluginApiClientContext,
+  usePluginApiClientContext,
 } from './components/ProjectContext';
-import { ApiClient } from './api/ApiClient';
 
 interface GitHubReleaseManagerProps {
   project: Project;
@@ -76,30 +76,29 @@ export function GitHubReleaseManager({
   components,
 }: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
-  const apiClient = new ApiClient({
-    pluginApiClient,
+  pluginApiClient.setRepoPath({
     repoPath: `${project.github.org}/${project.github.repo}`,
   });
   const classes = useStyles();
 
   return (
-    <ApiClientContext.Provider value={apiClient}>
+    <PluginApiClientContext.Provider value={pluginApiClient}>
       <div className={classes.root}>
         <ContentHeader title="GitHub Release Manager" />
 
         <Cards project={project} components={components} />
       </div>
-    </ApiClientContext.Provider>
+    </PluginApiClientContext.Provider>
   );
 }
 
 function Cards({ project, components }: GitHubReleaseManagerProps) {
-  const apiClient = useApiClientContext();
+  const pluginApiClient = usePluginApiClientContext();
   const [refetch, setRefetch] = useState(0);
-  const gitHubBatchInfo = useAsync(getGitHubBatchInfo({ apiClient }), [
-    project,
-    refetch,
-  ]);
+  const gitHubBatchInfo = useAsync(
+    getGitHubBatchInfo({ pluginApiClient: pluginApiClient }),
+    [project, refetch],
+  );
 
   if (gitHubBatchInfo.error) {
     return <Alert severity="error">{gitHubBatchInfo.error.message}</Alert>;

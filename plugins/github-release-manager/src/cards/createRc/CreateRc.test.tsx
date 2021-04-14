@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { render } from '@testing-library/react';
 
@@ -28,7 +29,7 @@ import {
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
 jest.mock('../../components/ProjectContext', () => ({
-  useApiClientContext: () => mockApiClient,
+  usePluginApiClientContext: () => mockApiClient,
 }));
 jest.mock('./getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfo,

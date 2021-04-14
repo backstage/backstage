@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 
@@ -26,7 +27,7 @@ import {
 } from '../../test-helpers/test-helpers';
 
 jest.mock('../../components/ProjectContext', () => ({
-  useApiClientContext: () => mockApiClient,
+  usePluginApiClientContext: () => mockApiClient,
 }));
 
 import { PatchBody } from './PatchBody';

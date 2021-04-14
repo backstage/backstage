@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ComponentConfigPromoteRc,
   GhGetReleaseResponse,
   ResponseStep,
 } from '../../../types/types';
-import { ApiClient } from '../../../api/ApiClient';
+import { PluginApiClient } from '../../../api/PluginApiClient';
 
 interface PromoteRc {
-  apiClient: ApiClient;
+  pluginApiClient: PluginApiClient;
   rcRelease: GhGetReleaseResponse;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
 export function promoteRc({
-  apiClient,
+  pluginApiClient,
   rcRelease,
   releaseVersion,
   successCb,
@@ -36,7 +37,7 @@ export function promoteRc({
   return async (): Promise<ResponseStep[]> => {
     const responseSteps: ResponseStep[] = [];
 
-    const { release } = await apiClient.promoteRc.promoteRelease({
+    const { release } = await pluginApiClient.promoteRc.promoteRelease({
       releaseId: rcRelease.id,
       releaseVersion,
     });
