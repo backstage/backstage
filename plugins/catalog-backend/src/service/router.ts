@@ -143,12 +143,27 @@ export async function createRouter(
         }
         res.status(200).json(entities[0]);
       })
-      // TODO: Alternative API: If we don't want to have a top level attachments
-      // endpoint, we could go with a
-      // /entities/by-name/:kind/:namespace/:name/attachments/:key endpoint instead.
-      // In that case, do we also want to offer the /by-uid/ variant?
+
+      .get('/entities/by-uid/:uid/attachments/:key', async (req, res) => {
+        const { uid, key } = req.params;
+        const attachment = await entitiesCatalog.attachment(uid, key);
+
+        if (!attachment) {
+          throw new NotFoundError(
+            `No attachment with key '${key}' found for entity with uid ${uid}, with kind '${kind}' in namespace '${namespace}'`,
+          );
+        }
+
+        // TODO: Include etag for caching
+
+        res
+          .status(200)
+          .contentType(attachment.contentType)
+          .send(attachment.data);
+      })
+
       .get(
-        '/attachments/by-name/:kind/:namespace/:name/:key',
+        '/entities/by-name/:kind/:namespace/:name/attachments/:key',
         async (req, res) => {
           const { kind, namespace, name, key } = req.params;
           const { entities } = await entitiesCatalog.entities({
@@ -171,9 +186,11 @@ export async function createRouter(
 
           if (!attachment) {
             throw new NotFoundError(
-              `No attachment with key '${key}' found for entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+              `No attachment with key '${key}' found for entity named '${name}', with kind '${kind}' in namespace '${namespace}'`,
             );
           }
+
+          // TODO: Include etag for caching
 
           res
             .status(200)

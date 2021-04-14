@@ -119,9 +119,9 @@ export class CatalogClient implements CatalogApi {
   }
 
   async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
-    return `${await this.discoveryApi.getBaseUrl(
-      'catalog',
-    )}/attachments/by-name/${name.kind}/${name.namespace}/${name.name}/${key}`;
+    return `${await this.discoveryApi.getBaseUrl('catalog')}/entities/by-name/${
+      name.kind
+    }/${name.namespace}/${name.name}/attachments/${key}`;
   }
 
   async addLocation(

@@ -26,6 +26,8 @@ import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from './request';
 
+// TODO: Include tests for the two new routes!
+
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;

@@ -29,6 +29,8 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 
+// TODO: Add tests for attachment endpoints
+
 describe('CatalogClient', () => {
   let client: CatalogClient;
 
