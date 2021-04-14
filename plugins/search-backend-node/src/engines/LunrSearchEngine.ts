@@ -73,6 +73,7 @@ export class LunrSearchEngine implements SearchEngine {
       this.docStore[document.location] = document;
     });
 
+    // "Rotate" the index by simply overwriting any existing index of the same name.
     this.lunrIndices[documentType] = lunrBuilder.build();
   }
 
