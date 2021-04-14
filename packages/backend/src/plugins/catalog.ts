@@ -18,6 +18,7 @@ import { useHotCleanup } from '@backstage/backend-common';
 import {
   CatalogBuilder,
   createRouter,
+  NextCatalogBuilder,
   runPeriodically,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
@@ -26,6 +27,28 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
+  // HIGHLY experimental rework of the software catalog
+  if (process.env.EXPERIMENTAL_CATALOG === '1') {
+    const builder = new NextCatalogBuilder(env);
+    const {
+      entitiesCatalog,
+      locationsCatalog,
+      locationAnalyzer,
+      processingEngine,
+    } = await builder.build();
+
+    // TODO(jhaals): run and manage in background.
+    processingEngine.start();
+
+    return await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      locationAnalyzer,
+      logger: env.logger,
+      config: env.config,
+    });
+  }
+
   const builder = new CatalogBuilder(env);
   const {
     entitiesCatalog,
