@@ -23,6 +23,7 @@ import {
   EscalationPolicy,
   Schedule,
   IncidentResponder,
+  IncidentAction,
 } from '../types';
 
 export type TableState = {
@@ -34,7 +35,7 @@ export type GetIncidentsOpts = {
   maxResults?: number;
   startIndex?: number;
   states?: IncidentStatus[];
-  alertSources?: number[] | string[];
+  alertSources?: number[];
 };
 
 export type GetIncidentsCountOpts = {
@@ -53,6 +54,7 @@ export interface ILertApi {
   fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
   fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
   fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
+  fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
   acceptIncident(incident: Incident): Promise<Incident>;
   resolveIncident(incident: Incident): Promise<Incident>;
   assignIncident(
@@ -60,6 +62,10 @@ export interface ILertApi {
     responder: IncidentResponder,
   ): Promise<Incident>;
   createIncident(eventRequest: EventRequest): Promise<boolean>;
+  triggerIncidentAction(
+    incident: Incident,
+    action: IncidentAction,
+  ): Promise<void>;
 
   fetchUptimeMonitors(): Promise<UptimeMonitor[]>;
   pauseUptimeMonitor(uptimeMonitor: UptimeMonitor): Promise<UptimeMonitor>;
@@ -98,10 +104,10 @@ export type Options = {
   discoveryApi: DiscoveryApi;
 
   /**
-   * Domain used by users to access iLert web UI.
+   * URL used by users to access iLert web UI.
    * Example: https://my-org.ilert.com/
    */
-  domain: string;
+  baseUrl: string;
 
   /**
    * Path to use for requests via the proxy, defaults to /ilert/api

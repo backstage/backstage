@@ -310,3 +310,19 @@ export interface IncidentResponder {
   name: string;
   disabled: boolean;
 }
+
+export interface IncidentAction {
+  name: string;
+  type: string;
+  webhookId: string;
+  extensionId?: string;
+  history?: IncidentActionHistory[];
+}
+
+export interface IncidentActionHistory {
+  id: string;
+  webhookId: string;
+  incidentId: number;
+  actor: User;
+  success: boolean;
+}

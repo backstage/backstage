@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, useApi } from '@backstage/core';
+import { alertApiRef, Progress, useApi } from '@backstage/core';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ilertApiRef } from '../../api';
-import { Incident } from '../../types';
+import { Incident, IncidentAction } from '../../types';
 import { IncidentAssignModal } from './IncidentAssignModal';
+import { useIncidentActions } from '../../hooks/useIncidentActions';
 
 export const IncidentActionsMenu = ({
   incident,
@@ -40,6 +41,11 @@ export const IncidentActionsMenu = ({
     isAssignIncidentModalOpened,
     setIsAssignIncidentModalOpened,
   ] = React.useState(false);
+
+  const [{ incidentActions, isLoading }] = useIncidentActions(
+    incident,
+    Boolean(anchorEl),
+  );
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,6 +90,40 @@ export const IncidentActionsMenu = ({
     setIsAssignIncidentModalOpened(true);
   };
 
+  const handleTriggerAction = (action: IncidentAction) => async () => {
+    try {
+      handleCloseMenu();
+      setProcessing(true);
+      await ilertApi.triggerIncidentAction(incident, action);
+      alertApi.post({ message: 'Incident action triggered.' });
+      setProcessing(false);
+    } catch (err) {
+      setProcessing(false);
+      alertApi.post({ message: err, severity: 'error' });
+    }
+  };
+
+  const actions: React.ReactNode[] = incidentActions.map(a => {
+    const successTrigger = a.history
+      ? a.history.find(h => h.success)
+      : undefined;
+    const triggeredBy =
+      successTrigger && successTrigger.actor
+        ? `${successTrigger.actor.firstName} ${successTrigger.actor.lastName}`
+        : '';
+    return (
+      <MenuItem
+        key={a.webhookId}
+        onClick={handleTriggerAction(a)}
+        disabled={!!successTrigger}
+      >
+        <Typography variant="inherit" noWrap>
+          {triggeredBy ? `${a.name} (by ${triggeredBy})` : a.name}
+        </Typography>
+      </MenuItem>
+    );
+  });
+
   return (
     <>
       <IconButton
@@ -102,7 +142,7 @@ export const IncidentActionsMenu = ({
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
         PaperProps={{
-          style: { maxHeight: 48 * 4.5 },
+          style: { maxHeight: 48 * 5.5 },
         }}
       >
         {incident.status === 'PENDING' ? (
@@ -128,6 +168,14 @@ export const IncidentActionsMenu = ({
             </Typography>
           </MenuItem>
         ) : null}
+
+        {isLoading ? (
+          <MenuItem key="loading">
+            <Progress style={{ width: '100%' }} />
+          </MenuItem>
+        ) : (
+          actions
+        )}
 
         <MenuItem key="details" onClick={handleCloseMenu}>
           <Typography variant="inherit" noWrap>

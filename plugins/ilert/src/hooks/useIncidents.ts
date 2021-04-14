@@ -22,11 +22,18 @@ import {
 } from '../api';
 import { useApi, errorApiRef } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
-import { ACCEPTED, PENDING, Incident, IncidentStatus } from '../types';
+import {
+  ACCEPTED,
+  PENDING,
+  Incident,
+  IncidentStatus,
+  AlertSource,
+} from '../types';
 
 export const useIncidents = (
   paging: boolean,
-  alertSources?: number[] | string[],
+  singleSource?: boolean,
+  alertSource?: AlertSource | null,
 ) => {
   const ilertApi = useApi(ilertApiRef);
   const errorApi = useApi(errorApiRef);
@@ -45,10 +52,13 @@ export const useIncidents = (
 
   const fetchIncidentsCall = async () => {
     try {
+      if (singleSource && !alertSource) {
+        return;
+      }
       setIsLoading(true);
       const opts: GetIncidentsOpts = {
         states,
-        alertSources,
+        alertSources: alertSource ? [alertSource.id] : [],
       };
       if (paging) {
         opts.maxResults = tableState.pageSize;
@@ -80,6 +90,8 @@ export const useIncidents = (
   const fetchIncidents = useAsyncRetry(fetchIncidentsCall, [
     tableState,
     states,
+    singleSource,
+    alertSource,
   ]);
 
   const refetchIncidents = () => {

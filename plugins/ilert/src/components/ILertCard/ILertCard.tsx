@@ -56,7 +56,6 @@ export const ILertCard = () => {
     { alertSource, uptimeMonitor },
     { setAlertSource, refetchAlertSource },
   ] = useAlertSource(integrationKey);
-  const alertSourcesFilter = alertSource ? [alertSource.id] : [integrationKey];
   const [
     { tableState, states, incidents, incidentsCount, isLoading, error },
     {
@@ -67,7 +66,7 @@ export const ILertCard = () => {
       refetchIncidents,
       setIsLoading,
     },
-  ] = useIncidents(false, alertSourcesFilter);
+  ] = useIncidents(false, true, alertSource);
 
   const [
     isNewIncidentModalOpened,

@@ -18,6 +18,7 @@ import {
   AlertSource,
   EscalationPolicy,
   Incident,
+  IncidentAction,
   IncidentResponder,
   Schedule,
   UptimeMonitor,
@@ -44,22 +45,22 @@ export class UnauthorizedError extends Error {}
 export class ILertClient implements ILertApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly proxyPath: string;
-  private readonly domain: string;
+  private readonly baseUrl: string;
 
   static fromConfig(configApi: ConfigApi, discoveryApi: DiscoveryApi) {
-    const domainUrl: string =
-      configApi.getOptionalString('domainUrl') ?? 'https://api.ilert.com';
+    const baseUrl: string =
+      configApi.getOptionalString('ilert.baseUrl') ?? 'https://app.ilert.com';
 
     return new ILertClient({
       discoveryApi: discoveryApi,
-      domain: domainUrl,
+      baseUrl,
       proxyPath: configApi.getOptionalString('ilert.proxyPath'),
     });
   }
 
   constructor(opts: Options) {
     this.discoveryApi = opts.discoveryApi;
-    this.domain = opts.domain;
+    this.baseUrl = opts.baseUrl;
     this.proxyPath = opts.proxyPath ?? DEFAULT_PROXY_PATH;
   }
 
@@ -94,7 +95,7 @@ export class ILertClient implements ILertApi {
       query.append('start-index', `${opts.startIndex}`);
     }
     if (opts && opts.alertSources) {
-      opts.alertSources.forEach((a: string | number) => {
+      opts.alertSources.forEach((a: number) => {
         if (a) {
           query.append('alert-source', `${a}`);
         }
@@ -147,6 +148,22 @@ export class ILertClient implements ILertApi {
 
     const response = await this.fetch(
       `/api/v1/incidents/${incident.id}/responders`,
+      init,
+    );
+
+    return response;
+  }
+
+  async fetchIncidentActions(incident: Incident): Promise<IncidentAction[]> {
+    const init = {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    };
+
+    const response = await this.fetch(
+      `/api/v1/incidents/${incident.id}/actions`,
       init,
     );
 
@@ -220,6 +237,27 @@ export class ILertClient implements ILertApi {
     );
 
     return response;
+  }
+
+  async triggerIncidentAction(
+    incident: Incident,
+    action: IncidentAction,
+  ): Promise<void> {
+    const init = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        webhookId: action.webhookId,
+        extensionId: action.extensionId,
+        type: action.type,
+        name: action.name,
+      }),
+    };
+
+    await this.fetch(`/api/v1/incidents/${incident.id}/actions`, init);
   }
 
   async createIncident(eventRequest: EventRequest): Promise<boolean> {
@@ -461,26 +499,26 @@ export class ILertClient implements ILertApi {
   }
 
   getIncidentDetailsURL(incident: Incident): string {
-    return `${this.domain}/incident/view.jsf?id=${incident.id}`;
+    return `${this.baseUrl}/incident/view.jsf?id=${incident.id}`;
   }
 
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string {
     if (!alertSource) {
       return '';
     }
-    return `${this.domain}/source/view.jsf?id=${alertSource.id}`;
+    return `${this.baseUrl}/source/view.jsf?id=${alertSource.id}`;
   }
 
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string {
-    return `${this.domain}/policy/view.jsf?id=${escalationPolicy.id}`;
+    return `${this.baseUrl}/policy/view.jsf?id=${escalationPolicy.id}`;
   }
 
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string {
-    return `${this.domain}/uptime/view.jsf?id=${uptimeMonitor.id}`;
+    return `${this.baseUrl}/uptime/view.jsf?id=${uptimeMonitor.id}`;
   }
 
   getScheduleDetailsURL(schedule: Schedule): string {
-    return `${this.domain}/schedule/view.jsf?id=${schedule.id}`;
+    return `${this.baseUrl}/schedule/view.jsf?id=${schedule.id}`;
   }
 
   getUserInitials(assignedTo: User | null) {

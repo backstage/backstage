@@ -17,6 +17,9 @@ This plugin provides:
 - A list of incidents
 - A way to trigger a new incident
 - A way to reassign/acknowledge/resolve an incident
+- A way to trigger an incident action
+- A way to trigger an immediate maintenance
+- A way to disable/enable an alert source
 - A list of uptime monitors
 
 ## Setup instructions
@@ -41,7 +44,6 @@ import {
   isPluginApplicableToEntity as isILertAvailable,
   EntityILertCard,
 } from '@backstage/plugin-ilert';
-// add to code
 {
   isILertAvailable(entity) && (
     <Grid item md={6}>
@@ -58,10 +60,8 @@ import {
 Modify your app routes in [`App.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/App.tsx) to include the Router component exported from the plugin, for example:
 
 ```tsx
-// At the top imports
 import { ILertPage } from '@backstage/plugin-ilert';
 
-// Inside App component
 <Routes>
   // ...
   <Route path="/ilert" element={<ILertPage />} />
@@ -72,10 +72,8 @@ import { ILertPage } from '@backstage/plugin-ilert';
 Modify your sidebar in [`Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx) to include the icon component exported from the plugin, for example:
 
 ```tsx
-// At the top imports
 import { ILertIcon } from '@backstage/plugin-ilert';
 
-// Inside Sidebar component
 <Sidebar>
   // ...
   <SidebarItem icon={ILertIcon} to="ilert" text="iLert" />
@@ -91,7 +89,7 @@ In `app-config.yaml`:
 
 ```yaml
 ilert:
-  domain: https://my-org.ilert.com/
+  baseUrl: https://my-org.ilert.com/
 ```
 
 ## Providing the Authorization Header
