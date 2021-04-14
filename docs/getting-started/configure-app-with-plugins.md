@@ -34,23 +34,25 @@ CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
 export { plugin as Circleci } from '@backstage/plugin-circleci';
 ```
 
-3. Register the plugin router:
+3. Register the plugin in the entity pages:
 
 ```jsx
 // packages/app/src/components/catalog/EntityPage.tsx
-
-import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
+import {
+  EntityCircleCIContent,
+  isCircleCIAvailable,
+} from '@backstage/plugin-circleci';
 
 // Then somewhere inside <EntityPageLayout>
-<EntityPageLayout.Content
-  path="/ci-cd/*"
-  title="CI/CD"
-  element={<CircleCIRouter />}
-/>;
+<EntitySwitch.Case if={isCircleCIAvailable}>
+  <EntityCircleCIContent />
+</EntitySwitch.Case>;
 ```
 
-Note that stand-alone plugins that are not "attached" to the Software Catalog
-would be added outside the `EntityPage`.
+This is just one example, but each Backstage instance may integrate content or
+cards to suit their needs on different pages, tabs, etc. Note that stand-alone
+plugins that are not "attached" to the Software Catalog would be added outside
+the `EntityPage`.
 
 4. [Optional] Add proxy config:
 
