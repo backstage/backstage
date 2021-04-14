@@ -51,7 +51,7 @@ export type GithubPullRequestActionInput = {
   description: string;
   owner?: string;
   repo?: string;
-  destination: Destination;
+  destination?: Destination;
   host?: string;
   targetPath?: string;
   sourcePath?: string;
