@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
 
-export default async () => {
+export default async (cmd: Command) => {
+  const disableTypes = cmd.opts().disableTypes;
+  const outputs = new Set([Output.cjs]);
+  if (!disableTypes) {
+    outputs.add(Output.types);
+  }
   await buildPackage({
-    outputs: new Set([Output.cjs, Output.types]),
+    outputs,
   });
 };

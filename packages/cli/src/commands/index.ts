@@ -41,6 +41,11 @@ export function registerCommands(program: CommanderStatic) {
 
   program
     .command('backend:build')
+    .option(
+      '--disable-types',
+      'do not output types as a part of the build',
+      false,
+    )
     .description('Build a backend plugin')
     .action(lazy(() => import('./backend/build').then(m => m.default)));
 
