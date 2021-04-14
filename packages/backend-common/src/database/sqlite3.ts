@@ -87,7 +87,10 @@ export function buildSqliteDatabaseConfig(
     const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
 
     if (database && sqliteConnection.filename !== ':memory:') {
-      sqliteConnection.filename = `${sqliteConnection.filename}/${database}.sqlite`;
+      sqliteConnection.filename = path.join(
+        sqliteConnection.filename,
+        `${database}.sqlite`,
+      );
     }
   }
 

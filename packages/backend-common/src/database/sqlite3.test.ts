@@ -15,6 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
+import path from 'path';
 import {
   buildSqliteDatabaseConfig,
   createSqliteDatabaseClient,
@@ -34,9 +35,11 @@ describe('sqlite3', () => {
     });
 
     it('builds a persistent connection, normalize config with filename', () => {
-      expect(buildSqliteDatabaseConfig(createConfig('/path/to/foo'))).toEqual({
+      expect(
+        buildSqliteDatabaseConfig(createConfig(path.join('path', 'to', 'foo'))),
+      ).toEqual({
         client: 'sqlite3',
-        connection: { filename: '/path/to/foo' },
+        connection: { filename: path.join('path', 'to', 'foo') },
         useNullAsDefault: true,
       });
     });
@@ -45,13 +48,13 @@ describe('sqlite3', () => {
       expect(
         buildSqliteDatabaseConfig(
           createConfig({
-            filename: '/path/to/foo',
+            filename: path.join('path', 'to', 'foo'),
           }),
         ),
       ).toEqual({
         client: 'sqlite3',
         connection: {
-          filename: '/path/to/foo',
+          filename: path.join('path', 'to', 'foo'),
         },
         useNullAsDefault: true,
       });
@@ -61,7 +64,7 @@ describe('sqlite3', () => {
       expect(
         buildSqliteDatabaseConfig(
           createConfig({
-            filename: '/path/to/foo',
+            filename: path.join('path', 'to', 'foo'),
           }),
           {
             connection: {
@@ -72,7 +75,7 @@ describe('sqlite3', () => {
       ).toEqual({
         client: 'sqlite3',
         connection: {
-          filename: '/path/to/foo/my-database.sqlite',
+          filename: path.join('path', 'to', 'foo', 'my-database.sqlite'),
           database: 'my-database',
         },
         useNullAsDefault: true,
@@ -82,12 +85,12 @@ describe('sqlite3', () => {
     it('replaces the connection with an override', () => {
       expect(
         buildSqliteDatabaseConfig(createConfig(':memory:'), {
-          connection: { filename: '/path/to/foo' },
+          connection: { filename: path.join('path', 'to', 'foo') },
         }),
       ).toEqual({
         client: 'sqlite3',
         connection: {
-          filename: '/path/to/foo',
+          filename: path.join('path', 'to', 'foo'),
         },
         useNullAsDefault: true,
       });
