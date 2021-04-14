@@ -143,19 +143,36 @@ describe('createValidator', () => {
     });
 
     const errors = { foo: { bar: { addError: jest.fn() } } };
-    validator({ foo: { bar: 'github.com?owner=a' } }, errors as any);
+    validator(
+      { foo: { bar: JSON.stringify({ host: 'github.com', owner: 'owner' }) } },
+      errors as any,
+    );
     expect(errors.foo.bar.addError).toHaveBeenCalledWith(
       'Incomplete repository location provided',
     );
     jest.resetAllMocks();
 
-    validator({ foo: { bar: 'github.com?repo=b' } }, errors as any);
+    validator(
+      { foo: { bar: JSON.stringify({ host: 'github.com', repo: 'b' }) } },
+      errors as any,
+    );
     expect(errors.foo.bar.addError).toHaveBeenCalledWith(
       'Incomplete repository location provided',
     );
     jest.resetAllMocks();
 
-    validator({ foo: { bar: 'github.com?owner=a&repo=b' } }, errors as any);
+    validator(
+      {
+        foo: {
+          bar: JSON.stringify({
+            host: 'github.com',
+            owner: 'owner',
+            repo: 'repo',
+          }),
+        },
+      },
+      errors as any,
+    );
     expect(errors.foo.bar.addError).not.toHaveBeenCalled();
   });
 });
