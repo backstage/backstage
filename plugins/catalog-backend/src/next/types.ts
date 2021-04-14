@@ -18,6 +18,7 @@ import {
   EntityName,
   LocationSpec,
   Location,
+  EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Observable } from '@backstage/core'; // << nooo
@@ -81,6 +82,7 @@ export type EntityProcessingResult =
       state: Map<string, JsonObject>;
       completedEntity: Entity;
       deferredEntites: Entity[];
+      relations: EntityRelationSpec[];
       errors: Error[];
     }
   | {

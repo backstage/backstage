@@ -46,8 +46,19 @@ export type GetProcessableEntitiesResult = {
   items: RefreshStateItem[];
 };
 
+export type UpdateFinalEntityOptions = {
+  finalEntity: Entity;
+  // TODO(freben): search
+};
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
+
+  updateFinalEntity(
+    txOpaque: Transaction,
+    options: UpdateFinalEntityOptions,
+  ): Promise<void>;
+
   addUnprocessedEntities(
     tx: Transaction,
     options: AddUnprocessedEntitiesOptions,

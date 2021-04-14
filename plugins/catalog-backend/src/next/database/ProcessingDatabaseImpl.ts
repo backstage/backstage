@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/errors';
+import { ConflictError, NotFoundError, InputError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { Transaction } from '../../database';
+import { DbEntitiesRow } from '../../database/types';
 import {
   ProcessingDatabase,
   AddUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
   GetProcessableEntitiesResult,
+  UpdateFinalEntityOptions,
 } from './types';
 import type { Logger } from 'winston';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { createHash } from 'crypto';
+import stringify from 'fast-json-stable-stringify';
 import { v4 as uuid } from 'uuid';
 
 export type DbRefreshStateRequest = {
@@ -43,11 +47,51 @@ export type DbRefreshStateRow = {
   errors: string;
 };
 
+function generateEntityEtag(entity: Entity) {
+  return createHash('sha1')
+    .update(stringify({ ...entity }))
+    .digest('hex');
+}
+
 export class ProcessingDatabaseImpl implements ProcessingDatabase {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,
   ) {}
+
+  async updateFinalEntity(
+    txOpaque: Transaction,
+    options: UpdateFinalEntityOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+
+    const { finalEntity } = options;
+    const { relations } = finalEntity;
+    const { uid, etag, generation } = finalEntity.metadata;
+
+    if (uid === undefined || etag === undefined || generation === undefined) {
+      throw new InputError(
+        'One of the metadata fields "uid", "etag", or "generation" was missing',
+      );
+    } else if (relations === undefined) {
+      throw new InputError('The field "relations" was missing');
+    }
+    // TODO(freben): state/errors?
+
+    const fullName = stringifyEntityRef(finalEntity);
+
+    const result = await tx<DbEntitiesRow>('entities')
+      .insert({
+        id: uid,
+        location_id: null,
+        etag,
+        generation,
+        full_name: fullName,
+        data: JSON.stringify(finalEntity),
+      })
+      .onConflict('full_name')
+      .merge(['etag', 'generation', 'data']);
+  }
 
   async updateProcessedEntity(
     txOpaque: Transaction,

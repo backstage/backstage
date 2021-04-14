@@ -46,18 +46,13 @@ import {
   FileReaderProcessor,
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
-  HigherOrderOperation,
-  HigherOrderOperations,
   LdapOrgReaderProcessor,
-  LocationEntityProcessor,
-  LocationReaders,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
   StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
-import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
 import {
   jsonPlaceholderResolver,
@@ -73,6 +68,7 @@ import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
 import { LocationStoreImpl } from '../next/LocationStoreImpl';
 import { ProcessingStateManagerImpl } from '../next/ProcessingStateManagerImpl';
 import { CatalogProcessingEngine } from '../next/types';
+import { Stitcher } from './Stitcher';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -255,16 +251,17 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new DatabaseEntitiesCatalog(db, this.env.logger);
+    const entitiesCatalog = new DatabaseEntitiesCatalog(db, logger);
 
     const locationStore = new LocationStoreImpl(db);
     const dbLocationProvider = new DatabaseLocationProvider(locationStore);
+    const stitcher = new Stitcher(dbClient, logger);
     const processingEngine = new CatalogProcessingEngineImpl(
       logger,
       [dbLocationProvider], // entityproviders
       stateManager,
       orchestrator,
-      entitiesCatalog,
+      stitcher,
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);

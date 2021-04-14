@@ -23,8 +23,13 @@ import {
   CatalogProcessingOrchestrator,
 } from './types';
 
-import { EntitiesCatalog } from '../catalog/types';
 import { Logger } from 'winston';
+import {
+  Entity,
+  stringifyEntityRef,
+  EntityRelationSpec,
+} from '@backstage/catalog-model';
+import { Stitcher } from './Stitcher';
 
 export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
   private subscriptions: Subscription[] = [];
@@ -35,7 +40,7 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
     private readonly entityProviders: EntityProvider[],
     private readonly stateManager: ProcessingStateManager,
     private readonly orchestrator: CatalogProcessingOrchestrator,
-    private readonly entitiesCatalog: EntitiesCatalog,
+    private readonly stitcher: Stitcher,
   ) {}
 
   async start() {
@@ -77,6 +82,14 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
       await this.stateManager.addProcessingItems({
         entities: result.deferredEntites,
       });
+
+      const setOfThingsToStitch = new Set<string>([
+        stringifyEntityRef(result.completedEntity),
+        ...result.relations.map(relation =>
+          stringifyEntityRef(relation.source),
+        ),
+      ]);
+      await this.stitcher.stitch(setOfThingsToStitch);
     }
   }
 
