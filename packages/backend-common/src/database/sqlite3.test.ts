@@ -26,8 +26,21 @@ describe('sqlite3', () => {
     new ConfigReader({ client: 'sqlite3', connection });
 
   describe('buildSqliteDatabaseConfig', () => {
-    it('builds an in memory connection', () => {
+    it('builds an in-memory connection', () => {
       expect(buildSqliteDatabaseConfig(createConfig(':memory:'))).toEqual({
+        client: 'sqlite3',
+        connection: { filename: ':memory:' },
+        useNullAsDefault: true,
+      });
+    });
+
+    it('builds an in-memory connection by override with filename', () => {
+      expect(
+        buildSqliteDatabaseConfig(
+          createConfig(path.join('path', 'to', 'foo')),
+          { connection: ':memory:' },
+        ),
+      ).toEqual({
         client: 'sqlite3',
         connection: { filename: ':memory:' },
         useNullAsDefault: true,

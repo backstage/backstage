@@ -34,7 +34,7 @@ export function createSqliteDatabaseClient(
 
   // If storage on disk is used, ensure that the directory exists
   if (
-    typeof knexConfig.connection === 'object' &&
+    knexConfig.connection &&
     (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename
   ) {
     const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
@@ -70,6 +70,9 @@ export function buildSqliteDatabaseConfig(
   if (typeof baseConfig.connection === 'string') {
     baseConfig.connection = { filename: baseConfig.connection };
   }
+  if (overrides && typeof overrides.connection === 'string') {
+    overrides.connection = { filename: overrides.connection };
+  }
 
   const config: Knex.Config = mergeDatabaseConfig(
     baseConfig,
@@ -82,7 +85,7 @@ export function buildSqliteDatabaseConfig(
   // If we don't create an in-memory database, interpret the connection string
   // as a directory that contains multiple sqlite files based on the database
   // name.
-  if (config.connection && typeof config.connection === 'object') {
+  if (config.connection) {
     const database = (config.connection as Knex.ConnectionConfig).database;
     const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
 
