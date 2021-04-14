@@ -17,7 +17,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 // eslint-disable-next-line no-restricted-imports
-import { resolve as resolvePath, join as joinPath, dirname } from 'path';
+import {
+  resolve as resolvePath,
+  relative as relativePath,
+  dirname,
+} from 'path';
 import fs from 'fs-extra';
 import {
   Extractor,
@@ -169,6 +173,7 @@ async function runApiExtraction({
     (Extractor as any)._checkCompilerCompatibility = () => {};
 
     let shouldLogInstructions = false;
+    let conflictingFile: undefined | string = undefined;
 
     // Invoke API Extractor
     const extractorResult = Extractor.invoke(extractorConfig, {
@@ -182,6 +187,12 @@ async function runApiExtraction({
           )
         ) {
           shouldLogInstructions = true;
+          const match = message.text.match(
+            /Please copy the file "(.*)" to "api-report\.md"/,
+          );
+          if (match) {
+            conflictingFile = match[1];
+          }
         }
       },
       compilerState,
@@ -203,7 +214,23 @@ async function runApiExtraction({
           '*************************************************************************************',
         );
         console.log('');
+
+        if (conflictingFile) {
+          console.log('');
+          console.log(
+            `The conflicting file is ${relativePath(
+              tmpDir,
+              conflictingFile,
+            )}, with the following content:`,
+          );
+          console.log('');
+
+          const content = await fs.readFile(conflictingFile, 'utf8');
+          console.log(content);
+          console.log('');
+        }
       }
+
       throw new Error(
         `API Extractor completed with ${extractorResult.errorCount} errors` +
           ` and ${extractorResult.warningCount} warnings`,
