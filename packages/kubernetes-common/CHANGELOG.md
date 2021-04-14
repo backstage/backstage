@@ -4,4 +4,4 @@
 
 ### Minor Changes
 
-- Adds the following types to be shared by the backend and the front end:
+- Adds types to be shared by the backend and the front end.

@@ -35,6 +35,7 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^0.7.6",
     "@kubernetes/client-node": "^0.14.0"
   },
   "devDependencies": {
