@@ -47,7 +47,9 @@ export async function createRouter({
         const results = await engine?.query(req.query);
         res.send(results);
       } catch (err) {
-        throw new Error(`There was a problem performing the search query.`);
+        throw new Error(
+          `There was a problem performing the search query. ${err}`,
+        );
       }
     },
   );
