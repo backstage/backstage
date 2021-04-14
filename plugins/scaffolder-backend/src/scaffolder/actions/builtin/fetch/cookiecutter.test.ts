@@ -142,7 +142,7 @@ describe('fetch:cookiecutter', () => {
         ...mockContext,
         input: {
           ...mockContext.input,
-          copyWithoutRender: 'xyz',
+          copyWithoutRender: 'xyz' as any,
         },
       }),
     ).rejects.toThrow(/copyWithoutRender must be an Array/);
@@ -154,7 +154,7 @@ describe('fetch:cookiecutter', () => {
         ...mockContext,
         input: {
           ...mockContext.input,
-          extensions: 'xyz',
+          extensions: 'xyz' as any,
         },
       }),
     ).rejects.toThrow(/extensions must be an Array/);

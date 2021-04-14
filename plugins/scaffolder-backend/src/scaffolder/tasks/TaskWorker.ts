@@ -129,6 +129,7 @@ export class TaskWorker {
             const validateResult = validateJsonSchema(input, action.schema, {
               propertyName: 'input',
             });
+
             if (!validateResult.valid) {
               const errors = validateResult.errors.join(', ');
               throw new InputError(
