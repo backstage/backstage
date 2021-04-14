@@ -33,10 +33,7 @@ export function createSqliteDatabaseClient(
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
 
   // If storage on disk is used, ensure that the directory exists
-  if (
-    knexConfig.connection &&
-    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename
-  ) {
+  if ((knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename) {
     const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
     const directory = path.dirname(filename);
 
@@ -75,6 +72,9 @@ export function buildSqliteDatabaseConfig(
   }
 
   const config: Knex.Config = mergeDatabaseConfig(
+    {
+      connection: {},
+    },
     baseConfig,
     {
       useNullAsDefault: true,
@@ -85,16 +85,14 @@ export function buildSqliteDatabaseConfig(
   // If we don't create an in-memory database, interpret the connection string
   // as a directory that contains multiple sqlite files based on the database
   // name.
-  if (config.connection) {
-    const database = (config.connection as Knex.ConnectionConfig).database;
-    const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
+  const database = (config.connection as Knex.ConnectionConfig).database;
+  const sqliteConnection = config.connection as Knex.Sqlite3ConnectionConfig;
 
-    if (database && sqliteConnection.filename !== ':memory:') {
-      sqliteConnection.filename = path.join(
-        sqliteConnection.filename,
-        `${database}.sqlite`,
-      );
-    }
+  if (database && sqliteConnection.filename !== ':memory:') {
+    sqliteConnection.filename = path.join(
+      sqliteConnection.filename,
+      `${database}.sqlite`,
+    );
   }
 
   return config;
