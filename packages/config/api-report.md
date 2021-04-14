@@ -4,16 +4,12 @@
 
 ```ts
 
-// Warning: (ae-missing-release-tag) "AppConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type AppConfig = {
     context: string;
     data: JsonObject;
 };
 
-// Warning: (ae-missing-release-tag) "Config" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Config = {
     has(key: string): boolean;
@@ -34,8 +30,6 @@ export type Config = {
     getOptionalStringArray(key: string): string[] | undefined;
 };
 
-// Warning: (ae-missing-release-tag) "ConfigReader" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class ConfigReader implements Config {
     constructor(data: JsonObject | undefined, context?: string, fallback?: ConfigReader | undefined, prefix?: string);
@@ -75,26 +69,18 @@ export class ConfigReader implements Config {
     keys(): string[];
     }
 
-// Warning: (ae-missing-release-tag) "JsonArray" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface JsonArray extends Array<JsonValue> {
 }
 
-// Warning: (ae-missing-release-tag) "JsonObject" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type JsonObject = {
     [key in string]?: JsonValue;
 };
 
-// Warning: (ae-missing-release-tag) "JsonPrimitive" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type JsonPrimitive = number | string | boolean | null;
 
-// Warning: (ae-missing-release-tag) "JsonValue" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type JsonValue = JsonObject | JsonArray | JsonPrimitive;
 

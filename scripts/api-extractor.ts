@@ -133,9 +133,9 @@ async function runApiExtraction({
         },
 
         messages: {
+          // Silence warnings, as these will prevent the CI build to work
           compilerMessageReporting: {
             default: {
-              // Silence compiler warnings, as these will prevent the CI build to work
               logLevel: 'none' as ExtractorLogLevel.None,
               // These contain absolute file paths, so can't be included in the report
               // addToApiReportFile: true,
@@ -143,14 +143,14 @@ async function runApiExtraction({
           },
           extractorMessageReporting: {
             default: {
-              logLevel: 'warning' as ExtractorLogLevel.Warning,
-              addToApiReportFile: true,
+              logLevel: 'none' as ExtractorLogLevel.Warning,
+              // addToApiReportFile: true,
             },
           },
           tsdocMessageReporting: {
             default: {
-              logLevel: 'warning' as ExtractorLogLevel.Warning,
-              addToApiReportFile: true,
+              logLevel: 'none' as ExtractorLogLevel.Warning,
+              // addToApiReportFile: true,
             },
           },
         },

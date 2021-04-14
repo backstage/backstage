@@ -12,14 +12,9 @@ import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core';
 import { ReactNode } from 'react';
 
-// Warning: (ae-forgotten-export) The symbol "DevAppBuilder" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "createDevApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function createDevApp(): DevAppBuilder;
 
-// Warning: (ae-missing-release-tag) "EntityGridItem" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityGridItem: ({ entity, classes, ...rest }: Omit<GridProps<"div", {}>, "container" | "item"> & {
     entity: Entity;

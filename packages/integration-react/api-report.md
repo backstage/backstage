@@ -8,16 +8,12 @@ import { ApiRef } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
-// Warning: (ae-missing-release-tag) "ScmIntegrationsApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class ScmIntegrationsApi {
     // (undocumented)
     static fromConfig(config: Config): ScmIntegrationRegistry;
 }
 
-// Warning: (ae-missing-release-tag) "scmIntegrationsApiRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const scmIntegrationsApiRef: ApiRef<ScmIntegrationRegistry>;
 

@@ -6,20 +6,14 @@
 
 import { JsonObject } from '@backstage/config';
 
-// Warning: (ae-missing-release-tag) "AuthenticationError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class AuthenticationError extends CustomErrorBase {
 }
 
-// Warning: (ae-missing-release-tag) "ConflictError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ConflictError extends CustomErrorBase {
 }
 
-// Warning: (ae-missing-release-tag) "CustomErrorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class CustomErrorBase extends Error {
     constructor(message?: string, cause?: Error);
@@ -27,13 +21,9 @@ export class CustomErrorBase extends Error {
     readonly cause?: Error;
 }
 
-// Warning: (ae-missing-release-tag) "deserializeError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function deserializeError<T extends Error = Error>(data: SerializedError): T;
 
-// Warning: (ae-missing-release-tag) "ErrorResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type ErrorResponse = {
     error: SerializedError;
@@ -46,38 +36,25 @@ export type ErrorResponse = {
     };
 };
 
-// Warning: (ae-missing-release-tag) "InputError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class InputError extends CustomErrorBase {
 }
 
-// Warning: (ae-missing-release-tag) "NotAllowedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class NotAllowedError extends CustomErrorBase {
 }
 
-// Warning: (ae-missing-release-tag) "NotFoundError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class NotFoundError extends CustomErrorBase {
 }
 
-// Warning: (ae-missing-release-tag) "NotModifiedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class NotModifiedError extends CustomErrorBase {
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "parseErrorResponse" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function parseErrorResponse(response: Response): Promise<ErrorResponse>;
 
-// Warning: (ae-missing-release-tag) "ResponseError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class ResponseError extends Error {
     constructor(props: {
@@ -92,8 +69,6 @@ export class ResponseError extends Error {
     readonly response: Response;
 }
 
-// Warning: (ae-missing-release-tag) "SerializedError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type SerializedError = JsonObject & {
     name: string;
@@ -102,10 +77,6 @@ export type SerializedError = JsonObject & {
     code?: string;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// Warning: (ae-missing-release-tag) "serializeError" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function serializeError(error: Error, options?: {
     includeStack?: boolean;

@@ -16,28 +16,20 @@ import { RouteRef } from '@backstage/core-api';
 import { StorageApi } from '@backstage/core-api';
 import { StorageValueChange } from '@backstage/core-api';
 
-// Warning: (ae-forgotten-export) The symbol "Breakpoint" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "mockBreakpoint" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function mockBreakpoint(initialBreakpoint?: Breakpoint): {
     set(breakpoint: Breakpoint): void;
     remove(): void;
 };
 
-// Warning: (ae-missing-release-tag) "MockErrorApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class MockErrorApi implements ErrorApi {
-    // Warning: (ae-forgotten-export) The symbol "Options" needs to be exported by the entry point index.d.ts
     constructor(options?: Options);
     // (undocumented)
     error$(): Observable<{
         error: Error;
         context?: ErrorContext;
     }>;
-    // Warning: (ae-forgotten-export) The symbol "ErrorWithContext" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     getErrors(): ErrorWithContext[];
     // (undocumented)
@@ -46,8 +38,6 @@ export class MockErrorApi implements ErrorApi {
     waitForError(pattern: RegExp, timeoutMs?: number): Promise<ErrorWithContext>;
 }
 
-// Warning: (ae-missing-release-tag) "MockStorageApi" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class MockStorageApi implements StorageApi {
     // (undocumented)
@@ -64,15 +54,11 @@ export class MockStorageApi implements StorageApi {
     set<T>(key: string, data: T): Promise<void>;
     }
 
-// Warning: (ae-missing-release-tag) "MockStorageBucket" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type MockStorageBucket = {
     [key: string]: any;
 };
 
-// Warning: (ae-missing-release-tag) "msw" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const msw: {
     setupDefaultHandlers: (worker: {
@@ -82,14 +68,9 @@ export const msw: {
     }) => void;
 };
 
-// Warning: (ae-forgotten-export) The symbol "TestAppOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "renderInTestApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function renderInTestApp(Component: ComponentType | ReactNode, options?: TestAppOptions): Promise<RenderResult>;
 
-// Warning: (ae-missing-release-tag) "wrapInTestApp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function wrapInTestApp(Component: ComponentType | ReactNode, options?: TestAppOptions): ReactElement;
 

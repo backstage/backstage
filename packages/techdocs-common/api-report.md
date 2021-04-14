@@ -17,26 +17,18 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
 import { Writable } from 'stream';
 
-// Warning: (ae-missing-release-tag) "checkoutGitRepository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const checkoutGitRepository: (repoUrl: string, config: Config, logger: Logger) => Promise<string>;
 
-// Warning: (ae-missing-release-tag) "CommonGitPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class CommonGitPreparer implements PreparerBase {
     constructor(config: Config, logger: Logger);
-    // Warning: (ae-forgotten-export) The symbol "PreparerResponse" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     prepare(entity: Entity, options?: {
         etag?: string;
     }): Promise<PreparerResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "DirectoryPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class DirectoryPreparer implements PreparerBase {
     constructor(config: Config, logger: Logger, reader: UrlReader);
@@ -44,23 +36,17 @@ export class DirectoryPreparer implements PreparerBase {
     prepare(entity: Entity): Promise<PreparerResponse>;
     }
 
-// Warning: (ae-missing-release-tag) "GeneratorBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type GeneratorBase = {
     run(opts: GeneratorRunOptions): Promise<void>;
 };
 
-// Warning: (ae-missing-release-tag) "GeneratorBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type GeneratorBuilder = {
     register(protocol: SupportedGeneratorKey, generator: GeneratorBase): void;
     get(entity: Entity): GeneratorBase;
 };
 
-// Warning: (ae-missing-release-tag) "Generators" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class Generators implements GeneratorBuilder {
     // (undocumented)
@@ -73,79 +59,51 @@ export class Generators implements GeneratorBuilder {
     register(generatorKey: SupportedGeneratorKey, generator: GeneratorBase): void;
 }
 
-// Warning: (ae-missing-release-tag) "getAzureIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getAzureIntegrationConfig: (config: Config, host: string) => AzureIntegrationConfig;
 
-// Warning: (ae-missing-release-tag) "getDefaultBranch" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getDefaultBranch: (repositoryUrl: string, config: Config) => Promise<string>;
 
-// Warning: (ae-missing-release-tag) "getDocFilesFromRepository" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getDocFilesFromRepository: (reader: UrlReader, entity: Entity, opts?: {
     etag?: string | undefined;
     logger?: Logger | undefined;
 } | undefined) => Promise<PreparerResponse>;
 
-// Warning: (ae-missing-release-tag) "getGitHost" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function getGitHost(url: string): string;
 
-// Warning: (ae-missing-release-tag) "getGitHubIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getGitHubIntegrationConfig: (config: Config, host: string) => GitHubIntegrationConfig;
 
-// Warning: (ae-missing-release-tag) "getGitLabIntegrationConfig" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getGitLabIntegrationConfig: (config: Config, host: string) => GitLabIntegrationConfig;
 
-// Warning: (ae-missing-release-tag) "getGitRepositoryTempFolder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getGitRepositoryTempFolder: (repositoryUrl: string, config: Config) => Promise<string>;
 
-// Warning: (ae-missing-release-tag) "getGitRepoType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function getGitRepoType(url: string): string;
 
-// Warning: (ae-missing-release-tag) "getLastCommitTimestamp" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getLastCommitTimestamp: (repositoryLocation: string, logger: Logger) => Promise<number>;
 
-// Warning: (ae-missing-release-tag) "getLocationForEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getLocationForEntity: (entity: Entity) => ParsedLocationAnnotation;
 
-// Warning: (ae-missing-release-tag) "getTokenForGitRepo" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const getTokenForGitRepo: (repositoryUrl: string, config: Config) => Promise<string | undefined>;
 
-// Warning: (ae-missing-release-tag) "ParsedLocationAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type ParsedLocationAnnotation = {
     type: RemoteProtocol;
     target: string;
 };
 
-// Warning: (ae-missing-release-tag) "parseReferenceAnnotation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const parseReferenceAnnotation: (annotationName: string, entity: Entity) => ParsedLocationAnnotation;
 
-// Warning: (ae-missing-release-tag) "PreparerBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type PreparerBase = {
     prepare(entity: Entity, options?: {
@@ -154,20 +112,14 @@ export type PreparerBase = {
     }): Promise<PreparerResponse>;
 };
 
-// Warning: (ae-missing-release-tag) "PreparerBuilder" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type PreparerBuilder = {
     register(protocol: RemoteProtocol, preparer: PreparerBase): void;
     get(entity: Entity): PreparerBase;
 };
 
-// Warning: (ae-missing-release-tag) "Preparers" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class Preparers implements PreparerBuilder {
-    // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     static fromConfig(config: Config, { logger, reader }: factoryOptions): Promise<PreparerBuilder>;
     // (undocumented)
@@ -176,41 +128,26 @@ export class Preparers implements PreparerBuilder {
     register(protocol: RemoteProtocol, preparer: PreparerBase): void;
 }
 
-// Warning: (ae-missing-release-tag) "Publisher" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class Publisher {
-    // Warning: (ae-forgotten-export) The symbol "factoryOptions" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     static fromConfig(config: Config, { logger, discovery }: factoryOptions_2): Promise<PublisherBase>;
 }
 
-// Warning: (ae-missing-release-tag) "PublisherBase" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface PublisherBase {
     docsRouter(): express.Handler;
     fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
     hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (ae-forgotten-export) The symbol "PublishRequest" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "PublishResponse" needs to be exported by the entry point index.d.ts
     publish(request: PublishRequest): Promise<PublishResponse>;
 }
 
-// Warning: (ae-missing-release-tag) "PublisherType" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type PublisherType = 'local' | 'googleGcs' | 'awsS3' | 'azureBlobStorage' | 'openStackSwift';
 
-// Warning: (ae-missing-release-tag) "RemoteProtocol" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type RemoteProtocol = 'url' | 'dir' | 'github' | 'gitlab' | 'file' | 'azure/api';
 
-// Warning: (ae-missing-release-tag) "TechdocsGenerator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class TechdocsGenerator implements GeneratorBase {
     constructor(logger: Logger, config: Config);
@@ -218,9 +155,6 @@ export class TechdocsGenerator implements GeneratorBase {
     run({ inputDir, outputDir, dockerClient, parsedLocationAnnotation, etag, }: GeneratorRunOptions): Promise<void>;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "TechDocsMetadata" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type TechDocsMetadata = {
     site_name: string;
@@ -228,8 +162,6 @@ export type TechDocsMetadata = {
     etag: string;
 };
 
-// Warning: (ae-missing-release-tag) "UrlPreparer" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export class UrlPreparer implements PreparerBase {
     constructor(reader: UrlReader, logger: Logger);
@@ -239,15 +171,6 @@ export class UrlPreparer implements PreparerBase {
     }): Promise<PreparerResponse>;
     }
 
-
-// Warnings were encountered during analysis:
-//
-// src/stages/generate/types.ts:42:3 - (ae-forgotten-export) The symbol "GeneratorRunOptions" needs to be exported by the entry point index.d.ts
-// src/stages/generate/types.ts:54:3 - (ae-forgotten-export) The symbol "SupportedGeneratorKey" needs to be exported by the entry point index.d.ts
-// src/stages/prepare/types.ts:35:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/stages/prepare/types.ts:36:6 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/stages/prepare/types.ts:38:31 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/stages/prepare/types.ts:38:14 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 
 // (No @packageDocumentation comment for this package)
 

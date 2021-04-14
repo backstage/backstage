@@ -4,13 +4,9 @@
 
 ```ts
 
-// Warning: (ae-missing-release-tag) "findPaths" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function findPaths(searchDir: string): Paths;
 
-// Warning: (ae-missing-release-tag) "Paths" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Paths = {
     ownDir: string;
@@ -23,10 +19,6 @@ export type Paths = {
     resolveTargetRoot: ResolveFunc;
 };
 
-
-// Warnings were encountered during analysis:
-//
-// src/paths.ts:38:3 - (ae-forgotten-export) The symbol "ResolveFunc" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -6,24 +6,18 @@
 
 import { JsonObject } from '@backstage/config';
 
-// Warning: (ae-missing-release-tag) "DocumentCollator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface DocumentCollator {
     // (undocumented)
     execute(): Promise<IndexableDocument[]>;
 }
 
-// Warning: (ae-missing-release-tag) "DocumentDecorator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface DocumentDecorator {
     // (undocumented)
     execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
 }
 
-// Warning: (ae-missing-release-tag) "IndexableDocument" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export interface IndexableDocument {
     location: string;
@@ -31,8 +25,6 @@ export interface IndexableDocument {
     title: string;
 }
 
-// Warning: (ae-missing-release-tag) "SearchQuery" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface SearchQuery {
     // (undocumented)
@@ -43,16 +35,12 @@ export interface SearchQuery {
     term: string;
 }
 
-// Warning: (ae-missing-release-tag) "SearchResult" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface SearchResult {
     // (undocumented)
     document: IndexableDocument;
 }
 
-// Warning: (ae-missing-release-tag) "SearchResultSet" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface SearchResultSet {
     // (undocumented)

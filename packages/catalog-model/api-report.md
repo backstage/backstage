@@ -9,23 +9,15 @@ import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/config';
 import * as yup from 'yup';
 
-// Warning: (ae-missing-release-tag) "analyzeLocationSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const analyzeLocationSchema: yup.ObjectSchema<{
     location: LocationSpec;
 }, object>;
 
-// Warning: (ae-missing-release-tag) "ApiEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface ApiEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND;
     // (undocumented)
@@ -42,53 +34,26 @@ export { ApiEntityV1alpha1 as ApiEntity }
 
 export { ApiEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "apiEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const apiEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "CommonValidatorFunctions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class CommonValidatorFunctions {
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     static isJsonSafe(value: unknown): boolean;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
     static isValidDnsLabel(value: unknown): boolean;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
     static isValidDnsSubdomain(value: unknown): boolean;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     static isValidPrefixAndOrSuffix(value: unknown, separator: string, isValidPrefix: (value: string) => boolean, isValidSuffix: (value: string) => boolean): boolean;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     static isValidString(value: unknown): boolean;
-    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     static isValidUrl(value: unknown): boolean;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-forgotten-export) The symbol "EntityRefContext" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "compareEntityToRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function compareEntityToRef(entity: Entity, ref: EntityRef | EntityName, context?: EntityRefContext): boolean;
 
-// Warning: (ae-missing-release-tag) "ComponentEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface ComponentEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_2[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_2;
     // (undocumented)
@@ -99,6 +64,7 @@ interface ComponentEntityV1alpha1 extends Entity {
         subcomponentOf?: string;
         providesApis?: string[];
         consumesApis?: string[];
+        dependsOn?: string[];
         system?: string;
     };
 }
@@ -107,13 +73,9 @@ export { ComponentEntityV1alpha1 as ComponentEntity }
 
 export { ComponentEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "componentEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const componentEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "DefaultNamespaceEntityPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class DefaultNamespaceEntityPolicy implements EntityPolicy {
     constructor(namespace?: string);
@@ -121,16 +83,10 @@ export class DefaultNamespaceEntityPolicy implements EntityPolicy {
     enforce(entity: Entity): Promise<Entity>;
     }
 
-// Warning: (ae-missing-release-tag) "DomainEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface DomainEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_3[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_3;
     // (undocumented)
@@ -143,19 +99,12 @@ export { DomainEntityV1alpha1 as DomainEntity }
 
 export { DomainEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "domainEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const domainEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "EDIT_URL_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EDIT_URL_ANNOTATION = "backstage.io/edit-url";
 
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (ae-missing-release-tag) "Entity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type Entity = {
     apiVersion: string;
@@ -165,25 +114,15 @@ export type Entity = {
     relations?: EntityRelation[];
 };
 
-// Warning: (ae-missing-release-tag) "ENTITY_DEFAULT_NAMESPACE" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const ENTITY_DEFAULT_NAMESPACE = "default";
 
-// Warning: (ae-missing-release-tag) "ENTITY_META_GENERATED_FIELDS" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const ENTITY_META_GENERATED_FIELDS: readonly ["uid", "etag", "generation"];
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "entityHasChanges" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function entityHasChanges(previous: Entity, next: Entity): boolean;
 
-// Warning: (ae-missing-release-tag) "EntityLink" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityLink = {
     url: string;
@@ -191,10 +130,6 @@ export type EntityLink = {
     icon?: string;
 };
 
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (ae-missing-release-tag) "EntityMeta" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityMeta = JsonObject & {
     uid?: string;
@@ -209,8 +144,6 @@ export type EntityMeta = JsonObject & {
     links?: EntityLink[];
 };
 
-// Warning: (ae-missing-release-tag) "EntityName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityName = {
     kind: string;
@@ -218,23 +151,17 @@ export type EntityName = {
     name: string;
 };
 
-// Warning: (ae-missing-release-tag) "EntityPolicies" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const EntityPolicies: {
     allOf(policies: EntityPolicy[]): AllEntityPolicies;
     oneOf(policies: EntityPolicy[]): AnyEntityPolicy;
 };
 
-// Warning: (ae-missing-release-tag) "EntityPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityPolicy = {
     enforce(entity: Entity): Promise<Entity | undefined>;
 };
 
-// Warning: (ae-missing-release-tag) "EntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityRef = string | {
     kind?: string;
@@ -242,16 +169,12 @@ export type EntityRef = string | {
     name: string;
 };
 
-// Warning: (ae-missing-release-tag) "EntityRelation" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityRelation = {
     type: string;
     target: EntityName;
 };
 
-// Warning: (ae-missing-release-tag) "EntityRelationSpec" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type EntityRelationSpec = {
     source: EntityName;
@@ -259,8 +182,6 @@ export type EntityRelationSpec = {
     target: EntityName;
 };
 
-// Warning: (ae-missing-release-tag) "FieldFormatEntityPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
     constructor(validators?: Validators);
@@ -268,39 +189,28 @@ export class FieldFormatEntityPolicy implements EntityPolicy {
     enforce(entity: Entity): Promise<Entity>;
     }
 
-// Warning: (ae-missing-release-tag) "generateEntityEtag" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function generateEntityEtag(): string;
 
-// Warning: (ae-missing-release-tag) "generateEntityUid" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function generateEntityUid(): string;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "generateUpdatedEntity" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function generateUpdatedEntity(previous: Entity, next: Entity): Entity;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "getEntityName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function getEntityName(entity: Entity): EntityName;
 
-// Warning: (ae-missing-release-tag) "GroupEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
+// @public
+export function getEntitySourceLocation(entity: Entity): {
+    type: string;
+    target: string;
+};
+
 // @public (undocumented)
 interface GroupEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_4[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_4;
     // (undocumented)
@@ -321,30 +231,19 @@ export { GroupEntityV1alpha1 as GroupEntity }
 
 export { GroupEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "groupEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const groupEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "JSONSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type JSONSchema = JSONSchema7 & {
     [key in string]?: JsonValue;
 };
 
-// Warning: (ae-missing-release-tag) "KindValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export type KindValidator = {
     check(entity: Entity): Promise<boolean>;
 };
 
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (tsdoc-unsupported-tag) The TSDoc tag "@see" is not supported by this tool
-// Warning: (ae-missing-release-tag) "KubernetesValidatorFunctions" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class KubernetesValidatorFunctions {
     // (undocumented)
@@ -365,8 +264,6 @@ export class KubernetesValidatorFunctions {
     static isValidObjectName(value: unknown): boolean;
 }
 
-// Warning: (ae-missing-release-tag) "Location" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 type Location_2 = {
     id: string;
@@ -374,21 +271,13 @@ type Location_2 = {
 
 export { Location_2 as Location }
 
-// Warning: (ae-missing-release-tag) "LOCATION_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const LOCATION_ANNOTATION = "backstage.io/managed-by-location";
 
-// Warning: (ae-missing-release-tag) "LocationEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface LocationEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_5[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_5;
     // (undocumented)
@@ -403,18 +292,12 @@ export { LocationEntityV1alpha1 as LocationEntity }
 
 export { LocationEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "locationEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const locationEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "locationSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const locationSchema: yup.ObjectSchema<Location_2, object>;
 
-// Warning: (ae-missing-release-tag) "LocationSpec" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type LocationSpec = {
     type: string;
@@ -422,18 +305,12 @@ export type LocationSpec = {
     presence?: 'optional' | 'required';
 };
 
-// Warning: (ae-missing-release-tag) "locationSpecSchema" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const locationSpecSchema: yup.ObjectSchema<LocationSpec, object>;
 
-// Warning: (ae-missing-release-tag) "makeValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export function makeValidator(overrides?: Partial<Validators>): Validators;
 
-// Warning: (ae-missing-release-tag) "NoForeignRootFieldsEntityPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
     constructor(knownFields?: string[]);
@@ -441,24 +318,12 @@ export class NoForeignRootFieldsEntityPolicy implements EntityPolicy {
     enforce(entity: Entity): Promise<Entity>;
     }
 
-// Warning: (ae-missing-release-tag) "ORIGIN_LOCATION_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const ORIGIN_LOCATION_ANNOTATION = "backstage.io/managed-by-origin-location";
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "parseEntityName" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function parseEntityName(ref: EntityRef, context?: EntityRefContext): EntityName;
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "parseEntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "parseEntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-// Warning: (ae-missing-release-tag) "parseEntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function parseEntityRef(ref: EntityRef, context?: {
     defaultKind: string;
@@ -487,103 +352,65 @@ export function parseEntityRef(ref: EntityRef, context?: {
     name: string;
 };
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (ae-missing-release-tag) "parseLocationReference" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function parseLocationReference(ref: string): {
     type: string;
     target: string;
 };
 
-// Warning: (ae-missing-release-tag) "RELATION_API_CONSUMED_BY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_API_CONSUMED_BY = "apiConsumedBy";
 
-// Warning: (ae-missing-release-tag) "RELATION_API_PROVIDED_BY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_API_PROVIDED_BY = "apiProvidedBy";
 
-// Warning: (ae-missing-release-tag) "RELATION_CHILD_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_CHILD_OF = "childOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_CONSUMES_API" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_CONSUMES_API = "consumesApi";
 
-// Warning: (ae-missing-release-tag) "RELATION_DEPENDENCY_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_DEPENDENCY_OF = "dependencyOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_DEPENDS_ON" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_DEPENDS_ON = "dependsOn";
 
-// Warning: (ae-missing-release-tag) "RELATION_HAS_MEMBER" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_HAS_MEMBER = "hasMember";
 
-// Warning: (ae-missing-release-tag) "RELATION_HAS_PART" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_HAS_PART = "hasPart";
 
-// Warning: (ae-missing-release-tag) "RELATION_MEMBER_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_MEMBER_OF = "memberOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_OWNED_BY" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_OWNED_BY = "ownedBy";
 
-// Warning: (ae-missing-release-tag) "RELATION_OWNER_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_OWNER_OF = "ownerOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_PARENT_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_PARENT_OF = "parentOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_PART_OF" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const RELATION_PART_OF = "partOf";
 
-// Warning: (ae-missing-release-tag) "RELATION_PROVIDES_API" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const RELATION_PROVIDES_API = "providesApi";
 
-// Warning: (ae-missing-release-tag) "ResourceEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface ResourceEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_6[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_6;
     // (undocumented)
     spec: {
         type: string;
         owner: string;
+        dependsOn?: string[];
         system?: string;
     };
 }
@@ -592,27 +419,18 @@ export { ResourceEntityV1alpha1 as ResourceEntity }
 
 export { ResourceEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "resourceEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const resourceEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "schemaValidator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated (undocumented)
 export function schemaValidator(kind: string, apiVersion: readonly string[], schema: yup.Schema<any>): KindValidator;
 
-// Warning: (ae-missing-release-tag) "SchemaValidEntityPolicy" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export class SchemaValidEntityPolicy implements EntityPolicy {
     // (undocumented)
     enforce(entity: Entity): Promise<Entity>;
     }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "serializeEntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public @deprecated
 export function serializeEntityRef(ref: Entity | {
     kind?: string;
@@ -620,14 +438,9 @@ export function serializeEntityRef(ref: Entity | {
     name: string;
 }): EntityRef;
 
-// Warning: (ae-missing-release-tag) "SOURCE_LOCATION_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const SOURCE_LOCATION_ANNOTATION = "backstage.io/source-location";
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "stringifyEntityRef" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function stringifyEntityRef(ref: Entity | {
     kind: string;
@@ -635,27 +448,16 @@ export function stringifyEntityRef(ref: Entity | {
     name: string;
 }): string;
 
-// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (ae-missing-release-tag) "stringifyLocationReference" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export function stringifyLocationReference(ref: {
     type: string;
     target: string;
 }): string;
 
-// Warning: (ae-missing-release-tag) "SystemEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface SystemEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_7[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_7;
     // (undocumented)
@@ -669,21 +471,13 @@ export { SystemEntityV1alpha1 as SystemEntity }
 
 export { SystemEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "systemEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const systemEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "TemplateEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface TemplateEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_8[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_8;
     // (undocumented)
@@ -699,21 +493,13 @@ export { TemplateEntityV1alpha1 as TemplateEntity }
 
 export { TemplateEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "templateEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const templateEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "TemplateEntityV1beta2" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export interface TemplateEntityV1beta2 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_9[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_9;
     // (undocumented)
@@ -736,21 +522,13 @@ export interface TemplateEntityV1beta2 extends Entity {
     };
 }
 
-// Warning: (ae-missing-release-tag) "templateEntityV1beta2Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "UserEntityV1alpha1" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 interface UserEntityV1alpha1 extends Entity {
-    // Warning: (ae-forgotten-export) The symbol "API_VERSION" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     apiVersion: typeof API_VERSION_10[number];
-    // Warning: (ae-forgotten-export) The symbol "KIND" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
     kind: typeof KIND_10;
     // (undocumented)
@@ -768,13 +546,9 @@ export { UserEntityV1alpha1 as UserEntity }
 
 export { UserEntityV1alpha1 }
 
-// Warning: (ae-missing-release-tag) "userEntityV1alpha1Validator" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export const userEntityV1alpha1Validator: KindValidator;
 
-// Warning: (ae-missing-release-tag) "Validators" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 export type Validators = {
     isValidApiVersion(value: unknown): boolean;
@@ -788,18 +562,9 @@ export type Validators = {
     isValidTag(value: unknown): boolean;
 };
 
-// Warning: (ae-missing-release-tag) "VIEW_URL_ANNOTATION" is exported by the package, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public
 export const VIEW_URL_ANNOTATION = "backstage.io/view-url";
 
-
-// Warnings were encountered during analysis:
-//
-// src/EntityPolicies.ts:55:28 - (ae-forgotten-export) The symbol "AllEntityPolicies" needs to be exported by the entry point index.d.ts
-// src/EntityPolicies.ts:57:3 - (ae-forgotten-export) The symbol "AnyEntityPolicy" needs to be exported by the entry point index.d.ts
-// src/entity/policies/types.ts:27:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/kinds/types.ts:26:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 
