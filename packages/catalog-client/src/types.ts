@@ -46,7 +46,7 @@ export interface CatalogApi {
 
   // Locations
   getLocationById(
-    id: String,
+    id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
   getOriginLocationByEntity(

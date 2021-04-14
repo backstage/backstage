@@ -42,10 +42,14 @@ export class CatalogClient implements CatalogApi {
   }
 
   async getLocationById(
-    id: String,
+    id: string,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined> {
-    return await this.requestOptional('GET', `/locations/${id}`, options);
+    return await this.requestOptional(
+      'GET',
+      `/locations/${encodeURIComponent(id)}`,
+      options,
+    );
   }
 
   async getEntities(
@@ -86,7 +90,9 @@ export class CatalogClient implements CatalogApi {
     const { kind, namespace = 'default', name } = compoundName;
     return this.requestOptional(
       'GET',
-      `/entities/by-name/${kind}/${namespace}/${name}`,
+      `/entities/by-name/${encodeURIComponent(kind)}/${encodeURIComponent(
+        namespace,
+      )}/${encodeURIComponent(name)}`,
       options,
     );
   }
@@ -171,14 +177,22 @@ export class CatalogClient implements CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void> {
-    await this.requestIgnored('DELETE', `/locations/${id}`, options);
+    await this.requestIgnored(
+      'DELETE',
+      `/locations/${encodeURIComponent(id)}`,
+      options,
+    );
   }
 
   async removeEntityByUid(
     uid: string,
     options?: CatalogRequestOptions,
   ): Promise<void> {
-    await this.requestIgnored('DELETE', `/entities/by-uid/${uid}`, options);
+    await this.requestIgnored(
+      'DELETE',
+      `/entities/by-uid/${encodeURIComponent(uid)}`,
+      options,
+    );
   }
 
   //
