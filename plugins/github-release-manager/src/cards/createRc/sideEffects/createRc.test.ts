@@ -45,7 +45,7 @@ describe('createRc', () => {
         },
         Object {
           "link": "mock_compareCommits_html_url",
-          "message": "Fetched commit comparision",
+          "message": "Fetched commit comparison",
           "secondaryMessage": "rc/1.2.3...rc/1.2.3",
         },
         Object {
