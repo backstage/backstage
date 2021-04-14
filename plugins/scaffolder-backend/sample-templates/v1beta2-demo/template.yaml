@@ -31,9 +31,9 @@ spec:
               - Group
     - title: Choose a location
       required:
-        - repoUrl
+        - destination
       properties:
-        repoUrl:
+        destination:
           title: Repository Location
           type: string
           ui:field: RepoUrlPicker
@@ -50,6 +50,7 @@ spec:
         values:
           name: '{{ parameters.name }}'
           owner: '{{ parameters.owner }}'
+          destination: '{{ parameters.destination }}'
 
     - id: fetch-docs
       name: Fetch Docs
@@ -64,7 +65,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: 'This is {{ parameters.name }}'
-        repoUrl: '{{ parameters.repoUrl }}'
+        destination: '{{ parameters.destination }}'
 
     - id: register
       name: Register

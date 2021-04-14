@@ -49,7 +49,7 @@ describe('publish:bitbucket', () => {
   const mockContext = {
     input: {
       destination: {
-        host: 'bitbucket.com',
+        host: 'bitbucket.org',
         repo: 'repo',
         owner: 'owner',
       },
@@ -104,7 +104,11 @@ describe('publish:bitbucket', () => {
         'https://api.bitbucket.org/2.0/repositories/owner/repo',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer tokenlols');
-          expect(req.body).toEqual({ is_private: true, scm: 'git' });
+          expect(req.body).toEqual({
+            is_private: true,
+            scm: 'git',
+            description: 'im a description',
+          });
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
@@ -136,7 +140,11 @@ describe('publish:bitbucket', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/owner/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ is_private: true, name: 'repo' });
+          expect(req.body).toEqual({
+            is_private: true,
+            name: 'repo',
+            description: 'im a description',
+          });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),

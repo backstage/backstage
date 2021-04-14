@@ -16,7 +16,7 @@
 
 import { readFile } from 'fs-extra';
 import path from 'path';
-import { parseRepoUrl } from './util';
+import { Destination } from './util';
 
 import {
   GithubCredentialsProvider,
@@ -51,7 +51,7 @@ export type GithubPullRequestActionInput = {
   description: string;
   owner?: string;
   repo?: string;
-  repoUrl?: string;
+  destination: Destination;
   host?: string;
   targetPath?: string;
   sourcePath?: string;
@@ -130,6 +130,27 @@ export const createPublishGithubPullRequestAction = ({
             title: 'Repository',
             description: 'The github repository to create the file in',
           },
+          destination: {
+            title: 'Repository Location',
+            type: 'object',
+            required: ['host', 'owner', 'repo'],
+            properties: {
+              host: {
+                type: 'string',
+                description:
+                  'The hostname where the repository is located, e.g github.com',
+              },
+              owner: {
+                type: 'string',
+                description:
+                  'The owner of the repository, either organization or user',
+              },
+              repo: {
+                type: 'string',
+                description: 'The repository name',
+              },
+            },
+          },
           branchName: {
             type: 'string',
             title: 'Branch Name',
@@ -174,7 +195,7 @@ export const createPublishGithubPullRequestAction = ({
       let { owner, repo } = ctx.input;
       let host = 'github.com';
       const {
-        repoUrl,
+        destination,
         branchName,
         title,
         description,
@@ -182,11 +203,10 @@ export const createPublishGithubPullRequestAction = ({
         sourcePath,
       } = ctx.input;
 
-      if (repoUrl) {
-        const parsed = parseRepoUrl(repoUrl);
-        host = parsed.host;
-        owner = parsed.owner;
-        repo = parsed.repo;
+      if (destination) {
+        host = destination.host;
+        owner = destination.owner;
+        repo = destination.repo;
       }
 
       if (!host || !owner || !repo) {

@@ -178,13 +178,17 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
-  describe('with repoUrl', () => {
+  describe('with destination', () => {
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput>;
 
     beforeEach(() => {
       input = {
-        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        destination: {
+          host: 'github.com',
+          owner: 'myorg',
+          repo: 'myrepo',
+        },
         title: 'Create my new app',
         branchName: 'new-app',
         description: 'This PR is really good',
