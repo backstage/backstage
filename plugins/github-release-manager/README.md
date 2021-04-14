@@ -6,13 +6,13 @@
 
 Does it build and ship your code? **No**.
 
-What `GRM` does is manage your **[releases](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/managing-releases-in-a-repository)** on GitHub, building and shipping is entirely up to you as a developer to handle in your CI.
+What `GRM` does is manage your **[releases](https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository)** on GitHub, building and shipping is entirely up to you as a developer to handle in your CI.
 
 `GRM` is built with industry standards in mind and the flow is as follows:
 
 ![](./src/cards/info/flow.png)
 
-> **GitHub**: The source control system where releases reside in a practical sense. Read more about GitHub releases [here](https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/. Note that this plugin works just as well with GitHub Enterprise)
+> **GitHub**: The source control system where releases reside in a practical sense. Read more about [GitHub releases](https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository). Note that this plugin works just as well with GitHub Enterprise)
 >
 > **Release Candidate (RC)**: A GitHub pre-release intended primarily for internal testing
 >

@@ -99,7 +99,7 @@ export async function createRc({
 
 `;
   responseSteps.push({
-    message: 'Fetched commit comparision',
+    message: 'Fetched commit comparison',
     secondaryMessage: `${previousReleaseBranch}...${nextReleaseBranch}`,
     link: comparison.html_url,
   });

@@ -47,12 +47,12 @@ export const Info = ({
 
         <Typography>
           <strong>GitHub</strong>: The source control system where releases
-          reside in a practical sense. Read more about GitHub releases{' '}
+          reside in a practical sense. Read more about{' '}
           <Link
-            href="https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/managing-releases-in-a-repository"
+            href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
           >
-            here
+            GitHub releases
           </Link>
           . Note that this plugin works just as well with GitHub Enterprise
           (GHE)

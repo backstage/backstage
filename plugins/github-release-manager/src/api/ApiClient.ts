@@ -54,6 +54,10 @@ export class ApiClient {
     this.githubCommonPath = `/repos/${this.repoPath}`;
   }
 
+  public getHost() {
+    return this.pluginApiClient.host;
+  }
+
   public getRepoPath() {
     return this.repoPath;
   }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
-import { green, red } from '@material-ui/core/colors';
 import {
+  colors,
   IconButton,
   ListItem,
   ListItemIcon,
@@ -78,7 +78,7 @@ export const ResponseStepListItem = ({
       return (
         <CheckCircleOutline
           data-testid={TEST_IDS.components.responseStepListItemIconSuccess}
-          style={{ color: green[500] }}
+          style={{ color: colors.green[500] }}
         />
       );
     }
@@ -87,7 +87,7 @@ export const ResponseStepListItem = ({
       return (
         <ErrorOutlineIcon
           data-testid={TEST_IDS.components.responseStepListItemIconFailure}
-          style={{ color: red[500] }}
+          style={{ color: colors.red[500] }}
         />
       );
     }

@@ -19,7 +19,8 @@ import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 export class PluginApiClientConfig {
   private readonly githubAuthApi: OAuthApi;
-  readonly baseUrl: string;
+  private readonly baseUrl: string;
+  readonly host: string;
 
   constructor({
     configApi,
@@ -33,7 +34,12 @@ export class PluginApiClientConfig {
     const configs = readGitHubIntegrationConfigs(
       configApi.getOptionalConfigArray('integrations.github') ?? [],
     );
-    const githubIntegrationConfig = configs.find(v => v.host === 'github.com');
+
+    const githubIntegrationConfig = configs.find(
+      v => v.host === 'github.com' || v.host.startsWith('ghe.'),
+    );
+
+    this.host = githubIntegrationConfig?.host ?? 'github.com';
     this.baseUrl =
       githubIntegrationConfig?.apiBaseUrl ?? 'https://api.github.com';
   }

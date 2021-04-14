@@ -16,8 +16,6 @@
 import React, { useState } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useAsync, useAsyncFn } from 'react-use';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
-import Paper from '@material-ui/core/Paper';
 import {
   Button,
   Checkbox,
@@ -29,8 +27,10 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
+  Paper,
   Typography,
 } from '@material-ui/core';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 import { Differ } from '../../components/Differ';
@@ -229,12 +229,13 @@ export const PatchBody = ({
                 <ListItemSecondaryAction>
                   <IconButton
                     aria-label="commit"
-                    disabled={commitExistsOnReleaseBranch}
+                    disabled={commitExistsOnReleaseBranch || !releaseBranch}
                     onClick={() => {
                       const repoPath = apiClient.getRepoPath();
+                      const host = apiClient.getHost();
 
                       const newTab = window.open(
-                        `https://github.com/${repoPath}/compare/${releaseBranch?.name}...${commit.sha}`,
+                        `https://${host}/${repoPath}/compare/${releaseBranch?.name}...${commit.sha}`,
                         '_blank',
                       );
                       newTab?.focus();
