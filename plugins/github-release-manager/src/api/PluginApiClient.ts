@@ -157,10 +157,13 @@ export interface IPluginApiClient {
       } & PartialProject,
     ) => Promise<Todo>;
   };
+
+  getOrganizations: (args: { ownerIsUser: boolean }) => Promise<Todo>;
+  getUsername: () => Promise<{ username: string }>;
+  getRepositories: (args: { owner: string; username: string }) => Promise<Todo>;
 }
 
 export class PluginApiClient implements IPluginApiClient {
-  // private readonly getAccessToken: any;
   private readonly githubAuthApi: OAuthApi;
   private readonly baseUrl: string;
   readonly host: string;
@@ -173,8 +176,6 @@ export class PluginApiClient implements IPluginApiClient {
     githubAuthApi: OAuthApi;
   }) {
     this.githubAuthApi = githubAuthApi;
-
-    // this.getAccessToken = () => this.githubAuthApi.getAccessToken();
 
     const githubIntegrationConfig = this.getGithubIntegrationConfig({
       configApi,
@@ -190,11 +191,13 @@ export class PluginApiClient implements IPluginApiClient {
       configApi.getOptionalConfigArray('integrations.github') ?? [],
     );
 
-    const githubIntegrationConfig = configs.find(
-      v => v.host === 'github.com' || v.host.startsWith('ghe.'),
+    const githubIntegrationEnterpriseConfig = configs.find(v =>
+      v.host.startsWith('ghe.'),
     );
+    const githubIntegrationConfig = configs.find(v => v.host === 'github.com');
 
-    return githubIntegrationConfig;
+    // Prioritize enterprise configs if available
+    return githubIntegrationEnterpriseConfig ?? githubIntegrationConfig;
   }
 
   private async getOctokit() {
@@ -214,6 +217,40 @@ export class PluginApiClient implements IPluginApiClient {
 
   public getRepoPath({ owner, repo }: PartialProject) {
     return `${owner}/${repo}`;
+  }
+
+  async getOrganizations() {
+    const { octokit } = await this.getOctokit();
+    const { data: orgs } = await octokit.orgs.listForAuthenticatedUser();
+
+    return { orgs };
+  }
+
+  async getRepositories({
+    owner,
+    username,
+  }: {
+    owner: string;
+    username: string;
+  }) {
+    const { octokit } = await this.getOctokit();
+
+    if (owner === username) {
+      const { data: repos } = await octokit.repos.listForUser({ username });
+
+      return { repos };
+    }
+
+    const { data: repos } = await octokit.repos.listForOrg({ org: owner });
+
+    return { repos };
+  }
+
+  async getUsername() {
+    const { octokit } = await this.getOctokit();
+    const { data: user } = await octokit.users.getAuthenticated();
+
+    return { username: user.login };
   }
 
   async getRecentCommits({

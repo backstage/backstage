@@ -20,7 +20,6 @@ import { useAsync, useAsyncFn } from 'react-use';
 import {
   Button,
   Checkbox,
-  CircularProgress,
   IconButton,
   Link,
   List,
@@ -50,6 +49,7 @@ import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { patch } from './sideEffects/patch';
 import { useProjectContext } from '../../contexts/ProjectContext';
+import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -124,7 +124,7 @@ export const PatchBody = ({
     return <Alert severity="error">{patchReleaseResponse.error.message}</Alert>;
   }
   if (githubDataResponse.loading) {
-    return <CircularProgress data-testid={TEST_IDS.patch.loading} />;
+    return <CenteredCircularProgress data-testid={TEST_IDS.patch.loading} />;
   }
 
   function Description() {

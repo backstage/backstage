@@ -15,10 +15,11 @@
  */
 
 import { Alert } from '@material-ui/lab';
-import { CircularProgress, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { useAsync } from 'react-use';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useApi, ContentHeader, ErrorBoundary } from '@backstage/core';
+import { useForm } from 'react-hook-form';
 
 import { CreateRc } from './cards/createRc/CreateRc';
 import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
@@ -35,11 +36,11 @@ import {
   PluginApiClientContext,
   usePluginApiClientContext,
 } from './contexts/PluginApiClientContext';
-import {
-  ProjectContext,
-  useProjectContext,
-  Project,
-} from './contexts/ProjectContext';
+import { ProjectContext, Project } from './contexts/ProjectContext';
+import { isProjectValid } from './cards/projectForm/isProjectValid';
+import { InfoCardPlus } from './components/InfoCardPlus';
+import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
+import { CenteredCircularProgress } from './components/CenteredCircularProgress';
 
 interface GitHubReleaseManagerProps {
   components?: {
@@ -62,30 +63,54 @@ export function GitHubReleaseManager({
 }: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const classes = useStyles();
+  const usernameResponse = useAsync(() => pluginApiClient.getUsername());
+  const { control, watch } = useForm();
+  const project: Project = watch('repo-details-form');
 
-  const project: Project = {
-    owner: 'erikengervall',
-    repo: 'playground',
-    versioningStrategy: 'semver',
-  };
+  if (usernameResponse.error) {
+    return <Alert severity="error">{usernameResponse.error.message}</Alert>;
+  }
+
+  if (usernameResponse.loading) {
+    return <CenteredCircularProgress />;
+  }
+
+  if (!usernameResponse.value?.username) {
+    return <Alert severity="error">Unable to retrieve username</Alert>;
+  }
 
   return (
-    <ProjectContext.Provider value={project}>
-      {/* @ts-ignore-error TODO: Update interface for PluginApiClient */}
-      <PluginApiClientContext.Provider value={pluginApiClient}>
-        <div className={classes.root}>
-          <ContentHeader title="GitHub Release Manager" />
+    <PluginApiClientContext.Provider
+      value={
+        pluginApiClient as any // TODO: Fix type errors
+      }
+    >
+      <div className={classes.root}>
+        <ContentHeader title="GitHub Release Manager" />
 
-          <Cards components={components} />
-        </div>
-      </PluginApiClientContext.Provider>
-    </ProjectContext.Provider>
+        <InfoCardPlus>
+          <RepoDetailsForm
+            control={control}
+            username={usernameResponse.value.username}
+          />
+        </InfoCardPlus>
+
+        {isProjectValid(project) && (
+          <Cards components={components} project={project} />
+        )}
+      </div>
+    </PluginApiClientContext.Provider>
   );
 }
 
-function Cards({ components }: GitHubReleaseManagerProps) {
+function Cards({
+  components,
+  project,
+}: {
+  components: GitHubReleaseManagerProps['components'];
+  project: Project;
+}) {
   const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
   const [refetch, setRefetch] = useState(0);
   const gitHubBatchInfo = useAsync(
     getGitHubBatchInfo({ project, pluginApiClient }),
@@ -97,11 +122,7 @@ function Cards({ components }: GitHubReleaseManagerProps) {
   }
 
   if (gitHubBatchInfo.loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <CircularProgress />
-      </div>
-    );
+    return <CenteredCircularProgress />;
   }
 
   if (gitHubBatchInfo.value === undefined) {
@@ -120,38 +141,40 @@ function Cards({ components }: GitHubReleaseManagerProps) {
   }
 
   return (
-    <ErrorBoundary>
-      <Info
-        latestRelease={gitHubBatchInfo.value.latestRelease}
-        releaseBranch={gitHubBatchInfo.value.releaseBranch}
-      />
-
-      {components?.default?.createRc?.omit !== true && (
-        <CreateRc
+    <ProjectContext.Provider value={project}>
+      <ErrorBoundary>
+        <Info
           latestRelease={gitHubBatchInfo.value.latestRelease}
           releaseBranch={gitHubBatchInfo.value.releaseBranch}
-          defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
-          setRefetch={setRefetch}
-          successCb={components?.default?.createRc?.successCb}
         />
-      )}
 
-      {components?.default?.promoteRc?.omit !== true && (
-        <PromoteRc
-          latestRelease={gitHubBatchInfo.value.latestRelease}
-          setRefetch={setRefetch}
-          successCb={components?.default?.promoteRc?.successCb}
-        />
-      )}
+        {components?.default?.createRc?.omit !== true && (
+          <CreateRc
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
+            setRefetch={setRefetch}
+            successCb={components?.default?.createRc?.successCb}
+          />
+        )}
 
-      {components?.default?.patch?.omit !== true && (
-        <Patch
-          latestRelease={gitHubBatchInfo.value.latestRelease}
-          releaseBranch={gitHubBatchInfo.value.releaseBranch}
-          setRefetch={setRefetch}
-          successCb={components?.default?.patch?.successCb}
-        />
-      )}
-    </ErrorBoundary>
+        {components?.default?.promoteRc?.omit !== true && (
+          <PromoteRc
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            setRefetch={setRefetch}
+            successCb={components?.default?.promoteRc?.successCb}
+          />
+        )}
+
+        {components?.default?.patch?.omit !== true && (
+          <Patch
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            setRefetch={setRefetch}
+            successCb={components?.default?.patch?.successCb}
+          />
+        )}
+      </ErrorBoundary>
+    </ProjectContext.Provider>
   );
 }

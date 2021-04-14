@@ -15,6 +15,7 @@
  */
 
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
+import { calverRegexp } from './getCalverTagParts';
 
 export type SemverTagParts = {
   prefix: string;
@@ -28,6 +29,10 @@ export function getSemverTagParts(tag: string) {
 
   if (result === null || result.length < 4) {
     throw new GitHubReleaseManagerError('Invalid semver tag');
+  }
+
+  if (tag.match(calverRegexp)) {
+    throw new GitHubReleaseManagerError('Invalid semver tag, found calver');
   }
 
   const tagParts: SemverTagParts = {

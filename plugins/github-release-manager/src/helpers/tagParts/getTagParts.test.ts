@@ -109,5 +109,13 @@ describe('getTagParts', () => {
         getTagParts({ project: mockSemverProject, tag: 'rc-1.2' }),
       ).toThrowErrorMatchingInlineSnapshot(`"Invalid semver tag"`);
     });
+
+    it('should throw for invalid semver (founds calver)', () => {
+      expect(() =>
+        getTagParts({ project: mockSemverProject, tag: 'rc-1337.01.01_1' }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid semver tag, found calver"`,
+      );
+    });
   });
 });

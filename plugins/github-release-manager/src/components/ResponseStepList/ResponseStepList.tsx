@@ -17,7 +17,6 @@
 import React, { PropsWithChildren } from 'react';
 import {
   List,
-  CircularProgress,
   Button,
   Dialog,
   DialogActions,
@@ -28,6 +27,7 @@ import {
 import { ResponseStep, SetRefetch } from '../../types/types';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { ResponseStepListItem } from './ResponseStepListItem';
+import { CenteredCircularProgress } from '../CenteredCircularProgress';
 
 interface ResponseStepListProps {
   responseSteps?: ResponseStep[];
@@ -68,7 +68,7 @@ export const ResponseStepList = ({
 
       {loading || !responseSteps ? (
         <div style={{ margin: 10, textAlign: 'center' }}>
-          <CircularProgress
+          <CenteredCircularProgress
             data-testid={TEST_IDS.components.circularProgress}
           />
         </div>

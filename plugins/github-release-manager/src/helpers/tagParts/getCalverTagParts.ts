@@ -22,10 +22,10 @@ export type CalverTagParts = {
   patch: number;
 };
 
+export const calverRegexp = /(rc|version)-([0-9]{4}\.[0-9]{2}\.[0-9]{2})_([0-9]+)/;
+
 export function getCalverTagParts(tag: string) {
-  const result = tag.match(
-    /(rc|version)-([0-9]{4}\.[0-9]{2}\.[0-9]{2})_([0-9]+)/,
-  );
+  const result = tag.match(calverRegexp);
 
   if (result === null || result.length < 4) {
     throw new GitHubReleaseManagerError('Invalid calver tag');
