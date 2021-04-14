@@ -21,7 +21,7 @@ import {
 } from '@backstage/search-common';
 import lunr from 'lunr';
 import { Logger } from 'winston';
-import { SearchEngine, QueryTranslator } from './types';
+import { SearchEngine, QueryTranslator } from '../types';
 
 type ConcreteLunrQuery = {
   lunrQueryString: string;
@@ -38,16 +38,25 @@ export class LunrSearchEngine implements SearchEngine {
     this.docStore = {};
   }
 
-  translator: QueryTranslator = (query: SearchQuery): ConcreteLunrQuery => {
+  translator: QueryTranslator = ({
+    term,
+    filters,
+  }: SearchQuery): ConcreteLunrQuery => {
+    let lunrQueryFilters;
+    if (filters) {
+      lunrQueryFilters = Object.keys(filters)
+        .map(key => ` +${key}:${filters[key]}`)
+        .join('');
+    }
+
     return {
-      lunrQueryString: query.term,
+      lunrQueryString: `${term}${lunrQueryFilters || ''}`,
       documentTypes: ['*'],
     };
   };
 
   index(documentType: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
-
     // Make this lunr index aware of all relevant fields.
     Object.keys(documents[0]).forEach(field => {
       lunrBuilder.field(field);
@@ -69,7 +78,6 @@ export class LunrSearchEngine implements SearchEngine {
 
   query(query: SearchQuery): Promise<SearchResultSet> {
     const { lunrQueryString, documentTypes } = this.translator(query);
-
     const results: lunr.Index.Result[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
