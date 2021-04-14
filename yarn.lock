@@ -4239,9 +4239,9 @@
     shortid "^2.2.14"
 
 "@rjsf/material-ui@^2.4.0":
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.1.tgz#b0dedff8877b114147e298966ca3faba895a7a62"
-  integrity sha512-pZaWL5Dw+km8S0hFLIK1lRHaeNtheMxTF2mZrWhf6HlGWCTGkQJnXta2UgshJN/nKtZPgO1L4FKz42Eun9nnhg==
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.5.1.tgz#b93ac9f1f4a909e2aae729616859c2d72557e53e"
+  integrity sha512-ooKxQJO12+i1xCGtknMZDxWSbVlSEgQ5U1I7lJ+uI/MvwAg3Rz9wb2cTEF3ErBczT7EEW+j1lR19rxBjFd78MA==
 
 "@roadiehq/backstage-plugin-buildkite@^1.0.0":
   version "1.0.0"
