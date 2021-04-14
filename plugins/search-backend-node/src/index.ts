@@ -15,5 +15,5 @@
  */
 
 export { IndexBuilder } from './IndexBuilder';
-export { LunrSearchEngine } from './LunrSearchEngine';
+export { LunrSearchEngine } from './engines';
 export type { SearchEngine } from './types';

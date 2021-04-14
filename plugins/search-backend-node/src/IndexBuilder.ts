@@ -16,7 +16,7 @@
 
 import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 import { Logger } from 'winston';
-import { LunrSearchEngine } from './LunrSearchEngine';
+import { LunrSearchEngine } from '.';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
