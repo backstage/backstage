@@ -67,8 +67,12 @@ proxy:
     allowedMethods: ['GET']
     headers:
       Authorization:
-        # Content: 'Basic base64("<api-key>:")' <-- note the trailing ':'
-        # Example: Basic bXktYXBpLWtleTo=
+        # Environmental variable: SONARQUBE_AUTH_HEADER
+        # Value: 'Basic base64("<sonar-auth-token>:")'
+        # Encode the "<sonar-auth-token>:" string using base64 encoder.
+        # Note the trailing colon (:) at the end of the token.
+        # Example environmental config: SONARQUBE_AUTH_HEADER=Basic bXktYXBpLWtleTo=
+        # Fetch the sonar-auth-token from https://sonarcloud.io/account/security/
         $env: SONARQUBE_AUTH_HEADER
 
 sonarQube:
@@ -77,7 +81,14 @@ sonarQube:
 
 5. Get and provide `SONARQUBE_AUTH_HEADER` as env variable (https://sonarcloud.io/account/security or https://docs.sonarqube.org/latest/user-guide/user-token/)
 
-6. Add the `sonarqube.org/project-key` annotation to your entity's `catalog-info.yaml` file:
+6. Run the following commands in the root folder of the project to install and compile the changes.
+
+```yaml
+yarn install
+yarn tsc
+```
+
+7. Add the `sonarqube.org/project-key` annotation to the `catalog-info.yaml` file of the target repo for which code quality analysis is needed.
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

@@ -29,7 +29,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@asyncapi/react-component": "^0.19.2",
+    "@asyncapi/react-component": "^0.22.3",
     "@backstage/catalog-model": "^0.7.5",
     "@backstage/core": "^0.7.4",
     "@backstage/plugin-catalog-react": "^0.1.4",
