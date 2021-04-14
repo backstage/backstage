@@ -17,7 +17,7 @@
 import {
   ClusterLocatorMethod,
   CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
+} from '@backstage/kubernetes-common';
 
 export interface Config {
   kubernetes?: {

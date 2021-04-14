@@ -22,7 +22,7 @@ import { useEffect, useState } from 'react';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
-} from '@backstage/plugin-kubernetes-backend';
+} from '@backstage/kubernetes-common';
 
 export interface KubernetesObjects {
   kubernetesObjects: ObjectsByEntityResponse | undefined;

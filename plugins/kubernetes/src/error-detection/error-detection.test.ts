@@ -30,7 +30,7 @@ import * as maxedOutHpa from './__fixtures__/hpa-maxed-out.json';
 import {
   FetchResponse,
   ObjectsByEntityResponse,
-} from '@backstage/plugin-kubernetes-backend';
+} from '@backstage/kubernetes-common';
 
 const CLUSTER_NAME = 'cluster-a';
 
