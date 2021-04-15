@@ -33,7 +33,11 @@ export function createSqliteDatabaseClient(
   const knexConfig = buildSqliteDatabaseConfig(dbConfig, overrides);
 
   // If storage on disk is used, ensure that the directory exists
-  if ((knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename) {
+  if (
+    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename &&
+    (knexConfig.connection as Knex.Sqlite3ConnectionConfig).filename !==
+      ':memory:'
+  ) {
     const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
     const directory = path.dirname(filename);
 
