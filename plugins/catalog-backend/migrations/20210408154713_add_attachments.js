@@ -42,7 +42,12 @@ exports.up = async function up(knex) {
       .text('content_type')
       .notNullable()
       .comment('The content type of the attachment for serving over HTTP');
-    // TODO: Store etag?
+    table
+      .string('etag')
+      .notNullable()
+      .comment(
+        'An opaque string that changes for each update operation to the content of the attachment.',
+      );
     table.primary(['originating_entity_id', 'key']);
   });
 };

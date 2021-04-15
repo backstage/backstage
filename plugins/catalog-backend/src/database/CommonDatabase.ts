@@ -26,6 +26,7 @@ import {
   parseEntityName,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
+import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
@@ -34,6 +35,9 @@ import {
   Database,
   DatabaseLocationUpdateLogEvent,
   DatabaseLocationUpdateLogStatus,
+  DbAttachmentFilter,
+  DbAttachmentMetadataResponse,
+  DbAttachmentMetadataRow,
   DbAttachmentRequest,
   DbAttachmentResponse,
   DbAttachmentRow,
@@ -201,7 +205,7 @@ export class CommonDatabase implements Database {
 
     // Only keep attachments that are still emitted and we don't want to update
     const attachmentKeys = request.attachments
-      .filter(({ data }) => !data)
+      .filter(({ content }) => !content)
       .map(({ key }) => key);
     await tx<DbEntitiesRelationsRow>('entities_attachments')
       .where({ originating_entity_id: uid })
@@ -352,18 +356,50 @@ export class CommonDatabase implements Database {
     await tx.batchInsert('entities_relations', relationRows, BATCH_SIZE);
   }
 
-  // TODO: Do we have the need to query all attachment metadatas?
+  async attachmentsByUid(
+    txOpaque: Transaction,
+    entityUid: string,
+  ): Promise<DbAttachmentMetadataResponse[]> {
+    const tx = txOpaque as Knex.Transaction;
+
+    const results = await tx<DbAttachmentMetadataRow>('entities_attachments')
+      .where({ originating_entity_id: entityUid })
+      // Make sure, not to include the data column, as we try to avoid loading
+      // the potentially large data here.
+      .select('originating_entity_id', 'key', 'etag', 'content_type');
+
+    return results.map(
+      ({ key, originating_entity_id, content_type, etag }) => ({
+        key,
+        entityUid: originating_entity_id,
+        contentType: content_type,
+        etag,
+      }),
+    );
+  }
 
   async attachmentByUidAndKey(
     txOpaque: Transaction,
     entityUid: string,
     key: string,
+    { ifNotMatchEtag }: DbAttachmentFilter,
   ): Promise<DbAttachmentResponse | undefined> {
     const tx = txOpaque as Knex.Transaction;
 
     const [result] = await tx<DbAttachmentRow>('entities_attachments')
       .where({ originating_entity_id: entityUid, key })
-      .select();
+      .select(
+        'originating_entity_id',
+        'key',
+        'etag',
+        'content_type',
+        ifNotMatchEtag
+          ? tx.raw(
+              'CASE WHEN etag = ? THEN NULL ELSE data END AS dataOrNull',
+              ifNotMatchEtag,
+            )
+          : 'data AS dataOrNull',
+      );
 
     if (!result) {
       return undefined;
@@ -373,7 +409,8 @@ export class CommonDatabase implements Database {
       key: result.key,
       entityUid: result.originating_entity_id,
       contentType: result.content_type,
-      data: result.data,
+      data: result.dataOrNull,
+      etag: result.etag,
     };
   }
 
@@ -535,16 +572,17 @@ export class CommonDatabase implements Database {
     originatingEntityId: string,
     attachments: DbAttachmentRequest[],
   ): DbAttachmentRow[] {
-    const rows = attachments.map(({ key, data, contentType }) => {
-      if (!data) {
-        throw new InputError('Require attachment data for store operations');
+    const rows = attachments.map(({ key, content }) => {
+      if (!content) {
+        throw new InputError('Require attachment content for store operations');
       }
 
       return {
         originating_entity_id: originatingEntityId,
         key,
-        data,
-        content_type: contentType,
+        data: content.data,
+        content_type: content.contentType,
+        etag: generateAttachmentEtag(content.data, content.contentType),
       };
     });
 
@@ -655,4 +693,11 @@ function deduplicateRelations(
     rows,
     r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
   );
+}
+
+function generateAttachmentEtag(data: Buffer, contentType: string): string {
+  return createHash('sha256')
+    .update(data)
+    .update(contentType, 'utf8')
+    .digest('base64');
 }

@@ -101,23 +101,58 @@ export type DatabaseLocationUpdateLogEvent = {
 };
 
 export type DbAttachmentRequest = {
+  /** Key of the entity attachment, has to be unique inside an entity. */
   key: string;
-  data?: Buffer;
-  contentType: string;
+  /**
+   * Optional content of the attachment, including data and content type. If no
+   * content is provided, the current content is kept.
+   */
+  content?: DbAttachmentRequestContent;
 };
 
-export type DbAttachmentResponse = {
-  entityUid: string;
-  key: string;
+export type DbAttachmentRequestContent = {
+  /** Data to be stored in the attachment. */
   data: Buffer;
+  /** Mime type of the data. */
   contentType: string;
 };
 
-export type DbAttachmentRow = {
+export type DbAttachmentMetadataResponse = {
+  /** Unique id of the entity that this attachment belongs to. */
+  entityUid: string;
+  /** Key of the entity attachment, has to be unique inside an entity. */
+  key: string;
+  /**
+   * An opaque string that changes for each update operation to the content of
+   * the attachment.
+   */
+  etag: string;
+  /** Mime type of the data. */
+  contentType: string;
+};
+
+export type DbAttachmentResponse = DbAttachmentMetadataResponse & {
+  /**
+   * Data that is stored in the attachment. Might be empty, if it matches the
+   * requested etag.
+   */
+  data?: Buffer;
+};
+
+export type DbAttachmentFilter = {
+  /** Return data in the attachment only if the provided etag doesn't match. */
+  ifNotMatchEtag?: string;
+};
+
+export type DbAttachmentMetadataRow = {
   originating_entity_id: string;
   key: string;
-  data: Buffer;
+  etag: string;
   content_type: string;
+};
+
+export type DbAttachmentRow = DbAttachmentMetadataRow & {
+  dataOrNull?: Buffer;
 };
 
 /**
@@ -236,10 +271,29 @@ export type Database = {
 
   removeEntityByUid(tx: Transaction, uid: string): Promise<void>;
 
+  /**
+   * Query metadata on all attachments of an entity.
+   *
+   * @param tx An ongoing transaction
+   * @param entityUid The entity uid
+   */
+  attachmentsByUid(
+    tx: Transaction,
+    entityUid: string,
+  ): Promise<DbAttachmentMetadataResponse[]>;
+
+  /**
+   * Query metadata and content of an attachment of an entity.
+   *
+   * @param tx An ongoing transaction
+   * @param entityUid The entity uid
+   * @param key The key of the attachment
+   */
   attachmentByUidAndKey(
     tx: Transaction,
     entityUid: string,
     key: string,
+    filter?: DbAttachmentFilter,
   ): Promise<DbAttachmentResponse | undefined>;
 
   /**

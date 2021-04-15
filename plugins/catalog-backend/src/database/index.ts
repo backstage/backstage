@@ -18,6 +18,10 @@ export { CommonDatabase } from './CommonDatabase';
 export { DatabaseManager } from './DatabaseManager';
 export type {
   Database,
+  DbAttachmentRequest,
+  DbAttachmentRequestContent,
+  DbAttachmentMetadataResponse,
+  DbAttachmentResponse,
   DbEntityRequest,
   DbEntityResponse,
   EntitiesSearchFilter,

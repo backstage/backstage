@@ -146,7 +146,9 @@ export async function createRouter(
 
       .get('/entities/by-uid/:uid/attachments/:key', async (req, res) => {
         const { uid, key } = req.params;
-        const attachment = await entitiesCatalog.attachment(uid, key);
+        const attachment = await entitiesCatalog.attachment(uid, key, {
+          ifNotMatchEtag: req.header('if-none-match'),
+        });
 
         if (!attachment) {
           throw new NotFoundError(
@@ -154,7 +156,12 @@ export async function createRouter(
           );
         }
 
-        // TODO: Include etag for caching
+        res.header('ETag', attachment.etag);
+
+        if (!attachment.data) {
+          res.status(304).send();
+          return;
+        }
 
         res
           .status(200)
@@ -182,6 +189,9 @@ export async function createRouter(
           const attachment = await entitiesCatalog.attachment(
             entities[0].metadata.uid!,
             key,
+            {
+              ifNotMatchEtag: req.header('if-none-match'),
+            },
           );
 
           if (!attachment) {
@@ -190,7 +200,12 @@ export async function createRouter(
             );
           }
 
-          // TODO: Include etag for caching
+          res.header('ETag', attachment.etag);
+
+          if (!attachment.data) {
+            res.status(304).send();
+            return;
+          }
 
           res
             .status(200)

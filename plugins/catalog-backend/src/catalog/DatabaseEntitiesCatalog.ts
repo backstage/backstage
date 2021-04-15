@@ -35,6 +35,7 @@ import {
   EntitiesRequest,
   EntitiesResponse,
   EntityAttachment,
+  EntityAttachmentFilter,
   EntityUpsertRequest,
   EntityUpsertResponse,
 } from './types';
@@ -87,9 +88,15 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
   async attachment(
     uid: string,
     key: string,
+    filter?: EntityAttachmentFilter,
   ): Promise<EntityAttachment | undefined> {
     return await this.database.transaction(async tx => {
-      const response = await this.database.attachmentByUidAndKey(tx, uid, key);
+      const response = await this.database.attachmentByUidAndKey(
+        tx,
+        uid,
+        key,
+        filter,
+      );
 
       if (!response) {
         return undefined;
@@ -99,6 +106,7 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         key: response.key,
         data: response.data,
         contentType: response.contentType,
+        etag: response.etag,
       };
     });
   }
@@ -319,10 +327,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
         locationId,
         entity,
         relations,
-        attachments: attachments.map(({ key, data, contentType }) => ({
+        attachments: attachments.map(({ key, content }) => ({
           key,
-          data,
-          contentType,
+          content,
         })),
       })),
     );
@@ -385,10 +392,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           locationId,
           entity: updated,
           relations,
-          attachments: attachments.map(({ key, data, contentType }) => ({
+          attachments: attachments.map(({ key, content }) => ({
             key,
-            data,
-            contentType,
+            content,
           })),
         },
         existing.entity.metadata.etag,
@@ -400,10 +406,9 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
           locationId,
           entity,
           relations,
-          attachments: attachments.map(({ key, data, contentType }) => ({
+          attachments: attachments.map(({ key, content }) => ({
             key,
-            data,
-            contentType,
+            content,
           })),
         },
       ]);
