@@ -31,7 +31,7 @@ CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
 
 ```js
 // packages/app/src/plugins.ts
-export { plugin as Circleci } from '@backstage/plugin-circleci';
+export { plugin as CircleCi } from '@backstage/plugin-circleci';
 ```
 
 3. Register the plugin in the entity pages:
