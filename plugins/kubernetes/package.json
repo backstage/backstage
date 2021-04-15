@@ -19,7 +19,6 @@
     "backstage",
     "kubernetes"
   ],
-  "configSchema": "schema.d.ts",
   "scripts": {
     "build": "backstage-cli plugin:build",
     "start": "backstage-cli plugin:serve",
@@ -63,7 +62,6 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist",
-    "schema.d.ts"
+    "dist"
   ]
 }
