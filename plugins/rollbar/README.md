@@ -45,8 +45,7 @@ const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
 rollbar:
   organization: organization-name
   # used by rollbar-backend
-  accountToken:
-    $env: ROLLBAR_ACCOUNT_TOKEN
+  accountToken: ${ROLLBAR_ACCOUNT_TOKEN}
 ```
 
 6. Annotate entities with the rollbar project slug

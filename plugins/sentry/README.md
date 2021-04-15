@@ -70,9 +70,7 @@ proxy:
     target: https://sentry.io/api/
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        # Content: 'Bearer <your-sentry-token>'
-        $env: SENTRY_TOKEN
+      Authorization: Bearer ${SENTRY_TOKEN}
 
 sentry:
   organization: <your-organization>

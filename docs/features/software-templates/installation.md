@@ -189,8 +189,7 @@ public within the enterprise.
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
 
 scaffolder:
   github:
@@ -207,8 +206,7 @@ instance:
 integrations:
   gitlab:
     - host: gitlab.com
-      token:
-        $env: GITLAB_TOKEN
+      token: ${GITLAB_TOKEN}
 ```
 
 #### Bitbucket
@@ -221,8 +219,7 @@ following:
 integrations:
   bitbucket:
     - host: bitbucket.org
-      token:
-        $env: BITBUCKET_TOKEN
+      token: ${BITBUCKET_TOKEN}
 ```
 
 or
@@ -231,10 +228,8 @@ or
 integrations:
   bitbucket:
     - host: bitbucket.org
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
-      username:
-        $env: BITBUCKET_USERNAME
+      appPassword: ${BITBUCKET_APP_PASSWORD}
+      username: ${BITBUCKET_USERNAME}
 ```
 
 #### Azure DevOps
@@ -249,8 +244,7 @@ verified.
 integrations:
   azure:
     - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
 ```
 
 ### Running the Backend
