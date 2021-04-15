@@ -58,7 +58,7 @@ the local `auth.environment` setting will be selected.
 After configuring an authentication provider, the `app` frontend package needs a
 small update to show this provider as a login option. The `SignInPage` component
 handles this, and takes either a `provider` or `providers` (array) prop of
-`SignInConfig` definitions.
+`SignInProviderConfig` definitions.
 
 These reference the [ApiRef](../reference/utility-apis/README.md) exported by
 the provider. Again, an example using GitHub that can be adapted to any of the
@@ -66,9 +66,9 @@ built-in providers:
 
 ```diff
 # packages/app/src/App.tsx
-+ import { githubAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
++ import { githubAuthApiRef, SignInProviderConfig, SignInPage } from '@backstage/core';
 
-+ const githubProvider: SignInConfig = {
++ const githubProvider: SignInProviderConfig = {
 +  id: 'github-auth-provider',
 +  title: 'GitHub',
 +  message: 'Sign in using GitHub',
