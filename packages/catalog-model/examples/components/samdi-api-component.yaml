@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: samdi-api
+  description: Samdi API
+  tags:
+    - go
+  annotations: 
+    'backstage.io/kubernetes-id': samdi-api
+spec:
+  type: service
+  lifecycle: sandbox
+  owner: user:guest
+  system: testing
