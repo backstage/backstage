@@ -26,7 +26,6 @@ import {
   parseEntityName,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import type { Logger } from 'winston';
@@ -54,6 +53,7 @@ import {
   EntityPagination,
   Transaction,
 } from './types';
+import { generateAttachmentEtag } from './utils';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -693,11 +693,4 @@ function deduplicateRelations(
     rows,
     r => `${r.source_full_name}:${r.target_full_name}:${r.type}`,
   );
-}
-
-function generateAttachmentEtag(data: Buffer, contentType: string): string {
-  return createHash('sha256')
-    .update(data)
-    .update(contentType, 'utf8')
-    .digest('base64');
 }
