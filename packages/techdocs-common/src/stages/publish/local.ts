@@ -28,6 +28,7 @@ import {
   PublisherBase,
   PublishRequest,
   PublishResponse,
+  ReadinessResponse,
   TechDocsMetadata,
 } from './types';
 
@@ -63,6 +64,12 @@ export class LocalPublish implements PublisherBase {
     this.config = config;
     this.logger = logger;
     this.discovery = discovery;
+  }
+
+  async getReadiness(): Promise<ReadinessResponse> {
+    return {
+      isAvailable: true,
+    };
   }
 
   publish({ entity, directory }: PublishRequest): Promise<PublishResponse> {

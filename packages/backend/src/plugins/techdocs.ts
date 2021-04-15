@@ -48,6 +48,9 @@ export default async function createPlugin({
     discovery,
   });
 
+  // checks if the publisher is working and logs the result
+  await publisher.getReadiness();
+
   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
   const dockerClient = new Docker();
 

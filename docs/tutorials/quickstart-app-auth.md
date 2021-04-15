@@ -79,13 +79,10 @@ auth:
   providers:
     github:
       development:
-        clientId:
-          $env: AUTH_GITHUB_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GITHUB_CLIENT_SECRET
-        ## uncomment the following two lines if using enterprise
-        # enterpriseInstanceUrl:
-        #  $env: AUTH_GITHUB_ENTERPRISE_INSTANCE_URL
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        ## uncomment the following line if using enterprise
+        # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
 ```
 
 ### 2. Generate a GitHub client ID and secret
@@ -122,10 +119,8 @@ auth:
   providers:
     gitlab:
       development:
-        clientId:
-          $env: AUTH_GITLAB_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GITLAB_CLIENT_SECRET
+        clientId: ${AUTH_GITLAB_CLIENT_ID}
+        clientSecret: ${AUTH_GITLAB_CLIENT_SECRET}
         audience: https://gitlab.com # Or your self-hosted GitLab instance URL
 ```
 
@@ -172,10 +167,8 @@ auth:
   providers:
     google:
       development:
-        clientId:
-          $env: AUTH_GOOGLE_CLIENT_ID
-        clientSecret:
-          $env: AUTH_GOOGLE_CLIENT_SECRET
+        clientId: ${AUTH_GOOGLE_CLIENT_ID}
+        clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
 ```
 
 ### 2. Generate Google Credentials in Google Cloud console
@@ -216,12 +209,9 @@ auth:
   providers:
     microsoft:
       development:
-        clientId:
-          $env: AUTH_MICROSOFT_CLIENT_ID
-        clientSecret:
-          $env: AUTH_MICROSOFT_CLIENT_SECRET
-        tenantId:
-          $env: AUTH_MICROSOFT_TENANT_ID
+        clientId: ${AUTH_MICROSOFT_CLIENT_ID}
+        clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
+        tenantId: ${AUTH_MICROSOFT_TENANT_ID}
 ```
 
 ### 2. Create a Microsoft App Registration in Microsoft Portal
@@ -264,12 +254,9 @@ auth:
   providers:
     auth0:
       development:
-        clientId:
-          $env: AUTH_AUTH0_CLIENT_ID
-        clientSecret:
-          $env: AUTH_AUTH0_CLIENT_SECRET
-        domain:
-          $env: AUTH_AUTH0_DOMAIN_ID
+        clientId: ${AUTH_AUTH0_CLIENT_ID}
+        clientSecret: ${AUTH_AUTH0_CLIENT_SECRET}
+        domain: ${AUTH_AUTH0_DOMAIN_ID}
 ```
 
 ### 2. Create an Auth0 application in the Auth0 management console

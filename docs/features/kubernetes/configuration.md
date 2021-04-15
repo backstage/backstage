@@ -26,8 +26,7 @@ kubernetes:
           name: minikube
           authProvider: 'serviceAccount'
           skipTLSVerify: false
-          serviceAccountToken:
-            $env: K8S_MINIKUBE_TOKEN
+          serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'

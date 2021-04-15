@@ -54,10 +54,9 @@ proxy:
     target: https://sonarcloud.io/api
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        # Content: 'Basic base64("<api-key>:")' <-- note the trailing ':'
-        # Example: Basic bXktYXBpLWtleTo=
-        $env: SONARQUBE_AUTH_HEADER
+      Authorization: Basic ${SONARQUBE_AUTH}
+      # Content: 'base64("<api-key>:")' <-- note the trailing ':'
+      # Example: bXktYXBpLWtleTo=
 ```
 
 **SonarQube**
@@ -70,20 +69,19 @@ proxy:
     target: https://your.sonarqube.instance.com/api
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        # Environmental variable: SONARQUBE_AUTH_HEADER
-        # Value: 'Basic base64("<sonar-auth-token>:")'
-        # Encode the "<sonar-auth-token>:" string using base64 encoder.
-        # Note the trailing colon (:) at the end of the token.
-        # Example environmental config: SONARQUBE_AUTH_HEADER=Basic bXktYXBpLWtleTo=
-        # Fetch the sonar-auth-token from https://sonarcloud.io/account/security/
-        $env: SONARQUBE_AUTH_HEADER
+      Authorization: Basic ${SONARQUBE_AUTH}
+      # Environmental variable: SONARQUBE_AUTH
+      # Value: 'base64("<sonar-auth-token>:")'
+      # Encode the "<sonar-auth-token>:" string using base64 encoder.
+      # Note the trailing colon (:) at the end of the token.
+      # Example environmental config: SONARQUBE_AUTH=bXktYXBpLWtleTo=
+      # Fetch the sonar-auth-token from https://sonarcloud.io/account/security/
 
 sonarQube:
   baseUrl: https://your.sonarqube.instance.com
 ```
 
-5. Get and provide `SONARQUBE_AUTH_HEADER` as env variable (https://sonarcloud.io/account/security or https://docs.sonarqube.org/latest/user-guide/user-token/)
+5. Get and provide `SONARQUBE_AUTH` as an env variable (https://sonarcloud.io/account/security or https://docs.sonarqube.org/latest/user-guide/user-token/)
 
 6. Run the following commands in the root folder of the project to install and compile the changes.
 
