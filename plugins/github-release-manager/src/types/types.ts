@@ -14,32 +14,6 @@
  * limitations under the License.
  */
 
-// export interface Project {
-//   /**
-//    * Repository's owner (user or organisation)
-//    *
-//    * @example erikengervall
-//    */
-//   owner: string;
-
-//   /**
-//    * Repository's name
-//    *
-//    * @example dockest
-//    */
-//   repo: string;
-
-//   /**
-//    * Declares the versioning strategy of the project
-//    *
-//    * semver: `1.2.3` (major.minor.patch)
-//    * calver: `2020.01.01_0` (YYYY.0M.0D_patch)
-//    *
-//    * Default: false
-//    */
-//   versioningStrategy: 'calver' | 'semver';
-// }
-
 interface ComponentConfig<Args = void> {
   successCb?: (args: Args) => Promise<void> | void;
   omit?: boolean;

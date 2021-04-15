@@ -304,7 +304,7 @@ export class PluginApiClient implements IPluginApiClient {
     const { octokit } = await this.getOctokit();
 
     const { data: repository } = await octokit.repos.get({
-      owner: owner,
+      owner,
       repo,
     });
 
@@ -312,6 +312,7 @@ export class PluginApiClient implements IPluginApiClient {
       repository: {
         pushPermissions: repository.permissions?.push,
         defaultBranch: repository.default_branch,
+        name: repository.name,
       },
     };
   }

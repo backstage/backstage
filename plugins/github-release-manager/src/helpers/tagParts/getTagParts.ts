@@ -16,7 +16,7 @@
 
 import { getCalverTagParts } from './getCalverTagParts';
 import { getSemverTagParts } from './getSemverTagParts';
-import { Project } from '../../types/types';
+import { Project } from '../../contexts/ProjectContext';
 
 export function getTagParts({
   project,

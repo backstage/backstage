@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import React, { useState } from 'react';
+import { useAsync } from 'react-use';
+import { useForm } from 'react-hook-form';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
-import { useAsync } from 'react-use';
-import React, { useEffect, useState } from 'react';
 import { useApi, ContentHeader, ErrorBoundary } from '@backstage/core';
-import { useForm } from 'react-hook-form';
 
 import { CreateRc } from './cards/createRc/CreateRc';
 import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
@@ -41,6 +41,7 @@ import { isProjectValid } from './cards/projectForm/isProjectValid';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
+import { useVersioningStrategyMatchesRepoTags } from './helpers/useVersioningStrategyMatchesRepoTags';
 
 interface GitHubReleaseManagerProps {
   components?: {
@@ -117,6 +118,12 @@ function Cards({
     [project, refetch],
   );
 
+  const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
+    latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tag_name,
+    project,
+    repositoryName: gitHubBatchInfo.value?.repository.name,
+  });
+
   if (gitHubBatchInfo.error) {
     return <Alert severity="error">{gitHubBatchInfo.error.message}</Alert>;
   }
@@ -136,6 +143,15 @@ function Cards({
       <Alert severity="error">
         You lack push permissions for repository "{project.owner}/{project.repo}
         "
+      </Alert>
+    );
+  }
+
+  if (!versioningStrategyMatches) {
+    return (
+      <Alert severity="error">
+        Versioning mismatch, expected {project.versioningStrategy} version, got{' '}
+        {gitHubBatchInfo.value?.latestRelease?.tag_name}
       </Alert>
     );
   }

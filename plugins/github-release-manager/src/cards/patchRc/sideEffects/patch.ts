@@ -23,8 +23,8 @@ import {
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { PluginApiClient } from '../../../api/PluginApiClient';
-import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { Project } from '../../../contexts/ProjectContext';
+import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 
 interface Patch {
   bumpedTag: string;
@@ -181,15 +181,15 @@ export async function patch({
   /**
    * 9. Update release
    */
-  const {
-    release: updatedRelease,
-  } = await pluginApiClient.patch.updateRelease({
-    ...project,
-    bumpedTag,
-    latestRelease,
-    selectedPatchCommit,
-    tagParts,
-  });
+  const { release: updatedRelease } = await pluginApiClient.patch.updateRelease(
+    {
+      ...project,
+      bumpedTag,
+      latestRelease,
+      selectedPatchCommit,
+      tagParts,
+    },
+  );
   responseSteps.push({
     message: `Updated release "${updatedRelease.name}"`,
     secondaryMessage: `with tag ${updatedRelease.tag_name}`,
