@@ -15,11 +15,7 @@
  */
 
 import { getRcGitHubInfo } from '../getRcGitHubInfo';
-import {
-  ComponentConfigCreateRc,
-  GhGetRepositoryResponse,
-  ResponseStep,
-} from '../../../types/types';
+import { ComponentConfigCreateRc, ResponseStep } from '../../../types/types';
 import {
   ApiMethodRetval,
   IPluginApiClient,
@@ -28,7 +24,9 @@ import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerE
 import { Project } from '../../../contexts/ProjectContext';
 
 interface CreateRC {
-  defaultBranch: GhGetRepositoryResponse['default_branch'];
+  defaultBranch: ApiMethodRetval<
+    IPluginApiClient['getRepository']
+  >['repository']['defaultBranch'];
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];

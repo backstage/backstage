@@ -41,24 +41,24 @@ export function promoteRc({
   return async (): Promise<ResponseStep[]> => {
     const responseSteps: ResponseStep[] = [];
 
-    const { release } = await pluginApiClient.promoteRc.promoteRelease({
+    const promotedRelease = await pluginApiClient.promoteRc.promoteRelease({
       ...project,
       releaseId: rcRelease.id,
       releaseVersion,
     });
     responseSteps.push({
-      message: `Promoted "${release.name}"`,
-      secondaryMessage: `from "${rcRelease.tagName}" to "${release.tag_name}"`,
-      link: release.html_url,
+      message: `Promoted "${promotedRelease.name}"`,
+      secondaryMessage: `from "${rcRelease.tagName}" to "${promotedRelease.tagName}"`,
+      link: promotedRelease.htmlUrl,
     });
 
     await successCb?.({
-      gitHubReleaseUrl: release.html_url,
-      gitHubReleaseName: release.name,
+      gitHubReleaseUrl: promotedRelease.htmlUrl,
+      gitHubReleaseName: promotedRelease.name,
       previousTagUrl: rcRelease.htmlUrl,
       previousTag: rcRelease.tagName,
-      updatedTagUrl: release.html_url,
-      updatedTag: release.tag_name,
+      updatedTagUrl: promotedRelease.htmlUrl,
+      updatedTag: promotedRelease.tagName,
     });
 
     return responseSteps;

@@ -125,9 +125,7 @@ export async function patch({
    * Note that branchSha is the original from up at the top.
    * > cherry = POST /repos/$owner/$repo/git/commits { "message": "looks good!", "tree": mergeTree, "parents": [branchSha] }
    */
-  const {
-    cherryPickCommit,
-  } = await pluginApiClient.patch.createCherryPickCommit({
+  const cherryPickCommit = await pluginApiClient.patch.createCherryPickCommit({
     ...project,
     bumpedTag,
     mergeTree,
@@ -143,7 +141,7 @@ export async function patch({
    * 6. Replace the temp commit with the real commit:
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = cherry.sha, force = true }
    */
-  const { updatedReference } = await pluginApiClient.patch.replaceTempCommit({
+  const updatedReference = await pluginApiClient.patch.replaceTempCommit({
     ...project,
     cherryPickCommit,
     releaseBranchName,
@@ -156,53 +154,51 @@ export async function patch({
    * 7. Create tag object: https://developer.github.com/v3/git/tags/#create-a-tag-object
    * > POST /repos/:owner/:repo/git/tags
    */
-  const { tagObjectResponse } = await pluginApiClient.patch.createTagObject({
+  const createdTagObject = await pluginApiClient.patch.createTagObject({
     ...project,
     bumpedTag,
     updatedReference,
   });
   responseSteps.push({
     message: 'Created new tag object',
-    secondaryMessage: `with name "${tagObjectResponse.tag}"`,
+    secondaryMessage: `with name "${createdTagObject.tag}"`,
   });
 
   /**
    * 8. Create a reference: https://developer.github.com/v3/git/refs/#create-a-reference
    * > POST /repos/:owner/:repo/git/refs
    */
-  const { reference } = await pluginApiClient.patch.createReference({
+  const reference = await pluginApiClient.patch.createReference({
     ...project,
     bumpedTag,
-    tagObjectResponse,
+    createdTagObject,
   });
   responseSteps.push({
     message: `Created new reference "${reference.ref}"`,
-    secondaryMessage: `for tag object "${tagObjectResponse.tag}"`,
+    secondaryMessage: `for tag object "${createdTagObject.tag}"`,
   });
 
   /**
    * 9. Update release
    */
-  const { release: updatedRelease } = await pluginApiClient.patch.updateRelease(
-    {
-      ...project,
-      bumpedTag,
-      latestRelease,
-      selectedPatchCommit,
-      tagParts,
-    },
-  );
+  const updatedRelease = await pluginApiClient.patch.updateRelease({
+    ...project,
+    bumpedTag,
+    latestRelease,
+    selectedPatchCommit,
+    tagParts,
+  });
   responseSteps.push({
     message: `Updated release "${updatedRelease.name}"`,
-    secondaryMessage: `with tag ${updatedRelease.tag_name}`,
-    link: updatedRelease.html_url,
+    secondaryMessage: `with tag ${updatedRelease.tagName}`,
+    link: updatedRelease.htmlUrl,
   });
 
   await successCb?.({
-    updatedReleaseUrl: updatedRelease.html_url,
+    updatedReleaseUrl: updatedRelease.htmlUrl,
     updatedReleaseName: updatedRelease.name,
     previousTag: latestRelease.tagName,
-    patchedTag: updatedRelease.tag_name,
+    patchedTag: updatedRelease.tagName,
     patchCommitUrl: selectedPatchCommit.htmlUrl,
     patchCommitMessage: selectedPatchCommit.commit.message,
   });

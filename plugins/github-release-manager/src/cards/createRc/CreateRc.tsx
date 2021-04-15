@@ -30,11 +30,7 @@ import { createRc } from './sideEffects/createRc';
 import { Differ } from '../../components/Differ';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import {
-  ComponentConfigCreateRc,
-  GhGetRepositoryResponse,
-  SetRefetch,
-} from '../../types/types';
+import { ComponentConfigCreateRc, SetRefetch } from '../../types/types';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -44,7 +40,9 @@ import { useStyles } from '../../styles/styles';
 import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface CreateRcProps {
-  defaultBranch: GhGetRepositoryResponse['default_branch'];
+  defaultBranch: ApiMethodRetval<
+    IPluginApiClient['getRepository']
+  >['repository']['defaultBranch'];
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];

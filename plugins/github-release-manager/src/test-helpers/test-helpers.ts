@@ -16,14 +16,6 @@
 
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
-import {
-  GhCreateReferenceResponse,
-  GhCreateTagObjectResponse,
-  GhGetReleaseResponse,
-  GhMergeResponse,
-  GhUpdateReferenceResponse,
-  GhUpdateReleaseResponse,
-} from '../types/types';
 import { Project } from '../contexts/ProjectContext';
 import {
   ApiMethodRetval,
@@ -179,6 +171,7 @@ export const mockApiClient: IPluginApiClient = {
     createRef: jest.fn().mockResolvedValue({
       ref: 'mock_createRef_ref',
     } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRef']>>),
+
     createRelease: jest.fn().mockResolvedValue({
       createReleaseResponse: {
         name: 'mock_createRelease_name',
@@ -186,37 +179,34 @@ export const mockApiClient: IPluginApiClient = {
         tagName: 'mock_createRelease_tag_name',
       },
     } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRelease']>>),
+
     getComparison: jest.fn().mockResolvedValue({
       htmlUrl: 'mock_compareCommits_html_url',
       aheadBy: 1,
     } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['getComparison']>>),
   },
+
   patch: {
     createCherryPickCommit: jest.fn().mockResolvedValue({
-      cherryPickCommit: {
-        commit: {
-          message: 'mock_merge_commit_message',
-          tree: { sha: 'mock_merge_commit_tree_sha' },
-        },
-        html_url: 'mock_merge_html_url',
-      } as GhMergeResponse,
-    }),
+      message: 'mock_cherrypick_message',
+      sha: 'mock_cherrypick_sha',
+    } as NonNullable<ApiMethodRetval<IPluginApiClient['patch']['createCherryPickCommit']>>),
+
     createReference: jest.fn().mockResolvedValue({
-      reference: {
-        ref: 'mock_reference_ref',
-      } as GhCreateReferenceResponse,
-    }),
+      ref: 'mock_reference_ref',
+    } as ApiMethodRetval<IPluginApiClient['patch']['createReference']>),
+
     createTagObject: jest.fn().mockResolvedValue({
-      tagObjectResponse: {
-        tag: 'mock_tag_object_tag',
-        sha: 'mock_tag_object_sha',
-      } as GhCreateTagObjectResponse,
-    }),
+      tag: 'mock_tag_object_tag',
+      sha: 'mock_tag_object_sha',
+    } as ApiMethodRetval<IPluginApiClient['patch']['createTagObject']>),
+
     createTempCommit: jest.fn().mockResolvedValue({
       message: 'mock_commit_message',
       sha: 'mock_commit_sha',
     } as ApiMethodRetval<IPluginApiClient['patch']['createTempCommit']>),
     forceBranchHeadToTempCommit: jest.fn().mockResolvedValue(undefined),
+
     merge: jest.fn().mockResolvedValue({
       htmlUrl: 'mock_merge_html_url',
       commit: {
@@ -226,28 +216,26 @@ export const mockApiClient: IPluginApiClient = {
         },
       },
     } as ApiMethodRetval<IPluginApiClient['patch']['merge']>),
+
     replaceTempCommit: jest.fn().mockResolvedValue({
-      updatedReference: {
-        ref: 'mock_reference_ref',
-        object: { sha: 'mock_reference_object_sha' },
-      } as GhUpdateReferenceResponse,
-    }),
+      ref: 'mock_reference_ref',
+      object: {
+        sha: 'mock_reference_object_sha',
+      },
+    } as ApiMethodRetval<IPluginApiClient['patch']['replaceTempCommit']>),
+
     updateRelease: jest.fn().mockResolvedValue({
-      release: {
-        name: 'mock_update_release_name',
-        tag_name: 'mock_update_release_tag_name',
-        html_url: 'mock_update_release_html_url',
-      } as GhUpdateReleaseResponse,
-    }),
+      name: 'mock_update_release_name',
+      tagName: 'mock_update_release_tag_name',
+      htmlUrl: 'mock_update_release_html_url',
+    } as ApiMethodRetval<IPluginApiClient['patch']['updateRelease']>),
   },
+
   promoteRc: {
     promoteRelease: jest.fn().mockResolvedValue({
-      release: {
-        name: 'mock_release_name',
-        tag_name: 'mock_release_tag_name',
-        html_url: 'mock_release_html_url',
-      } as GhGetReleaseResponse,
-    }),
+      name: 'mock_release_name',
+      tagName: 'mock_release_tag_name',
+      htmlUrl: 'mock_release_html_url',
+    } as ApiMethodRetval<IPluginApiClient['promoteRc']['promoteRelease']>),
   },
-  // project: mockSemverProject,
 };

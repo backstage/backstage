@@ -18,18 +18,10 @@ import { ConfigApi, OAuthApi } from '@backstage/core';
 import { Octokit } from '@octokit/rest';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
-import {
-  GhCreateCommitResponse,
-  GhCreateReferenceResponse,
-  GhCreateTagObjectResponse,
-  GhGetReleaseResponse,
-  GhUpdateReferenceResponse,
-  GhUpdateReleaseResponse,
-} from '../types/types';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
-import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 import { Project } from '../contexts/ProjectContext';
+import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 
 type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
   ? U
@@ -41,7 +33,6 @@ export type ApiMethodRetval<
 
 export type UnboxArray<T> = T extends (infer U)[] ? U : T;
 
-type Todo = any; // TODO:
 type PartialProject = Omit<Project, 'versioningStrategy'>;
 
 export interface IPluginApiClient {
@@ -205,29 +196,48 @@ export interface IPluginApiClient {
         mergeTree: string;
         releaseBranchSha: string;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      message: string;
+      sha: string;
+    }>;
 
     replaceTempCommit: (
       args: {
         releaseBranchName: string;
-        cherryPickCommit: GhCreateCommitResponse;
+        cherryPickCommit: ApiMethodRetval<
+          IPluginApiClient['patch']['createCherryPickCommit']
+        >;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      ref: string;
+      object: {
+        sha: string;
+      };
+    }>;
 
     createTagObject: ({
       bumpedTag,
       updatedReference,
     }: {
       bumpedTag: string;
-      updatedReference: GhUpdateReferenceResponse;
-    } & PartialProject) => Promise<Todo>;
+      updatedReference: ApiMethodRetval<
+        IPluginApiClient['patch']['replaceTempCommit']
+      >;
+    } & PartialProject) => Promise<{
+      tag: string;
+      sha: string;
+    }>;
 
     createReference: (
       args: {
         bumpedTag: string;
-        tagObjectResponse: GhCreateTagObjectResponse;
+        createdTagObject: ApiMethodRetval<
+          IPluginApiClient['patch']['createTagObject']
+        >;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      ref: string;
+    }>;
 
     updateRelease: (
       args: {
@@ -240,16 +250,26 @@ export interface IPluginApiClient {
           ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
         >;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      name: string | null;
+      tagName: string;
+      htmlUrl: string;
+    }>;
   };
 
   promoteRc: {
     promoteRelease: (
       args: {
-        releaseId: GhGetReleaseResponse['id'];
+        releaseId: NonNullable<
+          ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+        >['id'];
         releaseVersion: string;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      name: string | null;
+      tagName: string;
+      htmlUrl: string;
+    }>;
   };
 }
 
@@ -645,22 +665,18 @@ export class PluginApiClient implements IPluginApiClient {
       releaseBranchSha: string;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: cherryPickCommit } = await octokit.git.createCommit({
+        owner,
+        repo,
+        message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
+        tree: mergeTree,
+        parents: [releaseBranchSha],
+      });
 
-      const cherryPickCommit: GhCreateCommitResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/git/commits`,
-          {
-            method: 'POST',
-            data: {
-              message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
-              tree: mergeTree,
-              parents: [releaseBranchSha],
-            },
-          },
-        )
-      ).data;
-
-      return { cherryPickCommit };
+      return {
+        message: cherryPickCommit.message,
+        sha: cherryPickCommit.sha,
+      };
     },
 
     replaceTempCommit: async ({
@@ -670,27 +686,25 @@ export class PluginApiClient implements IPluginApiClient {
       cherryPickCommit,
     }: {
       releaseBranchName: string;
-      cherryPickCommit: GhCreateCommitResponse;
+      cherryPickCommit: ApiMethodRetval<
+        IPluginApiClient['patch']['createCherryPickCommit']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: updatedReference } = await octokit.git.updateRef({
+        owner,
+        repo,
+        ref: releaseBranchName,
+        sha: cherryPickCommit.sha,
+        force: true,
+      });
 
-      const updatedReference: GhUpdateReferenceResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({
-            owner,
-            repo,
-          })}/git/refs/heads/${releaseBranchName}`,
-          {
-            method: 'PATCH',
-            data: {
-              sha: cherryPickCommit.sha,
-              force: true,
-            },
-          },
-        )
-      ).data;
-
-      return { updatedReference };
+      return {
+        ref: updatedReference.ref,
+        object: {
+          sha: updatedReference.object.sha,
+        },
+      };
     },
 
     createTagObject: async ({
@@ -700,54 +714,49 @@ export class PluginApiClient implements IPluginApiClient {
       updatedReference,
     }: {
       bumpedTag: string;
-      updatedReference: GhUpdateReferenceResponse;
+      updatedReference: ApiMethodRetval<
+        IPluginApiClient['patch']['replaceTempCommit']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: createdTagObject } = await octokit.git.createTag({
+        owner,
+        repo,
+        message:
+          'Tag generated by your friendly neighborhood Backstage Release Manager',
+        tag: bumpedTag,
+        object: updatedReference.object.sha,
+        type: 'commit',
+      });
 
-      const tagObjectResponse: GhCreateTagObjectResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/git/tags`,
-          {
-            method: 'POST',
-            data: {
-              type: 'commit',
-              message:
-                'Tag generated by your friendly neighborhood GitHub Release Manager',
-              tag: bumpedTag,
-              object: updatedReference.object.sha,
-            },
-          },
-        )
-      ).data;
-
-      return { tagObjectResponse };
+      return {
+        tag: createdTagObject.tag,
+        sha: createdTagObject.sha,
+      };
     },
 
     createReference: async ({
       owner,
       repo,
       bumpedTag,
-      tagObjectResponse,
+      createdTagObject,
     }: {
       bumpedTag: string;
-      tagObjectResponse: GhCreateTagObjectResponse;
+      createdTagObject: ApiMethodRetval<
+        IPluginApiClient['patch']['createTagObject']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: reference } = await octokit.git.createRef({
+        owner,
+        repo,
+        ref: `refs/tags/${bumpedTag}`,
+        sha: createdTagObject.sha,
+      });
 
-      const reference: GhCreateReferenceResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/git/refs`,
-          {
-            method: 'POST',
-            data: {
-              ref: `refs/tags/${bumpedTag}`,
-              sha: tagObjectResponse.sha,
-            },
-          },
-        )
-      ).data;
-
-      return { reference };
+      return {
+        ref: reference.ref,
+      };
     },
 
     updateRelease: async ({
@@ -768,27 +777,23 @@ export class PluginApiClient implements IPluginApiClient {
       >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: updatedRelease } = await octokit.repos.updateRelease({
+        owner,
+        repo,
+        release_id: latestRelease.id,
+        tag_name: bumpedTag,
+        body: `${latestRelease.body}
 
-      const release: GhUpdateReleaseResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/releases/${
-            latestRelease.id
-          }`,
-          {
-            method: 'PATCH',
-            data: {
-              tag_name: bumpedTag,
-              body: `${latestRelease.body}
+        #### [Patch ${tagParts.patch}](${selectedPatchCommit.htmlUrl})
   
-  #### [Patch ${tagParts.patch}](${selectedPatchCommit.htmlUrl})
-  
-  ${selectedPatchCommit.commit.message}`,
-            },
-          },
-        )
-      ).data;
+        ${selectedPatchCommit.commit.message}`,
+      });
 
-      return { release };
+      return {
+        name: updatedRelease.name,
+        tagName: updatedRelease.tag_name,
+        htmlUrl: updatedRelease.html_url,
+      };
     },
   };
 
@@ -799,25 +804,25 @@ export class PluginApiClient implements IPluginApiClient {
       releaseId,
       releaseVersion,
     }: {
-      releaseId: GhGetReleaseResponse['id'];
+      releaseId: NonNullable<
+        ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+      >['id'];
       releaseVersion: string;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: promotedRelease } = await octokit.repos.updateRelease({
+        owner,
+        repo,
+        release_id: releaseId,
+        tag_name: releaseVersion,
+        prerelease: false,
+      });
 
-      const release: GhGetReleaseResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/releases/${releaseId}`,
-          {
-            method: 'PATCH',
-            data: {
-              tag_name: releaseVersion,
-              prerelease: false,
-            },
-          },
-        )
-      ).data;
-
-      return { release };
+      return {
+        name: promotedRelease.name,
+        tagName: promotedRelease.tag_name,
+        htmlUrl: promotedRelease.html_url,
+      };
     },
   };
 }

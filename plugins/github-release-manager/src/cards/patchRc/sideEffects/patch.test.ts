@@ -54,7 +54,7 @@ describe('patch', () => {
         },
         Object {
           "message": "Cherry-picked patch commit to \\"mock_branch_commit_sha\\"",
-          "secondaryMessage": "with message \\"undefined\\"",
+          "secondaryMessage": "with message \\"mock_cherrypick_message\\"",
         },
         Object {
           "message": "Updated reference \\"mock_reference_ref\\"",
