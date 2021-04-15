@@ -18,7 +18,6 @@ import React from 'react';
 import { Link, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
-import { GhGetBranchResponse } from '../../types/types';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
@@ -27,7 +26,7 @@ import flowImage from './flow.png';
 import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface InfoCardProps {
-  releaseBranch: GhGetBranchResponse | null;
+  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];

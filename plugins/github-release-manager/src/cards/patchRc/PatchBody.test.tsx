@@ -41,16 +41,16 @@ describe('PatchBody', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should render error', async () => {
-    (mockApiClient.getBranch as jest.Mock).mockImplementationOnce(() => {
+    (mockApiClient.getRecentCommits as jest.Mock).mockImplementationOnce(() => {
       throw new Error('banana');
     });
 
     const { getByTestId } = render(
       <PatchBody
-        latestRelease={mockRcRelease}
-        setRefetch={jest.fn()}
-        releaseBranch={mockReleaseBranch}
         bumpedTag={mockBumpedTag}
+        latestRelease={mockRcRelease}
+        releaseBranch={mockReleaseBranch}
+        setRefetch={jest.fn()}
         tagParts={mockTagParts}
       />,
     );

@@ -32,7 +32,6 @@ import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import {
   ComponentConfigCreateRc,
-  GhGetBranchResponse,
   GhGetRepositoryResponse,
   SetRefetch,
 } from '../../types/types';
@@ -49,7 +48,7 @@ interface CreateRcProps {
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];
-  releaseBranch: GhGetBranchResponse | null;
+  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigCreateRc['successCb'];
 }

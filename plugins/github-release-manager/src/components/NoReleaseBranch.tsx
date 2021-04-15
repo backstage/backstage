@@ -20,16 +20,16 @@ import { Alert } from '@material-ui/lab';
 import { useStyles } from '../styles/styles';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
-export const NoLatestRelease = () => {
+export const NoReleaseBranch = () => {
   const classes = useStyles();
 
   return (
     <Alert
-      data-testid={TEST_IDS.components.noLatestRelease}
+      data-testid={TEST_IDS.components.noReleaseBranch}
       className={classes.paragraph}
       severity="warning"
     >
-      Unable to find any Release
+      Unable to find any Release Branch
     </Alert>
   );
 };

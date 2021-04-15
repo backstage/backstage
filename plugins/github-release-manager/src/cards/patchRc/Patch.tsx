@@ -17,24 +17,20 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import { ComponentConfigPatch, SetRefetch } from '../../types/types';
 import { getBumpedTag } from '../../helpers/getBumpedTag';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
-import {
-  ComponentConfigPatch,
-  GhGetBranchResponse,
-  SetRefetch,
-} from '../../types/types';
 import { PatchBody } from './PatchBody';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface PatchProps {
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];
-  releaseBranch: GhGetBranchResponse | null;
+  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
 }
@@ -50,6 +46,10 @@ export const Patch = ({
 
   function Body() {
     if (latestRelease === null) {
+      return <NoLatestRelease />;
+    }
+
+    if (releaseBranch === null) {
       return <NoLatestRelease />;
     }
 

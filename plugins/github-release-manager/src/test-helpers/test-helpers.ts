@@ -92,16 +92,18 @@ export const mockReleaseVersion = createMockRelease({
 /**
  * MOCK BRANCH
  */
-const createMockBranch = ({ ...rest }: Partial<GhGetBranchResponse> = {}) =>
+const createMockBranch = ({
+  ...rest
+}: Partial<NonNullable<ApiMethodRetval<IPluginApiClient['getBranch']>>> = {}) =>
   ({
     name: 'rc/1.2.3',
     commit: {
       sha: 'mock_branch_commit_sha',
       commit: { tree: { sha: 'mock_branch_commit_commit_tree_sha' } },
     },
-    _links: { html: 'mock_branch__links_html' },
+    links: { html: 'mock_branch_links_html' },
     ...rest,
-  } as GhGetBranchResponse);
+  } as NonNullable<ApiMethodRetval<IPluginApiClient['getBranch']>>);
 export const mockReleaseBranch = createMockBranch();
 
 /**
@@ -134,21 +136,28 @@ export const mockSelectedPatchCommit = createMockCommit({
  */
 export const mockApiClient: IPluginApiClient = {
   getHost: jest.fn(() => 'github.com'),
+
   getRepoPath: jest.fn(() => 'erikengervall/playground'),
+
   getOrganizations: jest.fn(),
+
   getRepositories: jest.fn(),
+
   getUsername: jest.fn(),
+
   getRecentCommits: jest.fn().mockResolvedValue({
     recentCommits: mockRecentCommits,
   }),
+
   getLatestRelease: jest.fn(), // TODO:
+
   getRepository: jest.fn(),
+
   getLatestCommit: jest.fn().mockResolvedValue({
     latestCommit: createMockCommit({ node_id: 'mock_latest_commit' }),
   }),
-  getBranch: jest.fn().mockResolvedValue({
-    branch: mockReleaseBranch,
-  }),
+
+  getBranch: jest.fn().mockResolvedValue(createMockBranch()),
 
   createRc: {
     createRef: jest.fn().mockResolvedValue({

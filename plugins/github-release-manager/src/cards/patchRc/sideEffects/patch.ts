@@ -63,7 +63,7 @@ export async function patch({
    * > branchSha = branch.commit.sha
    * > branchTree = branch.commit.commit.tree.sha
    */
-  const { branch: releaseBranch } = await pluginApiClient.getBranch({
+  const releaseBranch = await pluginApiClient.getBranch({
     ...project,
     branchName: releaseBranchName,
   });
@@ -71,7 +71,7 @@ export async function patch({
   const releaseBranchTree = releaseBranch.commit.commit.tree.sha;
   responseSteps.push({
     message: `Fetched release branch "${releaseBranch.name}"`,
-    link: releaseBranch._links.html,
+    link: releaseBranch.links.html,
   });
 
   /**

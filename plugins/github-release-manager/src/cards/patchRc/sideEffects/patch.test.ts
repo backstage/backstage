@@ -29,18 +29,18 @@ describe('patch', () => {
 
   it('should work', async () => {
     const result = await patch({
-      pluginApiClient: mockApiClient,
-      latestRelease: mockReleaseVersion,
       bumpedTag: mockBumpedTag,
+      latestRelease: mockReleaseVersion,
+      pluginApiClient: mockApiClient,
+      project: mockCalverProject,
       selectedPatchCommit: mockSelectedPatchCommit,
       tagParts: mockTagParts,
-      project: mockCalverProject,
     });
 
     expect(result).toMatchInlineSnapshot(`
       Array [
         Object {
-          "link": "mock_branch__links_html",
+          "link": "mock_branch_links_html",
           "message": "Fetched release branch \\"rc/1.2.3\\"",
         },
         Object {

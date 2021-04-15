@@ -39,6 +39,7 @@ export const TEST_IDS = {
     divider: 'grm--divider',
     reloadButton: 'grm--reload-button',
     noLatestRelease: 'grm--no-latest-release',
+    noReleaseBranch: 'grm--no-release-branch',
     circularProgress: 'grm--circular-progress',
     responseStepListDialogContent: 'grm--response-step-list--dialog-content',
     responseStepListItem: 'grm--response-step-list-item',

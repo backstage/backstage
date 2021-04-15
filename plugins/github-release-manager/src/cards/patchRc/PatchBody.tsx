@@ -36,7 +36,6 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { Differ } from '../../components/Differ';
 import {
   ComponentConfigPatch,
-  GhGetBranchResponse,
   GhGetCommitResponse,
   SetRefetch,
 } from '../../types/types';
@@ -56,7 +55,7 @@ interface PatchBodyProps {
   latestRelease: NonNullable<
     ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
   >;
-  releaseBranch: GhGetBranchResponse | null;
+  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']>;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
@@ -76,25 +75,17 @@ export const PatchBody = ({
 
   const githubDataResponse = useAsync(async () => {
     const [
-      { branch: releaseBranchResponse },
       { recentCommits: recentCommitsOnDefaultBranch },
-    ] = await Promise.all([
-      pluginApiClient.getBranch({
-        ...project,
-        branchName: latestRelease.targetCommitish,
-      }),
-      pluginApiClient.getRecentCommits({ ...project }),
-    ]);
+    ] = await Promise.all([pluginApiClient.getRecentCommits({ ...project })]);
 
     const {
       recentCommits: recentCommitsOnReleaseBranch,
     } = await pluginApiClient.getRecentCommits({
       ...project,
-      releaseBranchName: releaseBranchResponse.name,
+      releaseBranchName: releaseBranch.name,
     });
 
     return {
-      releaseBranch: releaseBranchResponse,
       recentCommitsOnReleaseBranch,
       recentCommitsOnDefaultBranch,
     };

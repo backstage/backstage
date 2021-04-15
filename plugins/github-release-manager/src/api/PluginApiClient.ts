@@ -22,7 +22,6 @@ import {
   GhCreateCommitResponse,
   GhCreateReferenceResponse,
   GhCreateTagObjectResponse,
-  GhGetBranchResponse,
   GhGetCommitResponse,
   GhGetReleaseResponse,
   GhMergeResponse,
@@ -97,10 +96,29 @@ export interface IPluginApiClient {
   }>;
 
   getLatestCommit: (
-    args: { defaultBranch: string } & PartialProject,
+    args: {
+      defaultBranch: string;
+    } & PartialProject,
   ) => Promise<Todo>;
 
-  getBranch: (args: { branchName: string } & PartialProject) => Promise<Todo>;
+  getBranch: (
+    args: {
+      branchName: string;
+    } & PartialProject,
+  ) => Promise<{
+    name: string;
+    links: {
+      html: string;
+    };
+    commit: {
+      sha: string;
+      commit: {
+        tree: {
+          sha: string;
+        };
+      };
+    };
+  }>;
 
   createRc: {
     createRef: (
@@ -384,7 +402,6 @@ export class PluginApiClient implements IPluginApiClient {
     defaultBranch,
   }: { defaultBranch: string } & PartialProject) {
     const { octokit } = await this.getOctokit();
-
     const latestCommit: GhGetCommitResponse = (
       await octokit.request(
         `/repos/${this.getRepoPath({
@@ -404,13 +421,26 @@ export class PluginApiClient implements IPluginApiClient {
   }: { branchName: string } & PartialProject) {
     const { octokit } = await this.getOctokit();
 
-    const branch: GhGetBranchResponse = (
-      await octokit.request(
-        `/repos/${this.getRepoPath({ owner, repo })}/branches/${branchName}`,
-      )
-    ).data;
+    const { data: branch } = await octokit.repos.getBranch({
+      owner,
+      repo,
+      branch: branchName,
+    });
 
-    return { branch };
+    return {
+      name: branch.name,
+      links: {
+        html: branch._links.html,
+      },
+      commit: {
+        sha: branch.commit.sha,
+        commit: {
+          tree: {
+            sha: branch.commit.commit.tree.sha,
+          },
+        },
+      },
+    };
   }
 
   createRc = {

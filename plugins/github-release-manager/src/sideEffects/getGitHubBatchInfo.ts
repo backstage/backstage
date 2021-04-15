@@ -39,14 +39,14 @@ export const getGitHubBatchInfo = ({
     };
   }
 
-  const { branch } = await pluginApiClient.getBranch({
+  const releaseBranch = await pluginApiClient.getBranch({
     ...project,
     branchName: latestRelease.targetCommitish,
   });
 
   return {
     latestRelease,
-    releaseBranch: branch,
+    releaseBranch,
     repository,
   };
 };

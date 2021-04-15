@@ -96,9 +96,6 @@ describe('testHelpers', () => {
           },
         ],
         "mockReleaseBranch": Object {
-          "_links": Object {
-            "html": "mock_branch__links_html",
-          },
           "commit": Object {
             "commit": Object {
               "tree": Object {
@@ -106,6 +103,9 @@ describe('testHelpers', () => {
               },
             },
             "sha": "mock_branch_commit_sha",
+          },
+          "links": Object {
+            "html": "mock_branch_links_html",
           },
           "name": "rc/1.2.3",
         },

@@ -15,21 +15,17 @@
  */
 
 import React from 'react';
-import { Alert } from '@material-ui/lab';
+import { render } from '@testing-library/react';
 
-import { useStyles } from '../styles/styles';
 import { TEST_IDS } from '../test-helpers/test-ids';
+import { NoReleaseBranch } from './NoReleaseBranch';
 
-export const NoLatestRelease = () => {
-  const classes = useStyles();
+describe('NoReleaseBranch', () => {
+  it('render NoReleaseBranch', () => {
+    const { getByTestId } = render(<NoReleaseBranch />);
 
-  return (
-    <Alert
-      data-testid={TEST_IDS.components.noLatestRelease}
-      className={classes.paragraph}
-      severity="warning"
-    >
-      Unable to find any Release
-    </Alert>
-  );
-};
+    expect(
+      getByTestId(TEST_IDS.components.noReleaseBranch),
+    ).toBeInTheDocument();
+  });
+});
