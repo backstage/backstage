@@ -17,7 +17,7 @@ This guide covers basic Kubernetes definitions needed to get Backstage up and
 running in a typical cluster. The object definitions might look familiar, since
 the Backstage software catalog
 [also uses](../features/software-catalog/descriptor-format.md) the Kubernetes
-object format!
+object format for its entity definition files!
 
 ## Testing locally
 
@@ -84,7 +84,7 @@ for PostgreSQL.
 ### Creating a PostgreSQL secret
 
 First, create a Kubernetes Secret for the PostgreSQL username and password. This
-will be used by both the PostgreSQL and Backstage deployments:
+will be used by both the PostgreSQL database and Backstage deployments:
 
 ```yaml
 # kubernetes/postgres-secrets.yaml
@@ -158,7 +158,7 @@ spec:
       storage: 2G
 ```
 
-This file contains definitions for two different kinds, separate by a line with
+This file contains definitions for two different kinds, separated by a line with
 a triple dash. This syntax is helpful if you want to consolidate related
 Kubernetes definitions in a single file and apply them at the same time.
 
