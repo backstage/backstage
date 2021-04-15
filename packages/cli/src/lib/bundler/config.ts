@@ -114,6 +114,9 @@ export async function createConfig(
     );
   }
 
+  // TODO(blam): process is no longer auto polyfilled by webpack in v5.
+  // we use the provide plugin to provide this polyfill, but lets look
+  // to remove this eventually!
   plugins.push(
     new ProvidePlugin({
       process: 'process/browser',
