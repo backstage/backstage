@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import { useAsync, useAsyncFn } from 'react-use';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Button,
   Checkbox,
@@ -42,14 +42,14 @@ import {
   SetRefetch,
 } from '../../types/types';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
+import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { patch } from './sideEffects/patch';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { patch } from './sideEffects/patch';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { useStyles } from '../../styles/styles';
 
 interface PatchBodyProps {
   bumpedTag: string;

@@ -15,12 +15,12 @@
  */
 
 import React from 'react';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, CircularProgressProps } from '@material-ui/core';
 
-export const CenteredCircularProgress = () => {
+export const CenteredCircularProgress = (props: CircularProgressProps) => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <CircularProgress />
+      <CircularProgress {...props} />
     </div>
   );
 };

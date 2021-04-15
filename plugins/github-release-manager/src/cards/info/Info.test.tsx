@@ -22,16 +22,17 @@ import {
   mockReleaseBranch,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+
+jest.mock('../../contexts/ProjectContext', () => ({
+  useProjectContext: jest.fn(() => mockCalverProject),
+}));
+
 import { Info } from './Info';
 
 describe('Info', () => {
   it('should return early if no latestRelease exists', () => {
     const { getByTestId } = render(
-      <Info
-        latestRelease={null}
-        project={mockCalverProject}
-        releaseBranch={mockReleaseBranch}
-      />,
+      <Info latestRelease={null} releaseBranch={mockReleaseBranch} />,
     );
 
     expect(getByTestId(TEST_IDS.info.info)).toBeInTheDocument();

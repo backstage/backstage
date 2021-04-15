@@ -22,6 +22,11 @@ import {
   mockCalverProject,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+
+jest.mock('../../contexts/ProjectContext', () => ({
+  useProjectContext: jest.fn(() => mockCalverProject),
+}));
+
 import { Patch } from './Patch';
 
 describe('Patch', () => {
@@ -29,7 +34,6 @@ describe('Patch', () => {
     const { getByTestId } = render(
       <Patch
         latestRelease={null}
-        project={mockCalverProject}
         setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
       />,

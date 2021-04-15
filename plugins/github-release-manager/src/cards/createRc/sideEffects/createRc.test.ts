@@ -16,6 +16,7 @@
 
 import {
   mockApiClient,
+  mockCalverProject,
   mockDefaultBranch,
   mockNextGitHubInfo,
   mockReleaseVersion,
@@ -31,6 +32,7 @@ describe('createRc', () => {
       defaultBranch: mockDefaultBranch,
       latestRelease: mockReleaseVersion,
       nextGitHubInfo: mockNextGitHubInfo,
+      project: mockCalverProject,
     });
 
     expect(result).toMatchInlineSnapshot(`

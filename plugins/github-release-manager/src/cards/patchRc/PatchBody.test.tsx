@@ -18,16 +18,20 @@ import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
 
 import {
+  mockApiClient,
   mockBumpedTag,
+  mockCalverProject,
   mockRcRelease,
   mockReleaseBranch,
   mockReleaseVersion,
   mockTagParts,
-  mockApiClient,
 } from '../../test-helpers/test-helpers';
 
-jest.mock('../../components/ProjectContext', () => ({
-  usePluginApiClientContext: () => mockApiClient,
+jest.mock('../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: jest.fn(() => mockApiClient),
+}));
+jest.mock('../../contexts/ProjectContext', () => ({
+  useProjectContext: jest.fn(() => mockCalverProject),
 }));
 
 import { PatchBody } from './PatchBody';

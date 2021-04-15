@@ -28,13 +28,17 @@ import {
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('../../components/ProjectContext', () => ({
-  usePluginApiClientContext: () => mockApiClient,
+jest.mock('../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: jest.fn(() => mockApiClient),
+}));
+jest.mock('../../contexts/ProjectContext', () => ({
+  useProjectContext: jest.fn(() => mockCalverProject),
 }));
 jest.mock('./getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfo,
 }));
 
+import { useProjectContext } from '../../contexts/ProjectContext';
 import { CreateRc } from './CreateRc';
 
 describe('CreateRc', () => {
@@ -43,7 +47,6 @@ describe('CreateRc', () => {
       <CreateRc
         defaultBranch="mockDefaultBranch"
         latestRelease={mockRcRelease}
-        project={mockCalverProject}
         setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
       />,
@@ -53,11 +56,12 @@ describe('CreateRc', () => {
   });
 
   it('should display select element for semver', () => {
+    (useProjectContext as jest.Mock).mockReturnValue(mockSemverProject);
+
     const { getByTestId } = render(
       <CreateRc
         defaultBranch="mockDefaultBranch"
         latestRelease={mockReleaseVersion}
-        project={mockSemverProject}
         setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
       />,

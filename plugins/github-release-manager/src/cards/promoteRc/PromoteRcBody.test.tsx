@@ -17,12 +17,20 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { mockRcRelease, mockApiClient } from '../../test-helpers/test-helpers';
+import {
+  mockApiClient,
+  mockCalverProject,
+  mockRcRelease,
+} from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('../../components/ProjectContext', () => ({
-  usePluginApiClientContext: () => mockApiClient,
+jest.mock('../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: jest.fn(() => mockApiClient),
 }));
+jest.mock('../../contexts/ProjectContext', () => ({
+  useProjectContext: jest.fn(() => mockCalverProject),
+}));
+
 import { PromoteRcBody } from './PromoteRcBody';
 
 describe('PromoteRcBody', () => {

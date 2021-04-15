@@ -15,11 +15,12 @@
  */
 
 import {
+  mockApiClient,
   mockBumpedTag,
+  mockCalverProject,
   mockReleaseVersion,
   mockSelectedPatchCommit,
   mockTagParts,
-  mockApiClient,
 } from '../../../test-helpers/test-helpers';
 import { patch } from './patch';
 
@@ -33,6 +34,7 @@ describe('patch', () => {
       bumpedTag: mockBumpedTag,
       selectedPatchCommit: mockSelectedPatchCommit,
       tagParts: mockTagParts,
+      project: mockCalverProject,
     });
 
     expect(result).toMatchInlineSnapshot(`
