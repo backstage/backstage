@@ -10,7 +10,6 @@ The SonarQube Plugin displays code statistics from [SonarCloud](https://sonarclo
 
 ```bash
 # packages/app
-
 yarn add @backstage/plugin-sonarqube
 ```
 
@@ -18,37 +17,36 @@ yarn add @backstage/plugin-sonarqube
 
 ```js
 // packages/app/src/plugins.ts
-
 export { plugin as SonarQube } from '@backstage/plugin-sonarqube';
 ```
 
-3. Add the `SonarQubeCard` to the EntityPage:
+3. Add the `EntitySonarQubeCard` to the EntityPage:
 
-```jsx
-// packages/app/src/components/catalog/EntityPage.tsx
+```diff
+  // packages/app/src/components/catalog/EntityPage.tsx
++ import { EntitySonarQubeCard } from '@backstage/plugin-sonarqube';
 
-import { SonarQubeCard } from '@backstage/plugin-sonarqube';
+ ...
 
-const OverviewContent = ({ entity }: { entity: Entity }) => (
-  <Grid container spacing={3} alignItems="stretch">
-    // ...
-    <Grid item xs={12} sm={6} md={4}>
-      <SonarQubeCard entity={entity} />
-    </Grid>
-    // ...
-  </Grid>
-);
+ const overviewContent = (
+   <Grid container spacing={3} alignItems="stretch">
+     <Grid item md={6}>
+       <EntityAboutCard variant="gridItem" />
+     </Grid>
++    <Grid item md={6}>
++      <EntitySonarQubeCard variant="gridItem" />
++    </Grid>
+   </Grid>
+ );
 ```
 
 4. Add the proxy config:
 
-   Provide a method for your Backstage backend to get to your SonarQube API end point.
+   Provide a method for your Backstage backend to get to your SonarQube API end point. Add configuration to your `app-config.yaml` file depending on the product you use.
 
 **SonarCloud**
 
 ```yaml
-# app-config.yaml
-
 proxy:
   '/sonarqube':
     target: https://sonarcloud.io/api
@@ -62,8 +60,6 @@ proxy:
 **SonarQube**
 
 ```yaml
-# app-config.yaml
-
 proxy:
   '/sonarqube':
     target: https://your.sonarqube.instance.com/api
@@ -90,7 +86,7 @@ yarn install
 yarn tsc
 ```
 
-7. Add the `sonarqube.org/project-key` annotation to the catalog-info.yaml file of the target repo for which code quality analysis is needed.
+7. Add the `sonarqube.org/project-key` annotation to the `catalog-info.yaml` file of the target repo for which code quality analysis is needed.
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
