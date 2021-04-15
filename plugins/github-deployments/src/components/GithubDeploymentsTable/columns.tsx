@@ -26,7 +26,7 @@ import { GithubDeployment } from '../../api';
 import { DateTime } from 'luxon';
 import { Box, Typography, Link } from '@material-ui/core';
 
-const statusIndicator = (value: string): React.ReactNode => {
+const statusIndicator = (value: string): JSX.Element => {
   switch (value) {
     case 'PENDING':
       return <StatusPending />;
@@ -53,7 +53,7 @@ export function createEnvironmentColumn(): TableColumn<GithubDeployment> {
 export function createStatusColumn(): TableColumn<GithubDeployment> {
   return {
     title: 'Status',
-    render: (row: GithubDeployment): React.ReactNode => (
+    render: (row: GithubDeployment): JSX.Element => (
       <Box display="flex" alignItems="center">
         {statusIndicator(row.state)}
         <Typography variant="caption">{row.state}</Typography>
@@ -65,7 +65,7 @@ export function createStatusColumn(): TableColumn<GithubDeployment> {
 export function createCommitColumn(): TableColumn<GithubDeployment> {
   return {
     title: 'Commit',
-    render: (row: GithubDeployment): React.ReactNode => (
+    render: (row: GithubDeployment): JSX.Element => (
       <Link href={row.commit.commitUrl} target="_blank" rel="noopener">
         {row.commit.abbreviatedOid}
       </Link>
@@ -83,17 +83,18 @@ export function createCreatorColumn(): TableColumn<GithubDeployment> {
 export function createLastUpdatedColumn(): TableColumn<GithubDeployment> {
   return {
     title: 'Last Updated',
-    render: (row: GithubDeployment): React.ReactNode =>
-      DateTime.fromISO(row.updatedAt).toRelative({ locale: 'en' }),
+    render: (row: GithubDeployment): JSX.Element => (
+      <Box>{DateTime.fromISO(row.updatedAt).toRelative({ locale: 'en' })}</Box>
+    ),
   };
 }
 
-export function createPayloadColumn(
+export function createCustomColumn(
   title: string,
-  render: (payload: string) => React.ReactNode,
+  render: (payload: GithubDeployment) => JSX.Element,
 ): TableColumn<GithubDeployment> {
   return {
     title: title,
-    render: (deployment: GithubDeployment) => render(deployment.payload),
+    render: (deployment: GithubDeployment) => render(deployment),
   };
 }

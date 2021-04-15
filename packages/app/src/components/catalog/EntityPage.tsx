@@ -108,6 +108,7 @@ import {
 } from '@roadiehq/backstage-plugin-travis-ci';
 import React, { ReactNode, useMemo, useState } from 'react';
 import BadgeIcon from '@material-ui/icons/CallToAction';
+import { EntityGithubDeploymentsCard } from '@backstage/plugin-github-deployments';
 
 export const CICDSwitcher = ({ entity }: { entity: Entity }) => {
   // This component is just an example of how you can implement your company's logic in entity page.
@@ -246,6 +247,9 @@ const ComponentOverviewContent = ({ entity }: { entity: Entity }) => (
     )}
     <Grid item xs={12} md={6}>
       <EntityHasSubcomponentsCard variant="gridItem" />
+    </Grid>
+    <Grid item xs={12} md={6}>
+      <EntityGithubDeploymentsCard />
     </Grid>
   </Grid>
 );
