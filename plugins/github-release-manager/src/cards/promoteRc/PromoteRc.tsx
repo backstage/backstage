@@ -20,17 +20,16 @@ import { Typography } from '@material-ui/core';
 
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
-import {
-  ComponentConfigPromoteRc,
-  GhGetReleaseResponse,
-  SetRefetch,
-} from '../../types/types';
+import { ComponentConfigPromoteRc, SetRefetch } from '../../types/types';
 import { PromoteRcBody } from './PromoteRcBody';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface PromoteRcProps {
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }

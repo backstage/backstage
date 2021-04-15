@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Project } from '../contexts/ProjectContext';
 import { CalverTagParts } from './tagParts/getCalverTagParts';
-import { Project } from '../types/types';
 
 export function isCalverTagParts(
   project: Project,

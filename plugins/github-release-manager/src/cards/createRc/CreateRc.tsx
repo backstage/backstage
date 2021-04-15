@@ -33,7 +33,6 @@ import { InfoCardPlus } from '../../components/InfoCardPlus';
 import {
   ComponentConfigCreateRc,
   GhGetBranchResponse,
-  GhGetReleaseResponse,
   GhGetRepositoryResponse,
   SetRefetch,
 } from '../../types/types';
@@ -43,10 +42,13 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface CreateRcProps {
   defaultBranch: GhGetRepositoryResponse['default_branch'];
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
   releaseBranch: GhGetBranchResponse | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigCreateRc['successCb'];
@@ -97,7 +99,7 @@ export const CreateRc = ({
 
   const tagAlreadyExists =
     latestRelease !== null &&
-    latestRelease.tag_name === nextGitHubInfo.rcReleaseTag;
+    latestRelease.tagName === nextGitHubInfo.rcReleaseTag;
   const conflictingPreRelease =
     latestRelease !== null && latestRelease.prerelease;
 
@@ -132,7 +134,7 @@ export const CreateRc = ({
         <Typography>
           <Differ
             icon="tag"
-            prev={latestRelease?.tag_name}
+            prev={latestRelease?.tagName}
             next={nextGitHubInfo.rcReleaseTag}
           />
         </Typography>

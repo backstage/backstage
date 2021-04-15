@@ -17,20 +17,23 @@
 import { getRcGitHubInfo } from '../getRcGitHubInfo';
 import {
   ComponentConfigCreateRc,
-  GhCreateReferenceResponse,
-  GhGetReleaseResponse,
   GhGetRepositoryResponse,
   ResponseStep,
 } from '../../../types/types';
-import { PluginApiClient } from '../../../api/PluginApiClient';
+import {
+  ApiMethodRetval,
+  IPluginApiClient,
+} from '../../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 
 interface CreateRC {
   defaultBranch: GhGetRepositoryResponse['default_branch'];
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
   nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
-  pluginApiClient: PluginApiClient;
+  pluginApiClient: IPluginApiClient;
   project: Project;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
@@ -62,23 +65,20 @@ export async function createRc({
    * 2. Create a new ref based on the default branch's most recent sha
    */
   const mostRecentSha = latestCommit.sha;
-  let createdRef: GhCreateReferenceResponse;
-  try {
-    createdRef = (
-      await pluginApiClient.createRc.createRef({
-        ...project,
-        mostRecentSha,
-        targetBranch: nextGitHubInfo.rcBranch,
-      })
-    ).createdRef;
-  } catch (error) {
-    if (error.body.message === 'Reference already exists') {
-      throw new GitHubReleaseManagerError(
-        `Branch "${nextGitHubInfo.rcBranch}" already exists: .../tree/${nextGitHubInfo.rcBranch}`,
-      );
-    }
-    throw error;
-  }
+  const createdRef = await pluginApiClient.createRc
+    .createRef({
+      ...project,
+      mostRecentSha,
+      targetBranch: nextGitHubInfo.rcBranch,
+    })
+    .catch(error => {
+      if (error?.body?.message === 'Reference already exists') {
+        throw new GitHubReleaseManagerError(
+          `Branch "${nextGitHubInfo.rcBranch}" already exists: .../tree/${nextGitHubInfo.rcBranch}`,
+        );
+      }
+      throw error;
+    });
   responseSteps.push({
     message: 'Cut Release Branch',
     secondaryMessage: `with ref "${createdRef.ref}"`,
@@ -88,17 +88,17 @@ export async function createRc({
    * 3. Compose a body for the release
    */
   const previousReleaseBranch = latestRelease
-    ? latestRelease.target_commitish
+    ? latestRelease.targetCommitish
     : defaultBranch;
   const nextReleaseBranch = nextGitHubInfo.rcBranch;
-  const { comparison } = await pluginApiClient.createRc.getComparison({
+  const comparison = await pluginApiClient.createRc.getComparison({
     ...project,
     previousReleaseBranch,
     nextReleaseBranch,
   });
-  const releaseBody = `**Compare** ${comparison.html_url}
+  const releaseBody = `**Compare** ${comparison.htmlUrl}
 
-**Ahead by** ${comparison.ahead_by} commits
+**Ahead by** ${comparison.aheadBy} commits
 
 **Release branch** ${createdRef.ref}
 
@@ -108,7 +108,7 @@ export async function createRc({
   responseSteps.push({
     message: 'Fetched commit comparison',
     secondaryMessage: `${previousReleaseBranch}...${nextReleaseBranch}`,
-    link: comparison.html_url,
+    link: comparison.htmlUrl,
   });
 
   /**
@@ -124,15 +124,15 @@ export async function createRc({
   responseSteps.push({
     message: `Created Release Candidate "${createReleaseResponse.name}"`,
     secondaryMessage: `with tag "${nextGitHubInfo.rcReleaseTag}"`,
-    link: createReleaseResponse.html_url,
+    link: createReleaseResponse.htmlUrl,
   });
 
   await successCb?.({
-    gitHubReleaseUrl: createReleaseResponse.html_url,
+    gitHubReleaseUrl: createReleaseResponse.htmlUrl,
     gitHubReleaseName: createReleaseResponse.name,
-    comparisonUrl: comparison.html_url,
-    previousTag: latestRelease?.tag_name,
-    createdTag: createReleaseResponse.tag_name,
+    comparisonUrl: comparison.htmlUrl,
+    previousTag: latestRelease?.tagName,
+    createdTag: createReleaseResponse.tagName,
   });
 
   return responseSteps;

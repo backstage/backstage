@@ -23,15 +23,17 @@ import { NoLatestRelease } from '../../components/NoLatestRelease';
 import {
   ComponentConfigPatch,
   GhGetBranchResponse,
-  GhGetReleaseResponse,
   SetRefetch,
 } from '../../types/types';
 import { PatchBody } from './PatchBody';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface PatchProps {
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
   releaseBranch: GhGetBranchResponse | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
@@ -53,7 +55,7 @@ export const Patch = ({
 
     const { bumpedTag, tagParts } = getBumpedTag({
       project,
-      tag: latestRelease.tag_name,
+      tag: latestRelease.tagName,
       bumpLevel: 'patch',
     });
 

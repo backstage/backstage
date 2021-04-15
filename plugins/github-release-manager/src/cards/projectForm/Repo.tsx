@@ -18,7 +18,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { ControllerRenderProps } from 'react-hook-form';
 
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useFormClasses } from './styles';
@@ -26,10 +26,8 @@ import { CenteredCircularProgress } from '../../components/CenteredCircularProgr
 import { Project } from '../../contexts/ProjectContext';
 
 export function Repo({
-  username,
   controllerRenderProps,
 }: {
-  username: string;
   controllerRenderProps: ControllerRenderProps;
 }) {
   const pluginApiClient = usePluginApiClientContext();
@@ -37,11 +35,7 @@ export function Repo({
   const project: Project = controllerRenderProps.value;
 
   const { loading, error, value } = useAsync(
-    () =>
-      pluginApiClient.getRepositories({
-        owner: project.owner,
-        username,
-      }),
+    async () => pluginApiClient.getRepositories({ owner: project.owner }),
     [project.owner],
   );
 
@@ -53,7 +47,7 @@ export function Repo({
     return <CenteredCircularProgress />;
   }
 
-  if (!value?.repos) {
+  if (!value?.repositories) {
     return (
       <Alert severity="error">
         Could not fetch repositories for "{project.owner}"
@@ -79,9 +73,9 @@ export function Repo({
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {value.repos.map((repository, index) => (
-          <MenuItem key={`repository-${index}`} value={repository.name}>
-            {repository.name}
+        {value.repositories.map((repositoryName, index) => (
+          <MenuItem key={`repository-${index}`} value={repositoryName}>
+            {repositoryName}
           </MenuItem>
         ))}
       </Select>

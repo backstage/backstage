@@ -44,10 +44,7 @@ export function RepoDetailsForm({
             />
 
             {project.owner.length > 0 && (
-              <Repo
-                controllerRenderProps={controllerRenderProps}
-                username={username}
-              />
+              <Repo controllerRenderProps={controllerRenderProps} />
             )}
           </>
         );

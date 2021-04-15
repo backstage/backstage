@@ -17,19 +17,23 @@
 import {
   ComponentConfigPatch,
   GhGetCommitResponse,
-  GhGetReleaseResponse,
   ResponseStep,
 } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
-import { PluginApiClient } from '../../../api/PluginApiClient';
+import {
+  ApiMethodRetval,
+  IPluginApiClient,
+} from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 
 interface Patch {
   bumpedTag: string;
-  latestRelease: GhGetReleaseResponse;
-  pluginApiClient: PluginApiClient;
+  latestRelease: NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >;
+  pluginApiClient: IPluginApiClient;
   project: Project;
   selectedPatchCommit: GhGetCommitResponse;
   successCb?: ComponentConfigPatch['successCb'];
@@ -52,7 +56,7 @@ export async function patch({
     throw new GitHubReleaseManagerError('Invalid commit');
   }
 
-  const releaseBranchName = latestRelease.target_commitish;
+  const releaseBranchName = latestRelease.targetCommitish;
   /**
    * 1. Here is the branch we want to cherry-pick to:
    * > branch = GET /repos/$owner/$repo/branches/$branchName
@@ -199,7 +203,7 @@ export async function patch({
   await successCb?.({
     updatedReleaseUrl: updatedRelease.html_url,
     updatedReleaseName: updatedRelease.name,
-    previousTag: latestRelease.tag_name,
+    previousTag: latestRelease.tagName,
     patchedTag: updatedRelease.tag_name,
     patchCommitUrl: selectedPatchCommit.html_url,
     patchCommitMessage: selectedPatchCommit.commit.message,

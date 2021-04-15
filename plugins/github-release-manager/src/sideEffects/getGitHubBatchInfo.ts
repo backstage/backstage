@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { getLatestRelease } from './getLatestRelease';
-import { PluginApiClient } from '../api/PluginApiClient';
+import { IPluginApiClient } from '../api/PluginApiClient';
 import { Project } from '../contexts/ProjectContext';
 
 interface GetGitHubBatchInfo {
   project: Project;
-  pluginApiClient: PluginApiClient;
+  pluginApiClient: IPluginApiClient;
 }
 
 export const getGitHubBatchInfo = ({
   project,
   pluginApiClient,
 }: GetGitHubBatchInfo) => async () => {
-  const [{ repository }, latestRelease] = await Promise.all([
+  const [{ repository }, { latestRelease }] = await Promise.all([
     pluginApiClient.getRepository({ ...project }),
-    getLatestRelease({ project, pluginApiClient }),
+    pluginApiClient.getLatestRelease({ ...project }),
   ]);
 
   if (latestRelease === null) {
@@ -42,7 +41,7 @@ export const getGitHubBatchInfo = ({
 
   const { branch } = await pluginApiClient.getBranch({
     ...project,
-    branchName: latestRelease.target_commitish,
+    branchName: latestRelease.targetCommitish,
   });
 
   return {

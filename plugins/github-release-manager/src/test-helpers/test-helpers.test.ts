@@ -27,17 +27,15 @@ describe('testHelpers', () => {
             "getComparison": [MockFunction],
           },
           "getBranch": [MockFunction],
+          "getHost": [MockFunction],
           "getLatestCommit": [MockFunction],
-          "getOctokit": [Function],
-          "getProject": [MockFunction],
+          "getLatestRelease": [MockFunction],
+          "getOrganizations": [MockFunction],
           "getRecentCommits": [MockFunction],
-          "getRelease": [MockFunction],
-          "getReleases": [MockFunction],
           "getRepoPath": [MockFunction],
+          "getRepositories": [MockFunction],
           "getRepository": [MockFunction],
-          "githubAuthApi": Object {
-            "getAccessToken": [MockFunction],
-          },
+          "getUsername": [MockFunction],
           "patch": Object {
             "createCherryPickCommit": [MockFunction],
             "createReference": [MockFunction],
@@ -48,29 +46,14 @@ describe('testHelpers', () => {
             "replaceTempCommit": [MockFunction],
             "updateRelease": [MockFunction],
           },
-          "pluginApiClient": Object {
-            "baseUrl": "http://mock_base_url.hehe",
-            "getOctokit": [MockFunction],
-          },
-          "project": Object {
-            "github": Object {
-              "org": "mock_org",
-              "repo": "mock_repo",
-            },
-            "name": "mock_name",
-            "versioningStrategy": "semver",
-          },
           "promoteRc": Object {
             "promoteRelease": [MockFunction],
           },
         },
         "mockBumpedTag": "rc-2020.01.01_1337",
         "mockCalverProject": Object {
-          "github": Object {
-            "org": "mock_org",
-            "repo": "mock_repo",
-          },
-          "name": "mock_name",
+          "owner": "mock_owner",
+          "repo": "mock_repo",
           "versioningStrategy": "calver",
         },
         "mockDefaultBranch": "mock_defaultBranch",
@@ -80,12 +63,11 @@ describe('testHelpers', () => {
           "releaseName": "Version 1.2.3",
         },
         "mockRcRelease": Object {
-          "body": "mock_body",
-          "html_url": "mock_release_html_url",
+          "htmlUrl": "mock_release_html_url",
           "id": 1,
           "prerelease": true,
-          "tag_name": "rc-2020.01.01_1",
-          "target_commitish": "rc/1.2.3",
+          "tagName": "rc-2020.01.01_1",
+          "targetCommitish": "rc/1.2.3",
         },
         "mockRecentCommits": Array [
           Object {
@@ -128,12 +110,11 @@ describe('testHelpers', () => {
           "name": "rc/1.2.3",
         },
         "mockReleaseVersion": Object {
-          "body": "mock_body",
-          "html_url": "mock_release_html_url",
+          "htmlUrl": "mock_release_html_url",
           "id": 1,
           "prerelease": false,
-          "tag_name": "version-2020.01.01_1",
-          "target_commitish": "rc/1.2.3",
+          "tagName": "version-2020.01.01_1",
+          "targetCommitish": "rc/1.2.3",
         },
         "mockSelectedPatchCommit": Object {
           "author": Object {
@@ -148,11 +129,8 @@ describe('testHelpers', () => {
           "sha": "mock_latestCommit_sha",
         },
         "mockSemverProject": Object {
-          "github": Object {
-            "org": "mock_org",
-            "repo": "mock_repo",
-          },
-          "name": "mock_name",
+          "owner": "mock_owner",
+          "repo": "mock_repo",
           "versioningStrategy": "semver",
         },
         "mockTagParts": Object {

@@ -18,20 +18,24 @@ import React from 'react';
 import { Link, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
-import { GhGetBranchResponse, GhGetReleaseResponse } from '../../types/types';
+import { GhGetBranchResponse } from '../../types/types';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import flowImage from './flow.png';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface InfoCardProps {
   releaseBranch: GhGetBranchResponse | null;
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
 }
 
 export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
   const project = useProjectContext();
+
   const classes = useStyles();
 
   return (
@@ -98,7 +102,7 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
         </Typography>
 
         <Typography>
-          Latest release: <Differ icon="tag" next={latestRelease?.tag_name} />
+          Latest release: <Differ icon="tag" next={latestRelease?.tagName} />
         </Typography>
       </div>
     </InfoCardPlus>

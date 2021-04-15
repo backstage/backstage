@@ -17,10 +17,8 @@
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import {
-  GhCompareCommitsResponse,
   GhCreateCommitResponse,
   GhCreateReferenceResponse,
-  GhCreateReleaseResponse,
   GhCreateTagObjectResponse,
   GhGetBranchResponse,
   GhGetCommitResponse,
@@ -28,24 +26,19 @@ import {
   GhMergeResponse,
   GhUpdateReferenceResponse,
   GhUpdateReleaseResponse,
-  Project,
 } from '../types/types';
+import { Project } from '../contexts/ProjectContext';
+import { ApiMethodRetval, IPluginApiClient } from '../api/PluginApiClient';
 
 export const mockSemverProject: Project = {
-  github: {
-    org: 'mock_org',
-    repo: 'mock_repo',
-  },
-  name: 'mock_name',
+  owner: 'mock_owner',
+  repo: 'mock_repo',
   versioningStrategy: 'semver',
 };
 
 export const mockCalverProject: Project = {
-  github: {
-    org: 'mock_org',
-    repo: 'mock_repo',
-  },
-  name: 'mock_name',
+  owner: 'mock_owner',
+  repo: 'mock_repo',
   versioningStrategy: 'calver',
 };
 
@@ -72,23 +65,28 @@ const createMockRelease = ({
   id = 1,
   prerelease = false,
   ...rest
-}: Partial<GhGetReleaseResponse> = {}) =>
+}: Partial<
+  NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >
+> = {}) =>
   ({
     id: 1,
-    body: 'mock_body',
-    html_url: 'mock_release_html_url',
+    htmlUrl: 'mock_release_html_url',
     prerelease,
     ...rest,
-  } as GhGetReleaseResponse);
+  } as NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >);
 export const mockRcRelease = createMockRelease({
   prerelease: true,
-  tag_name: 'rc-2020.01.01_1',
-  target_commitish: 'rc/1.2.3',
+  tagName: 'rc-2020.01.01_1',
+  targetCommitish: 'rc/1.2.3',
 });
 export const mockReleaseVersion = createMockRelease({
   prerelease: false,
-  tag_name: 'version-2020.01.01_1',
-  target_commitish: 'rc/1.2.3',
+  tagName: 'version-2020.01.01_1',
+  targetCommitish: 'rc/1.2.3',
 });
 
 /**
@@ -134,63 +132,39 @@ export const mockSelectedPatchCommit = createMockCommit({
 /**
  * MOCK API CLIENT
  */
-export const mockApiClient = {
-  pluginApiClient: {
-    getOctokit: jest.fn(),
-    baseUrl: 'http://mock_base_url.hehe',
-  },
-
+export const mockApiClient: IPluginApiClient = {
+  getHost: jest.fn(() => 'github.com'),
   getRepoPath: jest.fn(() => 'erikengervall/playground'),
-
+  getOrganizations: jest.fn(),
+  getRepositories: jest.fn(),
+  getUsername: jest.fn(),
   getRecentCommits: jest.fn().mockResolvedValue({
     recentCommits: mockRecentCommits,
   }),
-  getReleases: jest.fn().mockResolvedValue({
-    releases: [
-      createMockRelease({ id: 1, body: 'mock_releases[0]' }),
-      createMockRelease({ id: 2, body: 'mock_releases[1]' }),
-    ],
-  }),
-  getRelease: jest.fn().mockResolvedValue({
-    latestRelease: createMockRelease({ id: 1, body: 'mock_latest_release' }),
-  }),
-
-  getBranch: jest.fn().mockResolvedValue({
-    branch: mockReleaseBranch,
-  }),
+  getLatestRelease: jest.fn(), // TODO:
+  getRepository: jest.fn(),
   getLatestCommit: jest.fn().mockResolvedValue({
     latestCommit: createMockCommit({ node_id: 'mock_latest_commit' }),
   }),
-  getOctokit: () => ({
-    octokit: {
-      request: jest.fn(),
-    },
+  getBranch: jest.fn().mockResolvedValue({
+    branch: mockReleaseBranch,
   }),
-  getProject: jest.fn(),
 
-  getRepository: jest.fn(),
-  githubAuthApi: {
-    getAccessToken: jest.fn(),
-  },
   createRc: {
     createRef: jest.fn().mockResolvedValue({
-      createdRef: {
-        ref: 'mock_createRef_ref',
-      } as GhCreateReferenceResponse,
-    }),
+      ref: 'mock_createRef_ref',
+    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRef']>>),
     createRelease: jest.fn().mockResolvedValue({
       createReleaseResponse: {
         name: 'mock_createRelease_name',
-        html_url: 'mock_createRelease_html_url',
-        tag_name: 'mock_createRelease_tag_name',
-      } as GhCreateReleaseResponse,
-    }),
+        htmlUrl: 'mock_createRelease_html_url',
+        tagName: 'mock_createRelease_tag_name',
+      },
+    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRelease']>>),
     getComparison: jest.fn().mockResolvedValue({
-      comparison: {
-        html_url: 'mock_compareCommits_html_url',
-        ahead_by: 1,
-      } as GhCompareCommitsResponse,
-    }),
+      htmlUrl: 'mock_compareCommits_html_url',
+      aheadBy: 1,
+    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['getComparison']>>),
   },
   patch: {
     createCherryPickCommit: jest.fn().mockResolvedValue({
@@ -252,5 +226,5 @@ export const mockApiClient = {
       } as GhGetReleaseResponse,
     }),
   },
-  project: mockSemverProject,
-} as any;
+  // project: mockSemverProject,
+};

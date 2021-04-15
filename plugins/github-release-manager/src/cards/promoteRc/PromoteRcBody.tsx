@@ -20,20 +20,19 @@ import { Alert } from '@material-ui/lab';
 import { Button, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
-import {
-  ComponentConfigPromoteRc,
-  GhGetReleaseResponse,
-  SetRefetch,
-} from '../../types/types';
+import { ComponentConfigPromoteRc, SetRefetch } from '../../types/types';
 import { promoteRc } from './sideEffects/promoteRc';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface PromoteRcBodyProps {
-  rcRelease: GhGetReleaseResponse;
+  rcRelease: NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
@@ -46,7 +45,7 @@ export const PromoteRcBody = ({
   const pluginApiClient = usePluginApiClientContext();
   const project = useProjectContext();
   const classes = useStyles();
-  const releaseVersion = rcRelease.tag_name.replace('rc-', 'version-');
+  const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
   const [promoteGitHubRcResponse, promoseGitHubRcFn] = useAsyncFn(
     promoteRc({
       pluginApiClient,
@@ -71,7 +70,7 @@ export const PromoteRcBody = ({
         </Typography>
 
         <Typography className={classes.paragraph}>
-          <Differ icon="tag" prev={rcRelease.tag_name} next={releaseVersion} />
+          <Differ icon="tag" prev={rcRelease.tagName} next={releaseVersion} />
         </Typography>
       </>
     );

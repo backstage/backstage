@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
+import { ComponentConfigPromoteRc, ResponseStep } from '../../../types/types';
 import {
-  ComponentConfigPromoteRc,
-  GhGetReleaseResponse,
-  ResponseStep,
-} from '../../../types/types';
-import { PluginApiClient } from '../../../api/PluginApiClient';
+  ApiMethodRetval,
+  IPluginApiClient,
+} from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
 
 interface PromoteRc {
-  pluginApiClient: PluginApiClient;
+  pluginApiClient: IPluginApiClient;
   project: Project;
-  rcRelease: GhGetReleaseResponse;
+  rcRelease: NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
@@ -47,15 +48,15 @@ export function promoteRc({
     });
     responseSteps.push({
       message: `Promoted "${release.name}"`,
-      secondaryMessage: `from "${rcRelease.tag_name}" to "${release.tag_name}"`,
+      secondaryMessage: `from "${rcRelease.tagName}" to "${release.tag_name}"`,
       link: release.html_url,
     });
 
     await successCb?.({
       gitHubReleaseUrl: release.html_url,
       gitHubReleaseName: release.name,
-      previousTagUrl: rcRelease.html_url,
-      previousTag: rcRelease.tag_name,
+      previousTagUrl: rcRelease.htmlUrl,
+      previousTag: rcRelease.tagName,
       updatedTagUrl: release.html_url,
       updatedTag: release.tag_name,
     });

@@ -16,7 +16,7 @@
 
 import { DateTime } from 'luxon';
 
-import { GhGetReleaseResponse } from '../../types/types';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 import {
   mockSemverProject,
   mockCalverProject,
@@ -34,8 +34,8 @@ describe('getRcGitHubInfo', () => {
 
   describe('calver', () => {
     const latestRelease = {
-      tag_name: 'rc-2020.01.01_0',
-    } as GhGetReleaseResponse;
+      tagName: 'rc-2020.01.01_0',
+    } as ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease'];
 
     it('should return correct GitHub info', () => {
       expect(
@@ -57,8 +57,8 @@ describe('getRcGitHubInfo', () => {
 
   describe('semver', () => {
     const latestRelease = {
-      tag_name: 'rc-1.1.1',
-    } as GhGetReleaseResponse;
+      tagName: 'rc-1.1.1',
+    } as ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease'];
 
     it("should return correct GitHub info when there's previous releases", () => {
       expect(

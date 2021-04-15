@@ -19,10 +19,8 @@ import { Octokit } from '@octokit/rest';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 import {
-  GhCompareCommitsResponse,
   GhCreateCommitResponse,
   GhCreateReferenceResponse,
-  GhCreateReleaseResponse,
   GhCreateTagObjectResponse,
   GhGetBranchResponse,
   GhGetCommitResponse,
@@ -36,32 +34,72 @@ import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 import { Project } from '../contexts/ProjectContext';
 
-// export type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
-//   ? U
-//   : never;
+type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
+  ? U
+  : never;
 
-type Todo = any;
+export type ApiMethodRetval<
+  T extends (...args: any) => Promise<any>
+> = UnboxPromise<ReturnType<T>>;
+
+type Todo = any; // TODO:
 type PartialProject = Omit<Project, 'versioningStrategy'>;
 
 export interface IPluginApiClient {
   getHost: () => string;
 
+  getRepoPath: (args: PartialProject) => string;
+
+  getOrganizations: () => Promise<{ organizations: string[] }>;
+
+  getRepositories: (args: {
+    owner: string;
+  }) => Promise<{ repositories: string[] }>;
+
+  getUsername: () => Promise<{ username: string }>;
+
   getRecentCommits: (
     args: { releaseBranchName?: string } & PartialProject,
-  ) => Promise<Todo>;
-  getReleases: (args: { releaseId: number } & PartialProject) => Promise<Todo>;
-  getRelease: (args: { releaseId: number } & PartialProject) => Promise<Todo>;
+  ) => Promise<{
+    recentCommits: {
+      sha: string;
+      author: {
+        htmlUrl?: string;
+        login?: string;
+      };
+      commit: {
+        message: string;
+      };
+    }[];
+  }>;
+
+  getLatestRelease: (
+    args: PartialProject,
+  ) => Promise<{
+    latestRelease: {
+      targetCommitish: string;
+      tagName: string;
+      prerelease: boolean;
+      id: number;
+      htmlUrl: string;
+      body?: string | null;
+    } | null;
+  }>;
+
   getRepository: (
     args: PartialProject,
   ) => Promise<{
     repository: {
       pushPermissions: boolean | undefined;
       defaultBranch: string;
+      name: string;
     };
   }>;
+
   getLatestCommit: (
     args: { defaultBranch: string } & PartialProject,
   ) => Promise<Todo>;
+
   getBranch: (args: { branchName: string } & PartialProject) => Promise<Todo>;
 
   createRc: {
@@ -70,21 +108,27 @@ export interface IPluginApiClient {
         mostRecentSha: string;
         targetBranch: string;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{ ref: string }>;
 
     getComparison: (
       args: {
         previousReleaseBranch: string;
         nextReleaseBranch: string;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{ htmlUrl: string; aheadBy: number }>;
 
     createRelease: (
       args: {
         nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
         releaseBody: string;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      createReleaseResponse: {
+        name: string | null;
+        htmlUrl: string;
+        tagName: string;
+      };
+    }>;
   };
 
   patch: {
@@ -142,7 +186,9 @@ export interface IPluginApiClient {
     updateRelease: (
       args: {
         bumpedTag: string;
-        latestRelease: GhGetReleaseResponse;
+        latestRelease: NonNullable<
+          ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+        >;
         tagParts: SemverTagParts | CalverTagParts;
         selectedPatchCommit: GhGetCommitResponse;
       } & PartialProject,
@@ -157,10 +203,6 @@ export interface IPluginApiClient {
       } & PartialProject,
     ) => Promise<Todo>;
   };
-
-  getOrganizations: (args: { ownerIsUser: boolean }) => Promise<Todo>;
-  getUsername: () => Promise<{ username: string }>;
-  getRepositories: (args: { owner: string; username: string }) => Promise<Todo>;
 }
 
 export class PluginApiClient implements IPluginApiClient {
@@ -221,36 +263,46 @@ export class PluginApiClient implements IPluginApiClient {
 
   async getOrganizations() {
     const { octokit } = await this.getOctokit();
-    const { data: orgs } = await octokit.orgs.listForAuthenticatedUser();
+    const orgListResponse = await octokit.paginate(
+      octokit.orgs.listForAuthenticatedUser,
+      { per_page: 100 },
+    );
 
-    return { orgs };
+    return {
+      organizations: orgListResponse.map(organization => organization.login),
+    };
   }
 
-  async getRepositories({
-    owner,
-    username,
-  }: {
-    owner: string;
-    username: string;
-  }) {
+  async getRepositories({ owner }: { owner: string }) {
     const { octokit } = await this.getOctokit();
 
-    if (owner === username) {
-      const { data: repos } = await octokit.repos.listForUser({ username });
+    const repositoryResponse = await octokit
+      .paginate(octokit.repos.listForOrg, { org: owner, per_page: 100 })
+      .catch(async error => {
+        // `owner` is not an org, try listing a user's repositories instead
+        if (error.status === 404) {
+          const userRepositoryResponse = await octokit.paginate(
+            octokit.repos.listForUser,
+            { username: owner, per_page: 100 },
+          );
+          return userRepositoryResponse;
+        }
 
-      return { repos };
-    }
+        throw error;
+      });
 
-    const { data: repos } = await octokit.repos.listForOrg({ org: owner });
-
-    return { repos };
+    return {
+      repositories: repositoryResponse.map(repository => repository.name),
+    };
   }
 
   async getUsername() {
     const { octokit } = await this.getOctokit();
-    const { data: user } = await octokit.users.getAuthenticated();
+    const userResponse = await octokit.users.getAuthenticated();
 
-    return { username: user.login };
+    return {
+      username: userResponse.data.login,
+    };
   }
 
   async getRecentCommits({
@@ -261,43 +313,52 @@ export class PluginApiClient implements IPluginApiClient {
     releaseBranchName?: string;
   } & PartialProject) {
     const { octokit } = await this.getOctokit();
-    const sha = releaseBranchName ? `?sha=${releaseBranchName}` : '';
+    const recentCommitsResponse = await octokit.repos.listCommits({
+      owner,
+      repo,
+      ...(releaseBranchName ? { sha: releaseBranchName } : {}),
+    });
 
-    const recentCommits: GhGetCommitResponse[] = (
-      await octokit.request(
-        `/repos/${this.getRepoPath({ owner, repo })}/commits${sha}`,
-      )
-    ).data;
-
-    return { recentCommits };
+    return {
+      recentCommits: recentCommitsResponse.data.map(commit => ({
+        sha: commit.sha,
+        author: {
+          htmlUrl: commit.author?.html_url,
+          login: commit.author?.login,
+        },
+        commit: {
+          message: commit.commit.message,
+        },
+      })),
+    };
   }
 
-  async getReleases({ owner, repo }: PartialProject) {
+  async getLatestRelease({ owner, repo }: PartialProject) {
     const { octokit } = await this.getOctokit();
+    const { data: latestReleases } = await octokit.repos.listReleases({
+      owner,
+      repo,
+      per_page: 1,
+    });
 
-    const releases: GhGetReleaseResponse[] = (
-      await octokit.request(
-        `/repos/${this.getRepoPath({ owner, repo })}/releases`,
-      )
-    ).data;
+    if (latestReleases.length === 0) {
+      return {
+        latestRelease: null,
+      };
+    }
 
-    return { releases };
-  }
+    const latestRelease = latestReleases[0];
 
-  async getRelease({
-    owner,
-    repo,
-    releaseId,
-  }: { releaseId: number } & PartialProject) {
-    const { octokit } = await this.getOctokit();
-
-    const latestRelease: GhGetReleaseResponse = (
-      await octokit.request(
-        `/repos/${this.getRepoPath({ owner, repo })}/releases/${releaseId}`,
-      )
-    ).data;
-
-    return { latestRelease };
+    return {
+      latestRelease: {
+        targetCommitish: latestRelease.target_commitish,
+        tagName: latestRelease.tag_name,
+        prerelease: latestRelease.prerelease,
+        id: latestRelease.id,
+        htmlUrl: latestRelease.html_url,
+        body: latestRelease.body,
+      },
+    };
   }
 
   async getRepository({ owner, repo }: PartialProject) {
@@ -363,21 +424,16 @@ export class PluginApiClient implements IPluginApiClient {
       targetBranch: string;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const createRefResponse = await octokit.git.createRef({
+        owner,
+        repo,
+        ref: `refs/heads/${targetBranch}`,
+        sha: mostRecentSha,
+      });
 
-      const createdRef: GhCreateReferenceResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/git/refs`,
-          {
-            method: 'POST',
-            data: {
-              ref: `refs/heads/${targetBranch}`,
-              sha: mostRecentSha,
-            },
-          },
-        )
-      ).data;
-
-      return { createdRef };
+      return {
+        ref: createRefResponse.data.ref,
+      };
     },
 
     getComparison: async ({
@@ -390,17 +446,17 @@ export class PluginApiClient implements IPluginApiClient {
       nextReleaseBranch: string;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const compareCommitsResponse = await octokit.repos.compareCommits({
+        owner,
+        repo,
+        base: previousReleaseBranch,
+        head: nextReleaseBranch,
+      });
 
-      const comparison: GhCompareCommitsResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({
-            owner,
-            repo,
-          })}/compare/${previousReleaseBranch}...${nextReleaseBranch}`,
-        )
-      ).data;
-
-      return { comparison };
+      return {
+        htmlUrl: compareCommitsResponse.data.html_url,
+        aheadBy: compareCommitsResponse.data.ahead_by,
+      };
     },
 
     createRelease: async ({
@@ -413,24 +469,23 @@ export class PluginApiClient implements IPluginApiClient {
       releaseBody: string;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const createReleaseResponse = await octokit.repos.createRelease({
+        owner,
+        repo,
+        tag_name: nextGitHubInfo.rcReleaseTag,
+        name: nextGitHubInfo.releaseName,
+        target_commitish: nextGitHubInfo.rcBranch,
+        body: releaseBody,
+        prerelease: true,
+      });
 
-      const createReleaseResponse: GhCreateReleaseResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/releases`,
-          {
-            method: 'POST',
-            data: {
-              tag_name: nextGitHubInfo.rcReleaseTag,
-              name: nextGitHubInfo.releaseName,
-              target_commitish: nextGitHubInfo.rcBranch,
-              body: releaseBody,
-              prerelease: true,
-            },
-          },
-        )
-      ).data;
-
-      return { createReleaseResponse };
+      return {
+        createReleaseResponse: {
+          name: createReleaseResponse.data.name,
+          htmlUrl: createReleaseResponse.data.html_url,
+          tagName: createReleaseResponse.data.tag_name,
+        },
+      };
     },
   };
 
@@ -640,7 +695,9 @@ export class PluginApiClient implements IPluginApiClient {
       selectedPatchCommit,
     }: {
       bumpedTag: string;
-      latestRelease: GhGetReleaseResponse;
+      latestRelease: NonNullable<
+        ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+      >;
       tagParts: SemverTagParts | CalverTagParts;
       selectedPatchCommit: GhGetCommitResponse;
     } & PartialProject) => {

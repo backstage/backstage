@@ -15,8 +15,9 @@
  */
 
 import {
-  mockRcRelease,
   mockApiClient,
+  mockRcRelease,
+  mockSemverProject,
 } from '../../../test-helpers/test-helpers';
 import { promoteRc } from './promoteRc';
 
@@ -28,6 +29,7 @@ describe('promoteRc', () => {
       pluginApiClient: mockApiClient,
       rcRelease: mockRcRelease,
       releaseVersion: 'version-1.2.3',
+      project: mockSemverProject,
     })();
 
     expect(result).toMatchInlineSnapshot(`

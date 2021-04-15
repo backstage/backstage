@@ -48,7 +48,7 @@ export function Owner({
     return <CenteredCircularProgress />;
   }
 
-  if (!value?.orgs) {
+  if (!value?.organizations) {
     return <Alert severity="error">Could not fetch organizations</Alert>;
   }
 
@@ -74,9 +74,9 @@ export function Owner({
         <MenuItem value={username}>
           <strong>{username}</strong>
         </MenuItem>
-        {value.orgs.map((org, index) => (
-          <MenuItem key={`organization-${index}`} value={org.login}>
-            {org.login}
+        {value.organizations.map((orgName, index) => (
+          <MenuItem key={`organization-${index}`} value={orgName}>
+            {orgName}
           </MenuItem>
         ))}
       </Select>

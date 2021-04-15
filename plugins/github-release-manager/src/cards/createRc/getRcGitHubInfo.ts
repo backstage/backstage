@@ -18,9 +18,9 @@ import { DateTime } from 'luxon';
 
 import { getBumpedSemverTagParts } from '../../helpers/getBumpedTag';
 import { getSemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { GhGetReleaseResponse } from '../../types/types';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { Project } from '../../contexts/ProjectContext';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 export const getRcGitHubInfo = ({
   project,
@@ -29,7 +29,9 @@ export const getRcGitHubInfo = ({
   injectedDate = DateTime.now().toFormat('yyyy.MM.dd'),
 }: {
   project: Project;
-  latestRelease: GhGetReleaseResponse | null;
+  latestRelease: ApiMethodRetval<
+    IPluginApiClient['getLatestRelease']
+  >['latestRelease'];
   semverBumpLevel: keyof typeof SEMVER_PARTS;
   injectedDate?: string;
 }) => {
@@ -49,7 +51,7 @@ export const getRcGitHubInfo = ({
     };
   }
 
-  const tagParts = getSemverTagParts(latestRelease.tag_name);
+  const tagParts = getSemverTagParts(latestRelease.tagName);
   const { bumpedTagParts } = getBumpedSemverTagParts(tagParts, semverBumpLevel);
 
   const bumpedTag = `${bumpedTagParts.major}.${bumpedTagParts.minor}.${bumpedTagParts.patch}`;

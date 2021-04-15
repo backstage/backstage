@@ -28,10 +28,10 @@ describe('createRc', () => {
 
   it('should work', async () => {
     const result = await createRc({
-      pluginApiClient: mockApiClient,
       defaultBranch: mockDefaultBranch,
       latestRelease: mockReleaseVersion,
       nextGitHubInfo: mockNextGitHubInfo,
+      pluginApiClient: mockApiClient,
       project: mockCalverProject,
     });
 

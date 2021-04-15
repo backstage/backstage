@@ -16,11 +16,11 @@
 
 import { createContext, useContext } from 'react';
 
-import { PluginApiClient } from '../api/PluginApiClient';
+import { IPluginApiClient } from '../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
 export const PluginApiClientContext = createContext<
-  PluginApiClient | undefined
+  IPluginApiClient | undefined
 >(undefined);
 
 export const usePluginApiClientContext = () => {

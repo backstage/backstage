@@ -21,7 +21,7 @@ interface ComponentConfig<Args = void> {
 
 export interface ComponentConfigCreateRcSuccessCbArgs {
   gitHubReleaseUrl: string;
-  gitHubReleaseName: string;
+  gitHubReleaseName: string | null;
   comparisonUrl: string;
   previousTag?: string;
   createdTag: string;
@@ -30,7 +30,7 @@ export type ComponentConfigCreateRc = ComponentConfig<ComponentConfigCreateRcSuc
 
 export interface ComponentConfigPromoteRcSuccessCbArgs {
   gitHubReleaseUrl: string;
-  gitHubReleaseName: string;
+  gitHubReleaseName: string | null;
   previousTagUrl: string;
   previousTag: string;
   updatedTagUrl: string;

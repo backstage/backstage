@@ -41,7 +41,7 @@ describe('PatchBody', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should render error', async () => {
-    mockApiClient.getBranch.mockImplementationOnce(() => {
+    (mockApiClient.getBranch as jest.Mock).mockImplementationOnce(() => {
       throw new Error('banana');
     });
 

@@ -81,11 +81,7 @@ export function GitHubReleaseManager({
   }
 
   return (
-    <PluginApiClientContext.Provider
-      value={
-        pluginApiClient as any // TODO: Fix type errors
-      }
-    >
+    <PluginApiClientContext.Provider value={pluginApiClient}>
       <div className={classes.root}>
         <ContentHeader title="GitHub Release Manager" />
 
@@ -119,7 +115,7 @@ function Cards({
   );
 
   const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
-    latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tag_name,
+    latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tagName,
     project,
     repositoryName: gitHubBatchInfo.value?.repository.name,
   });
@@ -151,7 +147,7 @@ function Cards({
     return (
       <Alert severity="error">
         Versioning mismatch, expected {project.versioningStrategy} version, got{' '}
-        {gitHubBatchInfo.value?.latestRelease?.tag_name}
+        {gitHubBatchInfo.value.latestRelease?.tagName}
       </Alert>
     );
   }

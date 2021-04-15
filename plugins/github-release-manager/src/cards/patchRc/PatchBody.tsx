@@ -38,7 +38,6 @@ import {
   ComponentConfigPatch,
   GhGetBranchResponse,
   GhGetCommitResponse,
-  GhGetReleaseResponse,
   SetRefetch,
 } from '../../types/types';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
@@ -50,10 +49,13 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
+import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 
 interface PatchBodyProps {
   bumpedTag: string;
-  latestRelease: GhGetReleaseResponse;
+  latestRelease: NonNullable<
+    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
+  >;
   releaseBranch: GhGetBranchResponse | null;
   setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
@@ -75,17 +77,17 @@ export const PatchBody = ({
   const githubDataResponse = useAsync(async () => {
     const [
       { branch: releaseBranchResponse },
-      { recentCommits },
+      { recentCommits: recentCommitsOnDefaultBranch },
     ] = await Promise.all([
       pluginApiClient.getBranch({
         ...project,
-        branchName: latestRelease.target_commitish,
+        branchName: latestRelease.targetCommitish,
       }),
       pluginApiClient.getRecentCommits({ ...project }),
     ]);
 
     const {
-      recentCommits: recentReleaseBranchCommits,
+      recentCommits: recentCommitsOnReleaseBranch,
     } = await pluginApiClient.getRecentCommits({
       ...project,
       releaseBranchName: releaseBranchResponse.name,
@@ -93,8 +95,8 @@ export const PatchBody = ({
 
     return {
       releaseBranch: releaseBranchResponse,
-      recentReleaseBranchCommits,
-      recentCommits,
+      recentCommitsOnReleaseBranch,
+      recentCommitsOnDefaultBranch,
     };
   });
 
@@ -146,118 +148,118 @@ export const PatchBody = ({
         )}
 
         <Typography className={classes.paragraph}>
-          <Differ icon="tag" prev={latestRelease.tag_name} next={bumpedTag} />
+          <Differ icon="tag" prev={latestRelease.tagName} next={bumpedTag} />
         </Typography>
       </>
     );
   }
 
   function CommitList() {
-    if (!githubDataResponse.value?.recentCommits) {
+    if (!githubDataResponse.value?.recentCommitsOnDefaultBranch) {
       return null;
     }
 
     return (
       <List>
-        {githubDataResponse.value.recentCommits.map((commit, index) => {
-          const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentReleaseBranchCommits.find(
-            ({ sha }) => {
-              return sha === commit.sha;
-            },
-          );
+        {githubDataResponse.value.recentCommitsOnDefaultBranch.map(
+          (commit, index) => {
+            const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentCommitsOnReleaseBranch.find(
+              releaseBranchCommit => releaseBranchCommit.sha === commit.sha,
+            );
 
-          return (
-            <div style={{ position: 'relative' }} key={`commit-${index}`}>
-              {commitExistsOnReleaseBranch && (
-                <Paper
-                  elevation={3}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate3d(-50%,-50%,0)',
-                    zIndex: 10,
-                    color: 'green',
-                    padding: 6,
-                    background: 'rgba(244,244,244,1)',
-                    borderRadius: 8,
-                  }}
-                >
-                  <FileCopyIcon
-                    fontSize="small"
-                    style={{ verticalAlign: 'middle' }}
-                  />{' '}
-                  Already exists on <b>{releaseBranch?.name}</b>
-                </Paper>
-              )}
-
-              <ListItem
-                disabled={
-                  patchReleaseResponse.loading ||
-                  (patchReleaseResponse.value &&
-                    patchReleaseResponse.value.length > 0) ||
-                  commitExistsOnReleaseBranch
-                }
-                role={undefined}
-                dense
-                button
-                onClick={() => {
-                  if (index === checkedCommitIndex) {
-                    setCheckedCommitIndex(-1);
-                  } else {
-                    setCheckedCommitIndex(index);
-                  }
-                }}
-              >
-                <ListItemIcon>
-                  <Checkbox
-                    edge="start"
-                    checked={checkedCommitIndex === index}
-                    tabIndex={-1}
-                  />
-                </ListItemIcon>
-
-                <ListItemText
-                  id={commit.sha}
-                  primary={commit.commit.message}
-                  secondary={
-                    <>
-                      {commit.sha}{' '}
-                      <Link
-                        color="primary"
-                        href={commit.author.html_url}
-                        target="_blank"
-                      >
-                        @{commit.author.login}
-                      </Link>
-                    </>
-                  }
-                />
-
-                <ListItemSecondaryAction>
-                  <IconButton
-                    aria-label="commit"
-                    disabled={commitExistsOnReleaseBranch || !releaseBranch}
-                    onClick={() => {
-                      const repoPath = pluginApiClient.getRepoPath({
-                        ...project,
-                      });
-                      const host = pluginApiClient.getHost();
-
-                      const newTab = window.open(
-                        `https://${host}/${repoPath}/compare/${releaseBranch?.name}...${commit.sha}`,
-                        '_blank',
-                      );
-                      newTab?.focus();
+            return (
+              <div style={{ position: 'relative' }} key={`commit-${index}`}>
+                {commitExistsOnReleaseBranch && (
+                  <Paper
+                    elevation={3}
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate3d(-50%,-50%,0)',
+                      zIndex: 10,
+                      color: 'green',
+                      padding: 6,
+                      background: 'rgba(244,244,244,1)',
+                      borderRadius: 8,
                     }}
                   >
-                    <OpenInNewIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            </div>
-          );
-        })}
+                    <FileCopyIcon
+                      fontSize="small"
+                      style={{ verticalAlign: 'middle' }}
+                    />{' '}
+                    Already exists on <b>{releaseBranch?.name}</b>
+                  </Paper>
+                )}
+
+                <ListItem
+                  disabled={
+                    patchReleaseResponse.loading ||
+                    (patchReleaseResponse.value &&
+                      patchReleaseResponse.value.length > 0) ||
+                    commitExistsOnReleaseBranch
+                  }
+                  role={undefined}
+                  dense
+                  button
+                  onClick={() => {
+                    if (index === checkedCommitIndex) {
+                      setCheckedCommitIndex(-1);
+                    } else {
+                      setCheckedCommitIndex(index);
+                    }
+                  }}
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={checkedCommitIndex === index}
+                      tabIndex={-1}
+                    />
+                  </ListItemIcon>
+
+                  <ListItemText
+                    id={commit.sha}
+                    primary={commit.commit.message}
+                    secondary={
+                      <>
+                        {commit.sha}{' '}
+                        <Link
+                          color="primary"
+                          href={commit.author.htmlUrl}
+                          target="_blank"
+                        >
+                          @{commit.author.login}
+                        </Link>
+                      </>
+                    }
+                  />
+
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      aria-label="commit"
+                      disabled={commitExistsOnReleaseBranch || !releaseBranch}
+                      onClick={() => {
+                        const repoPath = pluginApiClient.getRepoPath({
+                          ...project,
+                        });
+                        const host = pluginApiClient.getHost();
+
+                        const newTab = window.open(
+                          `https://${host}/${repoPath}/compare/${releaseBranch?.name}...${commit.sha}`,
+                          '_blank',
+                        );
+                        newTab?.focus();
+                      }}
+                    >
+                      <OpenInNewIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </div>
+            );
+          },
+        )}
       </List>
     );
   }
@@ -275,7 +277,11 @@ export const PatchBody = ({
       );
     }
 
-    if (!githubDataResponse.value?.recentCommits[checkedCommitIndex]) {
+    if (
+      !githubDataResponse.value?.recentCommitsOnDefaultBranch[
+        checkedCommitIndex
+      ]
+    ) {
       return (
         <Button disabled variant="contained" color="primary">
           Patch Release Candidate
@@ -291,7 +297,9 @@ export const PatchBody = ({
         onClick={() => {
           // FIXME: Optional chaining shouldn't be needed here due to the if-statement above
           patchReleaseFn(
-            githubDataResponse.value?.recentCommits[checkedCommitIndex],
+            githubDataResponse.value?.recentCommitsOnDefaultBranch[
+              checkedCommitIndex
+            ],
           );
         }}
       >
