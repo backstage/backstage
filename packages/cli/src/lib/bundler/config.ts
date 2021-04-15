@@ -258,7 +258,7 @@ export async function createBackendConfig(
         modulesDir: paths.rootNodeModules,
         additionalModuleDirs: moduleDirs,
         allowlist: ['webpack/hot/poll?100', ...localPackageNames],
-      }) as any,
+      }),
     ],
     target: 'node' as const,
     node: {
@@ -358,8 +358,11 @@ function nodeExternalsWithResolve(
     },
   });
 
-  return (context: string, request: string, callback: any) => {
-    currentContext = context;
+  return (
+    { context, request }: { context?: string; request?: string },
+    callback: any,
+  ) => {
+    currentContext = context!;
     return externals(context, request, callback);
   };
 }
