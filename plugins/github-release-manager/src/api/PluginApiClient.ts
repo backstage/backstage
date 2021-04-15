@@ -156,12 +156,17 @@ export interface IPluginApiClient {
         releaseBranchTree: string;
         selectedPatchCommit: GhGetCommitResponse;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<{
+      message: string;
+      sha: string;
+    }>;
 
     forceBranchHeadToTempCommit: (
       args: {
         releaseBranchName: string;
-        tempCommit: GhCreateCommitResponse;
+        tempCommit: ApiMethodRetval<
+          IPluginApiClient['patch']['createTempCommit']
+        >;
       } & PartialProject,
     ) => Promise<Todo>;
 
@@ -532,22 +537,18 @@ export class PluginApiClient implements IPluginApiClient {
       selectedPatchCommit: GhGetCommitResponse;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: tempCommit } = await octokit.git.createCommit({
+        owner,
+        repo,
+        message: `Temporary commit for patch ${tagParts.patch}`,
+        tree: releaseBranchTree,
+        parents: [selectedPatchCommit.parents[0].sha],
+      });
 
-      const tempCommit: GhCreateCommitResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/git/commits`,
-          {
-            method: 'POST',
-            data: {
-              message: `Temporary commit for patch ${tagParts.patch}`,
-              tree: releaseBranchTree,
-              parents: [selectedPatchCommit.parents[0].sha],
-            },
-          },
-        )
-      ).data;
-
-      return { tempCommit };
+      return {
+        message: tempCommit.message,
+        sha: tempCommit.sha,
+      };
     },
 
     forceBranchHeadToTempCommit: async ({
@@ -557,7 +558,9 @@ export class PluginApiClient implements IPluginApiClient {
       tempCommit,
     }: {
       releaseBranchName: string;
-      tempCommit: GhCreateCommitResponse;
+      tempCommit: ApiMethodRetval<
+        IPluginApiClient['patch']['createTempCommit']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 

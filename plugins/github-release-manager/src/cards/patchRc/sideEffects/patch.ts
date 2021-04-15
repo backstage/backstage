@@ -80,7 +80,7 @@ export async function patch({
    *  > parentSha = commit.parents.head // first parent -- there should only be one
    *  > tempCommit = POST /repos/$owner/$repo/git/commits { "message": "temp", "tree": branchTree, "parents": [parentSha] }
    */
-  const { tempCommit } = await pluginApiClient.patch.createTempCommit({
+  const tempCommit = await pluginApiClient.patch.createTempCommit({
     ...project,
     releaseBranchTree,
     selectedPatchCommit,

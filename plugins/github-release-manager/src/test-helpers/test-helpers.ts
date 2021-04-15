@@ -197,11 +197,9 @@ export const mockApiClient: IPluginApiClient = {
       } as GhCreateTagObjectResponse,
     }),
     createTempCommit: jest.fn().mockResolvedValue({
-      tempCommit: {
-        message: 'mock_commit_message',
-        sha: 'mock_commit_sha',
-      } as GhCreateCommitResponse,
-    }),
+      message: 'mock_commit_message',
+      sha: 'mock_commit_sha',
+    } as ApiMethodRetval<IPluginApiClient['patch']['createTempCommit']>),
     forceBranchHeadToTempCommit: jest.fn().mockResolvedValue(undefined),
     merge: jest.fn().mockResolvedValue({
       merge: {
