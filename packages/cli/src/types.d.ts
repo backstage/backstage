@@ -54,7 +54,7 @@ declare module 'react-dev-utils/ModuleScopePlugin' {
       appSrc: string | ReadonlyArray<string>,
       allowedFiles?: ReadonlyArray<string>,
     );
-    apply: (compiler: webpack.Compiler) => void;
+    apply: (resolver: any) => void;
   }
 }
 
