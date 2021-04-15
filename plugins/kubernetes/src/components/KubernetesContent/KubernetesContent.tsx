@@ -31,7 +31,7 @@ import {
   StatusOK,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
-import { ClusterObjects } from '@backstage/kubernetes-common';
+import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { ErrorPanel } from './ErrorPanel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { DeploymentsAccordions } from '../DeploymentsAccordions';

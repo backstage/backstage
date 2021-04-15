@@ -28,4 +28,4 @@ export type {
   KubernetesServiceLocator,
   ObjectFetchParams,
   ServiceLocatorMethod,
-} from '@backstage/kubernetes-common';
+} from '@backstage/plugin-kubernetes-common';

@@ -15,7 +15,7 @@
  */
 
 import { KubernetesAuthProvider } from './types';
-import { KubernetesRequestBody } from '@backstage/kubernetes-common';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
 export class ServiceAccountKubernetesAuthProvider
   implements KubernetesAuthProvider {

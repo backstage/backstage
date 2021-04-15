@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/kubernetes-common",
+  "name": "@backstage/plugin-kubernetes-common",
   "description": "Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin",
   "version": "0.1.0",
   "main": "src/index.ts",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/kubernetes-common"
+    "directory": "plugin/kubernetes-common"
   },
   "keywords": [
     "techdocs",

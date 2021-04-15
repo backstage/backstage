@@ -18,7 +18,7 @@ import { createApiRef } from '@backstage/core';
 import {
   KubernetesRequestBody,
   ObjectsByEntityResponse,
-} from '@backstage/kubernetes-common';
+} from '@backstage/plugin-kubernetes-common';
 
 export const kubernetesApiRef = createApiRef<KubernetesApi>({
   id: 'plugin.kubernetes.service',

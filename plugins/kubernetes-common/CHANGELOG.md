@@ -1,4 +1,4 @@
-# @backstage/techdocs-common
+# @backstage/plugin-kubernetes-common
 
 ## 0.1.0
 

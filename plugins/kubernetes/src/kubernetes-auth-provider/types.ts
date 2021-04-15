@@ -15,7 +15,7 @@
  */
 
 import { createApiRef } from '@backstage/core';
-import { KubernetesRequestBody } from '@backstage/kubernetes-common';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 
 export interface KubernetesAuthProvider {
   decorateRequestBodyForAuth(

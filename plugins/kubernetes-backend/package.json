@@ -34,7 +34,7 @@
     "@backstage/backend-common": "^0.6.3",
     "@backstage/catalog-model": "^0.7.7",
     "@backstage/config": "^0.1.4",
-    "@backstage/kubernetes-common": "^0.1.0",
+    "@backstage/plugin-kubernetes-common": "^0.1.0",
     "@google-cloud/container": "^2.2.0",
     "@kubernetes/client-node": "^0.14.0",
     "@types/express": "^4.17.6",
