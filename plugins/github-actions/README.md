@@ -35,17 +35,29 @@ TBD
 
 ### Standalone app requirements
 
-If you didn't clone this repo you have to do some extra work.
-
-1. Add plugin API to your Backstage instance:
+1. Install the plugin dependency in your Backstage app package:
 
 ```bash
+cd packages/app
 yarn add @backstage/plugin-github-actions
 ```
 
-```js
-// packages/app/src/plugins.ts
-export { plugin as GithubActions } from '@backstage/plugin-github-actions';
+2. Add to the app `EntityPage` component:
+
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+import { EntityGithubActionsContent } from '@backstage/plugin-github-actions';
+
+// ...
+const serviceEntityPage = (
+  <EntityPageLayout>
+    ...
+    <EntityLayout.Route path="/github-actions" title="GitHub Actions">
+      <EntityGithubActionsContent />
+    </EntityLayout.Route>
+    ...
+  </EntityPageLayout>
+);
 ```
 
 2. Run the app with `yarn start` and the backend with `yarn --cwd packages/backend start`, navigate to `/github-actions/`.

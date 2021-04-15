@@ -29,14 +29,8 @@ yarn add @backstage/plugin-techdocs
 
 Once the package has been installed, you need to import the plugin in your app.
 
-Add the following to `packages/app/src/plugins.ts`:
-
-```typescript
-export { plugin as TechDocs } from '@backstage/plugin-techdocs';
-```
-
-Now we can add a route for the TechDocs page. In `packages/app/src/App.tsx`,
-import TechDocsPage and add the following to `FlatRoutes`:
+In `packages/app/src/App.tsx`, import TechDocsPage and add the following to
+`FlatRoutes`:
 
 ```tsx
 import { TechDocsPage } from '@backstage/plugin-techdocs';

@@ -11,12 +11,6 @@ Welcome to the Bitrise plugin!
 $ yarn add @backstage/plugin-bitrise
 ```
 
-Then make sure to export the plugin in your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts) to enable the plugin:
-
-```js
-export { bitrisePlugin } from '@backstage/plugin-bitrise';
-```
-
 Bitrise Plugin exposes an "Entity Tab Content" component `EntityBitriseContent`. You can include it in the [`EntityPage.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/catalog/EntityPage.tsx)`:
 
 ```tsx

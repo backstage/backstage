@@ -17,17 +17,12 @@ yarn add @backstage/plugin-graphiql
 ```
 
 ```diff
-# in packages/app/src/plugins.ts
-+export { plugin as GraphiQL } from '@backstage/plugin-graphiql';
-```
-
-```diff
 # in packages/app/src/App.tsx
-+import { Router as GraphiQLRouter } from '@backstage/plugin-graphiql';
++import { GraphiQLPage } from '@backstage/plugin-graphiql';
 
- const AppRoutes = () => (
-   <Routes>
-+    <Route path="/graphiql" element={<GraphiQLRouter />} />
+ const routes = (
+   <FlatRoutes>
++    <Route path="/graphiql" element={<GraphiQLPage />} />
 ```
 
 ### Adding GraphQL endpoints
