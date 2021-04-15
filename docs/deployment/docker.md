@@ -1,14 +1,15 @@
 ---
-id: deployment-docker
-title: Docker
-description: Documentation on how to deploy Backstage as a Docker image
+id: docker
+title: Building a Docker image
+sidebar_label: Docker
+description: How to build a Backstage Docker image for deployment
 ---
 
 This section describes how to build a Backstage App into a deployable Docker
 image. It is split into three sections, first covering the host build approach,
 which is recommended due its speed and more efficient and often simpler caching.
 The second section covers a full multi-stage Docker build, and the last section
-covers how to split frontend content into a separate image.
+covers how deploy the frontend and backend as separate images.
 
 Something that goes for all of these docker deployment strategies is that they
 are stateless, so for a production deployment you will want to set up and
@@ -20,10 +21,10 @@ bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
 configuration into the app. This means you that you only need to build and
 deploy a single container in a minimal setup of Backstage. If you wish to
-separate the serving of the frontend out from the backend, see
-[the section on that topic below](#separate-frontend).
+separate the serving of the frontend out from the backend, see the
+[separate frontend](#separate-frontend) topic below.
 
-### Host Build
+## Host Build
 
 This section describes how to build a Docker image from a Backstage repo with
 most of the build happening outside of Docker. This is almost always the faster
@@ -109,7 +110,7 @@ docker run -it -p 7000:7000 backstage
 You should then start to get logs in your terminal, and then you can open your
 browser at `http://localhost:7000`
 
-### Multistage Build
+## Multi-stage Build
 
 This section describes how to set up a multi-stage Docker build that builds the
 entire project within Docker. This is typically slower than a host build, but is
@@ -207,7 +208,7 @@ docker run -it -p 7000:7000 backstage
 You should then start to get logs in your terminal, and then you can open your
 browser at `http://localhost:7000`
 
-### Separate Frontend
+## Separate Frontend
 
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The
