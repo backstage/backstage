@@ -52,7 +52,6 @@
     "@svgr/webpack": "5.5.x",
     "@types/start-server-webpack-plugin": "^2.2.0",
     "@types/webpack-env": "^1.15.2",
-    "@types/webpack-node-externals": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^v4.28.3",
     "@typescript-eslint/parser": "^v4.28.3",
     "@yarnpkg/lockfile": "^1.1.0",
