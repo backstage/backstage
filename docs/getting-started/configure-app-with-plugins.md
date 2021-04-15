@@ -36,17 +36,22 @@ export { plugin as CircleCi } from '@backstage/plugin-circleci';
 
 3. Register the plugin in the entity pages:
 
-```jsx
-// packages/app/src/components/catalog/EntityPage.tsx
-import {
-  EntityCircleCIContent,
-  isCircleCIAvailable,
-} from '@backstage/plugin-circleci';
+```diff
+ // packages/app/src/components/catalog/EntityPage.tsx
++import {
++  EntityCircleCIContent,
++  isCircleCIAvailable,
++} from '@backstage/plugin-circleci';
 
-// Then somewhere inside <EntityPageLayout>
-<EntitySwitch.Case if={isCircleCIAvailable}>
-  <EntityCircleCIContent />
-</EntitySwitch.Case>;
+...
+ const cicdContent = (
+   <EntitySwitch>
+     ...
++     <EntitySwitch.Case if={isCircleCIAvailable}>
++       <EntityCircleCIContent />
++     </EntitySwitch.Case>;
+   </EntitySwitch>
+ );
 ```
 
 This is just one example, but each Backstage instance may integrate content or
