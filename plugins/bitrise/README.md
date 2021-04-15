@@ -55,8 +55,7 @@ proxy:
     target: 'https://api.bitrise.io/v0.1'
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        $env: BITRISE_AUTH_TOKEN
+      Authorization: ${BITRISE_AUTH_TOKEN}
 ```
 
 Learn on https://devcenter.bitrise.io/api/authentication how to create a new Bitrise token.

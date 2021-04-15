@@ -50,9 +50,7 @@ proxy:
     target: https://app.fossa.io/api
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        # Content: 'token <your-fossa-api-token>'
-        $env: FOSSA_AUTH_HEADER
+      Authorization: token ${FOSSA_API_TOKEN}
 
 # if you have a fossa organization, configure your id here
 fossa:
