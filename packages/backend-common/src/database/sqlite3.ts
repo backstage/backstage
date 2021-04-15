@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import fs from 'fs';
+import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import path from 'path';
 import { mergeDatabaseConfig } from './config';
@@ -37,9 +37,7 @@ export function createSqliteDatabaseClient(
     const { filename } = knexConfig.connection as Knex.Sqlite3ConnectionConfig;
     const directory = path.dirname(filename);
 
-    if (!fs.existsSync(directory)) {
-      fs.mkdirSync(directory, { recursive: true });
-    }
+    ensureDirSync(directory);
   }
 
   const database = knexFactory(knexConfig);
