@@ -17,10 +17,10 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert } from '@material-ui/lab';
 import { techdocsStorageApiRef } from '../../api';
 import transformer, {
   addBaseUrl,
@@ -343,7 +343,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       {docLoading || (docLoadError && syncInProgress) ? (
         <TechDocsProgressBar />
       ) : null}
-      <div ref={shadowDomRef} />
+      <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
     </>
   );
 };
