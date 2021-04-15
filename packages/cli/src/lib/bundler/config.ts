@@ -167,6 +167,9 @@ export async function createConfig(
     performance: {
       hints: false, // we check the gzip size instead
     },
+    // Workaround for hot module reloads not working, will be fixed in webpack-dev-server v4
+    //   https://github.com/webpack/webpack-dev-server/issues/2758
+    target: 'web',
     devtool: isDev ? 'eval-cheap-module-source-map' : 'source-map',
     context: paths.targetPath,
     entry: [require.resolve('react-hot-loader/patch'), paths.targetEntry],
