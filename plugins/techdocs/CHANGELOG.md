@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 0.7.2
+
+### Patch Changes
+
+- fef852ecd: Reworked the TechDocs plugin to support using the configured company name instead of
+  'Backstage' in the page title.
+- 18f7345a6: Add borders to TechDocs tables and increase font size. Fixes #5264 and #5276.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+
 ## 0.7.1
 
 ### Patch Changes

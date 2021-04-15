@@ -1,5 +1,128 @@
 # @backstage/create-app
 
+## 0.3.18
+
+### Patch Changes
+
+- b49a525ab: Fixing dependency resolution for problematic library `graphql-language-service-interface`.
+
+  This change might not have to be applied to your local installation, however if you run into this error:
+
+  ```
+  Error: Failed to compile.
+  /tmp/backstage-e2e-uMeycm/test-app/node_modules/graphql-language-service-interface/esm/GraphQLLanguageService.js 100:23
+  Module parse failed: Unexpected token (100:23)
+  You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+  |         }
+  |         let customRules = null;
+  >         if (extensions?.customValidationRules &&
+  |             typeof extensions.customValidationRules === 'function') {
+  |             customRules = extensions.customValidationRules(this._graphQLConfig);
+  ```
+
+  You can fix it by adding the following to the root `package.json`.
+
+  ```json
+  ...
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+   },
+  ...
+  ```
+
+- a360f9478: Expose the catalog-import route as an external route from the scaffolder.
+
+  This will make it possible to hide the "Register Existing Component" button
+  when you for example are running backstage with `catalog.readonly=true`.
+
+  As a consequence of this change you need add a new binding to your createApp call to
+  keep the button visible. However, if you instead want to hide the button you can safely
+  ignore the following example.
+
+  To bind the external route from the catalog-import plugin to the scaffolder template
+  index page, make sure you have the appropriate imports and add the following
+  to the createApp call:
+
+  ```typescript
+  import { catalogImportPlugin } from '@backstage/plugin-catalog-import';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      // ...
+      bind(scaffolderPlugin.externalRoutes, {
+        registerComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- f1952337c: Due to a change in the techdocs publishers, they don't check if they are able to reach e.g. the configured S3 bucket anymore.
+  This can be added again by the following change. Note that the backend process will no longer exit when it is not reachable but will only emit an error log message.
+  You should include the check when your backend to get early feedback about a potential misconfiguration:
+
+  ```diff
+    // packages/backend/src/plugins/techdocs.ts
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // ...
+
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      })
+
+  +   // checks if the publisher is working and logs the result
+  +   await publisher.getReadiness();
+
+      // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+      const dockerClient = new Docker();
+
+      // ...
+  }
+  ```
+
+- Updated dependencies [d8ffec739]
+- Updated dependencies [7abec4dbc]
+- Updated dependencies [017192ee8]
+- Updated dependencies [a360f9478]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d840d30bc]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [b25846562]
+- Updated dependencies [12390778e]
+- Updated dependencies [cba5944fc]
+- Updated dependencies [a376e3ee8]
+- Updated dependencies [fef852ecd]
+- Updated dependencies [18f7345a6]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [423a514c3]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [442f34b87]
+- Updated dependencies [e27cb6c45]
+- Updated dependencies [184b02bef]
+- Updated dependencies [0b7fd7a9d]
+- Updated dependencies [60ce64aa2]
+  - @backstage/plugin-scaffolder-backend@0.9.6
+  - @backstage/plugin-catalog-backend@0.7.1
+  - @backstage/plugin-scaffolder@0.9.0
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/plugin-catalog@0.5.4
+  - @backstage/plugin-api-docs@0.4.11
+  - @backstage/plugin-techdocs-backend@0.7.1
+  - @backstage/plugin-techdocs@0.7.2
+  - @backstage/catalog-client@0.3.10
+  - @backstage/plugin-tech-radar@0.3.9
+  - @backstage/cli@0.6.8
+
 ## 0.3.17
 
 ### Patch Changes

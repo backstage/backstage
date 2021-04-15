@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.4
+
+### Patch Changes
+
+- 7fd46f26d: Use `string` TypeScript type instead of `String`.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
 ## 0.3.3
 
 ### Patch Changes
