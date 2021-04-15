@@ -15,16 +15,17 @@
  */
 
 import type {
-  FetchResponse,
-  KubernetesFetchError,
+  FetchResponse as FetchResponseCommon,
+  KubernetesFetchError as KubernetesFetchErrorCommon,
 } from '@backstage/plugin-kubernetes-common';
 
 export type {
-  FetchResponse,
   KubernetesErrorTypes,
-  KubernetesFetchError,
   KubernetesRequestBody,
 } from '@backstage/plugin-kubernetes-common';
+
+export type KubernetesFetchError = KubernetesFetchErrorCommon;
+export type FetchResponse = FetchResponseCommon;
 
 export type ClusterLocatorMethod =
   | ConfigClusterLocatorMethod

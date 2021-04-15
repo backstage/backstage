@@ -24,7 +24,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "backstage-cli build --outputs cjs,types",
+    "build": "backstage-cli build",
     "lint": "backstage-cli lint",
     "test": "backstage-cli test",
     "prepack": "backstage-cli prepack",
