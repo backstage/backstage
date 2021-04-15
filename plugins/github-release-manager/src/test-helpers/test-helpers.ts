@@ -17,18 +17,19 @@
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import {
-  GhCreateCommitResponse,
   GhCreateReferenceResponse,
   GhCreateTagObjectResponse,
-  GhGetBranchResponse,
-  GhGetCommitResponse,
   GhGetReleaseResponse,
   GhMergeResponse,
   GhUpdateReferenceResponse,
   GhUpdateReleaseResponse,
 } from '../types/types';
 import { Project } from '../contexts/ProjectContext';
-import { ApiMethodRetval, IPluginApiClient } from '../api/PluginApiClient';
+import {
+  ApiMethodRetval,
+  IPluginApiClient,
+  UnboxArray,
+} from '../api/PluginApiClient';
 
 export const mockSemverProject: Project = {
   owner: 'mock_owner',
@@ -109,26 +110,34 @@ export const mockReleaseBranch = createMockBranch();
 /**
  * MOCK COMMIT
  */
-const createMockCommit = ({ node_id = '1' }: Partial<GhGetCommitResponse>) =>
+const createMockCommit = ({
+  ...rest
+}: Partial<
+  NonNullable<
+    UnboxArray<
+      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+    >
+  >
+>) =>
   ({
-    node_id,
     author: {
-      html_url: 'mock_recentCommits_author_html_url',
-      login: 'mock_recentCommit_author_login',
+      htmlUrl: 'author_html_url',
+      login: 'author_login',
     },
     commit: {
-      message: 'mock_latestCommit_message',
+      message: 'commit_message',
     },
-    html_url: 'mock_latestCommit_html_url',
-    sha: 'mock_latestCommit_sha',
-  } as GhGetCommitResponse);
-export const mockRecentCommits = [
-  createMockCommit({ node_id: '1' }),
-  createMockCommit({ node_id: '2' }),
-] as GhGetCommitResponse[];
+    sha: 'mock_sha',
+    firstParentSha: 'mock_first_parent_sha',
+    ...rest,
+  } as NonNullable<
+    UnboxArray<
+      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+    >
+  >);
 
 export const mockSelectedPatchCommit = createMockCommit({
-  node_id: 'mock_selected_patch_commit',
+  sha: 'mock_sha_selected_patch_commit',
 });
 
 /**
@@ -146,7 +155,10 @@ export const mockApiClient: IPluginApiClient = {
   getUsername: jest.fn(),
 
   getRecentCommits: jest.fn().mockResolvedValue({
-    recentCommits: mockRecentCommits,
+    recentCommits: [
+      createMockCommit({ sha: 'mock_sha_recent_commits_1' }),
+      createMockCommit({ sha: 'mock_sha_recent_commits_2' }),
+    ],
   }),
 
   getLatestRelease: jest.fn(), // TODO:
@@ -154,8 +166,12 @@ export const mockApiClient: IPluginApiClient = {
   getRepository: jest.fn(),
 
   getLatestCommit: jest.fn().mockResolvedValue({
-    latestCommit: createMockCommit({ node_id: 'mock_latest_commit' }),
-  }),
+    sha: 'latestCommit.sha',
+    htmlUrl: 'latestCommit.html_url',
+    commit: {
+      message: 'latestCommit.commit.message',
+    },
+  } as NonNullable<ApiMethodRetval<IPluginApiClient['getLatestCommit']>>),
 
   getBranch: jest.fn().mockResolvedValue(createMockBranch()),
 
@@ -202,14 +218,14 @@ export const mockApiClient: IPluginApiClient = {
     } as ApiMethodRetval<IPluginApiClient['patch']['createTempCommit']>),
     forceBranchHeadToTempCommit: jest.fn().mockResolvedValue(undefined),
     merge: jest.fn().mockResolvedValue({
-      merge: {
-        commit: {
-          message: 'mock_merge_commit_message',
-          tree: { sha: 'mock_merge_commit_tree_sha' },
+      htmlUrl: 'mock_merge_html_url',
+      commit: {
+        message: 'mock_merge_commit_message',
+        tree: {
+          sha: 'mock_merge_commit_tree_sha',
         },
-        html_url: 'mock_merge_html_url',
-      } as GhMergeResponse,
-    }),
+      },
+    } as ApiMethodRetval<IPluginApiClient['patch']['merge']>),
     replaceTempCommit: jest.fn().mockResolvedValue({
       updatedReference: {
         ref: 'mock_reference_ref',

@@ -33,14 +33,10 @@ import {
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
-import { Differ } from '../../components/Differ';
-import {
-  ComponentConfigPatch,
-  GhGetCommitResponse,
-  SetRefetch,
-} from '../../types/types';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { ComponentConfigPatch, SetRefetch } from '../../types/types';
+import { Differ } from '../../components/Differ';
 import { patch } from './sideEffects/patch';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
@@ -48,7 +44,11 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import {
+  ApiMethodRetval,
+  IPluginApiClient,
+  UnboxArray,
+} from '../../api/PluginApiClient';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -92,7 +92,9 @@ export const PatchBody = ({
   });
 
   const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
-    const selectedPatchCommit: GhGetCommitResponse = args[0];
+    const selectedPatchCommit: UnboxArray<
+      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+    > = args[0];
     const patchResponseSteps = await patch({
       project,
       pluginApiClient,

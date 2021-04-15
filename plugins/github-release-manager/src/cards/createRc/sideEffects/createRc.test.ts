@@ -38,9 +38,9 @@ describe('createRc', () => {
     expect(result).toMatchInlineSnapshot(`
       Array [
         Object {
-          "link": "mock_latestCommit_html_url",
+          "link": "latestCommit.html_url",
           "message": "Fetched latest commit from \\"mock_defaultBranch\\"",
-          "secondaryMessage": "with message \\"mock_latestCommit_message\\"",
+          "secondaryMessage": "with message \\"latestCommit.commit.message\\"",
         },
         Object {
           "message": "Cut Release Branch",

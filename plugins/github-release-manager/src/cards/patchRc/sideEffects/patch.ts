@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  ComponentConfigPatch,
-  GhGetCommitResponse,
-  ResponseStep,
-} from '../../../types/types';
+import { ComponentConfigPatch, ResponseStep } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import {
   ApiMethodRetval,
   IPluginApiClient,
+  UnboxArray,
 } from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
@@ -35,7 +32,9 @@ interface Patch {
   >;
   pluginApiClient: IPluginApiClient;
   project: Project;
-  selectedPatchCommit: GhGetCommitResponse;
+  selectedPatchCommit: UnboxArray<
+    ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+  >;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
@@ -55,7 +54,6 @@ export async function patch({
   if (!selectedPatchCommit || !selectedPatchCommit.sha) {
     throw new GitHubReleaseManagerError('Invalid commit');
   }
-
   const releaseBranchName = latestRelease.targetCommitish;
   /**
    * 1. Here is the branch we want to cherry-pick to:
@@ -105,7 +103,7 @@ export async function patch({
    * 4. Merge the commit we want into this mess:
    * > merge = POST /repos/$owner/$repo/merges { "base": branchName, "head": commit.sha }
    */
-  const { merge } = await pluginApiClient.patch.merge({
+  const merge = await pluginApiClient.patch.merge({
     ...project,
     base: releaseBranchName,
     head: selectedPatchCommit.sha,
@@ -113,7 +111,7 @@ export async function patch({
   responseSteps.push({
     message: `Merged temporary commit into "${releaseBranchName}"`,
     secondaryMessage: `with message "${merge.commit.message}"`,
-    link: merge.html_url,
+    link: merge.htmlUrl,
   });
 
   /**
@@ -205,7 +203,7 @@ export async function patch({
     updatedReleaseName: updatedRelease.name,
     previousTag: latestRelease.tagName,
     patchedTag: updatedRelease.tag_name,
-    patchCommitUrl: selectedPatchCommit.html_url,
+    patchCommitUrl: selectedPatchCommit.htmlUrl,
     patchCommitMessage: selectedPatchCommit.commit.message,
   });
 

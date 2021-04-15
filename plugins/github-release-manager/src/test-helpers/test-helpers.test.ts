@@ -69,32 +69,6 @@ describe('testHelpers', () => {
           "tagName": "rc-2020.01.01_1",
           "targetCommitish": "rc/1.2.3",
         },
-        "mockRecentCommits": Array [
-          Object {
-            "author": Object {
-              "html_url": "mock_recentCommits_author_html_url",
-              "login": "mock_recentCommit_author_login",
-            },
-            "commit": Object {
-              "message": "mock_latestCommit_message",
-            },
-            "html_url": "mock_latestCommit_html_url",
-            "node_id": "1",
-            "sha": "mock_latestCommit_sha",
-          },
-          Object {
-            "author": Object {
-              "html_url": "mock_recentCommits_author_html_url",
-              "login": "mock_recentCommit_author_login",
-            },
-            "commit": Object {
-              "message": "mock_latestCommit_message",
-            },
-            "html_url": "mock_latestCommit_html_url",
-            "node_id": "2",
-            "sha": "mock_latestCommit_sha",
-          },
-        ],
         "mockReleaseBranch": Object {
           "commit": Object {
             "commit": Object {
@@ -118,15 +92,14 @@ describe('testHelpers', () => {
         },
         "mockSelectedPatchCommit": Object {
           "author": Object {
-            "html_url": "mock_recentCommits_author_html_url",
-            "login": "mock_recentCommit_author_login",
+            "htmlUrl": "author_html_url",
+            "login": "author_login",
           },
           "commit": Object {
-            "message": "mock_latestCommit_message",
+            "message": "commit_message",
           },
-          "html_url": "mock_latestCommit_html_url",
-          "node_id": "mock_selected_patch_commit",
-          "sha": "mock_latestCommit_sha",
+          "firstParentSha": "mock_first_parent_sha",
+          "sha": "mock_sha_selected_patch_commit",
         },
         "mockSemverProject": Object {
           "owner": "mock_owner",

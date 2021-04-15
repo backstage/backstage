@@ -51,14 +51,14 @@ export async function createRc({
   /**
    * 1. Get the default branch's most recent commit
    */
-  const { latestCommit } = await pluginApiClient.getLatestCommit({
+  const latestCommit = await pluginApiClient.getLatestCommit({
     ...project,
     defaultBranch,
   });
   responseSteps.push({
     message: `Fetched latest commit from "${defaultBranch}"`,
     secondaryMessage: `with message "${latestCommit.commit.message}"`,
-    link: latestCommit.html_url,
+    link: latestCommit.htmlUrl,
   });
 
   /**

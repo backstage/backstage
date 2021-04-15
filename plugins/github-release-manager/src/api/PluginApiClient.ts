@@ -22,9 +22,7 @@ import {
   GhCreateCommitResponse,
   GhCreateReferenceResponse,
   GhCreateTagObjectResponse,
-  GhGetCommitResponse,
   GhGetReleaseResponse,
-  GhMergeResponse,
   GhUpdateReferenceResponse,
   GhUpdateReleaseResponse,
 } from '../types/types';
@@ -40,6 +38,8 @@ type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
 export type ApiMethodRetval<
   T extends (...args: any) => Promise<any>
 > = UnboxPromise<ReturnType<T>>;
+
+export type UnboxArray<T> = T extends (infer U)[] ? U : T;
 
 type Todo = any; // TODO:
 type PartialProject = Omit<Project, 'versioningStrategy'>;
@@ -61,6 +61,7 @@ export interface IPluginApiClient {
     args: { releaseBranchName?: string } & PartialProject,
   ) => Promise<{
     recentCommits: {
+      htmlUrl: string;
       sha: string;
       author: {
         htmlUrl?: string;
@@ -69,6 +70,7 @@ export interface IPluginApiClient {
       commit: {
         message: string;
       };
+      firstParentSha?: string;
     }[];
   }>;
 
@@ -99,7 +101,13 @@ export interface IPluginApiClient {
     args: {
       defaultBranch: string;
     } & PartialProject,
-  ) => Promise<Todo>;
+  ) => Promise<{
+    sha: string;
+    htmlUrl: string;
+    commit: {
+      message: string;
+    };
+  }>;
 
   getBranch: (
     args: {
@@ -154,7 +162,9 @@ export interface IPluginApiClient {
       args: {
         tagParts: SemverTagParts | CalverTagParts;
         releaseBranchTree: string;
-        selectedPatchCommit: GhGetCommitResponse;
+        selectedPatchCommit: UnboxArray<
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        >;
       } & PartialProject,
     ) => Promise<{
       message: string;
@@ -168,17 +178,30 @@ export interface IPluginApiClient {
           IPluginApiClient['patch']['createTempCommit']
         >;
       } & PartialProject,
-    ) => Promise<Todo>;
+    ) => Promise<void>;
 
     merge: ({
       base,
       head,
-    }: { base: string; head: string } & PartialProject) => Promise<Todo>;
+    }: {
+      base: string;
+      head: string;
+    } & PartialProject) => Promise<{
+      htmlUrl: string;
+      commit: {
+        message: string;
+        tree: {
+          sha: string;
+        };
+      };
+    }>;
 
     createCherryPickCommit: (
       args: {
         bumpedTag: string;
-        selectedPatchCommit: GhGetCommitResponse;
+        selectedPatchCommit: UnboxArray<
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        >;
         mergeTree: string;
         releaseBranchSha: string;
       } & PartialProject,
@@ -213,7 +236,9 @@ export interface IPluginApiClient {
           ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
         >;
         tagParts: SemverTagParts | CalverTagParts;
-        selectedPatchCommit: GhGetCommitResponse;
+        selectedPatchCommit: UnboxArray<
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        >;
       } & PartialProject,
     ) => Promise<Todo>;
   };
@@ -344,6 +369,7 @@ export class PluginApiClient implements IPluginApiClient {
 
     return {
       recentCommits: recentCommitsResponse.data.map(commit => ({
+        htmlUrl: commit.html_url,
         sha: commit.sha,
         author: {
           htmlUrl: commit.author?.html_url,
@@ -352,6 +378,7 @@ export class PluginApiClient implements IPluginApiClient {
         commit: {
           message: commit.commit.message,
         },
+        firstParentSha: commit.parents?.[0].sha,
       })),
     };
   }
@@ -407,16 +434,19 @@ export class PluginApiClient implements IPluginApiClient {
     defaultBranch,
   }: { defaultBranch: string } & PartialProject) {
     const { octokit } = await this.getOctokit();
-    const latestCommit: GhGetCommitResponse = (
-      await octokit.request(
-        `/repos/${this.getRepoPath({
-          owner,
-          repo,
-        })}/commits/refs/heads/${defaultBranch}`,
-      )
-    ).data;
+    const { data: latestCommit } = await octokit.repos.getCommit({
+      owner,
+      repo,
+      ref: defaultBranch,
+    });
 
-    return { latestCommit };
+    return {
+      sha: latestCommit.sha,
+      htmlUrl: latestCommit.html_url,
+      commit: {
+        message: latestCommit.commit.message,
+      },
+    };
   }
 
   async getBranch({
@@ -534,7 +564,9 @@ export class PluginApiClient implements IPluginApiClient {
     }: {
       tagParts: SemverTagParts | CalverTagParts;
       releaseBranchTree: string;
-      selectedPatchCommit: GhGetCommitResponse;
+      selectedPatchCommit: UnboxArray<
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
       const { data: tempCommit } = await octokit.git.createCommit({
@@ -542,7 +574,7 @@ export class PluginApiClient implements IPluginApiClient {
         repo,
         message: `Temporary commit for patch ${tagParts.patch}`,
         tree: releaseBranchTree,
-        parents: [selectedPatchCommit.parents[0].sha],
+        parents: [selectedPatchCommit.firstParentSha ?? ''], // TODO: Avoid `??`
       });
 
       return {
@@ -563,20 +595,13 @@ export class PluginApiClient implements IPluginApiClient {
       >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
-
-      await octokit.request(
-        `/repos/${this.getRepoPath({
-          owner,
-          repo,
-        })}/git/refs/heads/${releaseBranchName}`,
-        {
-          method: 'PATCH',
-          data: {
-            sha: tempCommit.sha,
-            force: true,
-          },
-        },
-      );
+      await octokit.git.updateRef({
+        owner,
+        repo,
+        ref: releaseBranchName,
+        sha: tempCommit.sha,
+        force: true,
+      });
     },
 
     merge: async ({
@@ -586,18 +611,22 @@ export class PluginApiClient implements IPluginApiClient {
       head,
     }: { base: string; head: string } & PartialProject) => {
       const { octokit } = await this.getOctokit();
+      const { data: merge } = await octokit.repos.merge({
+        owner,
+        repo,
+        base,
+        head,
+      });
 
-      const merge: GhMergeResponse = (
-        await octokit.request(
-          `/repos/${this.getRepoPath({ owner, repo })}/merges`,
-          {
-            method: 'POST',
-            data: { base, head },
+      return {
+        htmlUrl: merge.html_url,
+        commit: {
+          message: merge.commit.message,
+          tree: {
+            sha: merge.commit.tree.sha,
           },
-        )
-      ).data;
-
-      return { merge };
+        },
+      };
     },
 
     createCherryPickCommit: async ({
@@ -609,7 +638,9 @@ export class PluginApiClient implements IPluginApiClient {
       releaseBranchSha,
     }: {
       bumpedTag: string;
-      selectedPatchCommit: GhGetCommitResponse;
+      selectedPatchCommit: UnboxArray<
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+      >;
       mergeTree: string;
       releaseBranchSha: string;
     } & PartialProject) => {
@@ -732,7 +763,9 @@ export class PluginApiClient implements IPluginApiClient {
         ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
       >;
       tagParts: SemverTagParts | CalverTagParts;
-      selectedPatchCommit: GhGetCommitResponse;
+      selectedPatchCommit: UnboxArray<
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+      >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
 
@@ -747,7 +780,7 @@ export class PluginApiClient implements IPluginApiClient {
               tag_name: bumpedTag,
               body: `${latestRelease.body}
   
-  #### [Patch ${tagParts.patch}](${selectedPatchCommit.html_url})
+  #### [Patch ${tagParts.patch}](${selectedPatchCommit.htmlUrl})
   
   ${selectedPatchCommit.commit.message}`,
             },
