@@ -25,13 +25,6 @@ import {
 } from '@kubernetes/client-node';
 import { Entity } from '@backstage/catalog-model';
 
-export interface ClusterDetails {
-  name: string;
-  url: string;
-  authProvider: string;
-  serviceAccountToken?: string | undefined;
-}
-
 export interface KubernetesRequestBody {
   auth?: {
     google?: string;
@@ -49,10 +42,7 @@ export interface ObjectsByEntityResponse {
   items: ClusterObjects[];
 }
 
-export interface FetchResponseWrapper {
-  errors: KubernetesFetchError[];
-  responses: FetchResponse[];
-}
+export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
 
 export type FetchResponse =
   | PodFetchResponse
@@ -63,18 +53,6 @@ export type FetchResponse =
   | HorizontalPodAutoscalersFetchResponse
   | IngressesFetchResponse
   | CustomResourceFetchResponse;
-
-// TODO fairly sure there's a easier way to do this
-
-export type KubernetesObjectTypes =
-  | 'pods'
-  | 'services'
-  | 'configmaps'
-  | 'deployments'
-  | 'replicasets'
-  | 'horizontalpodautoscalers'
-  | 'ingresses'
-  | 'customresources';
 
 export interface PodFetchResponse {
   type: 'pods';
@@ -116,30 +94,10 @@ export interface CustomResourceFetchResponse {
   resources: Array<any>;
 }
 
-export interface ObjectFetchParams {
-  serviceId: string;
-  clusterDetails: ClusterDetails;
-  objectTypesToFetch: Set<KubernetesObjectTypes>;
-  labelSelector: string;
-  customResources: CustomResource[];
-}
-
-// Fetches information from a kubernetes cluster using the cluster details object
-// to target a specific cluster
-export interface KubernetesFetcher {
-  fetchObjectsForService(
-    params: ObjectFetchParams,
-  ): Promise<FetchResponseWrapper>;
-}
-
-// Used to locate which cluster(s) a service is running on
-export interface KubernetesServiceLocator {
-  getClustersByServiceId(serviceId: string): Promise<ClusterDetails[]>;
-}
-
-// Used to load cluster details from different sources
-export interface KubernetesClustersSupplier {
-  getClusters(): Promise<ClusterDetails[]>;
+export interface KubernetesFetchError {
+  errorType: KubernetesErrorTypes;
+  statusCode?: number;
+  resourcePath?: string;
 }
 
 export type KubernetesErrorTypes =
@@ -147,62 +105,3 @@ export type KubernetesErrorTypes =
   | 'UNAUTHORIZED_ERROR'
   | 'SYSTEM_ERROR'
   | 'UNKNOWN_ERROR';
-
-export interface KubernetesFetchError {
-  errorType: KubernetesErrorTypes;
-  statusCode?: number;
-  resourcePath?: string;
-}
-
-export interface ConfigClusterLocatorMethod {
-  /**
-   * @visibility frontend
-   */
-  type: 'config';
-  clusters: {
-    /**
-     * @visibility frontend
-     */
-    url: string;
-    /**
-     * @visibility frontend
-     */
-    name: string;
-    /**
-     * @visibility secret
-     */
-    serviceAccountToken: string | undefined;
-    /**
-     * @visibility frontend
-     */
-    authProvider: 'aws' | 'google' | 'serviceAccount';
-  }[];
-}
-
-export interface GKEClusterLocatorMethod {
-  /**
-   * @visibility frontend
-   */
-  type: 'gke';
-  /**
-   * @visibility frontend
-   */
-  projectId: string;
-  /**
-   * @visibility frontend
-   */
-  region?: string;
-}
-
-export type ClusterLocatorMethod =
-  | ConfigClusterLocatorMethod
-  | GKEClusterLocatorMethod;
-
-export type ServiceLocatorMethod = 'multiTenant' | 'http'; // TODO implement http
-export type AuthProviderType = 'google' | 'serviceAccount' | 'aws';
-
-export interface CustomResource {
-  group: string;
-  apiVersion: string;
-  plural: string;
-}
