@@ -24,6 +24,14 @@ const buildEntityKey = (component: Entity) =>
     component.metadata.name
   }`;
 
+export const isStarredEntity = (
+  starredEntities: Set<string>,
+  entity: Entity,
+) => {
+  const entityKey = buildEntityKey(entity);
+  return starredEntities.has(entityKey);
+};
+
 export const useStarredEntities = () => {
   const storageApi = useApi(storageApiRef);
   const settingsStore = storageApi.forBucket('settings');
@@ -59,10 +67,9 @@ export const useStarredEntities = () => {
     [starredEntities, settingsStore],
   );
 
-  const isStarredEntity = useCallback(
+  const isStarredEntityCb = useCallback(
     (entity: Entity) => {
-      const entityKey = buildEntityKey(entity);
-      return starredEntities.has(entityKey);
+      return isStarredEntity(starredEntities, entity);
     },
     [starredEntities],
   );
@@ -70,6 +77,6 @@ export const useStarredEntities = () => {
   return {
     starredEntities,
     toggleStarredEntity,
-    isStarredEntity,
+    isStarredEntity: isStarredEntityCb,
   };
 };

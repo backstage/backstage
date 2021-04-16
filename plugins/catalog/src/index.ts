@@ -15,6 +15,7 @@
  */
 
 export { AboutCard } from './components/AboutCard';
+export { CatalogIndexContent } from './components/CatalogIndexContent';
 export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
@@ -22,6 +23,7 @@ export { Router } from './components/Router';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
+  CatalogIndexPageNew,
   catalogPlugin,
   catalogPlugin as plugin,
   EntityAboutCard,

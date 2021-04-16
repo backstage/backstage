@@ -20,6 +20,7 @@ import {
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
+  createRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
@@ -57,6 +58,17 @@ export const CatalogIndexPage = catalogPlugin.provide(
   createRoutableExtension({
     component: () =>
       import('./components/CatalogPage').then(m => m.CatalogPage),
+    mountPoint: createRouteRef({
+      path: '',
+      title: 'Catalog',
+    }),
+  }),
+);
+
+export const CatalogIndexPageNew = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogIndexPage').then(m => m.CatalogIndexPage),
     mountPoint: catalogRouteRef,
   }),
 );

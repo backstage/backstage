@@ -13,7 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { EntityContext, useEntity, useEntityFromUrl } from './useEntity';
-export { useEntityCompoundName } from './useEntityCompoundName';
-export { useRelatedEntities } from './useRelatedEntities';
-export { isStarredEntity, useStarredEntities } from './useStarredEntities';
+
+export { CatalogIndexContent } from './CatalogIndexContent';

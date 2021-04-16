@@ -24,7 +24,9 @@ import {
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
+  CatalogIndexContent,
   CatalogIndexPage,
+  CatalogIndexPageNew,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
 
@@ -99,6 +101,9 @@ const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
     <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route path="/catalog-new" element={<CatalogIndexPageNew />}>
+      <CatalogIndexContent />
+    </Route>
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}

@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { EntityContext, useEntity, useEntityFromUrl } from './useEntity';
-export { useEntityCompoundName } from './useEntityCompoundName';
-export { useRelatedEntities } from './useRelatedEntities';
-export { isStarredEntity, useStarredEntities } from './useStarredEntities';
+
+import React, { createContext } from 'react';
+import { EntityListState } from './types';
+
+export type EntityListContextProps = {
+  state: EntityListState;
+  dispatch: React.Dispatch<any>;
+};
+
+export const EntityListContext = createContext<
+  EntityListContextProps | undefined
+>(undefined);
