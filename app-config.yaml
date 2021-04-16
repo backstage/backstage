@@ -135,7 +135,14 @@ kafka:
   clusters:
     - name: cluster
       brokers:
-        - localhost:9092
+        $env: KAFKA_CLUSTER
+      ssl: true
+      sasl:
+        mechanism: plain # or 'scram-sha-256' or 'scram-sha-512'
+        username: 
+          $env: KAFKA_USERNAME
+        password: 
+          $env: KAFKA_PASSWORD
 
 integrations:
   github:

@@ -44,6 +44,12 @@ spec:
           value: $(DATABASE_NAME)
         - name: DATABASE_PASSWORD
           value: $(DATABASE_PASSWORD)
+        - name: KAFKA_CLUSTER
+          value: $(KAFKA_CLUSTER)
+        - name: KAFKA_USERNAME
+          value: $(KAFKA_USERNAME)
+        - name: KAFKA_PASSWORD
+          value: $(KAFKA_PASSWORD)
         - name: HELLMAN_SERVICE_ACCOUNT_TOKEN
           value: $(HELLMAN_SERVICE_ACCOUNT_TOKEN)
         - name: GITHUB_PRIVATE_TOKEN
