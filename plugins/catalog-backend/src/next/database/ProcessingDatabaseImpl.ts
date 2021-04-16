@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError, InputError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { Transaction } from '../../database';
-import { DbEntitiesRow } from '../../database/types';
+import lodash from 'lodash';
+
 import {
   ProcessingDatabase,
   AddUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
   GetProcessableEntitiesResult,
-  UpdateFinalEntityOptions,
 } from './types';
 import type { Logger } from 'winston';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
-import stringify from 'fast-json-stable-stringify';
+import stableStringify from 'fast-json-stable-stringify';
 import { v4 as uuid } from 'uuid';
 
-export type DbRefreshStateRequest = {
-  entity: Entity;
-  nextRefresh: string; // TODO dateTime/ Date?
-};
-
 export type DbRefreshStateRow = {
-  id: string;
+  entity_id: string;
   entity_ref: string;
   unprocessed_entity: string;
   processed_entity: string;
@@ -47,11 +42,30 @@ export type DbRefreshStateRow = {
   errors: string;
 };
 
+export type DbRelationsRow = {
+  originating_entity_id: string;
+  source_entity_ref: string;
+  target_entity_ref: string;
+  type: string;
+};
+
+export type DbRefreshStateReferences = {
+  source_special_key?: string;
+  source_entity_id?: string;
+  target_entity_id: string;
+};
+
 function generateEntityEtag(entity: Entity) {
   return createHash('sha1')
-    .update(stringify({ ...entity }))
+    .update(stableStringify({ ...entity }))
     .digest('hex');
 }
+
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+const BATCH_SIZE = 50;
 
 export class ProcessingDatabaseImpl implements ProcessingDatabase {
   constructor(
@@ -59,59 +73,70 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
     private readonly logger: Logger,
   ) {}
 
-  async updateFinalEntity(
-    txOpaque: Transaction,
-    options: UpdateFinalEntityOptions,
-  ): Promise<void> {
-    const tx = txOpaque as Knex.Transaction;
-
-    const { finalEntity } = options;
-    const { relations } = finalEntity;
-    const { uid, etag, generation } = finalEntity.metadata;
-
-    if (uid === undefined || etag === undefined || generation === undefined) {
-      throw new InputError(
-        'One of the metadata fields "uid", "etag", or "generation" was missing',
-      );
-    } else if (relations === undefined) {
-      throw new InputError('The field "relations" was missing');
-    }
-    // TODO(freben): state/errors?
-
-    const fullName = stringifyEntityRef(finalEntity);
-
-    const result = await tx<DbEntitiesRow>('entities')
-      .insert({
-        id: uid,
-        location_id: null,
-        etag,
-        generation,
-        full_name: fullName,
-        data: JSON.stringify(finalEntity),
-      })
-      .onConflict('full_name')
-      .merge(['etag', 'generation', 'data']);
-  }
-
   async updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const { id, processedEntity, state, errors } = options;
-    const result = await tx<DbRefreshStateRow>('refresh_state')
+    const {
+      id,
+      processedEntity,
+      state,
+      errors,
+      relations,
+      deferedEntities,
+    } = options;
+
+    const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
       .update({
         processed_entity: JSON.stringify(processedEntity),
         cache: JSON.stringify(state),
         errors,
       })
-      .where('id', id);
-    if (result === 0) {
+      .where('entity_id', id);
+
+    if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
 
-    // Update refs table
+    // Schedule all deferred entities for future processing.
+    await this.addUnprocessedEntities(tx, {
+      entities: deferedEntities,
+      id,
+      type: 'entity',
+    });
+
     // Update fragments
+
+    // Update relations
+    const entityRef = stringifyEntityRef(processedEntity);
+
+    // Delete old relations
+    await tx<DbRelationsRow>('relations')
+      .where({ originating_entity_id: id })
+      .delete();
+
+    // Batch insert new relations
+    const relationRows: DbRelationsRow[] = relations.map(
+      ({ source, target, type }) => ({
+        originating_entity_id: id,
+        source_entity_ref: stringifyEntityRef(source),
+        target_entity_ref: stringifyEntityRef(target),
+        type,
+      }),
+    );
+    await tx.batchInsert(
+      'relations',
+      this.deduplicateRelations(relationRows),
+      BATCH_SIZE,
+    );
+  }
+
+  private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
+    return lodash.uniqBy(
+      rows,
+      r => `${r.source_entity_ref}:${r.target_entity_ref}:${r.type}`,
+    );
   }
 
   async addUnprocessedEntities(
@@ -119,12 +144,14 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
     options: AddUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
+    const entityIds = new Array<string>();
 
-    for (const entity of options.unprocessedEntities) {
+    for (const entity of options.entities) {
+      const entityRef = stringifyEntityRef(entity);
       await tx<DbRefreshStateRow>('refresh_state')
         .insert({
-          id: uuid(),
-          entity_ref: stringifyEntityRef(entity),
+          entity_id: uuid(),
+          entity_ref: entityRef,
           unprocessed_entity: JSON.stringify(entity),
           errors: '',
           next_update_at: tx.fn.now(),
@@ -132,7 +159,29 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
         })
         .onConflict('entity_ref')
         .merge(['unprocessed_entity', 'last_discovery_at']);
+
+      const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
+        'refresh_state',
+      ).where({ entity_ref: entityRef });
+      entityIds.push(entityId);
     }
+
+    const key =
+      options.type === 'provider'
+        ? { source_special_key: options.id }
+        : { source_entity_id: options.id };
+    // copied from update refs
+    await tx<DbRefreshStateReferences>('refresh_state_references')
+      .where(key)
+      .delete();
+
+    const referenceRows: DbRefreshStateReferences[] = entityIds.map(
+      entityId => ({
+        ...key,
+        target_entity_id: entityId,
+      }),
+    );
+    await tx.batchInsert('refresh_state_references', referenceRows, BATCH_SIZE);
   }
 
   async getProcessableEntities(
@@ -161,7 +210,7 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
 
     return {
       items: items.map(i => ({
-        id: i.id,
+        id: i.entity_id,
         entityRef: i.entity_ref,
         unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
         processedEntity: JSON.parse(i.processed_entity) as Entity,

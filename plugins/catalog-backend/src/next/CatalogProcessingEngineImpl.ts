@@ -24,11 +24,7 @@ import {
 } from './types';
 
 import { Logger } from 'winston';
-import {
-  Entity,
-  stringifyEntityRef,
-  EntityRelationSpec,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Stitcher } from './Stitcher';
 
 export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
@@ -45,9 +41,10 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
+      const id = 'databaseProvider';
       const subscription = provider
         .entityChange$()
-        .subscribe({ next: m => this.onNext(m) });
+        .subscribe({ next: m => this.onNext(id, m) });
       this.subscriptions.push(subscription);
     }
 
@@ -73,14 +70,14 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
         return;
       }
 
+      result.completedEntity.metadata.uid = id;
       await this.stateManager.setProcessingItemResult({
         id,
         entity: result.completedEntity,
         state: result.state,
         errors: result.errors,
-      });
-      await this.stateManager.addProcessingItems({
-        entities: result.deferredEntites,
+        relations: result.relations,
+        deferredEntities: result.deferredEntites,
       });
 
       const setOfThingsToStitch = new Set<string>([
@@ -101,16 +98,20 @@ export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
     }
   }
 
-  private async onNext(message: EntityMessage) {
+  private async onNext(id: string, message: EntityMessage) {
     if ('all' in message) {
       // TODO unhandled rejection
       await this.stateManager.addProcessingItems({
+        id,
+        type: 'provider',
         entities: message.all,
       });
     }
 
     if ('added' in message) {
       await this.stateManager.addProcessingItems({
+        id,
+        type: 'provider',
         entities: message.added,
       });
 

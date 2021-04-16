@@ -32,15 +32,15 @@ export class ProcessingStateManagerImpl implements ProcessingStateManager {
         processedEntity: result.entity,
         errors: JSON.stringify(result.errors),
         state: result.state,
+        relations: result.relations,
+        deferedEntities: result.deferredEntities,
       });
     });
   }
 
   async addProcessingItems(request: AddProcessingItemRequest) {
     return this.db.transaction(async tx => {
-      await this.db.addUnprocessedEntities(tx, {
-        unprocessedEntities: request.entities,
-      });
+      await this.db.addUnprocessedEntities(tx, request);
     });
   }
 

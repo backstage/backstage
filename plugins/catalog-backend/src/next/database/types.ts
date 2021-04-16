@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 import { Transaction } from '../../database/types';
 
 export type AddUnprocessedEntitiesOptions = {
-  unprocessedEntities: Entity[];
+  type: 'entity' | 'provider';
+  id: string;
+  entities: Entity[];
 };
 
 export type AddUnprocessedEntitiesResult = {};
 
 export type UpdateProcessedEntityOptions = {
   id: string;
-  processedEntity?: Entity;
+  processedEntity: Entity;
   state?: Map<string, JsonObject>;
   errors?: string;
+  relations: EntityRelationSpec[];
+  deferedEntities: Entity[];
 };
 
 export type RefreshStateItem = {
@@ -46,18 +50,8 @@ export type GetProcessableEntitiesResult = {
   items: RefreshStateItem[];
 };
 
-export type UpdateFinalEntityOptions = {
-  finalEntity: Entity;
-  // TODO(freben): search
-};
-
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
-
-  updateFinalEntity(
-    txOpaque: Transaction,
-    options: UpdateFinalEntityOptions,
-  ): Promise<void>;
 
   addUnprocessedEntities(
     tx: Transaction,

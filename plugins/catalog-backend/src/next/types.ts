@@ -99,9 +99,13 @@ export type ProcessingItemResult = {
   entity: Entity;
   state: Map<string, JsonObject>;
   errors: Error[];
+  relations: EntityRelationSpec[];
+  deferredEntities: Entity[];
 };
 
 export type AddProcessingItemRequest = {
+  type: 'entity' | 'provider';
+  id: string;
   entities: Entity[];
 };
 
@@ -110,6 +114,7 @@ export type ProccessingItem = {
   entity: Entity;
   state: Map<string, JsonObject>;
 };
+
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
   getNextProcessingItem(): Promise<ProccessingItem>;

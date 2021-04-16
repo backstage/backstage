@@ -101,7 +101,6 @@ export class CatalogProcessingOrchestratorImpl
 
     const result = await this.processSingleEntity(entity);
 
-    console.log('result', JSON.stringify(result, undefined, 2));
     return result;
   }
 
