@@ -25,6 +25,7 @@ kubernetes:
         - url: http://127.0.0.1:9999
           name: minikube
           authProvider: 'serviceAccount'
+          skipTLSVerify: false
           serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
@@ -77,6 +78,11 @@ cluster. Valid values are:
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `serviceAccount` | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
 | `google`         | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
+
+##### `clusters.\*.skipTLSVerify`
+
+This determines whether or not the Kubernetes client verifies the TLS
+certificate presented by the API server. Defaults to `false`.
 
 ##### `clusters.\*.serviceAccountToken` (optional)
 
