@@ -56,6 +56,7 @@ export type Team = {
 export type Repository = {
   name: string;
   url: string;
+  isArchived: boolean;
 };
 
 export type Connection<T> = {
@@ -234,6 +235,7 @@ export async function getOrganizationRepositories(
         nodes {
           name
           url
+          isArchived
         }
         pageInfo {
           hasNextPage
