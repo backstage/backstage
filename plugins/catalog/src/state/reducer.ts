@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createAction, createReducer } from '@reduxjs/toolkit';
 import { collectTags, entityPredicate } from './filters';
 import { EntityFilter, EntityListState } from './types';
 
@@ -32,63 +31,83 @@ export const entityListInitialState: EntityListState = {
   matchingEntities: [],
 };
 
-export const setInitialState = createAction<
-  Partial<EntityListState>,
-  'setInitialState'
->('setInitialState');
+export const setInitialState = (payload: Partial<EntityListState>) =>
+  ({
+    type: 'setInitialState',
+    payload,
+  } as const);
 
-export const applyFilter = createAction<
-  { id: string; filter: EntityFilter },
-  'applyFilter'
->('applyFilter');
+export const applyFilter = (payload: { id: string; filter: EntityFilter }) =>
+  ({
+    type: 'applyFilter',
+    payload,
+  } as const);
 
-export const removeFilter = createAction<string, 'removeFilter'>(
-  'removeFilter',
-);
+export const removeFilter = (payload: string) =>
+  ({
+    type: 'removeFilter',
+    payload,
+  } as const);
 
-export const entityListReducer = createReducer(
-  entityListInitialState,
-  builder =>
-    builder
-      .addCase(setInitialState, (state, action) => {
-        const entities: Entity[] =
-          action.payload?.entities ?? (state?.entities as Entity[]) ?? [];
+type Actions = ReturnType<
+  typeof setInitialState | typeof applyFilter | typeof removeFilter
+>;
 
-        state.loading = action.payload.loading ?? false;
-        state.orgName = action.payload.orgName;
-        state.entities = entities;
-        state.starredEntities = action.payload.starredEntities ?? [];
-        state.ownUser = action.payload.ownUser;
-        state.entityTypes = [
-          ...new Set(entities.map((e: any) => e?.spec?.type)),
-        ];
-        state.isCatalogEmpty = entities?.length === 0;
-        state.matchingEntities = entities;
-        state.availableTags = collectTags(entities);
-      })
-      .addCase(applyFilter, (state, action) => {
-        state.clientFilters[action.payload.id] = action.payload.filter;
+export const entityListReducer = (
+  state: EntityListState = entityListInitialState,
+  action: Actions,
+): typeof entityListInitialState => {
+  switch (action.type) {
+    case 'setInitialState': {
+      const entities: Entity[] =
+        action.payload?.entities ?? (state?.entities as Entity[]) ?? [];
 
-        const predicate = entityPredicate(Object.values(state.clientFilters), {
-          ownUser: state.ownUser as any,
-          starredEntities: state.starredEntities,
-        });
+      return {
+        ...state,
+        loading: action.payload.loading ?? false,
+        orgName: action.payload.orgName,
+        entities: entities,
+        starredEntities: action.payload.starredEntities ?? [],
+        ownUser: action.payload.ownUser,
+        entityTypes: [...new Set(entities.map((e: any) => e?.spec?.type))],
+        isCatalogEmpty: entities?.length === 0,
+        matchingEntities: entities,
+        availableTags: collectTags(entities),
+      };
+    }
+    case 'applyFilter': {
+      const clientFilters = {
+        ...state.clientFilters,
+        [action.payload.id]: action.payload.filter,
+      };
 
-        state.matchingEntities = state.entities.filter(e =>
-          predicate(e as any),
-        );
-      })
-      .addCase(removeFilter, (state, action) => {
-        const { [action.payload]: key, ...filters } = state.clientFilters;
-        state.clientFilters = filters;
+      const predicate = entityPredicate(Object.values(clientFilters), {
+        ownUser: state.ownUser as any,
+        starredEntities: state.starredEntities,
+      });
 
-        const predicate = entityPredicate(Object.values(state.clientFilters), {
-          ownUser: state.ownUser as any,
-          starredEntities: state.starredEntities,
-        });
+      return {
+        ...state,
+        clientFilters,
+        matchingEntities: state.entities.filter(e => predicate(e as any)),
+      };
+    }
+    case 'removeFilter': {
+      const { [action.payload]: key, ...clientFilters } = state.clientFilters;
 
-        state.matchingEntities = state.entities.filter(e =>
-          predicate(e as any),
-        );
-      }),
-);
+      const predicate = entityPredicate(Object.values(clientFilters), {
+        ownUser: state.ownUser as any,
+        starredEntities: state.starredEntities,
+      });
+
+      return {
+        ...state,
+        clientFilters,
+        matchingEntities: state.entities.filter(e => predicate(e as any)),
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+};

@@ -62,7 +62,7 @@ describe('reducer', () => {
   it('should apply a filter', () => {
     expect(
       entityListReducer(
-        undefined,
+        undefined as any,
         applyFilter({ id: 'foo', filter: { type: 'owned' } }),
       ),
     ).toEqual(
