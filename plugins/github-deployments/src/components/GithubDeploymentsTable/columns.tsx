@@ -21,13 +21,14 @@ import {
   TableColumn,
   StatusAborted,
   StatusError,
+  Link,
 } from '@backstage/core';
 import { GithubDeployment } from '../../api';
 import { DateTime } from 'luxon';
-import { Box, Typography, Link } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 
-const statusIndicator = (value: string): JSX.Element => {
-  switch (value) {
+export const GithubStateIndicator = ({ state }: { state: string }) => {
+  switch (state) {
     case 'PENDING':
       return <StatusPending />;
     case 'IN_PROGRESS':
@@ -55,7 +56,7 @@ export function createStatusColumn(): TableColumn<GithubDeployment> {
     title: 'Status',
     render: (row: GithubDeployment): JSX.Element => (
       <Box display="flex" alignItems="center">
-        {statusIndicator(row.state)}
+        <GithubStateIndicator state={row.state} />
         <Typography variant="caption">{row.state}</Typography>
       </Box>
     ),
@@ -66,7 +67,7 @@ export function createCommitColumn(): TableColumn<GithubDeployment> {
   return {
     title: 'Commit',
     render: (row: GithubDeployment): JSX.Element => (
-      <Link href={row.commit.commitUrl} target="_blank" rel="noopener">
+      <Link to={row.commit.commitUrl} target="_blank" rel="noopener">
         {row.commit.abbreviatedOid}
       </Link>
     ),
