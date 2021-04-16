@@ -16,8 +16,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
   ENTITY_DEFAULT_NAMESPACE,
+  EntityName,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
@@ -59,12 +59,9 @@ const getEntityRootDir = (entity: Entity) => {
   return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
-function createLogger() {
-  const logger = getVoidLogger();
-  jest.spyOn(logger, 'info').mockReturnValue(logger);
-  jest.spyOn(logger, 'error').mockReturnValue(logger);
-  return logger;
-}
+const logger = getVoidLogger();
+jest.spyOn(logger, 'info').mockReturnValue(logger);
+jest.spyOn(logger, 'error').mockReturnValue(logger);
 
 let publisher: PublisherBase;
 beforeEach(async () => {
@@ -85,13 +82,51 @@ beforeEach(async () => {
     },
   });
 
-  publisher = await AzureBlobStoragePublish.fromConfig(
-    mockConfig,
-    createLogger(),
-  );
+  publisher = AzureBlobStoragePublish.fromConfig(mockConfig, logger);
 });
 
 describe('publishing with valid credentials', () => {
+  describe('getReadiness', () => {
+    it('should validate correct config', async () => {
+      expect(await publisher.getReadiness()).toEqual({
+        isAvailable: true,
+      });
+    });
+
+    it('should reject incorrect config', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'azureBlobStorage',
+            azureBlobStorage: {
+              credentials: {
+                accountName: 'accountName',
+                accountKey: 'accountKey',
+              },
+              containerName: 'bad_container',
+            },
+          },
+        },
+      });
+
+      const errorPublisher = await AzureBlobStoragePublish.fromConfig(
+        mockConfig,
+        logger,
+      );
+
+      expect(await errorPublisher.getReadiness()).toEqual({
+        isAvailable: false,
+      });
+
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Could not retrieve metadata about the Azure Blob Storage container bad_container.`,
+        ),
+      );
+    });
+  });
+
   describe('publish', () => {
     beforeEach(() => {
       const entity = createMockEntity();
@@ -149,6 +184,60 @@ describe('publishing with valid credentials', () => {
             expect.stringContaining(wrongPathToGeneratedDirectory),
           );
         });
+      mockFs.restore();
+    });
+
+    it('reports an error when bad account credentials', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'azureBlobStorage',
+            azureBlobStorage: {
+              credentials: {
+                accountName: 'failupload',
+                accountKey: 'accountKey',
+              },
+              containerName: 'containerName',
+            },
+          },
+        },
+      });
+
+      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
+
+      const entity = createMockEntity();
+      const entityRootDir = getEntityRootDir(entity);
+
+      mockFs({
+        [entityRootDir]: {
+          'index.html': '',
+        },
+      });
+
+      let error;
+      try {
+        await publisher.publish({
+          entity,
+          directory: entityRootDir,
+        });
+      } catch (e) {
+        error = e;
+      }
+
+      expect(error.message).toContain(
+        `Unable to upload file(s) to Azure Blob Storage.`,
+      );
+
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
+            entityRootDir,
+            'index.html',
+          )} with status code 500`,
+        ),
+      );
+
       mockFs.restore();
     });
   });
@@ -239,159 +328,6 @@ describe('publishing with valid credentials', () => {
             'techdocs_metadata.json',
           )} does not exist !`,
         ),
-      );
-    });
-  });
-});
-
-describe('error reporting', () => {
-  it('reports an error when unable to read container properties', async () => {
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        requestUrl: 'http://localhost:7000',
-        publisher: {
-          type: 'azureBlobStorage',
-          azureBlobStorage: {
-            credentials: {
-              accountName: 'accountName',
-            },
-            containerName: 'bad_container',
-          },
-        },
-      },
-    });
-
-    const logger = createLogger();
-
-    let error;
-    try {
-      publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error).toBeInstanceOf(Error);
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Could not retrieve metadata about the Azure Blob Storage container bad_container.`,
-      ),
-    );
-  });
-
-  it('reports an error when bad account credentials', async () => {
-    const mockConfig = new ConfigReader({
-      techdocs: {
-        requestUrl: 'http://localhost:7000',
-        publisher: {
-          type: 'azureBlobStorage',
-          azureBlobStorage: {
-            credentials: {
-              accountName: 'failupload',
-              accountKey: 'accountKey',
-            },
-            containerName: 'containerName',
-          },
-        },
-      },
-    });
-
-    const logger = createLogger();
-
-    publisher = await AzureBlobStoragePublish.fromConfig(mockConfig, logger);
-
-    const entity = createMockEntity();
-    const entityRootDir = getEntityRootDir(entity);
-
-    mockFs({
-      [entityRootDir]: {
-        'index.html': '',
-      },
-    });
-
-    let error;
-    try {
-      await publisher.publish({
-        entity,
-        directory: entityRootDir,
-      });
-    } catch (e) {
-      error = e;
-    }
-
-    expect(error.message).toContain(
-      `Unable to upload file(s) to Azure Blob Storage.`,
-    );
-
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.stringContaining(
-        `Unable to upload file(s) to Azure Blob Storage. Error: Upload failed for ${path.join(
-          entityRootDir,
-          'index.html',
-        )} with status code 500`,
-      ),
-    );
-
-    mockFs.restore();
-  });
-
-  describe('fetchTechDocsMetadata', () => {
-    it('should return tech docs metadata', async () => {
-      const entityNameMock = createMockEntityName();
-      const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
-
-      mockFs({
-        [entityRootDir]: {
-          'techdocs_metadata.json':
-            '{"site_name": "backstage", "site_description": "site_content", "etag": "etag"}',
-        },
-      });
-      const expectedMetadata: TechDocsMetadata = {
-        site_name: 'backstage',
-        site_description: 'site_content',
-        etag: 'etag',
-      };
-      expect(
-        await publisher.fetchTechDocsMetadata(entityNameMock),
-      ).toStrictEqual(expectedMetadata);
-      mockFs.restore();
-    });
-
-    it('should return tech docs metadata when json encoded with single quotes', async () => {
-      const entityNameMock = createMockEntityName();
-      const entity = createMockEntity();
-      const entityRootDir = getEntityRootDir(entity);
-
-      mockFs({
-        [entityRootDir]: {
-          'techdocs_metadata.json': `{'site_name': 'backstage', 'site_description': 'site_content', 'etag': 'etag'}`,
-        },
-      });
-
-      const expectedMetadata: TechDocsMetadata = {
-        site_name: 'backstage',
-        site_description: 'site_content',
-        etag: 'etag',
-      };
-      expect(
-        await publisher.fetchTechDocsMetadata(entityNameMock),
-      ).toStrictEqual(expectedMetadata);
-      mockFs.restore();
-    });
-
-    it('should return an error if the techdocs_metadata.json file is not present', async () => {
-      const entityNameMock = createMockEntityName();
-
-      let error;
-      try {
-        await publisher.fetchTechDocsMetadata(entityNameMock);
-      } catch (e) {
-        error = e;
-      }
-
-      expect(error.message).toEqual(
-        expect.stringContaining('TechDocs metadata fetch'),
       );
     });
   });

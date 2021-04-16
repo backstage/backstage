@@ -2,8 +2,8 @@
 id: locations
 title: Bitbucket Locations
 sidebar_label: Locations
-description:
-  Integrating source code stored in Bitbucket into the Backstage catalog
+# prettier-ignore
+description: Integrating source code stored in Bitbucket into the Backstage catalog
 ---
 
 The Bitbucket integration supports loading catalog entities from bitbucket.org
@@ -38,3 +38,6 @@ a structure with up to four elements:
 - `apiBaseUrl` (optional): The URL of the Bitbucket API. For self-hosted
   installations, it is commonly at `https://<host>/rest/api/1.0`. For
   bitbucket.org, this configuration is not needed as it can be inferred.
+
+> Note: If you are using Bitbucket server you MUST set the username as well as
+> the token or appPassword.

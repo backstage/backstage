@@ -54,6 +54,8 @@ versions:check           Check Backstage package versioning
 prepack                  Prepares a package for packaging before publishing
 postpack                 Restores the changes made by the prepack command
 
+create-github-app        Create new GitHub App in your organization (experimental)
+
 help [command]           display help for command
 ```
 
@@ -190,10 +192,13 @@ output of `backstage-cli backend:bundle` into an image:
 FROM node:14-buster-slim
 WORKDIR /app
 
-ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+COPY yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
+RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
+
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
-ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
+COPY packages/backend/dist/bundle.tar.gz app-config.yaml ./
+RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 CMD ["node", "packages/backend"]
 ```
@@ -605,4 +610,19 @@ the resulting archive in the target `workspace-dir`.
 
 ```text
 Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
+```
+
+## create-github-app
+
+Scope: `root`
+
+Creates a GitHub App in your GitHub organization. This is an alternative to
+token-based [GitHub integration](../integrations/github/locations.md). See
+[GitHub Apps for Backstage Authentication](../plugins/github-apps.md).
+
+Launches a browser to create the App through GitHub and saves the result as a
+YAML file that can be referenced in the GitHub integration configuration.
+
+```text
+Usage: backstage-cli create-github-app &lt;github-org&gt;
 ```

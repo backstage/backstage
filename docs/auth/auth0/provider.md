@@ -46,29 +46,5 @@ The Auth0 provider is a structure with three configuration keys:
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `auth0AuthApi` reference and
-`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
-
-```diff
-+ import { auth0AuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
-
-+ const auth0Provider: SignInConfig = {
-+  id: 'auth0-auth-provider',
-+  title: 'Auth0',
-+  message: 'Sign in using Auth0',
-+  apiRef: auth0AuthApiRef,
-+};
-+
-const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={auth0Provider}
-+      />
-+    ),
-+  },
-  bindRoutes({ bind }) {
-```
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).

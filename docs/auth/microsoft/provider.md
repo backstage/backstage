@@ -49,29 +49,5 @@ The Microsoft provider is a structure with three configuration keys:
 ## Adding the provider to the Backstage frontend
 
 To add the provider to the frontend, add the `microsoftAuthApi` reference and
-`SignInPage` component to `createApp` in `packages/app/src/App.tsx`:
-
-```diff
-+ import { microsoftAuthApiRef, SignInConfig, SignInPage } from '@backstage/core';
-
-+ const microsoftProvider: SignInConfig = {
-+  id: 'microsoft-auth-provider',
-+  title: 'Microsoft Azure',
-+  message: 'Sign in using Azure',
-+  apiRef: microsoftAuthApiRef,
-+};
-+
-const app = createApp({
-  apis,
-  plugins: Object.values(plugins),
-+  components: {
-+    SignInPage: props => (
-+      <SignInPage
-+        {...props}
-+        auto
-+        provider={microsoftProvider}
-+      />
-+    ),
-+  },
-  bindRoutes({ bind }) {
-```
+`SignInPage` component as shown in
+[Adding the provider to the sign-in page](../index.md#adding-the-provider-to-the-sign-in-page).

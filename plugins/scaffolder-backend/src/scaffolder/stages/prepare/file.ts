@@ -21,14 +21,14 @@ import { PreparerBase, PreparerOptions } from './types';
 
 export class FilePreparer implements PreparerBase {
   async prepare({ url, workspacePath }: PreparerOptions) {
-    if (!url.startsWith('file:///')) {
+    if (!url.startsWith('file://')) {
       throw new InputError(`Wrong location protocol, should be 'file', ${url}`);
     }
 
+    const templatePath = fileURLToPath(url);
+
     const targetDir = path.join(workspacePath, 'template');
     await fs.ensureDir(targetDir);
-
-    const templatePath = fileURLToPath(url);
 
     await fs.copy(templatePath, targetDir, {
       recursive: true,

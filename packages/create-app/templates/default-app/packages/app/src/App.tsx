@@ -12,14 +12,14 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-import';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import { apis } from './apis';
-import { EntityPage } from './components/catalog/EntityPage';
+import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
 import * as plugins from './plugins';
 
@@ -32,6 +32,9 @@ const app = createApp({
     });
     bind(apiDocsPlugin.externalRoutes, {
       createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(scaffolderPlugin.externalRoutes, {
+      registerComponent: catalogImportPlugin.routes.importPage,
     });
   },
 });
@@ -47,7 +50,7 @@ const routes = (
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
     >
-      <EntityPage />
+      {entityPage}
     </Route>
     <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />} />

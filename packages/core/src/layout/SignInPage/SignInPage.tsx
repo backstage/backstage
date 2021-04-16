@@ -22,7 +22,7 @@ import { ContentHeader } from '../ContentHeader/ContentHeader';
 import { Grid, Button, Typography } from '@material-ui/core';
 import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
 import { useSignInProviders, getSignInProviders } from './providers';
-import { IdentityProviders, SignInConfig } from './types';
+import { IdentityProviders, SignInProviderConfig } from './types';
 import { Progress } from '../../components/Progress';
 import { GridItem, useStyles } from './styles';
 import { InfoCard } from '../InfoCard';
@@ -34,7 +34,7 @@ type MultiSignInPageProps = SignInPageProps & {
 };
 
 type SingleSignInPageProps = SignInPageProps & {
-  provider: SignInConfig;
+  provider: SignInProviderConfig;
   auto?: boolean;
 };
 

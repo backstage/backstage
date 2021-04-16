@@ -20,7 +20,7 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { parseRepoUrl } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch from 'cross-fetch';
 import { createTemplateAction } from '../../createTemplateAction';
 
@@ -165,6 +165,7 @@ export function createPublishBitbucketAction(options: {
     repoUrl: string;
     description: string;
     repoVisibility: 'private' | 'public';
+    sourcePath?: string;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -186,6 +187,11 @@ export function createPublishBitbucketAction(options: {
             title: 'Repository Visiblity',
             type: 'string',
             enum: ['private', 'public'],
+          },
+          sourcePath: {
+            title:
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
+            type: 'string',
           },
         },
       },
@@ -233,7 +239,7 @@ export function createPublishBitbucketAction(options: {
       });
 
       await initRepoAndPush({
-        dir: ctx.workspacePath,
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth: {
           username: integrationConfig.config.username

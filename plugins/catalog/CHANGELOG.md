@@ -1,5 +1,41 @@
 # @backstage/plugin-catalog
 
+## 0.5.4
+
+### Patch Changes
+
+- 5d0740563: Implemented missing support for the dependsOn/dependencyOf relationships
+  between `Component` and `Resource` catalog model objects.
+
+  Added support for generating the relevant relationships to the
+  `BuiltinKindsEntityProcessor`, and added simple support for fetching
+  relationships between `Components` and `Resources` for rendering in the
+  system diagram. All catalog-model changes backwards compatible.
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [442f34b87]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/catalog-client@0.3.10
+
+## 0.5.3
+
+### Patch Changes
+
+- 98dd5da71: Add support for multiple links to post-scaffold task summary page
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [b051e770c]
+- Updated dependencies [98dd5da71]
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+
 ## 0.5.2
 
 ### Patch Changes

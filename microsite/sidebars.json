@@ -22,16 +22,6 @@
           "getting-started/app-custom-theme"
         ]
       },
-      {
-        "type": "subcategory",
-        "label": "Deployment",
-        "ids": [
-          "getting-started/deployment-docker",
-          "getting-started/deployment-k8s",
-          "getting-started/deployment-helm",
-          "getting-started/deployment-other"
-        ]
-      },
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
       "getting-started/contributors"
@@ -142,6 +132,11 @@
         "type": "subcategory",
         "label": "LDAP",
         "ids": ["integrations/ldap/org"]
+      },
+      {
+        "type": "subcategory",
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       }
     ],
     "Plugins": [
@@ -186,7 +181,6 @@
     ],
     "Auth and identity": [
       "auth/index",
-      "auth/add-auth-provider",
       {
         "type": "subcategory",
         "label": "Included providers",
@@ -196,13 +190,22 @@
           "auth/github/provider",
           "auth/gitlab/provider",
           "auth/google/provider",
-          "auth/okta/provider"
+          "auth/okta/provider",
+          "auth/onelogin/provider"
         ]
       },
+      "auth/add-auth-provider",
+      "auth/using-auth",
       "auth/auth-backend",
       "auth/oauth",
-      "auth/glossary",
-      "auth/auth-backend-classes"
+      "auth/auth-backend-classes",
+      "auth/glossary"
+    ],
+    "Deployment": [
+      "deployment/index",
+      "deployment/k8s",
+      "deployment/helm",
+      "deployment/heroku"
     ],
     "Designing for Backstage": [
       "dls/design",

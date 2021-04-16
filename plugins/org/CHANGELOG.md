@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.3.12
+
+### Patch Changes
+
+- 97d53f686: Optimize data fetched for the `OwnershipCard`.
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [b051e770c]
+- Updated dependencies [98dd5da71]
+  - @backstage/core@0.7.4
+  - @backstage/core-api@0.2.16
+  - @backstage/catalog-model@0.7.6
+
 ## 0.3.11
 
 ### Patch Changes

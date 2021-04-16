@@ -50,6 +50,7 @@ spec:
         values:
           name: '{{ parameters.name }}'
           owner: '{{ parameters.owner }}'
+          destination: '{{ parseRepoUrl parameters.repoUrl }}'
 
     - id: fetch-docs
       name: Fetch Docs

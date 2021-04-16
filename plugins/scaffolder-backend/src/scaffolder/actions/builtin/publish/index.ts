@@ -15,6 +15,7 @@
  */
 
 export { createPublishGithubAction } from './github';
+export { createPublishGithubPullRequestAction } from './githubPullRequest';
 export { createPublishAzureAction } from './azure';
 export { createPublishGitlabAction } from './gitlab';
 export { createPublishBitbucketAction } from './bitbucket';

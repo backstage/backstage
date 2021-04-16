@@ -23,7 +23,7 @@ import {
 } from '@backstage/core';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import { rootRouteRef } from './routes';
+import { rootRouteRef, registerComponentRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -41,6 +41,9 @@ export const scaffolderPlugin = createPlugin({
   ],
   routes: {
     root: rootRouteRef,
+  },
+  externalRoutes: {
+    registerComponent: registerComponentRouteRef,
   },
 });
 

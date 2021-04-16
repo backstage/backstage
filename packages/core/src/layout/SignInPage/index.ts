@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export type { SignInProviderConfig } from './types';
 export { SignInPage } from './SignInPage';

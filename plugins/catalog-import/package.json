@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -30,9 +30,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.7.5",
+    "@backstage/catalog-model": "^0.7.6",
     "@backstage/catalog-client": "^0.3.9",
-    "@backstage/core": "^0.7.3",
+    "@backstage/core": "^0.7.5",
     "@backstage/integration": "^0.5.0",
     "@backstage/integration-react": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.1.4",
@@ -43,6 +43,7 @@
     "@octokit/rest": "^18.0.12",
     "@types/react": "^16.9",
     "git-url-parse": "^11.4.4",
+    "js-base64": "^3.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-hook-form": "^6.15.4",
@@ -52,9 +53,9 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.6",
+    "@backstage/cli": "^0.6.8",
     "@backstage/dev-utils": "^0.1.13",
-    "@backstage/test-utils": "^0.1.9",
+    "@backstage/test-utils": "^0.1.10",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^3.3.0",
