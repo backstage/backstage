@@ -210,7 +210,7 @@ describe('github-deployments', () => {
       ).toBeInTheDocument();
       expect(await rendered.findByText('failure')).toBeInTheDocument();
     });
-    
+
     it('should display extra columns', async () => {
       worker.use(
         graphql.query('deployments', (_, res, ctx) =>
