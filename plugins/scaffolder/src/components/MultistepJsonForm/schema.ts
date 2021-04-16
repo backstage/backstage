@@ -22,41 +22,39 @@ function isObject(value: unknown): value is JsonObject {
 }
 
 function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
+  if (!isObject(schema)) {
+    return;
+  }
+
   const { properties } = schema;
+
+  for (const propName in schema) {
+    if (!schema.hasOwnProperty(propName)) {
+      continue;
+    }
+
+    if (propName.startsWith('ui:')) {
+      uiSchema[propName] = schema[propName];
+      delete schema[propName];
+    }
+  }
+
   if (!isObject(properties)) {
     return;
   }
+
   for (const propName in properties) {
     if (!properties.hasOwnProperty(propName)) {
       continue;
     }
+
     const schemaNode = properties[propName];
     if (!isObject(schemaNode)) {
       continue;
     }
-
-    if (schemaNode.type === 'object') {
-      const innerUiSchema = {};
-      uiSchema[propName] = innerUiSchema;
-      extractUiSchema(schemaNode, innerUiSchema);
-    } else {
-      for (const innerKey in schemaNode) {
-        if (!schemaNode.hasOwnProperty(innerKey)) {
-          continue;
-        }
-        const innerValue = schemaNode[innerKey];
-        if (innerKey.startsWith('ui:')) {
-          const innerUiSchema = uiSchema[propName] || {};
-          if (!isObject(innerUiSchema)) {
-            throw new TypeError('Unexpected non-object in uiSchema');
-          }
-          uiSchema[propName] = innerUiSchema;
-
-          innerUiSchema[innerKey] = innerValue;
-          delete schemaNode[innerKey];
-        }
-      }
-    }
+    const innerUiSchema = {};
+    uiSchema[propName] = innerUiSchema;
+    extractUiSchema(schemaNode, innerUiSchema);
   }
 }
 
