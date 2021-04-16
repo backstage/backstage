@@ -44,9 +44,9 @@ const useStyles = makeStyles(() => ({
   indicatorNext: {
     position: 'absolute',
     top: 'calc(40% - 10px)',
-    left: -8,
-    width: 16,
-    height: 16,
+    left: -6,
+    width: 12,
+    height: 12,
     background: '#92949c !important',
     borderRadius: '50%',
   },
@@ -54,11 +54,33 @@ const useStyles = makeStyles(() => ({
   indicatorCurrent: {
     position: 'absolute',
     top: 'calc(40% - 10px)',
-    left: -8,
-    width: 16,
-    height: 16,
+    left: -6,
+    width: 12,
+    height: 12,
     background: '#ffb74d !important',
+    color: '#ffb74d !important',
     borderRadius: '50%',
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: '$ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
   },
 
   beforeText: {

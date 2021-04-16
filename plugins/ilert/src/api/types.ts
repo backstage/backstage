@@ -24,6 +24,7 @@ import {
   Schedule,
   IncidentResponder,
   IncidentAction,
+  OnCall,
 } from '../types';
 
 export type TableState = {
@@ -74,6 +75,7 @@ export interface ILertApi {
 
   fetchAlertSources(): Promise<AlertSource[]>;
   fetchAlertSource(idOrIntegrationKey: number | string): Promise<AlertSource>;
+  fetchAlertSourceOnCalls(alertSource: AlertSource): Promise<OnCall[]>;
   enableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
   disableAlertSource(alertSource: AlertSource): Promise<AlertSource>;
 
@@ -97,7 +99,8 @@ export interface ILertApi {
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string;
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string;
   getScheduleDetailsURL(schedule: Schedule): string;
-  getUserInitials(assignedTo: User | null): string;
+  getUserPhoneNumber(user: User | null): string;
+  getUserInitials(user: User | null): string;
 }
 
 export type Options = {

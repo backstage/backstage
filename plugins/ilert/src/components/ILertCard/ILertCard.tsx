@@ -33,6 +33,7 @@ import { useILertEntity } from '../../hooks';
 import { ILertCardHeaderStatus } from './ILertCardHeaderStatus';
 import { ILertCardMaintenanceModal } from './ILertCardMaintenanceModal';
 import { ILertCardEmptyState } from './ILertCardEmptyState';
+import { ILertCardOnCall } from './ILertCardOnCall';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[ILERT_INTEGRATION_KEY]);
@@ -111,6 +112,7 @@ export const ILertCard = () => {
         />
         <Divider />
         <CardContent className={classes.content}>
+          <ILertCardOnCall alertSource={alertSource} />
           <IncidentsTable
             incidents={incidents}
             incidentsCount={incidentsCount}

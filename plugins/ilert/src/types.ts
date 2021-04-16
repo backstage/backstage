@@ -326,3 +326,12 @@ export interface IncidentActionHistory {
   actor: User;
   success: boolean;
 }
+
+export interface OnCall {
+  user: User;
+  escalationPolicy: EscalationPolicy;
+  schedule?: Schedule;
+  start: string;
+  end: string;
+  escalationLevel: number;
+}

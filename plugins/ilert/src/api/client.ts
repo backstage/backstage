@@ -20,6 +20,7 @@ import {
   Incident,
   IncidentAction,
   IncidentResponder,
+  OnCall,
   Schedule,
   UptimeMonitor,
   User,
@@ -388,6 +389,24 @@ export class ILertClient implements ILertApi {
     return response;
   }
 
+  async fetchAlertSourceOnCalls(alertSource: AlertSource): Promise<OnCall[]> {
+    const init = {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    };
+
+    const response = await this.fetch(
+      `/api/v1/on-calls?policies=${
+        alertSource.escalationPolicy.id
+      }&expand=user&expand=escalationPolicy&timezone=${momentTimezone.tz.guess()}`,
+      init,
+    );
+
+    return response;
+  }
+
   async enableAlertSource(alertSource: AlertSource): Promise<AlertSource> {
     const init = {
       method: 'PUT',
@@ -521,14 +540,28 @@ export class ILertClient implements ILertApi {
     return `${this.baseUrl}/schedule/view.jsf?id=${schedule.id}`;
   }
 
-  getUserInitials(assignedTo: User | null) {
-    if (!assignedTo) {
+  getUserPhoneNumber(user: User | null) {
+    if (!user) {
       return '';
     }
-    if (!assignedTo.firstName && !assignedTo.lastName) {
-      return assignedTo.username;
+    if (user.mobile) {
+      return user.mobile.number;
     }
-    return `${assignedTo.firstName} ${assignedTo.lastName} (${assignedTo.username})`;
+
+    if (user.landline) {
+      return user.landline.number;
+    }
+    return '';
+  }
+
+  getUserInitials(user: User | null) {
+    if (!user) {
+      return '';
+    }
+    if (!user.firstName && !user.lastName) {
+      return user.username;
+    }
+    return `${user.firstName} ${user.lastName} (${user.username})`;
   }
 
   private async apiUrl() {
