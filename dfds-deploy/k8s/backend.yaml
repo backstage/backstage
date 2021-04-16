@@ -34,8 +34,6 @@ spec:
           value: $(AUTH_MICROSOFT_TENANT_ID)
         - name: DATABASE_HOST
           value: $(DATABASE_HOST)
-        - name: DATABASE_HOST
-          value: $(DATABASE_HOST)
         - name: DATABASE_PORT
           value: $(DATABASE_PORT)
         - name: DATABASE_USER
