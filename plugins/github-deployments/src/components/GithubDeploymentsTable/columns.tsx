@@ -88,13 +88,3 @@ export function createLastUpdatedColumn(): TableColumn<GithubDeployment> {
     ),
   };
 }
-
-export function createCustomColumn(
-  title: string,
-  render: (payload: GithubDeployment) => JSX.Element,
-): TableColumn<GithubDeployment> {
-  return {
-    title: title,
-    render: (deployment: GithubDeployment) => render(deployment),
-  };
-}
