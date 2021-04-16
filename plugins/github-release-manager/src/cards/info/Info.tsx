@@ -52,8 +52,7 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
           >
             GitHub releases
           </Link>
-          . Note that this plugin works just as well with GitHub Enterprise
-          (GHE)
+          . (Note that this plugin works just as well with GitHub Enterprise.)
         </Typography>
 
         <Typography>

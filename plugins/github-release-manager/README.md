@@ -12,7 +12,7 @@ What `GRM` does is manage your **[releases](https://docs.github.com/en/github/ad
 
 ![](./src/cards/info/flow.png)
 
-> **GitHub**: The source control system where releases reside in a practical sense. Read more about [GitHub releases](https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository). Note that this plugin works just as well with GitHub Enterprise)
+> **GitHub**: The source control system where releases reside in a practical sense. Read more about [GitHub releases](https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository). (Note that this plugin works just as well with GitHub Enterprise.)
 >
 > **Release Candidate (RC)**: A GitHub pre-release intended primarily for internal testing
 >
