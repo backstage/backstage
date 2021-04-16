@@ -11,8 +11,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  k8s-service-connection: 'Kubernetes-Hellman'
-  kubernetes-namespace: 'backstage'
+- group: Developer-Automation
+- name: k8s-service-connection
+  value: 'Kubernetes-Hellman'
+- name: kubernetes-namespace
+  value: 'backstage'
 
 stages:
 - stage: CI
