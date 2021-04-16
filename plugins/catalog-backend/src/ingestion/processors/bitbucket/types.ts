@@ -13,6 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { githubDeploymentsPlugin, EntityGithubDeploymentsCard } from './plugin';
-export { GithubDeploymentsTable } from './components/GithubDeploymentsTable';
-export { isGithubDeploymentsAvailable } from './Router';
+export type Project = {
+  key: string;
+};
+
+export type Repository = {
+  project: Project;
+  slug: string;
+  links: Record<string, Link[]>;
+};
+
+export type Link = {
+  href: string;
+};

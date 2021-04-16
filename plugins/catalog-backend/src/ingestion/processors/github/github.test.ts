@@ -162,10 +162,12 @@ describe('github', () => {
               {
                 name: 'backstage',
                 url: 'https://github.com/backstage/backstage',
+                isArchived: false,
               },
               {
                 name: 'demo',
                 url: 'https://github.com/backstage/demo',
+                isArchived: true,
               },
             ],
             pageInfo: {
@@ -177,10 +179,15 @@ describe('github', () => {
 
       const output = {
         repositories: [
-          { name: 'backstage', url: 'https://github.com/backstage/backstage' },
+          {
+            name: 'backstage',
+            url: 'https://github.com/backstage/backstage',
+            isArchived: false,
+          },
           {
             name: 'demo',
             url: 'https://github.com/backstage/demo',
+            isArchived: true,
           },
         ],
       };

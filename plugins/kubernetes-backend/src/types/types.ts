@@ -30,6 +30,7 @@ export interface ClusterDetails {
   url: string;
   authProvider: string;
   serviceAccountToken?: string | undefined;
+  skipTLSVerify?: boolean;
 }
 
 export interface KubernetesRequestBody {

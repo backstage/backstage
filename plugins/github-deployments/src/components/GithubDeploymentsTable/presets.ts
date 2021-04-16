@@ -13,6 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { githubDeploymentsPlugin, EntityGithubDeploymentsCard } from './plugin';
-export { GithubDeploymentsTable } from './components/GithubDeploymentsTable';
-export { isGithubDeploymentsAvailable } from './Router';
+import { TableColumn } from '@backstage/core';
+import { GithubDeployment } from '../../api';
+import {
+  createEnvironmentColumn,
+  createStatusColumn,
+  createCommitColumn,
+  createLastUpdatedColumn,
+  createCreatorColumn,
+} from './columns';
+
+export const defaultDeploymentColumns: TableColumn<GithubDeployment>[] = [
+  createEnvironmentColumn(),
+  createStatusColumn(),
+  createCommitColumn(),
+  createCreatorColumn(),
+  createLastUpdatedColumn(),
+];

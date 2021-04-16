@@ -44,6 +44,7 @@ clean                    Delete cache directories
 create-plugin            Creates a new plugin in the current repository
 remove-plugin            Removes plugin in the current repository
 
+config:docs              Browse the configuration reference documentation
 config:print             Print the app configuration for the current package
 config:check             Validate that the given configuration loads and matches schema
 config:schema            Dump the app configuration schema
@@ -445,6 +446,25 @@ Usage: backstage-cli test [options]
 
 Options:
   --backstage-cli-help    display help for command
+```
+
+## config:docs
+
+Scope: `root`
+
+This commands opens up the reference documentation of your apps local
+configuration schema in the browser. This is useful to get an overview of what
+configuration values are available to use, a description of what they do and
+their format, and where they get sent.
+
+```text
+Usage: backstage-cli config:docs [options]
+
+Browse the configuration reference documentation
+
+Options:
+  --package <name>  Only include the schema that applies to the given package
+  -h, --help        display help for command
 ```
 
 ## config:print
