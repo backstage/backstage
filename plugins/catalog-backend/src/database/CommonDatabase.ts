@@ -211,7 +211,10 @@ export class CommonDatabase implements Database {
       .where({ originating_entity_id: uid })
       .whereNotIn('key', attachmentKeys)
       .del();
-    const attachmentRows = this.toAttachmendRows(uid, request.attachments);
+    const attachmentRows = this.toAttachmendRows(
+      uid,
+      request.attachments.filter(({ content }) => content),
+    );
     await tx.batchInsert('entities_attachments', attachmentRows, BATCH_SIZE);
 
     try {
@@ -382,9 +385,10 @@ export class CommonDatabase implements Database {
     txOpaque: Transaction,
     entityUid: string,
     key: string,
-    { ifNotMatchEtag }: DbAttachmentFilter,
+    filter?: DbAttachmentFilter,
   ): Promise<DbAttachmentResponse | undefined> {
     const tx = txOpaque as Knex.Transaction;
+    const ifNotMatchEtag = filter && filter.ifNotMatchEtag;
 
     const [result] = await tx<DbAttachmentRow>('entities_attachments')
       .where({ originating_entity_id: entityUid, key })
@@ -409,7 +413,8 @@ export class CommonDatabase implements Database {
       key: result.key,
       entityUid: result.originating_entity_id,
       contentType: result.content_type,
-      data: result.dataOrNull,
+      // knex returns null, make sure we use undefined instead
+      data: result.dataOrNull ? result.dataOrNull : undefined,
       etag: result.etag,
     };
   }
