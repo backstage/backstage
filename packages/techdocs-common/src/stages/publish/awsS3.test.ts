@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
   ENTITY_DEFAULT_NAMESPACE,
+  EntityName,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
-import * as winston from 'winston';
 import { AwsS3Publish } from './awsS3';
 import { PublisherBase, TechDocsMetadata } from './types';
 
@@ -59,9 +59,7 @@ const getEntityRootDir = (entity: Entity) => {
   return path.join(rootDir, namespace || ENTITY_DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = winston.createLogger();
-jest.spyOn(logger, 'info').mockReturnValue(logger);
-jest.spyOn(logger, 'error').mockReturnValue(logger);
+const logger = getVoidLogger();
 
 let publisher: PublisherBase;
 
@@ -87,6 +85,39 @@ beforeEach(() => {
 });
 
 describe('AwsS3Publish', () => {
+  describe('getReadiness', () => {
+    it('should validate correct config', async () => {
+      expect(await publisher.getReadiness()).toEqual({
+        isAvailable: true,
+      });
+    });
+
+    it('should reject incorrect config', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'awsS3',
+            awsS3: {
+              credentials: {
+                accessKeyId: 'accessKeyId',
+                secretAccessKey: 'secretAccessKey',
+              },
+              // this bucket name will throw an error
+              bucketName: 'errorBucket',
+            },
+          },
+        },
+      });
+
+      const errorPublisher = AwsS3Publish.fromConfig(mockConfig, logger);
+
+      expect(await errorPublisher.getReadiness()).toEqual({
+        isAvailable: false,
+      });
+    });
+  });
+
   describe('publish', () => {
     beforeEach(() => {
       const entity = createMockEntity();

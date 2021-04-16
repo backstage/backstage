@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getEntityNameFromUrlPath } from './helpers';
 
-describe('getEntityNameFromUrlPath', () => {
-  it('should parse correctly', () => {
-    const path = 'default/Component/documented-component';
-    const parsedEntity = getEntityNameFromUrlPath(path);
-    expect(parsedEntity).toHaveProperty('namespace', 'default');
-    expect(parsedEntity).toHaveProperty('kind', 'Component');
-    expect(parsedEntity).toHaveProperty('name', 'documented-component');
-  });
-});
+export * from './api';
+export { configSchemaPlugin, ConfigSchemaPage } from './plugin';

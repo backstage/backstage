@@ -17,10 +17,10 @@ import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert } from '@material-ui/lab';
 import { techdocsStorageApiRef } from '../../api';
 import transformer, {
   addBaseUrl,
@@ -162,6 +162,16 @@ export const Reader = ({ entityId, onReady }: Props) => {
         .md-typeset { font-size: 1rem; }
         .md-nav { font-size: 1rem; }
         .md-grid { max-width: 90vw; margin: 0 }
+        .md-typeset table:not([class]) {
+          font-size: 1rem;
+          border: 1px solid ${theme.palette.text.primary};
+          border-bottom: none;
+          border-collapse: collapse;
+        }
+        .md-typeset table:not([class]) td, .md-typeset table:not([class]) th {
+          border-bottom: 1px solid ${theme.palette.text.primary};
+        }
+        .md-typeset table:not([class]) th { font-weight: bold; }
         @media screen and (max-width: 76.1875em) {
           .md-nav { 
             background-color: ${theme.palette.background.default}; 
@@ -221,6 +231,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
         :host {
           --md-tasklist-icon: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2A10 10 0 002 12a10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2z"/></svg>');
           --md-tasklist-icon--checked: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2m-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
+        }
         `,
       }),
     ]);
@@ -332,7 +343,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       {docLoading || (docLoadError && syncInProgress) ? (
         <TechDocsProgressBar />
       ) : null}
-      <div ref={shadowDomRef} />
+      <div data-testid="techdocs-content-shadowroot" ref={shadowDomRef} />
     </>
   );
 };

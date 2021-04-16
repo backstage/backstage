@@ -17,16 +17,21 @@ import { Entity, EntityName } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import aws, { Credentials } from 'aws-sdk';
 import { ManagedUpload } from 'aws-sdk/clients/s3';
+import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import express from 'express';
 import fs from 'fs-extra';
 import JSON5 from 'json5';
 import createLimiter from 'p-limit';
-import { CredentialsOptions } from 'aws-sdk/lib/credentials';
 import path from 'path';
 import { Readable } from 'stream';
 import { Logger } from 'winston';
 import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
-import { PublisherBase, PublishRequest, TechDocsMetadata } from './types';
+import {
+  PublisherBase,
+  PublishRequest,
+  ReadinessResponse,
+  TechDocsMetadata,
+} from './types';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -81,30 +86,6 @@ export class AwsS3Publish implements PublisherBase {
       ...(endpoint && { endpoint }),
     });
 
-    // Check if the defined bucket exists. Being able to connect means the configuration is good
-    // and the storage client will work.
-    storageClient.headBucket(
-      {
-        Bucket: bucketName,
-      },
-      err => {
-        if (err) {
-          logger.error(
-            `Could not retrieve metadata about the AWS S3 bucket ${bucketName}. ` +
-              'Make sure the bucket exists. Also make sure that authentication is setup either by ' +
-              'explicitly defining credentials and region in techdocs.publisher.awsS3 in app config or ' +
-              'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
-          );
-          logger.error(`from AWS client library: ${err.message}`);
-          throw new Error();
-        } else {
-          logger.info(
-            `Successfully connected to the AWS S3 bucket ${bucketName}.`,
-          );
-        }
-      },
-    );
-
     return new AwsS3Publish(storageClient, bucketName, logger);
   }
 
@@ -147,6 +128,35 @@ export class AwsS3Publish implements PublisherBase {
     this.storageClient = storageClient;
     this.bucketName = bucketName;
     this.logger = logger;
+  }
+
+  /**
+   * Check if the defined bucket exists. Being able to connect means the configuration is good
+   * and the storage client will work.
+   */
+  async getReadiness(): Promise<ReadinessResponse> {
+    try {
+      await this.storageClient
+        .headBucket({ Bucket: this.bucketName })
+        .promise();
+
+      this.logger.info(
+        `Successfully connected to the AWS S3 bucket ${this.bucketName}.`,
+      );
+
+      return { isAvailable: true };
+    } catch (error) {
+      this.logger.error(
+        `Could not retrieve metadata about the AWS S3 bucket ${this.bucketName}. ` +
+          'Make sure the bucket exists. Also make sure that authentication is setup either by ' +
+          'explicitly defining credentials and region in techdocs.publisher.awsS3 in app config or ' +
+          'by using environment variables. Refer to https://backstage.io/docs/features/techdocs/using-cloud-storage',
+      );
+      this.logger.error(`from AWS client library`, error);
+      return {
+        isAvailable: false,
+      };
+    }
   }
 
   /**

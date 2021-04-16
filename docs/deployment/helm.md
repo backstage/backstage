@@ -1,8 +1,8 @@
 ---
-id: deployment-helm
-title: Helm
-description: Documentation on Kubernetes and Helm Deployment
-sidebar_label: Kubernetes and Helm
+id: helm
+title: Deploying Backstage with Helm
+description: How to deploy Backstage with Helm and Kubernetes
+sidebar_label: Helm
 ---
 
 # Helm charts

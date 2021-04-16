@@ -58,6 +58,7 @@ type SetQueryParams<T> = (params: T) => void;
 
 export function useQueryParamState<T>(
   stateName: string,
+  debounceTime: number = 100,
 ): [T | undefined, SetQueryParams<T>] {
   const navigate = useNavigate();
   const location = useLocation();
@@ -85,7 +86,7 @@ export function useQueryParamState<T>(
         navigate({ ...location, search: `?${queryString}` }, { replace: true });
       }
     },
-    100,
+    debounceTime,
     [queryParamState],
   );
 

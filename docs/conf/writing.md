@@ -129,6 +129,9 @@ variable.
 $env: MY_SECRET
 ```
 
+Note however, that it's often more convenient to use
+[environment variable substitution](#environment-variable-substitution) instead.
+
 ### File Includes
 
 This reads a string value from the entire contents of a text file. The file path

@@ -172,4 +172,35 @@ describe('readLdapConfig', () => {
     ];
     expect(actual).toEqual(expected);
   });
+
+  it('supports multiline ldap query filter', () => {
+    const config = {
+      providers: [
+        {
+          target: 'target',
+          users: {
+            dn: 'udn',
+            options: {
+              filter: `
+              (| 
+                (cn=foo bar) 
+                (cn=bar) 
+              )
+              `,
+            },
+          },
+          groups: {
+            dn: 'gdn',
+            options: {
+              filter: 'f',
+            },
+          },
+        },
+      ],
+    };
+    const actual = readLdapConfig(new ConfigReader(config));
+
+    const expected = '(|(cn=foo bar)(cn=bar))';
+    expect(actual[0].users.options.filter).toEqual(expected);
+  });
 });

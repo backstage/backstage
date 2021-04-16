@@ -20,6 +20,7 @@ describe('transformSchemaToProps', () => {
   it('transforms deep schema', () => {
     const inputSchema = {
       type: 'object',
+      'ui:welp': 'warp',
       properties: {
         field1: {
           type: 'string',
@@ -53,6 +54,7 @@ describe('transformSchemaToProps', () => {
       },
     };
     const expectedUiSchema = {
+      'ui:welp': 'warp',
       field1: {
         'ui:derp': 'herp',
       },

@@ -17,16 +17,17 @@ import React from 'react';
 import {
   MissingAnnotationEmptyState,
   ResponseErrorPanel,
+  TableColumn,
   useApi,
 } from '@backstage/core';
 import { useAsyncRetry } from 'react-use';
-import { githubDeploymentsApiRef } from '../api';
+import { GithubDeployment, githubDeploymentsApiRef } from '../api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   GITHUB_PROJECT_SLUG_ANNOTATION,
   isGithubDeploymentsAvailable,
 } from '../Router';
-import GithubDeploymentsTable from './GithubDeploymentsTable/GithubDeploymentsTable';
+import { GithubDeploymentsTable } from './GithubDeploymentsTable/GithubDeploymentsTable';
 import {
   LOCATION_ANNOTATION,
   SOURCE_LOCATION_ANNOTATION,
@@ -35,11 +36,13 @@ import {
 const GithubDeploymentsComponent = ({
   projectSlug,
   last,
+  columns,
   locations,
 }: {
   projectSlug: string;
   last: number;
   locations: string[];
+  columns: TableColumn<GithubDeployment>[];
 }) => {
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
@@ -57,11 +60,18 @@ const GithubDeploymentsComponent = ({
       deployments={value || []}
       isLoading={loading}
       reload={reload}
+      columns={columns}
     />
   );
 };
 
-export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
+export const GithubDeploymentsCard = ({
+  last,
+  columns,
+}: {
+  last?: number;
+  columns?: TableColumn<GithubDeployment>[];
+}) => {
   const { entity } = useEntity();
   const locations = [
     entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
@@ -77,6 +87,7 @@ export const GithubDeploymentsCard = ({ last }: { last?: number }) => {
       }
       last={last || 10}
       locations={locations}
+      columns={columns || GithubDeploymentsTable.defaultDeploymentColumns}
     />
   );
 };

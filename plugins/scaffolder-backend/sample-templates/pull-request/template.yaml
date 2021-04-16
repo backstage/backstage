@@ -69,8 +69,9 @@ spec:
           {{#if parameters.description}}
           {{parameters.description}}
           {{/if}}
-        host: '{{parameters.host}}'
         targetPath: '{{#if parameters.targetPath}}{{parameters.targetPath}}{{else}}{{parameters.name}}{{/if}}'
 
   output:
-    remoteUrl: '{{steps.publish.output.remoteUrl}}'
+    links: 
+      - url: '{{steps.publish.output.remoteUrl}}'
+        text: 'Go to PR'

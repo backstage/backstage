@@ -30,8 +30,14 @@ export const getRepoSourceDirectory = (
   }
   return workspacePath;
 };
+export type RepoSpec = {
+  repo: string;
+  host: string;
+  owner: string;
+  organization?: string;
+};
 
-export const parseRepoUrl = (repoUrl: string) => {
+export const parseRepoUrl = (repoUrl: string): RepoSpec => {
   let parsed;
   try {
     parsed = new URL(`https://${repoUrl}`);
@@ -55,7 +61,7 @@ export const parseRepoUrl = (repoUrl: string) => {
     );
   }
 
-  const organization = parsed.searchParams.get('organization');
+  const organization = parsed.searchParams.get('organization') ?? undefined;
 
   return { host, owner, repo, organization };
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EntityName } from '@backstage/catalog-model';
-/**
- * Using the path of the TechDocs page URL, return a structured EntityName type object with namespace,
- * kind and name of the Entity.
- * @param {string} path Example: default/Component/documented-component
- */
-export const getEntityNameFromUrlPath = (path: string): EntityName => {
-  const [namespace, kind, name] = path.split('/');
 
-  return {
-    namespace,
-    kind,
-    name,
-  };
-};
+import { createApiRef, Observable } from '@backstage/core';
+import { Schema } from 'jsonschema';
+
+export interface ConfigSchemaResult {
+  schema?: Schema;
+}
+
+export interface ConfigSchemaApi {
+  schema$(): Observable<ConfigSchemaResult>;
+}
+
+export const configSchemaApiRef = createApiRef<ConfigSchemaApi>({
+  id: 'plugin.config-schema',
+});

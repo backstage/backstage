@@ -197,17 +197,21 @@ export const createPublishGithubPullRequestAction = ({
 
       const client = await clientFactory({ integrations, host, owner, repo });
       const fileRoot = sourcePath
-        ? path.join(ctx.workspacePath, sourcePath)
+        ? path.resolve(ctx.workspacePath, sourcePath)
         : ctx.workspacePath;
-      const localFilePaths = await globby(`${fileRoot}/**/*.*`);
+
+      const localFilePaths = await globby(['./**', './**/.*', '!.git'], {
+        cwd: fileRoot,
+        gitignore: true,
+        dot: true,
+      });
 
       const fileContents = await Promise.all(
-        localFilePaths.map(p => readFile(p)),
+        localFilePaths.map(p => readFile(path.resolve(fileRoot, p))),
       );
 
-      const repoFilePaths = localFilePaths.map(p => {
-        const relativePath = path.relative(fileRoot, p);
-        return targetPath ? `${targetPath}/${relativePath}` : relativePath;
+      const repoFilePaths = localFilePaths.map(repoFilePath => {
+        return targetPath ? `${targetPath}/${repoFilePath}` : repoFilePath;
       });
 
       const changes = [

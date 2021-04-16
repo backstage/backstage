@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-backend
 
+## 0.7.1
+
+### Patch Changes
+
+- 017192ee8: Add support for configure an LDAP query filter on multiple lines.
+- 5d0740563: Implemented missing support for the dependsOn/dependencyOf relationships
+  between `Component` and `Resource` catalog model objects.
+
+  Added support for generating the relevant relationships to the
+  `BuiltinKindsEntityProcessor`, and added simple support for fetching
+  relationships between `Components` and `Resources` for rendering in the
+  system diagram. All catalog-model changes backwards compatible.
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
 ## 0.7.0
 
 ### Minor Changes

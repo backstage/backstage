@@ -44,6 +44,7 @@ clean                    Delete cache directories
 create-plugin            Creates a new plugin in the current repository
 remove-plugin            Removes plugin in the current repository
 
+config:docs              Browse the configuration reference documentation
 config:print             Print the app configuration for the current package
 config:check             Validate that the given configuration loads and matches schema
 config:schema            Dump the app configuration schema
@@ -53,6 +54,8 @@ versions:check           Check Backstage package versioning
 
 prepack                  Prepares a package for packaging before publishing
 postpack                 Restores the changes made by the prepack command
+
+create-github-app        Create new GitHub App in your organization (experimental)
 
 help [command]           display help for command
 ```
@@ -445,6 +448,25 @@ Options:
   --backstage-cli-help    display help for command
 ```
 
+## config:docs
+
+Scope: `root`
+
+This commands opens up the reference documentation of your apps local
+configuration schema in the browser. This is useful to get an overview of what
+configuration values are available to use, a description of what they do and
+their format, and where they get sent.
+
+```text
+Usage: backstage-cli config:docs [options]
+
+Browse the configuration reference documentation
+
+Options:
+  --package <name>  Only include the schema that applies to the given package
+  -h, --help        display help for command
+```
+
 ## config:print
 
 Scope: `root`
@@ -608,4 +630,19 @@ the resulting archive in the target `workspace-dir`.
 
 ```text
 Usage: backstage-cli build-workspace [options] &lt;workspace-dir&gt;
+```
+
+## create-github-app
+
+Scope: `root`
+
+Creates a GitHub App in your GitHub organization. This is an alternative to
+token-based [GitHub integration](../integrations/github/locations.md). See
+[GitHub Apps for Backstage Authentication](../plugins/github-apps.md).
+
+Launches a browser to create the App through GitHub and saves the result as a
+YAML file that can be referenced in the GitHub integration configuration.
+
+```text
+Usage: backstage-cli create-github-app &lt;github-org&gt;
 ```
