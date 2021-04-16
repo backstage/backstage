@@ -143,7 +143,6 @@ export async function createRouter(
         }
         res.status(200).json(entities[0]);
       })
-
       .get('/entities/by-uid/:uid/attachments/:key', async (req, res) => {
         const { uid, key } = req.params;
         const attachment = await entitiesCatalog.attachment(uid, key, {
@@ -168,7 +167,6 @@ export async function createRouter(
           .contentType(attachment.contentType)
           .send(attachment.data);
       })
-
       .get(
         '/entities/by-name/:kind/:namespace/:name/attachments/:key',
         async (req, res) => {
