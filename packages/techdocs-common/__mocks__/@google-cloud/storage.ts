@@ -81,10 +81,12 @@ class Bucket {
     this.bucketName = bucketName;
   }
 
-  getMetadata() {
-    return new Promise(resolve => {
-      resolve('');
-    });
+  async getMetadata() {
+    if (this.bucketName === 'errorBucket') {
+      throw Error('Bucket does not exist');
+    }
+
+    return '';
   }
 
   upload(source: string, { destination }) {

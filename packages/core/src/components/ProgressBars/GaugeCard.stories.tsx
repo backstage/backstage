@@ -45,6 +45,9 @@ export const Default = () => (
     <Grid item>
       <GaugeCard title="Progress" progress={0.89} />
     </Grid>
+    <Grid item>
+      <GaugeCard title="Progress" inverse progress={0.2} />
+    </Grid>
   </Wrapper>
 );
 
@@ -67,6 +70,14 @@ export const Subhead = () => (
         progress={0.89}
       />
     </Grid>
+    <Grid item>
+      <GaugeCard
+        title="Progress"
+        subheader="With a subheader"
+        inverse
+        progress={0.2}
+      />
+    </Grid>
   </Wrapper>
 );
 
@@ -80,6 +91,9 @@ export const LinkInFooter = () => (
     </Grid>
     <Grid item>
       <GaugeCard title="Progress" deepLink={linkInfo} progress={0.89} />
+    </Grid>
+    <Grid item>
+      <GaugeCard title="Progress" deepLink={linkInfo} inverse progress={0.2} />
     </Grid>
   </Wrapper>
 );

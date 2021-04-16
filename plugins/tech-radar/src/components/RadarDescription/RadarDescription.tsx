@@ -19,6 +19,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Button, DialogActions, DialogContent } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
+import { MarkdownContent } from '@backstage/core';
 
 export type Props = {
   open: boolean;
@@ -43,7 +44,9 @@ const RadarDescription = (props: Props): JSX.Element => {
       <DialogTitle data-testid="radar-description-dialog-title">
         {title}
       </DialogTitle>
-      <DialogContent dividers>{description}</DialogContent>
+      <DialogContent dividers>
+        <MarkdownContent content={description} />
+      </DialogContent>
       {url && (
         <DialogActions>
           <Button

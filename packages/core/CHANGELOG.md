@@ -1,5 +1,14 @@
 # @backstage/core
 
+## 0.7.5
+
+### Patch Changes
+
+- d0d1c2f7b: Pass `inverse` prop to Gauge from GaugeCard
+- 5cafcf452: add debounce time attribute for apis-docs for search, giving more time to the users when they are typing.
+- 86a95ba67: exposes undocumented `PageTheme`
+- e27cb6c45: Don't use a drag & drop cursor when clicking on disabled `IconLinkVertical`.
+
 ## 0.7.4
 
 ### Patch Changes

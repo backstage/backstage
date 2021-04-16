@@ -95,8 +95,7 @@ techdocs:
     type: 'googleGcs'
     googleGcs:
       bucketName: 'name-of-techdocs-storage-bucket'
-      credentials:
-        $env: GOOGLE_APPLICATION_CREDENTIALS
+      credentials: ${GOOGLE_APPLICATION_CREDENTIALS}
 ```
 
 **4. That's it!**
@@ -179,13 +178,10 @@ techdocs:
     type: 'awsS3'
     awsS3:
       bucketName: 'name-of-techdocs-storage-bucket'
-      region:
-        $env: AWS_REGION
+      region: ${AWS_REGION}
       credentials:
-        accessKeyId:
-          $env: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          $env: AWS_SECRET_ACCESS_KEY
+        accessKeyId: ${AWS_ACCESS_KEY_ID}
+        secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 ```
 
 Refer to the
@@ -202,8 +198,7 @@ techdocs:
     type: 'awsS3'
     awsS3:
       bucketName: 'name-of-techdocs-storage-bucket'
-      region:
-        $env: AWS_REGION
+      region: ${AWS_REGION}
       credentials:
         roleArn: arn:aws:iam::123456789012:role/my-backstage-role
 ```
@@ -276,8 +271,7 @@ techdocs:
     azureBlobStorage:
       containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        accountName:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
+        accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
 ```
 
 **3b. Authentication using app-config.yaml**
@@ -297,10 +291,8 @@ techdocs:
     azureBlobStorage:
       containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        accountName:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME
-        accountKey:
-          $env: TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY
+        accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
+        accountKey: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_KEY}
 ```
 
 **4. That's it!**
@@ -361,20 +353,13 @@ techdocs:
     openStackSwift:
       containerName: 'name-of-techdocs-storage-bucket'
       credentials:
-        userName:
-          $env: OPENSTACK_SWIFT_STORAGE_USERNAME
-        password:
-          $env: OPENSTACK_SWIFT_STORAGE_PASSWORD
-      authUrl:
-        $env: OPENSTACK_SWIFT_STORAGE_AUTH_URL
-      keystoneAuthVersion:
-        $env: OPENSTACK_SWIFT_STORAGE_AUTH_VERSION
-      domainId:
-        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_ID
-      domainName:
-        $env: OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME
-      region:
-        $env: OPENSTACK_SWIFT_STORAGE_REGION
+        userName: ${OPENSTACK_SWIFT_STORAGE_USERNAME}
+        password: ${OPENSTACK_SWIFT_STORAGE_PASSWORD}
+      authUrl: ${OPENSTACK_SWIFT_STORAGE_AUTH_URL}
+      keystoneAuthVersion: ${OPENSTACK_SWIFT_STORAGE_AUTH_VERSION}
+      domainId: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_ID}
+      domainName: ${OPENSTACK_SWIFT_STORAGE_DOMAIN_NAME}
+      region: ${OPENSTACK_SWIFT_STORAGE_REGION}
 ```
 
 **4. That's it!**

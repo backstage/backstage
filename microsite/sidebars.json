@@ -22,16 +22,6 @@
           "getting-started/app-custom-theme"
         ]
       },
-      {
-        "type": "subcategory",
-        "label": "Deployment",
-        "ids": [
-          "getting-started/deployment-docker",
-          "getting-started/deployment-k8s",
-          "getting-started/deployment-helm",
-          "getting-started/deployment-other"
-        ]
-      },
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts",
       "getting-started/contributors"
@@ -210,6 +200,12 @@
       "auth/oauth",
       "auth/auth-backend-classes",
       "auth/glossary"
+    ],
+    "Deployment": [
+      "deployment/index",
+      "deployment/k8s",
+      "deployment/helm",
+      "deployment/heroku"
     ],
     "Designing for Backstage": [
       "dls/design",

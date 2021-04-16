@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 0.3.10
+
+### Patch Changes
+
+- 442f34b87: Make sure the `CatalogClient` escapes URL parameters correctly.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
 ## 0.3.9
 
 ### Patch Changes

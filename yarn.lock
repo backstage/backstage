@@ -81,28 +81,29 @@
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.4.0.tgz#a0b0e3cb1803400d93b15f7c354fe95824a36e2c"
-  integrity sha512-rI0UF9niaqUxZqFS2+iBvkekxhI3cXOv/O+i+w/1EhpPppLicPVnazQbBqQ1iO37sio+CPejJbeoBgj8m+ylPw==
+"@asyncapi/parser@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.4.4.tgz#66f2642e3f9ae4166cdea2480b665250b1edbd59"
+  integrity sha512-HEYEDM0BzfCxXNAv/pIS5yZWe11xB8fQo9G/SmsbpJavOpcF0sVZVIELva/NxHVz/ZUKPMKCa4Gqz7DF/lMqpw==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
-    "@asyncapi/specs" "^2.7.6"
+    "@asyncapi/specs" "^2.7.7"
     "@fmvilas/pseudo-yaml-ast" "^0.3.1"
     ajv "^6.10.1"
     js-yaml "^3.13.1"
     json-to-ast "^2.1.0"
+    lodash.clonedeep "^4.5.0"
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@^0.19.2":
-  version "0.19.2"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.19.2.tgz#364a1d839e6f49a454fcb44b544f9496d1501b93"
-  integrity sha512-NXLBVaJdXqsIX98tF8fKxjTDf6cE+ym3Fkp3IQhMQh/6o1X2y/YVp+XkjfLO2C/Ccb/Cys1C5OnqipfwEY1oqA==
+"@asyncapi/react-component@^0.22.3":
+  version "0.22.3"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.22.3.tgz#6ea7fb1044308e6d46f8455218920389becf2b22"
+  integrity sha512-f47sboqEQ0jNp0z2A+WGzBYYMS3ASmTwAXG/q6SwLuHBW15bSjaIYOVK3E8bmftBl+wVcEgAqUc6RKGtD9iVJg==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.2.0"
     "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.4.0"
+    "@asyncapi/parser" "^1.4.4"
     constate "^1.2.0"
     dompurify "^2.1.1"
     markdown-it "^11.0.1"
@@ -110,10 +111,10 @@
     openapi-sampler "^1.0.0-beta.15"
     react-use "^12.2.0"
 
-"@asyncapi/specs@^2.7.6":
-  version "2.7.6"
-  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.6.tgz#d04ad015a148cd222f7939b9561360ab903de632"
-  integrity sha512-2IYlLA02beYQKVJVCAqV+G5tXRI4s8yeKYiszuoxS178psdAMKxgXtng8hUYPOqSvU6X4lc+Jabk1zSQFHifVg==
+"@asyncapi/specs@^2.7.7":
+  version "2.7.7"
+  resolved "https://registry.npmjs.org/@asyncapi/specs/-/specs-2.7.7.tgz#10f72c95153a3cc10039f6ba9c3a6f7c3b7fecfc"
+  integrity sha512-z8kj4GDJ640DU4msRsWprvmuC9n7vIeJW+D7Tp1xdefoLX5ZJrK7+4Xruna513wV0fSLpFzCmGz7McEP6CtKDg==
 
 "@azure/abort-controller@^1.0.0":
   version "1.0.2"
@@ -4265,9 +4266,9 @@
     react-lifecycles-compat "^3.0.4"
 
 "@rjsf/core@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.4.0.tgz#c50bcff0d8178948ce08123177399d8816d51929"
-  integrity sha512-8zlydBkGldOxGXFEwNGFa1gzTxpcxaYn7ofegcu8XHJ7IKMCfpnU3ABg+H3eml1KZCX3FODmj1tHFJKuTmfynw==
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@rjsf/core/-/core-2.5.1.tgz#95a842d22bab5f83929662fcd73739108e9f5cbb"
+  integrity sha512-km8NYScXNONaL5BiSLS6wyDj49pOLZtn0iXg7Zxlm921uuf3o2AAX5SuZS5kB4Zj2zlrVMrXESexfX6bxdDYHw==
   dependencies:
     "@babel/runtime-corejs2" "^7.8.7"
     "@types/json-schema" "^7.0.4"
@@ -4282,9 +4283,9 @@
     shortid "^2.2.14"
 
 "@rjsf/material-ui@^2.4.0":
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.4.1.tgz#b0dedff8877b114147e298966ca3faba895a7a62"
-  integrity sha512-pZaWL5Dw+km8S0hFLIK1lRHaeNtheMxTF2mZrWhf6HlGWCTGkQJnXta2UgshJN/nKtZPgO1L4FKz42Eun9nnhg==
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.5.1.tgz#b93ac9f1f4a909e2aae729616859c2d72557e53e"
+  integrity sha512-ooKxQJO12+i1xCGtknMZDxWSbVlSEgQ5U1I7lJ+uI/MvwAg3Rz9wb2cTEF3ErBczT7EEW+j1lR19rxBjFd78MA==
 
 "@roadiehq/backstage-plugin-buildkite@^1.0.0":
   version "1.0.0"
@@ -23441,9 +23442,9 @@ semver@7.0.0:
   integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
 
 semver@7.x, semver@^7.0.0, semver@^7.1.1, semver@^7.1.3, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4:
-  version "7.3.4"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.4.tgz#27aaa7d2e4ca76452f98d3add093a72c943edc97"
-  integrity sha512-tCfb2WLjqFAtXn4KEdxIhalnRtoKFN7nAwj0B3ZXCbQloV2tq5eDbcTmT68JJD3nRJq24/XgxtQKFIpQdtvmVw==
+  version "7.3.5"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
+  integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
   dependencies:
     lru-cache "^6.0.0"
 

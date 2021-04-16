@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.4.11
+
+### Patch Changes
+
+- 12390778e: chore(deps): bump @asyncapi/react-component from 0.19.2 to 0.22.3
+- 5cafcf452: add debounce time attribute for apis-docs for search, giving more time to the users when they are typing.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+
 ## 0.4.10
 
 ### Patch Changes

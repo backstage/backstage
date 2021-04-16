@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.6.8
+
+### Patch Changes
+
+- 60ce64aa2: Disable hot reloading in CI environments.
+
 ## 0.6.7
 
 ### Patch Changes

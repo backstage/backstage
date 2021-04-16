@@ -74,7 +74,7 @@ proxy:
 Then start the backend passing the token as an environment variable:
 
 ```bash
-$ PAGERDUTY_TOKEN='Token token=<TOKEN>' yarn start
+$ PAGERDUTY_TOKEN='<TOKEN>' yarn start
 ```
 
 This will proxy the request by adding `Authorization` header with the provided token.
