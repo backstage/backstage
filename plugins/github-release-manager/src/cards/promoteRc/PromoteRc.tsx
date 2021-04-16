@@ -20,7 +20,7 @@ import { Typography } from '@material-ui/core';
 
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
-import { ComponentConfigPromoteRc, SetRefetch } from '../../types/types';
+import { ComponentConfigPromoteRc } from '../../types/types';
 import { PromoteRcBody } from './PromoteRcBody';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -30,15 +30,10 @@ interface PromoteRcProps {
   latestRelease: ApiMethodRetval<
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];
-  setRefetch: SetRefetch;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
-export const PromoteRc = ({
-  latestRelease,
-  setRefetch,
-  successCb,
-}: PromoteRcProps) => {
+export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
   const classes = useStyles();
 
   function Body() {
@@ -61,13 +56,7 @@ export const PromoteRc = ({
       );
     }
 
-    return (
-      <PromoteRcBody
-        rcRelease={latestRelease}
-        setRefetch={setRefetch}
-        successCb={successCb}
-      />
-    );
+    return <PromoteRcBody rcRelease={latestRelease} successCb={successCb} />;
   }
 
   return (

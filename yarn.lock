@@ -1679,50 +1679,6 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@backstage/core@^0.7.5":
-  version "0.7.5"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@backstage/core/-/core-0.7.5.tgz#27e0a7982dbab40973eefaa185d89babdd454913"
-  integrity sha1-J+CnmC26tAlz7vqhhdibq91FSRM=
-  dependencies:
-    "@backstage/config" "^0.1.4"
-    "@backstage/core-api" "^0.2.16"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/theme" "^0.2.5"
-    "@material-ui/core" "^4.11.0"
-    "@material-ui/icons" "^4.9.1"
-    "@material-ui/lab" "4.0.0-alpha.45"
-    "@testing-library/react-hooks" "^3.4.2"
-    "@types/dagre" "^0.7.44"
-    "@types/prop-types" "^15.7.3"
-    "@types/react" "^16.9"
-    "@types/react-sparklines" "^1.7.0"
-    "@types/react-text-truncate" "^0.14.0"
-    classnames "^2.2.6"
-    clsx "^1.1.0"
-    d3-selection "^2.0.0"
-    d3-shape "^2.0.0"
-    d3-zoom "^2.0.0"
-    dagre "^0.8.5"
-    immer "^9.0.1"
-    lodash "^4.17.15"
-    material-table "^1.69.1"
-    prop-types "^15.7.2"
-    qs "^6.9.4"
-    rc-progress "^3.0.0"
-    react "^16.12.0"
-    react-dom "^16.12.0"
-    react-helmet "6.1.0"
-    react-hook-form "^6.6.0"
-    react-markdown "^5.0.2"
-    react-router "6.0.0-beta.0"
-    react-router-dom "6.0.0-beta.0"
-    react-sparklines "^1.7.0"
-    react-syntax-highlighter "^15.4.3"
-    react-text-truncate "^0.16.0"
-    react-use "^15.3.3"
-    remark-gfm "^1.0.0"
-    zen-observable "^0.8.15"
-
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
@@ -21631,6 +21587,13 @@ qs@6.7.0:
   resolved "https://registry.npmjs.org/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
+qs@^6.10.1:
+  version "6.10.1"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
+  integrity sha1-STFIL6jWR6Wqt5nFJx0hM7mB+2o=
+  dependencies:
+    side-channel "^1.0.4"
+
 qs@^6.5.2, qs@^6.6.0, qs@^6.7.0, qs@^6.9.1, qs@^6.9.4, qs@^6.9.6:
   version "6.9.6"
   resolved "https://registry.npmjs.org/qs/-/qs-6.9.6.tgz#26ed3c8243a431b2924aca84cc90471f35d5a0ee"
@@ -23679,6 +23642,15 @@ side-channel@^1.0.2:
   dependencies:
     es-abstract "^1.17.0-next.1"
     object-inspect "^1.7.0"
+
+side-channel@^1.0.4:
+  version "1.0.4"
+  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/side-channel/-/side-channel-1.0.4.tgz#efce5c8fdc104ee751b25c58d4290011fa5ea2cf"
+  integrity sha1-785cj9wQTudRslxY1CkAEfpeos8=
+  dependencies:
+    call-bind "^1.0.0"
+    get-intrinsic "^1.0.2"
+    object-inspect "^1.9.0"
 
 sigmund@~1.0.0:
   version "1.0.1"

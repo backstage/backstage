@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createContext, useContext } from 'react';
 
-import { Owner } from './Owner';
-import { Project } from '../../contexts/ProjectContext';
-import { Repo } from './Repo';
-import { VersioningStrategy } from './VersioningStrategy';
+import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
-export function RepoDetailsForm({
-  username,
-  project,
-}: {
-  username: string;
-  project: Project;
-}) {
-  return (
-    <>
-      <VersioningStrategy project={project} />
-
-      <Owner project={project} username={username} />
-
-      {project.owner.length > 0 && <Repo project={project} />}
-    </>
-  );
+export interface Refetch {
+  refetchTrigger: number;
+  setRefetchTrigger: React.Dispatch<React.SetStateAction<number>>;
 }
+
+export const RefetchContext = createContext<Refetch | undefined>(undefined);
+
+export const useRefetchContext = () => {
+  const refetch = useContext(RefetchContext);
+
+  if (!refetch) {
+    throw new GitHubReleaseManagerError('refetch not found');
+  }
+
+  return {
+    setRefetchTrigger: refetch.setRefetchTrigger,
+  };
+};

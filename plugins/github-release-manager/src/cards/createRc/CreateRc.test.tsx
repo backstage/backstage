@@ -47,7 +47,6 @@ describe('CreateRc', () => {
       <CreateRc
         defaultBranch="mockDefaultBranch"
         latestRelease={mockRcRelease}
-        setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
       />,
     );
@@ -62,7 +61,6 @@ describe('CreateRc', () => {
       <CreateRc
         defaultBranch="mockDefaultBranch"
         latestRelease={mockReleaseVersion}
-        setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
       />,
     );

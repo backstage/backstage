@@ -30,7 +30,7 @@ describe('testHelpers', () => {
           "getHost": [MockFunction],
           "getLatestCommit": [MockFunction],
           "getLatestRelease": [MockFunction],
-          "getOrganizations": [MockFunction],
+          "getOwners": [MockFunction],
           "getRecentCommits": [MockFunction],
           "getRepoPath": [MockFunction],
           "getRepositories": [MockFunction],
@@ -69,6 +69,7 @@ describe('testHelpers', () => {
           "tagName": "rc-2020.01.01_1",
           "targetCommitish": "rc/1.2.3",
         },
+        "mockRefetch": [MockFunction],
         "mockReleaseBranch": Object {
           "commit": Object {
             "commit": Object {

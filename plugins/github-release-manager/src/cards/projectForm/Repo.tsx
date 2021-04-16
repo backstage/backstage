@@ -16,69 +16,92 @@
 
 import React from 'react';
 import { useAsync } from 'react-use';
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
-import { ControllerRenderProps } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+} from '@material-ui/core';
 
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { Project } from '../../contexts/ProjectContext';
+import { getNewQueryParams } from '../../helpers/getNewQueryParams';
+import { useQuery } from '../../helpers/useQuery';
 
-export function Repo({
-  controllerRenderProps,
-}: {
-  controllerRenderProps: ControllerRenderProps;
-}) {
+export function Repo({ project }: { project: Project }) {
   const pluginApiClient = usePluginApiClientContext();
+  const navigate = useNavigate();
   const formClasses = useFormClasses();
-  const project: Project = controllerRenderProps.value;
+  const query = useQuery();
 
   const { loading, error, value } = useAsync(
     async () => pluginApiClient.getRepositories({ owner: project.owner }),
     [project.owner],
   );
 
-  if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  if (loading) {
-    return <CenteredCircularProgress />;
-  }
-
-  if (!value?.repositories) {
-    return (
-      <Alert severity="error">
-        Could not fetch repositories for "{project.owner}"
-      </Alert>
-    );
-  }
+  const repositories = value?.repositories ?? [];
+  const customRepoFromUrl = !repositories.concat(['']).includes(project.repo);
 
   return (
-    <FormControl className={formClasses.formControl}>
-      <InputLabel id="repo-select-label">Repositories</InputLabel>
-      <Select
-        labelId="repo-select-label"
-        id="repo-select"
-        value={project.repo}
-        onChange={event => {
-          controllerRenderProps.onChange({
-            ...project,
-            repo: event.target.value,
-          } as Project);
-        }}
-        className={formClasses.selectEmpty}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {value.repositories.map((repositoryName, index) => (
-          <MenuItem key={`repository-${index}`} value={repositoryName}>
-            {repositoryName}
-          </MenuItem>
-        ))}
-      </Select>
+    <FormControl className={formClasses.formControl} required error={!!error}>
+      {loading ? (
+        <CenteredCircularProgress />
+      ) : (
+        <>
+          <InputLabel id="repo-select-label">Repositories</InputLabel>
+          <Select
+            labelId="repo-select-label"
+            id="repo-select"
+            value={project.repo}
+            defaultValue=""
+            onChange={event => {
+              const queryParams = getNewQueryParams({
+                query,
+                key: 'repo',
+                value: event.target.value as string,
+              });
+              navigate(`?${queryParams}`, { replace: true });
+            }}
+            className={formClasses.selectEmpty}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+
+            {!error && customRepoFromUrl && (
+              <MenuItem value={project.repo}>
+                <strong>From URL: {project.repo}</strong>
+              </MenuItem>
+            )}
+
+            {repositories.map((repositoryName, index) => (
+              <MenuItem key={`repository-${index}`} value={repositoryName}>
+                {repositoryName}
+              </MenuItem>
+            ))}
+          </Select>
+
+          {error && (
+            <FormHelperText>
+              Encountered an error ({error.message}")
+            </FormHelperText>
+          )}
+
+          {!error && project.repo.length === 0 && (
+            <>
+              <FormHelperText>Select a repository</FormHelperText>
+              <FormHelperText>
+                Custom queries can be made via the query param{' '}
+                <strong>repo</strong>
+              </FormHelperText>
+            </>
+          )}
+        </>
+      )}
     </FormControl>
   );
 }

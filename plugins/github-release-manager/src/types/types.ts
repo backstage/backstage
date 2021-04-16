@@ -19,7 +19,7 @@ interface ComponentConfig<Args = void> {
   omit?: boolean;
 }
 
-export interface ComponentConfigCreateRcSuccessCbArgs {
+interface ComponentConfigCreateRcSuccessCbArgs {
   gitHubReleaseUrl: string;
   gitHubReleaseName: string | null;
   comparisonUrl: string;
@@ -28,7 +28,7 @@ export interface ComponentConfigCreateRcSuccessCbArgs {
 }
 export type ComponentConfigCreateRc = ComponentConfig<ComponentConfigCreateRcSuccessCbArgs>;
 
-export interface ComponentConfigPromoteRcSuccessCbArgs {
+interface ComponentConfigPromoteRcSuccessCbArgs {
   gitHubReleaseUrl: string;
   gitHubReleaseName: string | null;
   previousTagUrl: string;
@@ -38,7 +38,7 @@ export interface ComponentConfigPromoteRcSuccessCbArgs {
 }
 export type ComponentConfigPromoteRc = ComponentConfig<ComponentConfigPromoteRcSuccessCbArgs>;
 
-export interface ComponentConfigPatchSuccessCbArgs {
+interface ComponentConfigPatchSuccessCbArgs {
   updatedReleaseUrl: string;
   updatedReleaseName: string | null;
   previousTag: string;
@@ -47,8 +47,6 @@ export interface ComponentConfigPatchSuccessCbArgs {
   patchCommitMessage: string;
 }
 export type ComponentConfigPatch = ComponentConfig<ComponentConfigPatchSuccessCbArgs>;
-
-export type SetRefetch = React.Dispatch<React.SetStateAction<number>>;
 
 export interface ResponseStep {
   message: string | React.ReactNode;

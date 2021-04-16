@@ -33,9 +33,7 @@ import { PromoteRc } from './PromoteRc';
 
 describe('PromoteRc', () => {
   it('return early if no latest release present', () => {
-    const { getByTestId } = render(
-      <PromoteRc latestRelease={null} setRefetch={jest.fn()} />,
-    );
+    const { getByTestId } = render(<PromoteRc latestRelease={null} />);
 
     expect(
       getByTestId(TEST_IDS.components.noLatestRelease),
@@ -44,16 +42,14 @@ describe('PromoteRc', () => {
 
   it('should display not-rc warning', () => {
     const { getByTestId } = render(
-      <PromoteRc latestRelease={mockReleaseVersion} setRefetch={jest.fn()} />,
+      <PromoteRc latestRelease={mockReleaseVersion} />,
     );
 
     expect(getByTestId(TEST_IDS.promoteRc.notRcWarning)).toBeInTheDocument();
   });
 
   it('should display PromoteRcBody', () => {
-    const { getByTestId } = render(
-      <PromoteRc latestRelease={mockRcRelease} setRefetch={jest.fn()} />,
-    );
+    const { getByTestId } = render(<PromoteRc latestRelease={mockRcRelease} />);
 
     expect(
       getByTestId(TEST_IDS.promoteRc.mockedPromoteRcBody),

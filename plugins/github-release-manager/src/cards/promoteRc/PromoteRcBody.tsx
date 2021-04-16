@@ -20,7 +20,7 @@ import { Alert } from '@material-ui/lab';
 import { Button, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
-import { ComponentConfigPromoteRc, SetRefetch } from '../../types/types';
+import { ComponentConfigPromoteRc } from '../../types/types';
 import { promoteRc } from './sideEffects/promoteRc';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -33,15 +33,10 @@ interface PromoteRcBodyProps {
   rcRelease: NonNullable<
     ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
   >;
-  setRefetch: SetRefetch;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
-export const PromoteRcBody = ({
-  rcRelease,
-  setRefetch,
-  successCb,
-}: PromoteRcBodyProps) => {
+export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
   const pluginApiClient = usePluginApiClientContext();
   const project = useProjectContext();
   const classes = useStyles();
@@ -82,7 +77,6 @@ export const PromoteRcBody = ({
         <ResponseStepList
           responseSteps={promoteGitHubRcResponse.value}
           title="Promote RC result"
-          setRefetch={setRefetch}
           loading={promoteGitHubRcResponse.loading}
         />
       );

@@ -15,71 +15,101 @@
  */
 
 import React from 'react';
+import { useNavigate } from 'react-router';
 import { useAsync } from 'react-use';
-import { ControllerRenderProps } from 'react-hook-form';
-import { Alert } from '@material-ui/lab';
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import {
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@material-ui/core';
 
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { Project } from '../../contexts/ProjectContext';
+import { getNewQueryParams } from '../../helpers/getNewQueryParams';
+import { useQuery } from '../../helpers/useQuery';
 
 export function Owner({
-  controllerRenderProps,
   username,
+  project,
 }: {
-  controllerRenderProps: ControllerRenderProps;
   username: string;
+  project: Project;
 }) {
   const pluginApiClient = usePluginApiClientContext();
   const formClasses = useFormClasses();
-  const project: Project = controllerRenderProps.value;
+  const navigate = useNavigate();
+  const query = useQuery();
 
-  const { loading, error, value } = useAsync(() =>
-    pluginApiClient.getOrganizations(),
-  );
-
-  if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  }
-
-  if (loading) {
-    return <CenteredCircularProgress />;
-  }
-
-  if (!value?.organizations) {
-    return <Alert severity="error">Could not fetch organizations</Alert>;
-  }
+  const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());
+  const owners = value?.owners ?? [];
+  const customOwnerFromUrl = !owners
+    .concat(['', username])
+    .includes(project.owner);
 
   return (
-    <FormControl className={formClasses.formControl}>
-      <InputLabel id="owner-select-label">Organizations</InputLabel>
-      <Select
-        labelId="owner-select-label"
-        id="owner-select"
-        value={project.owner}
-        onChange={event => {
-          controllerRenderProps.onChange({
-            ...project,
-            owner: event.target.value,
-            repo: '',
-          } as Project);
-        }}
-        className={formClasses.selectEmpty}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        <MenuItem value={username}>
-          <strong>{username}</strong>
-        </MenuItem>
-        {value.organizations.map((orgName, index) => (
-          <MenuItem key={`organization-${index}`} value={orgName}>
-            {orgName}
-          </MenuItem>
-        ))}
-      </Select>
+    <FormControl className={formClasses.formControl} required error={!!error}>
+      {loading ? (
+        <CenteredCircularProgress />
+      ) : (
+        <>
+          <InputLabel id="owner-select-label">Owners</InputLabel>
+          <Select
+            labelId="owner-select-label"
+            id="owner-select"
+            value={project.owner}
+            defaultValue=""
+            onChange={event => {
+              const queryParams = getNewQueryParams({
+                query,
+                key: 'owner',
+                value: event.target.value as string,
+              });
+              navigate(`?${queryParams}`, { replace: true });
+            }}
+            className={formClasses.selectEmpty}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+
+            <MenuItem value={username}>
+              <strong>{username}</strong>
+            </MenuItem>
+
+            {!error && customOwnerFromUrl && (
+              <MenuItem value={project.owner}>
+                <strong>From URL: {project.owner}</strong>
+              </MenuItem>
+            )}
+
+            {owners.map((orgName, index) => (
+              <MenuItem key={`organization-${index}`} value={orgName}>
+                {orgName}
+              </MenuItem>
+            ))}
+          </Select>
+
+          {error && (
+            <FormHelperText>
+              Encountered an error ({error.message})
+            </FormHelperText>
+          )}
+
+          {!error && project.owner.length === 0 && (
+            <>
+              <FormHelperText>Select an owner (org or user)</FormHelperText>
+              <FormHelperText>
+                Custom queries can be made via the query param{' '}
+                <strong>owner</strong>
+              </FormHelperText>
+            </>
+          )}
+        </>
+      )}
     </FormControl>
   );
 }

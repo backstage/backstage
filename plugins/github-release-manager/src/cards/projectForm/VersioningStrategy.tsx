@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import {
   FormControl,
   FormControlLabel,
@@ -21,29 +23,48 @@ import {
   Radio,
   RadioGroup,
 } from '@material-ui/core';
-import React from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
-import { Project } from '../../contexts/ProjectContext';
 
-export function VersioningStrategy({
-  controllerRenderProps,
-}: {
-  controllerRenderProps: ControllerRenderProps;
-}) {
-  const project: Project = controllerRenderProps.value;
+import { Project } from '../../contexts/ProjectContext';
+import { useQuery } from '../../helpers/useQuery';
+import {
+  getNewQueryParams,
+  getParsedQuery,
+} from '../../helpers/getNewQueryParams';
+
+export function VersioningStrategy({ project }: { project: Project }) {
+  const navigate = useNavigate();
+  const query = useQuery();
+
+  useEffect(() => {
+    const parsedQuery = getParsedQuery({ query });
+
+    if (!parsedQuery.versioningStrategy) {
+      const queryParams = getNewQueryParams({
+        query,
+        key: 'versioningStrategy',
+        value: project.versioningStrategy,
+      });
+
+      navigate(`?${queryParams}`, { replace: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <FormControl component="fieldset">
+    <FormControl component="fieldset" required>
       <FormLabel component="legend">Calendar strategy</FormLabel>
       <RadioGroup
         aria-label="calendar-strategy"
         name="calendar-strategy"
         value={project.versioningStrategy}
+        defaultValue="semver"
         onChange={event => {
-          controllerRenderProps.onChange({
-            ...project,
-            versioningStrategy: event.target.value,
-          } as Project);
+          const queryParams = getNewQueryParams({
+            query,
+            key: 'versioningStrategy',
+            value: event.target.value,
+          });
+
+          navigate(`?${queryParams}`, { replace: true });
         }}
       >
         <FormControlLabel

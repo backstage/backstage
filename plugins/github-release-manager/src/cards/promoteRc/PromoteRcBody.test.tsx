@@ -35,9 +35,7 @@ import { PromoteRcBody } from './PromoteRcBody';
 
 describe('PromoteRcBody', () => {
   it('should display CTA', () => {
-    const { getByTestId } = render(
-      <PromoteRcBody rcRelease={mockRcRelease} setRefetch={jest.fn()} />,
-    );
+    const { getByTestId } = render(<PromoteRcBody rcRelease={mockRcRelease} />);
 
     expect(getByTestId(TEST_IDS.promoteRc.cta)).toBeInTheDocument();
   });

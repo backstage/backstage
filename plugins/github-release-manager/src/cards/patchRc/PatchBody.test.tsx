@@ -50,7 +50,6 @@ describe('PatchBody', () => {
         bumpedTag={mockBumpedTag}
         latestRelease={mockRcRelease}
         releaseBranch={mockReleaseBranch}
-        setRefetch={jest.fn()}
         tagParts={mockTagParts}
       />,
     );
@@ -66,7 +65,6 @@ describe('PatchBody', () => {
     const { getByTestId } = render(
       <PatchBody
         latestRelease={mockReleaseVersion}
-        setRefetch={jest.fn()}
         releaseBranch={mockReleaseBranch}
         bumpedTag={mockBumpedTag}
         tagParts={mockTagParts}

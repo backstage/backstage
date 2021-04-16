@@ -16,22 +16,22 @@
 
 import React, { PropsWithChildren } from 'react';
 import {
-  List,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  List,
 } from '@material-ui/core';
 
-import { ResponseStep, SetRefetch } from '../../types/types';
-import { TEST_IDS } from '../../test-helpers/test-ids';
-import { ResponseStepListItem } from './ResponseStepListItem';
 import { CenteredCircularProgress } from '../CenteredCircularProgress';
+import { ResponseStep } from '../../types/types';
+import { ResponseStepListItem } from './ResponseStepListItem';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useRefetchContext } from '../../contexts/RefetchContext';
 
 interface ResponseStepListProps {
   responseSteps?: ResponseStep[];
-  setRefetch: SetRefetch;
   title: string;
   animationDelay?: number;
   loading: boolean;
@@ -42,7 +42,6 @@ interface ResponseStepListProps {
 export const ResponseStepList = ({
   responseSteps,
   animationDelay,
-  setRefetch,
   loading = false,
   closeable = false,
   denseList = false,
@@ -50,6 +49,7 @@ export const ResponseStepList = ({
   children,
 }: PropsWithChildren<ResponseStepListProps>) => {
   const [open, setOpen] = React.useState(true);
+  const { setRefetchTrigger } = useRefetchContext();
 
   const handleClose = () => setOpen(false);
 
@@ -102,7 +102,7 @@ export const ResponseStepList = ({
               </Button>
             )}
             <Button
-              onClick={() => setRefetch(Date.now())}
+              onClick={() => setRefetchTrigger(Date.now())}
               color="primary"
               variant="contained"
               size="large"

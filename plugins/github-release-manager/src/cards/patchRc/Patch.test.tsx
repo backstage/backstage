@@ -32,11 +32,7 @@ import { Patch } from './Patch';
 describe('Patch', () => {
   it('should return early if no latestRelease exists', () => {
     const { getByTestId } = render(
-      <Patch
-        latestRelease={null}
-        setRefetch={jest.fn()}
-        releaseBranch={mockReleaseBranch}
-      />,
+      <Patch latestRelease={null} releaseBranch={mockReleaseBranch} />,
     );
 
     expect(

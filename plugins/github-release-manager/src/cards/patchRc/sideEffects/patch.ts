@@ -16,7 +16,6 @@
 
 import { ComponentConfigPatch, ResponseStep } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
-import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import {
   ApiMethodRetval,
   IPluginApiClient,
@@ -33,13 +32,13 @@ interface Patch {
   pluginApiClient: IPluginApiClient;
   project: Project;
   selectedPatchCommit: UnboxArray<
-    ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+    ApiMethodRetval<IPluginApiClient['getRecentCommits']>
   >;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
-// Inspo: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
+// Inspiration: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
 export async function patch({
   bumpedTag,
   latestRelease,
@@ -51,9 +50,6 @@ export async function patch({
 }: Patch) {
   const responseSteps: ResponseStep[] = [];
 
-  if (!selectedPatchCommit || !selectedPatchCommit.sha) {
-    throw new GitHubReleaseManagerError('Invalid commit');
-  }
   const releaseBranchName = latestRelease.targetCommitish;
   /**
    * 1. Here is the branch we want to cherry-pick to:

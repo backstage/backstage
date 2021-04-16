@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useLocation } from 'react-router';
 
-import { Owner } from './Owner';
-import { Project } from '../../contexts/ProjectContext';
-import { Repo } from './Repo';
-import { VersioningStrategy } from './VersioningStrategy';
-
-export function RepoDetailsForm({
-  username,
-  project,
-}: {
-  username: string;
-  project: Project;
-}) {
-  return (
-    <>
-      <VersioningStrategy project={project} />
-
-      <Owner project={project} username={username} />
-
-      {project.owner.length > 0 && <Repo project={project} />}
-    </>
-  );
+export function useQuery(): URLSearchParams {
+  return new URLSearchParams(useLocation().search);
 }

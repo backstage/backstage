@@ -18,7 +18,7 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 
 import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
-import { ComponentConfigPatch, SetRefetch } from '../../types/types';
+import { ComponentConfigPatch } from '../../types/types';
 import { getBumpedTag } from '../../helpers/getBumpedTag';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
@@ -31,14 +31,12 @@ interface PatchProps {
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];
   releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
-  setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
 }
 
 export const Patch = ({
   latestRelease,
   releaseBranch,
-  setRefetch,
   successCb,
 }: PatchProps) => {
   const project = useProjectContext();
@@ -64,7 +62,6 @@ export const Patch = ({
         bumpedTag={bumpedTag}
         latestRelease={latestRelease}
         releaseBranch={releaseBranch}
-        setRefetch={setRefetch}
         successCb={successCb}
         tagParts={tagParts}
       />

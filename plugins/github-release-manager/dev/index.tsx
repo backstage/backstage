@@ -22,14 +22,27 @@ import {
   GitHubReleaseManagerPage,
 } from '../src/plugin';
 
+function DevWrapper({ children }: { children: React.ReactNode }) {
+  return <div style={{ padding: 30 }}>{children}</div>;
+}
+
 createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
     title: 'Page 1',
-    element: <GitHubReleaseManagerPage />,
+    element: (
+      <DevWrapper>
+        <GitHubReleaseManagerPage />
+      </DevWrapper>
+    ),
   })
   .addPage({
     title: 'Page 2',
-    element: <GitHubReleaseManagerPage />,
+    element: (
+      <DevWrapper>
+        {' '}
+        <GitHubReleaseManagerPage />
+      </DevWrapper>
+    ),
   })
   .render();

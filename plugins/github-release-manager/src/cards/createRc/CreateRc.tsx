@@ -30,7 +30,7 @@ import { createRc } from './sideEffects/createRc';
 import { Differ } from '../../components/Differ';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { ComponentConfigCreateRc, SetRefetch } from '../../types/types';
+import { ComponentConfigCreateRc } from '../../types/types';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -47,7 +47,6 @@ interface CreateRcProps {
     IPluginApiClient['getLatestRelease']
   >['latestRelease'];
   releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
-  setRefetch: SetRefetch;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 
@@ -55,7 +54,6 @@ export const CreateRc = ({
   defaultBranch,
   latestRelease,
   releaseBranch,
-  setRefetch,
   successCb,
 }: CreateRcProps) => {
   const pluginApiClient = usePluginApiClientContext();
@@ -149,7 +147,6 @@ export const CreateRc = ({
           responseSteps={createGitHubReleaseResponse.value}
           loading={createGitHubReleaseResponse.loading}
           title="Create RC result"
-          setRefetch={setRefetch}
         />
       );
     }

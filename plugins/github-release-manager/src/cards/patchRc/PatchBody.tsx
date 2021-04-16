@@ -35,7 +35,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { ComponentConfigPatch, SetRefetch } from '../../types/types';
+import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { patch } from './sideEffects/patch';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
@@ -49,6 +49,7 @@ import {
   IPluginApiClient,
   UnboxArray,
 } from '../../api/PluginApiClient';
+import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -56,7 +57,6 @@ interface PatchBodyProps {
     ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
   >;
   releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']>;
-  setRefetch: SetRefetch;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
@@ -65,7 +65,6 @@ export const PatchBody = ({
   bumpedTag,
   latestRelease,
   releaseBranch,
-  setRefetch,
   successCb,
   tagParts,
 }: PatchBodyProps) => {
@@ -75,15 +74,19 @@ export const PatchBody = ({
 
   const githubDataResponse = useAsync(async () => {
     const [
-      { recentCommits: recentCommitsOnDefaultBranch },
-    ] = await Promise.all([pluginApiClient.getRecentCommits({ ...project })]);
-
-    const {
-      recentCommits: recentCommitsOnReleaseBranch,
-    } = await pluginApiClient.getRecentCommits({
-      ...project,
-      releaseBranchName: releaseBranch.name,
-    });
+      recentCommitsOnDefaultBranch,
+      recentCommitsOnReleaseBranch,
+    ] = await Promise.all([
+      pluginApiClient.getRecentCommits({
+        owner: project.owner,
+        repo: project.repo,
+      }),
+      pluginApiClient.getRecentCommits({
+        owner: project.owner,
+        repo: project.repo,
+        releaseBranchName: releaseBranch.name,
+      }),
+    ]);
 
     return {
       recentCommitsOnReleaseBranch,
@@ -93,7 +96,7 @@ export const PatchBody = ({
 
   const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
     const selectedPatchCommit: UnboxArray<
-      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+      ApiMethodRetval<IPluginApiClient['getRecentCommits']>
     > = args[0];
     const patchResponseSteps = await patch({
       project,
@@ -111,13 +114,15 @@ export const PatchBody = ({
   if (githubDataResponse.error) {
     return (
       <Alert data-testid={TEST_IDS.patch.error} severity="error">
-        {githubDataResponse.error.message}
+        Unexpected error: {githubDataResponse.error.message}
       </Alert>
     );
   }
+
   if (patchReleaseResponse.error) {
     return <Alert severity="error">{patchReleaseResponse.error.message}</Alert>;
   }
+
   if (githubDataResponse.loading) {
     return <CenteredCircularProgress data-testid={TEST_IDS.patch.loading} />;
   }
@@ -156,9 +161,11 @@ export const PatchBody = ({
       <List>
         {githubDataResponse.value.recentCommitsOnDefaultBranch.map(
           (commit, index) => {
+            // FIXME: Performance improvement opportunity: Convert to object lookup
             const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentCommitsOnReleaseBranch.find(
               releaseBranchCommit => releaseBranchCommit.sha === commit.sha,
             );
+            const hasNoParent = !commit.firstParentSha;
 
             return (
               <div style={{ position: 'relative' }} key={`commit-${index}`}>
@@ -190,7 +197,8 @@ export const PatchBody = ({
                     patchReleaseResponse.loading ||
                     (patchReleaseResponse.value &&
                       patchReleaseResponse.value.length > 0) ||
-                    commitExistsOnReleaseBranch
+                    commitExistsOnReleaseBranch ||
+                    hasNoParent
                   }
                   role={undefined}
                   dense
@@ -264,36 +272,28 @@ export const PatchBody = ({
           responseSteps={patchReleaseResponse.value}
           loading={patchReleaseResponse.loading}
           title="Patch result"
-          setRefetch={setRefetch}
           closeable
         />
       );
     }
 
-    if (
-      !githubDataResponse.value?.recentCommitsOnDefaultBranch[
+    const selectedPatchCommit =
+      githubDataResponse.value?.recentCommitsOnDefaultBranch[
         checkedCommitIndex
-      ]
-    ) {
-      return (
-        <Button disabled variant="contained" color="primary">
-          Patch Release Candidate
-        </Button>
-      );
-    }
-
+      ];
     return (
       <Button
-        disabled={checkedCommitIndex === -1}
+        disabled={checkedCommitIndex === -1 || !selectedPatchCommit}
         variant="contained"
         color="primary"
         onClick={() => {
-          // FIXME: Optional chaining shouldn't be needed here due to the if-statement above
-          patchReleaseFn(
-            githubDataResponse.value?.recentCommitsOnDefaultBranch[
-              checkedCommitIndex
-            ],
-          );
+          if (!selectedPatchCommit) {
+            throw new GitHubReleaseManagerError(
+              'Could not find selected patch commit',
+            );
+          }
+
+          patchReleaseFn(selectedPatchCommit);
         }}
       >
         Patch Release Candidate

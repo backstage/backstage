@@ -40,7 +40,7 @@ export interface IPluginApiClient {
 
   getRepoPath: (args: PartialProject) => string;
 
-  getOrganizations: () => Promise<{ organizations: string[] }>;
+  getOwners: () => Promise<{ owners: string[] }>;
 
   getRepositories: (args: {
     owner: string;
@@ -50,8 +50,8 @@ export interface IPluginApiClient {
 
   getRecentCommits: (
     args: { releaseBranchName?: string } & PartialProject,
-  ) => Promise<{
-    recentCommits: {
+  ) => Promise<
+    {
       htmlUrl: string;
       sha: string;
       author: {
@@ -62,8 +62,8 @@ export interface IPluginApiClient {
         message: string;
       };
       firstParentSha?: string;
-    }[];
-  }>;
+    }[]
+  >;
 
   getLatestRelease: (
     args: PartialProject,
@@ -154,7 +154,7 @@ export interface IPluginApiClient {
         tagParts: SemverTagParts | CalverTagParts;
         releaseBranchTree: string;
         selectedPatchCommit: UnboxArray<
-          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>
         >;
       } & PartialProject,
     ) => Promise<{
@@ -191,7 +191,7 @@ export interface IPluginApiClient {
       args: {
         bumpedTag: string;
         selectedPatchCommit: UnboxArray<
-          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>
         >;
         mergeTree: string;
         releaseBranchSha: string;
@@ -247,7 +247,7 @@ export interface IPluginApiClient {
         >;
         tagParts: SemverTagParts | CalverTagParts;
         selectedPatchCommit: UnboxArray<
-          ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+          ApiMethodRetval<IPluginApiClient['getRecentCommits']>
         >;
       } & PartialProject,
     ) => Promise<{
@@ -272,6 +272,12 @@ export interface IPluginApiClient {
     }>;
   };
 }
+
+const DISABLE_CACHE = {
+  headers: {
+    'If-None-Match': '',
+  },
+};
 
 export class PluginApiClient implements IPluginApiClient {
   private readonly githubAuthApi: OAuthApi;
@@ -329,7 +335,7 @@ export class PluginApiClient implements IPluginApiClient {
     return `${owner}/${repo}`;
   }
 
-  async getOrganizations() {
+  async getOwners() {
     const { octokit } = await this.getOctokit();
     const orgListResponse = await octokit.paginate(
       octokit.orgs.listForAuthenticatedUser,
@@ -337,7 +343,7 @@ export class PluginApiClient implements IPluginApiClient {
     );
 
     return {
-      organizations: orgListResponse.map(organization => organization.login),
+      owners: orgListResponse.map(organization => organization.login),
     };
   }
 
@@ -385,22 +391,21 @@ export class PluginApiClient implements IPluginApiClient {
       owner,
       repo,
       ...(releaseBranchName ? { sha: releaseBranchName } : {}),
+      ...DISABLE_CACHE,
     });
 
-    return {
-      recentCommits: recentCommitsResponse.data.map(commit => ({
-        htmlUrl: commit.html_url,
-        sha: commit.sha,
-        author: {
-          htmlUrl: commit.author?.html_url,
-          login: commit.author?.login,
-        },
-        commit: {
-          message: commit.commit.message,
-        },
-        firstParentSha: commit.parents?.[0].sha,
-      })),
-    };
+    return recentCommitsResponse.data.map(commit => ({
+      htmlUrl: commit.html_url,
+      sha: commit.sha,
+      author: {
+        htmlUrl: commit.author?.html_url,
+        login: commit.author?.login,
+      },
+      commit: {
+        message: commit.commit.message,
+      },
+      firstParentSha: commit.parents?.[0]?.sha,
+    }));
   }
 
   async getLatestRelease({ owner, repo }: PartialProject) {
@@ -409,6 +414,7 @@ export class PluginApiClient implements IPluginApiClient {
       owner,
       repo,
       per_page: 1,
+      ...DISABLE_CACHE,
     });
 
     if (latestReleases.length === 0) {
@@ -433,10 +439,10 @@ export class PluginApiClient implements IPluginApiClient {
 
   async getRepository({ owner, repo }: PartialProject) {
     const { octokit } = await this.getOctokit();
-
     const { data: repository } = await octokit.repos.get({
       owner,
       repo,
+      ...DISABLE_CACHE,
     });
 
     return {
@@ -458,6 +464,7 @@ export class PluginApiClient implements IPluginApiClient {
       owner,
       repo,
       ref: defaultBranch,
+      ...DISABLE_CACHE,
     });
 
     return {
@@ -480,6 +487,7 @@ export class PluginApiClient implements IPluginApiClient {
       owner,
       repo,
       branch: branchName,
+      ...DISABLE_CACHE,
     });
 
     return {
@@ -585,7 +593,7 @@ export class PluginApiClient implements IPluginApiClient {
       tagParts: SemverTagParts | CalverTagParts;
       releaseBranchTree: string;
       selectedPatchCommit: UnboxArray<
-        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>
       >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();
@@ -659,7 +667,7 @@ export class PluginApiClient implements IPluginApiClient {
     }: {
       bumpedTag: string;
       selectedPatchCommit: UnboxArray<
-        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>
       >;
       mergeTree: string;
       releaseBranchSha: string;
@@ -773,7 +781,7 @@ export class PluginApiClient implements IPluginApiClient {
       >;
       tagParts: SemverTagParts | CalverTagParts;
       selectedPatchCommit: UnboxArray<
-        ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
+        ApiMethodRetval<IPluginApiClient['getRecentCommits']>
       >;
     } & PartialProject) => {
       const { octokit } = await this.getOctokit();

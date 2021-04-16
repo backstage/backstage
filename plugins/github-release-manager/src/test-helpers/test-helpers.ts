@@ -105,11 +105,7 @@ export const mockReleaseBranch = createMockBranch();
 const createMockCommit = ({
   ...rest
 }: Partial<
-  NonNullable<
-    UnboxArray<
-      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
-    >
-  >
+  NonNullable<UnboxArray<ApiMethodRetval<IPluginApiClient['getRecentCommits']>>>
 >) =>
   ({
     author: {
@@ -123,14 +119,14 @@ const createMockCommit = ({
     firstParentSha: 'mock_first_parent_sha',
     ...rest,
   } as NonNullable<
-    UnboxArray<
-      ApiMethodRetval<IPluginApiClient['getRecentCommits']>['recentCommits']
-    >
+    UnboxArray<ApiMethodRetval<IPluginApiClient['getRecentCommits']>>
   >);
 
 export const mockSelectedPatchCommit = createMockCommit({
   sha: 'mock_sha_selected_patch_commit',
 });
+
+export const mockRefetch = jest.fn();
 
 /**
  * MOCK API CLIENT
@@ -140,18 +136,18 @@ export const mockApiClient: IPluginApiClient = {
 
   getRepoPath: jest.fn(() => 'erikengervall/playground'),
 
-  getOrganizations: jest.fn(),
+  getOwners: jest.fn(),
 
   getRepositories: jest.fn(),
 
   getUsername: jest.fn(),
 
-  getRecentCommits: jest.fn().mockResolvedValue({
-    recentCommits: [
+  getRecentCommits: jest
+    .fn()
+    .mockResolvedValue([
       createMockCommit({ sha: 'mock_sha_recent_commits_1' }),
       createMockCommit({ sha: 'mock_sha_recent_commits_2' }),
-    ],
-  }),
+    ]),
 
   getLatestRelease: jest.fn(), // TODO:
 

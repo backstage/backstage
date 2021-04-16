@@ -17,17 +17,18 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { TEST_IDS } from '../../test-helpers/test-ids';
+import { mockRefetch } from '../../test-helpers/test-helpers';
 import { ResponseStepList } from './ResponseStepList';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+
+jest.mock('../../contexts/RefetchContext', () => ({
+  useRefetchContext: jest.fn(() => mockRefetch),
+}));
 
 describe('ResponseStepList', () => {
   it('should render loading state when loading', () => {
     const { getByTestId } = render(
-      <ResponseStepList
-        loading
-        setRefetch={jest.fn()}
-        title="mock_responseStepList_title"
-      />,
+      <ResponseStepList loading title="mock_responseStepList_title" />,
     );
 
     expect(
@@ -37,11 +38,7 @@ describe('ResponseStepList', () => {
 
   it('should render loading state when no responseSteps', () => {
     const { getByTestId } = render(
-      <ResponseStepList
-        loading={false}
-        setRefetch={jest.fn()}
-        title="mock_responseStepList_title"
-      />,
+      <ResponseStepList loading={false} title="mock_responseStepList_title" />,
     );
 
     expect(
@@ -53,7 +50,6 @@ describe('ResponseStepList', () => {
     const { getByTestId } = render(
       <ResponseStepList
         loading={false}
-        setRefetch={jest.fn()}
         title="mock_responseStepList_title"
         responseSteps={[]}
       />,
