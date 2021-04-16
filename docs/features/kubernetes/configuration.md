@@ -82,7 +82,7 @@ cluster. Valid values are:
 ##### `clusters.\*.skipTLSVerify`
 
 This determines whether or not the Kubernetes client verifies the TLS
-certificate presented by the API server.
+certificate presented by the API server. Defaults to `false`.
 
 ##### `clusters.\*.serviceAccountToken` (optional)
 
