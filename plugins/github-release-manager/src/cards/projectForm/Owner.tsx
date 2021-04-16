@@ -65,9 +65,12 @@ export function Owner({
             onChange={event => {
               const queryParams = getNewQueryParams({
                 query,
-                key: 'owner',
-                value: event.target.value as string,
+                updates: [
+                  { key: 'repo', value: '' },
+                  { key: 'owner', value: event.target.value as string },
+                ],
               });
+
               navigate(`?${queryParams}`, { replace: true });
             }}
             className={formClasses.selectEmpty}

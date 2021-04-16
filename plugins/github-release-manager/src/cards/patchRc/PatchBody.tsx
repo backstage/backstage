@@ -159,7 +159,9 @@ export const PatchBody = ({
           (commit, index) => {
             // FIXME: Performance improvement opportunity: Convert to object lookup
             const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentCommitsOnReleaseBranch.find(
-              releaseBranchCommit => releaseBranchCommit.sha === commit.sha,
+              releaseBranchCommit =>
+                releaseBranchCommit.sha === commit.sha ||
+                releaseBranchCommit.commit.message.includes(commit.sha), // The selected patch commit's sha is included in the commit message
             );
             const hasNoParent = !commit.firstParentSha;
 
@@ -216,11 +218,18 @@ export const PatchBody = ({
                   </ListItemIcon>
 
                   <ListItemText
+                    style={{ marginRight: 15 }}
                     id={commit.sha}
                     primary={commit.commit.message}
                     secondary={
                       <>
-                        {commit.sha}{' '}
+                        <Link
+                          color="primary"
+                          href={commit.htmlUrl}
+                          target="_blank"
+                        >
+                          {commit.sha}
+                        </Link>{' '}
                         <Link
                           color="primary"
                           href={commit.author.htmlUrl}

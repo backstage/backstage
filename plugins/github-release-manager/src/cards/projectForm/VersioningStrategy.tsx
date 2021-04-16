@@ -41,8 +41,9 @@ export function VersioningStrategy({ project }: { project: Project }) {
     if (!parsedQuery.versioningStrategy) {
       const queryParams = getNewQueryParams({
         query,
-        key: 'versioningStrategy',
-        value: project.versioningStrategy,
+        updates: [
+          { key: 'versioningStrategy', value: project.versioningStrategy },
+        ],
       });
 
       navigate(`?${queryParams}`, { replace: true });
@@ -60,8 +61,7 @@ export function VersioningStrategy({ project }: { project: Project }) {
         onChange={event => {
           const queryParams = getNewQueryParams({
             query,
-            key: 'versioningStrategy',
-            value: event.target.value,
+            updates: [{ key: 'versioningStrategy', value: event.target.value }],
           });
 
           navigate(`?${queryParams}`, { replace: true });

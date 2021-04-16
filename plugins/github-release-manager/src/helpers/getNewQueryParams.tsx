@@ -26,24 +26,19 @@ export function getParsedQuery({ query }: { query: URLSearchParams }) {
 
 export function getNewQueryParams({
   query,
-  key,
-  value,
+  updates,
 }: {
   query: URLSearchParams;
-  key: keyof Project;
-  value: string;
+  updates: {
+    key: keyof Project;
+    value: string;
+  }[];
 }) {
   const queryParams = qs.parse(query.toString());
-  queryParams[key] = value;
+
+  for (const { key, value } of updates) {
+    queryParams[key] = value;
+  }
 
   return qs.stringify(queryParams);
 }
-
-// TODO:
-// import { useQuery } from './useQuery';
-
-// export function useGetNewQueryParams({}) {
-//   const query = useQuery();
-
-//   return 1;
-// }

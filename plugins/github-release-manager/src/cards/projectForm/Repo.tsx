@@ -61,9 +61,9 @@ export function Repo({ project }: { project: Project }) {
             onChange={event => {
               const queryParams = getNewQueryParams({
                 query,
-                key: 'repo',
-                value: event.target.value as string,
+                updates: [{ key: 'repo', value: event.target.value as string }],
               });
+
               navigate(`?${queryParams}`, { replace: true });
             }}
             className={formClasses.selectEmpty}

@@ -706,7 +706,10 @@ export class PluginApiClient implements IPluginApiClient {
       const { data: cherryPickCommit } = await octokit.git.createCommit({
         owner,
         repo,
-        message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}`,
+        message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}
+
+${selectedPatchCommit.sha}
+${selectedPatchCommit.htmlUrl}`,
         tree: mergeTree,
         parents: [releaseBranchSha],
       });
