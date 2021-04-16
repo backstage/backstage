@@ -24,6 +24,10 @@ export type GithubDeployment = {
     abbreviatedOid: string;
     commitUrl: string;
   };
+  creator: {
+    login: string;
+  };
+  payload: string;
 };
 
 export interface GithubDeploymentsApi {
@@ -55,6 +59,10 @@ query deployments($owner: String!, $repo: String!, $last: Int) {
           abbreviatedOid
           commitUrl
         }
+        creator {
+          login
+        }
+        payload
       }
     }
   }

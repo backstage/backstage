@@ -26,7 +26,11 @@ import {
 
 import { fireEvent } from '@testing-library/react';
 import { msw, renderInTestApp } from '@backstage/test-utils';
-import { GithubDeploymentsApiClient, githubDeploymentsApiRef } from '../api';
+import {
+  GithubDeployment,
+  GithubDeploymentsApiClient,
+  githubDeploymentsApiRef,
+} from '../api';
 import { githubDeploymentsPlugin } from '../plugin';
 import { GithubDeploymentsCard } from './GithubDeploymentsCard';
 
@@ -39,6 +43,8 @@ import {
 
 import { setupServer } from 'msw/node';
 import { graphql } from 'msw';
+import { GithubDeploymentsTable } from './GithubDeploymentsTable';
+import { Box } from '@material-ui/core';
 
 jest.mock('@backstage/plugin-catalog-react', () => ({
   useEntity: () => {
@@ -158,6 +164,40 @@ describe('github-deployments', () => {
         await rendered.findByText('GitHub Deployments'),
       ).toBeInTheDocument();
       expect(await rendered.findByText('failure')).toBeInTheDocument();
+    });
+
+    it('should display extra columns', async () => {
+      worker.use(
+        graphql.query('deployments', (_, res, ctx) =>
+          res(ctx.data(responseStub)),
+        ),
+      );
+
+      const renderTargetFromPayload = (payload: string) => {
+        const parsedPayload = JSON.parse(payload);
+        return parsedPayload?.target || 'unknown';
+      };
+
+      const extraColumn = {
+        title: 'Target',
+        render: (row: GithubDeployment): JSX.Element => (
+          <Box>{renderTargetFromPayload(row.payload)}</Box>
+        ),
+      };
+
+      const columns = [
+        ...GithubDeploymentsTable.defaultDeploymentColumns,
+        extraColumn,
+      ];
+
+      const rendered = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <GithubDeploymentsCard columns={columns} />
+        </ApiProvider>,
+      );
+
+      expect(await rendered.findByText('moon')).toBeInTheDocument();
+      expect(await rendered.findByText('sun')).toBeInTheDocument();
     });
   });
 });
