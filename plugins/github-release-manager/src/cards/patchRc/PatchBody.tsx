@@ -45,18 +45,16 @@ import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import {
-  ApiMethodRetval,
-  IPluginApiClient,
-  UnboxArray,
+  GetBranchResult,
+  GetLatestReleaseResult,
+  GetRecentCommitsResultSingle,
 } from '../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 
 interface PatchBodyProps {
   bumpedTag: string;
-  latestRelease: NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >;
-  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']>;
+  latestRelease: NonNullable<GetLatestReleaseResult>;
+  releaseBranch: GetBranchResult;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
@@ -95,9 +93,7 @@ export const PatchBody = ({
   });
 
   const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
-    const selectedPatchCommit: UnboxArray<
-      ApiMethodRetval<IPluginApiClient['getRecentCommits']>
-    > = args[0];
+    const selectedPatchCommit: GetRecentCommitsResultSingle = args[0];
     const patchResponseSteps = await patch({
       project,
       pluginApiClient,
@@ -242,7 +238,8 @@ export const PatchBody = ({
                       disabled={commitExistsOnReleaseBranch || !releaseBranch}
                       onClick={() => {
                         const repoPath = pluginApiClient.getRepoPath({
-                          ...project,
+                          owner: project.owner,
+                          repo: project.repo,
                         });
                         const host = pluginApiClient.getHost();
 
@@ -277,16 +274,16 @@ export const PatchBody = ({
       );
     }
 
-    const selectedPatchCommit =
-      githubDataResponse.value?.recentCommitsOnDefaultBranch[
-        checkedCommitIndex
-      ];
     return (
       <Button
-        disabled={checkedCommitIndex === -1 || !selectedPatchCommit}
+        disabled={checkedCommitIndex === -1}
         variant="contained"
         color="primary"
         onClick={() => {
+          const selectedPatchCommit =
+            githubDataResponse.value?.recentCommitsOnDefaultBranch[
+              checkedCommitIndex
+            ];
           if (!selectedPatchCommit) {
             throw new GitHubReleaseManagerError(
               'Could not find selected patch commit',

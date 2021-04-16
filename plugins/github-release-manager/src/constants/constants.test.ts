@@ -20,6 +20,11 @@ describe('constants', () => {
   it('should match snapshot', () => {
     expect(constants).toMatchInlineSnapshot(`
       Object {
+        "DISABLE_CACHE": Object {
+          "headers": Object {
+            "If-None-Match": "",
+          },
+        },
         "SEMVER_PARTS": Object {
           "major": "major",
           "minor": "minor",

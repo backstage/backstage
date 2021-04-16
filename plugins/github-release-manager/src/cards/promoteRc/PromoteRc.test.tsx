@@ -18,8 +18,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import {
-  mockRcRelease,
-  mockReleaseVersion,
+  mockReleaseCandidate,
+  mockReleaseVersionCalver,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -42,14 +42,16 @@ describe('PromoteRc', () => {
 
   it('should display not-rc warning', () => {
     const { getByTestId } = render(
-      <PromoteRc latestRelease={mockReleaseVersion} />,
+      <PromoteRc latestRelease={mockReleaseVersionCalver} />,
     );
 
     expect(getByTestId(TEST_IDS.promoteRc.notRcWarning)).toBeInTheDocument();
   });
 
   it('should display PromoteRcBody', () => {
-    const { getByTestId } = render(<PromoteRc latestRelease={mockRcRelease} />);
+    const { getByTestId } = render(
+      <PromoteRc latestRelease={mockReleaseCandidate} />,
+    );
 
     expect(
       getByTestId(TEST_IDS.promoteRc.mockedPromoteRcBody),

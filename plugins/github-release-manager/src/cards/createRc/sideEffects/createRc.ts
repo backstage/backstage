@@ -17,19 +17,16 @@
 import { getRcGitHubInfo } from '../getRcGitHubInfo';
 import { ComponentConfigCreateRc, ResponseStep } from '../../../types/types';
 import {
-  ApiMethodRetval,
+  GetLatestReleaseResult,
+  GetRepositoryResult,
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 
 interface CreateRC {
-  defaultBranch: ApiMethodRetval<
-    IPluginApiClient['getRepository']
-  >['repository']['defaultBranch'];
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
+  defaultBranch: GetRepositoryResult['defaultBranch'];
+  latestRelease: GetLatestReleaseResult;
   nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
   pluginApiClient: IPluginApiClient;
   project: Project;
@@ -50,7 +47,8 @@ export async function createRc({
    * 1. Get the default branch's most recent commit
    */
   const latestCommit = await pluginApiClient.getLatestCommit({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     defaultBranch,
   });
   responseSteps.push({
@@ -65,7 +63,8 @@ export async function createRc({
   const mostRecentSha = latestCommit.sha;
   const createdRef = await pluginApiClient.createRc
     .createRef({
-      ...project,
+      owner: project.owner,
+      repo: project.repo,
       mostRecentSha,
       targetBranch: nextGitHubInfo.rcBranch,
     })
@@ -90,7 +89,8 @@ export async function createRc({
     : defaultBranch;
   const nextReleaseBranch = nextGitHubInfo.rcBranch;
   const comparison = await pluginApiClient.createRc.getComparison({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     previousReleaseBranch,
     nextReleaseBranch,
   });
@@ -112,25 +112,24 @@ export async function createRc({
   /**
    * 4. Creates the release itself in GitHub
    */
-  const {
-    createReleaseResponse,
-  } = await pluginApiClient.createRc.createRelease({
-    ...project,
+  const createReleaseResult = await pluginApiClient.createRc.createRelease({
+    owner: project.owner,
+    repo: project.repo,
     nextGitHubInfo: nextGitHubInfo,
     releaseBody,
   });
   responseSteps.push({
-    message: `Created Release Candidate "${createReleaseResponse.name}"`,
+    message: `Created Release Candidate "${createReleaseResult.name}"`,
     secondaryMessage: `with tag "${nextGitHubInfo.rcReleaseTag}"`,
-    link: createReleaseResponse.htmlUrl,
+    link: createReleaseResult.htmlUrl,
   });
 
   await successCb?.({
-    gitHubReleaseUrl: createReleaseResponse.htmlUrl,
-    gitHubReleaseName: createReleaseResponse.name,
+    gitHubReleaseUrl: createReleaseResult.htmlUrl,
+    gitHubReleaseName: createReleaseResult.name,
     comparisonUrl: comparison.htmlUrl,
     previousTag: latestRelease?.tagName,
-    createdTag: createReleaseResponse.tagName,
+    createdTag: createReleaseResult.tagName,
   });
 
   return responseSteps;

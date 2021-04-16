@@ -17,23 +17,19 @@
 import { ComponentConfigPatch, ResponseStep } from '../../../types/types';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import {
-  ApiMethodRetval,
+  GetLatestReleaseResult,
+  GetRecentCommitsResultSingle,
   IPluginApiClient,
-  UnboxArray,
 } from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 
 interface Patch {
   bumpedTag: string;
-  latestRelease: NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >;
+  latestRelease: NonNullable<GetLatestReleaseResult>;
   pluginApiClient: IPluginApiClient;
   project: Project;
-  selectedPatchCommit: UnboxArray<
-    ApiMethodRetval<IPluginApiClient['getRecentCommits']>
-  >;
+  selectedPatchCommit: GetRecentCommitsResultSingle;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
@@ -49,8 +45,8 @@ export async function patch({
   tagParts,
 }: Patch) {
   const responseSteps: ResponseStep[] = [];
-
   const releaseBranchName = latestRelease.targetCommitish;
+
   /**
    * 1. Here is the branch we want to cherry-pick to:
    * > branch = GET /repos/$owner/$repo/branches/$branchName
@@ -58,7 +54,8 @@ export async function patch({
    * > branchTree = branch.commit.commit.tree.sha
    */
   const releaseBranch = await pluginApiClient.getBranch({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     branchName: releaseBranchName,
   });
   const releaseBranchSha = releaseBranch.commit.sha;
@@ -75,7 +72,8 @@ export async function patch({
    *  > tempCommit = POST /repos/$owner/$repo/git/commits { "message": "temp", "tree": branchTree, "parents": [parentSha] }
    */
   const tempCommit = await pluginApiClient.patch.createTempCommit({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     releaseBranchTree,
     selectedPatchCommit,
     tagParts,
@@ -90,7 +88,8 @@ export async function patch({
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = tempCommit.sha, force = true }
    */
   await pluginApiClient.patch.forceBranchHeadToTempCommit({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     tempCommit,
     releaseBranchName,
   });
@@ -100,7 +99,8 @@ export async function patch({
    * > merge = POST /repos/$owner/$repo/merges { "base": branchName, "head": commit.sha }
    */
   const merge = await pluginApiClient.patch.merge({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     base: releaseBranchName,
     head: selectedPatchCommit.sha,
   });
@@ -122,7 +122,8 @@ export async function patch({
    * > cherry = POST /repos/$owner/$repo/git/commits { "message": "looks good!", "tree": mergeTree, "parents": [branchSha] }
    */
   const cherryPickCommit = await pluginApiClient.patch.createCherryPickCommit({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     bumpedTag,
     mergeTree,
     releaseBranchSha,
@@ -138,7 +139,8 @@ export async function patch({
    * > PATCH /repos/$owner/$repo/git/refs/heads/$refName { sha = cherry.sha, force = true }
    */
   const updatedReference = await pluginApiClient.patch.replaceTempCommit({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     cherryPickCommit,
     releaseBranchName,
   });
@@ -151,7 +153,8 @@ export async function patch({
    * > POST /repos/:owner/:repo/git/tags
    */
   const createdTagObject = await pluginApiClient.patch.createTagObject({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     bumpedTag,
     updatedReference,
   });
@@ -165,7 +168,8 @@ export async function patch({
    * > POST /repos/:owner/:repo/git/refs
    */
   const reference = await pluginApiClient.patch.createReference({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     bumpedTag,
     createdTagObject,
   });
@@ -178,7 +182,8 @@ export async function patch({
    * 9. Update release
    */
   const updatedRelease = await pluginApiClient.patch.updateRelease({
-    ...project,
+    owner: project.owner,
+    repo: project.repo,
     bumpedTag,
     latestRelease,
     selectedPatchCommit,

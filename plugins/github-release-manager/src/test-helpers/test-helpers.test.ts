@@ -62,14 +62,6 @@ describe('testHelpers', () => {
           "rcReleaseTag": "rc-1.2.3",
           "releaseName": "Version 1.2.3",
         },
-        "mockRcRelease": Object {
-          "htmlUrl": "mock_release_html_url",
-          "id": 1,
-          "prerelease": true,
-          "tagName": "rc-2020.01.01_1",
-          "targetCommitish": "rc/1.2.3",
-        },
-        "mockRefetch": [MockFunction],
         "mockReleaseBranch": Object {
           "commit": Object {
             "commit": Object {
@@ -84,11 +76,25 @@ describe('testHelpers', () => {
           },
           "name": "rc/1.2.3",
         },
-        "mockReleaseVersion": Object {
+        "mockReleaseCandidate": Object {
+          "htmlUrl": "mock_release_html_url",
+          "id": 1,
+          "prerelease": true,
+          "tagName": "rc-2020.01.01_1",
+          "targetCommitish": "rc/1.2.3",
+        },
+        "mockReleaseVersionCalver": Object {
           "htmlUrl": "mock_release_html_url",
           "id": 1,
           "prerelease": false,
           "tagName": "version-2020.01.01_1",
+          "targetCommitish": "rc/1.2.3",
+        },
+        "mockReleaseVersionSemver": Object {
+          "htmlUrl": "mock_release_html_url",
+          "id": 1,
+          "prerelease": false,
+          "tagName": "version-1.2.3",
           "targetCommitish": "rc/1.2.3",
         },
         "mockSelectedPatchCommit": Object {
@@ -100,6 +106,7 @@ describe('testHelpers', () => {
             "message": "commit_message",
           },
           "firstParentSha": "mock_first_parent_sha",
+          "htmlUrl": "mock_htmlUrl",
           "sha": "mock_sha_selected_patch_commit",
         },
         "mockSemverProject": Object {

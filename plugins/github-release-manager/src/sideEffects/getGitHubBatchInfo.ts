@@ -26,7 +26,7 @@ export const getGitHubBatchInfo = ({
   project,
   pluginApiClient,
 }: GetGitHubBatchInfo) => async () => {
-  const [{ repository }, { latestRelease }] = await Promise.all([
+  const [repository, latestRelease] = await Promise.all([
     pluginApiClient.getRepository({ ...project }),
     pluginApiClient.getLatestRelease({ ...project }),
   ]);

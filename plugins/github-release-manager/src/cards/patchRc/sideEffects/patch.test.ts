@@ -18,7 +18,7 @@ import {
   mockApiClient,
   mockBumpedTag,
   mockCalverProject,
-  mockReleaseVersion,
+  mockReleaseVersionCalver,
   mockSelectedPatchCommit,
   mockTagParts,
 } from '../../../test-helpers/test-helpers';
@@ -30,7 +30,7 @@ describe('patch', () => {
   it('should work', async () => {
     const result = await patch({
       bumpedTag: mockBumpedTag,
-      latestRelease: mockReleaseVersion,
+      latestRelease: mockReleaseVersionCalver,
       pluginApiClient: mockApiClient,
       project: mockCalverProject,
       selectedPatchCommit: mockSelectedPatchCommit,

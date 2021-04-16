@@ -23,3 +23,9 @@ export const SEMVER_PARTS: {
   minor: 'minor',
   patch: 'patch',
 } as const;
+
+export const DISABLE_CACHE = {
+  headers: {
+    'If-None-Match': '',
+  },
+} as const;

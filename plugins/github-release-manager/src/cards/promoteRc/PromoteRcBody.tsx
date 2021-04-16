@@ -27,12 +27,10 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 
 interface PromoteRcBodyProps {
-  rcRelease: NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >;
+  rcRelease: NonNullable<GetLatestReleaseResult>;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 

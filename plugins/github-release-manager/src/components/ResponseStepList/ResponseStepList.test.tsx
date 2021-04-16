@@ -17,12 +17,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { mockRefetch } from '../../test-helpers/test-helpers';
 import { ResponseStepList } from './ResponseStepList';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
 jest.mock('../../contexts/RefetchContext', () => ({
-  useRefetchContext: jest.fn(() => mockRefetch),
+  useRefetchContext: () => jest.fn(),
 }));
 
 describe('ResponseStepList', () => {

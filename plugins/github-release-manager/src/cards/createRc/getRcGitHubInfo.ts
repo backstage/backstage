@@ -17,10 +17,10 @@
 import { DateTime } from 'luxon';
 
 import { getBumpedSemverTagParts } from '../../helpers/getBumpedTag';
+import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 import { getSemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { SEMVER_PARTS } from '../../constants/constants';
 import { Project } from '../../contexts/ProjectContext';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import { SEMVER_PARTS } from '../../constants/constants';
 
 export const getRcGitHubInfo = ({
   project,
@@ -29,9 +29,7 @@ export const getRcGitHubInfo = ({
   injectedDate = DateTime.now().toFormat('yyyy.MM.dd'),
 }: {
   project: Project;
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
+  latestRelease: GetLatestReleaseResult;
   semverBumpLevel: keyof typeof SEMVER_PARTS;
   injectedDate?: string;
 }) => {

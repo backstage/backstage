@@ -18,13 +18,13 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import {
+  mockApiClient,
   mockCalverProject,
   mockNextGitHubInfo,
-  mockRcRelease,
+  mockReleaseCandidate,
   mockReleaseBranch,
-  mockReleaseVersion,
+  mockReleaseVersionCalver,
   mockSemverProject,
-  mockApiClient,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -46,7 +46,7 @@ describe('CreateRc', () => {
     const { getByTestId } = render(
       <CreateRc
         defaultBranch="mockDefaultBranch"
-        latestRelease={mockRcRelease}
+        latestRelease={mockReleaseCandidate}
         releaseBranch={mockReleaseBranch}
       />,
     );
@@ -60,7 +60,7 @@ describe('CreateRc', () => {
     const { getByTestId } = render(
       <CreateRc
         defaultBranch="mockDefaultBranch"
-        latestRelease={mockReleaseVersion}
+        latestRelease={mockReleaseVersionCalver}
         releaseBranch={mockReleaseBranch}
       />,
     );

@@ -23,13 +23,14 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import flowImage from './flow.png';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import {
+  GetBranchResult,
+  GetLatestReleaseResult,
+} from '../../api/PluginApiClient';
 
 interface InfoCardProps {
-  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
+  releaseBranch: GetBranchResult | null;
+  latestRelease: GetLatestReleaseResult;
 }
 
 export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {

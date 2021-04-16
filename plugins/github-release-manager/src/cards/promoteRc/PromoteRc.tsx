@@ -24,12 +24,10 @@ import { ComponentConfigPromoteRc } from '../../types/types';
 import { PromoteRcBody } from './PromoteRcBody';
 import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 
 interface PromoteRcProps {
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
+  latestRelease: GetLatestReleaseResult;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 

@@ -19,7 +19,7 @@ import {
   mockCalverProject,
   mockDefaultBranch,
   mockNextGitHubInfo,
-  mockReleaseVersion,
+  mockReleaseVersionCalver,
 } from '../../../test-helpers/test-helpers';
 import { createRc } from './createRc';
 
@@ -29,7 +29,7 @@ describe('createRc', () => {
   it('should work', async () => {
     const result = await createRc({
       defaultBranch: mockDefaultBranch,
-      latestRelease: mockReleaseVersion,
+      latestRelease: mockReleaseVersionCalver,
       nextGitHubInfo: mockNextGitHubInfo,
       pluginApiClient: mockApiClient,
       project: mockCalverProject,

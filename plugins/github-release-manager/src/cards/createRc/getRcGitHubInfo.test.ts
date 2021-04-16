@@ -16,10 +16,11 @@
 
 import { DateTime } from 'luxon';
 
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
 import {
   mockSemverProject,
   mockCalverProject,
+  mockReleaseVersionCalver,
+  mockReleaseVersionSemver,
 } from '../../test-helpers/test-helpers';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 
@@ -33,15 +34,11 @@ describe('getRcGitHubInfo', () => {
   });
 
   describe('calver', () => {
-    const latestRelease = {
-      tagName: 'rc-2020.01.01_0',
-    } as ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease'];
-
     it('should return correct GitHub info', () => {
       expect(
         getRcGitHubInfo({
           project: mockCalverProject,
-          latestRelease,
+          latestRelease: mockReleaseVersionCalver,
           semverBumpLevel: 'minor',
           injectedDate: '2021.01.28',
         }),
@@ -56,22 +53,18 @@ describe('getRcGitHubInfo', () => {
   });
 
   describe('semver', () => {
-    const latestRelease = {
-      tagName: 'rc-1.1.1',
-    } as ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease'];
-
     it("should return correct GitHub info when there's previous releases", () => {
       expect(
         getRcGitHubInfo({
           project: mockSemverProject,
-          latestRelease,
+          latestRelease: mockReleaseVersionSemver,
           semverBumpLevel: 'minor',
         }),
       ).toMatchInlineSnapshot(`
         Object {
-          "rcBranch": "rc/1.2.0",
-          "rcReleaseTag": "rc-1.2.0",
-          "releaseName": "Version 1.2.0",
+          "rcBranch": "rc/1.3.0",
+          "rcReleaseTag": "rc-1.3.0",
+          "releaseName": "Version 1.3.0",
         }
       `);
     });

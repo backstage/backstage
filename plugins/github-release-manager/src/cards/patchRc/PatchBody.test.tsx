@@ -21,9 +21,9 @@ import {
   mockApiClient,
   mockBumpedTag,
   mockCalverProject,
-  mockRcRelease,
+  mockReleaseCandidate,
   mockReleaseBranch,
-  mockReleaseVersion,
+  mockReleaseVersionCalver,
   mockTagParts,
 } from '../../test-helpers/test-helpers';
 
@@ -48,7 +48,7 @@ describe('PatchBody', () => {
     const { getByTestId } = render(
       <PatchBody
         bumpedTag={mockBumpedTag}
-        latestRelease={mockRcRelease}
+        latestRelease={mockReleaseCandidate}
         releaseBranch={mockReleaseBranch}
         tagParts={mockTagParts}
       />,
@@ -64,7 +64,7 @@ describe('PatchBody', () => {
   it('should render not-prerelease description', async () => {
     const { getByTestId } = render(
       <PatchBody
-        latestRelease={mockReleaseVersion}
+        latestRelease={mockReleaseVersionCalver}
         releaseBranch={mockReleaseBranch}
         bumpedTag={mockBumpedTag}
         tagParts={mockTagParts}

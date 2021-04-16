@@ -66,15 +66,16 @@ export function GitHubReleaseManager({
 }: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const classes = useStyles();
-  const usernameResponse = useAsync(() => pluginApiClient.getUsername());
   const query = useQuery();
-
   const parsedQuery = getParsedQuery({ query });
   const project: Project = {
     owner: parsedQuery.owner ?? '',
     repo: parsedQuery.repo ?? '',
     versioningStrategy: parsedQuery.versioningStrategy ?? 'semver',
   };
+  const usernameResponse = useAsync(() =>
+    pluginApiClient.getUsername({ owner: project.owner, repo: project.repo }),
+  );
 
   if (usernameResponse.error) {
     return <Alert severity="error">{usernameResponse.error.message}</Alert>;

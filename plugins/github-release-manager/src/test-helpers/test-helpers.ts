@@ -18,9 +18,10 @@ import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
 import { Project } from '../contexts/ProjectContext';
 import {
-  ApiMethodRetval,
+  GetBranchResult,
+  GetLatestReleaseResult,
+  GetRecentCommitsResultSingle,
   IPluginApiClient,
-  UnboxArray,
 } from '../api/PluginApiClient';
 
 export const mockSemverProject: Project = {
@@ -59,26 +60,28 @@ const createMockRelease = ({
   prerelease = false,
   ...rest
 }: Partial<
-  NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >
-> = {}) =>
-  ({
-    id: 1,
-    htmlUrl: 'mock_release_html_url',
-    prerelease,
-    ...rest,
-  } as NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >);
-export const mockRcRelease = createMockRelease({
+  NonNullable<GetLatestReleaseResult>
+> = {}): NonNullable<GetLatestReleaseResult> => ({
+  id: 1,
+  htmlUrl: 'mock_release_html_url',
+  prerelease,
+  tagName: 'rc-2020.01.01_1',
+  targetCommitish: 'rc/1.2.3',
+  ...rest,
+});
+export const mockReleaseCandidate = createMockRelease({
   prerelease: true,
   tagName: 'rc-2020.01.01_1',
   targetCommitish: 'rc/1.2.3',
 });
-export const mockReleaseVersion = createMockRelease({
+export const mockReleaseVersionCalver = createMockRelease({
   prerelease: false,
   tagName: 'version-2020.01.01_1',
+  targetCommitish: 'rc/1.2.3',
+});
+export const mockReleaseVersionSemver = createMockRelease({
+  prerelease: false,
+  tagName: 'version-1.2.3',
   targetCommitish: 'rc/1.2.3',
 });
 
@@ -87,46 +90,39 @@ export const mockReleaseVersion = createMockRelease({
  */
 const createMockBranch = ({
   ...rest
-}: Partial<NonNullable<ApiMethodRetval<IPluginApiClient['getBranch']>>> = {}) =>
-  ({
-    name: 'rc/1.2.3',
-    commit: {
-      sha: 'mock_branch_commit_sha',
-      commit: { tree: { sha: 'mock_branch_commit_commit_tree_sha' } },
-    },
-    links: { html: 'mock_branch_links_html' },
-    ...rest,
-  } as NonNullable<ApiMethodRetval<IPluginApiClient['getBranch']>>);
+}: Partial<GetBranchResult> = {}): GetBranchResult => ({
+  name: 'rc/1.2.3',
+  commit: {
+    sha: 'mock_branch_commit_sha',
+    commit: { tree: { sha: 'mock_branch_commit_commit_tree_sha' } },
+  },
+  links: { html: 'mock_branch_links_html' },
+  ...rest,
+});
 export const mockReleaseBranch = createMockBranch();
 
 /**
  * MOCK COMMIT
  */
-const createMockCommit = ({
+const createMockRecentCommit = ({
   ...rest
-}: Partial<
-  NonNullable<UnboxArray<ApiMethodRetval<IPluginApiClient['getRecentCommits']>>>
->) =>
-  ({
-    author: {
-      htmlUrl: 'author_html_url',
-      login: 'author_login',
-    },
-    commit: {
-      message: 'commit_message',
-    },
-    sha: 'mock_sha',
-    firstParentSha: 'mock_first_parent_sha',
-    ...rest,
-  } as NonNullable<
-    UnboxArray<ApiMethodRetval<IPluginApiClient['getRecentCommits']>>
-  >);
-
-export const mockSelectedPatchCommit = createMockCommit({
-  sha: 'mock_sha_selected_patch_commit',
+}: Partial<GetRecentCommitsResultSingle>): GetRecentCommitsResultSingle => ({
+  author: {
+    htmlUrl: 'author_html_url',
+    login: 'author_login',
+  },
+  commit: {
+    message: 'commit_message',
+  },
+  sha: 'mock_sha',
+  firstParentSha: 'mock_first_parent_sha',
+  htmlUrl: 'mock_htmlUrl',
+  ...rest,
 });
 
-export const mockRefetch = jest.fn();
+export const mockSelectedPatchCommit = createMockRecentCommit({
+  sha: 'mock_sha_selected_patch_commit',
+});
 
 /**
  * MOCK API CLIENT
@@ -136,74 +132,77 @@ export const mockApiClient: IPluginApiClient = {
 
   getRepoPath: jest.fn(() => 'erikengervall/playground'),
 
-  getOwners: jest.fn(),
+  getOwners: jest.fn(async () => ({
+    owners: ['owner1', 'owner2'],
+  })),
 
-  getRepositories: jest.fn(),
+  getRepositories: jest.fn(async () => ({
+    repositories: ['repo1', 'repo2'],
+  })),
 
-  getUsername: jest.fn(),
+  getUsername: jest.fn(async () => ({
+    username: 'erikengervall',
+  })),
 
-  getRecentCommits: jest
-    .fn()
-    .mockResolvedValue([
-      createMockCommit({ sha: 'mock_sha_recent_commits_1' }),
-      createMockCommit({ sha: 'mock_sha_recent_commits_2' }),
-    ]),
+  getRecentCommits: jest.fn(async () => [
+    createMockRecentCommit({ sha: 'mock_sha_recent_commits_1' }),
+    createMockRecentCommit({ sha: 'mock_sha_recent_commits_2' }),
+  ]),
 
-  getLatestRelease: jest.fn(), // TODO:
+  getLatestRelease: jest.fn(),
 
   getRepository: jest.fn(),
 
-  getLatestCommit: jest.fn().mockResolvedValue({
+  getLatestCommit: jest.fn(async () => ({
     sha: 'latestCommit.sha',
     htmlUrl: 'latestCommit.html_url',
     commit: {
       message: 'latestCommit.commit.message',
     },
-  } as NonNullable<ApiMethodRetval<IPluginApiClient['getLatestCommit']>>),
+  })),
 
-  getBranch: jest.fn().mockResolvedValue(createMockBranch()),
+  getBranch: jest.fn(async () => createMockBranch()),
 
   createRc: {
-    createRef: jest.fn().mockResolvedValue({
+    createRef: jest.fn(async () => ({
       ref: 'mock_createRef_ref',
-    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRef']>>),
+    })),
 
-    createRelease: jest.fn().mockResolvedValue({
-      createReleaseResponse: {
-        name: 'mock_createRelease_name',
-        htmlUrl: 'mock_createRelease_html_url',
-        tagName: 'mock_createRelease_tag_name',
-      },
-    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['createRelease']>>),
+    createRelease: jest.fn(async () => ({
+      name: 'mock_createRelease_name',
+      htmlUrl: 'mock_createRelease_html_url',
+      tagName: 'mock_createRelease_tag_name',
+    })),
 
-    getComparison: jest.fn().mockResolvedValue({
+    getComparison: jest.fn(async () => ({
       htmlUrl: 'mock_compareCommits_html_url',
       aheadBy: 1,
-    } as NonNullable<ApiMethodRetval<IPluginApiClient['createRc']['getComparison']>>),
+    })),
   },
 
   patch: {
-    createCherryPickCommit: jest.fn().mockResolvedValue({
+    createCherryPickCommit: jest.fn(async () => ({
       message: 'mock_cherrypick_message',
       sha: 'mock_cherrypick_sha',
-    } as NonNullable<ApiMethodRetval<IPluginApiClient['patch']['createCherryPickCommit']>>),
+    })),
 
-    createReference: jest.fn().mockResolvedValue({
+    createReference: jest.fn(async () => ({
       ref: 'mock_reference_ref',
-    } as ApiMethodRetval<IPluginApiClient['patch']['createReference']>),
+    })),
 
-    createTagObject: jest.fn().mockResolvedValue({
+    createTagObject: jest.fn(async () => ({
       tag: 'mock_tag_object_tag',
       sha: 'mock_tag_object_sha',
-    } as ApiMethodRetval<IPluginApiClient['patch']['createTagObject']>),
+    })),
 
-    createTempCommit: jest.fn().mockResolvedValue({
+    createTempCommit: jest.fn(async () => ({
       message: 'mock_commit_message',
       sha: 'mock_commit_sha',
-    } as ApiMethodRetval<IPluginApiClient['patch']['createTempCommit']>),
-    forceBranchHeadToTempCommit: jest.fn().mockResolvedValue(undefined),
+    })),
 
-    merge: jest.fn().mockResolvedValue({
+    forceBranchHeadToTempCommit: jest.fn(async () => undefined),
+
+    merge: jest.fn(async () => ({
       htmlUrl: 'mock_merge_html_url',
       commit: {
         message: 'mock_merge_commit_message',
@@ -211,27 +210,27 @@ export const mockApiClient: IPluginApiClient = {
           sha: 'mock_merge_commit_tree_sha',
         },
       },
-    } as ApiMethodRetval<IPluginApiClient['patch']['merge']>),
+    })),
 
-    replaceTempCommit: jest.fn().mockResolvedValue({
+    replaceTempCommit: jest.fn(async () => ({
       ref: 'mock_reference_ref',
       object: {
         sha: 'mock_reference_object_sha',
       },
-    } as ApiMethodRetval<IPluginApiClient['patch']['replaceTempCommit']>),
+    })),
 
-    updateRelease: jest.fn().mockResolvedValue({
+    updateRelease: jest.fn(async () => ({
       name: 'mock_update_release_name',
       tagName: 'mock_update_release_tag_name',
       htmlUrl: 'mock_update_release_html_url',
-    } as ApiMethodRetval<IPluginApiClient['patch']['updateRelease']>),
+    })),
   },
 
   promoteRc: {
-    promoteRelease: jest.fn().mockResolvedValue({
+    promoteRelease: jest.fn(async () => ({
       name: 'mock_release_name',
       tagName: 'mock_release_tag_name',
       htmlUrl: 'mock_release_html_url',
-    } as ApiMethodRetval<IPluginApiClient['promoteRc']['promoteRelease']>),
+    })),
   },
 };

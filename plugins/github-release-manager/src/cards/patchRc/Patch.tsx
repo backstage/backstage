@@ -17,7 +17,10 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import {
+  GetBranchResult,
+  GetLatestReleaseResult,
+} from '../../api/PluginApiClient';
 import { ComponentConfigPatch } from '../../types/types';
 import { getBumpedTag } from '../../helpers/getBumpedTag';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
@@ -27,10 +30,8 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 
 interface PatchProps {
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
-  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
+  latestRelease: GetLatestReleaseResult;
+  releaseBranch: GetBranchResult | null;
   successCb?: ComponentConfigPatch['successCb'];
 }
 

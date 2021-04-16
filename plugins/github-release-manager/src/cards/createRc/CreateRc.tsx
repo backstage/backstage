@@ -26,27 +26,27 @@ import {
 } from '@material-ui/core';
 import { useAsyncFn } from 'react-use';
 
+import { ComponentConfigCreateRc } from '../../types/types';
 import { createRc } from './sideEffects/createRc';
 import { Differ } from '../../components/Differ';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { ComponentConfigCreateRc } from '../../types/types';
 import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
-import { ApiMethodRetval, IPluginApiClient } from '../../api/PluginApiClient';
+import {
+  GetBranchResult,
+  GetLatestReleaseResult,
+  GetRepositoryResult,
+} from '../../api/PluginApiClient';
 
 interface CreateRcProps {
-  defaultBranch: ApiMethodRetval<
-    IPluginApiClient['getRepository']
-  >['repository']['defaultBranch'];
-  latestRelease: ApiMethodRetval<
-    IPluginApiClient['getLatestRelease']
-  >['latestRelease'];
-  releaseBranch: ApiMethodRetval<IPluginApiClient['getBranch']> | null;
+  defaultBranch: GetRepositoryResult['defaultBranch'];
+  latestRelease: GetLatestReleaseResult;
+  releaseBranch: GetBranchResult | null;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 

@@ -16,7 +16,7 @@
 
 import { ComponentConfigPromoteRc, ResponseStep } from '../../../types/types';
 import {
-  ApiMethodRetval,
+  GetLatestReleaseResult,
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
@@ -24,9 +24,7 @@ import { Project } from '../../../contexts/ProjectContext';
 interface PromoteRc {
   pluginApiClient: IPluginApiClient;
   project: Project;
-  rcRelease: NonNullable<
-    ApiMethodRetval<IPluginApiClient['getLatestRelease']>['latestRelease']
-  >;
+  rcRelease: NonNullable<GetLatestReleaseResult>;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
