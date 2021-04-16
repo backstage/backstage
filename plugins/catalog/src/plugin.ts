@@ -119,9 +119,7 @@ export const EntityHasResourcesCard = catalogPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
-        import('./components/HasResourcesCard').then(
-          m => m.HasResourcesCard,
-        ),
+        import('./components/HasResourcesCard').then(m => m.HasResourcesCard),
     },
   }),
 );

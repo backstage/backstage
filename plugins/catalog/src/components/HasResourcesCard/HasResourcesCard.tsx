@@ -42,9 +42,7 @@ const columns = [
   EntityTable.columns.createMetadataDescriptionColumn(),
 ];
 
-export const HasResourcesCard = ({ 
-  variant = 'gridItem',
-}: Props) => {
+export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_HAS_PART,
