@@ -62,9 +62,9 @@ describe('<SystemDiagramCard />', () => {
     );
 
     expect(queryByText(/System Diagram/)).toBeInTheDocument();
-    expect(queryByText(/system:my-namespace2\/my-system2/)).toBeInTheDocument();
+    expect(queryByText(/my-namespace2\/my-system2/)).toBeInTheDocument();
     expect(
-      queryByText(/component:my-namespace\/my-entity/),
+      queryByText(/my-namespace\/my-entity/),
     ).not.toBeInTheDocument();
   });
 
@@ -118,7 +118,7 @@ describe('<SystemDiagramCard />', () => {
     );
 
     expect(getByText('System Diagram')).toBeInTheDocument();
-    expect(getByText('system:my-namespace/my-system')).toBeInTheDocument();
-    expect(getByText('component:my-namespace/my-entity')).toBeInTheDocument();
+    expect(getByText('my-namespace/my-system')).toBeInTheDocument();
+    expect(getByText('my-namespace/my-entity')).toBeInTheDocument();
   });
 });
