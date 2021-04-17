@@ -39,7 +39,7 @@ async function createStore(): Promise<DatabaseTaskStore> {
 
 describe('StorageTaskBroker', () => {
   let storage: DatabaseTaskStore;
-  const fakeSecrets = { identityToken: 'secret' } as TaskSecrets;
+  const fakeSecrets = { token: 'secret' } as TaskSecrets;
 
   beforeAll(async () => {
     storage = await createStore();

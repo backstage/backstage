@@ -134,7 +134,7 @@ export class TaskWorker {
             logger: taskLogger,
             logStream: stream,
             input,
-            token: task.secrets?.identityToken,
+            token: task.secrets?.token,
             workspacePath,
             async createTemporaryDirectory() {
               const tmpDir = await fs.mkdtemp(

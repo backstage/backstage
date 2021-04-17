@@ -56,7 +56,7 @@ export type TaskSpec = {
 };
 
 export type TaskSecrets = {
-  identityToken: string | undefined;
+  token: string | undefined;
 };
 
 export type DispatchResult = {

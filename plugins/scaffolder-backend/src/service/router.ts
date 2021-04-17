@@ -404,7 +404,7 @@ export async function createRouter(
       }
 
       const result = await taskBroker.dispatch(taskSpec, {
-        identityToken: token,
+        token: token,
       });
 
       res.status(201).json({ id: result.taskId });
