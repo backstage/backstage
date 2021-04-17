@@ -66,7 +66,12 @@ const DefaultTitle = ({
   title = 'Unknown page',
   className,
 }: DefaultTitleProps) => (
-  <Typography variant="h4" className={className} data-testid="header-title">
+  <Typography
+    variant="h4"
+    component="h2"
+    className={className}
+    data-testid="header-title"
+  >
     {title}
   </Typography>
 );

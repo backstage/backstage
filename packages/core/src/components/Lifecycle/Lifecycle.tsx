@@ -25,7 +25,7 @@ type Props = CSS.Properties & {
 
 const useStyles = makeStyles({
   alpha: {
-    color: '#d00150',
+    color: '#ffffff',
     fontFamily: 'serif',
     fontWeight: 'normal',
     fontStyle: 'italic',

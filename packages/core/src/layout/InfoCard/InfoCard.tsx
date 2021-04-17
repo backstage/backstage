@@ -125,6 +125,7 @@ type Props = {
   actionsTopRight?: ReactNode;
   className?: string;
   noPadding?: boolean;
+  titleTypographyProps?: object;
 };
 
 export const InfoCard = ({
@@ -143,6 +144,7 @@ export const InfoCard = ({
   actionsTopRight,
   className,
   noPadding,
+  titleTypographyProps,
 }: Props): JSX.Element => {
   const classes = useStyles();
   /**
@@ -183,6 +185,7 @@ export const InfoCard = ({
             title={title}
             subheader={subheader}
             style={{ ...headerStyle }}
+            titleTypographyProps={titleTypographyProps}
             {...headerProps}
           />
         )}
