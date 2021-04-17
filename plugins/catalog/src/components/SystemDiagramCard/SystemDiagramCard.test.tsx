@@ -63,9 +63,7 @@ describe('<SystemDiagramCard />', () => {
 
     expect(queryByText(/System Diagram/)).toBeInTheDocument();
     expect(queryByText(/my-namespace2\/my-system2/)).toBeInTheDocument();
-    expect(
-      queryByText(/my-namespace\/my-entity/),
-    ).not.toBeInTheDocument();
+    expect(queryByText(/my-namespace\/my-entity/)).not.toBeInTheDocument();
   });
 
   it('shows related systems', async () => {
