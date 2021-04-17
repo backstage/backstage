@@ -20,30 +20,30 @@ import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core';
 import { useApi, ContentHeader, ErrorBoundary } from '@backstage/core';
 
-import { CreateRc } from './cards/createRc/CreateRc';
-import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
-import { Info } from './cards/info/Info';
-import { Patch } from './cards/patchRc/Patch';
 import {
   ComponentConfigCreateRc,
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
 } from './types/types';
-import { PromoteRc } from './cards/promoteRc/PromoteRc';
-import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import {
   PluginApiClientContext,
   usePluginApiClientContext,
 } from './contexts/PluginApiClientContext';
-import { ProjectContext, Project } from './contexts/ProjectContext';
-import { isProjectValid } from './cards/projectForm/isProjectValid';
-import { InfoCardPlus } from './components/InfoCardPlus';
-import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
-import { useVersioningStrategyMatchesRepoTags } from './helpers/useVersioningStrategyMatchesRepoTags';
-import { useQuery } from './helpers/useQuery';
+import { CreateRc } from './cards/createRc/CreateRc';
+import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
 import { getParsedQuery } from './helpers/getNewQueryParams';
+import { githubReleaseManagerApiRef } from './api/serviceApiRef';
+import { Info } from './cards/info/Info';
+import { InfoCardPlus } from './components/InfoCardPlus';
+import { isProjectValid } from './cards/projectForm/isProjectValid';
+import { Patch } from './cards/patchRc/Patch';
+import { ProjectContext, Project } from './contexts/ProjectContext';
+import { PromoteRc } from './cards/promoteRc/PromoteRc';
 import { RefetchContext } from './contexts/RefetchContext';
+import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
+import { useQuery } from './helpers/useQuery';
+import { useVersioningStrategyMatchesRepoTags } from './helpers/useVersioningStrategyMatchesRepoTags';
 
 interface GitHubReleaseManagerProps {
   components?: {
