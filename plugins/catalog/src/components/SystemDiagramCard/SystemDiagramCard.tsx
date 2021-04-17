@@ -20,6 +20,7 @@ import {
   RELATION_PROVIDES_API,
   RELATION_PART_OF,
   serializeEntityRef,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
@@ -71,7 +72,10 @@ export function SystemDiagramCard() {
     return catalogApi.getEntities({
       filter: {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
-        'spec.system': currentSystemName,
+        'spec.system': [
+          currentSystemName,
+          `${ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
+        ],
       },
     });
   }, [catalogApi, currentSystemName]);
