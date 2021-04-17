@@ -100,7 +100,7 @@ export function createCatalogRegisterAction(options: {
           type: 'url',
           target: catalogInfoUrl,
         },
-        ...(ctx.token ? [{ token: ctx.token }] : []),
+        ctx.token ? { token: ctx.token } : {},
       );
       if (result.entities.length >= 1) {
         const { kind, name, namespace } = getEntityName(result.entities[0]);
