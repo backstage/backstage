@@ -28,11 +28,12 @@ import {
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { Project } from '../../contexts/ProjectContext';
-import { useQueryHandler } from '../../helpers/useQueryHandler';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useQueryHandler } from '../../hooks/useQueryHandler';
 
-export function Repo({ project }: { project: Project }) {
+export function Repo() {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const navigate = useNavigate();
   const formClasses = useFormClasses();
   const { getQueryParamsWithUpdates } = useQueryHandler();
@@ -41,6 +42,10 @@ export function Repo({ project }: { project: Project }) {
     async () => pluginApiClient.getRepositories({ owner: project.owner }),
     [project.owner],
   );
+
+  if (project.owner.length === 0) {
+    return null;
+  }
 
   const repositories = value?.repositories ?? [];
   const customRepoFromUrl = !repositories.concat(['']).includes(project.repo);

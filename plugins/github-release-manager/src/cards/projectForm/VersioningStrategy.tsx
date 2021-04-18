@@ -24,11 +24,12 @@ import {
   RadioGroup,
 } from '@material-ui/core';
 
-import { Project } from '../../contexts/ProjectContext';
-import { useQueryHandler } from '../../helpers/useQueryHandler';
+import { Project, useProjectContext } from '../../contexts/ProjectContext';
+import { useQueryHandler } from '../../hooks/useQueryHandler';
 
-export function VersioningStrategy({ project }: { project: Project }) {
+export function VersioningStrategy() {
   const navigate = useNavigate();
+  const project = useProjectContext();
   const { getParsedQuery, getQueryParamsWithUpdates } = useQueryHandler();
 
   useEffect(() => {

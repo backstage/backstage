@@ -37,12 +37,16 @@ import { Info } from './cards/info/Info';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
 import { Patch } from './cards/patchRc/Patch';
-import { ProjectContext, Project } from './contexts/ProjectContext';
+import {
+  ProjectContext,
+  Project,
+  useProjectContext,
+} from './contexts/ProjectContext';
 import { PromoteRc } from './cards/promoteRc/PromoteRc';
 import { RefetchContext } from './contexts/RefetchContext';
 import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
-import { useVersioningStrategyMatchesRepoTags } from './helpers/useVersioningStrategyMatchesRepoTags';
-import { useQueryHandler } from './helpers/useQueryHandler';
+import { useVersioningStrategyMatchesRepoTags } from './hooks/useVersioningStrategyMatchesRepoTags';
+import { useQueryHandler } from './hooks/useQueryHandler';
 
 interface GitHubReleaseManagerProps {
   components?: {
@@ -92,32 +96,28 @@ export function GitHubReleaseManager({
 
   return (
     <PluginApiClientContext.Provider value={pluginApiClient}>
-      <div className={classes.root}>
-        <ContentHeader title="GitHub Release Manager" />
+      <ProjectContext.Provider value={project}>
+        <div className={classes.root}>
+          <ContentHeader title="GitHub Release Manager" />
 
-        <InfoCardPlus>
-          <RepoDetailsForm
-            username={usernameResponse.value.username}
-            project={project}
-          />
-        </InfoCardPlus>
+          <InfoCardPlus>
+            <RepoDetailsForm username={usernameResponse.value.username} />
+          </InfoCardPlus>
 
-        {isProjectValid(project) && (
-          <Cards components={components} project={project} />
-        )}
-      </div>
+          {isProjectValid(project) && <Cards components={components} />}
+        </div>
+      </ProjectContext.Provider>
     </PluginApiClientContext.Provider>
   );
 }
 
 function Cards({
   components,
-  project,
 }: {
   components: GitHubReleaseManagerProps['components'];
-  project: Project;
 }) {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const gitHubBatchInfo = useAsync(
     getGitHubBatchInfo({ project, pluginApiClient }),
@@ -159,52 +159,50 @@ function Cards({
   }
 
   return (
-    <ProjectContext.Provider value={project}>
-      <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
-        <ErrorBoundary>
-          {gitHubBatchInfo.value.latestRelease && !versioningStrategyMatches && (
-            <Alert severity="warning" style={{ marginBottom: 20 }}>
-              Versioning mismatch, expected {project.versioningStrategy}{' '}
-              version, got "{gitHubBatchInfo.value.latestRelease.tagName}"
-            </Alert>
-          )}
+    <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
+      <ErrorBoundary>
+        {gitHubBatchInfo.value.latestRelease && !versioningStrategyMatches && (
+          <Alert severity="warning" style={{ marginBottom: 20 }}>
+            Versioning mismatch, expected {project.versioningStrategy} version,
+            got "{gitHubBatchInfo.value.latestRelease.tagName}"
+          </Alert>
+        )}
 
-          {!gitHubBatchInfo.value.latestRelease && (
-            <Alert severity="info" style={{ marginBottom: 20 }}>
-              This repository has not releases yet
-            </Alert>
-          )}
+        {!gitHubBatchInfo.value.latestRelease && (
+          <Alert severity="info" style={{ marginBottom: 20 }}>
+            This repository has not releases yet
+          </Alert>
+        )}
 
-          <Info
+        <Info
+          latestRelease={gitHubBatchInfo.value.latestRelease}
+          releaseBranch={gitHubBatchInfo.value.releaseBranch}
+        />
+
+        {components?.default?.createRc?.omit !== true && (
+          <CreateRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
+            successCb={components?.default?.createRc?.successCb}
           />
+        )}
 
-          {components?.default?.createRc?.omit !== true && (
-            <CreateRc
-              latestRelease={gitHubBatchInfo.value.latestRelease}
-              releaseBranch={gitHubBatchInfo.value.releaseBranch}
-              defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
-              successCb={components?.default?.createRc?.successCb}
-            />
-          )}
+        {components?.default?.promoteRc?.omit !== true && (
+          <PromoteRc
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            successCb={components?.default?.promoteRc?.successCb}
+          />
+        )}
 
-          {components?.default?.promoteRc?.omit !== true && (
-            <PromoteRc
-              latestRelease={gitHubBatchInfo.value.latestRelease}
-              successCb={components?.default?.promoteRc?.successCb}
-            />
-          )}
-
-          {components?.default?.patch?.omit !== true && (
-            <Patch
-              latestRelease={gitHubBatchInfo.value.latestRelease}
-              releaseBranch={gitHubBatchInfo.value.releaseBranch}
-              successCb={components?.default?.patch?.successCb}
-            />
-          )}
-        </ErrorBoundary>
-      </RefetchContext.Provider>
-    </ProjectContext.Provider>
+        {components?.default?.patch?.omit !== true && (
+          <Patch
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            successCb={components?.default?.patch?.successCb}
+          />
+        )}
+      </ErrorBoundary>
+    </RefetchContext.Provider>
   );
 }

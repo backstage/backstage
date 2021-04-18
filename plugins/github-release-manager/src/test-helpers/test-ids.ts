@@ -35,6 +35,14 @@ export const TEST_IDS = {
     notPrerelease: 'grm--patch-body--not-prerelease--info',
     body: 'grm--patch-body',
   },
+  form: {
+    owner: {
+      loading: 'grm--form--owner--loading',
+      select: 'grm--form--owner--select',
+      error: 'grm--form--owner--error',
+      empty: 'grm--form--owner--empty',
+    },
+  },
   components: {
     divider: 'grm--divider',
     reloadButton: 'grm--reload-button',

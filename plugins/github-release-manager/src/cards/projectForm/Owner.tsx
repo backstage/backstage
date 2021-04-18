@@ -26,18 +26,14 @@ import {
 } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { Project } from '../../contexts/ProjectContext';
 import { useFormClasses } from './styles';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useQueryHandler } from '../../helpers/useQueryHandler';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useQueryHandler } from '../../hooks/useQueryHandler';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
-export function Owner({
-  username,
-  project,
-}: {
-  username: string;
-  project: Project;
-}) {
+export function Owner({ username }: { username: string }) {
+  const project = useProjectContext();
   const formClasses = useFormClasses();
   const navigate = useNavigate();
   const pluginApiClient = usePluginApiClientContext();
@@ -52,11 +48,12 @@ export function Owner({
   return (
     <FormControl className={formClasses.formControl} required error={!!error}>
       {loading ? (
-        <CenteredCircularProgress />
+        <CenteredCircularProgress data-testid={TEST_IDS.form.owner.loading} />
       ) : (
         <>
           <InputLabel id="owner-select-label">Owners</InputLabel>
           <Select
+            data-testid={TEST_IDS.form.owner.select}
             labelId="owner-select-label"
             id="owner-select"
             value={project.owner}
@@ -95,15 +92,17 @@ export function Owner({
           </Select>
 
           {error && (
-            <FormHelperText>
+            <FormHelperText data-testid={TEST_IDS.form.owner.error}>
               Encountered an error ({error.message})
             </FormHelperText>
           )}
 
           {!error && project.owner.length === 0 && (
             <>
-              <FormHelperText>Select an owner (org or user)</FormHelperText>
-              <FormHelperText>
+              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
+                Select an owner (org or user)
+              </FormHelperText>
+              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
                 Custom queries can be made via the query param{' '}
                 <strong>owner</strong>
               </FormHelperText>

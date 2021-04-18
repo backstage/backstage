@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 
 import { Project } from '../contexts/ProjectContext';
-import { getTagParts } from './tagParts/getTagParts';
+import { getTagParts } from '../helpers/tagParts/getTagParts';
 
 export const useVersioningStrategyMatchesRepoTags = ({
   project,

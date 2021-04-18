@@ -17,24 +17,17 @@
 import React from 'react';
 
 import { Owner } from './Owner';
-import { Project } from '../../contexts/ProjectContext';
 import { Repo } from './Repo';
 import { VersioningStrategy } from './VersioningStrategy';
 
-export function RepoDetailsForm({
-  username,
-  project,
-}: {
-  username: string;
-  project: Project;
-}) {
+export function RepoDetailsForm({ username }: { username: string }) {
   return (
     <>
-      <VersioningStrategy project={project} />
+      <VersioningStrategy />
 
-      <Owner project={project} username={username} />
+      <Owner username={username} />
 
-      {project.owner.length > 0 && <Repo project={project} />}
+      <Repo />
     </>
   );
 }
