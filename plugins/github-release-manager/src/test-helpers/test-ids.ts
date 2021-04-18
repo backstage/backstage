@@ -48,6 +48,9 @@ export const TEST_IDS = {
       error: 'grm--form--repo--error',
       empty: 'grm--form--repo--empty',
     },
+    versioningStrategy: {
+      radioGroup: 'grm--form--versioning-strategy--radio-group',
+    },
   },
   components: {
     divider: 'grm--divider',

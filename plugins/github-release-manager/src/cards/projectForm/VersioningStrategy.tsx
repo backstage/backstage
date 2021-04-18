@@ -24,8 +24,9 @@ import {
   RadioGroup,
 } from '@material-ui/core';
 
-import { Project, useProjectContext } from '../../contexts/ProjectContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
 export function VersioningStrategy() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export function VersioningStrategy() {
     <FormControl component="fieldset" required>
       <FormLabel component="legend">Calendar strategy</FormLabel>
       <RadioGroup
+        data-testid={TEST_IDS.form.versioningStrategy.radioGroup}
         aria-label="calendar-strategy"
         name="calendar-strategy"
         value={project.versioningStrategy}
