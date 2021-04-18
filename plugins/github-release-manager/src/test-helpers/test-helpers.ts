@@ -39,6 +39,10 @@ export const mockCalverProject: Project = {
   versioningStrategy: 'calver',
 };
 
+export const mockSearchCalver = `?versioningStrategy=${mockCalverProject.versioningStrategy}&owner=${mockCalverProject.owner}&repo=${mockCalverProject.repo}`;
+
+export const mockSearchSemver = `?versioningStrategy=${mockSemverProject.versioningStrategy}&owner=${mockSemverProject.owner}&repo=${mockSemverProject.repo}`;
+
 export const mockDefaultBranch = 'mock_defaultBranch';
 
 export const mockNextGitHubInfo: ReturnType<typeof getRcGitHubInfo> = {

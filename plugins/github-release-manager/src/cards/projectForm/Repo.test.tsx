@@ -38,51 +38,47 @@ jest.mock('../../contexts/ProjectContext', () => ({
 }));
 
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { Owner } from './Owner';
+import { Repo } from './Repo';
 
-describe('Owner', () => {
+describe('Repo', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should render select', async () => {
-    const { getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
-    );
+    const { getByTestId } = render(<Repo />);
 
-    expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
+    expect(getByTestId(TEST_IDS.form.repo.loading)).toBeInTheDocument();
 
-    await waitFor(() => screen.getByTestId(TEST_IDS.form.owner.select));
-    expect(getByTestId(TEST_IDS.form.owner.select)).toBeInTheDocument();
+    await waitFor(() => screen.getByTestId(TEST_IDS.form.repo.select));
+    expect(getByTestId(TEST_IDS.form.repo.select)).toBeInTheDocument();
   });
 
-  it('should render select for empty owners', async () => {
+  it('should render select for empty repo', async () => {
     (useProjectContext as jest.Mock).mockImplementation(() => ({
       ...mockCalverProject,
-      owner: '',
+      repo: '',
     }));
 
-    const { getAllByTestId, getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
-    );
+    const { getAllByTestId, getByTestId } = render(<Repo />);
 
-    expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
+    expect(getByTestId(TEST_IDS.form.repo.loading)).toBeInTheDocument();
 
-    await waitFor(() => screen.getAllByTestId(TEST_IDS.form.owner.empty));
-    expect(getAllByTestId(TEST_IDS.form.owner.empty)).toMatchInlineSnapshot(`
+    await waitFor(() => screen.getAllByTestId(TEST_IDS.form.repo.empty));
+    expect(getAllByTestId(TEST_IDS.form.repo.empty)).toMatchInlineSnapshot(`
       Array [
         <p
           class="MuiFormHelperText-root Mui-required"
-          data-testid="grm--form--owner--empty"
+          data-testid="grm--form--repo--empty"
         >
-          Select an owner (org or user)
+          Select a repository
         </p>,
         <p
           class="MuiFormHelperText-root Mui-required"
-          data-testid="grm--form--owner--empty"
+          data-testid="grm--form--repo--empty"
         >
           Custom queries can be made via the query param
            
           <strong>
-            owner
+            repo
           </strong>
         </p>,
       ]
@@ -90,24 +86,24 @@ describe('Owner', () => {
   });
 
   it('should handle errors', async () => {
-    (mockApiClient.getOwners as jest.Mock).mockImplementationOnce(async () => {
-      throw new Error('Kaboom');
-    });
-
-    const { getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
+    (mockApiClient.getRepositories as jest.Mock).mockImplementationOnce(
+      async () => {
+        throw new Error('Kaboom');
+      },
     );
 
-    expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
-    await waitFor(() => screen.getByTestId(TEST_IDS.form.owner.error));
-    expect(getByTestId(TEST_IDS.form.owner.error)).toMatchInlineSnapshot(`
+    const { getByTestId } = render(<Repo />);
+
+    expect(getByTestId(TEST_IDS.form.repo.loading)).toBeInTheDocument();
+    await waitFor(() => screen.getByTestId(TEST_IDS.form.repo.error));
+    expect(getByTestId(TEST_IDS.form.repo.error)).toMatchInlineSnapshot(`
       <p
         class="MuiFormHelperText-root Mui-error Mui-required"
-        data-testid="grm--form--owner--error"
+        data-testid="grm--form--repo--error"
       >
         Encountered an error (
         Kaboom
-        )
+        ")
       </p>
     `);
   });

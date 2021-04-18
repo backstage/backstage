@@ -17,11 +17,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { mockSemverProject } from '../test-helpers/test-helpers';
+import { mockSearchSemver } from '../test-helpers/test-helpers';
 
 jest.mock('react-router', () => ({
   useLocation: jest.fn(() => ({
-    search: `?versioningStrategy=${mockSemverProject.versioningStrategy}&owner=${mockSemverProject.owner}&repo=${mockSemverProject.repo}`,
+    search: mockSearchSemver,
   })),
 }));
 

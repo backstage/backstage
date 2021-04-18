@@ -30,6 +30,7 @@ import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
 export function Repo() {
   const pluginApiClient = usePluginApiClientContext();
@@ -53,11 +54,12 @@ export function Repo() {
   return (
     <FormControl className={formClasses.formControl} required error={!!error}>
       {loading ? (
-        <CenteredCircularProgress />
+        <CenteredCircularProgress data-testid={TEST_IDS.form.repo.loading} />
       ) : (
         <>
           <InputLabel id="repo-select-label">Repositories</InputLabel>
           <Select
+            data-testid={TEST_IDS.form.repo.select}
             labelId="repo-select-label"
             id="repo-select"
             value={project.repo}
@@ -89,15 +91,17 @@ export function Repo() {
           </Select>
 
           {error && (
-            <FormHelperText>
+            <FormHelperText data-testid={TEST_IDS.form.repo.error}>
               Encountered an error ({error.message}")
             </FormHelperText>
           )}
 
           {!error && project.repo.length === 0 && (
             <>
-              <FormHelperText>Select a repository</FormHelperText>
-              <FormHelperText>
+              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
+                Select a repository
+              </FormHelperText>
+              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
                 Custom queries can be made via the query param{' '}
                 <strong>repo</strong>
               </FormHelperText>

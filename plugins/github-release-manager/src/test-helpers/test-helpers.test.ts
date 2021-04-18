@@ -76,7 +76,7 @@ describe('testHelpers', () => {
           },
           "name": "rc/1.2.3",
         },
-        "mockReleaseCandidate": Object {
+        "mockReleaseCandidateCalver": Object {
           "htmlUrl": "mock_release_html_url",
           "id": 1,
           "prerelease": true,
@@ -97,6 +97,8 @@ describe('testHelpers', () => {
           "tagName": "version-1.2.3",
           "targetCommitish": "rc/1.2.3",
         },
+        "mockSearchCalver": "?versioningStrategy=calver&owner=mock_owner&repo=mock_repo",
+        "mockSearchSemver": "?versioningStrategy=semver&owner=mock_owner&repo=mock_repo",
         "mockSelectedPatchCommit": Object {
           "author": Object {
             "htmlUrl": "author_html_url",

@@ -587,7 +587,7 @@ type GetOwners = () => Promise<{
 export type GetOwnersResult = UnboxReturnedPromise<GetOwners>;
 
 type GetRepositories = (args: {
-  owner: string;
+  owner: OwnerRepo['owner'];
 }) => Promise<{
   repositories: string[];
 }>;

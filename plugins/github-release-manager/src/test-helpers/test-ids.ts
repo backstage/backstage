@@ -42,6 +42,12 @@ export const TEST_IDS = {
       error: 'grm--form--owner--error',
       empty: 'grm--form--owner--empty',
     },
+    repo: {
+      loading: 'grm--form--repo--loading',
+      select: 'grm--form--repo--select',
+      error: 'grm--form--repo--error',
+      empty: 'grm--form--repo--empty',
+    },
   },
   components: {
     divider: 'grm--divider',
