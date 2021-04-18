@@ -17,6 +17,9 @@
 import { makeStyles, Theme } from '@material-ui/core';
 
 export const useStyles = makeStyles((_theme: Theme) => ({
+  root: {
+    maxWidth: '999px',
+  },
   paragraph: {
     marginBottom: '1em',
   },

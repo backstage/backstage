@@ -14,41 +14,28 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { makeStyles } from '@material-ui/core';
-import { useApi, ContentHeader, ErrorBoundary } from '@backstage/core';
+import { useApi, ContentHeader } from '@backstage/core';
 
 import {
   ComponentConfigCreateRc,
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
 } from './types/types';
-import {
-  PluginApiClientContext,
-  usePluginApiClientContext,
-} from './contexts/PluginApiClientContext';
+import { Cards } from './cards/Cards';
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
-import { CreateRc } from './cards/createRc/CreateRc';
-import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
-import { Info } from './cards/info/Info';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
-import { Patch } from './cards/patchRc/Patch';
-import {
-  ProjectContext,
-  Project,
-  useProjectContext,
-} from './contexts/ProjectContext';
-import { PromoteRc } from './cards/promoteRc/PromoteRc';
-import { RefetchContext } from './contexts/RefetchContext';
+import { PluginApiClientContext } from './contexts/PluginApiClientContext';
+import { ProjectContext, Project } from './contexts/ProjectContext';
 import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
-import { useVersioningStrategyMatchesRepoTags } from './hooks/useVersioningStrategyMatchesRepoTags';
 import { useQueryHandler } from './hooks/useQueryHandler';
+import { useStyles } from './styles/styles';
 
-interface GitHubReleaseManagerProps {
+export interface GitHubReleaseManagerProps {
   components?: {
     default?: {
       createRc?: ComponentConfigCreateRc;
@@ -57,12 +44,6 @@ interface GitHubReleaseManagerProps {
     };
   };
 }
-
-const useStyles = makeStyles(() => ({
-  root: {
-    maxWidth: '999px',
-  },
-}));
 
 export function GitHubReleaseManager({
   components,
@@ -108,101 +89,5 @@ export function GitHubReleaseManager({
         </div>
       </ProjectContext.Provider>
     </PluginApiClientContext.Provider>
-  );
-}
-
-function Cards({
-  components,
-}: {
-  components: GitHubReleaseManagerProps['components'];
-}) {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
-  const [refetchTrigger, setRefetchTrigger] = useState(0);
-  const gitHubBatchInfo = useAsync(
-    getGitHubBatchInfo({ project, pluginApiClient }),
-    [project, refetchTrigger],
-  );
-
-  const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
-    latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tagName,
-    project,
-    repositoryName: gitHubBatchInfo.value?.repository.name,
-  });
-
-  if (gitHubBatchInfo.error) {
-    return (
-      <Alert severity="error">
-        Error occured while fetching information for "{project.owner}/
-        {project.repo}" ({gitHubBatchInfo.error.message})
-      </Alert>
-    );
-  }
-
-  if (gitHubBatchInfo.loading) {
-    return <CenteredCircularProgress />;
-  }
-
-  if (gitHubBatchInfo.value === undefined) {
-    return (
-      <Alert severity="error">Failed to fetch latest GitHub release</Alert>
-    );
-  }
-
-  if (!gitHubBatchInfo.value.repository.pushPermissions) {
-    return (
-      <Alert severity="error">
-        You lack push permissions for repository "{project.owner}/{project.repo}
-        "
-      </Alert>
-    );
-  }
-
-  return (
-    <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
-      <ErrorBoundary>
-        {gitHubBatchInfo.value.latestRelease && !versioningStrategyMatches && (
-          <Alert severity="warning" style={{ marginBottom: 20 }}>
-            Versioning mismatch, expected {project.versioningStrategy} version,
-            got "{gitHubBatchInfo.value.latestRelease.tagName}"
-          </Alert>
-        )}
-
-        {!gitHubBatchInfo.value.latestRelease && (
-          <Alert severity="info" style={{ marginBottom: 20 }}>
-            This repository has not releases yet
-          </Alert>
-        )}
-
-        <Info
-          latestRelease={gitHubBatchInfo.value.latestRelease}
-          releaseBranch={gitHubBatchInfo.value.releaseBranch}
-        />
-
-        {components?.default?.createRc?.omit !== true && (
-          <CreateRc
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            releaseBranch={gitHubBatchInfo.value.releaseBranch}
-            defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
-            successCb={components?.default?.createRc?.successCb}
-          />
-        )}
-
-        {components?.default?.promoteRc?.omit !== true && (
-          <PromoteRc
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            successCb={components?.default?.promoteRc?.successCb}
-          />
-        )}
-
-        {components?.default?.patch?.omit !== true && (
-          <Patch
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            releaseBranch={gitHubBatchInfo.value.releaseBranch}
-            successCb={components?.default?.patch?.successCb}
-          />
-        )}
-      </ErrorBoundary>
-    </RefetchContext.Provider>
   );
 }
