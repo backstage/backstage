@@ -19,6 +19,7 @@ import {
   catalogApiRef,
   CatalogApi,
   EntityProvider,
+  entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { Entity, RELATION_PART_OF } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
@@ -59,6 +60,11 @@ describe('<SystemDiagramCard />', () => {
           <SystemDiagramCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(queryByText(/System Diagram/)).toBeInTheDocument();
@@ -113,6 +119,11 @@ describe('<SystemDiagramCard />', () => {
           <SystemDiagramCard />
         </EntityProvider>
       </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
     );
 
     expect(getByText('System Diagram')).toBeInTheDocument();

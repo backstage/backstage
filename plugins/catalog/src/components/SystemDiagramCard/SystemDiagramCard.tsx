@@ -25,7 +25,7 @@ import {
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
-  entityRoute,
+  entityRouteRef,
   getEntityRelations,
   useEntity,
 } from '@backstage/plugin-catalog-react';
@@ -37,13 +37,13 @@ import {
   useApi,
   ResponseErrorPanel,
   Link,
+  useRouteRef,
 } from '@backstage/core';
 import { Box, makeStyles, Typography } from '@material-ui/core';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import React from 'react';
 import { useAsync } from 'react-use';
 import { BackstageTheme } from '@backstage/theme';
-import { generatePath } from 'react-router';
 
 const useStyles = makeStyles((theme: BackstageTheme) => ({
   domainNode: {
@@ -86,6 +86,7 @@ function readableEntityName(
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const classes = useStyles();
+  const catalogEntityRoute = useRouteRef(entityRouteRef);
   const kind = props.node.kind || 'Component';
   const ref = parseEntityRef(props.node.id);
   let nodeClass = classes.componentNode;
@@ -114,7 +115,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
     <g>
       <rect width={200} height={100} rx={20} className={nodeClass} />
       <Link
-        to={generatePath(`/catalog/${entityRoute.path}`, {
+        to={catalogEntityRoute({
           kind: kind,
           namespace: ref.namespace,
           name: ref.name,
