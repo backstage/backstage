@@ -55,11 +55,10 @@ export const ILertCardOnCall = ({
 
   const repeatInfo = () => {
     if (
-      !onCalls ||
-      !onCalls.length ||
-      !onCalls[onCalls.length - 1].escalationPolicy ||
-      !onCalls[onCalls.length - 1].escalationPolicy.repeating ||
-      !onCalls[onCalls.length - 1].escalationPolicy.frequency
+      !alertSource ||
+      !alertSource.escalationPolicy ||
+      !alertSource.escalationPolicy.repeating ||
+      !alertSource.escalationPolicy.frequency
     ) {
       return null;
     }
@@ -76,9 +75,7 @@ export const ILertCardOnCall = ({
               color="textSecondary"
               className={classes.repeatText}
             >
-              {`Repeat ${
-                onCalls[onCalls.length - 1].escalationPolicy.frequency
-              } times`}
+              {`Repeat ${alertSource.escalationPolicy.frequency} times`}
             </Typography>
           }
         />
