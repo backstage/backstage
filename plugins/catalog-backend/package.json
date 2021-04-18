@@ -81,7 +81,8 @@
     "dist",
     "migrations/**/*.{js,d.ts}",
     "migrationsv2/**/*.{js,d.ts}",
-    "config.d.ts"
+    "config.d.ts",
+    "src"
   ],
   "configSchema": "config.d.ts"
 }

@@ -55,6 +55,7 @@
     "ts-node": "^8.10.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

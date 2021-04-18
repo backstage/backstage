@@ -58,6 +58,7 @@
   },
   "files": [
     "dist",
-    "schema.d.ts"
+    "schema.d.ts",
+    "src"
   ]
 }

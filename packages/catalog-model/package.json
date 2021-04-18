@@ -46,6 +46,7 @@
     "yaml": "^1.9.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

@@ -74,6 +74,8 @@
     "msw": "^0.21.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "src"
   ]
 }

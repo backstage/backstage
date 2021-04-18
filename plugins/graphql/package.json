@@ -53,6 +53,7 @@
   },
   "files": [
     "dist",
-    "schema.gql"
+    "schema.gql",
+    "src"
   ]
 }

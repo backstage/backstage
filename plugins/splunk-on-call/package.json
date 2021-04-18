@@ -59,6 +59,7 @@
     "node-fetch": "^2.6.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

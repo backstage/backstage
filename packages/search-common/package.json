@@ -22,7 +22,8 @@
   ],
   "license": "Apache-2.0",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "backstage-cli build --outputs cjs,types",

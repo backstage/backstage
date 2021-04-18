@@ -57,6 +57,7 @@
     "react-router-dom": "6.0.0-beta.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }

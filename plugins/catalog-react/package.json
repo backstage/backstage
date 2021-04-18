@@ -53,6 +53,7 @@
     "react-test-renderer": "^16.13.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ]
 }
