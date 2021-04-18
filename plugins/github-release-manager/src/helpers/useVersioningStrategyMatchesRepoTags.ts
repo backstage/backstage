@@ -20,12 +20,12 @@ import { Project } from '../contexts/ProjectContext';
 import { getTagParts } from './tagParts/getTagParts';
 
 export const useVersioningStrategyMatchesRepoTags = ({
-  latestReleaseTagName,
   project,
+  latestReleaseTagName,
   repositoryName,
 }: {
-  latestReleaseTagName?: string;
   project: Project;
+  latestReleaseTagName?: string;
   repositoryName?: string;
 }) => {
   const [versioningStrategyMatches, setVersioningStrategyMatches] = useState(
