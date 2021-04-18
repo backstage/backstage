@@ -72,7 +72,7 @@ const createMockRelease = ({
   targetCommitish: 'rc/1.2.3',
   ...rest,
 });
-export const mockReleaseCandidate = createMockRelease({
+export const mockReleaseCandidateCalver = createMockRelease({
   prerelease: true,
   tagName: 'rc-2020.01.01_1',
   targetCommitish: 'rc/1.2.3',

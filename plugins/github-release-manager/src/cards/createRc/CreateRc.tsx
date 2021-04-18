@@ -121,7 +121,7 @@ export const CreateRc = ({
         <Typography>
           <Differ
             icon="branch"
-            prev={releaseBranch?.name}
+            current={releaseBranch?.name}
             next={nextGitHubInfo.rcBranch}
           />
         </Typography>
@@ -129,7 +129,7 @@ export const CreateRc = ({
         <Typography>
           <Differ
             icon="tag"
-            prev={latestRelease?.tagName}
+            current={latestRelease?.tagName}
             next={nextGitHubInfo.rcReleaseTag}
           />
         </Typography>

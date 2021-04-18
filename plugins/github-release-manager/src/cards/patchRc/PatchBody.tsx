@@ -142,7 +142,7 @@ export const PatchBody = ({
         )}
 
         <Typography className={classes.paragraph}>
-          <Differ icon="tag" prev={latestRelease.tagName} next={bumpedTag} />
+          <Differ icon="tag" current={latestRelease.tagName} next={bumpedTag} />
         </Typography>
       </>
     );

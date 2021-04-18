@@ -21,7 +21,7 @@ import {
   mockApiClient,
   mockCalverProject,
   mockNextGitHubInfo,
-  mockReleaseCandidate,
+  mockReleaseCandidateCalver,
   mockReleaseBranch,
   mockReleaseVersionCalver,
   mockSemverProject,
@@ -46,7 +46,7 @@ describe('CreateRc', () => {
     const { getByTestId } = render(
       <CreateRc
         defaultBranch="mockDefaultBranch"
-        latestRelease={mockReleaseCandidate}
+        latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
       />,
     );

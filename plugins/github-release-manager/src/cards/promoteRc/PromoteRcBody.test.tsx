@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import {
   mockApiClient,
   mockCalverProject,
-  mockReleaseCandidate,
+  mockReleaseCandidateCalver,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
@@ -36,7 +36,7 @@ import { PromoteRcBody } from './PromoteRcBody';
 describe('PromoteRcBody', () => {
   it('should display CTA', () => {
     const { getByTestId } = render(
-      <PromoteRcBody rcRelease={mockReleaseCandidate} />,
+      <PromoteRcBody rcRelease={mockReleaseCandidateCalver} />,
     );
 
     expect(getByTestId(TEST_IDS.promoteRc.cta)).toBeInTheDocument();

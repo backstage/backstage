@@ -16,7 +16,7 @@
 
 import {
   mockApiClient,
-  mockReleaseCandidate,
+  mockReleaseCandidateCalver,
   mockSemverProject,
 } from '../../../test-helpers/test-helpers';
 import { promoteRc } from './promoteRc';
@@ -27,7 +27,7 @@ describe('promoteRc', () => {
   it('should work', async () => {
     const result = await promoteRc({
       pluginApiClient: mockApiClient,
-      rcRelease: mockReleaseCandidate,
+      rcRelease: mockReleaseCandidateCalver,
       releaseVersion: 'version-1.2.3',
       project: mockSemverProject,
     })();

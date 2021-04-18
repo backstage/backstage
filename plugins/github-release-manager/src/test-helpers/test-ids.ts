@@ -51,5 +51,16 @@ export const TEST_IDS = {
       'grm--response-step-list-item--item-icon--link',
     responseStepListItemIconDefault:
       'grm--response-step-list-item--item-icon--default',
+    differ: {
+      current: 'grm--differ-current',
+      next: 'grm--differ-next',
+      icons: {
+        tag: 'grm--differ--icons--tag',
+        branch: 'grm--differ--icons--branch',
+        github: 'grm--differ--icons--github',
+        slack: 'grm--differ--icons--slack',
+        versioning: 'grm--differ--icons--versioning',
+      },
+    },
   },
 };

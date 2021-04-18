@@ -21,7 +21,7 @@ import {
   mockApiClient,
   mockBumpedTag,
   mockCalverProject,
-  mockReleaseCandidate,
+  mockReleaseCandidateCalver,
   mockReleaseBranch,
   mockReleaseVersionCalver,
   mockTagParts,
@@ -48,7 +48,7 @@ describe('PatchBody', () => {
     const { getByTestId } = render(
       <PatchBody
         bumpedTag={mockBumpedTag}
-        latestRelease={mockReleaseCandidate}
+        latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
         tagParts={mockTagParts}
       />,

@@ -22,44 +22,16 @@ import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
+import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
+import { TEST_IDS } from '../test-helpers/test-ids';
+
 interface DifferProps {
+  icon: 'tag' | 'branch' | 'github' | 'slack' | 'versioning';
+  current?: string;
   next?: string | ReactNode;
-  prev?: string;
-  prefix?: string;
-  icon?: 'tag' | 'branch' | 'github' | 'slack' | 'versioning';
 }
 
-const Icon = ({ icon }: { icon: DifferProps['icon'] }) => {
-  switch (icon) {
-    case 'tag':
-      return (
-        <LocalOfferIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
-      );
-
-    case 'branch':
-      return (
-        <CallSplitIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
-      );
-
-    case 'github':
-      return (
-        <GitHubIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
-      );
-
-    case 'slack':
-      return <ChatIcon style={{ verticalAlign: 'middle' }} fontSize="small" />;
-
-    case 'versioning':
-      return (
-        <DynamicFeedIcon style={{ verticalAlign: 'middle' }} fontSize="small" />
-      );
-
-    default:
-      return null;
-  }
-};
-
-export const Differ = ({ prev, next, prefix, icon }: DifferProps) => {
+export const Differ = ({ current, next, icon }: DifferProps) => {
   return (
     <>
       {icon && (
@@ -67,14 +39,79 @@ export const Differ = ({ prev, next, prefix, icon }: DifferProps) => {
           <Icon icon={icon} />{' '}
         </span>
       )}
-      {prefix && <span>{prefix}: </span>}
-      {prev && (
-        <>
-          <span style={{ color: grey[700] }}>{prev}</span>
-          <span>{'  →  '}</span>
-        </>
+
+      <span
+        data-testid={TEST_IDS.components.differ.current}
+        style={{ color: grey[700] }}
+      >
+        {current ?? 'None'}
+      </span>
+
+      {next && <span>{'  →  '}</span>}
+      {next && (
+        <span
+          data-testid={TEST_IDS.components.differ.next}
+          style={{ fontWeight: 'bold' }}
+        >
+          {next}
+        </span>
       )}
-      <b>{next ?? 'None'}</b>
     </>
   );
 };
+
+interface IconProps {
+  icon: DifferProps['icon'];
+}
+
+function Icon({ icon }: IconProps) {
+  switch (icon) {
+    case 'tag':
+      return (
+        <LocalOfferIcon
+          data-testid={TEST_IDS.components.differ.icons.tag}
+          style={{ verticalAlign: 'middle' }}
+          fontSize="small"
+        />
+      );
+
+    case 'branch':
+      return (
+        <CallSplitIcon
+          data-testid={TEST_IDS.components.differ.icons.branch}
+          style={{ verticalAlign: 'middle' }}
+          fontSize="small"
+        />
+      );
+
+    case 'github':
+      return (
+        <GitHubIcon
+          data-testid={TEST_IDS.components.differ.icons.github}
+          style={{ verticalAlign: 'middle' }}
+          fontSize="small"
+        />
+      );
+
+    case 'slack':
+      return (
+        <ChatIcon
+          data-testid={TEST_IDS.components.differ.icons.slack}
+          style={{ verticalAlign: 'middle' }}
+          fontSize="small"
+        />
+      );
+
+    case 'versioning':
+      return (
+        <DynamicFeedIcon
+          data-testid={TEST_IDS.components.differ.icons.versioning}
+          style={{ verticalAlign: 'middle' }}
+          fontSize="small"
+        />
+      );
+
+    default:
+      throw new GitHubReleaseManagerError('Invalid Differ icon');
+  }
+}

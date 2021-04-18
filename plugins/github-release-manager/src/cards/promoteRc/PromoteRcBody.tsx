@@ -63,7 +63,11 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
         </Typography>
 
         <Typography className={classes.paragraph}>
-          <Differ icon="tag" prev={rcRelease.tagName} next={releaseVersion} />
+          <Differ
+            icon="tag"
+            current={rcRelease.tagName}
+            next={releaseVersion}
+          />
         </Typography>
       </>
     );

@@ -18,7 +18,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import {
-  mockReleaseCandidate,
+  mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -50,7 +50,7 @@ describe('PromoteRc', () => {
 
   it('should display PromoteRcBody', () => {
     const { getByTestId } = render(
-      <PromoteRc latestRelease={mockReleaseCandidate} />,
+      <PromoteRc latestRelease={mockReleaseCandidateCalver} />,
     );
 
     expect(
