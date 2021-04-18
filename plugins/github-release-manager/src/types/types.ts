@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-export type ComponentConfig<Args> =
-  | {
-      omit?: void;
-      successCb?: (args: Args) => Promise<void> | void;
-    }
-  | {
-      omit: boolean;
-      successCb?: void;
-    };
+export type ComponentConfig<Args> = {
+  omit?: boolean;
+  successCb?: (args: Args) => Promise<void> | void;
+};
 
 interface CreateRcSuccessCbArgs {
   gitHubReleaseUrl: string;
