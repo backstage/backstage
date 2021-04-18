@@ -94,14 +94,14 @@ export function Cards({
           </Alert>
         )}
 
-        {components?.info?.omit !== true && (
+        {!components?.info?.omit && (
           <Info
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
           />
         )}
 
-        {components?.createRc?.omit !== true && (
+        {!components?.createRc?.omit && (
           <CreateRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
@@ -110,14 +110,14 @@ export function Cards({
           />
         )}
 
-        {components?.promoteRc?.omit !== true && (
+        {!components?.promoteRc?.omit && (
           <PromoteRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             successCb={components?.promoteRc?.successCb}
           />
         )}
 
-        {components?.patch?.omit !== true && (
+        {!components?.patch?.omit && (
           <Patch
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}

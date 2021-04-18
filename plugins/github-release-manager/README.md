@@ -46,4 +46,14 @@ Looking at the flow above, a common release lifecycle could be:
 
 ## Usage
 
+### Importing
+
 The plugin exports a single full-page extension `GitHubReleaseManagerPage`, which one can add to an app like a usual top-level tool on a dedicated route.
+
+### Configuration
+
+The plugin is configurable either via props or the select elements on the page.
+
+If project configuration is provided via props, the select elements are disabled. It is also possible to omit components from the page via props, as well as attaching callbacks for successful executions.
+
+See the plugin's dev folder (`dev/index.tsx`) to see some examples.

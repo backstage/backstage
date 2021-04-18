@@ -16,12 +16,13 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { Alert } from '@material-ui/lab';
+import { Typography } from '@material-ui/core';
 
 import {
   gitHubReleaseManagerPlugin,
   GitHubReleaseManagerPage,
 } from '../src/plugin';
+import { InfoCardPlus } from '../src/components/InfoCardPlus';
 
 function DevWrapper({ children }: { children: React.ReactNode }) {
   return <div style={{ padding: 30 }}>{children}</div>;
@@ -31,21 +32,30 @@ createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
     title: 'Dynamic',
+    path: '/dynamic',
     element: (
-      <>
-        <Alert severity="info">Configure via select inputs</Alert>
+      <DevWrapper>
+        <InfoCardPlus>
+          <Typography variant="h4">Dev notes</Typography>
+          <Typography>Configure plugin via select inputs</Typography>
+        </InfoCardPlus>
 
-        <DevWrapper>
-          <GitHubReleaseManagerPage />
-        </DevWrapper>
-      </>
+        <GitHubReleaseManagerPage />
+      </DevWrapper>
     ),
   })
   .addPage({
     title: 'Static',
+    path: '/static',
     element: (
       <DevWrapper>
-        <Alert severity="info">Statically configured via props</Alert>
+        <InfoCardPlus>
+          <Typography variant="h4">Dev notes</Typography>
+          <Typography>
+            Configure plugin statically by passing props to the
+            `GitHubReleaseManagerPage` component
+          </Typography>
+        </InfoCardPlus>
 
         <GitHubReleaseManagerPage
           project={{
@@ -59,9 +69,14 @@ createDevApp()
   })
   .addPage({
     title: 'Omit',
+    path: '/omit',
     element: (
       <DevWrapper>
-        <Alert severity="info">Optionally omit components</Alert>
+        <InfoCardPlus>
+          <Typography variant="h4">Dev notes</Typography>
+          <Typography>Each components can be omitted</Typography>
+          <Typography>Success callbacks can also be added</Typography>
+        </InfoCardPlus>
 
         <GitHubReleaseManagerPage
           project={{
@@ -89,8 +104,12 @@ createDevApp()
                 );
               },
             },
-            promoteRc: { omit: true },
-            patch: { omit: true },
+            promoteRc: {
+              omit: true,
+            },
+            patch: {
+              omit: true,
+            },
           }}
         />
       </DevWrapper>

@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-export interface ComponentConfig<Args = void> {
-  successCb?: (args: Args) => Promise<void> | void;
-  omit?: boolean;
-}
+export type ComponentConfig<Args> =
+  | {
+      omit?: void;
+      successCb?: (args: Args) => Promise<void> | void;
+    }
+  | {
+      omit: boolean;
+      successCb?: void;
+    };
 
-interface ComponentConfigCreateRcSuccessCbArgs {
+interface CreateRcSuccessCbArgs {
   gitHubReleaseUrl: string;
   gitHubReleaseName: string | null;
   comparisonUrl: string;
   previousTag?: string;
   createdTag: string;
 }
-export type ComponentConfigCreateRc = ComponentConfig<ComponentConfigCreateRcSuccessCbArgs>;
+export type ComponentConfigCreateRc = ComponentConfig<CreateRcSuccessCbArgs>;
 
-interface ComponentConfigPromoteRcSuccessCbArgs {
+interface PromoteRcSuccessCbArgs {
   gitHubReleaseUrl: string;
   gitHubReleaseName: string | null;
   previousTagUrl: string;
@@ -36,9 +41,9 @@ interface ComponentConfigPromoteRcSuccessCbArgs {
   updatedTagUrl: string;
   updatedTag: string;
 }
-export type ComponentConfigPromoteRc = ComponentConfig<ComponentConfigPromoteRcSuccessCbArgs>;
+export type ComponentConfigPromoteRc = ComponentConfig<PromoteRcSuccessCbArgs>;
 
-interface ComponentConfigPatchSuccessCbArgs {
+interface PatchSuccessCbArgs {
   updatedReleaseUrl: string;
   updatedReleaseName: string | null;
   previousTag: string;
@@ -46,7 +51,7 @@ interface ComponentConfigPatchSuccessCbArgs {
   patchCommitUrl: string;
   patchCommitMessage: string;
 }
-export type ComponentConfigPatch = ComponentConfig<ComponentConfigPatchSuccessCbArgs>;
+export type ComponentConfigPatch = ComponentConfig<PatchSuccessCbArgs>;
 
 export interface ResponseStep {
   message: string | React.ReactNode;
