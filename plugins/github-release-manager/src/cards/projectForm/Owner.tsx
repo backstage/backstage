@@ -46,7 +46,12 @@ export function Owner({ username }: { username: string }) {
     .includes(project.owner);
 
   return (
-    <FormControl className={formClasses.formControl} required error={!!error}>
+    <FormControl
+      className={formClasses.formControl}
+      required
+      disabled={project.isProvidedViaProps}
+      error={!!error}
+    >
       {loading ? (
         <CenteredCircularProgress data-testid={TEST_IDS.form.owner.loading} />
       ) : (

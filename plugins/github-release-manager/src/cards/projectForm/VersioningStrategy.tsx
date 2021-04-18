@@ -36,7 +36,7 @@ export function VersioningStrategy() {
   useEffect(() => {
     const { parsedQuery } = getParsedQuery();
 
-    if (!parsedQuery.versioningStrategy) {
+    if (!parsedQuery.versioningStrategy && !project.isProvidedViaProps) {
       const { queryParams } = getQueryParamsWithUpdates({
         updates: [
           { key: 'versioningStrategy', value: project.versioningStrategy },
@@ -48,7 +48,11 @@ export function VersioningStrategy() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <FormControl component="fieldset" required>
+    <FormControl
+      component="fieldset"
+      required
+      disabled={project.isProvidedViaProps}
+    >
       <FormLabel component="legend">Calendar strategy</FormLabel>
       <RadioGroup
         data-testid={TEST_IDS.form.versioningStrategy.radioGroup}

@@ -52,7 +52,12 @@ export function Repo() {
   const customRepoFromUrl = !repositories.concat(['']).includes(project.repo);
 
   return (
-    <FormControl className={formClasses.formControl} required error={!!error}>
+    <FormControl
+      className={formClasses.formControl}
+      required
+      disabled={project.isProvidedViaProps}
+      error={!!error}
+    >
       {loading ? (
         <CenteredCircularProgress data-testid={TEST_IDS.form.repo.loading} />
       ) : (

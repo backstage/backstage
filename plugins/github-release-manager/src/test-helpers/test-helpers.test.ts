@@ -52,6 +52,7 @@ describe('testHelpers', () => {
         },
         "mockBumpedTag": "rc-2020.01.01_1337",
         "mockCalverProject": Object {
+          "isProvidedViaProps": false,
           "owner": "mock_owner",
           "repo": "mock_repo",
           "versioningStrategy": "calver",
@@ -112,6 +113,7 @@ describe('testHelpers', () => {
           "sha": "mock_sha_selected_patch_commit",
         },
         "mockSemverProject": Object {
+          "isProvidedViaProps": false,
           "owner": "mock_owner",
           "repo": "mock_repo",
           "versioningStrategy": "semver",

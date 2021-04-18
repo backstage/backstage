@@ -20,6 +20,7 @@ import { Alert } from '@material-ui/lab';
 import { useApi, ContentHeader } from '@backstage/core';
 
 import {
+  ComponentConfig,
   ComponentConfigCreateRc,
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
@@ -36,28 +37,32 @@ import { useQueryHandler } from './hooks/useQueryHandler';
 import { useStyles } from './styles/styles';
 
 export interface GitHubReleaseManagerProps {
+  project?: Omit<Project, 'isProvidedViaProps'>;
   components?: {
-    default?: {
-      createRc?: ComponentConfigCreateRc;
-      promoteRc?: ComponentConfigPromoteRc;
-      patch?: ComponentConfigPatch;
-    };
+    info?: Pick<ComponentConfig<void>, 'omit'>;
+    createRc?: ComponentConfigCreateRc;
+    promoteRc?: ComponentConfigPromoteRc;
+    patch?: ComponentConfigPatch;
   };
 }
 
-export function GitHubReleaseManager({
-  components,
-}: GitHubReleaseManagerProps) {
+export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const classes = useStyles();
 
   const { getParsedQuery } = useQueryHandler();
   const { parsedQuery } = getParsedQuery();
-  const project: Project = {
-    owner: parsedQuery.owner ?? '',
-    repo: parsedQuery.repo ?? '',
-    versioningStrategy: parsedQuery.versioningStrategy ?? 'semver',
-  };
+  const project: Project = isProjectValid(props.project)
+    ? {
+        ...props.project,
+        isProvidedViaProps: true,
+      }
+    : {
+        owner: parsedQuery.owner ?? '',
+        repo: parsedQuery.repo ?? '',
+        versioningStrategy: parsedQuery.versioningStrategy ?? 'semver',
+        isProvidedViaProps: false,
+      };
 
   const usernameResponse = useAsync(() =>
     pluginApiClient.getUsername({ owner: project.owner, repo: project.repo }),
@@ -85,7 +90,7 @@ export function GitHubReleaseManager({
             <RepoDetailsForm username={usernameResponse.value.username} />
           </InfoCardPlus>
 
-          {isProjectValid(project) && <Cards components={components} />}
+          {isProjectValid(project) && <Cards components={props.components} />}
         </div>
       </ProjectContext.Provider>
     </PluginApiClientContext.Provider>

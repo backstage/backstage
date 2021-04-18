@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-interface ComponentConfig<Args = void> {
+export interface ComponentConfig<Args = void> {
   successCb?: (args: Args) => Promise<void> | void;
   omit?: boolean;
 }

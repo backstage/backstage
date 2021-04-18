@@ -94,32 +94,34 @@ export function Cards({
           </Alert>
         )}
 
-        <Info
-          latestRelease={gitHubBatchInfo.value.latestRelease}
-          releaseBranch={gitHubBatchInfo.value.releaseBranch}
-        />
+        {components?.info?.omit !== true && (
+          <Info
+            latestRelease={gitHubBatchInfo.value.latestRelease}
+            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+          />
+        )}
 
-        {components?.default?.createRc?.omit !== true && (
+        {components?.createRc?.omit !== true && (
           <CreateRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
             defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
-            successCb={components?.default?.createRc?.successCb}
+            successCb={components?.createRc?.successCb}
           />
         )}
 
-        {components?.default?.promoteRc?.omit !== true && (
+        {components?.promoteRc?.omit !== true && (
           <PromoteRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
-            successCb={components?.default?.promoteRc?.successCb}
+            successCb={components?.promoteRc?.successCb}
           />
         )}
 
-        {components?.default?.patch?.omit !== true && (
+        {components?.patch?.omit !== true && (
           <Patch
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
-            successCb={components?.default?.patch?.successCb}
+            successCb={components?.patch?.successCb}
           />
         )}
       </ErrorBoundary>

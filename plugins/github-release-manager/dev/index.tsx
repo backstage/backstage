@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
+import { Alert } from '@material-ui/lab';
 
 import {
   gitHubReleaseManagerPlugin,
@@ -29,19 +30,69 @@ function DevWrapper({ children }: { children: React.ReactNode }) {
 createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
-    title: 'Page 1',
+    title: 'Dynamic',
+    element: (
+      <>
+        <Alert severity="info">Configure via select inputs</Alert>
+
+        <DevWrapper>
+          <GitHubReleaseManagerPage />
+        </DevWrapper>
+      </>
+    ),
+  })
+  .addPage({
+    title: 'Static',
     element: (
       <DevWrapper>
-        <GitHubReleaseManagerPage />
+        <Alert severity="info">Statically configured via props</Alert>
+
+        <GitHubReleaseManagerPage
+          project={{
+            owner: 'eengervall-playground',
+            repo: 'RMaaS-semver',
+            versioningStrategy: 'semver',
+          }}
+        />
       </DevWrapper>
     ),
   })
   .addPage({
-    title: 'Page 2',
+    title: 'Omit',
     element: (
       <DevWrapper>
-        {' '}
-        <GitHubReleaseManagerPage />
+        <Alert severity="info">Optionally omit components</Alert>
+
+        <GitHubReleaseManagerPage
+          project={{
+            owner: 'eengervall-playground',
+            repo: 'playground-semver',
+            versioningStrategy: 'semver',
+          }}
+          components={{
+            createRc: {
+              successCb: ({
+                comparisonUrl,
+                createdTag,
+                gitHubReleaseName,
+                gitHubReleaseUrl,
+                previousTag,
+              }) => {
+                // eslint-disable-next-line no-console
+                console.log(
+                  'Custom success callback for Create RC',
+                  comparisonUrl,
+                  createdTag,
+                  gitHubReleaseName,
+                  gitHubReleaseUrl,
+                  previousTag,
+                );
+              },
+            },
+            promoteRc: { omit: true },
+            patch: { omit: true },
+          }}
+        />
       </DevWrapper>
     ),
   })

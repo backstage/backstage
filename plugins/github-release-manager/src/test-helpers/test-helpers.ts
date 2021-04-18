@@ -31,12 +31,14 @@ export const mockSemverProject: Project = {
   owner: mockOwner,
   repo: mockRepo,
   versioningStrategy: 'semver',
+  isProvidedViaProps: false,
 };
 
 export const mockCalverProject: Project = {
   owner: mockOwner,
   repo: mockRepo,
   versioningStrategy: 'calver',
+  isProvidedViaProps: false,
 };
 
 export const mockSearchCalver = `?versioningStrategy=${mockCalverProject.versioningStrategy}&owner=${mockCalverProject.owner}&repo=${mockCalverProject.repo}`;

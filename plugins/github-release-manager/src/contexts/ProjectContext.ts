@@ -40,6 +40,12 @@ export interface Project {
    * Default: false
    */
   versioningStrategy: 'calver' | 'semver';
+  /**
+   * Project props was provided via props
+   *
+   * If true, this means select inputs will be disabled
+   */
+  isProvidedViaProps: boolean;
 }
 
 export const ProjectContext = createContext<Project | undefined>(undefined);
