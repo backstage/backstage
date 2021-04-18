@@ -25,12 +25,11 @@ import {
   Select,
 } from '@material-ui/core';
 
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { Project } from '../../contexts/ProjectContext';
-import { getNewQueryParams } from '../../helpers/getNewQueryParams';
-import { useQuery } from '../../helpers/useQuery';
+import { useFormClasses } from './styles';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
+import { useQueryHandler } from '../../helpers/useQueryHandler';
 
 export function Owner({
   username,
@@ -39,10 +38,10 @@ export function Owner({
   username: string;
   project: Project;
 }) {
-  const pluginApiClient = usePluginApiClientContext();
   const formClasses = useFormClasses();
   const navigate = useNavigate();
-  const query = useQuery();
+  const pluginApiClient = usePluginApiClientContext();
+  const { getQueryParamsWithUpdates } = useQueryHandler();
 
   const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());
   const owners = value?.owners ?? [];
@@ -63,8 +62,7 @@ export function Owner({
             value={project.owner}
             defaultValue=""
             onChange={event => {
-              const queryParams = getNewQueryParams({
-                query,
+              const { queryParams } = getQueryParamsWithUpdates({
                 updates: [
                   { key: 'repo', value: '' },
                   { key: 'owner', value: event.target.value as string },

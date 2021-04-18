@@ -32,18 +32,17 @@ import {
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
 import { CreateRc } from './cards/createRc/CreateRc';
 import { getGitHubBatchInfo } from './sideEffects/getGitHubBatchInfo';
-import { getParsedQuery } from './helpers/getNewQueryParams';
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import { Info } from './cards/info/Info';
 import { InfoCardPlus } from './components/InfoCardPlus';
-import { isProjectValid } from './cards/projectForm/isProjectValid';
+import { isProjectValid } from './helpers/isProjectValid';
 import { Patch } from './cards/patchRc/Patch';
 import { ProjectContext, Project } from './contexts/ProjectContext';
 import { PromoteRc } from './cards/promoteRc/PromoteRc';
 import { RefetchContext } from './contexts/RefetchContext';
 import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
-import { useQuery } from './helpers/useQuery';
 import { useVersioningStrategyMatchesRepoTags } from './helpers/useVersioningStrategyMatchesRepoTags';
+import { useQueryHandler } from './helpers/useQueryHandler';
 
 interface GitHubReleaseManagerProps {
   components?: {
@@ -66,13 +65,15 @@ export function GitHubReleaseManager({
 }: GitHubReleaseManagerProps) {
   const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const classes = useStyles();
-  const query = useQuery();
-  const parsedQuery = getParsedQuery({ query });
+
+  const { getParsedQuery } = useQueryHandler();
+  const { parsedQuery } = getParsedQuery();
   const project: Project = {
     owner: parsedQuery.owner ?? '',
     repo: parsedQuery.repo ?? '',
     versioningStrategy: parsedQuery.versioningStrategy ?? 'semver',
   };
+
   const usernameResponse = useAsync(() =>
     pluginApiClient.getUsername({ owner: project.owner, repo: project.repo }),
   );
@@ -157,19 +158,23 @@ function Cards({
     );
   }
 
-  if (!versioningStrategyMatches) {
-    return (
-      <Alert severity="error">
-        Versioning mismatch, expected {project.versioningStrategy} version, got{' '}
-        {gitHubBatchInfo.value.latestRelease?.tagName}
-      </Alert>
-    );
-  }
-
   return (
     <ProjectContext.Provider value={project}>
       <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
         <ErrorBoundary>
+          {gitHubBatchInfo.value.latestRelease && !versioningStrategyMatches && (
+            <Alert severity="warning" style={{ marginBottom: 20 }}>
+              Versioning mismatch, expected {project.versioningStrategy}{' '}
+              version, got "{gitHubBatchInfo.value.latestRelease.tagName}"
+            </Alert>
+          )}
+
+          {!gitHubBatchInfo.value.latestRelease && (
+            <Alert severity="info" style={{ marginBottom: 20 }}>
+              This repository has not releases yet
+            </Alert>
+          )}
+
           <Info
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}

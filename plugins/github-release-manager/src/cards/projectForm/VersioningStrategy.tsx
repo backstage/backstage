@@ -25,22 +25,17 @@ import {
 } from '@material-ui/core';
 
 import { Project } from '../../contexts/ProjectContext';
-import { useQuery } from '../../helpers/useQuery';
-import {
-  getNewQueryParams,
-  getParsedQuery,
-} from '../../helpers/getNewQueryParams';
+import { useQueryHandler } from '../../helpers/useQueryHandler';
 
 export function VersioningStrategy({ project }: { project: Project }) {
   const navigate = useNavigate();
-  const query = useQuery();
+  const { getParsedQuery, getQueryParamsWithUpdates } = useQueryHandler();
 
   useEffect(() => {
-    const parsedQuery = getParsedQuery({ query });
+    const { parsedQuery } = getParsedQuery();
 
     if (!parsedQuery.versioningStrategy) {
-      const queryParams = getNewQueryParams({
-        query,
+      const { queryParams } = getQueryParamsWithUpdates({
         updates: [
           { key: 'versioningStrategy', value: project.versioningStrategy },
         ],
@@ -59,8 +54,7 @@ export function VersioningStrategy({ project }: { project: Project }) {
         value={project.versioningStrategy}
         defaultValue="semver"
         onChange={event => {
-          const queryParams = getNewQueryParams({
-            query,
+          const queryParams = getQueryParamsWithUpdates({
             updates: [{ key: 'versioningStrategy', value: event.target.value }],
           });
 

@@ -24,15 +24,18 @@ import {
   IPluginApiClient,
 } from '../api/PluginApiClient';
 
+const mockOwner = 'mock_owner';
+const mockRepo = 'mock_repo';
+
 export const mockSemverProject: Project = {
-  owner: 'mock_owner',
-  repo: 'mock_repo',
+  owner: mockOwner,
+  repo: mockRepo,
   versioningStrategy: 'semver',
 };
 
 export const mockCalverProject: Project = {
-  owner: 'mock_owner',
-  repo: 'mock_repo',
+  owner: mockOwner,
+  repo: mockRepo,
   versioningStrategy: 'calver',
 };
 
@@ -130,18 +133,18 @@ export const mockSelectedPatchCommit = createMockRecentCommit({
 export const mockApiClient: IPluginApiClient = {
   getHost: jest.fn(() => 'github.com'),
 
-  getRepoPath: jest.fn(() => 'erikengervall/playground'),
+  getRepoPath: jest.fn(() => `${mockOwner}/${mockRepo}`),
 
   getOwners: jest.fn(async () => ({
-    owners: ['owner1', 'owner2'],
+    owners: [mockOwner, `${mockOwner}2`],
   })),
 
   getRepositories: jest.fn(async () => ({
-    repositories: ['repo1', 'repo2'],
+    repositories: [mockRepo, `${mockRepo}2`],
   })),
 
   getUsername: jest.fn(async () => ({
-    username: 'erikengervall',
+    username: mockOwner,
   })),
 
   getRecentCommits: jest.fn(async () => [

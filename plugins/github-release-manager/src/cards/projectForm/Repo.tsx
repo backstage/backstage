@@ -29,14 +29,13 @@ import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext
 import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { Project } from '../../contexts/ProjectContext';
-import { getNewQueryParams } from '../../helpers/getNewQueryParams';
-import { useQuery } from '../../helpers/useQuery';
+import { useQueryHandler } from '../../helpers/useQueryHandler';
 
 export function Repo({ project }: { project: Project }) {
   const pluginApiClient = usePluginApiClientContext();
   const navigate = useNavigate();
   const formClasses = useFormClasses();
-  const query = useQuery();
+  const { getQueryParamsWithUpdates } = useQueryHandler();
 
   const { loading, error, value } = useAsync(
     async () => pluginApiClient.getRepositories({ owner: project.owner }),
@@ -59,8 +58,7 @@ export function Repo({ project }: { project: Project }) {
             value={project.repo}
             defaultValue=""
             onChange={event => {
-              const queryParams = getNewQueryParams({
-                query,
+              const { queryParams } = getQueryParamsWithUpdates({
                 updates: [{ key: 'repo', value: event.target.value as string }],
               });
 

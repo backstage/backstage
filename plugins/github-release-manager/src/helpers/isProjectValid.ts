@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router';
+import { Project } from '../contexts/ProjectContext';
 
-export function useQuery(): URLSearchParams {
-  return new URLSearchParams(useLocation().search);
+export function isProjectValid(project: any): project is Project {
+  return (
+    project?.owner?.length > 0 &&
+    project?.repo?.length > 0 &&
+    (['semver', 'calver'] as Project['versioningStrategy'][]).includes(
+      project?.versioningStrategy,
+    )
+  );
 }
