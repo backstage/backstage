@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { codeCoveragePlugin, EntityCodeCoverageContent } from './plugin';
-export {
-  Router,
-  isCodeCoverageAvailable,
-  isCodeCoverageAvailable as isPluginApplicableToEntity,
-} from './components/Router';
+import { FileEntry } from '../jsoncoverage-types';
+
+export interface Converter {
+  convert(xml: unknown, scmFiles: Array<string>): Array<FileEntry>;
+}

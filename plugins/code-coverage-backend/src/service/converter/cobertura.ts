@@ -16,11 +16,11 @@
 import { BranchHit, FileEntry } from '../jsoncoverage-types';
 import { CoberturaXML, InnerClass, LineHit } from './types';
 import { Logger } from 'winston';
-import { Converter } from '.';
+import { Converter } from './Converter';
 
-export class Cobertura extends Converter {
+export class Cobertura implements Converter {
   constructor(readonly logger: Logger) {
-    super(logger);
+    this.logger = logger;
   }
 
   /**

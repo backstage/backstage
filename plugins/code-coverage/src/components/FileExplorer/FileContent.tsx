@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { useApi } from '@backstage/core-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
@@ -29,14 +29,6 @@ import CoverageRow from './CoverageRow';
 type Props = {
   filename: string;
   coverage: FileCoverage;
-};
-
-const getContent = async (value: any) => {
-  let blob = value;
-  if (value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
-    blob = new Blob([value], { type: 'application/octet-stream' });
-  }
-  return value;
 };
 
 const useStyles = makeStyles(theme => ({
@@ -96,10 +88,6 @@ export const FileContent = ({ filename, coverage }: Props) => {
         filename,
       ),
   );
-
-  useEffect(() => {
-    if (value) getContent(value);
-  }, [value]);
 
   const classes = useStyles();
 

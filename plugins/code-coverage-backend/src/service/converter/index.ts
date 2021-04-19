@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Logger } from 'winston';
-import { FileEntry } from '../jsoncoverage-types';
 
-export abstract class Converter {
-  constructor(readonly logger: Logger) {}
-
-  abstract convert(xml: any, scmFiles: Array<string>): Array<FileEntry>;
-}
+export * from './Converter';
+export { Cobertura } from './cobertura';
+export { Jacoco } from './jacoco';

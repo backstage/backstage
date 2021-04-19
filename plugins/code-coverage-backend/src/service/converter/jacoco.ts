@@ -16,7 +16,7 @@
 import { BranchHit, FileEntry } from '../jsoncoverage-types';
 import { JacocoSourceFile, JacocoXML } from './types';
 import { Logger } from 'winston';
-import { Converter } from '.';
+import { Converter } from './Converter';
 
 type ParsedLine = {
   number: number;
@@ -26,9 +26,9 @@ type ParsedLine = {
   covered_branches: number;
 };
 
-export class Jacoco extends Converter {
+export class Jacoco implements Converter {
   constructor(readonly logger: Logger) {
-    super(logger);
+    this.logger = logger;
   }
 
   /**

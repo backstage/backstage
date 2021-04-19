@@ -20,11 +20,10 @@ import highlight from 'highlight.js';
  * Given a file extension, repo name, and array of code lines, return a Promise resolving
  * to an array of formatted lines with html/css formatting.
  *
- * @param {String} fileExtension The extension of the source file
- * @param {String} repo The name of the code repository
- * @param {Array<String>} lines The source code lines
+ * @param fileExtension The extension of the source file
+ * @param lines The source code lines
  *
- * @returns {Promise<Array<String>>} Promise of formatted lines
+ * @returns Promise of formatted lines
  *
  * @see http://highlightjs.readthedocs.io/en/latest/api.html#highlight-name-value-ignore-illegals-continuation
  */
