@@ -2,7 +2,7 @@
 apiVersion: aws.crossplane.io/v1beta1
 kind: ProviderConfig
 metadata:
-  name: developerautomation-xavgy-provider-config
+  name: backstage-provider-config
   labels:
     department: cloudengineering
     project: developerautomation  
