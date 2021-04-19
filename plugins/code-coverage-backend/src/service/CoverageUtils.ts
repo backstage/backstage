@@ -16,7 +16,11 @@
 import { Request } from 'express';
 import { UrlReader } from '@backstage/backend-common';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { Entity, EntityName } from '@backstage/catalog-model';
+import {
+  Entity,
+  getEntitySourceLocation,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { ScmIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   AggregateCoverage,
@@ -96,11 +100,18 @@ export class CoverageUtils {
     let scmFiles: string[] = [];
 
     if (enforceScmFiles) {
-      sourceLocation =
-        entity.metadata.annotations?.['backstage.io/source-location'];
+      try {
+        const sl = getEntitySourceLocation(entity);
+        sourceLocation = sl.target;
+      } catch (e: unknown) {
+        // TODO: logging
+      }
+
       if (!sourceLocation) {
         throw new InputError(
-          `No "backstage.io/source-location" annotation on entity ${entity.kind}/${entity.metadata.namespace}/${entity.metadata.name}`,
+          `No "backstage.io/source-location" annotation on entity ${stringifyEntityRef(
+            entity,
+          )}`,
         );
       }
 
