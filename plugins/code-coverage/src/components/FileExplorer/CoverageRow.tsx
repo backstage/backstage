@@ -17,7 +17,6 @@ import React from 'react';
 
 // styles
 import { makeStyles } from '@material-ui/core';
-import { red, green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(theme => ({
   lineNumberCell: {
@@ -33,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: 'white', // need to enforce this color since it needs to stand out against colored background
     paddingLeft: theme.spacing(1),
-    paddingRight: `${theme.spacing(1)}`,
+    paddingRight: theme.spacing(1),
   },
   countRoundedRectangle: {
     borderRadius: '45px',
@@ -42,10 +41,10 @@ const useStyles = makeStyles(theme => ({
     width: '50px',
   },
   hitCountRoundedRectangle: {
-    backgroundColor: green[500],
+    backgroundColor: `${theme.palette.success.main}`,
   },
   notHitCountRoundedRectangle: {
-    backgroundColor: `${red[500]}`,
+    backgroundColor: `${theme.palette.error.main}`,
   },
   codeLine: {
     paddingLeft: `${theme.spacing(1)}`,
@@ -53,10 +52,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: '90%',
   },
   hitCodeLine: {
-    backgroundColor: `${green[100]}`,
+    backgroundColor: `${theme.palette.success.main}`,
   },
   notHitCodeLine: {
-    backgroundColor: `${red[100]}`,
+    backgroundColor: `${theme.palette.error.main}`,
   },
 }));
 
