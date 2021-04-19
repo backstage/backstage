@@ -38,7 +38,7 @@ import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { codeCoverageApiRef } from '../../api';
-import { Progress } from '@backstage/core';
+import { Progress, ResponseErrorPanel } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
@@ -88,8 +88,9 @@ export const CoverageHistoryChart = () => {
 
   if (loadingHistory) {
     return <Progress />;
-  } else if (errorHistory) {
-    return <Alert severity="error">{errorHistory.message}</Alert>;
+  }
+  if (errorHistory) {
+    return <ResponseErrorPanel error={errorHistory} />;
   } else if (!valueHistory) {
     return <Alert severity="warning">No history found.</Alert>;
   }

@@ -16,7 +16,12 @@
 
 import { useApi } from '@backstage/core-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Progress, Table, TableColumn } from '@backstage/core';
+import {
+  Progress,
+  ResponseErrorPanel,
+  Table,
+  TableColumn,
+} from '@backstage/core';
 import {
   Box,
   Card,
@@ -28,15 +33,10 @@ import {
 import React, { Fragment, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { FileContent } from './FileContent';
-
-export type FileCoverage = {
-  filename: string;
-  branchHits: { [branch: number]: number };
-  lineHits: { [line: number]: number };
-};
+import { Alert } from '@material-ui/lab';
+import { FileEntry } from '@backstage/plugin-code-coverage-backend';
 
 type FileStructureObject = Record<string, any>;
 
@@ -101,7 +101,7 @@ const formatInitialData = (value: any) => {
     coverage: value.aggregate.line.percentage,
     missing: value.aggregate.line.missed,
     tracked: value.aggregate.line.available,
-    files: value.files.map((fc: FileCoverage) => {
+    files: value.files.map((fc: FileEntry) => {
       return {
         path: '',
         filename: fc.filename,
@@ -145,7 +145,12 @@ export const FileExplorer = () => {
   if (loading) {
     return <Progress />;
   } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
+  }
+  if (!value) {
+    return (
+      <Alert severity="warning">No code coverage found for ${entity}</Alert>
+    );
   }
 
   const moveDownIntoPath = (path: string) => {
@@ -230,9 +235,13 @@ export const FileExplorer = () => {
 
   const pathArray = curPath.split('/');
   const lastPathElementIndex = pathArray.length - 1;
-  const fileCoverage = value.files.find((f: FileCoverage) =>
+  const fileCoverage = value.files.find((f: FileEntry) =>
     f.filename.endsWith(curFile),
   );
+
+  if (!fileCoverage) {
+    return null;
+  }
 
   return (
     <Box mt={8}>

@@ -21,6 +21,7 @@ import {
   JsonCodeCoverage,
   JsonCoverageHistory,
 } from '@backstage/plugin-code-coverage-backend';
+import { ResponseError } from '@backstage/errors';
 
 export class FetchError extends Error {
   get name(): string {
@@ -66,7 +67,9 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     init?: RequestInit,
   ): Promise<T | string> {
     const resp = await fetch(`${this.url}${input}`, init);
-    if (!resp.ok) throw await FetchError.forResponse(resp);
+    if (!resp.ok) {
+      throw await ResponseError.fromResponse(resp);
+    }
     if (resp.headers.get('content-type')?.includes('application/json')) {
       return await resp.json();
     }

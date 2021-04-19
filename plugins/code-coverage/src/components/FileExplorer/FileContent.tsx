@@ -23,12 +23,12 @@ import { Progress } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles, Paper } from '@material-ui/core';
 import { highlightLines } from './Highlighter';
-import { FileCoverage } from './FileExplorer';
 import CoverageRow from './CoverageRow';
+import { FileEntry } from '@backstage/plugin-code-coverage-backend';
 
 type Props = {
   filename: string;
-  coverage: FileCoverage;
+  coverage: FileEntry;
 };
 
 const useStyles = makeStyles(theme => ({
