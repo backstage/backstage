@@ -180,6 +180,36 @@
               "UA-000000-0"
             ]
           },
+          "datadogRum": {
+            "type": "object",
+            "description": "Datadog RUM events configuration",
+            "properties": {
+              "env": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "Environment for Datadog RUM events"
+              },
+              "clientToken": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "clientToken for Datadog RUM events"
+              },
+              "applicationId": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "applicationId for Datadog RUM events"
+              },
+              "site": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "site for Datadog RUM events"
+              }
+            },
+            "required": [
+              "clientToken",
+              "applicationId"
+            ]
+          },
           "listen": {
             "type": "object",
             "description": "Listening configuration for local development",

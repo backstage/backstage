@@ -127,6 +127,16 @@ export async function createConfig(
           googleAnalyticsTrackingId: frontendConfig.getOptionalString(
             'app.googleAnalyticsTrackingId',
           ),
+          datadogRum: {
+            env: frontendConfig.getOptionalString('app.datadogRum.env'),
+            clientToken: frontendConfig.getOptionalString(
+              'app.datadogRum.clientToken',
+            ),
+            applicationId: frontendConfig.getOptionalString(
+              'app.datadogRum.applicationId',
+            ),
+            site: frontendConfig.getOptionalString('app.datadogRum.site'),
+          },
         },
       },
     }),
