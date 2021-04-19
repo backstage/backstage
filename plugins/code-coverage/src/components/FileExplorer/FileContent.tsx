@@ -93,8 +93,16 @@ export const FileContent = ({ filename, coverage }: Props) => {
 
   if (loading) {
     return <Progress />;
-  } else if (error) {
+  }
+  if (error) {
     return <Alert severity="error">{error.message}</Alert>;
+  }
+  if (!value) {
+    return (
+      <Alert severity="error">
+        Unable to retrieve file content for {filename}
+      </Alert>
+    );
   }
 
   const [language] = filename.split('.').slice(-1);

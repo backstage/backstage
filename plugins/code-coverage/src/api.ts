@@ -17,6 +17,10 @@
 import { createApiRef } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  JsonCodeCoverage,
+  JsonCoverageHistory,
+} from '@backstage/plugin-code-coverage-backend';
 
 export class FetchError extends Error {
   get name(): string {
@@ -34,15 +38,15 @@ export class FetchError extends Error {
 
 export type CodeCoverageApi = {
   url: string;
-  getCoverageForEntity: (entity: EntityName) => Promise<any>;
+  getCoverageForEntity: (entity: EntityName) => Promise<JsonCodeCoverage>;
   getFileContentFromEntity: (
     entity: EntityName,
     filePath: string,
-  ) => Promise<any>;
+  ) => Promise<string>;
   getCoverageHistoryForEntity: (
     entity: EntityName,
     limit?: number,
-  ) => Promise<any>;
+  ) => Promise<JsonCoverageHistory>;
 };
 
 export const codeCoverageApiRef = createApiRef<CodeCoverageApi>({
@@ -57,7 +61,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
 
   constructor(public url: string) {}
 
-  private async fetch<T = any | string>(
+  private async fetch<T = unknown | string | JsonCoverageHistory>(
     input: string,
     init?: RequestInit,
   ): Promise<T | string> {
@@ -69,18 +73,21 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     return await resp.text();
   }
 
-  async getCoverageForEntity(entityName: EntityName): Promise<any> {
+  async getCoverageForEntity(
+    entityName: EntityName,
+  ): Promise<JsonCodeCoverage> {
     const entity = stringifyEntityRef(entityName);
-    return await this.fetch<any>(`/api/code-coverage/report?entity=${entity}`);
+    return (await this.fetch<JsonCodeCoverage>(
+      `/api/code-coverage/report?entity=${entity}`,
+    )) as JsonCodeCoverage;
   }
 
   async getFileContentFromEntity(
     entityName: EntityName,
     filePath: string,
-  ): Promise<any> {
+  ): Promise<string> {
     const entity = stringifyEntityRef(entityName);
-    return await this.fetch<any>(
-      /// file-content?entity=component:default/mycomponent&path=src/some-file.go
+    return await this.fetch<string>(
       `/api/code-coverage/file-content?entity=${entity}&path=${filePath}`,
     );
   }
@@ -88,13 +95,13 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   async getCoverageHistoryForEntity(
     entityName: EntityName,
     limit?: number,
-  ): Promise<any> {
+  ): Promise<JsonCoverageHistory> {
     const entity = stringifyEntityRef(entityName);
     const hasValidLimit = limit && limit > 0;
-    return await this.fetch<any>(
+    return (await this.fetch<JsonCoverageHistory>(
       `/api/code-coverage/history?entity=${entity}${
         hasValidLimit ? `&limit=${limit}` : ''
       }`,
-    );
+    )) as JsonCoverageHistory;
   }
 }
