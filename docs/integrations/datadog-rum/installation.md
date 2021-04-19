@@ -20,7 +20,7 @@ app:
 ```
 
 Replace the clientToken and applicationId with the ones generated for you
-datadog.
+Datadog.
 
 optional arguments:
 
