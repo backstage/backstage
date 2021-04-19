@@ -15,7 +15,7 @@
  */
 import { resolvePackagePath } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
-import { EntityName } from '@backstage/catalog-model';
+import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
@@ -24,17 +24,15 @@ import { JsonCodeCoverage, JsonCoverageHistory } from './jsoncoverage-types';
 
 export type RawDbCoverageRow = {
   id: string;
-  entity_name: string;
-  entity_namespace: string;
-  entity_kind: string;
+  entity: string;
   coverage: string;
 };
 export interface CodeCoverageStore {
   insertCodeCoverage(
     coverage: JsonCodeCoverage,
   ): Promise<{ codeCoverageId: string }>;
-  getCodeCoverage(entity: EntityName): Promise<JsonCodeCoverage>;
-  getHistory(entity: EntityName, limit: number): Promise<JsonCoverageHistory>;
+  getCodeCoverage(entity: string): Promise<JsonCodeCoverage>;
+  getHistory(entity: string, limit: number): Promise<JsonCoverageHistory>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -55,22 +53,22 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
     coverage: JsonCodeCoverage,
   ): Promise<{ codeCoverageId: string }> {
     const codeCoverageId = uuid();
+    this.logger.error(JSON.stringify(coverage.entity));
+    const entity = stringifyEntityRef({
+      kind: coverage.entity.kind,
+      namespace: coverage.entity.namespace,
+      name: coverage.entity.name,
+    });
     await this.db<RawDbCoverageRow>('code_coverage').insert({
       id: codeCoverageId,
-      entity_name: coverage.entity.name,
-      entity_kind: coverage.entity.kind,
-      entity_namespace: coverage.entity.namespace,
+      entity: entity,
       coverage: JSON.stringify(coverage),
     });
     return { codeCoverageId };
   }
-  async getCodeCoverage(entity: EntityName): Promise<JsonCodeCoverage> {
+  async getCodeCoverage(entity: string): Promise<JsonCodeCoverage> {
     const [result] = await this.db<RawDbCoverageRow>('code_coverage')
-      .where({
-        entity_name: entity.name,
-        entity_kind: entity.kind,
-        entity_namespace: entity.namespace,
-      })
+      .where({ entity: entity })
       .orderBy('created_at', 'desc')
       .limit(1)
       .select();
@@ -87,15 +85,11 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
   }
 
   async getHistory(
-    entity: EntityName,
+    entity: string,
     limit: number,
   ): Promise<JsonCoverageHistory> {
     const res = await this.db<RawDbCoverageRow>('code_coverage')
-      .where({
-        entity_name: entity.name,
-        entity_kind: entity.kind,
-        entity_namespace: entity.namespace,
-      })
+      .where({ entity: entity })
       .orderBy('created_at', 'desc')
       .limit(limit)
       .select();
@@ -104,8 +98,13 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
       .map(r => JSON.parse(r.coverage))
       .map(c => aggregateCoverage(c));
 
+    const entityName = parseEntityName(entity);
     return {
-      entity,
+      entity: {
+        name: entityName.name,
+        kind: entityName.kind,
+        namespace: entityName.namespace,
+      },
       history: history,
     };
   }

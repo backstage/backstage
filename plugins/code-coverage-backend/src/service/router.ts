@@ -33,6 +33,11 @@ import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Cobertura } from './converter/cobertura';
 import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
+import {
+  EntityRef,
+  parseEntityName,
+  parseEntityRef,
+} from '@backstage/catalog-model';
 
 export interface RouterOptions {
   config: Config;
@@ -69,19 +74,17 @@ export const makeRouter = async (
     res.status(200).json({ status: 'ok' });
   });
 
-  router.get('/:kind/:namespace/:name', async (req, res) => {
-    const { kind, namespace, name } = req.params;
-    const entity = await catalogApi.getEntityByName({ kind, namespace, name });
-    if (!entity) {
-      throw new NotFoundError(
-        `No entity found matching ${kind}/${namespace}/${name}`,
-      );
+  /**
+   * /report?entity=component:default/mycomponent
+   */
+  router.get('/report', async (req, res) => {
+    const { entity } = req.query;
+    const entityName = parseEntityName(entity as EntityRef);
+    const entityLookup = await catalogApi.getEntityByName(entityName);
+    if (!entityLookup) {
+      throw new NotFoundError(`No entity found matching ${entity}`);
     }
-    const stored = await codeCoverageDatabase.getCodeCoverage({
-      kind,
-      namespace,
-      name,
-    });
+    const stored = await codeCoverageDatabase.getCodeCoverage(entity as string);
 
     const aggregate = aggregateCoverage(stored);
 
@@ -94,45 +97,45 @@ export const makeRouter = async (
     });
   });
 
-  router.get('/:kind/:namespace/:name/history', async (req, res) => {
-    const { kind, namespace, name } = req.params;
-    const entity = await catalogApi.getEntityByName({ kind, namespace, name });
-    if (!entity) {
-      throw new NotFoundError(
-        `No entity found matching ${kind}/${namespace}/${name}`,
-      );
+  /**
+   * /history?entity=component:default/mycomponent
+   */
+  router.get('/history', async (req, res) => {
+    const { entity } = req.query;
+    const entityName = parseEntityName(entity as EntityRef);
+    const entityLookup = await catalogApi.getEntityByName(entityName);
+    if (!entityLookup) {
+      throw new NotFoundError(`No entity found matching ${entity}`);
     }
     const { limit } = req.query;
     const history = await codeCoverageDatabase.getHistory(
-      {
-        kind,
-        namespace,
-        name,
-      },
+      entity as string,
       parseInt(limit?.toString() || '10', 10),
     );
 
     res.status(200).json(history);
   });
 
-  router.get('/:kind/:namespace/:name/file-content', async (req, res) => {
-    const { kind, namespace, name } = req.params;
-    const entity = await catalogApi.getEntityByName({ kind, namespace, name });
-    if (!entity) {
-      throw new NotFoundError(
-        `No entity found matching ${kind}/${namespace}/${name}`,
-      );
+  /**
+   * /file-content?entity=component:default/mycomponent&path=src/some-file.go
+   */
+  router.get('/file-content', async (req, res) => {
+    const { entity, path } = req.query;
+    const entityName = parseEntityName(entity as EntityRef);
+    const entityLookup = await catalogApi.getEntityByName(entityName);
+    if (!entityLookup) {
+      throw new NotFoundError(`No entity found matching ${entity}`);
     }
-    const { path } = req.query;
+
     if (!path) {
       throw new InputError('Need path query parameter');
     }
 
     const sourceLocation =
-      entity.metadata.annotations?.['backstage.io/source-location'];
+      entityLookup.metadata.annotations?.['backstage.io/source-location'];
     if (!sourceLocation) {
       throw new InputError(
-        `No "backstage.io/source-location" annotation on entity ${entity.kind}/${entity.metadata.namespace}/${entity.metadata.name}`,
+        `No "backstage.io/source-location" annotation on entity ${entity}`,
       );
     }
 
@@ -165,9 +168,17 @@ export const makeRouter = async (
     res.status(200).contentType('text/plain').send(data);
   });
 
-  router.post('/:kind/:namespace/:name/', async (req, res) => {
-    const { kind, namespace, name } = req.params;
-    const { coverageType } = req.query;
+  /**
+   * /report?entity=component:default/mycomponent&coverageType=cobertura
+   */
+  router.post('/report', async (req, res) => {
+    const { entity, coverageType } = req.query;
+    const entityName = parseEntityName(entity as EntityRef);
+    const entityLookup = await catalogApi.getEntityByName(entityName);
+    if (!entityLookup) {
+      throw new NotFoundError(`No entity found matching ${entity}`);
+    }
+
     let converter: Converter;
     if (!coverageType) {
       throw new InputError('Need coverageType query parameter');
@@ -178,18 +189,13 @@ export const makeRouter = async (
     } else {
       throw new NotFoundError(`unsupported coverage type '${coverageType}`);
     }
-    const entity = await catalogApi.getEntityByName({ kind, namespace, name });
-    if (!entity) {
-      throw new NotFoundError(
-        `No entity found matching ${kind}/${namespace}/${name}`,
-      );
-    }
+
     const {
       sourceLocation,
       vcs,
       scmFiles,
       body,
-    } = await utils.processCoveragePayload(entity, req);
+    } = await utils.processCoveragePayload(entityLookup, req);
 
     const files = converter.convert(body, scmFiles);
     if (!files || files.length === 0) {
@@ -197,7 +203,7 @@ export const makeRouter = async (
     }
 
     const coverage = await utils.buildCoverage(
-      entity,
+      entityLookup,
       sourceLocation,
       vcs,
       files,
@@ -208,7 +214,7 @@ export const makeRouter = async (
       links: [
         {
           rel: 'coverage',
-          href: `${codecovUrl}/${kind}/${namespace}/${name}`,
+          href: `${codecovUrl}/report?entity=${entity}`,
         },
       ],
     });

@@ -16,7 +16,7 @@
 import { Request } from 'express';
 import { UrlReader } from '@backstage/backend-common';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityName } from '@backstage/catalog-model';
 import { ScmIntegration, ScmIntegrations } from '@backstage/integration';
 import {
   AggregateCoverage,

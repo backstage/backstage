@@ -22,12 +22,12 @@ Note: This requires the [`backstage.io/source-location` annotation](https://back
 
 ### Adding cobertura report
 
-POST a cobertura xml to `/:kind/:namespace/:name?coverageType=cobertura`
+POST a cobertura xml to `/report`
 
 Example:
 
 ```json
-// curl -X POST -H "Content-Type:text/xml" -d @cobertura.xml "localhost:7000/api/code-coverage/Component/default/entity-name?coverageType=cobertura"
+// curl -X POST -H "Content-Type:text/xml" -d @cobertura.xml "localhost:7000/api/code-coverage/report?entity=component:default/entity-name&coverageType=cobertura"
 {
   "links": [
     {
@@ -40,12 +40,12 @@ Example:
 
 ### Adding jacoco report
 
-POST a jacoco xml to `/:kind/:namespace/:name?coverageType=jacoco`
+POST a jacoco xml to `/report`
 
 Example:
 
 ```json
-// curl -X POST -H "Content-Type:text/xml" -d @jacoco.xml "localhost:7000/api/code-coverage/Component/default/entity-name?coverageType=jacoco"
+// curl -X POST -H "Content-Type:text/xml" -d @jacoco.xml "localhost:7000/api/code-coverage/report?entity=component:default/entity-name&coverageType=jacoco"
 {
   "links": [
     {
@@ -58,12 +58,12 @@ Example:
 
 ### Reading json coverage
 
-GET `/:kind/:namespace/:name`
+GET `/report`
 
 Example:
 
 ```json
-// curl localhost:7000/api/code-coverage/Component/default/entity-name
+// curl localhost:7000/api/code-coverage/report?entity=component:default/entity-name
 {
   "aggregate": {
     "branch": {
@@ -102,12 +102,12 @@ Example:
 
 ### Coverage history
 
-GET `/:kind/:namespace/:name/history`
+GET `/history`
 
 Example
 
 ```json
-// curl localhost:7000/api/code-coverage/Component/default/entity-name/history
+// curl localhost:7000/api/code-coverage/history?entity=component:default/entity-name
 {
   "entity": {
     "kind": "Component",

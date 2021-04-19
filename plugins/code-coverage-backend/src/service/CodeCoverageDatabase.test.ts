@@ -17,6 +17,7 @@ import {
   getVoidLogger,
   SingleConnectionDatabaseManager,
 } from '@backstage/backend-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   CodeCoverageDatabase,
@@ -142,11 +143,13 @@ describe('CodeCoverageDatabase', () => {
 
   describe('getCodeCoverage', () => {
     it("can get coverage that's in the database", async () => {
-      const cov = await database.getCodeCoverage({
-        name: 'test-entity',
-        kind: 'Component',
-        namespace: 'default',
-      });
+      const cov = await database.getCodeCoverage(
+        stringifyEntityRef({
+          name: 'test-entity',
+          kind: 'Component',
+          namespace: 'default',
+        }),
+      );
       expect(cov).toEqual(coverage[1]);
     });
   });
@@ -154,11 +157,11 @@ describe('CodeCoverageDatabase', () => {
   describe('getHistory', () => {
     it("can get history that's in the database", async () => {
       const cov = await database.getHistory(
-        {
+        stringifyEntityRef({
           name: 'test-entity',
           kind: 'Component',
           namespace: 'default',
-        },
+        }),
         5,
       );
       expect(cov.history.length).toEqual(2);

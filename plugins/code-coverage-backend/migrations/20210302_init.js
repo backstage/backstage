@@ -27,9 +27,7 @@ exports.up = async function up(knex) {
       .primary()
       .notNullable()
       .comment('The ID of the code coverage');
-    table.text('entity_name').notNullable().comment('entity name');
-    table.text('entity_kind').notNullable().comment('entity kind');
-    table.text('entity_namespace').notNullable().comment('entity namespace');
+    table.text('entity').notNullable().comment('entity string reference');
     table
       .text('coverage')
       .notNullable()

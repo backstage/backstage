@@ -16,7 +16,7 @@
 
 import { createApiRef } from '@backstage/core';
 import { Config } from '@backstage/config';
-import { EntityName } from '@backstage/catalog-model';
+import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
 
 export class FetchError extends Error {
   get name(): string {
@@ -69,33 +69,31 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     return await resp.text();
   }
 
-  async getCoverageForEntity({
-    kind,
-    namespace,
-    name,
-  }: EntityName): Promise<any> {
-    return await this.fetch<any>(
-      `/api/code-coverage/${kind}/${namespace}/${name}`,
-    );
+  async getCoverageForEntity(entityName: EntityName): Promise<any> {
+    const entity = stringifyEntityRef(entityName);
+    return await this.fetch<any>(`/api/code-coverage/report?entity=${entity}`);
   }
 
   async getFileContentFromEntity(
-    { kind, namespace, name }: EntityName,
+    entityName: EntityName,
     filePath: string,
   ): Promise<any> {
+    const entity = stringifyEntityRef(entityName);
     return await this.fetch<any>(
-      `/api/code-coverage/${kind}/${namespace}/${name}/file-content?path=${filePath}`,
+      /// file-content?entity=component:default/mycomponent&path=src/some-file.go
+      `/api/code-coverage/file-content?entity=${entity}&path=${filePath}`,
     );
   }
 
   async getCoverageHistoryForEntity(
-    { kind, namespace, name }: EntityName,
+    entityName: EntityName,
     limit?: number,
   ): Promise<any> {
+    const entity = stringifyEntityRef(entityName);
     const hasValidLimit = limit && limit > 0;
     return await this.fetch<any>(
-      `/api/code-coverage/${kind}/${namespace}/${name}/history${
-        hasValidLimit ? `?limit=${limit}` : ''
+      `/api/code-coverage/history?entity=${entity}${
+        hasValidLimit ? `&limit=${limit}` : ''
       }`,
     );
   }
