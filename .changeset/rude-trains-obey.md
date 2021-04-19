@@ -2,7 +2,6 @@
 '@backstage/backend-common': patch
 '@backstage/catalog-client': patch
 '@backstage/catalog-model': patch
-'@backstage/cli': patch
 '@backstage/cli-common': patch
 '@backstage/config': patch
 '@backstage/config-loader': patch

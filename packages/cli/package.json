@@ -149,8 +149,7 @@
     "templates",
     "config",
     "bin",
-    "dist/**/*.js",
-    "src"
+    "dist/**/*.js"
   ],
   "nodemonConfig": {
     "watch": "./src",
