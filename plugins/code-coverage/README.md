@@ -16,4 +16,4 @@ There's a feature to only include files that are in VCS in the coverage report, 
 backstage.io/code-coverage: scm-only
 ```
 
-Note: This requires the [`backstage.io/source-location` annotation](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location) to be set.
+Note: It may be required to set the [`backstage.io/source-location` annotation](https://backstage.io/docs/features/software-catalog/well-known-annotations#backstageiosource-location), however this should generally not be needed.
