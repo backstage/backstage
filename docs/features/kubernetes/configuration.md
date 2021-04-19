@@ -78,6 +78,7 @@ cluster. Valid values are:
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `serviceAccount` | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
 | `google`         | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
+| `aws`            | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                 |
 
 ##### `clusters.\*.skipTLSVerify`
 
