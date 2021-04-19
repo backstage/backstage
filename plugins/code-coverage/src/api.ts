@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { Config } from '@backstage/config';
 import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
 import {
@@ -38,7 +38,7 @@ export class FetchError extends Error {
 }
 
 export type CodeCoverageApi = {
-  url: string;
+  discovery: DiscoveryApi;
   getCoverageForEntity: (entity: EntityName) => Promise<JsonCodeCoverage>;
   getFileContentFromEntity: (
     entity: EntityName,
@@ -56,17 +56,18 @@ export const codeCoverageApiRef = createApiRef<CodeCoverageApi>({
 });
 
 export class CodeCoverageRestApi implements CodeCoverageApi {
-  static fromConfig(config: Config) {
-    return new CodeCoverageRestApi(config.getString('backend.baseUrl'));
-  }
+  url: string = '';
 
-  constructor(public url: string) {}
+  constructor(public discovery: DiscoveryApi) {}
 
   private async fetch<T = unknown | string | JsonCoverageHistory>(
-    input: string,
+    path: string,
     init?: RequestInit,
   ): Promise<T | string> {
-    const resp = await fetch(`${this.url}${input}`, init);
+    if (!this.url) {
+      this.url = await this.discovery.getBaseUrl('code-coverage');
+    }
+    const resp = await fetch(`${this.url}${path}`, init);
     if (!resp.ok) {
       throw await ResponseError.fromResponse(resp);
     }
@@ -81,7 +82,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   ): Promise<JsonCodeCoverage> {
     const entity = encodeURI(stringifyEntityRef(entityName));
     return (await this.fetch<JsonCodeCoverage>(
-      `/api/code-coverage/report?entity=${entity}`,
+      `/report?entity=${entity}`,
     )) as JsonCodeCoverage;
   }
 
@@ -91,9 +92,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   ): Promise<string> {
     const entity = encodeURI(stringifyEntityRef(entityName));
     return await this.fetch<string>(
-      `/api/code-coverage/file-content?entity=${entity}&path=${encodeURI(
-        filePath,
-      )}`,
+      `/file-content?entity=${entity}&path=${encodeURI(filePath)}`,
     );
   }
 
@@ -104,7 +103,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     const entity = encodeURI(stringifyEntityRef(entityName));
     const hasValidLimit = limit && limit > 0;
     return (await this.fetch<JsonCoverageHistory>(
-      `/api/code-coverage/history?entity=${entity}${
+      `/history?entity=${entity}${
         hasValidLimit ? `&limit=${encodeURI(`${limit}`)}` : ''
       }`,
     )) as JsonCoverageHistory;

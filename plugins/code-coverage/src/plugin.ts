@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import {
-  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  discoveryApiRef,
 } from '@backstage/core';
 import { codeCoverageApiRef, CodeCoverageRestApi } from './api';
 
@@ -31,8 +31,8 @@ export const codeCoveragePlugin = createPlugin({
   apis: [
     createApiFactory({
       api: codeCoverageApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => CodeCoverageRestApi.fromConfig(configApi),
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => new CodeCoverageRestApi(discoveryApi),
     }),
   ],
 });
