@@ -19,7 +19,7 @@ import { useApi } from '@backstage/core-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
-import { Progress } from '@backstage/core';
+import { Progress, ResponseErrorPanel } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 import { makeStyles, Paper } from '@material-ui/core';
 import { highlightLines } from './Highlighter';
@@ -95,11 +95,11 @@ export const FileContent = ({ filename, coverage }: Props) => {
     return <Progress />;
   }
   if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
+    return <ResponseErrorPanel error={error} />;
   }
   if (!value) {
     return (
-      <Alert severity="error">
+      <Alert severity="warning">
         Unable to retrieve file content for {filename}
       </Alert>
     );

@@ -33,7 +33,11 @@ import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Cobertura } from './converter/cobertura';
 import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
-import { EntityRef, parseEntityName } from '@backstage/catalog-model';
+import {
+  EntityRef,
+  getEntitySourceLocation,
+  parseEntityName,
+} from '@backstage/catalog-model';
 
 export interface RouterOptions {
   config: Config;
@@ -127,20 +131,20 @@ export const makeRouter = async (
       throw new InputError('Need path query parameter');
     }
 
-    const sourceLocation =
-      entityLookup.metadata.annotations?.['backstage.io/source-location'];
+    const sourceLocation = getEntitySourceLocation(entityLookup);
+
     if (!sourceLocation) {
       throw new InputError(
         `No "backstage.io/source-location" annotation on entity ${entity}`,
       );
     }
 
-    const vcs = scm.byUrl(sourceLocation);
+    const vcs = scm.byUrl(sourceLocation.target);
     if (!vcs) {
       throw new InputError(`Unable to determine SCM from ${sourceLocation}`);
     }
 
-    const scmTree = await urlReader.readTree(sourceLocation);
+    const scmTree = await urlReader.readTree(sourceLocation.target);
     const scmFile = (await scmTree.files()).find(f => f.path === path);
     if (!scmFile) {
       res.status(400).json({
