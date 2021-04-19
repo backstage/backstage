@@ -203,6 +203,7 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/docker",
       "deployment/k8s",
       "deployment/helm",
       "deployment/heroku"
