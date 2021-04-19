@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { UrlReader } from '@backstage/backend-common';
 import {
   ApiEntity,
   apiEntityV1alpha1Validator,
@@ -28,6 +29,7 @@ import {
   locationEntityV1alpha1Validator,
   LocationSpec,
   parseEntityRef,
+  parseLocationReference,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CHILD_OF,
@@ -57,6 +59,7 @@ import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
 export class BuiltinKindsEntityProcessor implements CatalogProcessor {
+  private readonly reader: UrlReader;
   private readonly validators = [
     apiEntityV1alpha1Validator,
     componentEntityV1alpha1Validator,
@@ -69,6 +72,10 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,
   ];
+
+  constructor({ reader }: { reader: UrlReader }) {
+    this.reader = reader;
+  }
 
   async validateEntityKind(entity: Entity): Promise<boolean> {
     for (const validator of this.validators) {
@@ -196,30 +203,45 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_HAS_PART,
       );
 
-      // TODO: Consider building a helper around this, but it's a bit difficult
-      // with "deleting" the previous field.
-
-      // TODO: Emitting the attachment from the definition field for now. That
-      // still requires that the definition is filled with the full data and we
-      // we can do any special caching around it for now. Later we can read it
-      // form a definitionLocation field instead.
       // TODO: Move to catalog model
       const ATTACHMENT_API_DEFINITION = 'backstage.io/api-definition';
-      // TODO: Also support directly reading from a location in the future, this
-      // avoid that we bload our memory with all definitions.
-      const data = Buffer.from(api.spec.definition!, 'utf8');
       // TODO: Actually a hard question, depends either on the use case or data,
       // but for api definitions plain should be a fine choice.
       const contentType = 'text/plain';
 
-      emit(result.attachment(ATTACHMENT_API_DEFINITION, { data, contentType }));
+      if (api.spec.definition) {
+        const data = Buffer.from(api.spec.definition!, 'utf8');
 
-      // TODO: How to migrate from "definition" to "definition?", it's a breaking change?
-      delete api.spec.definition;
-      api.spec.definitionLocation = stringifyLocationReference({
-        type: 'attachment',
-        target: ATTACHMENT_API_DEFINITION,
-      });
+        emit(
+          result.attachment(ATTACHMENT_API_DEFINITION, { data, contentType }),
+        );
+
+        // TODO: How to migrate from "definition" to "definition?", it's a breaking change?
+        delete api.spec.definition;
+        api.spec.definitionLocation = stringifyLocationReference({
+          type: 'attachment',
+          target: ATTACHMENT_API_DEFINITION,
+        });
+      } else if (api.spec.definitionLocation) {
+        const { type, target } = parseLocationReference(
+          api.spec.definitionLocation,
+        );
+
+        if (type === 'url') {
+          const data = await this.reader.read(target);
+
+          emit(
+            result.attachment(ATTACHMENT_API_DEFINITION, { data, contentType }),
+          );
+
+          api.spec.definitionLocation = stringifyLocationReference({
+            type: 'attachment',
+            target: ATTACHMENT_API_DEFINITION,
+          });
+        } else {
+          throw new Error(`Unsupported location type ${type}`);
+        }
+      }
     }
 
     /*
