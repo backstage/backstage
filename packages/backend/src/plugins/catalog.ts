@@ -34,9 +34,15 @@ export default async function createPlugin(
     locationAnalyzer,
   } = await builder.build();
 
+  const refreshLoopMs =
+    env.config.getOptionalNumber('backend.refreshLoopMs') || 100000;
+
   useHotCleanup(
     module,
-    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
+    runPeriodically(
+      () => higherOrderOperation.refreshAllLocations(),
+      refreshLoopMs,
+    ),
   );
 
   return await createRouter({
