@@ -269,7 +269,7 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new NextEntitiesCatalog(dbClient, logger);
+    const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
     const locationStore = new LocationStoreImpl(db);
     const dbLocationProvider = new DatabaseLocationProvider(locationStore);

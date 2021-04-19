@@ -78,11 +78,7 @@ export class Stitcher {
         )
           .where({ target_entity_id: entity.metadata.uid })
           .count({ reference_count: 'target_entity_id' });
-        console.log(
-          'DEBUG: reference_count_result =',
-          reference_count_result,
-          entityId,
-        );
+
         if (Number(reference_count_result.reference_count) === 0) {
           this.logger.debug(`${entityRef} is orphan`);
           entity.metadata.annotations = {
@@ -103,7 +99,6 @@ export class Stitcher {
         entity.metadata.generation = 1;
         const etag = generateEntityEtag(entity);
         entity.metadata.etag = etag;
-        console.log(JSON.stringify(entity, null, 2));
         await tx<DbFinalEntitiesRow>('final_entities')
           .insert({
             finalized_entity: JSON.stringify(entity),

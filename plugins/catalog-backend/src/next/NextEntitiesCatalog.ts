@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { Knex } from 'knex';
 import { DbFinalEntitiesRow } from './Stitcher';
 import { EntitiesCatalog } from '../catalog';
 import { EntitiesRequest, EntitiesResponse } from '../catalog/types';
 
 export class NextEntitiesCatalog implements EntitiesCatalog {
-  constructor(
-    private readonly database: Knex,
-    private readonly logger: Logger,
-  ) {}
+  constructor(private readonly database: Knex) {}
 
   async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
     if (request?.fields) {

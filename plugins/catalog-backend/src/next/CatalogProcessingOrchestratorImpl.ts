@@ -97,7 +97,7 @@ export class CatalogProcessingOrchestratorImpl
   async process(
     request: EntityProcessingRequest,
   ): Promise<EntityProcessingResult> {
-    const { entity, eager, state } = request;
+    const { entity } = request;
 
     const result = await this.processSingleEntity(entity);
 
