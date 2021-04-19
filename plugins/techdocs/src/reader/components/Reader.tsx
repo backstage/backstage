@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import { useApi } from '@backstage/core';
+import { useApi, configApiRef } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -31,6 +31,7 @@ import transformer, {
   rewriteDocLinks,
   sanitizeDOM,
   simplifyMkdocsFooter,
+  addGitFeedbackLink,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';
@@ -52,6 +53,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const [loadedPath, setLoadedPath] = useState('');
   const [atInitialLoad, setAtInitialLoad] = useState(true);
   const [newerDocsExist, setNewerDocsExist] = useState(false);
+  const configApi = useApi(configApiRef);
 
   const {
     value: isSynced,
@@ -142,6 +144,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       rewriteDocLinks(),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
+      addGitFeedbackLink(configApi),
       injectCss({
         css: `
         body {
@@ -313,6 +316,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
     name,
     newerDocsExist,
     isSynced,
+    configApi,
   ]);
 
   // docLoadError not considered an error state if sync request is still ongoing
