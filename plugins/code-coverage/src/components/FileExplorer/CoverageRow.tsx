@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     borderRight: `1px solid ${theme.palette.grey[500]}`,
     textAlign: 'center',
     color: 'white', // need to enforce this color since it needs to stand out against colored background
-    paddingLeft: `${theme.spacing(1)}`,
+    paddingLeft: theme.spacing(1),
     paddingRight: `${theme.spacing(1)}`,
   },
   countRoundedRectangle: {
