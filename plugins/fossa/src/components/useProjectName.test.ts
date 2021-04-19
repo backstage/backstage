@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import {
-  createComponentExtension,
-  createRoutableExtension,
-} from '@backstage/core';
-import { fossaPlugin } from './plugin';
-import { rootRoute } from './routes';
+import { Entity } from '@backstage/catalog-model';
+import { renderHook } from '@testing-library/react-hooks';
+import { useProjectName } from './useProjectName';
 
-export const EntityFossaCard = fossaPlugin.provide(
-  createComponentExtension({
-    component: {
-      lazy: () => import('./components/FossaCard').then(m => m.FossaCard),
+describe('useProjectName', () => {
+  const entity: Entity = {
+    apiVersion: 'v1',
+    kind: 'Component',
+    metadata: {
+      name: 'test',
+      annotations: {
+        'fossa.io/project-name': 'test',
+      },
     },
-  }),
-);
+  };
 
-export const FossaPage = fossaPlugin.provide(
-  createRoutableExtension({
-    component: () => import('./components/FossaPage').then(m => m.FossaPage),
-    mountPoint: rootRoute,
-  }),
-);
+  it('should extract the fossa project name', async () => {
+    const { result } = renderHook(() => useProjectName(entity));
+
+    expect(result.current).toBe('test');
+  });
+});

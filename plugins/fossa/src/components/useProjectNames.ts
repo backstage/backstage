@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  createComponentExtension,
-  createRoutableExtension,
-} from '@backstage/core';
-import { fossaPlugin } from './plugin';
-import { rootRoute } from './routes';
+import { Entity } from '@backstage/catalog-model';
+import { useMemo } from 'react';
+import { FOSSA_PROJECT_NAME_ANNOTATION } from './useProjectName';
 
-export const EntityFossaCard = fossaPlugin.provide(
-  createComponentExtension({
-    component: {
-      lazy: () => import('./components/FossaCard').then(m => m.FossaCard),
-    },
-  }),
-);
-
-export const FossaPage = fossaPlugin.provide(
-  createRoutableExtension({
-    component: () => import('./components/FossaPage').then(m => m.FossaPage),
-    mountPoint: rootRoute,
-  }),
-);
+export const useProjectNames = (
+  entities: Entity[] | undefined,
+): Array<string | undefined> => {
+  return useMemo(
+    () =>
+      entities?.map(
+        entity =>
+          entity.metadata.annotations?.[FOSSA_PROJECT_NAME_ANNOTATION] ??
+          undefined,
+      ) ?? [],
+    [entities],
+  );
+};
