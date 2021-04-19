@@ -15,32 +15,19 @@
  */
 
 import {
-  UserEntity,
-  serializeEntityRef,
   RELATION_MEMBER_OF,
+  stringifyEntityRef,
+  UserEntity,
 } from '@backstage/catalog-model';
 import { TokenParams } from '../../identity';
 
 export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
-  const userRef = serializeEntityRef(entity);
-  if (typeof userRef !== 'string') {
-    throw new Error(
-      `Failed to serialize user entity ref, ${JSON.stringify(userRef)}`,
-    );
-  }
+  const userRef = stringifyEntityRef(entity);
 
   const membershipRefs =
     entity.relations
       ?.filter(r => r.type === RELATION_MEMBER_OF)
-      .map(r => {
-        const ref = serializeEntityRef(r.target);
-        if (typeof ref !== 'string') {
-          throw new Error(
-            `Failed to serialize relation entity ref, ${JSON.stringify(ref)}`,
-          );
-        }
-        return ref;
-      }) ?? [];
+      .map(r => stringifyEntityRef(r.target)) ?? [];
 
   return {
     sub: userRef,
