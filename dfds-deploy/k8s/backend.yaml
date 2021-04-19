@@ -5,6 +5,8 @@ metadata:
   labels:
     app: backstage
     component: backend
+    project: developerautomation
+    department: cloudengineering
 spec:
   replicas: 1
   selector:
@@ -16,10 +18,12 @@ spec:
       labels:
         app: backstage
         component: backend
+        project: developerautomation
+        department: cloudengineering        
     spec:
       containers:
       - name: backend
-        image: 579478677147.dkr.ecr.eu-central-1.amazonaws.com/selfservice/backstage-backend:$(Build.BuildId)
+        image: 579478677147.dkr.ecr.eu-central-1.amazonaws.com/selfservice/backstage-backend:#(Build.BuildId)
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 7000
@@ -27,29 +31,19 @@ spec:
           protocol: TCP
         env:
         - name: AUTH_MICROSOFT_CLIENT_ID
-          value: $(AUTH_MICROSOFT_CLIENT_ID)
+          value: #(AUTH_MICROSOFT_CLIENT_ID)
         - name: AUTH_MICROSOFT_CLIENT_SECRET
-          value: $(AUTH_MICROSOFT_CLIENT_SECRET)
+          value: #(AUTH_MICROSOFT_CLIENT_SECRET)
         - name: AUTH_MICROSOFT_TENANT_ID
-          value: $(AUTH_MICROSOFT_TENANT_ID)
-        - name: DATABASE_HOST
-          value: $(DATABASE_HOST)
-        - name: DATABASE_PORT
-          value: $(DATABASE_PORT)
-        - name: DATABASE_USER
-          value: $(DATABASE_USER)
-        - name: DATABASE_NAME
-          value: $(DATABASE_NAME)
-        - name: DATABASE_PASSWORD
-          value: $(DATABASE_PASSWORD)
+          value: #(AUTH_MICROSOFT_TENANT_ID)
         - name: KAFKA_CLUSTER
-          value: $(KAFKA_CLUSTER)
+          value: #(KAFKA_CLUSTER)
         - name: KAFKA_USERNAME
-          value: $(KAFKA_USERNAME)
+          value: #(KAFKA_USERNAME)
         - name: KAFKA_PASSWORD
-          value: $(KAFKA_PASSWORD)
+          value: #(KAFKA_PASSWORD)
         - name: HELLMAN_SERVICE_ACCOUNT_TOKEN
-          value: $(HELLMAN_SERVICE_ACCOUNT_TOKEN)
+          value: #(HELLMAN_SERVICE_ACCOUNT_TOKEN)
         - name: GITHUB_PRIVATE_TOKEN
           valueFrom:
             secretKeyRef:
@@ -60,4 +54,24 @@ spec:
             secretKeyRef:
               name: backstage-third-party-credentials
               key: azuredevops_token
+        - name: DATABASE_HOST
+          valueFrom:
+            secretKeyRef:
+              name: backstage-rdspostgresql-conn
+              key: endpoint
+        - name: DATABASE_PORT
+          valueFrom:
+            secretKeyRef:
+              name: backstage-rdspostgresql-conn
+              key: port
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: backstage-rdspostgresql-conn
+              key: username
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backstage-rdspostgresql-conn
+              key: password
         resources: {}

@@ -1,0 +1,25 @@
+apiVersion: database.aws.crossplane.io/v1beta1
+kind: RDSInstance
+metadata:
+  name: backstage-rds
+  namespace: developerautomation-xavgy
+  labels:
+    department: cloudengineering
+    project: developerautomation
+spec:
+  providerConfigRef:
+    name: backstage-provider-config
+  forProvider:
+    region: eu-west-1
+    dbInstanceClass: db.t2.small
+    masterUsername: masteruser
+    allocatedStorage: 20
+    engine: postgres
+    engineVersion: "11"
+    skipFinalSnapshotBeforeDeletion: true
+    vpcSecurityGroupIDSelector:
+      matchLabels:
+        rdsinstance: backstage-rds
+  writeConnectionSecretToRef:
+    namespace: developerautomation-xavgy
+    name: backstage-rdspostgresql-conn

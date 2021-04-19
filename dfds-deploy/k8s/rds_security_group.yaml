@@ -1,0 +1,26 @@
+apiVersion: ec2.aws.crossplane.io/v1beta1
+kind: SecurityGroup
+metadata:
+  name: backstage-rds-security-group
+  namespace: developerautomation-xavgy
+  labels:
+    rdsinstance: backstage-rds
+    department: cloudengineering
+    project: developerautomation    
+spec:
+  forProvider:
+    region: eu-west-1
+    tags:
+    - key: Name
+      value: backstage-rds-security-group
+    groupName: backstage-rds-security-group
+    description: Security Group for RDS
+    ingress: 
+    - fromPort: 5432
+      toPort: 5432
+      ipProtocol: tcp
+      ipRanges:
+      - cidrIp: 0.0.0.0/0
+        description: postgresql
+  providerConfigRef:
+    name: backstage-provider-config

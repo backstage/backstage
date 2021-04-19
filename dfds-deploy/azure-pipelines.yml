@@ -108,14 +108,14 @@ stages:
             inputs:
               rootDirectory: '$(Pipeline.Workspace)/manifests/'
               targetFiles: '*.yaml'
-              tokenPrefix: '$('
+              tokenPrefix: '#('
               tokenSuffix: ')'
-          
+
           - task: Kubernetes@1
-            displayName: 'Apply manifests'
+            displayName: 'Apply k8s manifests'
             inputs:
               connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: '$(k8s-service-connection)'
-              namespace: '$(kubernetes-namespace)'
+              kubernetesServiceEndpoint: 'Kubernetes-Developer-Automation-Deploy'
+              namespace: 'developerautomation-xavgy'
               command: apply
               arguments: '-f $(Pipeline.Workspace)/manifests/'

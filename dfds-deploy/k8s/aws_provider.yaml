@@ -1,0 +1,15 @@
+---
+apiVersion: aws.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: developerautomation-xavgy-provider-config
+  labels:
+    department: cloudengineering
+    project: developerautomation  
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: developerautomation-xavgy
+      name: aws-creds
+      key: key

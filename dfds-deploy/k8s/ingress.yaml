@@ -5,8 +5,10 @@ metadata:
   annotations:
     traefik.frontend.rule.type: PathPrefixStrip
   labels:
+    department: cloudengineering
+    project: developerautomation  
     app: backstage
-    component: ingress
+    component: ingress    
 spec:
   rules:
   - host: backstage.dfds.cloud

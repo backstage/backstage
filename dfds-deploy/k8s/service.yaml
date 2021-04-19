@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: backstage
   labels:
+    department: cloudengineering
+    project: developerautomation  
     app: backstage
     component: frontend
 spec:
@@ -21,6 +23,8 @@ kind: Service
 metadata:
   name: backstage-backend
   labels:
+    department: cloudengineering
+    project: developerautomation  
     app: backstage
     component: backend
 spec:

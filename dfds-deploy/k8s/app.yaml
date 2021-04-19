@@ -3,8 +3,10 @@ kind: Deployment
 metadata:
   name: backstage
   labels:
-    app: backstage
+    department: cloudengineering
+    project: developerautomation
     component: frontend
+    app: backstage
 spec:
   replicas: 1
   selector:
@@ -14,8 +16,10 @@ spec:
   template:
     metadata:
       labels:
-        app: backstage
+        department: cloudengineering
+        project: developerautomation
         component: frontend
+        app: backstage
     spec:
       containers:
       - name: app
@@ -25,3 +29,10 @@ spec:
         - containerPort: 80
           name: app
           protocol: TCP
+      resources:
+        requests:
+          memory: "200Mi"
+          cpu: "100m"
+        limits:
+          memory: "400Mi"
+          cpu: "200m"
