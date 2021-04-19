@@ -23,7 +23,7 @@ export type JsonCodeCoverage = {
 
 export type JsonCoverageHistory = {
   entity: EntityName;
-  history: Array<CoverageHistory>;
+  history: Array<AggregateCoverage>;
 };
 
 export type CoverageHistory = {

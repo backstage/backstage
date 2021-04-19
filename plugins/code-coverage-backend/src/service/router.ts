@@ -33,11 +33,7 @@ import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
 import { Cobertura } from './converter/cobertura';
 import { Jacoco } from './converter/jacoco';
 import { Converter } from './converter';
-import {
-  EntityRef,
-  parseEntityName,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { EntityRef, parseEntityName } from '@backstage/catalog-model';
 
 export interface RouterOptions {
   config: Config;

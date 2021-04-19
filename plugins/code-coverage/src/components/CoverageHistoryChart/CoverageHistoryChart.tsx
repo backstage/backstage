@@ -19,6 +19,7 @@ import {
   Box,
   Card,
   CardContent,
+  makeStyles,
   MenuItem,
   Select,
   Typography,
@@ -42,15 +43,26 @@ import { Alert } from '@material-ui/lab';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
+import { BackstageTheme } from '@backstage/theme';
+import { ClassNameMap } from '@material-ui/styles';
 
 type Coverage = 'line' | 'branch';
 
-const getTrendIcon = (trend: number) => {
+const useStyles = makeStyles<BackstageTheme>(theme => ({
+  trendDown: {
+    color: theme.palette.status.warning,
+  },
+  trendUp: {
+    color: theme.palette.status.ok,
+  },
+}));
+
+const getTrendIcon = (trend: number, classes: ClassNameMap) => {
   switch (true) {
     case trend > 0:
-      return <TrendingUpIcon style={{ color: 'green' }} />;
+      return <TrendingUpIcon className={classes.trendUp} />;
     case trend < 0:
-      return <TrendingDownIcon style={{ color: 'red' }} />;
+      return <TrendingDownIcon className={classes.trendDown} />;
     case trend === 0:
     default:
       return <TrendingFlatIcon />;
@@ -72,11 +84,14 @@ export const CoverageHistoryChart = () => {
         name: entity.metadata.name,
       }),
   );
+  const classes = useStyles();
 
   if (loadingHistory) {
     return <Progress />;
   } else if (errorHistory) {
     return <Alert severity="error">{errorHistory.message}</Alert>;
+  } else if (!valueHistory) {
+    return <Alert severity="warning">No history found.</Alert>;
   }
 
   if (!valueHistory.history.length) {
@@ -123,7 +138,7 @@ export const CoverageHistoryChart = () => {
           </Box>
           <Box px={6} display="flex">
             <Box display="flex" mr={4}>
-              {getTrendIcon(lineTrend)}
+              {getTrendIcon(lineTrend, classes)}
               <Typography>
                 Current line: {latestCoverage.line.percentage}%<br />(
                 {Math.floor(lineTrend)}% change over{' '}
@@ -131,7 +146,7 @@ export const CoverageHistoryChart = () => {
               </Typography>
             </Box>
             <Box display="flex">
-              {getTrendIcon(branchTrend)}
+              {getTrendIcon(branchTrend, classes)}
               <Typography>
                 Current branch: {latestCoverage.branch.percentage}%<br />(
                 {Math.floor(branchTrend)}% change over{' '}

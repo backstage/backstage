@@ -30,6 +30,7 @@
     "@backstage/theme": "^0.2.3",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/styles": "^4.11.0",
     "@material-ui/lab": "4.0.0-alpha.45",
     "@types/highlightjs": "^10.1.0",
     "highlight.js": "^10.6.0",
