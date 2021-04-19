@@ -208,6 +208,10 @@ const groupPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
+
+    <EntityLayout.Route path="/diagram" title="Diagram">
+      <EntitySystemDiagramCard />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 
@@ -225,9 +229,6 @@ const systemPage = (
           <EntityHasApisCard variant="gridItem" />
         </Grid>
       </Grid>
-    </EntityLayout.Route>
-    <EntityLayout.Route path="/diagram" title="Diagram">
-      <EntitySystemDiagramCard />
     </EntityLayout.Route>
   </EntityLayout>
 );
