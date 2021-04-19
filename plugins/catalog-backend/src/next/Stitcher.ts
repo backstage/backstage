@@ -88,7 +88,7 @@ export class Stitcher {
         }
 
         const relationResults = await tx<DbRelationsRow>('relations')
-          .where({ originating_entity_id: entityId })
+          .where({ source_entity_ref: entityRef })
           .select();
 
         // TODO: entityRef is lower case and should be uppercase in the final result.
