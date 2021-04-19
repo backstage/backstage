@@ -75,7 +75,6 @@
   },
   "files": [
     "dist",
-    "src",
     "src"
   ]
 }
