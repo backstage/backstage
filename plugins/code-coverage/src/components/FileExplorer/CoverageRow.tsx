@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     color: `${theme.palette.grey[500]}`,
     fontSize: '90%',
     borderRight: `1px solid ${theme.palette.grey[500]}`,
-    paddingRight: '8px',
+    paddingRight: theme.spacing(1),
     textAlign: 'right',
   },
   hitCountCell: {
