@@ -38,6 +38,8 @@ describe('useEntityFilterGroup', () => {
       removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
       getEntityByName: jest.fn(),
+      getAttachment: jest.fn(),
+      getAttachmentUrl: jest.fn(),
     };
     const apis = ApiRegistry.with(catalogApiRef, catalogApi).with(
       storageApiRef,
