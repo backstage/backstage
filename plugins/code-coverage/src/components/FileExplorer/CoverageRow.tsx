@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
     width: '50px',
   },
   hitCountRoundedRectangle: {
-    backgroundColor: `${green[500]}`,
+    backgroundColor: green[500],
   },
   notHitCountRoundedRectangle: {
     backgroundColor: `${red[500]}`,
