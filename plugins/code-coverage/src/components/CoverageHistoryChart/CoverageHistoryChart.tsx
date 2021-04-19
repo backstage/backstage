@@ -19,9 +19,8 @@ import {
   Box,
   Card,
   CardContent,
+  CardHeader,
   makeStyles,
-  MenuItem,
-  Select,
   Typography,
 } from '@material-ui/core';
 import {
@@ -97,16 +96,10 @@ export const CoverageHistoryChart = () => {
 
   if (!valueHistory.history.length) {
     return (
-      <Box>
-        <Card>
-          <CardContent>
-            <Box mb={2} display="flex" justifyContent="space-between">
-              <Typography variant="h5">History</Typography>
-            </Box>
-            No coverage history found
-          </CardContent>
-        </Card>
-      </Box>
+      <Card>
+        <CardHeader title="History" />
+        <CardContent>No coverage history found</CardContent>
+      </Card>
     );
   }
 
@@ -128,58 +121,47 @@ export const CoverageHistoryChart = () => {
   const branchTrend = getTrendForCoverage('branch');
 
   return (
-    <Box>
-      <Card>
-        <CardContent>
-          <Box mb={2} display="flex" justifyContent="space-between">
-            <Typography variant="h5">History</Typography>
-            <Select>
-              <MenuItem>7</MenuItem>
-            </Select>
+    <Card>
+      <CardHeader title="History" />
+      <CardContent>
+        <Box px={6} display="flex">
+          <Box display="flex" mr={4}>
+            {getTrendIcon(lineTrend, classes)}
+            <Typography>
+              Current line: {latestCoverage.line.percentage}%<br />(
+              {Math.floor(lineTrend)}% change over {valueHistory.history.length}{' '}
+              builds)
+            </Typography>
           </Box>
-          <Box px={6} display="flex">
-            <Box display="flex" mr={4}>
-              {getTrendIcon(lineTrend, classes)}
-              <Typography>
-                Current line: {latestCoverage.line.percentage}%<br />(
-                {Math.floor(lineTrend)}% change over{' '}
-                {valueHistory.history.length} builds)
-              </Typography>
-            </Box>
-            <Box display="flex">
-              {getTrendIcon(branchTrend, classes)}
-              <Typography>
-                Current branch: {latestCoverage.branch.percentage}%<br />(
-                {Math.floor(branchTrend)}% change over{' '}
-                {valueHistory.history.length} builds)
-              </Typography>
-            </Box>
+          <Box display="flex">
+            {getTrendIcon(branchTrend, classes)}
+            <Typography>
+              Current branch: {latestCoverage.branch.percentage}%<br />(
+              {Math.floor(branchTrend)}% change over{' '}
+              {valueHistory.history.length} builds)
+            </Typography>
           </Box>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={valueHistory.history}
-              margin={{ right: 48, top: 32 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="timestamp" />
-              <YAxis dataKey="line.percentage" />
-              <YAxis dataKey="branch.percentage" />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="branch.percentage"
-                stroke="#8884d8"
-              />
-              <Line
-                type="monotone"
-                dataKey="line.percentage"
-                stroke="#82ca9d"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-    </Box>
+        </Box>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={valueHistory.history}
+            margin={{ right: 48, top: 32 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="timestamp" />
+            <YAxis dataKey="line.percentage" />
+            <YAxis dataKey="branch.percentage" />
+            <Tooltip />
+            <Legend />
+            <Line
+              type="monotone"
+              dataKey="branch.percentage"
+              stroke="#8884d8"
+            />
+            <Line type="monotone" dataKey="line.percentage" stroke="#82ca9d" />
+          </LineChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 };

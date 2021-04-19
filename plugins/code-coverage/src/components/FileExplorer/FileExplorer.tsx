@@ -26,9 +26,9 @@ import {
   Box,
   Card,
   CardContent,
+  CardHeader,
   Modal,
   Tooltip,
-  Typography,
 } from '@material-ui/core';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
@@ -244,46 +244,42 @@ export const FileExplorer = () => {
   }
 
   return (
-    <Box mt={8}>
-      <Card>
-        <CardContent>
-          <Box mb={2} display="flex" justifyContent="space-between">
-            <Typography variant="h5">Explore Files</Typography>
-          </Box>
-          <Box mb={2} display="flex">
-            {pathArray.map((pathElement, idx) => (
-              <Fragment key={pathElement || 'root'}>
-                <div
-                  role="button"
-                  tabIndex={idx}
-                  style={{
-                    color: `${idx !== lastPathElementIndex && 'lightblue'}`,
-                    cursor: `${idx !== lastPathElementIndex && 'pointer'}`,
-                  }}
-                  onKeyDown={() => moveUpIntoPath(pathElement)}
-                  onClick={() => moveUpIntoPath(pathElement)}
-                >
-                  {pathElement || 'root'}
-                </div>
-                <div>{'\u00A0/\u00A0'}</div>
-              </Fragment>
-            ))}
-          </Box>
-          <Table
-            emptyContent={<>No files found</>}
-            data={tableData || []}
-            columns={columns}
-          />
-          <Modal
-            open={modalOpen}
-            onClick={event => event.stopPropagation()}
-            onClose={() => setModalOpen(false)}
-            style={{ overflow: 'scroll' }}
-          >
-            <FileContent filename={curFile} coverage={fileCoverage} />
-          </Modal>
-        </CardContent>
-      </Card>
-    </Box>
+    <Card>
+      <CardHeader title="Explore Files" />
+      <CardContent>
+        <Box mb={2} display="flex">
+          {pathArray.map((pathElement, idx) => (
+            <Fragment key={pathElement || 'root'}>
+              <div
+                role="button"
+                tabIndex={idx}
+                style={{
+                  color: `${idx !== lastPathElementIndex && 'lightblue'}`,
+                  cursor: `${idx !== lastPathElementIndex && 'pointer'}`,
+                }}
+                onKeyDown={() => moveUpIntoPath(pathElement)}
+                onClick={() => moveUpIntoPath(pathElement)}
+              >
+                {pathElement || 'root'}
+              </div>
+              <div>{'\u00A0/\u00A0'}</div>
+            </Fragment>
+          ))}
+        </Box>
+        <Table
+          emptyContent={<>No files found</>}
+          data={tableData || []}
+          columns={columns}
+        />
+        <Modal
+          open={modalOpen}
+          onClick={event => event.stopPropagation()}
+          onClose={() => setModalOpen(false)}
+          style={{ overflow: 'scroll' }}
+        >
+          <FileContent filename={curFile} coverage={fileCoverage} />
+        </Modal>
+      </CardContent>
+    </Card>
   );
 };

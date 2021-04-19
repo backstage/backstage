@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { FC } from 'react';
+import React from 'react';
 import { useApi } from '@backstage/core-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useAsync } from 'react-use';
@@ -53,7 +53,7 @@ type FormattedLinesProps = {
   highlightedLines: string[];
   lineHits: Record<number, number>;
 };
-const FormattedLines: FC<FormattedLinesProps> = ({
+const FormattedLines = ({
   highlightedLines,
   lineHits,
 }: FormattedLinesProps) => {
