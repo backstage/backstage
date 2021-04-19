@@ -29,8 +29,6 @@ const discoveryApi: DiscoveryApi = {
   },
 };
 
-// TODO: Add tests for attachment endpoints
-
 describe('CatalogClient', () => {
   let client: CatalogClient;
 
@@ -198,6 +196,62 @@ describe('CatalogClient', () => {
       );
 
       await client.getLocationById('42');
+    });
+  });
+
+  describe('getAttachment', () => {
+    it('should load attachment', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/my-kind/my-namdspace/my-name/attachments/backstage.io%2Fattachment-key`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(`Bearer ${token}`);
+            return res(ctx.text('Hello World'));
+          },
+        ),
+      );
+
+      const attachment = await client.getAttachment(
+        { kind: 'my-kind', name: 'my-name', namespace: 'my-namdspace' },
+        'backstage.io/attachment-key',
+        { token },
+      );
+
+      expect(attachment.data.type).toBe('text/plain');
+      expect(await attachment.data.text()).toBe('Hello World');
+    });
+
+    it('skips authorization header if token is omitted', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/my-kind/my-namdspace/my-name/attachments/backstage.io%2Fattachment-key`,
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBeNull();
+            return res(ctx.text('Hello World'));
+          },
+        ),
+      );
+
+      const attachment = await client.getAttachment(
+        { kind: 'my-kind', name: 'my-name', namespace: 'my-namdspace' },
+        'backstage.io/attachment-key',
+      );
+
+      expect(attachment.data.type).toBe('text/plain');
+      expect(await attachment.data.text()).toBe('Hello World');
+    });
+  });
+
+  describe('getAttachmentUrl', () => {
+    it('should generate attachment url', async () => {
+      const url = await client.getAttachmentUrl(
+        { kind: 'my-kind', name: 'my-name', namespace: 'my-namdspace' },
+        'backstage.io/attachment-key',
+      );
+
+      expect(url).toEqual(
+        'http://backstage:9191/i-am-a-mock-base/entities/by-name/my-kind/my-namdspace/my-name/attachments/backstage.io%2Fattachment-key',
+      );
     });
   });
 });
