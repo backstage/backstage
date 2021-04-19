@@ -89,7 +89,7 @@ implementation very soon.
 
 In your main App.tsx:
 
-```
+```tsx
 import {
   TechDocsCustomHome,
   WidgetType,
