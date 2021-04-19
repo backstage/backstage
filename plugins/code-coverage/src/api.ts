@@ -15,7 +15,6 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
-import { Config } from '@backstage/config';
 import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   JsonCodeCoverage,

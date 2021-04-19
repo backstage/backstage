@@ -17,12 +17,13 @@
 import { createDevApp } from '@backstage/dev-utils';
 import { codeCoveragePlugin } from '../plugin';
 import { codeCoverageApiRef, CodeCoverageRestApi } from '../api';
+import { discoveryApiRef } from '@backstage/core-api';
 
 createDevApp()
   .registerPlugin(codeCoveragePlugin)
   .registerApi({
     api: codeCoverageApiRef,
-    deps: {},
-    factory: () => new CodeCoverageRestApi('http://localhost:3000'),
+    deps: { discoveryApi: discoveryApiRef },
+    factory: ({ discoveryApi }) => new CodeCoverageRestApi(discoveryApi),
   })
   .render();

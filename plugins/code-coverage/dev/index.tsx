@@ -15,12 +15,12 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { codeCoveragePlugin, CodeCoveragePage } from '../src/plugin';
+import { codeCoveragePlugin, EntityCodeCoverageContent } from '../src/plugin';
 
 createDevApp()
   .registerPlugin(codeCoveragePlugin)
   .addPage({
-    element: <CodeCoveragePage />,
+    element: <EntityCodeCoverageContent />,
     title: 'Root Page',
   })
   .render();
