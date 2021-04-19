@@ -87,6 +87,7 @@ export const FileContent = ({ filename, coverage }: Props) => {
         },
         filename,
       ),
+    [entity],
   );
 
   const classes = useStyles();
