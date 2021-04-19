@@ -150,7 +150,7 @@ const routes = (
 An example of tabsConfig that corresponds to the default documentation home page
 can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
 
-### 2nd way: custom home page plugin
+### 2nd way: Custom home page plugin
 
 A custom home page plugin can be built that uses the components extensions
 DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
