@@ -4,7 +4,7 @@ app:
   googleAnalyticsTrackingId: # UA-000000-0
   datadogRum:
     clientToken: '123456789'
-    applicationId: qwerty 
+    applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
 
