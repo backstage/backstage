@@ -86,6 +86,7 @@ exports.up = async function up(knex) {
       );
     table.text('etag').notNullable().comment('Etag to be used for caching');
     table.text('finalized_entity').notNullable().comment('The final entity');
+    table.index('entity_id', 'final_entities_entity_id_idx');
   });
 
   await knex.schema.createTable('refresh_state_references', table => {
@@ -149,11 +150,8 @@ exports.up = async function up(knex) {
       .text('target_entity_ref')
       .notNullable()
       .comment('The entity reference of the target entity of the relation');
-
-    table.index(
-      ['source_entity_ref', 'type', 'target_entity_ref'],
-      'relations_full_ref_idx',
-    );
+    table.index('source_entity_ref', 'relations_source_entity_ref_idx');
+    table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
 };
 
@@ -170,6 +168,15 @@ exports.down = async function down(knex) {
     table.dropIndex([], 'refresh_state_entity_ref_idx');
     table.dropIndex([], 'refresh_state_next_update_at_idx');
   });
-  await knex.schema.dropTable('refresh_state');
+  await knex.schema.alterTable('final_entities', table => {
+    table.dropIndex([], 'final_entities_entity_id_idx');
+  });
+  await knex.schema.alterTable('relations', table => {
+    table.index('source_entity_ref', 'relations_source_entity_ref_idx');
+    table.index('originating_entity_id', 'relations_source_entity_id_idx');
+  });
+  await knex.schema.dropTable('final_entities');
+  await knex.schema.dropTable('relations');
   await knex.schema.dropTable('references');
+  await knex.schema.dropTable('refresh_state');
 };
