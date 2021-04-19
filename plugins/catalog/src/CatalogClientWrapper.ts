@@ -72,16 +72,37 @@ export class CatalogClientWrapper implements CatalogApi {
   async getAttachment(
     name: EntityName,
     key: string,
+    options?: CatalogRequestOptions,
   ): Promise<CatalogAttachmentResponse> {
-    // TODO: Here we could set the header, but I think most of the use cases
-    // won't use the function, e.g. if I embed the url into an image like
-    // <img src={getAttachmentUrl(...)} ...
-    return await this.client.getAttachment(name, key);
+    return await this.client.getAttachment(name, key, {
+      token: options?.token ?? (await this.identityApi.getIdToken()),
+    });
   }
 
   async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
-    // TODO: Auth headers doesn't work well together with these urls...
-    // cookies would be better here. For now we skip this topic completly.
+    const token = await this.identityApi.getIdToken();
+
+    if (token) {
+      // In case a token is used, we have to fallback to a workaround, as a
+      // simple URL won't work with tokens provided in headers. This is less
+      // efficient, but also only used in that case.
+      // Instead of returning an URL where the called can request the attachment
+      // from, we return the attachmend directly as a base64 URL. Returning blob
+      // URLs might be more efficient, but requires to release them afterwars.
+      const attachment = await this.getAttachment(name, key);
+      const reader = new FileReader();
+
+      return new Promise<string>((resolve, reject) => {
+        reader.onload = e => {
+          if (e.target && typeof e.target.result === 'string') {
+            resolve(e.target.result);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(attachment.data);
+      });
+    }
+
     return await this.client.getAttachmentUrl(name, key);
   }
 

@@ -107,13 +107,17 @@ export class CatalogClient implements CatalogApi {
     );
   }
 
-  // TODO: These need tests!
   async getAttachment(
     name: EntityName,
     key: string,
+    options?: CatalogRequestOptions,
   ): Promise<CatalogAttachmentResponse> {
     const url = await this.getAttachmentUrl(name, key);
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+    });
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
