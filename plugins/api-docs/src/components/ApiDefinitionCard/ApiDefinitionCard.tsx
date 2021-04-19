@@ -48,9 +48,11 @@ export const ApiDefinitionCard = (_: Props) => {
       return entity.spec.definition;
     }
 
+    // TODO: Move to catalog model
+    const ATTACHMENT_API_DEFINITION = 'backstage.io/api-definition';
     const response = await catalogClient.getAttachment(
       getEntityName(entity),
-      'definition',
+      ATTACHMENT_API_DEFINITION,
     );
     return await response.data.text();
   }, [catalogClient, entity]);

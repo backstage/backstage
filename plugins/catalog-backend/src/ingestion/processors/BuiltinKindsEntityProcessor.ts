@@ -52,6 +52,7 @@ import {
   UserEntity,
   userEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
+import fetch from 'cross-fetch';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
@@ -202,20 +203,22 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       // still requires that the definition is filled with the full data and we
       // we can do any special caching around it for now. Later we can read it
       // form a definitionLocation field instead.
-      const key = 'definition';
+      // TODO: Move to catalog model
+      const ATTACHMENT_API_DEFINITION = 'backstage.io/api-definition';
       // TODO: Also support directly reading from a location in the future, this
       // avoid that we bload our memory with all definitions.
       const data = Buffer.from(api.spec.definition!, 'utf8');
       // TODO: Actually a hard question, depends either on the use case or data,
       // but for api definitions plain should be a fine choice.
       const contentType = 'text/plain';
-      emit(result.attachment('definition', data, contentType));
+
+      emit(result.attachment(ATTACHMENT_API_DEFINITION, data, contentType));
 
       // TODO: How to migrate from "definition" to "definition?", it's a breaking change?
       delete api.spec.definition;
       api.spec.definitionLocation = stringifyLocationReference({
         type: 'attachment',
-        target: key,
+        target: ATTACHMENT_API_DEFINITION,
       });
     }
 
@@ -259,6 +262,25 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       );
 
       // TODO: Create an attachment for the photo by downloading the URL.
+
+      // TODO: Property name could be better... like pictureLocation...
+
+      if (user.spec.profile?.picture) {
+        const response = await fetch(user.spec.profile?.picture);
+        const buffer = await response.arrayBuffer();
+        const data = Buffer.from(buffer);
+        const contentType =
+          response.headers.get('content-type') ?? 'text/plain';
+        // TODO: Move to catalog model
+        const ATTACHMENT_PROFILE_PICTURE = 'backstage.io/profile-picture';
+
+        emit(result.attachment(ATTACHMENT_PROFILE_PICTURE, data, contentType));
+
+        user.spec.profile.picture = stringifyLocationReference({
+          type: 'attachment',
+          target: ATTACHMENT_PROFILE_PICTURE,
+        });
+      }
     }
 
     /*
