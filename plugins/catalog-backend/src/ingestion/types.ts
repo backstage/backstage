@@ -55,13 +55,14 @@ export type LocationReader = {
 };
 
 // TODO: Is this a candidate for the catalog model? I don't think so because it contains both metadata (but not all metadata) and the content itself!
-export type EntityAttachment = {
-  key: string;
-  // Alternative: we could use a callback here instead of the value itself.
-  // We could pass an etag to that callback and the callback can either return a
-  // buffer or some other value if unchanged.
+export type EntityAttachmentContent = {
   data: Buffer;
   contentType: string;
+};
+
+export type EntityAttachment = {
+  key: string;
+  content?: EntityAttachmentContent;
 };
 
 export type ReadLocationResult = {

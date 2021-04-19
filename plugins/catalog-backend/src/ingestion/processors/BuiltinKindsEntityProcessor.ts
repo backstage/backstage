@@ -212,7 +212,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       // but for api definitions plain should be a fine choice.
       const contentType = 'text/plain';
 
-      emit(result.attachment(ATTACHMENT_API_DEFINITION, data, contentType));
+      emit(result.attachment(ATTACHMENT_API_DEFINITION, { data, contentType }));
 
       // TODO: How to migrate from "definition" to "definition?", it's a breaking change?
       delete api.spec.definition;
@@ -274,7 +274,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         // TODO: Move to catalog model
         const ATTACHMENT_PROFILE_PICTURE = 'backstage.io/profile-picture';
 
-        emit(result.attachment(ATTACHMENT_PROFILE_PICTURE, data, contentType));
+        emit(
+          result.attachment(ATTACHMENT_PROFILE_PICTURE, { data, contentType }),
+        );
 
         user.spec.profile.picture = stringifyLocationReference({
           type: 'attachment',

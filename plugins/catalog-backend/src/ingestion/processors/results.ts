@@ -20,7 +20,10 @@ import {
   LocationSpec,
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
-import { CatalogProcessorResult } from './types';
+import {
+  CatalogProcessorAttachmentContentResult,
+  CatalogProcessorResult,
+} from './types';
 
 export function notFoundError(
   atLocation: LocationSpec,
@@ -69,13 +72,16 @@ export function relation(spec: EntityRelationSpec): CatalogProcessorResult {
   return { type: 'relation', relation: spec };
 }
 
+/**
+ * Emits a entity attachment.
+ * @param key Required key for the attachment, has to be unqiue inside an
+ *            entity.
+ * @param content Optional content of the attachment. Content can be omitted, if
+ *                the previous content should be kept.
+ */
 export function attachment(
   key: string,
-  data: Buffer,
-  contentType: string,
+  content?: CatalogProcessorAttachmentContentResult,
 ): CatalogProcessorResult {
-  // TODO: Consider allowing to pass an optional etag to configure caching
-  // We could also make it required in CatalogProcessorResult and generate a
-  // fallback here (e.g. sha256)
-  return { type: 'attachment', key, data, contentType };
+  return { type: 'attachment', key, content };
 }

@@ -92,10 +92,7 @@ export class LocationReaders implements LocationReader {
                 } else if (emitResult.type === 'attachment') {
                   attachments.push({
                     key: emitResult.key,
-                    content: {
-                      data: emitResult.data,
-                      contentType: emitResult.contentType,
-                    },
+                    content: emitResult.content,
                   });
                   return;
                 }

@@ -357,7 +357,7 @@ describe('HigherOrderOperations', () => {
         { currentStatus: locationStatus, data: location },
       ]);
       locationReader.read.mockResolvedValue({
-        entities: [{ entity: desc, location, relations: [] }],
+        entities: [{ entity: desc, location, relations: [], attachments: [] }],
         errors: [],
       });
       entitiesCatalog.entities.mockResolvedValue({
