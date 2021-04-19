@@ -306,9 +306,6 @@ export class PrivateAppImpl implements BackstageApp {
         this.verifyPlugins(this.plugins);
 
         // Initialize APIs once all plugins are available
-        if (this.apiHolder) {
-          throw new Error('Plugin holder was initialized too soon');
-        }
         this.getApiHolder();
 
         return result;
