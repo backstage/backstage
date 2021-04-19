@@ -154,8 +154,8 @@ can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
 
 A custom home page plugin can be built that uses the components extensions
 DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
-array of documentation entities ( have 'backstage.io/techdocs-ref' annotation )
-as an 'entities' attribute.
+array of documentation entities ( i.e.have a 'backstage.io/techdocs-ref'
+annotation ) as an 'entities' attribute.
 
-For a reference to the React structure of the default home page, please refer
-to `plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
+For a reference to the React structure of the default home page, please refer to
+`plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
