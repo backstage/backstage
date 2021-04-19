@@ -157,5 +157,5 @@ DocsCardGrid and DocsTable, exported from @backstage/techdocs. They both take a
 array of documentation entities ( have 'backstage.io/techdocs-ref' annotation )
 as an 'entities' attribute.
 
-For an reference to the React structure of the default home page, please refer
+For a reference to the React structure of the default home page, please refer
 to `plugins/techdocs/src/home/components/TechDocsCustomHome.tsx`.
