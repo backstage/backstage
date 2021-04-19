@@ -76,7 +76,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   async getCoverageForEntity(
     entityName: EntityName,
   ): Promise<JsonCodeCoverage> {
-    const entity = stringifyEntityRef(entityName);
+    const entity = encodeURI(stringifyEntityRef(entityName));
     return (await this.fetch<JsonCodeCoverage>(
       `/api/code-coverage/report?entity=${entity}`,
     )) as JsonCodeCoverage;
@@ -86,9 +86,11 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     entityName: EntityName,
     filePath: string,
   ): Promise<string> {
-    const entity = stringifyEntityRef(entityName);
+    const entity = encodeURI(stringifyEntityRef(entityName));
     return await this.fetch<string>(
-      `/api/code-coverage/file-content?entity=${entity}&path=${filePath}`,
+      `/api/code-coverage/file-content?entity=${entity}&path=${encodeURI(
+        filePath,
+      )}`,
     );
   }
 
@@ -96,11 +98,11 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     entityName: EntityName,
     limit?: number,
   ): Promise<JsonCoverageHistory> {
-    const entity = stringifyEntityRef(entityName);
+    const entity = encodeURI(stringifyEntityRef(entityName));
     const hasValidLimit = limit && limit > 0;
     return (await this.fetch<JsonCoverageHistory>(
       `/api/code-coverage/history?entity=${entity}${
-        hasValidLimit ? `&limit=${limit}` : ''
+        hasValidLimit ? `&limit=${encodeURI(`${limit}`)}` : ''
       }`,
     )) as JsonCoverageHistory;
   }
