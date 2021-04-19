@@ -1,5 +1,3 @@
-import { Transaction } from '../database';
-
 /*
  * Copyright 2021 Spotify AB
  *
@@ -18,7 +16,28 @@ import { Transaction } from '../database';
 
 import { Knex } from 'knex';
 import { Logger } from 'winston';
+import { Transaction } from '../database';
 import { ConflictError } from '@backstage/errors';
+import {
+  DbRefreshStateReferences,
+  DbRefreshStateRow,
+  DbRelationsRow,
+} from './database/ProcessingDatabaseImpl';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { createHash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
+
+export type DbFinalEntitiesRow = {
+  entity_id: string;
+  etag: string;
+  finalized_entity: string;
+};
+
+function generateEntityEtag(entity: Entity) {
+  return createHash('sha1')
+    .update(stableStringify({ ...entity }))
+    .digest('hex');
+}
 
 export class Stitcher {
   constructor(
@@ -27,7 +46,74 @@ export class Stitcher {
   ) {}
 
   async stitch(entityRefs: Set<string>) {
-    console.log(entityRefs);
+    for (const entityRef of entityRefs) {
+      await this.transaction(async txOpaque => {
+        const tx = txOpaque as Knex.Transaction;
+        const [result] = await tx<DbRefreshStateRow>('refresh_state')
+          .select('entity_id', 'processed_entity')
+          .where({ entity_ref: entityRef });
+
+        if (!result) {
+          this.logger.debug(
+            `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
+          );
+          return;
+        } else if (!result.processed_entity) {
+          this.logger.debug(
+            `Unable to stitch ${entityRef}, the entity has not yet been processed`,
+          );
+          return;
+        }
+
+        const entity: Entity = JSON.parse(result.processed_entity);
+
+        const entityId = entity?.metadata?.uid;
+        if (!entityId) {
+          this.logger.error(`missing ID in entity ${JSON.stringify(entity)}`);
+          return;
+        }
+
+        const [reference_count_result] = await tx<DbRefreshStateReferences>(
+          'refresh_state_references',
+        )
+          .where({ target_entity_id: entity.metadata.uid })
+          .count({ reference_count: 'target_entity_id' });
+        console.log(
+          'DEBUG: reference_count_result =',
+          reference_count_result,
+          entityId,
+        );
+        if (Number(reference_count_result.reference_count) === 0) {
+          this.logger.debug(`${entityRef} is orphan`);
+          entity.metadata.annotations = {
+            ...entity.metadata.annotations,
+            ['backstage.io/orphan']: 'true',
+          };
+        }
+
+        const relationResults = await tx<DbRelationsRow>('relations')
+          .where({ originating_entity_id: entityId })
+          .select();
+
+        // TODO: entityRef is lower case and should be uppercase in the final result.
+        entity.relations = relationResults.map(relation => ({
+          type: relation.type,
+          target: parseEntityRef(relation.target_entity_ref),
+        }));
+        entity.metadata.generation = 1;
+        const etag = generateEntityEtag(entity);
+        entity.metadata.etag = etag;
+        console.log(JSON.stringify(entity, null, 2));
+        await tx<DbFinalEntitiesRow>('final_entities')
+          .insert({
+            finalized_entity: JSON.stringify(entity),
+            entity_id: entityId,
+            etag,
+          })
+          .onConflict('entity_id')
+          .merge(['finalized_entity', 'etag']);
+      });
+    }
   }
 
   private async transaction<T>(
@@ -45,6 +131,10 @@ export class Stitcher {
         {
           // If we explicitly trigger a rollback, don't fail.
           doNotRejectOnRollback: true,
+          isolationLevel:
+            this.database.client.config.client === 'sqlite3'
+              ? undefined // sqlite3 only supports serializable transactions, ignoring the isolation level param
+              : 'serializable',
         },
       );
 

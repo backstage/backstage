@@ -27,7 +27,11 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  // HIGHLY experimental rework of the software catalog
+  /*
+   * ** WARNING **
+   * DO NOT enable the experimental catalog, it will brick your database migrations.
+   * This is solely for internal backstage development.
+   */
   if (process.env.EXPERIMENTAL_CATALOG === '1') {
     const builder = new NextCatalogBuilder(env);
     const {

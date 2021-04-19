@@ -20,52 +20,6 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
-  await knex.schema.createTable('relations', table => {
-    table.comment('All relations between entities in the catalog');
-    table
-      .text('originating_entity_id')
-      .references('entity_id')
-      .inTable('refresh_state')
-      .onDelete('CASCADE')
-      .notNullable()
-      .comment('The entity that provided the relation');
-    table
-      .text('source_entity_ref')
-      .notNullable()
-      .comment('The entity reference of the source entity of the relation');
-    table
-      .text('type')
-      .notNullable()
-      .comment('The type of the relation between the entities');
-    table
-      .text('target_entity_ref')
-      .notNullable()
-      .comment('The entity reference of the target entity of the relation');
-
-    table.index(
-      ['source_entity_ref', 'type', 'target_entity_ref'],
-      'relations_full_ref_idx',
-    );
-  });
-
-  await knex.schema.createTable('final_entities', table => {
-    table.comment(
-      'This table contains the final entity result after processing and stitching',
-    );
-    table
-      .text('entity_id')
-      .primary()
-      .notNullable()
-      .references('entity_id')
-      .inTable('refresh_state')
-      .onDelete('CASCADE')
-      .comment(
-        'Entity ID which correspond to the ID in the refresh_state table',
-      );
-
-    table.text('finalized_entity').notNullable().comment('The final entity');
-  });
-
   await knex.schema.createTable('refresh_state', table => {
     table.comment(
       'Location refresh states. Every individual location (that was ever directly or indirectly discovered) and entity has an entry in this table. It therefore represents the entire live set of things that the refresh loop considers.',
@@ -116,6 +70,24 @@ exports.up = async function up(knex) {
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
   });
 
+  await knex.schema.createTable('final_entities', table => {
+    table.comment(
+      'This table contains the final entity result after processing and stitching',
+    );
+    table
+      .text('entity_id')
+      .primary()
+      .notNullable()
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
+      .comment(
+        'Entity ID which correspond to the ID in the refresh_state table',
+      );
+    table.text('etag').notNullable().comment('Etag to be used for caching');
+    table.text('finalized_entity').notNullable().comment('The final entity');
+  });
+
   await knex.schema.createTable('refresh_state_references', table => {
     table.comment(
       'Holds edges between refresh state rows. Every time when an entity is processed and emits another entity, an edge will be stored to represent that fact. This is used to detect orphans and ultimately deletions.',
@@ -153,6 +125,34 @@ exports.up = async function up(knex) {
     table.index(
       'target_entity_id',
       'refresh_state_references_target_entity_id_idx',
+    );
+  });
+
+  await knex.schema.createTable('relations', table => {
+    table.comment('All relations between entities in the catalog');
+    table
+      .text('originating_entity_id')
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
+      .notNullable()
+      .comment('The entity that provided the relation');
+    table
+      .text('source_entity_ref')
+      .notNullable()
+      .comment('The entity reference of the source entity of the relation');
+    table
+      .text('type')
+      .notNullable()
+      .comment('The type of the relation between the entities');
+    table
+      .text('target_entity_ref')
+      .notNullable()
+      .comment('The entity reference of the target entity of the relation');
+
+    table.index(
+      ['source_entity_ref', 'type', 'target_entity_ref'],
+      'relations_full_ref_idx',
     );
   });
 };

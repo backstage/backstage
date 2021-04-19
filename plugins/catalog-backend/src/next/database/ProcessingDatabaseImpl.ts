@@ -27,8 +27,6 @@ import {
 } from './types';
 import type { Logger } from 'winston';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
-import stableStringify from 'fast-json-stable-stringify';
 import { v4 as uuid } from 'uuid';
 
 export type DbRefreshStateRow = {
@@ -54,12 +52,6 @@ export type DbRefreshStateReferences = {
   source_entity_id?: string;
   target_entity_id: string;
 };
-
-function generateEntityEtag(entity: Entity) {
-  return createHash('sha1')
-    .update(stableStringify({ ...entity }))
-    .digest('hex');
-}
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -107,9 +99,6 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
     });
 
     // Update fragments
-
-    // Update relations
-    const entityRef = stringifyEntityRef(processedEntity);
 
     // Delete old relations
     await tx<DbRelationsRow>('relations')

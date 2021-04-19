@@ -4,7 +4,8 @@
     "packages/*/src",
     "plugins/*/src",
     "plugins/*/dev",
-    "plugins/*/migrations"
+    "plugins/*/migrations",
+    "plugins/catalog-backend/migrationsv2"
   ],
   "compilerOptions": {
     "outDir": "dist-types",

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager, UrlReader } from '@backstage/backend-common';
+import {
+  PluginDatabaseManager,
+  resolvePackagePath,
+  UrlReader,
+} from '@backstage/backend-common';
+import fs from 'fs-extra';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -30,12 +35,10 @@ import { ScmIntegrations } from '@backstage/integration';
 import lodash from 'lodash';
 import { Logger } from 'winston';
 import {
-  DatabaseEntitiesCatalog,
   DatabaseLocationsCatalog,
   EntitiesCatalog,
   LocationsCatalog,
 } from '../catalog';
-import { DatabaseManager } from '../database';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -68,7 +71,9 @@ import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
 import { LocationStoreImpl } from '../next/LocationStoreImpl';
 import { ProcessingStateManagerImpl } from '../next/ProcessingStateManagerImpl';
 import { CatalogProcessingEngine } from '../next/types';
+import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
+import { CommonDatabase } from '../database/CommonDatabase';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -239,7 +244,20 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    const db = await DatabaseManager.createDatabase(dbClient, { logger });
+    const allMigrations = resolvePackagePath(
+      '@backstage/plugin-catalog-backend',
+      'migrations',
+    );
+
+    const migrationsDir = resolvePackagePath(
+      '@backstage/plugin-catalog-backend',
+      'migrationsv2',
+    );
+    await fs.copy(allMigrations, migrationsDir);
+    await dbClient.migrate.latest({
+      directory: migrationsDir,
+    });
+    const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new ProcessingDatabaseImpl(dbClient, logger);
     const stateManager = new ProcessingStateManagerImpl(processingDatabase);
@@ -251,7 +269,7 @@ export class NextCatalogBuilder {
       parser,
       policy,
     });
-    const entitiesCatalog = new DatabaseEntitiesCatalog(db, logger);
+    const entitiesCatalog = new NextEntitiesCatalog(dbClient, logger);
 
     const locationStore = new LocationStoreImpl(db);
     const dbLocationProvider = new DatabaseLocationProvider(locationStore);
