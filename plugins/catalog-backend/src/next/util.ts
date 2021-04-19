@@ -82,7 +82,6 @@ export function locationSpecToLocationEntity(
     spec: {
       type: location.type,
       target: location.target,
-      optional: location.presence === 'optional' ? true : undefined,
     },
   };
 

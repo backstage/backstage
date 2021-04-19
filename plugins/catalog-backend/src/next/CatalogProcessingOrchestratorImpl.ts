@@ -181,7 +181,7 @@ export class CatalogProcessingOrchestratorImpl
 
       // Backwards compatible processing of location entites
       if (isLocationEntity(entity)) {
-        const { type = location.type, optional = false } = entity.spec;
+        const { type = location.type } = entity.spec;
         const targets = new Array<string>();
         if (entity.spec.target) {
           targets.push(entity.spec.target);
@@ -214,9 +214,9 @@ export class CatalogProcessingOrchestratorImpl
                   {
                     type,
                     target,
-                    presence: optional ? 'optional' : 'required',
+                    presence: 'required',
                   },
-                  Boolean(entity.spec?.optional),
+                  false,
                   emitter.emit,
                   this.options.parser,
                 );
