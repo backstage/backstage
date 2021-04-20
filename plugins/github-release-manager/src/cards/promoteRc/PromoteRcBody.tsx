@@ -16,18 +16,17 @@
 
 import React from 'react';
 import { useAsyncFn } from 'react-use';
-import { Alert } from '@material-ui/lab';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Dialog, DialogTitle, Typography } from '@material-ui/core';
 
 import { Differ } from '../../components/Differ';
 import { ComponentConfigPromoteRc } from '../../types/types';
 import { promoteRc } from './sideEffects/promoteRc';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import { GetLatestReleaseResult } from '../../api/PluginApiClient';
+import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
 
 interface PromoteRcBodyProps {
   rcRelease: NonNullable<GetLatestReleaseResult>;
@@ -49,42 +48,26 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
     }),
   );
 
-  if (promoteGitHubRcResponse.error) {
+  if (promoteGitHubRcResponse.loading || promoteGitHubRcResponse.value) {
     return (
-      <Alert severity="error">{promoteGitHubRcResponse.error.message}</Alert>
+      <Dialog open maxWidth="md" fullWidth>
+        <DialogTitle>Hello</DialogTitle>
+
+        <ResponseStepList2 responseSteps={promoteGitHubRcResponse.value} />
+      </Dialog>
     );
   }
 
-  function Description() {
-    return (
-      <>
-        <Typography className={classes.paragraph}>
-          Promotes the current Release Candidate to a <b>Release Version</b>.
-        </Typography>
+  return (
+    <>
+      <Typography className={classes.paragraph}>
+        Promotes the current Release Candidate to a <b>Release Version</b>.
+      </Typography>
 
-        <Typography className={classes.paragraph}>
-          <Differ
-            icon="tag"
-            current={rcRelease.tagName}
-            next={releaseVersion}
-          />
-        </Typography>
-      </>
-    );
-  }
+      <Typography className={classes.paragraph}>
+        <Differ icon="tag" current={rcRelease.tagName} next={releaseVersion} />
+      </Typography>
 
-  function CTA() {
-    if (promoteGitHubRcResponse.loading || promoteGitHubRcResponse.value) {
-      return (
-        <ResponseStepList
-          responseSteps={promoteGitHubRcResponse.value}
-          title="Promote RC result"
-          loading={promoteGitHubRcResponse.loading}
-        />
-      );
-    }
-
-    return (
       <Button
         data-testid={TEST_IDS.promoteRc.cta}
         variant="contained"
@@ -93,14 +76,6 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
       >
         Promote Release Candidate
       </Button>
-    );
-  }
-
-  return (
-    <div>
-      <Description />
-
-      <CTA />
-    </div>
+    </>
   );
 };

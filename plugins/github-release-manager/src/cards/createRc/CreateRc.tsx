@@ -18,20 +18,20 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from '@material-ui/lab';
 import {
   Button,
+  Dialog,
+  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
   Typography,
 } from '@material-ui/core';
-import { useAsyncFn } from 'react-use';
 
 import { ComponentConfigCreateRc } from '../../types/types';
-import { createRc } from './sideEffects/createRc';
+import { useCreateRc } from './sideEffects/useCreateRc';
 import { Differ } from '../../components/Differ';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
@@ -42,6 +42,8 @@ import {
   GetLatestReleaseResult,
   GetRepositoryResult,
 } from '../../api/PluginApiClient';
+import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
+import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
 
 interface CreateRcProps {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -73,22 +75,23 @@ export const CreateRc = ({
     );
   }, [semverBumpLevel, setNextGitHubInfo, latestRelease, project]);
 
-  const [createGitHubReleaseResponse, createGitHubReleaseFn] = useAsyncFn(
-    (...args) =>
-      createRc({
-        defaultBranch,
-        latestRelease,
-        nextGitHubInfo: args[0],
-        pluginApiClient,
-        project,
-        successCb,
-      }),
-  );
-  if (createGitHubReleaseResponse.error) {
+  const { run, responseSteps, progress } = useCreateRc({
+    defaultBranch,
+    latestRelease,
+    nextGitHubInfo,
+    pluginApiClient,
+    project,
+    successCb,
+  });
+  if (responseSteps.length > 0) {
     return (
-      <Alert severity="error">
-        {createGitHubReleaseResponse.error.message}
-      </Alert>
+      <Dialog open maxWidth="md" fullWidth>
+        <DialogTitle>Create Release Candidate (step {progress})</DialogTitle>
+
+        <LinearProgressWithLabel value={progress} />
+
+        <ResponseStepList2 responseSteps={responseSteps} />
+      </Dialog>
     );
   }
 
@@ -138,26 +141,15 @@ export const CreateRc = ({
   }
 
   function CTA() {
-    if (
-      createGitHubReleaseResponse.loading ||
-      createGitHubReleaseResponse.value
-    ) {
-      return (
-        <ResponseStepList
-          responseSteps={createGitHubReleaseResponse.value}
-          loading={createGitHubReleaseResponse.loading}
-          title="Create RC result"
-        />
-      );
-    }
-
     return (
       <Button
         data-testid={TEST_IDS.createRc.cta}
         disabled={conflictingPreRelease || tagAlreadyExists}
         variant="contained"
         color="primary"
-        onClick={() => createGitHubReleaseFn(nextGitHubInfo)}
+        onClick={async () => {
+          await run();
+        }}
       >
         Create RC
       </Button>

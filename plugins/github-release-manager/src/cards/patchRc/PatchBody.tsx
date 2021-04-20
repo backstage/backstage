@@ -278,7 +278,6 @@ export const PatchBody = ({
           responseSteps={patchReleaseResponse.value}
           loading={patchReleaseResponse.loading}
           title="Patch result"
-          closeable
         />
       );
     }

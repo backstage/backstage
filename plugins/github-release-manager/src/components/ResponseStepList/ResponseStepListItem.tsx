@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   colors,
   IconButton,
@@ -60,19 +60,9 @@ const useStyles = makeStyles({
 
 export const ResponseStepListItem = ({
   responseStep,
-  index,
   animationDelay = 300,
 }: ResponseStepListItemProps) => {
   const classes = useStyles({ animationDelay });
-  const [renderMe, setRenderMe] = useState(false);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setRenderMe(true);
-    }, animationDelay * index);
-
-    return () => clearTimeout(timeoutId);
-  }, [animationDelay, index, setRenderMe]);
 
   function ItemIcon() {
     if (responseStep.icon === 'success') {
@@ -120,7 +110,7 @@ export const ResponseStepListItem = ({
 
   return (
     <ListItem
-      className={`${classes.item} ${renderMe ? classes.shown : classes.hidden}`}
+      className={`${classes.item}`}
       data-testid={TEST_IDS.components.responseStepListItem}
     >
       <ListItemIcon>

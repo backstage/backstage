@@ -37,6 +37,13 @@ jest.mock('../../contexts/ProjectContext', () => ({
 jest.mock('./getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfo,
 }));
+jest.mock('./sideEffects/useCreateRc', () => ({
+  useCreateRc: () => ({
+    run: jest.fn(),
+    responseSteps: [],
+    progress: 0,
+  }),
+}));
 
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { CreateRc } from './CreateRc';
