@@ -33,7 +33,7 @@ export class ProcessingStateManagerImpl implements ProcessingStateManager {
         errors: JSON.stringify(result.errors),
         state: result.state,
         relations: result.relations,
-        deferedEntities: result.deferredEntities,
+        deferredEntities: result.deferredEntities,
       });
     });
   }

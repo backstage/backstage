@@ -32,7 +32,7 @@ export type UpdateProcessedEntityOptions = {
   state?: Map<string, JsonObject>;
   errors?: string;
   relations: EntityRelationSpec[];
-  deferedEntities: Entity[];
+  deferredEntities: Entity[];
 };
 
 export type RefreshStateItem = {

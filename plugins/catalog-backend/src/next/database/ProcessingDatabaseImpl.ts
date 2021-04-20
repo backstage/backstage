@@ -76,7 +76,7 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
       state,
       errors,
       relations,
-      deferedEntities,
+      deferredEntities,
     } = options;
 
     const refreshResult = await tx<DbRefreshStateRow>('refresh_state')
@@ -93,7 +93,7 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
 
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
-      entities: deferedEntities,
+      entities: deferredEntities,
       id,
       type: 'entity',
     });
@@ -183,7 +183,7 @@ export class ProcessingDatabaseImpl implements ProcessingDatabase {
       .select()
       .where('next_update_at', '<=', tx.fn.now())
       .limit(request.processBatchSize)
-      .orderBy('next_update_at', 'desc');
+      .orderBy('next_update_at', 'asc');
 
     await tx<DbRefreshStateRow>('refresh_state')
       .whereIn(

@@ -78,7 +78,7 @@ export class LocationStoreImpl implements LocationStore {
     return this.db.transaction(async tx => {
       const location = await this.db.location(id);
       if (!location) {
-        throw new ConflictError(`No location found with with id: ${id}`);
+        throw new ConflictError(`No location found with id: ${id}`);
       }
       await this.db.removeLocation(tx, id);
       this.notifyDeletion(location);
