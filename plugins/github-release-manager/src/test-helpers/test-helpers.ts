@@ -21,8 +21,8 @@ import {
   IPluginApiClient,
 } from '../api/PluginApiClient';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
-import { getRcGitHubInfo } from '../cards/CreateRc/helpers/getRcGitHubInfo';
 import { Project } from '../contexts/ProjectContext';
+import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
 
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';

@@ -21,7 +21,7 @@ import {
   mockReleaseVersionCalver,
   mockReleaseVersionSemver,
   mockSemverProject,
-} from '../../../test-helpers/test-helpers';
+} from '../test-helpers/test-helpers';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 
 describe('getRcGitHubInfo', () => {

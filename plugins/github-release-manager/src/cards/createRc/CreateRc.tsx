@@ -32,7 +32,7 @@ import {
 } from '../../api/PluginApiClient';
 import { ComponentConfigCreateRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
-import { getRcGitHubInfo } from './helpers/getRcGitHubInfo';
+import { getRcGitHubInfo } from '../../helpers/getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SEMVER_PARTS } from '../../constants/constants';

@@ -16,11 +16,11 @@
 
 import { DateTime } from 'luxon';
 
-import { getBumpedSemverTagParts } from '../../../helpers/getBumpedTag';
-import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
-import { getSemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
-import { Project } from '../../../contexts/ProjectContext';
-import { SEMVER_PARTS } from '../../../constants/constants';
+import { getBumpedSemverTagParts } from './getBumpedTag';
+import { GetLatestReleaseResult } from '../api/PluginApiClient';
+import { getSemverTagParts } from './tagParts/getSemverTagParts';
+import { Project } from '../contexts/ProjectContext';
+import { SEMVER_PARTS } from '../constants/constants';
 
 export const getRcGitHubInfo = ({
   project,

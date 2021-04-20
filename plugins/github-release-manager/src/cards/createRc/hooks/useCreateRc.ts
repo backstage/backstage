@@ -23,7 +23,7 @@ import {
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
-import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
+import { getRcGitHubInfo } from '../../../helpers/getRcGitHubInfo';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';

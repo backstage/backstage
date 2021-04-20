@@ -35,7 +35,7 @@ jest.mock('../../contexts/PluginApiClientContext', () => ({
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
-jest.mock('./helpers/getRcGitHubInfo', () => ({
+jest.mock('../../helpers/getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfo,
 }));
 jest.mock('./hooks/useCreateRc', () => ({
