@@ -45,7 +45,7 @@ import * as React from 'react';
 import { useMemo } from 'react';
 import { useAsync } from 'react-use';
 import { FindingSummary, fossaApiRef } from '../../api';
-import { useProjectNames } from '../useProjectNames';
+import { getProjectName } from '../getProjectName';
 
 type FossaRow = {
   entity: Entity;
@@ -63,7 +63,9 @@ const columns: TableColumn<FossaRow>[] = [
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
-    render: ({ entity }) => <EntityRefLink entityRef={entity} />,
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
+    ),
   },
   {
     title: 'Owner',
@@ -170,7 +172,10 @@ export const FossaPage = () => {
   });
 
   // get the project names of all entities. the idx of both lists match.
-  const projectNames = useProjectNames(entities?.items);
+  const projectNames = useMemo(
+    () => entities?.items?.map(getProjectName) ?? [],
+    [entities?.items],
+  );
 
   // get the summary list
   const { value: summaries, loading: summariesLoading } = useAsync(

@@ -16,30 +16,37 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { renderHook } from '@testing-library/react-hooks';
-import { useProjectNames } from './useProjectNames';
+import { getProjectName } from './getProjectName';
 
-describe('useProjectNames', () => {
-  const entity0: Entity = {
-    apiVersion: 'v1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-      annotations: {
-        'fossa.io/project-name': 'test',
-      },
-    },
-  };
-  const entity1: Entity = {
-    apiVersion: 'v1',
-    kind: 'Component',
-    metadata: {
-      name: 'test',
-    },
-  };
-
+describe('getProjectName', () => {
   it('should extract the fossa project name', async () => {
-    const { result } = renderHook(() => useProjectNames([entity0, entity1]));
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+        annotations: {
+          'fossa.io/project-name': 'test',
+        },
+      },
+    };
 
-    expect(result.current).toEqual(['test', undefined]);
+    const { result } = renderHook(() => getProjectName(entity));
+
+    expect(result.current).toBe('test');
+  });
+
+  it('should return undefined', async () => {
+    const entity: Entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'test',
+      },
+    };
+
+    const { result } = renderHook(() => getProjectName(entity));
+
+    expect(result.current).toBeUndefined();
   });
 });

@@ -55,7 +55,7 @@ export class FossaClient implements FossaApi {
   private async callApi<T>(
     path: string,
     query: Record<string, any>,
-  ): Promise<T | undefined> {
+  ): Promise<T> {
     const apiUrl = `${await this.discoveryApi.getBaseUrl('proxy')}/fossa`;
     const idToken = await this.identityApi.getIdToken();
     const response = await fetch(
@@ -75,29 +75,22 @@ export class FossaClient implements FossaApi {
   async *getProject(
     projectTitles: Set<string>,
   ): AsyncIterable<{ title: string; summary: FindingSummary }> {
-    let nextPage = 0;
     const pageSize = 1000;
 
-    for (;;) {
-      const projects = await this.limit(
-        page =>
-          this.callApi<FossaProjectsResponse[]>('projects', {
-            count: pageSize,
-            page,
-            sort: 'title+',
-            ...(this.organizationId && {
-              organizationId: this.organizationId,
-            }),
-            ...(projectTitles.size === 1 && {
-              title: projectTitles.values().next().value,
-            }),
+    for (let page = 0; ; page++) {
+      const projects = await this.limit(() =>
+        this.callApi<FossaProjectsResponse[]>('projects', {
+          count: pageSize,
+          page,
+          sort: 'title+',
+          ...(this.organizationId && {
+            organizationId: this.organizationId,
           }),
-        nextPage++,
+          ...(projectTitles.size === 1 && {
+            title: projectTitles.values().next().value,
+          }),
+        }),
       );
-
-      if (!projects) {
-        break;
-      }
 
       for (const project of projects) {
         if (projectTitles.has(project.title) && project.revisions.length > 0) {

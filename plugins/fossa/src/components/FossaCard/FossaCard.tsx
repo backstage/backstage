@@ -32,8 +32,8 @@ import { useAsync } from 'react-use';
 import { fossaApiRef } from '../../api';
 import {
   FOSSA_PROJECT_NAME_ANNOTATION,
-  useProjectName,
-} from '../useProjectName';
+  getProjectName,
+} from '../getProjectName';
 
 const useStyles = makeStyles(theme => ({
   numberError: {
@@ -102,7 +102,7 @@ export const FossaCard = ({ variant }: { variant?: InfoCardVariants }) => {
   const { entity } = useEntity();
   const fossaApi = useApi(fossaApiRef);
 
-  const projectTitle = useProjectName(entity);
+  const projectTitle = getProjectName(entity);
   const { value, loading, error } = useAsync(
     async () =>
       projectTitle ? fossaApi.getFindingSummary(projectTitle) : undefined,

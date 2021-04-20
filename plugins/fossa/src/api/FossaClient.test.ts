@@ -287,6 +287,70 @@ describe('FossaClient', () => {
       );
     });
 
+    it('should handle multiple pages', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/fossa/projects`, (req, res, ctx) => {
+          const page = req.url.searchParams.get('page');
+
+          if (page === '0') {
+            return res(
+              ctx.json(
+                [...Array(1000)].map(() => ({
+                  locator: 'custom+8736/our-service',
+                  title: 'our-service-2',
+                  default_branch: 'develop',
+                  revisions: [
+                    {
+                      updatedAt: '2020-01-01T00:00:00Z',
+                      dependency_count: 160,
+                      unresolved_licensing_issue_count: 5,
+                      unresolved_issue_count: 100,
+                    },
+                  ],
+                })),
+              ),
+            );
+          }
+
+          return res(
+            ctx.json([
+              {
+                locator: 'custom+8736/our-service',
+                title: 'our-service',
+                default_branch: 'develop',
+                revisions: [
+                  {
+                    updatedAt: '2020-01-01T00:00:00Z',
+                    dependency_count: 160,
+                    unresolved_licensing_issue_count: 5,
+                    unresolved_issue_count: 100,
+                  },
+                ],
+              },
+            ]),
+          );
+        }),
+      );
+
+      const summary = await client.getFindingSummaries(['our-service']);
+
+      expect(summary).toEqual(
+        new Map<string, FindingSummary>([
+          [
+            'our-service',
+            {
+              timestamp: '2020-01-01T00:00:00Z',
+              issueCount: 5,
+              dependencyCount: 160,
+              projectDefaultBranch: 'develop',
+              projectUrl:
+                'https://app.fossa.com/projects/custom%2B8736%2Four-service',
+            },
+          ],
+        ]),
+      );
+    });
+
     it('should handle empty result', async () => {
       server.use(
         rest.get(`${mockBaseUrl}/fossa/projects`, (_req, res, ctx) => {

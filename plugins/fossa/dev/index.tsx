@@ -27,7 +27,7 @@ import React from 'react';
 import { EntityFossaCard, fossaPlugin } from '../src';
 import { FindingSummary, FossaApi, fossaApiRef } from '../src/api';
 import { FossaPage } from '../src/components/FossaPage';
-import { FOSSA_PROJECT_NAME_ANNOTATION } from '../src/components/useProjectName';
+import { FOSSA_PROJECT_NAME_ANNOTATION } from '../src/components/getProjectName';
 
 const entity = (name?: string) =>
   ({
