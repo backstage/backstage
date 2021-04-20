@@ -15,18 +15,17 @@
  */
 
 import React from 'react';
-import { Button, Dialog, DialogTitle, Typography } from '@material-ui/core';
+import { Button, Typography } from '@material-ui/core';
 
-import { Differ } from '../../components/Differ';
 import { ComponentConfigPromoteRc } from '../../types/types';
-import { usePromoteRc } from './sideEffects/usePromoteRc';
+import { Dialog } from '../../components/Dialog';
+import { Differ } from '../../components/Differ';
+import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
+import { usePromoteRc } from './sideEffects/usePromoteRc';
 import { useStyles } from '../../styles/styles';
-import { GetLatestReleaseResult } from '../../api/PluginApiClient';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
-import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
 
 interface PromoteRcBodyProps {
   rcRelease: NonNullable<GetLatestReleaseResult>;
@@ -49,13 +48,11 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
 
   if (responseSteps.length > 0) {
     return (
-      <Dialog open maxWidth="md" fullWidth>
-        <DialogTitle>Promote Release Candidate</DialogTitle>
-
-        <LinearProgressWithLabel value={progress} />
-
-        <ResponseStepList responseSteps={responseSteps} />
-      </Dialog>
+      <Dialog
+        progress={progress}
+        responseSteps={responseSteps}
+        title="Promote Release Candidate"
+      />
     );
   }
 

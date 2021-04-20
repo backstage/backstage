@@ -18,8 +18,6 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from '@material-ui/lab';
 import {
   Button,
-  Dialog,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -27,23 +25,22 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { ComponentConfigCreateRc } from '../../types/types';
-import { useCreateRc } from './sideEffects/useCreateRc';
-import { Differ } from '../../components/Differ';
-import { getRcGitHubInfo } from './getRcGitHubInfo';
-import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { SEMVER_PARTS } from '../../constants/constants';
-import { TEST_IDS } from '../../test-helpers/test-ids';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRepositoryResult,
 } from '../../api/PluginApiClient';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
-import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
+import { ComponentConfigCreateRc } from '../../types/types';
+import { Dialog } from '../../components/Dialog';
+import { Differ } from '../../components/Differ';
+import { getRcGitHubInfo } from './getRcGitHubInfo';
+import { InfoCardPlus } from '../../components/InfoCardPlus';
+import { SEMVER_PARTS } from '../../constants/constants';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useCreateRc } from './sideEffects/useCreateRc';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 
 interface CreateRcProps {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -85,13 +82,11 @@ export const CreateRc = ({
   });
   if (responseSteps.length > 0) {
     return (
-      <Dialog open maxWidth="md" fullWidth>
-        <DialogTitle>Create Release Candidate</DialogTitle>
-
-        <LinearProgressWithLabel value={progress} />
-
-        <ResponseStepList responseSteps={responseSteps} />
-      </Dialog>
+      <Dialog
+        progress={progress}
+        responseSteps={responseSteps}
+        title="Create Release Candidate"
+      />
     );
   }
 

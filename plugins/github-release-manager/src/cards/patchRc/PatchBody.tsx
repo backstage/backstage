@@ -20,8 +20,6 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Button,
   Checkbox,
-  Dialog,
-  DialogTitle,
   IconButton,
   Link,
   List,
@@ -35,23 +33,22 @@ import {
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
-import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
-import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { ComponentConfigPatch } from '../../types/types';
-import { Differ } from '../../components/Differ';
-import { usePatch } from './sideEffects/usePatch';
-import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
-import { TEST_IDS } from '../../test-helpers/test-ids';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
 } from '../../api/PluginApiClient';
+import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
+import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { ComponentConfigPatch } from '../../types/types';
+import { Dialog } from '../../components/Dialog';
+import { Differ } from '../../components/Differ';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
-import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
+import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+import { usePatch } from './sideEffects/usePatch';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -104,13 +101,11 @@ export const PatchBody = ({
   });
   if (responseSteps.length > 0) {
     return (
-      <Dialog open maxWidth="md" fullWidth>
-        <DialogTitle>Patch Release Candidate</DialogTitle>
-
-        <LinearProgressWithLabel value={progress} />
-
-        <ResponseStepList responseSteps={responseSteps} />
-      </Dialog>
+      <Dialog
+        progress={progress}
+        responseSteps={responseSteps}
+        title="Patch Release Candidate"
+      />
     );
   }
 

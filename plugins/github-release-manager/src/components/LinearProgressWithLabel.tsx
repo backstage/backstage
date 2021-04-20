@@ -26,7 +26,7 @@ export function LinearProgressWithLabel(
   props: LinearProgressProps & { value: number },
 ) {
   return (
-    <Box display="flex" alignItems="center" width="75%" alignSelf="center">
+    <Box display="flex" alignItems="center" width="90%" alignSelf="center">
       <Box width="100%" mr={1}>
         <LinearProgress variant="determinate" {...props} />
       </Box>
