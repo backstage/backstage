@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export * from './catalog';
-export * from './database';
-export * from './ingestion';
-export * from './search';
-export * from './service';
-export * from './util';
-export * from './next';
+export { NextCatalogBuilder } from './NextCatalogBuilder';

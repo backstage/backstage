@@ -33,6 +33,7 @@
     "@backstage/backend-common": "^0.6.1",
     "@backstage/catalog-model": "^0.7.7",
     "@backstage/config": "^0.1.4",
+    "@backstage/core": "^0.7.3",
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@backstage/plugin-search-backend-node": "^0.1.2",
@@ -46,6 +47,7 @@
     "cross-fetch": "^3.0.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^9.0.0",
     "git-url-parse": "^11.4.4",
     "glob": "^7.1.6",
@@ -59,7 +61,8 @@
     "winston": "^3.2.1",
     "yaml": "^1.9.2",
     "yn": "^4.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "zen-observable": "^0.8.15"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.8",
@@ -77,6 +80,7 @@
   "files": [
     "dist",
     "migrations/**/*.{js,d.ts}",
+    "migrationsv2/**/*.{js,d.ts}",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
