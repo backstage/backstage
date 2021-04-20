@@ -20,9 +20,9 @@ Note: It may be required to set the [`backstage.io/source-location` annotation](
 
 ## API
 
-### Adding cobertura report
+### Adding a Cobertura report
 
-POST a cobertura xml to `/report`
+POST a Cobertura XML file to `/report`
 
 Example:
 
@@ -38,9 +38,9 @@ Example:
 }
 ```
 
-### Adding jacoco report
+### Adding a JaCoCo report
 
-POST a jacoco xml to `/report`
+POST a JaCoCo XML file to `/report`
 
 Example:
 

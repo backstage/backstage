@@ -10,6 +10,7 @@ Chai
 Changesets
 Chanwit
 Cloudformation
+Cobertura
 Codecov
 Codehilite
 Config
@@ -34,6 +35,7 @@ Hackathons
 Heroku
 Hostname
 Iain
+JaCoCo
 JavaScript
 Kaewkasi
 Knex
@@ -78,6 +80,7 @@ Tolerations
 WWW
 Weaveworks
 Webpack
+XML
 Zalando
 Zhou
 abc
