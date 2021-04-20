@@ -13,9 +13,11 @@ Cloudformation
 Codecov
 Codehilite
 Config
+Datadog
 Debounce
 Discoverability
 Dockerfile
+dockerfiles
 Dockerize
 Docusaurus
 Env
