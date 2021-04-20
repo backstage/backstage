@@ -19,9 +19,9 @@ import { ErrorBoundary } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
 import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
-import { CreateRc } from './_CreateRc/CreateRc';
+import { CreateRc } from './CreateRc/CreateRc';
 import { GitHubReleaseManagerProps } from '../GitHubReleaseManager';
-import { Info } from './_Info/Info';
+import { Info } from './Info/Info';
 import { Patch } from './Patch/Patch';
 import { PromoteReleaseCandidate } from './PromoteReleaseCandidate/PromoteRc';
 import { RefetchContext } from '../contexts/RefetchContext';
