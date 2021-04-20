@@ -18,7 +18,7 @@ Backstage root folder, instead do:
 yarn dev
 ```
 
-This will launch both the front and backend in same window, populated some example entities.
+This will launch both frontend and backend in the same window, populated with some example entities.
 
 ## Links
 
