@@ -85,7 +85,7 @@ export const TemplateCard = ({
         <Box className={classes.description}>{description}</Box>
       </CardContent>
       <CardActions>
-        <Button color="primary" to={href}>
+        <Button color="primary" to={href} aria-label={`Choose ${title} `}>
           Choose
         </Button>
       </CardActions>
