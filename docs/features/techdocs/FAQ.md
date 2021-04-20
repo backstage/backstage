@@ -54,6 +54,6 @@ on a TechDocs page, be sure that you have `repo_url` and `edit_uri` values in
 your `mkdocs.yml` files per
 [MkDocs instructions](https://www.mkdocs.org/user-guide/configuration).
 
-If the hostname of your source code hosting URL does not include 'github' or
-'gitlab', an `integrations` entry in your `app-config.yaml` pointed at your
+If the host name of your source code hosting URL does not include `github` or
+`gitlab`, an `integrations` entry in your `app-config.yaml` pointed at your
 source code provider is also needed (only the `host` key is necessary).
