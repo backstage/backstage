@@ -31,13 +31,13 @@ import {
   GetRepositoryResult,
 } from '../../api/PluginApiClient';
 import { ComponentConfigCreateRc } from '../../types/types';
-import { Dialog } from '../../components/Dialog';
 import { Differ } from '../../components/Differ';
-import { getRcGitHubInfo } from './getRcGitHubInfo';
+import { getRcGitHubInfo } from './helpers/getRcGitHubInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
+import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useCreateRc } from './sideEffects/useCreateRc';
+import { useCreateRc } from './hooks/useCreateRc';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
@@ -72,7 +72,7 @@ export const CreateRc = ({
     );
   }, [semverBumpLevel, setNextGitHubInfo, latestRelease, project]);
 
-  const { run, responseSteps, progress } = useCreateRc({
+  const { progress, responseSteps, run, runInvoked } = useCreateRc({
     defaultBranch,
     latestRelease,
     nextGitHubInfo,
@@ -82,7 +82,7 @@ export const CreateRc = ({
   });
   if (responseSteps.length > 0) {
     return (
-      <Dialog
+      <ResponseStepDialog
         progress={progress}
         responseSteps={responseSteps}
         title="Create Release Candidate"
@@ -139,14 +139,12 @@ export const CreateRc = ({
     return (
       <Button
         data-testid={TEST_IDS.createRc.cta}
-        disabled={conflictingPreRelease || tagAlreadyExists}
+        disabled={conflictingPreRelease || tagAlreadyExists || runInvoked}
         variant="contained"
         color="primary"
-        onClick={async () => {
-          await run();
-        }}
+        onClick={() => run()}
       >
-        Create RC
+        Create Release Candidate
       </Button>
     );
   }

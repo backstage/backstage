@@ -15,18 +15,17 @@
  */
 
 import React, { useState } from 'react';
-import { useAsync } from 'react-use';
 import { ErrorBoundary } from '@backstage/core';
 import { Alert } from '@material-ui/lab';
 
 import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
-import { CreateRc } from './createRc/CreateRc';
-import { getGitHubBatchInfo } from '../sideEffects/getGitHubBatchInfo';
+import { CreateRc } from './CreateRc/CreateRc';
 import { GitHubReleaseManagerProps } from '../GitHubReleaseManager';
-import { Info } from './info/Info';
-import { Patch } from './patchRc/Patch';
-import { PromoteRc } from './promoteRc/PromoteRc';
+import { Info } from './Info/Info';
+import { Patch } from './Patch/Patch';
+import { PromoteReleaseCandidate } from './PromoteReleaseCandidate/PromoteRc';
 import { RefetchContext } from '../contexts/RefetchContext';
+import { useGetGitHubBatchInfo } from '../hooks/useGetGitHubBatchInfo';
 import { usePluginApiClientContext } from '../contexts/PluginApiClientContext';
 import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
@@ -39,10 +38,11 @@ export function Cards({
   const pluginApiClient = usePluginApiClientContext();
   const project = useProjectContext();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
-  const gitHubBatchInfo = useAsync(
-    getGitHubBatchInfo({ project, pluginApiClient }),
-    [project, refetchTrigger],
-  );
+  const { gitHubBatchInfo } = useGetGitHubBatchInfo({
+    pluginApiClient,
+    project,
+    refetchTrigger,
+  });
 
   const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
     latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tagName,
@@ -111,7 +111,7 @@ export function Cards({
         )}
 
         {!components?.promoteRc?.omit && (
-          <PromoteRc
+          <PromoteReleaseCandidate
             latestRelease={gitHubBatchInfo.value.latestRelease}
             successCb={components?.promoteRc?.successCb}
           />

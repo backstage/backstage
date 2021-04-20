@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { forwardRef, Ref } from 'react';
 import {
   Button,
   Dialog as MaterialDialog,
   DialogActions,
   DialogTitle,
+  Slide,
 } from '@material-ui/core';
+import { TransitionProps } from '@material-ui/core/transitions';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
-import { ResponseStep } from '../types/types';
-import { ResponseStepList } from './ResponseStepList/ResponseStepList';
-import { useRefetchContext } from '../contexts/RefetchContext';
+import { ResponseStep } from '../../types/types';
+import { ResponseStepList } from './ResponseStepList';
+import { useRefetchContext } from '../../contexts/RefetchContext';
 
 interface DialogProps {
   progress: number;
@@ -33,23 +36,43 @@ interface DialogProps {
   title: string;
 }
 
-export const Dialog = ({ progress, responseSteps, title }: DialogProps) => {
+const Transition = forwardRef(function Transition(
+  props: { children?: React.ReactElement<any, any> } & TransitionProps,
+  ref: Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+export const ResponseStepDialog = ({
+  progress,
+  responseSteps,
+  title,
+}: DialogProps) => {
   const { setRefetchTrigger } = useRefetchContext();
 
   return (
-    <MaterialDialog open maxWidth="md" fullWidth>
+    <MaterialDialog
+      open
+      maxWidth="md"
+      fullWidth
+      TransitionComponent={Transition}
+    >
       <DialogTitle>{title}</DialogTitle>
 
       <ResponseStepList responseSteps={responseSteps} />
 
-      <LinearProgressWithLabel value={progress} />
+      <LinearProgressWithLabel
+        progress={progress}
+        responseSteps={responseSteps}
+      />
 
-      <DialogActions>
+      <DialogActions style={{ padding: 20 }}>
         <Button
           onClick={() => setRefetchTrigger(Date.now())}
-          color="primary"
           variant="contained"
           size="large"
+          color="primary"
+          startIcon={<RefreshIcon />}
         >
           Ok
         </Button>

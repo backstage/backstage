@@ -17,19 +17,19 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { Dialog } from './Dialog';
+import { ResponseStepDialog } from './ResponseStepDialog';
 
-jest.mock('../contexts/RefetchContext', () => ({
+jest.mock('../../contexts/RefetchContext', () => ({
   useRefetchContext: () => jest.fn(),
 }));
 
-describe('Dialog', () => {
-  it('should render Dialog', () => {
+describe('ResponseStepDialog', () => {
+  it('should render ResponseStepDialog', () => {
     const mockTitle = 'mock_dialog_title';
     const mockResponseStepMessage = 'banana';
 
     const { baseElement } = render(
-      <Dialog
+      <ResponseStepDialog
         progress={1}
         responseSteps={[{ message: mockResponseStepMessage }]}
         title={mockTitle}

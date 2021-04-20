@@ -18,13 +18,13 @@ import React from 'react';
 import { Button, Typography } from '@material-ui/core';
 
 import { ComponentConfigPromoteRc } from '../../types/types';
-import { Dialog } from '../../components/Dialog';
 import { Differ } from '../../components/Differ';
 import { GetLatestReleaseResult } from '../../api/PluginApiClient';
+import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { usePromoteRc } from './sideEffects/usePromoteRc';
+import { usePromoteRc } from './hooks/usePromoteRc';
 import { useStyles } from '../../styles/styles';
 
 interface PromoteRcBodyProps {
@@ -38,7 +38,7 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
   const classes = useStyles();
   const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
 
-  const { run, responseSteps, progress } = usePromoteRc({
+  const { progress, responseSteps, run, runInvoked } = usePromoteRc({
     pluginApiClient,
     project,
     rcRelease,
@@ -48,7 +48,7 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
 
   if (responseSteps.length > 0) {
     return (
-      <Dialog
+      <ResponseStepDialog
         progress={progress}
         responseSteps={responseSteps}
         title="Promote Release Candidate"
@@ -70,6 +70,7 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
         data-testid={TEST_IDS.promoteRc.cta}
         variant="contained"
         color="primary"
+        disabled={runInvoked}
         onClick={() => run()}
       >
         Promote Release Candidate

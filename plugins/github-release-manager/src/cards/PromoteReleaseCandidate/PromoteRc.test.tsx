@@ -29,11 +29,13 @@ jest.mock('./PromoteRcBody', () => ({
   ),
 }));
 
-import { PromoteRc } from './PromoteRc';
+import { PromoteReleaseCandidate } from './PromoteRc';
 
 describe('PromoteRc', () => {
   it('return early if no latest release present', () => {
-    const { getByTestId } = render(<PromoteRc latestRelease={null} />);
+    const { getByTestId } = render(
+      <PromoteReleaseCandidate latestRelease={null} />,
+    );
 
     expect(
       getByTestId(TEST_IDS.components.noLatestRelease),
@@ -42,7 +44,7 @@ describe('PromoteRc', () => {
 
   it('should display not-rc warning', () => {
     const { getByTestId } = render(
-      <PromoteRc latestRelease={mockReleaseVersionCalver} />,
+      <PromoteReleaseCandidate latestRelease={mockReleaseVersionCalver} />,
     );
 
     expect(getByTestId(TEST_IDS.promoteRc.notRcWarning)).toBeInTheDocument();
@@ -50,7 +52,7 @@ describe('PromoteRc', () => {
 
   it('should display PromoteRcBody', () => {
     const { getByTestId } = render(
-      <PromoteRc latestRelease={mockReleaseCandidateCalver} />,
+      <PromoteReleaseCandidate latestRelease={mockReleaseCandidateCalver} />,
     );
 
     expect(

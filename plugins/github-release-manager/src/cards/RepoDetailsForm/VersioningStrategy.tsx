@@ -24,9 +24,9 @@ import {
   RadioGroup,
 } from '@material-ui/core';
 
+import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
-import { TEST_IDS } from '../../test-helpers/test-ids';
 
 export function VersioningStrategy() {
   const navigate = useNavigate();

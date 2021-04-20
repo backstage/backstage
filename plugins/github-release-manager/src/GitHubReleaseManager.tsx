@@ -32,7 +32,7 @@ import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
 import { PluginApiClientContext } from './contexts/PluginApiClientContext';
 import { ProjectContext, Project } from './contexts/ProjectContext';
-import { RepoDetailsForm } from './cards/projectForm/RepoDetailsForm';
+import { RepoDetailsForm } from './cards/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
 import { useStyles } from './styles/styles';
 

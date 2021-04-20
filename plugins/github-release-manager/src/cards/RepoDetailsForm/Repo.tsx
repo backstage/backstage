@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { useNavigate } from 'react-router';
 import { useAsync } from 'react-use';
+import { useNavigate } from 'react-router';
 import {
   FormControl,
   FormHelperText,
@@ -26,24 +26,30 @@ import {
 } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useFormClasses } from './styles';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
-import { TEST_IDS } from '../../test-helpers/test-ids';
 
-export function Owner({ username }: { username: string }) {
-  const project = useProjectContext();
-  const formClasses = useFormClasses();
-  const navigate = useNavigate();
+export function Repo() {
   const pluginApiClient = usePluginApiClientContext();
+  const project = useProjectContext();
+  const navigate = useNavigate();
+  const formClasses = useFormClasses();
   const { getQueryParamsWithUpdates } = useQueryHandler();
 
-  const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());
-  const owners = value?.owners ?? [];
-  const customOwnerFromUrl = !owners
-    .concat(['', username])
-    .includes(project.owner);
+  const { loading, error, value } = useAsync(
+    async () => pluginApiClient.getRepositories({ owner: project.owner }),
+    [project.owner],
+  );
+
+  if (project.owner.length === 0) {
+    return null;
+  }
+
+  const repositories = value?.repositories ?? [];
+  const customRepoFromUrl = !repositories.concat(['']).includes(project.repo);
 
   return (
     <FormControl
@@ -53,22 +59,19 @@ export function Owner({ username }: { username: string }) {
       error={!!error}
     >
       {loading ? (
-        <CenteredCircularProgress data-testid={TEST_IDS.form.owner.loading} />
+        <CenteredCircularProgress data-testid={TEST_IDS.form.repo.loading} />
       ) : (
         <>
-          <InputLabel id="owner-select-label">Owners</InputLabel>
+          <InputLabel id="repo-select-label">Repositories</InputLabel>
           <Select
-            data-testid={TEST_IDS.form.owner.select}
-            labelId="owner-select-label"
-            id="owner-select"
-            value={project.owner}
+            data-testid={TEST_IDS.form.repo.select}
+            labelId="repo-select-label"
+            id="repo-select"
+            value={project.repo}
             defaultValue=""
             onChange={event => {
               const { queryParams } = getQueryParamsWithUpdates({
-                updates: [
-                  { key: 'repo', value: '' },
-                  { key: 'owner', value: event.target.value as string },
-                ],
+                updates: [{ key: 'repo', value: event.target.value as string }],
               });
 
               navigate(`?${queryParams}`, { replace: true });
@@ -79,37 +82,33 @@ export function Owner({ username }: { username: string }) {
               <em>None</em>
             </MenuItem>
 
-            <MenuItem value={username}>
-              <strong>{username}</strong>
-            </MenuItem>
-
-            {!error && customOwnerFromUrl && (
-              <MenuItem value={project.owner}>
-                <strong>From URL: {project.owner}</strong>
+            {!error && customRepoFromUrl && (
+              <MenuItem value={project.repo}>
+                <strong>From URL: {project.repo}</strong>
               </MenuItem>
             )}
 
-            {owners.map((orgName, index) => (
-              <MenuItem key={`organization-${index}`} value={orgName}>
-                {orgName}
+            {repositories.map((repositoryName, index) => (
+              <MenuItem key={`repository-${index}`} value={repositoryName}>
+                {repositoryName}
               </MenuItem>
             ))}
           </Select>
 
           {error && (
-            <FormHelperText data-testid={TEST_IDS.form.owner.error}>
-              Encountered an error ({error.message})
+            <FormHelperText data-testid={TEST_IDS.form.repo.error}>
+              Encountered an error ({error.message}")
             </FormHelperText>
           )}
 
-          {!error && project.owner.length === 0 && (
+          {!error && project.repo.length === 0 && (
             <>
-              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
-                Select an owner (org or user)
+              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
+                Select a repository
               </FormHelperText>
-              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
+              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
                 Custom queries can be made via the query param{' '}
-                <strong>owner</strong>
+                <strong>repo</strong>
               </FormHelperText>
             </>
           )}

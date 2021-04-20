@@ -21,8 +21,8 @@ import {
   mockApiClient,
   mockBumpedTag,
   mockCalverProject,
-  mockReleaseCandidateCalver,
   mockReleaseBranch,
+  mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
   mockTagParts,
 } from '../../test-helpers/test-helpers';
@@ -33,7 +33,7 @@ jest.mock('../../contexts/PluginApiClientContext', () => ({
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
-jest.mock('./sideEffects/usePatch', () => ({
+jest.mock('./hooks/usePatch', () => ({
   usePatch: () => ({
     run: jest.fn(),
     responseSteps: [],

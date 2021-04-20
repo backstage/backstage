@@ -94,6 +94,7 @@ describe('useCreateRc', () => {
           },
         ],
         "run": [Function],
+        "runLoading": false,
       }
     `);
   });

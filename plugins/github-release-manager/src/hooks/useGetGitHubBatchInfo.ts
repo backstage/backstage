@@ -14,39 +14,49 @@
  * limitations under the License.
  */
 
+import { useAsync } from 'react-use';
+
 import { IPluginApiClient } from '../api/PluginApiClient';
 import { Project } from '../contexts/ProjectContext';
 
 interface GetGitHubBatchInfo {
   project: Project;
   pluginApiClient: IPluginApiClient;
+  refetchTrigger: number;
 }
 
-export const getGitHubBatchInfo = ({
+export const useGetGitHubBatchInfo = ({
   project,
   pluginApiClient,
-}: GetGitHubBatchInfo) => async () => {
-  const [repository, latestRelease] = await Promise.all([
-    pluginApiClient.getRepository({ ...project }),
-    pluginApiClient.getLatestRelease({ ...project }),
-  ]);
+  refetchTrigger,
+}: GetGitHubBatchInfo) => {
+  const gitHubBatchInfo = useAsync(async () => {
+    const [repository, latestRelease] = await Promise.all([
+      pluginApiClient.getRepository({ ...project }),
+      pluginApiClient.getLatestRelease({ ...project }),
+    ]);
 
-  if (latestRelease === null) {
+    if (latestRelease === null) {
+      return {
+        latestRelease,
+        releaseBranch: null,
+        repository,
+      };
+    }
+
+    const releaseBranch = await pluginApiClient.getBranch({
+      ...project,
+      branchName: latestRelease.targetCommitish,
+    });
+
     return {
       latestRelease,
-      releaseBranch: null,
+      releaseBranch,
       repository,
     };
-  }
-
-  const releaseBranch = await pluginApiClient.getBranch({
-    ...project,
-    branchName: latestRelease.targetCommitish,
-  });
+  }, [project, refetchTrigger]);
 
   return {
-    latestRelease,
-    releaseBranch,
-    repository,
+    gitHubBatchInfo,
   };
 };

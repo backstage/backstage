@@ -17,11 +17,11 @@
 import { useState, useEffect } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import { ComponentConfigPromoteRc } from '../../../types/types';
 import {
   GetLatestReleaseResult,
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
+import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
 import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
@@ -39,7 +39,7 @@ export function usePromoteRc({
   rcRelease,
   releaseVersion,
   successCb,
-}: PromoteRc) {
+}: PromoteRc): CardHook<void> {
   const {
     responseSteps,
     addStepToResponseSteps,
@@ -105,8 +105,13 @@ export function usePromoteRc({
   }, [TOTAL_STEPS, responseSteps.length]);
 
   return {
-    run,
-    responseSteps,
     progress,
+    responseSteps,
+    run,
+    runInvoked: Boolean(
+      promotedReleaseRes.loading ||
+        promotedReleaseRes.value ||
+        promotedReleaseRes.error,
+    ),
   };
 }

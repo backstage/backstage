@@ -17,8 +17,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { TEST_IDS } from '../../test-helpers/test-ids';
 import { ResponseStepListItem } from './ResponseStepListItem';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
 describe('ResponseStepListItem', () => {
   it('should render', () => {

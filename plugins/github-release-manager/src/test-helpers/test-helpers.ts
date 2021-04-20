@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
-import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
-import { Project } from '../contexts/ProjectContext';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
   IPluginApiClient,
 } from '../api/PluginApiClient';
+import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
+import { getRcGitHubInfo } from '../cards/CreateRc/helpers/getRcGitHubInfo';
+import { Project } from '../contexts/ProjectContext';
 
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';

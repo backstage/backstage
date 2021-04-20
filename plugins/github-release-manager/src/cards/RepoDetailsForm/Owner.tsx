@@ -15,41 +15,35 @@
  */
 
 import React from 'react';
-import { useAsync } from 'react-use';
 import { useNavigate } from 'react-router';
+import { useAsync } from 'react-use';
 import {
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
 } from '@material-ui/core';
 
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useFormClasses } from './styles';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useFormClasses } from './styles';
+import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
-import { TEST_IDS } from '../../test-helpers/test-ids';
 
-export function Repo() {
-  const pluginApiClient = usePluginApiClientContext();
+export function Owner({ username }: { username: string }) {
   const project = useProjectContext();
-  const navigate = useNavigate();
   const formClasses = useFormClasses();
+  const navigate = useNavigate();
+  const pluginApiClient = usePluginApiClientContext();
   const { getQueryParamsWithUpdates } = useQueryHandler();
 
-  const { loading, error, value } = useAsync(
-    async () => pluginApiClient.getRepositories({ owner: project.owner }),
-    [project.owner],
-  );
-
-  if (project.owner.length === 0) {
-    return null;
-  }
-
-  const repositories = value?.repositories ?? [];
-  const customRepoFromUrl = !repositories.concat(['']).includes(project.repo);
+  const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());
+  const owners = value?.owners ?? [];
+  const customOwnerFromUrl = !owners
+    .concat(['', username])
+    .includes(project.owner);
 
   return (
     <FormControl
@@ -59,19 +53,22 @@ export function Repo() {
       error={!!error}
     >
       {loading ? (
-        <CenteredCircularProgress data-testid={TEST_IDS.form.repo.loading} />
+        <CenteredCircularProgress data-testid={TEST_IDS.form.owner.loading} />
       ) : (
         <>
-          <InputLabel id="repo-select-label">Repositories</InputLabel>
+          <InputLabel id="owner-select-label">Owners</InputLabel>
           <Select
-            data-testid={TEST_IDS.form.repo.select}
-            labelId="repo-select-label"
-            id="repo-select"
-            value={project.repo}
+            data-testid={TEST_IDS.form.owner.select}
+            labelId="owner-select-label"
+            id="owner-select"
+            value={project.owner}
             defaultValue=""
             onChange={event => {
               const { queryParams } = getQueryParamsWithUpdates({
-                updates: [{ key: 'repo', value: event.target.value as string }],
+                updates: [
+                  { key: 'repo', value: '' },
+                  { key: 'owner', value: event.target.value as string },
+                ],
               });
 
               navigate(`?${queryParams}`, { replace: true });
@@ -82,33 +79,37 @@ export function Repo() {
               <em>None</em>
             </MenuItem>
 
-            {!error && customRepoFromUrl && (
-              <MenuItem value={project.repo}>
-                <strong>From URL: {project.repo}</strong>
+            <MenuItem value={username}>
+              <strong>{username}</strong>
+            </MenuItem>
+
+            {!error && customOwnerFromUrl && (
+              <MenuItem value={project.owner}>
+                <strong>From URL: {project.owner}</strong>
               </MenuItem>
             )}
 
-            {repositories.map((repositoryName, index) => (
-              <MenuItem key={`repository-${index}`} value={repositoryName}>
-                {repositoryName}
+            {owners.map((orgName, index) => (
+              <MenuItem key={`organization-${index}`} value={orgName}>
+                {orgName}
               </MenuItem>
             ))}
           </Select>
 
           {error && (
-            <FormHelperText data-testid={TEST_IDS.form.repo.error}>
-              Encountered an error ({error.message}")
+            <FormHelperText data-testid={TEST_IDS.form.owner.error}>
+              Encountered an error ({error.message})
             </FormHelperText>
           )}
 
-          {!error && project.repo.length === 0 && (
+          {!error && project.owner.length === 0 && (
             <>
-              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
-                Select a repository
+              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
+                Select an owner (org or user)
               </FormHelperText>
-              <FormHelperText data-testid={TEST_IDS.form.repo.empty}>
+              <FormHelperText data-testid={TEST_IDS.form.owner.empty}>
                 Custom queries can be made via the query param{' '}
-                <strong>repo</strong>
+                <strong>owner</strong>
               </FormHelperText>
             </>
           )}

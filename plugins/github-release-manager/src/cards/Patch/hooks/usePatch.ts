@@ -17,13 +17,13 @@
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import { ComponentConfigPatch } from '../../../types/types';
-import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import {
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
+import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
+import { ComponentConfigPatch, CardHook } from '../../../types/types';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
@@ -45,7 +45,7 @@ export function usePatch({
   project,
   tagParts,
   successCb,
-}: Patch) {
+}: Patch): CardHook<GetRecentCommitsResultSingle> {
   const {
     responseSteps,
     addStepToResponseSteps,
@@ -345,8 +345,13 @@ export function usePatch({
   }, [TOTAL_STEPS, responseSteps.length]);
 
   return {
-    run,
-    responseSteps,
     progress,
+    responseSteps,
+    run,
+    runInvoked: Boolean(
+      releaseBranchRes.loading ||
+        releaseBranchRes.value ||
+        releaseBranchRes.error,
+    ),
   };
 }

@@ -18,37 +18,37 @@ import { useState } from 'react';
 
 import { ResponseStep } from '../types/types';
 
+const RESPONSE_STEP_FAILURE_ABORT: ResponseStep = {
+  message: 'Skipped due to error in previous step',
+  icon: 'failure',
+};
+
 export function useResponseSteps() {
   const [responseSteps, setResponseSteps] = useState<ResponseStep[]>([]);
 
-  function abortIfError(error?: Error) {
-    const RESPONSE_STEP_SKIP = {
-      responseStep: {
-        message: 'Skipped due to error in previous step',
-        icon: 'failure',
-      } as ResponseStep,
-    };
+  const addStepToResponseSteps = (responseStep: ResponseStep) => {
+    setResponseSteps([...responseSteps, responseStep]);
+  };
 
+  const abortIfError = (error?: Error) => {
     if (error) {
-      setResponseSteps([...responseSteps, RESPONSE_STEP_SKIP.responseStep]);
+      addStepToResponseSteps(RESPONSE_STEP_FAILURE_ABORT);
       throw error;
     }
-  }
+  };
 
-  function asyncCatcher(error: Error): never {
+  const asyncCatcher = (error?: Error): never => {
     const responseStepError: ResponseStep = {
-      message: 'Something went wrong ❌',
-      secondaryMessage: `Error message: ${error.message}`,
+      message: 'Something went wrong 🔥',
+      secondaryMessage: `Error message: ${
+        error?.message ? error.message : 'unknown'
+      }`,
       icon: 'failure',
     };
 
-    setResponseSteps([...responseSteps, responseStepError]);
+    addStepToResponseSteps(responseStepError);
     throw error;
-  }
-
-  function addStepToResponseSteps(responseStep: ResponseStep) {
-    setResponseSteps([...responseSteps, responseStep]);
-  }
+  };
 
   return {
     responseSteps,

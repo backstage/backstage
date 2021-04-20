@@ -17,15 +17,15 @@
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import { getRcGitHubInfo } from '../getRcGitHubInfo';
-import { ComponentConfigCreateRc } from '../../../types/types';
 import {
   GetLatestReleaseResult,
   GetRepositoryResult,
   IPluginApiClient,
 } from '../../../api/PluginApiClient';
-import { Project } from '../../../contexts/ProjectContext';
+import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
+import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
+import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
 interface CreateRC {
@@ -44,7 +44,7 @@ export function useCreateRc({
   pluginApiClient,
   project,
   successCb,
-}: CreateRC) {
+}: CreateRC): CardHook<void> {
   const {
     responseSteps,
     addStepToResponseSteps,
@@ -211,8 +211,11 @@ export function useCreateRc({
   }, [TOTAL_STEPS, responseSteps.length]);
 
   return {
-    run,
-    responseSteps,
     progress,
+    responseSteps,
+    run,
+    runInvoked: Boolean(
+      latestCommitRes.loading || latestCommitRes.value || latestCommitRes.error,
+    ),
   };
 }

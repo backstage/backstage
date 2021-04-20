@@ -40,12 +40,12 @@ import {
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';
-import { Dialog } from '../../components/Dialog';
 import { Differ } from '../../components/Differ';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
+import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { usePatch } from './sideEffects/usePatch';
+import { usePatch } from './hooks/usePatch';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
@@ -91,7 +91,7 @@ export const PatchBody = ({
     };
   });
 
-  const { run, responseSteps, progress } = usePatch({
+  const { progress, responseSteps, run, runInvoked } = usePatch({
     bumpedTag,
     latestRelease,
     pluginApiClient,
@@ -101,7 +101,7 @@ export const PatchBody = ({
   });
   if (responseSteps.length > 0) {
     return (
-      <Dialog
+      <ResponseStepDialog
         progress={progress}
         responseSteps={responseSteps}
         title="Patch Release Candidate"
@@ -190,7 +190,7 @@ export const PatchBody = ({
 
                 <ListItem
                   disabled={
-                    progress > 0 || commitExistsOnReleaseBranch || hasNoParent
+                    runInvoked || commitExistsOnReleaseBranch || hasNoParent
                   }
                   role={undefined}
                   dense
@@ -238,7 +238,11 @@ export const PatchBody = ({
                   <ListItemSecondaryAction>
                     <IconButton
                       aria-label="commit"
-                      disabled={commitExistsOnReleaseBranch || !releaseBranch}
+                      disabled={
+                        runInvoked ||
+                        commitExistsOnReleaseBranch ||
+                        !releaseBranch
+                      }
                       onClick={() => {
                         const repoPath = pluginApiClient.getRepoPath({
                           owner: project.owner,

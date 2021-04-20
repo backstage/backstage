@@ -18,20 +18,23 @@ import React from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { Typography } from '@material-ui/core';
 
+import { ComponentConfigPromoteRc } from '../../types/types';
+import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
-import { ComponentConfigPromoteRc } from '../../types/types';
 import { PromoteRcBody } from './PromoteRcBody';
-import { useStyles } from '../../styles/styles';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { GetLatestReleaseResult } from '../../api/PluginApiClient';
+import { useStyles } from '../../styles/styles';
 
-interface PromoteRcProps {
+interface PromoteReleaseCandidateProps {
   latestRelease: GetLatestReleaseResult;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
-export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
+export const PromoteReleaseCandidate = ({
+  latestRelease,
+  successCb,
+}: PromoteReleaseCandidateProps) => {
   const classes = useStyles();
 
   function Body() {

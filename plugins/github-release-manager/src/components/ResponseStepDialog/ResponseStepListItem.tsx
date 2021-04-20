@@ -28,8 +28,8 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
-import { TEST_IDS } from '../../test-helpers/test-ids';
 import { ResponseStep } from '../../types/types';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
 interface ResponseStepListItemProps {
   responseStep: ResponseStep;

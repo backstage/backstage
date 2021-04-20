@@ -17,11 +17,11 @@
 import { DateTime } from 'luxon';
 
 import {
-  mockSemverProject,
   mockCalverProject,
   mockReleaseVersionCalver,
   mockReleaseVersionSemver,
-} from '../../test-helpers/test-helpers';
+  mockSemverProject,
+} from '../../../test-helpers/test-helpers';
 import { getRcGitHubInfo } from './getRcGitHubInfo';
 
 describe('getRcGitHubInfo', () => {

@@ -54,3 +54,10 @@ export interface ResponseStep {
   link?: string;
   icon?: 'success' | 'failure';
 }
+
+export interface CardHook<RunArgs> {
+  progress: number;
+  responseSteps: ResponseStep[];
+  run: (args: RunArgs) => Promise<any>;
+  runInvoked: boolean;
+}

@@ -20,7 +20,7 @@ import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { DISABLE_CACHE } from '../constants/constants';
-import { getRcGitHubInfo } from '../cards/createRc/getRcGitHubInfo';
+import { getRcGitHubInfo } from '../cards/CreateRc/helpers/getRcGitHubInfo';
 import { Project } from '../contexts/ProjectContext';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 

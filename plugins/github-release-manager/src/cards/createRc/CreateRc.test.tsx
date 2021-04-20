@@ -21,28 +21,31 @@ import {
   mockApiClient,
   mockCalverProject,
   mockNextGitHubInfo,
-  mockReleaseCandidateCalver,
   mockReleaseBranch,
+  mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
   mockSemverProject,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useCreateRc } from './hooks/useCreateRc';
 
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: jest.fn(() => mockApiClient),
+  usePluginApiClientContext: () => mockApiClient,
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
-jest.mock('./getRcGitHubInfo', () => ({
+jest.mock('./helpers/getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfo,
 }));
-jest.mock('./sideEffects/useCreateRc', () => ({
-  useCreateRc: () => ({
-    run: jest.fn(),
-    responseSteps: [],
-    progress: 0,
-  }),
+jest.mock('./hooks/useCreateRc', () => ({
+  useCreateRc: () =>
+    ({
+      run: jest.fn(),
+      responseSteps: [],
+      progress: 0,
+      runLoading: false,
+    } as ReturnType<typeof useCreateRc>),
 }));
 
 import { useProjectContext } from '../../contexts/ProjectContext';
