@@ -26,6 +26,7 @@ import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
 import MuiDocsIcon from '@material-ui/icons/Description';
+import MuiCloudIcon from '@material-ui/icons/Cloud';
 
 import React from 'react';
 import { useApp } from '../app/AppContext';
@@ -44,6 +45,7 @@ export const defaultSystemIcons: IconComponentMap = {
   user: MuiPersonIcon,
   warning: MuiWarningIcon,
   docs: MuiDocsIcon,
+  cloud: MuiCloudIcon,
 };
 
 const overridableSystemIcon = (key: SystemIconKey): IconComponent => {
@@ -65,3 +67,4 @@ export const HelpIcon = overridableSystemIcon('help');
 export const UserIcon = overridableSystemIcon('user');
 export const WarningIcon = overridableSystemIcon('warning');
 export const DocsIcon = overridableSystemIcon('docs');
+export const CloudIcon = overridableSystemIcon('cloud');

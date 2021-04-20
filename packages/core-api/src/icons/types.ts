@@ -27,7 +27,8 @@ export type SystemIconKey =
   | 'help'
   | 'user'
   | 'warning'
-  | 'docs';
+  | 'docs'
+  | 'cloud';
 
 export type IconComponent = ComponentType<SvgIconProps>;
 export type IconKey = SystemIconKey | string;
