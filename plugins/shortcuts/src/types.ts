@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-// TODO(Rugvip): This plugin is currently not part of the app element tree,
-//               ideally we have an API for the context menu that permits that.
-export { badgesPlugin } from '@backstage/plugin-badges';
-export { githubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
-export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
+export type Shortcut = {
+  id: string;
+  url: string;
+  title: string;
+};
+
+export type FormValues = {
+  url: string;
+  title: string;
+};

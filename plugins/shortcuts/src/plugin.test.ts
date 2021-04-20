@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { shortcutsPlugin } from './plugin';
 
-// TODO(Rugvip): This plugin is currently not part of the app element tree,
-//               ideally we have an API for the context menu that permits that.
-export { badgesPlugin } from '@backstage/plugin-badges';
-export { githubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
-export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
+describe('shortcuts', () => {
+  it('should export plugin', () => {
+    expect(shortcutsPlugin).toBeDefined();
+  });
+});
