@@ -210,7 +210,7 @@ export class DefaultCatalogProcessingOrchestrator
           for (const processor of this.options.processors) {
             if (processor.readLocation) {
               try {
-                handled = await processor.readLocation(
+                const read = await processor.readLocation(
                   {
                     type,
                     target,
@@ -220,7 +220,7 @@ export class DefaultCatalogProcessingOrchestrator
                   emitter.emit,
                   this.options.parser,
                 );
-                if (handled) {
+                if (read) {
                   break;
                 }
               } catch (e) {
