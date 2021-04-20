@@ -2,19 +2,18 @@
 
 ## Introduction
 
-[iLert](https://www.ilert.com) is a platform for alerting, on-call management and uptime monitoring. It helps teams to reduce response times to critical incidents by extending monitoring tools with reliable alerting, automatic escalations, on-call schedules and other features to support the incident response process, such as [informing stakeholders](https://docs.ilert.com/getting-started/stakeholder-engagement) or creating tickets in external incident management tools.
+[iLert](https://www.ilert.com) is a platform for alerting, on-call management and uptime monitoring. It helps teams to reduce response times to critical incidents by extending monitoring tools with reliable alerting, automatic escalations, on-call schedules and other features to support the incident response process, such as informing stakeholders or creating tickets in external incident management tools.
 
 ## Overview
 
-This plugin displays iLert information about an entity such as if there are any active incidents, wo is on-call now and uptime monitor status.
+This plugin gives an overview about ongoing iLert incidents, on-call and uptime monitor status.
+See who is on-call, which incidents are active and trigger incidents directly from backstage for the configured alert sources.
 
-There is also an easy way to trigger an incident directly to the person who is currently on-call.
+In detail this plugin provides:
 
-This plugin provides:
-
-- Information details about the persons on-call
-- A way to override current person on-call
-- A list of incidents
+- Information details about the person on-call (all escalation levels of the current time)
+- A way to override the current on-call person
+- A list of active incidents
 - A way to trigger a new incident
 - A way to reassign/acknowledge/resolve an incident
 - A way to trigger an incident action
@@ -30,8 +29,7 @@ Install the plugin:
 yarn add @backstage/plugin-ilert
 ```
 
-Then make sure to export the plugin in your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts)
-to enable the plugin:
+Then make sure to export the plugin in your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts) to enable the plugin:
 
 ```js
 export { plugin as ILert } from '@backstage/plugin-ilert';
@@ -53,15 +51,14 @@ import {
 }
 ```
 
-> To force iLert card for each entity just add the `<EntityILertCard />` component, so an instruction card will appears if no integration key is set.
+> To force an iLert card for each entity just add the `<EntityILertCard />` component. An instruction card will appear if no integration key is set.
 
-## Add iLert explorer to the App sidebar
+## Add iLert explorer to the app sidebar
 
-Modify your app routes in [`App.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/App.tsx) to include the Router component exported from the plugin, for example:
+Modify your app routes in [`App.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/App.tsx) to include the Router component exported by the plugin - for example:
 
 ```tsx
 import { ILertPage } from '@backstage/plugin-ilert';
-
 <Routes>
   // ...
   <Route path="/ilert" element={<ILertPage />} />
@@ -69,11 +66,10 @@ import { ILertPage } from '@backstage/plugin-ilert';
 </Routes>;
 ```
 
-Modify your sidebar in [`Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx) to include the icon component exported from the plugin, for example:
+Modify your sidebar in [`Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx) to include the icon component exported by the plugin - for example:
 
 ```tsx
 import { ILertIcon } from '@backstage/plugin-ilert';
-
 <Sidebar>
   // ...
   <SidebarItem icon={ILertIcon} to="ilert" text="iLert" />
@@ -94,7 +90,7 @@ ilert:
 
 ## Providing the Authorization Header
 
-In order to make the API calls, you need to provide a new proxy config which will redirect to the [iLert API](https://api.ilert.com/api-docs/) endpoint it needs an [Authorization Header](https://api.ilert.com/api-docs/#section/Authentication).
+In order to make the API calls, you need to provide a new proxy config which will redirect to the [iLert API](https://api.ilert.com/api-docs/) endpoint. It needs an [Authorization Header](https://api.ilert.com/api-docs/#section/Authentication).
 
 Add the proxy configuration in `app-config.yaml`
 
@@ -110,7 +106,7 @@ proxy:
         $env: ILERT_AUTH_HEADER
 ```
 
-Then start the backend passing the token as an environment variable:
+Then start the backend, passing the token as environment variable:
 
 ```bash
 $ ILERT_AUTH_HEADER='Basic <TOKEN>' yarn start
