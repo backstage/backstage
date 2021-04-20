@@ -36,7 +36,7 @@ export const useGetGitHubBatchInfo = ({
       pluginApiClient.getLatestRelease({ ...project }),
     ]);
 
-    if (!latestRelease) {
+    if (latestRelease === null) {
       return {
         latestRelease,
         releaseBranch: null,

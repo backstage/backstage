@@ -41,7 +41,10 @@ export const gitHubReleaseManagerPlugin = createPlugin({
         githubAuthApi: githubAuthApiRef,
       },
       factory: ({ configApi, githubAuthApi }) => {
-        return new PluginApiClient({ configApi, githubAuthApi });
+        return new PluginApiClient({
+          configApi,
+          githubAuthApi,
+        });
       },
     }),
   ],
