@@ -46,8 +46,55 @@ describe('Cards', () => {
       await waitFor(() => getByTestId(TEST_IDS.info.info));
     });
 
-    expect(getByTestId(TEST_IDS.info.info).innerHTML).toMatchInlineSnapshot(
-      `"<h6 class=\\"MuiTypography-root MuiTypography-h6\\">Terminology</h6><p class=\\"MuiTypography-root MuiTypography-body1\\"><strong>GitHub</strong>: The source control system where releases reside in a practical sense. Read more about <a class=\\"MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary\\" href=\\"https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository\\" target=\\"_blank\\">GitHub releases</a>. (Note that this plugin works just as well with GitHub Enterprise.)</p><p class=\\"MuiTypography-root MuiTypography-body1\\"><strong>Release Candidate</strong>: A GitHub <i>prerelease</i> intended primarily for internal testing</p><p class=\\"MuiTypography-root MuiTypography-body1\\"><strong>Release Version</strong>: A GitHub release intended for end users</p>"`,
-    );
+    expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
+      <div
+        data-testid="grm--info"
+        style="margin-bottom: 1em;"
+      >
+        <h6
+          class="MuiTypography-root MuiTypography-h6"
+        >
+          Terminology
+        </h6>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          <strong>
+            GitHub
+          </strong>
+          : The source control system where releases reside in a practical sense. Read more about
+           
+          <a
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
+            href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
+            target="_blank"
+          >
+            GitHub releases
+          </a>
+          . (Note that this plugin works just as well with GitHub Enterprise.)
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          <strong>
+            Release Candidate
+          </strong>
+          : A GitHub 
+          <i>
+            prerelease
+          </i>
+           
+          intended primarily for internal testing
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          <strong>
+            Release Version
+          </strong>
+          : A GitHub release intended for end users
+        </p>
+      </div>
+    `);
   });
 });

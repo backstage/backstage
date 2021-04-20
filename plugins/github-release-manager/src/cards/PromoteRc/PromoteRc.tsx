@@ -26,15 +26,12 @@ import { PromoteRcBody } from './PromoteRcBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useStyles } from '../../styles/styles';
 
-interface PromoteReleaseCandidateProps {
+interface PromoteRcProps {
   latestRelease: GetLatestReleaseResult;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
-export const PromoteReleaseCandidate = ({
-  latestRelease,
-  successCb,
-}: PromoteReleaseCandidateProps) => {
+export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
   const classes = useStyles();
 
   function Body() {

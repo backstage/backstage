@@ -23,7 +23,7 @@ import { CreateRc } from './CreateRc/CreateRc';
 import { GitHubReleaseManagerProps } from '../GitHubReleaseManager';
 import { Info } from './Info/Info';
 import { Patch } from './Patch/Patch';
-import { PromoteReleaseCandidate } from './PromoteReleaseCandidate/PromoteRc';
+import { PromoteRc } from './PromoteRc/PromoteRc';
 import { RefetchContext } from '../contexts/RefetchContext';
 import { useGetGitHubBatchInfo } from '../hooks/useGetGitHubBatchInfo';
 import { usePluginApiClientContext } from '../contexts/PluginApiClientContext';
@@ -111,7 +111,7 @@ export function Cards({
         )}
 
         {!components?.promoteRc?.omit && (
-          <PromoteReleaseCandidate
+          <PromoteRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             successCb={components?.promoteRc?.successCb}
           />
