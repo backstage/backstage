@@ -27,7 +27,7 @@ jest.mock('../../contexts/RefetchContext', () => ({
 describe('ResponseStepList', () => {
   it('should render loading state when loading', () => {
     const { getByTestId } = render(
-      <ResponseStepList loading title="mock_responseStepList_title" />,
+      <ResponseStepList loading responseSteps={[]} />,
     );
 
     expect(
@@ -37,7 +37,7 @@ describe('ResponseStepList', () => {
 
   it('should render loading state when no responseSteps', () => {
     const { getByTestId } = render(
-      <ResponseStepList loading={false} title="mock_responseStepList_title" />,
+      <ResponseStepList loading={false} responseSteps={[]} />,
     );
 
     expect(
@@ -49,8 +49,7 @@ describe('ResponseStepList', () => {
     const { getByTestId } = render(
       <ResponseStepList
         loading={false}
-        title="mock_responseStepList_title"
-        responseSteps={[]}
+        responseSteps={[{ message: 'banana' }]}
       />,
     );
 

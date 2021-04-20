@@ -48,9 +48,9 @@ describe('useQueryHandler', () => {
   it('should get parsedQuery and queryParams', () => {
     const { getByTestId } = render(<MockComponent />);
 
-    const smt = getByTestId(TEST_ID).innerHTML;
+    const result = getByTestId(TEST_ID).innerHTML;
 
-    expect(smt).toMatchInlineSnapshot(`
+    expect(result).toMatchInlineSnapshot(`
         "{
           \\"parsedQuery\\": {
             \\"versioningStrategy\\": \\"semver\\",

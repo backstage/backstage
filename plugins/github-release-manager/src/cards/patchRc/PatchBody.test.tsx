@@ -34,7 +34,7 @@ jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
 jest.mock('./sideEffects/usePatch', () => ({
-  useCreateRc: () => ({
+  usePatch: () => ({
     run: jest.fn(),
     responseSteps: [],
     progress: 0,
@@ -44,10 +44,7 @@ jest.mock('./sideEffects/usePatch', () => ({
 import { PatchBody } from './PatchBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-// TODO: Fix tests
-/* eslint-disable jest/no-disabled-tests */
-
-describe.skip('PatchBody', () => {
+describe('PatchBody', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should render error', async () => {

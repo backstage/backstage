@@ -19,21 +19,24 @@ import { waitFor } from '@testing-library/react';
 
 import {
   mockApiClient,
-  mockReleaseCandidateCalver,
-  mockSemverProject,
+  mockCalverProject,
+  mockDefaultBranch,
+  mockNextGitHubInfo,
+  mockReleaseVersionCalver,
 } from '../../../test-helpers/test-helpers';
-import { usePromoteRc } from './usePromoteRc';
+import { useCreateRc } from './useCreateRc';
 
-describe('usePromoteRc', () => {
+describe('useCreateRc', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should return the expected responseSteps and progress', async () => {
     const { result } = renderHook(() =>
-      usePromoteRc({
+      useCreateRc({
+        defaultBranch: mockDefaultBranch,
+        latestRelease: mockReleaseVersionCalver,
+        nextGitHubInfo: mockNextGitHubInfo,
         pluginApiClient: mockApiClient,
-        project: mockSemverProject,
-        rcRelease: mockReleaseCandidateCalver,
-        releaseVersion: 'version-1.2.3',
+        project: mockCalverProject,
       }),
     );
 
@@ -42,16 +45,17 @@ describe('usePromoteRc', () => {
     });
 
     expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(1);
+    expect(result.current.responseSteps).toHaveLength(4);
   });
 
   it('should return the expected responseSteps and progress (with successCb)', async () => {
     const { result } = renderHook(() =>
-      usePromoteRc({
+      useCreateRc({
+        defaultBranch: mockDefaultBranch,
+        latestRelease: mockReleaseVersionCalver,
+        nextGitHubInfo: mockNextGitHubInfo,
         pluginApiClient: mockApiClient,
-        project: mockSemverProject,
-        rcRelease: mockReleaseCandidateCalver,
-        releaseVersion: 'version-1.2.3',
+        project: mockCalverProject,
         successCb: jest.fn(),
       }),
     );
@@ -60,15 +64,29 @@ describe('usePromoteRc', () => {
       await waitFor(() => result.current.run());
     });
 
-    expect(result.current.responseSteps).toHaveLength(2);
+    expect(result.current.responseSteps).toHaveLength(5);
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "progress": 100,
         "responseSteps": Array [
           Object {
-            "link": "mock_release_html_url",
-            "message": "Promoted \\"mock_release_name\\"",
-            "secondaryMessage": "from \\"rc-2020.01.01_1\\" to \\"mock_release_tag_name\\"",
+            "link": "latestCommit.html_url",
+            "message": "Fetched latest commit from \\"mock_defaultBranch\\"",
+            "secondaryMessage": "with message \\"latestCommit.commit.message\\"",
+          },
+          Object {
+            "message": "Cut Release Branch",
+            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+          },
+          Object {
+            "link": "mock_compareCommits_html_url",
+            "message": "Fetched commit comparison",
+            "secondaryMessage": "rc/1.2.3...rc/1.2.3",
+          },
+          Object {
+            "link": "mock_createRelease_html_url",
+            "message": "Created Release Candidate \\"mock_createRelease_name\\"",
+            "secondaryMessage": "with tag \\"rc-1.2.3\\"",
           },
           Object {
             "icon": "success",

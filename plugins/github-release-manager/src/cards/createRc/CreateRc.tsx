@@ -42,7 +42,7 @@ import {
   GetLatestReleaseResult,
   GetRepositoryResult,
 } from '../../api/PluginApiClient';
-import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
+import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
 
 interface CreateRcProps {
@@ -90,7 +90,7 @@ export const CreateRc = ({
 
         <LinearProgressWithLabel value={progress} />
 
-        <ResponseStepList2 responseSteps={responseSteps} />
+        <ResponseStepList responseSteps={responseSteps} />
       </Dialog>
     );
   }

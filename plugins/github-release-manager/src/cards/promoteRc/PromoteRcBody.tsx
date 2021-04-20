@@ -25,7 +25,7 @@ import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 import { GetLatestReleaseResult } from '../../api/PluginApiClient';
-import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
+import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
 
 interface PromoteRcBodyProps {
@@ -54,7 +54,7 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
 
         <LinearProgressWithLabel value={progress} />
 
-        <ResponseStepList2 responseSteps={responseSteps} />
+        <ResponseStepList responseSteps={responseSteps} />
       </Dialog>
     );
   }

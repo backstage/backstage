@@ -15,14 +15,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  List,
-} from '@material-ui/core';
+import { Button, DialogActions, DialogContent, List } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../CenteredCircularProgress';
 import { ResponseStep } from '../../types/types';
@@ -31,10 +24,9 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useRefetchContext } from '../../contexts/RefetchContext';
 
 interface ResponseStepListProps {
-  responseSteps?: (ResponseStep | undefined)[];
-  title: string;
+  responseSteps: (ResponseStep | undefined)[];
   animationDelay?: number;
-  loading: boolean;
+  loading?: boolean;
   closeable?: boolean;
   denseList?: boolean;
 }
@@ -44,16 +36,13 @@ export const ResponseStepList = ({
   animationDelay,
   loading = false,
   denseList = false,
-  title,
   children,
 }: PropsWithChildren<ResponseStepListProps>) => {
   const { setRefetchTrigger } = useRefetchContext();
 
   return (
-    <Dialog open maxWidth="md" fullWidth>
-      <DialogTitle>{title}</DialogTitle>
-
-      {loading || !responseSteps ? (
+    <>
+      {loading || responseSteps.length === 0 ? (
         <div style={{ margin: 10, textAlign: 'center' }}>
           <CenteredCircularProgress
             data-testid={TEST_IDS.components.circularProgress}
@@ -95,6 +84,6 @@ export const ResponseStepList = ({
           </DialogActions>
         </>
       )}
-    </Dialog>
+    </>
   );
 };

@@ -51,7 +51,7 @@ import {
 } from '../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
-import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
+import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -109,7 +109,7 @@ export const PatchBody = ({
 
         <LinearProgressWithLabel value={progress} />
 
-        <ResponseStepList2 responseSteps={responseSteps} />
+        <ResponseStepList responseSteps={responseSteps} />
       </Dialog>
     );
   }
