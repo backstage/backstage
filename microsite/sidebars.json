@@ -206,8 +206,7 @@
       "deployment/docker",
       "deployment/k8s",
       "deployment/helm",
-      "deployment/heroku",
-      "deployment/fargate"
+      "deployment/heroku"
     ],
     "Designing for Backstage": [
       "dls/design",

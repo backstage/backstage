@@ -1,9 +1,4 @@
----
-id: fargate
-title: Deploying with AWS Fargate and Aurora
-sidebar_label: AWS
-description: How to deploy Backstage on AWS Fargate and Aurora
----
+# Deploying Backstage with AWS Fargate and Aurora
 
 There are any number of ways to deploy backstage containers on AWS. One of the
 simplest from a management and ops perspective is to leverage AWS Fargate and
