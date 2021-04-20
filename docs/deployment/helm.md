@@ -1,11 +1,9 @@
 ---
 id: helm
-title: Deploying Backstage with Helm
+title: Deploying with Helm
 description: How to deploy Backstage with Helm and Kubernetes
 sidebar_label: Helm
 ---
-
-# Helm charts
 
 An example Backstage app can be deployed in Kubernetes using the
 [Backstage Helm charts](https://github.com/backstage/backstage/tree/master/contrib/chart/backstage).

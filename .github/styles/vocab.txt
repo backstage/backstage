@@ -22,6 +22,7 @@ Dockerize
 Docusaurus
 Env
 Expedia
+Fargate
 Figma
 Firekube
 Fiverr
