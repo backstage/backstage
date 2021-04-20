@@ -20,10 +20,6 @@ import { render } from '@testing-library/react';
 import { ResponseStepList } from './ResponseStepList';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('../../contexts/RefetchContext', () => ({
-  useRefetchContext: () => jest.fn(),
-}));
-
 describe('ResponseStepList', () => {
   it('should render loading state when loading', () => {
     const { getByTestId } = render(

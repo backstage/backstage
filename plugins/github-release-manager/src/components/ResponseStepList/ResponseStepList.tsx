@@ -15,13 +15,12 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Button, DialogActions, DialogContent, List } from '@material-ui/core';
+import { DialogContent, List } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../CenteredCircularProgress';
 import { ResponseStep } from '../../types/types';
 import { ResponseStepListItem } from './ResponseStepListItem';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useRefetchContext } from '../../contexts/RefetchContext';
 
 interface ResponseStepListProps {
   responseSteps: (ResponseStep | undefined)[];
@@ -38,8 +37,6 @@ export const ResponseStepList = ({
   denseList = false,
   children,
 }: PropsWithChildren<ResponseStepListProps>) => {
-  const { setRefetchTrigger } = useRefetchContext();
-
   return (
     <>
       {loading || responseSteps.length === 0 ? (
@@ -72,16 +69,6 @@ export const ResponseStepList = ({
 
             {children}
           </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={() => setRefetchTrigger(Date.now())}
-              color="primary"
-              variant="contained"
-              size="large"
-            >
-              Ok
-            </Button>
-          </DialogActions>
         </>
       )}
     </>

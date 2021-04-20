@@ -15,11 +15,17 @@
  */
 
 import React from 'react';
-import { DialogTitle, Dialog as MaterialDialog } from '@material-ui/core';
+import {
+  Button,
+  Dialog as MaterialDialog,
+  DialogActions,
+  DialogTitle,
+} from '@material-ui/core';
 
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { ResponseStep } from '../types/types';
 import { ResponseStepList } from './ResponseStepList/ResponseStepList';
+import { useRefetchContext } from '../contexts/RefetchContext';
 
 interface DialogProps {
   progress: number;
@@ -27,12 +33,27 @@ interface DialogProps {
   title: string;
 }
 
-export const Dialog = ({ progress, responseSteps, title }: DialogProps) => (
-  <MaterialDialog open maxWidth="md" fullWidth>
-    <DialogTitle>{title}</DialogTitle>
+export const Dialog = ({ progress, responseSteps, title }: DialogProps) => {
+  const { setRefetchTrigger } = useRefetchContext();
 
-    <LinearProgressWithLabel value={progress} />
+  return (
+    <MaterialDialog open maxWidth="md" fullWidth>
+      <DialogTitle>{title}</DialogTitle>
 
-    <ResponseStepList responseSteps={responseSteps} />
-  </MaterialDialog>
-);
+      <ResponseStepList responseSteps={responseSteps} />
+
+      <LinearProgressWithLabel value={progress} />
+
+      <DialogActions>
+        <Button
+          onClick={() => setRefetchTrigger(Date.now())}
+          color="primary"
+          variant="contained"
+          size="large"
+        >
+          Ok
+        </Button>
+      </DialogActions>
+    </MaterialDialog>
+  );
+};
