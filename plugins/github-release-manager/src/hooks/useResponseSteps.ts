@@ -30,14 +30,7 @@ export function useResponseSteps() {
     setResponseSteps([...responseSteps, responseStep]);
   };
 
-  const abortIfError = (error?: Error) => {
-    if (error) {
-      addStepToResponseSteps(RESPONSE_STEP_FAILURE_ABORT);
-      throw error;
-    }
-  };
-
-  const asyncCatcher = (error?: Error): never => {
+  const asyncCatcher = (error: Error): never => {
     const responseStepError: ResponseStep = {
       message: 'Something went wrong 🔥',
       secondaryMessage: `Error message: ${
@@ -48,6 +41,13 @@ export function useResponseSteps() {
 
     addStepToResponseSteps(responseStepError);
     throw error;
+  };
+
+  const abortIfError = (error?: Error) => {
+    if (error) {
+      addStepToResponseSteps(RESPONSE_STEP_FAILURE_ABORT);
+      throw error;
+    }
   };
 
   return {
