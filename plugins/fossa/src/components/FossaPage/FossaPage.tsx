@@ -22,6 +22,7 @@ import {
 import {
   Content,
   Header,
+  Link,
   Page,
   StatusError,
   StatusOK,
@@ -63,6 +64,7 @@ const columns: TableColumn<FossaRow>[] = [
     title: 'Name',
     field: 'resolved.name',
     highlight: true,
+    width: 'auto',
     render: ({ entity }) => (
       <EntityRefLink entityRef={entity} defaultKind="Component" />
     ),
@@ -70,7 +72,6 @@ const columns: TableColumn<FossaRow>[] = [
   {
     title: 'Owner',
     field: 'resolved.ownedByRelationsTitle',
-    highlight: true,
     render: ({ resolved }) => (
       <EntityRefLinks
         entityRefs={resolved.ownedByRelations}
@@ -144,6 +145,16 @@ const columns: TableColumn<FossaRow>[] = [
           </Tooltip>
         )
       );
+    },
+  },
+  {
+    sorting: false,
+    render: ({ resolved: { loading, details } }) => {
+      if (loading) {
+        return <Skeleton animation="pulse" />;
+      }
+
+      return details && <Link to={details.projectUrl}>View in FOSSA</Link>;
     },
   },
 ];

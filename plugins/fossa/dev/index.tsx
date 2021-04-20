@@ -140,7 +140,12 @@ createDevApp()
           await new Promise(r => setTimeout(r, 1000));
 
           return {
-            items: [entity('zero-deps'), entity('issues'), entity('no-issues')],
+            items: [
+              entity('no-fossa'),
+              entity('zero-deps'),
+              entity('issues'),
+              entity('no-issues'),
+            ],
           };
         },
       } as Partial<CatalogApi>) as any),
