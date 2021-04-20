@@ -18,8 +18,10 @@ import { createTestShadowDom } from '../../test-utils';
 import { addGitFeedbackLink } from './addGitFeedbackLink';
 
 const configApi = {
-  getOptionalString: function getOptionalString(key: string) {
-    return key === 'gitlab' ? 'gitlab.com' : 'github.com';
+  getConfigArray: function getConfigArray(key: string) {
+    return key === 'integrations.github'
+      ? [{ data: { host: 'self-hosted-git-hub-provider.com' } }]
+      : [];
   },
 };
 
@@ -80,7 +82,7 @@ describe('addGitFeedbackLink', () => {
       <!DOCTYPE html>
       <html>
         <article class="md-content__inner">
-          <h1 id="conveyor-pipelines">Conveyor Pipelines<a class="headerlink" href="http://headerlink.com">¶</a></h1>
+          <h1>HeaderText<a class="headerlink" href="http://headerlink.com">¶</a></h1>
         </article>
       </html>
     `,
@@ -99,8 +101,8 @@ describe('addGitFeedbackLink', () => {
       <!DOCTYPE html>
       <html>
         <article class="md-content__inner">
-          <h1 id="conveyor-pipelines">Conveyor Pipelines<a class="headerlink" href="http://headerlink.com">¶</a></h1>
-          <a href="https://not-a-git-provider.com/reponame/username/docs/TestDoc.md"/>
+          <h1>HeaderText<a class="headerlink" href="http://headerlink.com">¶</a></h1>
+          <a title="Edit this page" href="https://not-a-git-provider.com/reponame/username/docs/TestDoc.md"/>
         </article>
       </html>
     `,
@@ -111,5 +113,30 @@ describe('addGitFeedbackLink', () => {
     );
 
     expect(shadowDom.querySelector('#git-feedback-link')).toBeFalsy();
+  });
+
+  it('adds a feedback link when a Gitlab or Github source edit link is not available but hostname matches an integrations host', () => {
+    const shadowDom = createTestShadowDom(
+      `
+      <!DOCTYPE html>
+      <html>
+        <article class="md-content__inner">
+          <h1>HeaderText<a class="headerlink" href="http://headerlink.com">¶</a></h1>
+          <a title="Edit this page" href="https://self-hosted-git-hub-provider.com/reponame/username/docs/TestDoc.md"/>
+        </article>
+      </html>
+    `,
+      {
+        preTransformers: [addGitFeedbackLink(configApi)],
+        postTransformers: [],
+      },
+    );
+
+    expect(shadowDom.querySelector('#git-feedback-link')).toBeTruthy();
+    expect(
+      (shadowDom.querySelector('#git-feedback-link') as HTMLLinkElement)!.href,
+    ).toEqual(
+      'https://self-hosted-git-hub-provider.com/reponame/username/issues/new?title=Documentation%20Feedback%3A%20HeaderText&body=Page%20source%3A%0Ahttps%3A%2F%2Fself-hosted-git-hub-provider.com%2Freponame%2Fusername%2Fdocs%2FTestDoc.md%0A%0AFeedback%3A',
+    );
   });
 });
