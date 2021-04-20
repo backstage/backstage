@@ -44,7 +44,7 @@ jest.mock('./hooks/useCreateRc', () => ({
       run: jest.fn(),
       responseSteps: [],
       progress: 0,
-      runLoading: false,
+      runInvoked: false,
     } as ReturnType<typeof useCreateRc>),
 }));
 

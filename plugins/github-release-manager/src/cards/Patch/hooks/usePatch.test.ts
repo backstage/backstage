@@ -113,6 +113,7 @@ describe('patch', () => {
           },
         ],
         "run": [Function],
+        "runInvoked": true,
       }
     `);
   });

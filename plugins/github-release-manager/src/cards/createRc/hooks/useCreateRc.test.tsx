@@ -94,7 +94,7 @@ describe('useCreateRc', () => {
           },
         ],
         "run": [Function],
-        "runLoading": false,
+        "runInvoked": true,
       }
     `);
   });

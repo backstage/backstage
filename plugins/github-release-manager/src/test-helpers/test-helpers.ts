@@ -158,9 +158,13 @@ export const mockApiClient: IPluginApiClient = {
     createMockRecentCommit({ sha: 'mock_sha_recent_commits_2' }),
   ]),
 
-  getLatestRelease: jest.fn(),
+  getLatestRelease: jest.fn(async () => createMockRelease()),
 
-  getRepository: jest.fn(),
+  getRepository: jest.fn(async () => ({
+    pushPermissions: true,
+    defaultBranch: mockDefaultBranch,
+    name: mockRepo,
+  })),
 
   getLatestCommit: jest.fn(async () => ({
     sha: 'latestCommit.sha',

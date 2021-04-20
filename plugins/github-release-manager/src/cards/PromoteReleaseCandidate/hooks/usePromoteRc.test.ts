@@ -76,6 +76,7 @@ describe('usePromoteRc', () => {
           },
         ],
         "run": [Function],
+        "runInvoked": true,
       }
     `);
   });
