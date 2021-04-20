@@ -27,7 +27,7 @@ import { Logger } from 'winston';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Stitcher } from './Stitcher';
 
-export class CatalogProcessingEngineImpl implements CatalogProcessingEngine {
+export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
   private subscriptions: Subscription[] = [];
   private running: boolean = false;
 

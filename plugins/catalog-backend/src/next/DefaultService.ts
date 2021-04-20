@@ -26,7 +26,7 @@ import {
   CatalogProcessingOrchestrator,
 } from './types';
 
-export class LocationServiceImpl implements LocationService {
+export class DefaultLocationService implements LocationService {
   constructor(
     private readonly store: LocationStore,
     private readonly orchestrator: CatalogProcessingOrchestrator,

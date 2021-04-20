@@ -59,7 +59,7 @@ export type DbRefreshStateReferences = {
 // enough to get the speed benefits.
 const BATCH_SIZE = 50;
 
-export class ProcessingDatabaseImpl implements ProcessingDatabase {
+export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
     private readonly database: Knex,
     private readonly logger: Logger,

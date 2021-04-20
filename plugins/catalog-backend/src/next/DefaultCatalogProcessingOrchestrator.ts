@@ -82,7 +82,7 @@ function toAbsoluteUrl(
   }
 }
 
-export class CatalogProcessingOrchestratorImpl
+export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator {
   constructor(
     private readonly options: {

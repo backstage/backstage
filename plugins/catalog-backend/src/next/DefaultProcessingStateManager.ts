@@ -22,7 +22,7 @@ import {
   ProcessingStateManager,
 } from './types';
 
-export class ProcessingStateManagerImpl implements ProcessingStateManager {
+export class DefaultProcessingStateManager implements ProcessingStateManager {
   constructor(private readonly db: ProcessingDatabase) {}
 
   async setProcessingItemResult(result: ProcessingItemResult) {

@@ -64,12 +64,12 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngineImpl } from '../next/CatalogProcessingEngineImpl';
-import { CatalogProcessingOrchestratorImpl } from '../next/CatalogProcessingOrchestratorImpl';
-import { ProcessingDatabaseImpl } from '../next/database/ProcessingDatabaseImpl';
+import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
+import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
+import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
-import { LocationStoreImpl } from '../next/LocationStoreImpl';
-import { ProcessingStateManagerImpl } from '../next/ProcessingStateManagerImpl';
+import { DefaultLocationStore } from './DefaultLocationStore';
+import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
 import { CatalogProcessingEngine } from '../next/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
@@ -259,10 +259,10 @@ export class NextCatalogBuilder {
     });
     const db = new CommonDatabase(dbClient, logger);
 
-    const processingDatabase = new ProcessingDatabaseImpl(dbClient, logger);
-    const stateManager = new ProcessingStateManagerImpl(processingDatabase);
+    const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
+    const stateManager = new DefaultProcessingStateManager(processingDatabase);
     const integrations = ScmIntegrations.fromConfig(config);
-    const orchestrator = new CatalogProcessingOrchestratorImpl({
+    const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
       integrations,
       logger,
@@ -271,10 +271,10 @@ export class NextCatalogBuilder {
     });
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
-    const locationStore = new LocationStoreImpl(db);
+    const locationStore = new DefaultLocationStore(db);
     const dbLocationProvider = new DatabaseLocationProvider(locationStore);
     const stitcher = new Stitcher(dbClient, logger);
-    const processingEngine = new CatalogProcessingEngineImpl(
+    const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
       [dbLocationProvider], // entityproviders
       stateManager,

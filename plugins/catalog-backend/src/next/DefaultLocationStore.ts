@@ -26,7 +26,7 @@ export type LocationMessage =
   | { all: Location[] }
   | { added: Location[]; removed: Location[] };
 
-export class LocationStoreImpl implements LocationStore {
+export class DefaultLocationStore implements LocationStore {
   private subscribers = new Set<
     ZenObservable.SubscriptionObserver<LocationMessage>
   >();

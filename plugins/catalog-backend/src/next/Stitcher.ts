@@ -22,7 +22,7 @@ import {
   DbRefreshStateReferences,
   DbRefreshStateRow,
   DbRelationsRow,
-} from './database/ProcessingDatabaseImpl';
+} from './database/DefaultProcessingDatabase';
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
