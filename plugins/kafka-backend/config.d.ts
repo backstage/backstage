@@ -29,11 +29,22 @@ export interface Config {
        * Optional SSL connection parameters to connect to the cluster. Passed directly to Node tls.connect.
        * See https://nodejs.org/dist/latest-v8.x/docs/api/tls.html#tls_tls_createsecurecontext_options
        */
-      ssl?: {
-        ca: string[];
+      ssl?:
+        | {
+            ca: string[];
+            /** @visibility secret */
+            key: string;
+            cert: string;
+          }
+        | boolean;
+      /**
+       * Optional SASL connection parameters.
+       */
+      sasl?: {
+        mechanism: 'plain' | 'scram-sha-256' | 'scram-sha-512';
+        username: string;
         /** @visibility secret */
-        key: string;
-        cert: string;
+        password: string;
       };
     }[];
   };

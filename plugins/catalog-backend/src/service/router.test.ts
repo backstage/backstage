@@ -15,6 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import type { Entity, LocationSpec } from '@backstage/catalog-model';
 import express from 'express';
@@ -25,7 +26,7 @@ import { HigherOrderOperation } from '../ingestion/types';
 import { createRouter } from './router';
 import { basicEntityFilter } from './request';
 
-describe('createRouter', () => {
+describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
   let locationsCatalog: jest.Mocked<LocationsCatalog>;
   let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
@@ -55,6 +56,7 @@ describe('createRouter', () => {
       locationsCatalog,
       higherOrderOperation,
       logger: getVoidLogger(),
+      config: new ConfigReader(undefined),
     });
     app = express().use(router);
   });
@@ -323,6 +325,160 @@ describe('createRouter', () => {
           location: { id: 'a', ...spec },
         }),
       );
+    });
+
+    it('supports dry run', async () => {
+      const spec: LocationSpec = {
+        type: 'b',
+        target: 'c',
+      };
+
+      higherOrderOperation.addLocation.mockResolvedValue({
+        location: { id: 'a', ...spec },
+        entities: [],
+      });
+
+      const response = await request(app)
+        .post('/locations?dryRun=true')
+        .send(spec);
+
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledTimes(1);
+      expect(higherOrderOperation.addLocation).toHaveBeenCalledWith(spec, {
+        dryRun: true,
+      });
+      expect(response.status).toEqual(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          location: { id: 'a', ...spec },
+        }),
+      );
+    });
+  });
+});
+
+describe('createRouter readonly enabled', () => {
+  let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
+  let locationsCatalog: jest.Mocked<LocationsCatalog>;
+  let higherOrderOperation: jest.Mocked<HigherOrderOperation>;
+  let app: express.Express;
+
+  beforeAll(async () => {
+    entitiesCatalog = {
+      entities: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      batchAddOrUpdateEntities: jest.fn(),
+    };
+    locationsCatalog = {
+      addLocation: jest.fn(),
+      removeLocation: jest.fn(),
+      locations: jest.fn(),
+      location: jest.fn(),
+      locationHistory: jest.fn(),
+      logUpdateSuccess: jest.fn(),
+      logUpdateFailure: jest.fn(),
+    };
+    higherOrderOperation = {
+      addLocation: jest.fn(),
+      refreshAllLocations: jest.fn(),
+    };
+    const router = await createRouter({
+      entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
+      logger: getVoidLogger(),
+      config: new ConfigReader({
+        catalog: {
+          readonly: true,
+        },
+      }),
+    });
+    app = express().use(router);
+  });
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe('GET /entities', () => {
+    it('happy path: lists entities', async () => {
+      const entities: Entity[] = [
+        { apiVersion: 'a', kind: 'b', metadata: { name: 'n' } },
+      ];
+
+      entitiesCatalog.entities.mockResolvedValueOnce({
+        entities: [entities[0]],
+        pageInfo: { hasNextPage: false },
+      });
+
+      const response = await request(app).get('/entities');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(entities);
+    });
+  });
+
+  describe('POST /entities', () => {
+    it('is not allowed', async () => {
+      const entity: Entity = {
+        apiVersion: 'a',
+        kind: 'b',
+        metadata: {
+          name: 'c',
+          namespace: 'd',
+        },
+      };
+
+      const response = await request(app)
+        .post('/entities')
+        .set('Content-Type', 'application/json')
+        .send(entity);
+
+      expect(entitiesCatalog.batchAddOrUpdateEntities).not.toHaveBeenCalled();
+      expect(response.status).toEqual(403);
+      expect(response.text).toMatch(/not allowed in readonly/);
+    });
+  });
+
+  describe('DELETE /entities/by-uid/:uid', () => {
+    // this delete is allowed as there is no other way to remove entities
+    it('is allowed', async () => {
+      const response = await request(app).delete('/entities/by-uid/apa');
+
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledTimes(1);
+      expect(entitiesCatalog.removeEntityByUid).toHaveBeenCalledWith('apa');
+      expect(response.status).toEqual(204);
+    });
+  });
+
+  describe('GET /locations', () => {
+    it('happy path: lists locations', async () => {
+      const locations: LocationResponse[] = [
+        {
+          currentStatus: { timestamp: '', status: '', message: '' },
+          data: { id: 'a', type: 'b', target: 'c' },
+        },
+      ];
+      locationsCatalog.locations.mockResolvedValueOnce(locations);
+
+      const response = await request(app).get('/locations');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(locations);
+    });
+  });
+
+  describe('POST /locations', () => {
+    it('is not allowed', async () => {
+      const spec: LocationSpec = {
+        type: 'b',
+        target: 'c',
+      };
+
+      const response = await request(app).post('/locations').send(spec);
+
+      expect(higherOrderOperation.addLocation).not.toHaveBeenCalled();
+      expect(response.status).toEqual(403);
+      expect(response.text).toMatch(/not allowed in readonly/);
     });
 
     it('supports dry run', async () => {

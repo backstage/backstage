@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import {
   Content,
   Header,
@@ -26,6 +30,8 @@ import {
 } from '@backstage/core';
 import {
   EntityContext,
+  EntityRefLinks,
+  getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
@@ -73,6 +79,29 @@ const headerProps = (
       return t;
     })(),
   };
+};
+
+const EntityLabels = ({ entity }: { entity: Entity }) => {
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  return (
+    <>
+      {ownedByRelations.length > 0 && (
+        <HeaderLabel
+          label="Owner"
+          value={
+            <EntityRefLinks
+              entityRefs={ownedByRelations}
+              defaultKind="Group"
+              color="inherit"
+            />
+          }
+        />
+      )}
+      {entity.spec?.lifecycle && (
+        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+      )}
+    </>
+  );
 };
 
 // NOTE(freben): Intentionally not exported at this point, since it's part of
@@ -133,17 +162,9 @@ export const EntityLayout = ({
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {/* TODO: fix after catalog page customization is added */}
-        {entity && kind !== 'user' && (
+        {entity && (
           <>
-            <HeaderLabel
-              label="Owner"
-              value={entity.spec?.owner || 'unknown'}
-            />
-            <HeaderLabel
-              label="Lifecycle"
-              value={entity.spec?.lifecycle || 'unknown'}
-            />
+            <EntityLabels entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               onUnregisterEntity={showRemovalDialog}

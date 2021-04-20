@@ -45,6 +45,14 @@ export const HomeWithSubtitle = () => (
   </Header>
 );
 
+export const Apis = () => (
+  <Page themeId="apis">
+    <Header title="API catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
+);
+
 export const Tool = () => (
   <Page themeId="tool">
     <Header title="Stand-alone tool" type="tool">

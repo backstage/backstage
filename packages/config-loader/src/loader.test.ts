@@ -20,6 +20,7 @@ import mockFs from 'mock-fs';
 describe('loadConfig', () => {
   beforeAll(() => {
     process.env.MY_SECRET = 'is-secret';
+    process.env.SUBSTITUTE_ME = 'substituted';
 
     mockFs({
       '/root/app-config.yaml': `
@@ -27,6 +28,7 @@ describe('loadConfig', () => {
           title: Example App
           sessionKey:
             $file: secrets/session-key.txt
+          escaped: \$\${Escaped}
       `,
       '/root/app-config.development.yaml': `
         app:
@@ -45,6 +47,19 @@ describe('loadConfig', () => {
         foo:
           bar: token \${MY_SECRET}
       `,
+      '/root/app-config.substitute.yaml': `
+        app:
+          someConfig:
+            $include: \${SUBSTITUTE_ME}.yaml
+          noSubstitute:
+            $file: \$\${ESCAPE_ME}.txt
+      `,
+      '/root/substituted.yaml': `
+        secret:
+          $file: secrets/\${SUBSTITUTE_ME}.txt
+      `,
+      '/root/secrets/substituted.txt': '123abc',
+      '/root/${ESCAPE_ME}.txt': 'notSubstituted',
     });
   });
 
@@ -66,6 +81,7 @@ describe('loadConfig', () => {
           app: {
             title: 'Example App',
             sessionKey: 'abc123',
+            escaped: '${Escaped}',
           },
         },
       },
@@ -86,6 +102,7 @@ describe('loadConfig', () => {
           app: {
             title: 'Example App',
             sessionKey: 'abc123',
+            escaped: '${Escaped}',
           },
         },
       },
@@ -109,6 +126,7 @@ describe('loadConfig', () => {
           app: {
             title: 'Example App',
             sessionKey: 'abc123',
+            escaped: '${Escaped}',
           },
         },
       },
@@ -125,6 +143,28 @@ describe('loadConfig', () => {
           },
           other: {
             secret: 'abc123',
+          },
+        },
+      },
+    ]);
+  });
+
+  it('loads deep substituted config', async () => {
+    await expect(
+      loadConfig({
+        configRoot: '/root',
+        configPaths: ['/root/app-config.substitute.yaml'],
+        env: 'development',
+      }),
+    ).resolves.toEqual([
+      {
+        context: 'app-config.substitute.yaml',
+        data: {
+          app: {
+            someConfig: {
+              secret: '123abc',
+            },
+            noSubstitute: 'notSubstituted',
           },
         },
       },

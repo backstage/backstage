@@ -61,8 +61,10 @@ describe('createRouter', () => {
       addLocation: jest.fn(),
       getEntities: jest.fn(),
       getEntityByName: jest.fn(),
+      getOriginLocationByEntity: jest.fn(),
       getLocationByEntity: jest.fn(),
       getLocationById: jest.fn(),
+      removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
     };
 
@@ -112,11 +114,14 @@ describe('createRouter', () => {
       expect(response.text).toEqual(JSON.stringify([badge], null, 2));
 
       expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith({
-        namespace: 'default',
-        kind: 'service',
-        name: 'test',
-      });
+      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+        {
+          namespace: 'default',
+          kind: 'service',
+          name: 'test',
+        },
+        { token: undefined },
+      );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(1);
       expect(badgeBuilder.createBadgeJson).toHaveBeenCalledTimes(1);
@@ -148,11 +153,14 @@ describe('createRouter', () => {
       expect(response.body).toEqual(Buffer.from(image));
 
       expect(catalog.getEntityByName).toHaveBeenCalledTimes(1);
-      expect(catalog.getEntityByName).toHaveBeenCalledWith({
-        namespace: 'default',
-        kind: 'service',
-        name: 'test',
-      });
+      expect(catalog.getEntityByName).toHaveBeenCalledWith(
+        {
+          namespace: 'default',
+          kind: 'service',
+          name: 'test',
+        },
+        { token: undefined },
+      );
 
       expect(badgeBuilder.getBadges).toHaveBeenCalledTimes(0);
       expect(badgeBuilder.createBadgeSvg).toHaveBeenCalledTimes(1);
@@ -166,6 +174,42 @@ describe('createRouter', () => {
           entity,
         },
       });
+    });
+
+    it('returns badge spec for entity', async () => {
+      catalog.getEntityByName.mockResolvedValueOnce(entity);
+      badgeBuilder.createBadgeJson.mockResolvedValueOnce(badge);
+
+      const url = '/entity/default/service/test/badge/test-badge?format=json';
+      const response = await request(app).get(url);
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(badge);
+    });
+  });
+
+  describe('Errors', () => {
+    it('returns 404 for unknown entities', async () => {
+      catalog.getEntityByName.mockResolvedValue(undefined);
+      async function testUrl(url: string) {
+        const response = await request(app).get(url);
+        expect(response.status).toEqual(404);
+        expect(response.body).toEqual({
+          error: {
+            message: 'No service entity in default named "missing"',
+            name: 'NotFoundError',
+          },
+          request: {
+            method: 'GET',
+            url,
+          },
+          response: {
+            statusCode: 404,
+          },
+        });
+      }
+      await testUrl('/entity/default/service/missing/badge-specs');
+      await testUrl('/entity/default/service/missing/badge/test-badge');
     });
   });
 });

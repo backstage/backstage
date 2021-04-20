@@ -1,0 +1,77 @@
+apiVersion: backstage.io/v1beta2
+kind: Template
+metadata:
+  name: pull-request
+  title: Pull Request Action template
+  description: scaffolder v1beta2 template demo publishing to PR on existing git repository
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  parameters:
+    - title: Fill in some steps
+      required:
+        - name
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Unique name of the component
+          ui:autofocus: true
+          ui:options:
+            rows: 5
+        description:
+          title: Description
+          type: string
+          description: Description of the component
+        targetPath:
+          title: Target Path in repo
+          type: string
+          description: Name of the directory to create in the repository
+    - title: Choose a location
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  steps:
+    - id: fetch-base
+      name: Fetch Base
+      action: fetch:cookiecutter
+      input:
+        url: ./template
+        values:
+          name: '{{parameters.name}}'
+
+    - id: fetch-docs
+      name: Fetch Docs
+      action: fetch:plain
+      input:
+        targetPath: ./community
+        url: https://github.com/backstage/community/tree/main/backstage-community-sessions
+
+    - id: publish
+      name: Publish
+      action: publish:github:pull-request
+      input:
+        repoUrl: '{{ parameters.repoUrl }}'
+        title: 'Create new project: {{parameters.name}}'
+        branchName: 'create-{{parameters.name}}'
+        description: |
+          # New project: {{parameters.name}}
+
+          {{#if parameters.description}}
+          {{parameters.description}}
+          {{/if}}
+        targetPath: '{{#if parameters.targetPath}}{{parameters.targetPath}}{{else}}{{parameters.name}}{{/if}}'
+
+  output:
+    links: 
+      - url: '{{steps.publish.output.remoteUrl}}'
+        text: 'Go to PR'

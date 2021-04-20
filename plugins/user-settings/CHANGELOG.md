@@ -1,5 +1,11 @@
 # @backstage/plugin-user-settings
 
+## 0.2.9
+
+### Patch Changes
+
+- dd7fa21e2: Adds Auth0 to the default Authentication Providers settings page
+
 ## 0.2.8
 
 ### Patch Changes

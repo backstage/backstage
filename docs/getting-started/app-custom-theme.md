@@ -27,6 +27,7 @@ import { createTheme, lightTheme } from '@backstage/theme';
 const myTheme = createTheme({
   palette: lightTheme.palette,
   fontFamily: 'Comic Sans MS',
+  defaultPageTheme: 'home',
 });
 ```
 
@@ -73,3 +74,64 @@ Note that your list of custom themes overrides the default themes. If you still
 want to use the default themes, they are exported as `lightTheme` and
 `darkTheme` from
 [@backstage/theme](https://www.npmjs.com/package/@backstage/theme).
+
+## Example of a custom theme
+
+```ts
+const themeOptions = createThemeOptions({
+  palette: {
+    ...lightTheme.palette,
+    primary: {
+      main: '#123456',
+    },
+    secondary: {
+      main: '#123456',
+    },
+    error: {
+      main: '#123456'
+    },
+    warning: {
+      main: '#123456',
+    },
+    info: {
+      main: '#123456',
+    },
+    success: {
+      main: '#123456',
+    },
+    background: {
+      default: '#123456',
+      paper: '#123456',
+    },
+    banner: {
+      info: '#123456',
+      error: '#123456'
+      text: '#123456'
+      link: '#123456',
+    },
+    errorBackground: '#123456'
+    warningBackground: '#123456'
+    infoBackground: '#123456'
+    navigation: {
+      background: '#123456',
+      indicator: '#123456'
+      color: '#123456'
+      selectedColor: '#123456',
+    },
+  },
+  defaultPageTheme: 'home',
+  fontFamily: 'Comic Sans',
+  /* below drives the header colors */
+  pageTheme: {
+    home: genPageTheme(['#123456','#123456'], shapes.wave),
+    documentation: genPageTheme(['#123456','#123456'], shapes.wave2),
+    tool: genPageTheme(['#123456','#123456'], shapes.round),
+    service: genPageTheme(['#123456','#123456'], shapes.wave),
+    website: genPageTheme(['#123456','#123456'], shapes.wave),
+    library: genPageTheme(['#123456','#123456'] shapes.wave),
+    other: genPageTheme(['#123456','#123456'], shapes.wave),
+    app: genPageTheme(['#123456','#123456'], shapes.wave),
+    apis: genPageTheme(['#123456','#123456'], shapes.wave),
+  },
+});
+```

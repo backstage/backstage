@@ -95,7 +95,9 @@ describe('CatalogImportClient', () => {
   const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
     getEntities: jest.fn(),
     addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
     getEntityByName: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
@@ -307,7 +309,7 @@ describe('CatalogImportClient', () => {
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
-          fileContent: 'some content',
+          fileContent: 'some content 🤖',
           title: 'A title/message',
           body: 'A body',
         }),
@@ -333,7 +335,7 @@ describe('CatalogImportClient', () => {
         repo: 'backstage',
         path: 'catalog-info.yaml',
         message: 'A title/message',
-        content: 'c29tZSBjb250ZW50',
+        content: 'c29tZSBjb250ZW50IPCfpJY=',
         branch: 'backstage-integration',
       });
       expect(

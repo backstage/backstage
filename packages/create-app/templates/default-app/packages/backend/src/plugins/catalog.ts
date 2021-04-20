@@ -27,5 +27,6 @@ export default async function createPlugin(env: PluginEnvironment): Promise<Rout
     higherOrderOperation,
     locationAnalyzer,
     logger: env.logger,
+    config: env.config,
   });
 }

@@ -45,8 +45,10 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
     addLocation: jest.fn(),
     getEntities: jest.fn(),
     getEntityByName: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     getLocationById: jest.fn(),
+    removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
   };
   if (entity) {

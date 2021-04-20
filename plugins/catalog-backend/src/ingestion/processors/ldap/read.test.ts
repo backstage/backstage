@@ -26,6 +26,7 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { readLdapGroups, readLdapUsers, resolveRelations } from './read';
+import { ActiveDirectoryVendor, DefaultLdapVendor } from './vendors';
 
 function user(data: RecursivePartial<UserEntity>): UserEntity {
   return merge(
@@ -53,25 +54,27 @@ function group(data: RecursivePartial<GroupEntity>): GroupEntity {
   );
 }
 
-function searchEntry(attributes: Record<string, string[]>): SearchEntry {
+function searchEntry(
+  attributes: Record<string, string[] | Buffer[]>,
+): SearchEntry {
   return {
-    attributes: Object.entries(attributes).map(([k, vs]) => ({
-      json: {
-        type: k,
-        vals: vs,
-      },
-    })),
+    raw: Object.entries(attributes).reduce((obj, [key, values]) => {
+      obj[key] = values;
+      return obj;
+    }, {} as any),
   } as any;
 }
 
 describe('readLdapUsers', () => {
   const client: jest.Mocked<LdapClient> = {
     search: jest.fn(),
+    getVendor: jest.fn(),
   } as any;
 
   afterEach(() => jest.resetAllMocks());
 
-  it('transfers all attributes', async () => {
+  it('transfers all attributes from a default ldap vendor', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
     client.search.mockResolvedValue([
       searchEntry({
         uid: ['uid-value'],
@@ -123,16 +126,91 @@ describe('readLdapUsers', () => {
       new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
     );
   });
+
+  it('transfers all attributes from Microsoft Active Directory', async () => {
+    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.search.mockResolvedValue([
+      searchEntry({
+        uid: ['uid-value'],
+        description: ['description-value'],
+        cn: ['cn-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'y', 'z'],
+        distinguishedName: ['dn-value'],
+        objectGUID: [
+          Buffer.from([
+            68,
+            2,
+            125,
+            190,
+            209,
+            0,
+            94,
+            73,
+            133,
+            33,
+            230,
+            174,
+            234,
+            195,
+            160,
+            152,
+          ]),
+        ],
+      }),
+    ]);
+    const config: UserConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'uid',
+        name: 'uid',
+        description: 'description',
+        displayName: 'cn',
+        email: 'mail',
+        picture: 'avatarUrl',
+        memberOf: 'memberOf',
+      },
+    };
+    const { users, userMemberOf } = await readLdapUsers(client, config);
+    expect(users).toEqual([
+      expect.objectContaining({
+        metadata: {
+          name: 'uid-value',
+          description: 'description-value',
+          annotations: {
+            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_RDN_ANNOTATION]: 'uid-value',
+            [LDAP_UUID_ANNOTATION]: 'be7d0244-00d1-495e-8521-e6aeeac3a098',
+          },
+        },
+        spec: {
+          profile: {
+            displayName: 'cn-value',
+            email: 'mail-value',
+            picture: 'avatarUrl-value',
+          },
+          memberOf: [],
+        },
+      }),
+    ]);
+    expect(userMemberOf).toEqual(
+      new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
+    );
+  });
 });
 
 describe('readLdapGroups', () => {
   const client: jest.Mocked<LdapClient> = {
     search: jest.fn(),
+    getVendor: jest.fn(),
   } as any;
 
   afterEach(() => jest.resetAllMocks());
 
-  it('transfers all attributes', async () => {
+  it('transfers all attributes from a default ldap vendor', async () => {
+    client.getVendor.mockResolvedValue(DefaultLdapVendor);
     client.search.mockResolvedValue([
       searchEntry({
         cn: ['cn-value'],
@@ -174,6 +252,88 @@ describe('readLdapGroups', () => {
             [LDAP_DN_ANNOTATION]: 'dn-value',
             [LDAP_RDN_ANNOTATION]: 'cn-value',
             [LDAP_UUID_ANNOTATION]: 'uuid-value',
+          },
+        },
+        spec: {
+          type: 'type-value',
+          profile: {
+            displayName: 'cn-value',
+            email: 'mail-value',
+            picture: 'avatarUrl-value',
+          },
+          children: [],
+        },
+      }),
+    ]);
+    expect(groupMember).toEqual(
+      new Map([['dn-value', new Set(['e', 'f', 'g'])]]),
+    );
+    expect(groupMemberOf).toEqual(
+      new Map([['dn-value', new Set(['x', 'y', 'z'])]]),
+    );
+  });
+  it('transfers all attributes from Microsoft Active Directory', async () => {
+    client.getVendor.mockResolvedValue(ActiveDirectoryVendor);
+    client.search.mockResolvedValue([
+      searchEntry({
+        cn: ['cn-value'],
+        description: ['description-value'],
+        tt: ['type-value'],
+        mail: ['mail-value'],
+        avatarUrl: ['avatarUrl-value'],
+        memberOf: ['x', 'y', 'z'],
+        member: ['e', 'f', 'g'],
+        distinguishedName: ['dn-value'],
+        objectGUID: [
+          Buffer.from([
+            68,
+            2,
+            125,
+            190,
+            209,
+            0,
+            94,
+            73,
+            133,
+            33,
+            230,
+            174,
+            234,
+            195,
+            160,
+            152,
+          ]),
+        ],
+      }),
+    ]);
+    const config: GroupConfig = {
+      dn: 'ddd',
+      options: {},
+      map: {
+        rdn: 'cn',
+        name: 'cn',
+        description: 'description',
+        displayName: 'cn',
+        email: 'mail',
+        picture: 'avatarUrl',
+        type: 'tt',
+        memberOf: 'memberOf',
+        members: 'member',
+      },
+    };
+    const { groups, groupMember, groupMemberOf } = await readLdapGroups(
+      client,
+      config,
+    );
+    expect(groups).toEqual([
+      expect.objectContaining({
+        metadata: {
+          name: 'cn-value',
+          description: 'description-value',
+          annotations: {
+            [LDAP_DN_ANNOTATION]: 'dn-value',
+            [LDAP_RDN_ANNOTATION]: 'cn-value',
+            [LDAP_UUID_ANNOTATION]: 'be7d0244-00d1-495e-8521-e6aeeac3a098',
           },
         },
         spec: {

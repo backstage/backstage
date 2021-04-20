@@ -189,8 +189,7 @@ public within the enterprise.
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
 
 scaffolder:
   github:
@@ -207,11 +206,10 @@ instance:
 integrations:
   gitlab:
     - host: gitlab.com
-      token:
-        $env: GITLAB_TOKEN
+      token: ${GITLAB_TOKEN}
 ```
 
-#### BitBucket
+#### Bitbucket
 
 For Bitbucket there are two authentication methods supported. Either `token` or
 a combination of `appPassword` and `username`. It looks like either of the
@@ -221,8 +219,7 @@ following:
 integrations:
   bitbucket:
     - host: bitbucket.org
-      token:
-        $env: BITBUCKET_TOKEN
+      token: ${BITBUCKET_TOKEN}
 ```
 
 or
@@ -231,10 +228,8 @@ or
 integrations:
   bitbucket:
     - host: bitbucket.org
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
-      username:
-        $env: BITBUCKET_USERNAME
+      appPassword: ${BITBUCKET_APP_PASSWORD}
+      username: ${BITBUCKET_USERNAME}
 ```
 
 #### Azure DevOps
@@ -249,8 +244,7 @@ verified.
 integrations:
   azure:
     - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
 ```
 
 ### Running the Backend
@@ -265,3 +259,15 @@ GITHUB_TOKEN=<token> yarn start
 
 If you've also set up the frontend plugin, so you should be ready to go browse
 the templates at [localhost:3000/create](http://localhost:3000/create) now!
+
+### Disabling Docker in Docker situation (Optional)
+
+Software Templates use
+[Cookiecutter](https://github.com/cookiecutter/cookiecutter) as templating
+library. By default it will use the
+[spotify/backstage-cookiecutter](<[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)>)
+docker image.
+
+If you are running backstage from a Docker container and you want to avoid
+calling a container inside a container, you can set up Cookiecutter in your own
+image, this will use the local installation instead.

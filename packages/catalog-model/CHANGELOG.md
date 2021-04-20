@@ -1,5 +1,33 @@
 # @backstage/catalog-model
 
+## 0.7.7
+
+### Patch Changes
+
+- bb5055aee: Add getEntitySourceLocation helper
+- 5d0740563: Implemented missing support for the dependsOn/dependencyOf relationships
+  between `Component` and `Resource` catalog model objects.
+
+  Added support for generating the relevant relationships to the
+  `BuiltinKindsEntityProcessor`, and added simple support for fetching
+  relationships between `Components` and `Resources` for rendering in the
+  system diagram. All catalog-model changes backwards compatible.
+
+## 0.7.6
+
+### Patch Changes
+
+- 97b60de98: Added `stringifyEntityRef`, which always creates a string representation of an entity reference. Also deprecated `serializeEntityRef`, as `stringifyEntityRef` should be used instead.
+- 98dd5da71: Add support for multiple links to post-scaffold task summary page
+
+## 0.7.5
+
+### Patch Changes
+
+- 8488a1a96: Added support for the "members" field of the Group entity, allowing specification of
+  direct members from the Group side of the relationship. Added support to the
+  `BuiltinKindsEntityProcessor` to generate the appropriate relationships.
+
 ## 0.7.4
 
 ### Patch Changes

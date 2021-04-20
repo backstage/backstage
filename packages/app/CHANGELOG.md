@@ -1,5 +1,86 @@
 # example-app
 
+## 0.2.24
+
+### Patch Changes
+
+- Updated dependencies [a360f9478]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [12390778e]
+- Updated dependencies [fef852ecd]
+- Updated dependencies [18f7345a6]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+- Updated dependencies [184b02bef]
+- Updated dependencies [60ce64aa2]
+  - @backstage/plugin-scaffolder@0.9.0
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/plugin-catalog@0.5.4
+  - @backstage/plugin-api-docs@0.4.11
+  - @backstage/plugin-techdocs@0.7.2
+  - @backstage/plugin-tech-radar@0.3.9
+  - @backstage/cli@0.6.8
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies [d0b4ebf22]
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [3f96a9d5a]
+- Updated dependencies [b051e770c]
+- Updated dependencies [f9c75f7a9]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [97d53f686]
+- Updated dependencies [64d2ce700]
+  - @backstage/plugin-badges@0.2.0
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+  - @backstage/plugin-scaffolder@0.8.2
+  - @backstage/plugin-catalog-import@0.5.2
+  - @backstage/plugin-catalog@0.5.3
+  - @backstage/plugin-org@0.3.12
+  - @backstage/plugin-github-deployments@0.1.2
+  - @backstage/cli@0.6.7
+
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [687f066e1]
+- Updated dependencies [d10ea17c9]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-kubernetes@0.4.2
+  - @backstage/plugin-badges@0.1.2
+  - @backstage/plugin-cost-insights@0.8.4
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-jenkins@0.4.1
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
 ## 0.2.20
 
 ### Patch Changes

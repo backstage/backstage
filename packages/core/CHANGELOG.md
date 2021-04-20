@@ -1,5 +1,41 @@
 # @backstage/core
 
+## 0.7.5
+
+### Patch Changes
+
+- d0d1c2f7b: Pass `inverse` prop to Gauge from GaugeCard
+- 5cafcf452: add debounce time attribute for apis-docs for search, giving more time to the users when they are typing.
+- 86a95ba67: exposes undocumented `PageTheme`
+- e27cb6c45: Don't use a drag & drop cursor when clicking on disabled `IconLinkVertical`.
+
+## 0.7.4
+
+### Patch Changes
+
+- 1279a3325: Introduce a `load-chunk` step in the `BootErrorPage` to show make chunk loading
+  errors visible to the user.
+- 4a4681b1b: Improved error messaging for routable extension errors, making it easier to identify the component and mount point that caused the error.
+- b051e770c: Fixed a bug with `useRouteRef` where navigating from routes beneath a mount point would often fail.
+- 98dd5da71: Add support for multiple links to post-scaffold task summary page
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [b051e770c]
+  - @backstage/core-api@0.2.16
+
+## 0.7.3
+
+### Patch Changes
+
+- fcc3ada24: Reuse ResponseErrorList for non ResponseErrors
+- 4618774ff: Changed color for Add Item, Support & Choose buttons with low contrast/readability in dark mode
+- df59930b3: Fix PropTypes error with OverflowTooltip component
+- Updated dependencies [76deafd31]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4618774ff]
+  - @backstage/core-api@0.2.15
+  - @backstage/theme@0.2.5
+
 ## 0.7.2
 
 ### Patch Changes

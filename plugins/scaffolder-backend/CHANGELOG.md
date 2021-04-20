@@ -1,5 +1,99 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.9.6
+
+### Patch Changes
+
+- d8ffec739: Add built-in publish action for creating GitHub pull requests.
+- 7abec4dbc: Fix for the `file://` protocol check in the `FilePreparer` being too strict, breaking Windows.
+- d840d30bc: Bitbucket server needs username to be set as well as the token or appPassword for the publishing process to work.
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.mycompany.com
+        apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
+        token: token
+        username: username
+  ```
+
+- b25846562: Enable the JSON parsing of the response from templated variables in the `v2beta1` syntax. Previously if template parameters json strings they were left as strings, they are now parsed as JSON objects.
+
+  Before:
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: custom:run
+    input:
+      input: '{"hello":"ben"}'
+  ```
+
+  Now:
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: custom:run
+    input:
+      input:
+        hello: ben
+  ```
+
+  Also added the `parseRepoUrl` and `json` helpers to the parameters syntax. You can now use these helpers to parse work with some `json` or `repoUrl` strings in templates.
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: cookiecutter:fetch
+    input:
+      destination: '{{ parseRepoUrl parameters.repoUrl }}'
+  ```
+
+  Will produce a parsed version of the `repoUrl` of type `{ repo: string, owner: string, host: string }` that you can use in your actions. Specifically `cookiecutter` with `{{ cookiecutter.destination.owner }}` like the `plugins/scaffolder-backend/sample-templates/v1beta2-demo/template.yaml` example.
+
+- a376e3ee8: Adds a collaborator field to GitHub publish action for multiple users and access levels
+- 423a514c3: Fix execution of the GitHub Pull Request publish action on Windows.
+- 0b7fd7a9d: Fix bug in pull request sample template.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+- Updated dependencies [442f34b87]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/catalog-client@0.3.10
+
+## 0.9.5
+
+### Patch Changes
+
+- 802b41b65: Allow custom directory to be specified for GitHub publish action
+- Updated dependencies [97b60de98]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/catalog-model@0.7.6
+  - @backstage/backend-common@0.6.2
+
+## 0.9.4
+
+### Patch Changes
+
+- 2ab6f3ff0: Add OwnerPicker component to scaffolder for specifying a component's owner from users and groups in the catalog.
+- 164cc4c53: Fix a bug with GitHub Apps support not parsing the URL correctly
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.9.3
+
+### Patch Changes
+
+- 9f2e51e89: Fixes bug in the `github:publish` action causing repositories to be set as private even if the visibility is set to internal
+- 91e87c055: Add inputs for action `fetch:cookiecutter`: copyWithoutRender, extensions, imageName
+- 113d3d59e: Added a `publish:file` action to use for local development. The action is not installed by default.
+
 ## 0.9.2
 
 ### Patch Changes

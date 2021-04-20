@@ -1,5 +1,23 @@
 # @backstage/catalog-client
 
+## 0.3.10
+
+### Patch Changes
+
+- 442f34b87: Make sure the `CatalogClient` escapes URL parameters correctly.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
+## 0.3.9
+
+### Patch Changes
+
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- b196a4569: Avoid using Headers as it is not supported in the backend
+- Updated dependencies [8488a1a96]
+  - @backstage/catalog-model@0.7.5
+
 ## 0.3.8
 
 ### Patch Changes

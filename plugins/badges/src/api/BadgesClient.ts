@@ -15,7 +15,7 @@
  */
 
 import { generatePath } from 'react-router';
-import { DiscoveryApi } from '@backstage/core';
+import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRoute } from '@backstage/plugin-catalog-react';
@@ -23,14 +23,26 @@ import { BadgesApi, BadgeSpec } from './types';
 
 export class BadgesClient implements BadgesApi {
   private readonly discoveryApi: DiscoveryApi;
+  private readonly identityApi: IdentityApi;
 
-  constructor(options: { discoveryApi: DiscoveryApi }) {
+  constructor(options: {
+    discoveryApi: DiscoveryApi;
+    identityApi: IdentityApi;
+  }) {
     this.discoveryApi = options.discoveryApi;
+    this.identityApi = options.identityApi;
   }
 
   public async getEntityBadgeSpecs(entity: Entity): Promise<BadgeSpec[]> {
     const entityBadgeSpecsUrl = await this.getEntityBadgeSpecsUrl(entity);
-    const response = await fetch(entityBadgeSpecsUrl);
+    const token = await this.identityApi.getIdToken();
+    const response = await fetch(entityBadgeSpecsUrl, {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : undefined,
+    });
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

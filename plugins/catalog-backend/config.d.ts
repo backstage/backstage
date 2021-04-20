@@ -43,6 +43,20 @@ export interface Config {
     }>;
 
     /**
+     * Readonly defines whether the catalog allows writes after startup.
+     *
+     * Setting 'readonly=false' allows users to register their own components.
+     * This is the default value.
+     *
+     * Setting 'readonly=true' configures catalog to only allow reads. This can
+     * be used in combination with static locations to only serve operator
+     * provided locations. Effectively this removes the ability to register new
+     * components to a running backstage instance.
+     *
+     */
+    readonly?: boolean;
+
+    /**
      * A set of static locations that the catalog shall always keep itself
      * up-to-date with. This is commonly used for large, permanent integrations
      * that are defined by the Backstage operators at an organization, rather

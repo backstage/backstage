@@ -15,8 +15,8 @@
  */
 
 import { ApiEntity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { CardTab, TabbedCard, useApi } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const ApiDefinitionCard = (_: Props) => {
-  const entity = useEntity().entity as ApiEntity;
+  const { entity } = useEntity<ApiEntity>();
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
 

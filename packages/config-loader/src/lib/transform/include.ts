@@ -35,6 +35,7 @@ const includeFileParser: {
 export function createIncludeTransform(
   env: EnvFunc,
   readFile: ReadFileFunc,
+  substitute: TransformFunc,
 ): TransformFunc {
   return async (input: JsonValue, baseDir: string) => {
     if (!isObject(input)) {
@@ -53,9 +54,19 @@ export function createIncludeTransform(
       return { applied: false };
     }
 
-    const includeValue = input[includeKey];
-    if (typeof includeValue !== 'string') {
+    const rawIncludedValue = input[includeKey];
+    if (typeof rawIncludedValue !== 'string') {
       throw new Error(`${includeKey} include value is not a string`);
+    }
+
+    const substituteResults = await substitute(rawIncludedValue, baseDir);
+    const includeValue = substituteResults.applied
+      ? substituteResults.value
+      : rawIncludedValue;
+
+    // The second string check is needed for Typescript to know this is a string.
+    if (includeValue === undefined || typeof includeValue !== 'string') {
+      throw new Error(`${includeKey} substitution value was undefined`);
     }
 
     switch (includeKey) {

@@ -1,5 +1,26 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.7.1
+
+### Patch Changes
+
+- cba5944fc: Change the response status of metadata endpoints in case a documentation is not
+  available to `404 NOT FOUND`. This also introduces the JSON based error messages
+  used by other backends.
+- Updated dependencies [bc9d62f4f]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/techdocs-common@0.5.0
+  - @backstage/catalog-model@0.7.7
+
+## 0.7.0
+
+### Minor Changes
+
+- aaeb7ecf3: When newer documentation available but not built, show older documentation while async building newer
+  TechDocs backend: /sync endpoint added to support above, returns immediate success if docs don't need a build, returns delayed success after build if needed
+  TechDocs backend: /docs endpoint removed as frontend can directly request to techdocs.storageUrl or /static/docs
+
 ## 0.6.5
 
 ### Patch Changes

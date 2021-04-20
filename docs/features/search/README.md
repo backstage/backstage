@@ -24,13 +24,13 @@ Backstage ecosystem.
 
 ## Project roadmap
 
-| Version                          | Description                                                                                                                                                        |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Backstage Search v0 ✅           | Search Frontend letting you search through the entities of the software catalog. [See v0 Use Cases.](#backstage-search-v0)                                         |
-| [Backstage Search V0.5 ⌛][v0.5] | Foundations for the architecture.                                                                                                                                  |
-| [Backstage Search v1 ⌛][v1]     | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See v1 Use Cases.](#backstage-search-v1)   |
-| [Backstage Search v2 ⌛][v2]     | Search Backend responsible for the indexing process of entities, and their metadata, registered to the Software Catalog. [See v2 Use Cases.](#backstage-search-v2) |
-| [Backstage Search v3 ⌛][v3]     | Standardized Search API lets you index other plugins data to the search engine of choice. [See v3 Use Cases.](#backstage-search-v3)                                |
+| Version                           | Description                                                                                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Backstage Search v0 ✅            | Search Frontend letting you search through the entities of the software catalog. [See v0 Use Cases.](#backstage-search-v0)                                         |
+| [Backstage Search V0.5 ✅ ][v0.5] | Foundations for the architecture.                                                                                                                                  |
+| [Backstage Search v1 ⌛][v1]      | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See v1 Use Cases.](#backstage-search-v1)   |
+| [Backstage Search v2 ⌛][v2]      | Search Backend responsible for the indexing process of entities, and their metadata, registered to the Software Catalog. [See v2 Use Cases.](#backstage-search-v2) |
+| [Backstage Search v3 ⌛][v3]      | Standardized Search API lets you index other plugins data to the search engine of choice. [See v3 Use Cases.](#backstage-search-v3)                                |
 
 [v0.5]: https://github.com/backstage/backstage/milestone/25
 [v1]: https://github.com/backstage/backstage/milestone/26
@@ -84,6 +84,7 @@ the search engines are used.
 
 | Search Engine | Support Status |
 | ------------- | -------------- |
+| Basic (lunr)  | Not yet ❌     |
 | ElasticSearch | Not yet ❌     |
 
 [Reach out to us](#feedback) if you want to chat about support for more search
@@ -91,16 +92,15 @@ engines.
 
 ## Tech Stack
 
-| Stack           | Location                 |
-| --------------- | ------------------------ |
-| Frontend Plugin | @backstage/plugin-search |
-| Backend Plugin  | ⌛                       |
+| Stack           | Location                              |
+| --------------- | ------------------------------------- |
+| Frontend Plugin | @backstage/plugin-search              |
+| Backend Plugin  | @backstage/plugin-search-backend      |
+| Indexer Plugin  | @backstage/plugin-search-backend-node |
+| Common Code     | @backstage/search-common              |
 
-## Feedback
+## Get Involved
 
-For any questions of feedback, reach out to us in the `#search` channel of our
+For any questions, feedback, or to help move search forward, reach out to us in
+the `#search` channel of our
 [Discord chatroom](https://github.com/backstage/backstage#community).
-
-We are still looking for feedback to improve the architecture to fit your
-use-case, see
-[this open issue](https://github.com/backstage/backstage/issues/4078).

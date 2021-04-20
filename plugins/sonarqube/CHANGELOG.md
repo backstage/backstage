@@ -1,5 +1,32 @@
 # @backstage/plugin-sonarqube
 
+## 0.1.16
+
+### Patch Changes
+
+- db802fafb: Export isSonarQubeAvailable.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+
+## 0.1.15
+
+### Patch Changes
+
+- 322e01a95: Support SonarQube project keys containing special characters like colons.
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.1.14
 
 ### Patch Changes

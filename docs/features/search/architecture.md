@@ -6,8 +6,8 @@ description: Documentation on Search Architecture
 
 # Search Architecture
 
-> _This is a proposed architecture which has not been implemented yet. Find our
-> milestones to follow our progress on the
+> _This architecture has not been fully implemented yet. Find our milestones to
+> follow our progress and help contribute on the
 > [Search Roadmap](./README.md#project-roadmap)._
 
 Below you can explore the Search Architecture. Our aim with this architecture is

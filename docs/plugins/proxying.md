@@ -40,8 +40,9 @@ proxy:
   '/larger-example/v1':
     target: http://larger.example.com:8080/svc.v1
     headers:
-      Authorization:
-        $env: EXAMPLE_AUTH_HEADER
+      Authorization: ${EXAMPLE_AUTH_HEADER}
+      # ...or interpolating a value into part of a string,
+      # Authorization: Bearer ${EXAMPLE_AUTH_TOKEN}
 ```
 
 Each key under the proxy configuration entry is a route to match, below the

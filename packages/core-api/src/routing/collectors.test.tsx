@@ -90,13 +90,26 @@ function sortedEntries<T>(map: Map<RouteRef, T>): [RouteRef, T][] {
   );
 }
 
-function routeObj(path: string, refs: RouteRef[], children: any[] = []) {
+function routeObj(
+  path: string,
+  refs: RouteRef[],
+  children: any[] = [],
+  type: 'mounted' | 'gathered' = 'mounted',
+) {
   return {
     path: path,
     caseSensitive: false,
-    element: null,
+    element: type,
     routeRefs: new Set(refs),
-    children: children,
+    children: [
+      {
+        path: '/*',
+        caseSensitive: false,
+        element: 'match-all',
+        routeRefs: new Set(),
+      },
+      ...children,
+    ],
   };
 }
 
@@ -266,8 +279,12 @@ describe('discovery', () => {
       [ref5, ref3],
     ]);
     expect(routeObjects).toEqual([
-      routeObj('/foo', [ref1, ref2]),
-      routeObj('/bar', [ref3], [routeObj('/baz', [ref4, ref5])]),
+      routeObj('/foo', [ref1, ref2], [], 'gathered'),
+      routeObj(
+        '/bar',
+        [ref3],
+        [routeObj('/baz', [ref4, ref5], [], 'gathered')],
+      ),
     ]);
   });
 
@@ -321,6 +338,7 @@ describe('discovery', () => {
             '/bar',
             [ref2, ref5],
             [routeObj('/baz', [ref3], [routeObj('/blop', [ref4])])],
+            'gathered',
           ),
         ],
       ),

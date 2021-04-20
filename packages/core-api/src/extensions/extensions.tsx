@@ -15,9 +15,10 @@
  */
 
 import React, { lazy, Suspense } from 'react';
+import { useApp } from '../app';
+import { BackstagePlugin, Extension } from '../plugin/types';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
-import { Extension, BackstagePlugin } from '../plugin/types';
 
 type ComponentLoader<T> =
   | {
@@ -40,22 +41,41 @@ export function createRoutableExtension<
   return createReactExtension({
     component: {
       lazy: () =>
-        component().then(InnerComponent => {
-          const RoutableExtensionWrapper = ((props: any) => {
-            // Validate that the routing is wired up correctly in the App.tsx
-            try {
-              useRouteRef(mountPoint);
-            } catch {
-              throw new Error(
-                'Routable extension component was not discovered in the app element tree. ' +
-                  'Routable extension components may not be rendered by other components and must be ' +
-                  'directly available as an element within the App provider component.',
-              );
-            }
-            return <InnerComponent {...props} />;
-          }) as T;
-          return RoutableExtensionWrapper;
-        }),
+        component().then(
+          InnerComponent => {
+            const RoutableExtensionWrapper: any = (props: any) => {
+              // Validate that the routing is wired up correctly in the App.tsx
+              try {
+                useRouteRef(mountPoint);
+              } catch {
+                throw new Error(
+                  `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
+                    'Routable extension components may not be rendered by other components and must be ' +
+                    'directly available as an element within the App provider component.',
+                );
+              }
+              return <InnerComponent {...props} />;
+            };
+
+            const componentName =
+              (InnerComponent as { displayName?: string }).displayName ||
+              InnerComponent.name ||
+              'LazyComponent';
+
+            RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
+
+            return RoutableExtensionWrapper as T;
+          },
+          error => {
+            const RoutableExtensionWrapper: any = (_: any) => {
+              const app = useApp();
+              const { BootErrorPage } = app.getComponents();
+
+              return <BootErrorPage step="load-chunk" error={error} />;
+            };
+            return RoutableExtensionWrapper;
+          },
+        ),
     },
     data: {
       'core.mountPoint': mountPoint,

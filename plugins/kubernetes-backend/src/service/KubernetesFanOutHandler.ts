@@ -58,7 +58,10 @@ export class KubernetesFanOutHandler {
     requestBody: KubernetesRequestBody,
     objectTypesToFetch: Set<KubernetesObjectTypes> = DEFAULT_OBJECTS,
   ) {
-    const entityName = requestBody.entity.metadata.name;
+    const entityName =
+      requestBody.entity?.metadata?.annotations?.[
+        'backstage.io/kubernetes-id'
+      ] || requestBody.entity?.metadata?.name;
 
     const clusterDetails: ClusterDetails[] = await this.serviceLocator.getClustersByServiceId(
       entityName,

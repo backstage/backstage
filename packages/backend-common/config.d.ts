@@ -57,7 +57,7 @@ export interface Config {
     database:
       | {
           client: 'sqlite3';
-          connection: ':memory:' | string;
+          connection: ':memory:' | string | { filename: string };
         }
       | {
           client: 'pg';

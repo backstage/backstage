@@ -30,28 +30,39 @@ export type CatalogRequestOptions = {
 };
 
 export interface CatalogApi {
-  getLocationById(
-    id: String,
-    options?: CatalogRequestOptions,
-  ): Promise<Location | undefined>;
-  getEntityByName(
-    name: EntityName,
-    options?: CatalogRequestOptions,
-  ): Promise<Entity | undefined>;
+  // Entities
   getEntities(
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>>;
-  addLocation(
-    location: AddLocationRequest,
+  getEntityByName(
+    name: EntityName,
     options?: CatalogRequestOptions,
-  ): Promise<AddLocationResponse>;
+  ): Promise<Entity | undefined>;
+  removeEntityByUid(
+    uid: string,
+    options?: CatalogRequestOptions,
+  ): Promise<void>;
+
+  // Locations
+  getLocationById(
+    id: string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined>;
+  getOriginLocationByEntity(
+    entity: Entity,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined>;
   getLocationByEntity(
     entity: Entity,
     options?: CatalogRequestOptions,
   ): Promise<Location | undefined>;
-  removeEntityByUid(
-    uid: string,
+  addLocation(
+    location: AddLocationRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<AddLocationResponse>;
+  removeLocationById(
+    id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
 }

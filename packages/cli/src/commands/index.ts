@@ -141,6 +141,15 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./testCommand').then(m => m.default)));
 
   program
+    .command('config:docs')
+    .option(
+      '--package <name>',
+      'Only include the schema that applies to the given package',
+    )
+    .description('Browse the configuration reference documentation')
+    .action(lazy(() => import('./config/docs').then(m => m.default)));
+
+  program
     .command('config:print')
     .option(
       '--package <name>',

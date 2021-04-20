@@ -1,5 +1,52 @@
 # @backstage/plugin-techdocs
 
+## 0.7.2
+
+### Patch Changes
+
+- fef852ecd: Reworked the TechDocs plugin to support using the configured company name instead of
+  'Backstage' in the page title.
+- 18f7345a6: Add borders to TechDocs tables and increase font size. Fixes #5264 and #5276.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+
+## 0.7.1
+
+### Patch Changes
+
+- bebd1c4fe: Remove the `@backstage/techdocs-common` dependency to not pull in backend config schemas in the frontend.
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8488a1a96]
+  - @backstage/plugin-catalog-react@0.1.4
+  - @backstage/catalog-model@0.7.5
+
+## 0.7.0
+
+### Minor Changes
+
+- aaeb7ecf3: When newer documentation available but not built, show older documentation while async building newer
+  TechDocs backend: /sync endpoint added to support above, returns immediate success if docs don't need a build, returns delayed success after build if needed
+  TechDocs backend: /docs endpoint removed as frontend can directly request to techdocs.storageUrl or /static/docs
+- 3139f83af: Add sticky sidebars and footer navigation links to TechDocs Reader
+
+### Patch Changes
+
+- ea9d977e7: Introduce workaround for admonition icons of MkDocs.
+- 2aab54319: TechDocs: links at sidebar and bottom reset scroll position to top
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [4618774ff]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+
 ## 0.6.2
 
 ### Patch Changes
