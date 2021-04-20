@@ -67,3 +67,29 @@ export async function initRepoAndPush({
     remote: 'origin',
   });
 }
+
+export async function checkIfRepoExists({
+  remoteUrl,
+  auth,
+  logger,
+}: {
+  remoteUrl: string;
+  auth: { username: string; password: string };
+  logger: Logger;
+}): Promise<boolean> {
+  const git = Git.fromAuth({
+    username: auth.username,
+    password: auth.password,
+    logger,
+  });
+  try {
+    await git.clone({ url: remoteUrl, dir: 'testClone' });
+    // no error - repository exists
+    return true;
+  } catch (error) {
+    if (error.data.statusCode === 404) {
+      return false;
+    }
+    throw error;
+  }
+}

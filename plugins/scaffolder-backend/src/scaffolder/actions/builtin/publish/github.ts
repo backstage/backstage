@@ -19,7 +19,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import {
+  initRepoAndPush,
+  checkIfRepoExists,
+} from '../../../stages/publish/helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
@@ -43,6 +46,7 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     sourcePath?: string;
+    skipIfExists?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
   }>({
@@ -75,6 +79,11 @@ export function createPublishGithubAction(options: {
             title:
               'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
             type: 'string',
+          },
+          skipIfExists: {
+            title:
+              'If the repository exists, skip this action without failing.',
+            type: 'boolean',
           },
           collaborators: {
             title: 'Collaborators',
@@ -214,15 +223,29 @@ export function createPublishGithubAction(options: {
       const remoteUrl = data.clone_url;
       const repoContentsUrl = `${data.html_url}/blob/master`;
 
-      await initRepoAndPush({
-        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-        remoteUrl,
-        auth: {
-          username: 'x-access-token',
-          password: token,
-        },
-        logger: ctx.logger,
-      });
+      let exists = false;
+      if (ctx.input.skipIfExists) {
+        exists = await checkIfRepoExists({
+          remoteUrl,
+          auth: {
+            username: 'x-access-token',
+            password: token,
+          },
+          logger: ctx.logger,
+        });
+      }
+
+      if (!exists) {
+        await initRepoAndPush({
+          dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+          remoteUrl,
+          auth: {
+            username: 'x-access-token',
+            password: token,
+          },
+          logger: ctx.logger,
+        });
+      }
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
