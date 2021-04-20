@@ -86,7 +86,7 @@ export const CreateRc = ({
   if (responseSteps.length > 0) {
     return (
       <Dialog open maxWidth="md" fullWidth>
-        <DialogTitle>Create Release Candidate (step {progress})</DialogTitle>
+        <DialogTitle>Create Release Candidate</DialogTitle>
 
         <LinearProgressWithLabel value={progress} />
 

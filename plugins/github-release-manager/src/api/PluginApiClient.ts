@@ -414,8 +414,7 @@ export class PluginApiClient implements IPluginApiClient {
         repo,
         message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}
 
-${selectedPatchCommit.sha}
-${selectedPatchCommit.htmlUrl}`,
+${selectedPatchCommit.sha}`,
         tree: mergeTree,
         parents: [releaseBranchSha],
       });

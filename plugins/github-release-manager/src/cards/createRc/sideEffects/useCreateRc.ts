@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 
 import { getRcGitHubInfo } from '../getRcGitHubInfo';
-import { ComponentConfigCreateRc, ResponseStep } from '../../../types/types';
+import { ComponentConfigCreateRc } from '../../../types/types';
 import {
   GetLatestReleaseResult,
   GetRepositoryResult,
@@ -26,7 +27,6 @@ import {
 import { Project } from '../../../contexts/ProjectContext';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
-import { useEffect, useState } from 'react';
 
 interface CreateRC {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -47,44 +47,46 @@ export function useCreateRc({
 }: CreateRC) {
   const {
     responseSteps,
-    setResponseSteps,
+    addStepToResponseSteps,
     asyncCatcher,
-    abortIfError: skipIfError,
+    abortIfError,
   } = useResponseSteps();
 
   /**
    * (1) Get the default branch's most recent commit
    */
-  const getLatestCommit = async () => {
-    const latestCommit = await pluginApiClient.getLatestCommit({
-      owner: project.owner,
-      repo: project.repo,
-      defaultBranch,
-    });
+  const [latestCommitRes, run] = useAsyncFn(async () => {
+    const latestCommit = await pluginApiClient
+      .getLatestCommit({
+        owner: project.owner,
+        repo: project.repo,
+        defaultBranch,
+      })
+      .catch(asyncCatcher);
 
-    const responseStep: ResponseStep = {
+    addStepToResponseSteps({
       message: `Fetched latest commit from "${defaultBranch}"`,
       secondaryMessage: `with message "${latestCommit.commit.message}"`,
       link: latestCommit.htmlUrl,
+    });
+
+    return {
+      latestCommit,
     };
-    setResponseSteps([...responseSteps, responseStep]);
-
-    return { latestCommit };
-  };
-
-  const [latestCommitRes, run] = useAsyncFn(async () =>
-    getLatestCommit().catch(asyncCatcher),
-  );
+  });
 
   /**
    * (2) Create a new ref based on the default branch's most recent sha
    */
-  const createRcFromDefaultBranch = async (latestCommitSha: string) => {
+  const createRcRes = useAsync(async () => {
+    abortIfError(latestCommitRes.error);
+    if (!latestCommitRes.value) return undefined;
+
     const createdRef = await pluginApiClient.createRc
       .createRef({
         owner: project.owner,
         repo: project.repo,
-        mostRecentSha: latestCommitSha,
+        mostRecentSha: latestCommitRes.value.latestCommit.sha,
         targetBranch: nextGitHubInfo.rcBranch,
       })
       .catch(error => {
@@ -94,104 +96,86 @@ export function useCreateRc({
           );
         }
         throw error;
-      });
+      })
+      .catch(asyncCatcher);
 
-    const responseStep: ResponseStep = {
+    addStepToResponseSteps({
       message: 'Cut Release Branch',
       secondaryMessage: `with ref "${createdRef.ref}"`,
+    });
+
+    return {
+      ...createdRef,
     };
-    setResponseSteps([...responseSteps, responseStep]);
-
-    return { ...createdRef };
-  };
-
-  const createRcRes = useAsync(async () => {
-    skipIfError(latestCommitRes.error);
-
-    if (latestCommitRes.value) {
-      return createRcFromDefaultBranch(
-        latestCommitRes.value.latestCommit.sha,
-      ).catch(asyncCatcher);
-    }
-
-    return undefined;
   }, [latestCommitRes.value, latestCommitRes.error]);
 
   /**
    * (3) Compose a body for the release
    */
-  const getComparison = async (createdRefRef: string) => {
+  const getComparisonRes = useAsync(async () => {
+    abortIfError(createRcRes.error);
+    if (!createRcRes.value) return undefined;
+
     const previousReleaseBranch = latestRelease
       ? latestRelease.targetCommitish
       : defaultBranch;
     const nextReleaseBranch = nextGitHubInfo.rcBranch;
-    const comparison = await pluginApiClient.createRc.getComparison({
-      owner: project.owner,
-      repo: project.repo,
-      previousReleaseBranch,
-      nextReleaseBranch,
-    });
+    const comparison = await pluginApiClient.createRc
+      .getComparison({
+        owner: project.owner,
+        repo: project.repo,
+        previousReleaseBranch,
+        nextReleaseBranch,
+      })
+      .catch(asyncCatcher);
+
     const releaseBody = `**Compare** ${comparison.htmlUrl}
 
 **Ahead by** ${comparison.aheadBy} commits
 
-**Release branch** ${createdRefRef}
+**Release branch** ${createRcRes.value.ref}
 
 ---
 
 `;
 
-    const responseStep: ResponseStep = {
+    addStepToResponseSteps({
       message: 'Fetched commit comparison',
       secondaryMessage: `${previousReleaseBranch}...${nextReleaseBranch}`,
       link: comparison.htmlUrl,
+    });
+
+    return {
+      ...comparison,
+      releaseBody,
     };
-    setResponseSteps([...responseSteps, responseStep]);
-
-    return { ...comparison, releaseBody };
-  };
-
-  const getComparisonRes = useAsync(async () => {
-    skipIfError(createRcRes.error);
-
-    if (createRcRes.value) {
-      return getComparison(createRcRes.value.ref).catch(asyncCatcher);
-    }
-
-    return undefined;
   }, [createRcRes.value, createRcRes.error]);
 
   /**
    * (4) Creates the release itself in GitHub
    */
-  const createRelease = async (releaseBody: string) => {
-    const createReleaseResult = await pluginApiClient.createRc.createRelease({
-      owner: project.owner,
-      repo: project.repo,
-      nextGitHubInfo: nextGitHubInfo,
-      releaseBody,
-    });
+  const createReleaseRes = useAsync(async () => {
+    abortIfError(getComparisonRes.error);
+    if (!getComparisonRes.value) return undefined;
 
-    const responseStep: ResponseStep = {
+    const createReleaseResult = await pluginApiClient.createRc
+      .createRelease({
+        owner: project.owner,
+        repo: project.repo,
+        nextGitHubInfo: nextGitHubInfo,
+        releaseBody: getComparisonRes.value.releaseBody,
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
       message: `Created Release Candidate "${createReleaseResult.name}"`,
       secondaryMessage: `with tag "${nextGitHubInfo.rcReleaseTag}"`,
       link: createReleaseResult.htmlUrl,
+    });
+
+    return {
+      ...createReleaseResult,
     };
-    setResponseSteps([...responseSteps, responseStep]);
-
-    return { ...createReleaseResult };
-  };
-
-  const createReleaseRes = useAsync(async () => {
-    skipIfError(getComparisonRes.error);
-
-    if (getComparisonRes.value) {
-      return createRelease(getComparisonRes.value.releaseBody).catch(
-        asyncCatcher,
-      );
-    }
-
-    return undefined;
   }, [getComparisonRes.value, getComparisonRes.error]);
 
   /**
@@ -199,7 +183,7 @@ export function useCreateRc({
    */
   useAsync(async () => {
     if (successCb && !!createReleaseRes.value && !!getComparisonRes.value) {
-      skipIfError(createReleaseRes.error);
+      abortIfError(createReleaseRes.error);
 
       try {
         await successCb({
@@ -213,18 +197,18 @@ export function useCreateRc({
         asyncCatcher(error);
       }
 
-      const responseStep: ResponseStep = {
+      addStepToResponseSteps({
         message: 'Success callback successfully called 🚀',
         icon: 'success',
-      };
-      setResponseSteps([...responseSteps, responseStep]);
+      });
     }
   }, [createReleaseRes.value]);
 
+  const TOTAL_STEPS = 4 + (!!successCb ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
-    setProgress((responseSteps.length / (4 + (!!successCb ? 1 : 0))) * 100);
-  }, [responseSteps.length, successCb]);
+    setProgress((responseSteps.length / TOTAL_STEPS) * 100);
+  }, [TOTAL_STEPS, responseSteps.length]);
 
   return {
     run,

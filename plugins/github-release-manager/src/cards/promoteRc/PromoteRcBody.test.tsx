@@ -30,6 +30,13 @@ jest.mock('../../contexts/PluginApiClientContext', () => ({
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
+jest.mock('./sideEffects/usePromoteRc', () => ({
+  usePromoteRc: () => ({
+    run: jest.fn(),
+    responseSteps: [],
+    progress: 0,
+  }),
+}));
 
 import { PromoteRcBody } from './PromoteRcBody';
 

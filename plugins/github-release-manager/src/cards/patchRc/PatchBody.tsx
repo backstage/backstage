@@ -15,11 +15,13 @@
  */
 
 import React, { useState } from 'react';
-import { useAsync, useAsyncFn } from 'react-use';
+import { useAsync } from 'react-use';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Button,
   Checkbox,
+  Dialog,
+  DialogTitle,
   IconButton,
   Link,
   List,
@@ -37,8 +39,7 @@ import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';
-import { patch } from './sideEffects/patch';
-import { ResponseStepList } from '../../components/ResponseStepList/ResponseStepList';
+import { usePatch } from './sideEffects/usePatch';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
@@ -47,9 +48,10 @@ import { useStyles } from '../../styles/styles';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
-  GetRecentCommitsResultSingle,
 } from '../../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
+import { LinearProgressWithLabel } from '../../components/LinearProgressWithLabel';
+import { ResponseStepList2 } from '../../components/ResponseStepList/ResponseStepList2';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -92,20 +94,25 @@ export const PatchBody = ({
     };
   });
 
-  const [patchReleaseResponse, patchReleaseFn] = useAsyncFn(async (...args) => {
-    const selectedPatchCommit: GetRecentCommitsResultSingle = args[0];
-    const patchResponseSteps = await patch({
-      project,
-      pluginApiClient,
-      bumpedTag,
-      latestRelease,
-      selectedPatchCommit,
-      successCb,
-      tagParts,
-    });
-
-    return patchResponseSteps;
+  const { run, responseSteps, progress } = usePatch({
+    bumpedTag,
+    latestRelease,
+    pluginApiClient,
+    project,
+    tagParts,
+    successCb,
   });
+  if (responseSteps.length > 0) {
+    return (
+      <Dialog open maxWidth="md" fullWidth>
+        <DialogTitle>Patch Release Candidate</DialogTitle>
+
+        <LinearProgressWithLabel value={progress} />
+
+        <ResponseStepList2 responseSteps={responseSteps} />
+      </Dialog>
+    );
+  }
 
   if (githubDataResponse.error) {
     return (
@@ -113,10 +120,6 @@ export const PatchBody = ({
         Unexpected error: {githubDataResponse.error.message}
       </Alert>
     );
-  }
-
-  if (patchReleaseResponse.error) {
-    return <Alert severity="error">{patchReleaseResponse.error.message}</Alert>;
   }
 
   if (githubDataResponse.loading) {
@@ -192,11 +195,7 @@ export const PatchBody = ({
 
                 <ListItem
                   disabled={
-                    patchReleaseResponse.loading ||
-                    (patchReleaseResponse.value &&
-                      patchReleaseResponse.value.length > 0) ||
-                    commitExistsOnReleaseBranch ||
-                    hasNoParent
+                    progress > 0 || commitExistsOnReleaseBranch || hasNoParent
                   }
                   role={undefined}
                   dense
@@ -272,19 +271,9 @@ export const PatchBody = ({
   }
 
   function CTA() {
-    if (patchReleaseResponse.loading || patchReleaseResponse.value) {
-      return (
-        <ResponseStepList
-          responseSteps={patchReleaseResponse.value}
-          loading={patchReleaseResponse.loading}
-          title="Patch result"
-        />
-      );
-    }
-
     return (
       <Button
-        disabled={checkedCommitIndex === -1}
+        disabled={checkedCommitIndex === -1 || progress > 0}
         variant="contained"
         color="primary"
         onClick={() => {
@@ -298,7 +287,7 @@ export const PatchBody = ({
             );
           }
 
-          patchReleaseFn(selectedPatchCommit);
+          run(selectedPatchCommit);
         }}
       >
         Patch Release Candidate
