@@ -305,7 +305,8 @@ describe('CodeCoverageUtils', () => {
           namespace: 'test',
           annotations: {
             'backstage.io/code-coverage': 'scm-only',
-            'backstage.io/source-location': 'https://github.com/example/test/',
+            'backstage.io/source-location':
+              'url:https://github.com/example/test/',
           },
         },
         apiVersion: 'backstage.io/v1alpha1',
