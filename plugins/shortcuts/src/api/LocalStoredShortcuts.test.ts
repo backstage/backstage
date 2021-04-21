@@ -29,7 +29,7 @@ describe('LocalStoredShortcuts', () => {
     const shortcut: Shortcut = { id: 'id', title: 'title', url: '/url' };
 
     await shortcutApi.add(shortcut);
-    shortcutApi.observe().subscribe(data => {
+    shortcutApi.shortcut$().subscribe(data => {
       expect(data).toEqual(
         expect.arrayContaining([{ ...shortcut, id: expect.anything() }]),
       );

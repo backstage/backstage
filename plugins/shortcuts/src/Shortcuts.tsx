@@ -25,7 +25,7 @@ import { shortcutsApiRef } from './api';
 export const Shortcuts = () => {
   const shortcutApi = useApi(shortcutsApiRef);
   const shortcuts = useObservable(
-    useMemo(() => shortcutApi.observe(), [shortcutApi]),
+    useMemo(() => shortcutApi.shortcut$(), [shortcutApi]),
   );
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
   const loading = Boolean(!shortcuts);

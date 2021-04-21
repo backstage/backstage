@@ -27,7 +27,7 @@ export interface ShortcutApi {
   /**
    * Returns an Observable that will subscribe to changes.
    */
-  observe(): Observable<Shortcut[]>;
+  shortcut$(): Observable<Shortcut[]>;
 
   /**
    * Generates a unique id for the shortcut and then saves it.

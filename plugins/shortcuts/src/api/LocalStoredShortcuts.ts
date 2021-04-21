@@ -27,7 +27,7 @@ import { Shortcut } from '../types';
 export class LocalStoredShortcuts implements ShortcutApi {
   constructor(private readonly storageApi: StorageApi) {}
 
-  observe() {
+  shortcut$() {
     return this.observable;
   }
 
