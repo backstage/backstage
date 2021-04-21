@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { CatalogBuilder } from './CatalogBuilder';
+export { CatalogBuilder, defaultProcessors } from './CatalogBuilder';
 export { createRouter } from './router';
 export type { RouterOptions } from './router';

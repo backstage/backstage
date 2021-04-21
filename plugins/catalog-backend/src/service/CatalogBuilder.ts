@@ -282,8 +282,7 @@ export class CatalogBuilder {
   }
 
   private buildProcessors(): CatalogProcessor[] {
-    const { config, logger, reader } = this.env;
-    const integrations = ScmIntegrations.fromConfig(config);
+    const { config, reader } = this.env;
 
     this.checkDeprecatedReaderProcessors();
 
@@ -303,18 +302,7 @@ export class CatalogBuilder {
 
     // These are only added unless the user replaced them all
     if (!this.processorsReplace) {
-      processors.push(
-        new FileReaderProcessor(),
-        BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubDiscoveryProcessor.fromConfig(config, { logger }),
-        GithubOrgReaderProcessor.fromConfig(config, { logger }),
-        LdapOrgReaderProcessor.fromConfig(config, { logger }),
-        MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
-        new UrlReaderProcessor({ reader, logger }),
-        CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        new LocationEntityProcessor({ integrations }),
-        new AnnotateLocationEntityProcessor({ integrations }),
-      );
+      processors.push(...defaultProcessors(this.env));
     }
 
     // Add the ones (if any) that the user added
@@ -348,4 +336,25 @@ export class CatalogBuilder {
       );
     }
   }
+}
+
+export function defaultProcessors(env: CatalogEnvironment): CatalogProcessor[] {
+  const { config, logger, reader } = env;
+  const integrations = ScmIntegrations.fromConfig(config);
+
+  const processors: CatalogProcessor[] = [];
+  processors.push(
+    new FileReaderProcessor(),
+    BitbucketDiscoveryProcessor.fromConfig(config, { logger }),
+    GithubDiscoveryProcessor.fromConfig(config, { logger }),
+    GithubOrgReaderProcessor.fromConfig(config, { logger }),
+    LdapOrgReaderProcessor.fromConfig(config, { logger }),
+    MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
+    new UrlReaderProcessor({ reader, logger }),
+    CodeOwnersProcessor.fromConfig(config, { logger, reader }),
+    new LocationEntityProcessor({ integrations }),
+    new AnnotateLocationEntityProcessor({ integrations }),
+  );
+
+  return processors;
 }
