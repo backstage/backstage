@@ -273,6 +273,20 @@ project within your organization.
 Specifying this annotation may enable SonarQube related features in Backstage
 for that entity.
 
+### backstage.io/code-coverage
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/code-coverage: scm-only
+```
+
+The value of this annotation controls the code-coverage backstage plugin. If set
+to `scm-only`, the plugin will only take into account files stored in source
+control (e.g. ignoring generated code). If set to `enabled`, all files covered
+by a coverage report will be taken into account.
+
 ## Deprecated Annotations
 
 The following annotations are deprecated, and only listed here to aid in
