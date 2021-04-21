@@ -15,7 +15,6 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { renderHook } from '@testing-library/react-hooks';
 import { getProjectName } from './getProjectName';
 
 describe('getProjectName', () => {
@@ -31,9 +30,7 @@ describe('getProjectName', () => {
       },
     };
 
-    const { result } = renderHook(() => getProjectName(entity));
-
-    expect(result.current).toBe('test');
+    expect(getProjectName(entity)).toBe('test');
   });
 
   it('should return undefined', async () => {
@@ -45,8 +42,6 @@ describe('getProjectName', () => {
       },
     };
 
-    const { result } = renderHook(() => getProjectName(entity));
-
-    expect(result.current).toBeUndefined();
+    expect(getProjectName(entity)).toBeUndefined();
   });
 });
