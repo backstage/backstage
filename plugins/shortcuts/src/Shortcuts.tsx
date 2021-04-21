@@ -17,12 +17,21 @@
 import React, { useMemo } from 'react';
 import { useObservable } from 'react-use';
 import { Progress, SidebarItem, useApi } from '@backstage/core';
+import { makeStyles } from '@material-ui/core';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';
 import { shortcutsApiRef } from './api';
 
+const useStyles = makeStyles({
+  root: {
+    flex: '1 1 auto',
+    overflow: 'scroll',
+  },
+});
+
 export const Shortcuts = () => {
+  const classes = useStyles();
   const shortcutApi = useApi(shortcutsApiRef);
   const shortcuts = useObservable(
     useMemo(() => shortcutApi.shortcut$(), [shortcutApi]),
@@ -39,7 +48,7 @@ export const Shortcuts = () => {
   };
 
   return (
-    <>
+    <div className={classes.root}>
       <SidebarItem
         icon={PlayListAddIcon}
         text="Add Shortcuts"
@@ -61,6 +70,6 @@ export const Shortcuts = () => {
           />
         ))
       )}
-    </>
+    </div>
   );
 };
