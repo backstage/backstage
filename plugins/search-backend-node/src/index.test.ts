@@ -21,6 +21,7 @@ import {
   IndexableDocument,
 } from '@backstage/search-common';
 import { IndexBuilder } from './IndexBuilder';
+import { LunrSearchEngine, SearchEngine } from './index';
 
 class TestDocumentCollator implements DocumentCollator {
   async execute() {
@@ -35,12 +36,18 @@ class TestDocumentDecorator implements DocumentDecorator {
 }
 
 describe('IndexBuilder', () => {
+  let testSearchEngine: SearchEngine;
   let testIndexBuilder: IndexBuilder;
   let testCollator: DocumentCollator;
   let testDecorator: DocumentDecorator;
 
   beforeEach(() => {
-    testIndexBuilder = new IndexBuilder({ logger: getVoidLogger() });
+    const logger = getVoidLogger();
+    testSearchEngine = new LunrSearchEngine({ logger });
+    testIndexBuilder = new IndexBuilder({
+      logger,
+      searchEngine: testSearchEngine,
+    });
     testCollator = new TestDocumentCollator();
     testDecorator = new TestDocumentDecorator();
   });

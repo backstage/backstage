@@ -15,7 +15,10 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import {
+  IndexBuilder,
+  LunrSearchEngine,
+} from '@backstage/plugin-search-backend-node';
 import express from 'express';
 import request from 'supertest';
 
@@ -26,10 +29,11 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const logger = getVoidLogger();
-    const indexBuilder = new IndexBuilder({ logger });
+    const searchEngine = new LunrSearchEngine({ logger });
+    const indexBuilder = new IndexBuilder({ logger, searchEngine });
     const router = await createRouter({
-      logger,
       engine: indexBuilder.getSearchEngine(),
+      logger,
     });
     app = express().use(router);
   });
