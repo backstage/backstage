@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Observable from 'zen-observable';
-import { createApiRef } from '@backstage/core';
+import { createApiRef, Observable } from '@backstage/core';
 import { Shortcut } from '../types';
 
 export const shortcutsApiRef = createApiRef<ShortcutApi>({
