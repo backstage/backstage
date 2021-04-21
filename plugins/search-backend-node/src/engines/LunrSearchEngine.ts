@@ -44,8 +44,8 @@ export class LunrSearchEngine implements SearchEngine {
   }: SearchQuery): ConcreteLunrQuery => {
     let lunrQueryFilters;
     if (filters) {
-      lunrQueryFilters = Object.keys(filters)
-        .map(key => ` +${key}:${filters[key]}`)
+      lunrQueryFilters = Object.entries(filters)
+        .map(([key, value]) => ` +${key}:${value}`)
         .join('');
     }
 
