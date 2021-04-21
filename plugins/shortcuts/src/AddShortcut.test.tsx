@@ -80,7 +80,7 @@ describe('AddShortcut', () => {
       }),
     );
 
-    fireEvent.click(screen.getByText('Paste Current Url'));
+    fireEvent.click(screen.getByText('Use current page'));
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
       expect(spy).toBeCalledWith({
@@ -102,7 +102,7 @@ describe('AddShortcut', () => {
       ),
     );
 
-    fireEvent.click(screen.getByText('Paste Current Url'));
+    fireEvent.click(screen.getByText('Use current page'));
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => {
       expect(

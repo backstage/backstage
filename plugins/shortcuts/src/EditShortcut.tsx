@@ -63,7 +63,7 @@ export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
     try {
       await api.update(newShortcut);
       alertApi.post({
-        message: 'Successfully updated shortcut',
+        message: `Updated shortcut '${title}'`,
         severity: 'success',
       });
     } catch (error) {
@@ -80,7 +80,7 @@ export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
     try {
       await api.remove(shortcut);
       alertApi.post({
-        message: 'Successfully deleted shortcut',
+        message: `Removed shortcut '${shortcut.title}' from your sidebar`,
         severity: 'success',
       });
     } catch (error) {

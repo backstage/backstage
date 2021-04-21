@@ -60,7 +60,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
     try {
       await api.add(shortcut);
       alertApi.post({
-        message: 'Successfully added shortcut',
+        message: `Added shortcut '${title}' to your sidebar`,
         severity: 'success',
       });
     } catch (error) {
@@ -106,7 +106,7 @@ export const AddShortcut = ({ onClose, anchorEl, api }: Props) => {
               color="primary"
               onClick={handlePaste}
             >
-              Paste Current Url
+              Use current page
             </Button>
           }
         />
