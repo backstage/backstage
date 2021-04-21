@@ -1,0 +1,14 @@
+version: '3'
+services:
+  backstage:
+    image: backstage
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+    ports:
+      - '7000:7000'
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
