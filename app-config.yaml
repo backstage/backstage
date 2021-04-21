@@ -125,12 +125,12 @@ integrations:
     - host: github.com
       token: ${GITHUB_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using the API:
-    - host: ghe.spotify.net
-      apiBaseUrl: https://ghe.spotify.net/api/v3
-      token: ${GHE_TOKEN}
+    # - host: ghe.example.net
+    #   apiBaseUrl: https://ghe.example.net/api/v3
+    #   token: ${GHE_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
-    # - host: ghe.spotify.net
-    #   rawBaseUrl: https://ghe.spotify.net/raw
+    # - host: ghe.example.net
+    #   rawBaseUrl: https://ghe.example.net/raw
     #   token: ${GHE_TOKEN}
   gitlab:
     - host: gitlab.com
@@ -165,8 +165,8 @@ catalog:
         - target: https://github.com
           token: ${GITHUB_TOKEN}
         #### Example for how to add your GitHub Enterprise instance using the API:
-        # - target: https://ghe.spotify.net
-        #   apiBaseUrl: https://ghe.spotify.net/api
+        # - target: https://ghe.example.net
+        #   apiBaseUrl: https://ghe.example.net/api
         #   token: ${GHE_TOKEN}
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
