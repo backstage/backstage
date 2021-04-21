@@ -29,10 +29,10 @@ spec:
         - containerPort: 80
           name: app
           protocol: TCP
-      resources:
-        requests:
-          memory: "200Mi"
-          cpu: "100m"
-        limits:
-          memory: "400Mi"
-          cpu: "200m"
+        # resources:
+        #   requests:
+        #     memory: "200Mi"
+        #     cpu: "100m"
+        #   limits:
+        #     memory: "400Mi"
+        #     cpu: "200m"
