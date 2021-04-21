@@ -272,11 +272,10 @@ export class NextCatalogBuilder {
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
     const locationStore = new DefaultLocationStore(db);
-    const dbLocationProvider = new DatabaseLocationProvider(locationStore);
     const stitcher = new Stitcher(dbClient, logger);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      [dbLocationProvider], // entityproviders
+      [locationStore], // entityproviders
       stateManager,
       orchestrator,
       stitcher,

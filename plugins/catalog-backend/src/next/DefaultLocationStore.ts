@@ -16,24 +16,29 @@
 
 import { LocationSpec, Location } from '@backstage/catalog-model';
 import { Database } from '../database';
-import { LocationStore } from './types';
+import {
+  LocationStore,
+  EntityProvider,
+  EntityProviderConnection,
+} from './types';
 import { v4 as uuidv4 } from 'uuid';
+import { locationSpecToLocationEntity } from './util';
 import { ConflictError } from '@backstage/errors';
-import { Observable } from '@backstage/core';
-import ObservableImpl from 'zen-observable';
 
 export type LocationMessage =
   | { all: Location[] }
   | { added: Location[]; removed: Location[] };
 
-export class DefaultLocationStore implements LocationStore {
-  private subscribers = new Set<
-    ZenObservable.SubscriptionObserver<LocationMessage>
-  >();
+export class DefaultLocationStore implements LocationStore, EntityProvider {
+  private _connection: EntityProviderConnection | undefined;
 
   constructor(private readonly db: Database) {}
 
   createLocation(spec: LocationSpec): Promise<Location> {
+    if (!this.connection) {
+      throw new Error('location store is not initialized');
+    }
+
     return this.db.transaction(async tx => {
       // TODO: id should really be type and target combined and not a uuid.
 
@@ -55,7 +60,11 @@ export class DefaultLocationStore implements LocationStore {
         target: spec.target,
       });
 
-      this.notifyAddition(location);
+      await this.connection.applyMutation({
+        type: 'delta',
+        added: [locationSpecToLocationEntity(location)],
+        removed: [],
+      });
 
       return location;
     });
@@ -75,40 +84,33 @@ export class DefaultLocationStore implements LocationStore {
   }
 
   deleteLocation(id: string): Promise<void> {
+    if (!this.connection) {
+      throw new Error('location store is not initialized');
+    }
+
     return this.db.transaction(async tx => {
       const location = await this.db.location(id);
       if (!location) {
         throw new ConflictError(`No location found with id: ${id}`);
       }
       await this.db.removeLocation(tx, id);
-      this.notifyDeletion(location);
-    });
-  }
-
-  private notifyAddition(location: Location) {
-    for (const subscriber of this.subscribers) {
-      subscriber.next({
-        added: [location],
-        removed: [],
-      });
-    }
-  }
-
-  private notifyDeletion(location: Location) {
-    for (const subscriber of this.subscribers) {
-      subscriber.next({
+      await this.connection.applyMutation({
+        type: 'delta',
         added: [],
-        removed: [location],
+        removed: [locationSpecToLocationEntity(location)],
       });
-    }
+    });
   }
 
-  location$(): Observable<LocationMessage> {
-    return new ObservableImpl<LocationMessage>(subscriber => {
-      this.subscribers.add(subscriber);
-      return () => {
-        this.subscribers.delete(subscriber);
-      };
-    });
+  private get connection(): EntityProviderConnection {
+    if (!this._connection) {
+      throw new Error('location store is not initialized');
+    }
+
+    return this._connection;
+  }
+
+  async connect(connection: EntityProviderConnection): Promise<void> {
+    this._connection = connection;
   }
 }

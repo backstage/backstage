@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
   EntityName,
@@ -21,7 +22,6 @@ import {
   EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { Observable } from '@backstage/core'; // << nooo
 
 export interface LocationEntity {
   apiVersion: 'backstage.io/v1alpha1';
@@ -45,20 +45,11 @@ export interface LocationService {
   deleteLocation(id: string): Promise<void>;
 }
 
-export type EntityMessage =
-  | { all: Entity[] }
-  | { added: Entity[]; removed: EntityName[] };
-
 export interface LocationStore {
-  // extends EntityProvider
   createLocation(spec: LocationSpec): Promise<Location>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
-
-  location$(): Observable<
-    { all: Location[] } | { added: Location[]; removed: Location[] }
-  >;
 }
 
 export interface CatalogProcessingEngine {
@@ -66,8 +57,16 @@ export interface CatalogProcessingEngine {
   stop(): Promise<void>;
 }
 
+export type EntityProviderMutation =
+  | { type: 'full'; entities: Iterable<Entity> }
+  | { type: 'delta'; added: Iterable<Entity>; removed: Iterable<Entity> };
+
+export interface EntityProviderConnection {
+  applyMutation(mutation: EntityProviderMutation): Promise<void>;
+}
+
 export interface EntityProvider {
-  entityChange$(): Observable<EntityMessage>;
+  connect(connection: EntityProviderConnection): Promise<void>;
 }
 
 export type EntityProcessingRequest = {
