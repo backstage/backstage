@@ -43,7 +43,7 @@ describe('useGetGitHubBatchInfo', () => {
             "id": 1,
             "prerelease": false,
             "tagName": "rc-2020.01.01_1",
-            "targetCommitish": "rc/1.2.3",
+            "targetCommitish": "rc/2020.01.01_1",
           },
           "releaseBranch": Object {
             "commit": Object {

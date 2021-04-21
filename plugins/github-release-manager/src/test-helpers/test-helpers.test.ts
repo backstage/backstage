@@ -58,7 +58,12 @@ describe('testHelpers', () => {
           "versioningStrategy": "calver",
         },
         "mockDefaultBranch": "mock_defaultBranch",
-        "mockNextGitHubInfo": Object {
+        "mockNextGitHubInfoCalver": Object {
+          "rcBranch": "rc/2020.01.01_1",
+          "rcReleaseTag": "rc-2020.01.01_1",
+          "releaseName": "Version 2020.01.01_1",
+        },
+        "mockNextGitHubInfoSemver": Object {
           "rcBranch": "rc/1.2.3",
           "rcReleaseTag": "rc-1.2.3",
           "releaseName": "Version 1.2.3",
@@ -82,6 +87,13 @@ describe('testHelpers', () => {
           "id": 1,
           "prerelease": true,
           "tagName": "rc-2020.01.01_1",
+          "targetCommitish": "rc/2020.01.01_1",
+        },
+        "mockReleaseCandidateSemver": Object {
+          "htmlUrl": "mock_release_html_url",
+          "id": 1,
+          "prerelease": true,
+          "tagName": "rc-1.2.3",
           "targetCommitish": "rc/1.2.3",
         },
         "mockReleaseVersionCalver": Object {
@@ -89,7 +101,7 @@ describe('testHelpers', () => {
           "id": 1,
           "prerelease": false,
           "tagName": "version-2020.01.01_1",
-          "targetCommitish": "rc/1.2.3",
+          "targetCommitish": "rc/2020.01.01_1",
         },
         "mockReleaseVersionSemver": Object {
           "htmlUrl": "mock_release_html_url",

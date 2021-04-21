@@ -20,7 +20,7 @@ import { render } from '@testing-library/react';
 import {
   mockApiClient,
   mockCalverProject,
-  mockNextGitHubInfo,
+  mockNextGitHubInfoSemver,
   mockReleaseBranch,
   mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
@@ -36,7 +36,7 @@ jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
 }));
 jest.mock('../../helpers/getRcGitHubInfo', () => ({
-  getRcGitHubInfo: () => mockNextGitHubInfo,
+  getRcGitHubInfo: () => mockNextGitHubInfoSemver,
 }));
 jest.mock('./hooks/useCreateRc', () => ({
   useCreateRc: () =>

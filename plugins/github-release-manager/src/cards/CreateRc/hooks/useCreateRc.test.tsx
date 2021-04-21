@@ -21,7 +21,7 @@ import {
   mockApiClient,
   mockCalverProject,
   mockDefaultBranch,
-  mockNextGitHubInfo,
+  mockNextGitHubInfoCalver,
   mockReleaseVersionCalver,
 } from '../../../test-helpers/test-helpers';
 import { useCreateRc } from './useCreateRc';
@@ -34,7 +34,7 @@ describe('useCreateRc', () => {
       useCreateRc({
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
-        nextGitHubInfo: mockNextGitHubInfo,
+        nextGitHubInfo: mockNextGitHubInfoCalver,
         pluginApiClient: mockApiClient,
         project: mockCalverProject,
       }),
@@ -53,7 +53,7 @@ describe('useCreateRc', () => {
       useCreateRc({
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
-        nextGitHubInfo: mockNextGitHubInfo,
+        nextGitHubInfo: mockNextGitHubInfoCalver,
         pluginApiClient: mockApiClient,
         project: mockCalverProject,
         successCb: jest.fn(),
@@ -81,12 +81,12 @@ describe('useCreateRc', () => {
           Object {
             "link": "mock_compareCommits_html_url",
             "message": "Fetched commit comparison",
-            "secondaryMessage": "rc/1.2.3...rc/1.2.3",
+            "secondaryMessage": "rc/2020.01.01_1...rc/2020.01.01_1",
           },
           Object {
             "link": "mock_createRelease_html_url",
             "message": "Created Release Candidate \\"mock_createRelease_name\\"",
-            "secondaryMessage": "with tag \\"rc-1.2.3\\"",
+            "secondaryMessage": "with tag \\"rc-2020.01.01_1\\"",
           },
           Object {
             "icon": "success",

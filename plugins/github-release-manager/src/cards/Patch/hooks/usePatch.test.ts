@@ -80,11 +80,11 @@ describe('patch', () => {
             "secondaryMessage": "with message \\"mock_commit_message\\"",
           },
           Object {
-            "message": "Forced branch \\"rc/1.2.3\\" to temporary commit \\"mock_commit_sha\\"",
+            "message": "Forced branch \\"rc/2020.01.01_1\\" to temporary commit \\"mock_commit_sha\\"",
           },
           Object {
             "link": "mock_merge_html_url",
-            "message": "Merged temporary commit into \\"rc/1.2.3\\"",
+            "message": "Merged temporary commit into \\"rc/2020.01.01_1\\"",
             "secondaryMessage": "with message \\"mock_merge_commit_message\\"",
           },
           Object {

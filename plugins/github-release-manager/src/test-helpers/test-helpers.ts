@@ -27,6 +27,18 @@ import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';
 
+const A_CALVER_VERSION = '2020.01.01_1';
+const MOCK_RELEASE_NAME_CALVER = `Version ${A_CALVER_VERSION}`;
+const MOCK_RELEASE_BRANCH_NAME_CALVER = `rc/${A_CALVER_VERSION}`;
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER = `rc-${A_CALVER_VERSION}`;
+const MOCK_RELEASE_VERSION_TAG_NAME_CALVER = `version-${A_CALVER_VERSION}`;
+
+const A_SEMVER_VERSION = '1.2.3';
+const MOCK_RELEASE_NAME_SEMVER = `Version ${A_SEMVER_VERSION}`;
+const MOCK_RELEASE_BRANCH_NAME_SEMVER = `rc/${A_SEMVER_VERSION}`;
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER = `rc-${A_SEMVER_VERSION}`;
+const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER = `version-${A_SEMVER_VERSION}`;
+
 export const mockSemverProject: Project = {
   owner: mockOwner,
   repo: mockRepo,
@@ -47,10 +59,16 @@ export const mockSearchSemver = `?versioningStrategy=${mockSemverProject.version
 
 export const mockDefaultBranch = 'mock_defaultBranch';
 
-export const mockNextGitHubInfo: ReturnType<typeof getRcGitHubInfo> = {
-  rcBranch: 'rc/1.2.3',
-  rcReleaseTag: 'rc-1.2.3',
-  releaseName: 'Version 1.2.3',
+export const mockNextGitHubInfoSemver: ReturnType<typeof getRcGitHubInfo> = {
+  rcBranch: MOCK_RELEASE_BRANCH_NAME_SEMVER,
+  rcReleaseTag: MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER,
+  releaseName: MOCK_RELEASE_NAME_SEMVER,
+};
+
+export const mockNextGitHubInfoCalver: ReturnType<typeof getRcGitHubInfo> = {
+  rcBranch: MOCK_RELEASE_BRANCH_NAME_CALVER,
+  rcReleaseTag: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+  releaseName: MOCK_RELEASE_NAME_CALVER,
 };
 
 export const mockTagParts = {
@@ -74,24 +92,32 @@ const createMockRelease = ({
   id: 1,
   htmlUrl: 'mock_release_html_url',
   prerelease,
-  tagName: 'rc-2020.01.01_1',
-  targetCommitish: 'rc/1.2.3',
+  tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+  targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
   ...rest,
 });
+
 export const mockReleaseCandidateCalver = createMockRelease({
   prerelease: true,
-  tagName: 'rc-2020.01.01_1',
-  targetCommitish: 'rc/1.2.3',
+  tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+  targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
 });
+
 export const mockReleaseVersionCalver = createMockRelease({
   prerelease: false,
-  tagName: 'version-2020.01.01_1',
-  targetCommitish: 'rc/1.2.3',
+  tagName: MOCK_RELEASE_VERSION_TAG_NAME_CALVER,
+  targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
+});
+
+export const mockReleaseCandidateSemver = createMockRelease({
+  prerelease: true,
+  tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER,
+  targetCommitish: MOCK_RELEASE_BRANCH_NAME_SEMVER,
 });
 export const mockReleaseVersionSemver = createMockRelease({
   prerelease: false,
-  tagName: 'version-1.2.3',
-  targetCommitish: 'rc/1.2.3',
+  tagName: MOCK_RELEASE_VERSION_TAG_NAME_SEMVER,
+  targetCommitish: MOCK_RELEASE_BRANCH_NAME_SEMVER,
 });
 
 /**
@@ -100,12 +126,18 @@ export const mockReleaseVersionSemver = createMockRelease({
 const createMockBranch = ({
   ...rest
 }: Partial<GetBranchResult> = {}): GetBranchResult => ({
-  name: 'rc/1.2.3',
+  name: MOCK_RELEASE_BRANCH_NAME_SEMVER,
   commit: {
     sha: 'mock_branch_commit_sha',
-    commit: { tree: { sha: 'mock_branch_commit_commit_tree_sha' } },
+    commit: {
+      tree: {
+        sha: 'mock_branch_commit_commit_tree_sha',
+      },
+    },
   },
-  links: { html: 'mock_branch_links_html' },
+  links: {
+    html: 'mock_branch_links_html',
+  },
   ...rest,
 });
 export const mockReleaseBranch = createMockBranch();
