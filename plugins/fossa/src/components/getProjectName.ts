@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 
 export const FOSSA_PROJECT_NAME_ANNOTATION = 'fossa.io/project-name';
 
-export const useProjectName = (entity: Entity): string | undefined => {
+export const getProjectName = (entity: Entity): string | undefined => {
   return (
     entity?.metadata.annotations?.[FOSSA_PROJECT_NAME_ANNOTATION] ?? undefined
   );
