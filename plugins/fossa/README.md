@@ -75,3 +75,51 @@ spec:
   owner: CNCF
   lifecycle: experimental
 ```
+
+## Other Components
+
+### FOSSA Overview Page
+
+The plugin provides an optional page that can be used to check the license compliance of all components.
+
+![FOSSA Overview](./docs/fossa-overview.png)
+
+Add it to your Backstage application:
+
+1. Install the FOSSA Plugin (see [Getting Started](#getting-started)).
+
+2. Register the page:
+
+```tsx
+// packages/app/src/App.tsx
+
+import { FossaPage } from '@backstage/plugin-fossa';
+
+// ...
+
+const routes = (
+  <FlatRoutes>
+    // ...
+    <Route path="/fossa" element={<FossaPage />} />
+  </FlatRoutes>
+);
+```
+
+3. (Optional) Add a Sidebar Icon:
+
+```tsx
+// packages/app/src/components/Root/Root.tsx
+
+// ...
+
+export const Root = ({ children }: PropsWithChildren<{}>) => (
+  <SidebarPage>
+    <Sidebar>
+      // ...
+      <SidebarItem icon={CheckCircleIcon} to="fossa" text="FOSSA" />
+      // ...
+    </Sidebar>
+    {children}
+  </SidebarPage>
+);
+```

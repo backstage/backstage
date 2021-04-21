@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { Entity } from '@backstage/catalog-model';
-
-export const FOSSA_PROJECT_NAME_ANNOTATION = 'fossa.io/project-name';
-
-export const useProjectName = (entity: Entity): string | undefined => {
-  return (
-    entity?.metadata.annotations?.[FOSSA_PROJECT_NAME_ANNOTATION] ?? undefined
-  );
-};
+import '@testing-library/jest-dom';
+import 'cross-fetch/polyfill';

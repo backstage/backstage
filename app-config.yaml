@@ -124,6 +124,9 @@ integrations:
   github:
     - host: github.com
       token: ${GITHUB_TOKEN}
+    - host: ghe.spotify.net
+      apiBaseUrl: https://ghe.spotify.net/api/v3
+      token: ${GHE_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3

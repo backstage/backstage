@@ -111,6 +111,11 @@
       },
       {
         "type": "subcategory",
+        "label": "Datadog",
+        "ids": ["integrations/datadog-rum/installation"]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",

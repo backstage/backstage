@@ -102,6 +102,7 @@ import {
   EntityTravisCIOverviewCard,
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
+import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -303,6 +304,10 @@ const serviceEntityPage = (
       <EntityGithubInsightsContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+      <EntityCodeCoverageContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/kafka" title="Kafka">
       <EntityKafkaContent />
     </EntityLayout.Route>
@@ -345,6 +350,10 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/code-insights" title="Code Insights">
       <EntityGithubInsightsContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+      <EntityCodeCoverageContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
