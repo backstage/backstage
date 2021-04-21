@@ -15,8 +15,8 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LunrSearchEngine } from '.';
-import { SearchEngine } from '../';
+import { LunrSearchEngine } from './LunrSearchEngine';
+import { SearchEngine } from '../SearchEngine';
 
 describe('LunrSearchEngine', () => {
   let testLunrSearchEngine: SearchEngine;
