@@ -17,7 +17,7 @@
 import * as testHelpers from './test-helpers';
 
 describe('testHelpers', () => {
-  it('should match snapshot', () => {
+  it('should export the correct things', () => {
     expect(testHelpers).toMatchInlineSnapshot(`
       Object {
         "mockApiClient": Object {
