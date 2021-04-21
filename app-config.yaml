@@ -93,6 +93,27 @@ proxy:
       Authorization:
         $env: SENTRY_TOKEN
 
+  '/dfds/developer-automation/capability':
+    target: https://api.hellman.oxygen.dfds.cloud/capability/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: DFDS_CAPABILITY_SERVICE_TOKEN
+
+  '/dfds/developer-automation/cost-janitor':
+    target: https://api.hellman.oxygen.dfds.cloud/costjanitor2/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: DFDS_COST_JANITOR_TOKEN
+
+  '/dfds/developer-automation/azuredevops':
+    target: https://api.hellman.oxygen.dfds.cloud/azuredevops/
+    allowedMethods: ['GET']
+    headers:
+      Authorization:
+        $env: DFDS_COST_JANITOR_TOKEN
+
 organization:
   name: DFDS
 
