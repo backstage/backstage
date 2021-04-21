@@ -83,8 +83,8 @@ export class LunrSearchEngine implements SearchEngine {
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
       // Iterate over all this.lunrIndex keys.
-      Object.keys(this.lunrIndices).forEach(d => {
-        results.push(...this.lunrIndices[d].search(lunrQueryString));
+      Object.values(this.lunrIndices).forEach(i => {
+        results.push(...i.search(lunrQueryString));
       });
     } else {
       // Iterate over the filtered list of this.lunrIndex keys.
