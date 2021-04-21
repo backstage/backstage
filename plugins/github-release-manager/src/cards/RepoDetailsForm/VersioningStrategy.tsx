@@ -54,13 +54,13 @@ export function VersioningStrategy() {
       required
       disabled={project.isProvidedViaProps}
     >
-      <FormLabel component="legend">Calendar strategy</FormLabel>
+      <FormLabel component="legend">Versioning strategy</FormLabel>
+
       <RadioGroup
         data-testid={TEST_IDS.form.versioningStrategy.radioGroup}
         aria-label="calendar-strategy"
         name="calendar-strategy"
         value={project.versioningStrategy}
-        defaultValue={VERSIONING_STRATEGIES.semver}
         onChange={event => {
           const { queryParams } = getQueryParamsWithUpdates({
             updates: [{ key: 'versioningStrategy', value: event.target.value }],
@@ -74,6 +74,7 @@ export function VersioningStrategy() {
           control={<Radio />}
           label="Semantic versioning"
         />
+
         <FormControlLabel
           value={VERSIONING_STRATEGIES.calver}
           control={<Radio />}
