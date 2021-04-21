@@ -77,5 +77,6 @@ export const TEST_IDS = {
         versioning: 'grm--differ--icons--versioning',
       },
     },
+    linearProgressWithLabel: 'grm--linear-progress-with-label',
   },
 };

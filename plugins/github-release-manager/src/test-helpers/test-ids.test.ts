@@ -35,6 +35,7 @@ describe('test-ids', () => {
               "next": "grm--differ-next",
             },
             "divider": "grm--divider",
+            "linearProgressWithLabel": "grm--linear-progress-with-label",
             "noLatestRelease": "grm--no-latest-release",
             "responseStepListDialogContent": "grm--response-step-list--dialog-content",
             "responseStepListItem": "grm--response-step-list-item",

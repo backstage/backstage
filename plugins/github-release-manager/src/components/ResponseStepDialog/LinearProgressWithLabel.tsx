@@ -18,12 +18,20 @@ import React from 'react';
 import { Box, LinearProgress, Typography } from '@material-ui/core';
 
 import { ResponseStep } from '../../types/types';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
 const STATUSES = {
   FAILURE: 'FAILURE',
   ONGOING: 'ONGOING',
   SUCCESS: 'SUCCESS',
 } as const;
+
+const ICONS = {
+  SUCCESS: '🚀',
+  FAILURE: '🔥',
+};
+
+const getFontSize = (progress: number) => 125 + Math.ceil(progress / Math.PI);
 
 export function LinearProgressWithLabel(props: {
   progress: number;
@@ -42,8 +50,8 @@ export function LinearProgressWithLabel(props: {
 
   const CompletionEmoji = () => {
     if (status === STATUSES.ONGOING) return null;
-    if (status === STATUSES.FAILURE) return <span>{' 🔥 '}</span>;
-    return <span>{' 🚀 '}</span>;
+    if (status === STATUSES.FAILURE) return <span>{` ${ICONS.FAILURE} `}</span>;
+    return <span>{` ${ICONS.SUCCESS} `}</span>;
   };
 
   return (
@@ -61,12 +69,14 @@ export function LinearProgressWithLabel(props: {
       <Box>
         <Typography
           variant="body2"
+          data-testid={TEST_IDS.components.linearProgressWithLabel}
           style={{
             marginTop: 8,
             minWidth: 35,
             color: failure ? '#ff0033' : '#1DB954',
             fontWeight: 'bold',
-            fontSize: `${125 + Math.ceil(progress / 3)}%`,
+            fontSize: `${getFontSize(progress)}%`,
+            transition: 'font-size 250ms ease',
           }}
         >
           <CompletionEmoji />
@@ -77,3 +87,7 @@ export function LinearProgressWithLabel(props: {
     </Box>
   );
 }
+
+export const testables = {
+  ICONS,
+};
