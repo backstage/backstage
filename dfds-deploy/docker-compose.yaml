@@ -2,6 +2,9 @@ version: '3'
 services:
   backstage:
     image: backstage
+    build:
+      dockerfile: ./packages/backend/Dockerfile
+      context:
     environment:
       POSTGRES_HOST: db
       POSTGRES_USER: postgres
