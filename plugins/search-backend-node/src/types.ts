@@ -62,7 +62,7 @@ export interface RegisterDecoratorParameters {
  * A type of function responsible for translating an abstract search query into
  * a concrete query relevant to a particular search engine.
  */
-export type QueryTranslator = (query: SearchQuery) => any;
+export type QueryTranslator = (query: SearchQuery) => unknown;
 
 /**
  * Interface that must be implemented by specific search engines, responsible
