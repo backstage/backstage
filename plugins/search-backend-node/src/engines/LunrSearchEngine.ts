@@ -55,7 +55,7 @@ export class LunrSearchEngine implements SearchEngine {
     };
   };
 
-  index(documentType: string, documents: IndexableDocument[]): void {
+  index(type: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
     // Make this lunr index aware of all relevant fields.
     Object.keys(documents[0]).forEach(field => {
@@ -74,7 +74,7 @@ export class LunrSearchEngine implements SearchEngine {
     });
 
     // "Rotate" the index by simply overwriting any existing index of the same name.
-    this.lunrIndices[documentType] = lunrBuilder.build();
+    this.lunrIndices[type] = lunrBuilder.build();
   }
 
   query(query: SearchQuery): Promise<SearchResultSet> {

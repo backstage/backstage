@@ -71,6 +71,6 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
  */
 export interface SearchEngine {
   translator: QueryTranslator;
-  index(documentType: string, documents: IndexableDocument[]): void;
+  index(type: string, documents: IndexableDocument[]): void;
   query(query: SearchQuery): Promise<SearchResultSet>;
 }
