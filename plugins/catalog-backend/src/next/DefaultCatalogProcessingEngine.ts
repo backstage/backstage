@@ -19,6 +19,8 @@ import {
   CatalogProcessingEngine,
   EntityProvider,
   EntityMessage,
+  EntityProviderConnection,
+  EntityProviderMutation,
   ProcessingStateManager,
   CatalogProcessingOrchestrator,
 } from './types';
@@ -27,8 +29,13 @@ import { Logger } from 'winston';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Stitcher } from './Stitcher';
 
+class Connection implements EntityProviderConnection {
+  constructor(private readonly stateManager: ProcessingStateManager) {}
+
+  async applyMutation(mutation: EntityProviderMutation): Promise<void> {}
+}
+
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
-  private subscriptions: Subscription[] = [];
   private running: boolean = false;
 
   constructor(
@@ -41,11 +48,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
-      const id = 'databaseProvider';
-      const subscription = provider
-        .entityChange$()
-        .subscribe({ next: m => this.onNext(id, m) });
-      this.subscriptions.push(subscription);
+      provider.connect(new Connection(this.stateManager));
     }
 
     this.running = true;
