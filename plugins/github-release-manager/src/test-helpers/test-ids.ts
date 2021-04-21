@@ -55,7 +55,6 @@ export const TEST_IDS = {
   components: {
     divider: 'grm--divider',
     noLatestRelease: 'grm--no-latest-release',
-    noReleaseBranch: 'grm--no-release-branch',
     circularProgress: 'grm--circular-progress',
     responseStepListDialogContent: 'grm--response-step-list--dialog-content',
     responseStepListItem: 'grm--response-step-list-item',

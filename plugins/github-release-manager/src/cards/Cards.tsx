@@ -90,7 +90,13 @@ export function Cards({
 
         {!gitHubBatchInfo.value.latestRelease && (
           <Alert severity="info" style={{ marginBottom: 20 }}>
-            This repository has not releases yet
+            This repository doesn't have any releases yet
+          </Alert>
+        )}
+
+        {!gitHubBatchInfo.value.releaseBranch && (
+          <Alert severity="info" style={{ marginBottom: 20 }}>
+            This repository doesn't have any release branches
           </Alert>
         )}
 

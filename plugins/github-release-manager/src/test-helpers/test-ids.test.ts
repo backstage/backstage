@@ -36,7 +36,6 @@ describe('test-ids', () => {
             },
             "divider": "grm--divider",
             "noLatestRelease": "grm--no-latest-release",
-            "noReleaseBranch": "grm--no-release-branch",
             "responseStepListDialogContent": "grm--response-step-list--dialog-content",
             "responseStepListItem": "grm--response-step-list-item",
             "responseStepListItemIconDefault": "grm--response-step-list-item--item-icon--default",
