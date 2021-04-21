@@ -29,6 +29,7 @@ interface CollatorEnvelope {
 }
 
 type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
   logger: Logger;
 };
 
@@ -38,14 +39,10 @@ export class IndexBuilder {
   private searchEngine: SearchEngine;
   private logger: Logger;
 
-  constructor({ logger }: IndexBuilderOptions) {
+  constructor({ logger, searchEngine }: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
     this.logger = logger;
-    this.searchEngine = new LunrSearchEngine({ logger });
-  }
-
-  setSearchEngine(searchEngine: SearchEngine) {
     this.searchEngine = searchEngine;
   }
 

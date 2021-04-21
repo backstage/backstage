@@ -15,7 +15,10 @@
  */
 import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
+import {
+  IndexBuilder,
+  LunrSearchEngine,
+} from '@backstage/plugin-search-backend-node';
 import { PluginEnvironment } from '../types';
 import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
 
@@ -23,7 +26,8 @@ export default async function createPlugin({
   logger,
   discovery,
 }: PluginEnvironment) {
-  const indexBuilder = new IndexBuilder({ logger });
+  const searchEngine = new LunrSearchEngine({ logger });
+  const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   indexBuilder.addCollator({
     type: 'software-catalog',
