@@ -29,3 +29,11 @@ export const DISABLE_CACHE = {
     'If-None-Match': '',
   },
 } as const;
+
+export const VERSIONING_STRATEGIES: {
+  semver: 'semver';
+  calver: 'calver';
+} = {
+  semver: 'semver',
+  calver: 'calver',
+} as const;

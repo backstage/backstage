@@ -16,6 +16,7 @@
 
 import { createContext, useContext } from 'react';
 
+import { VERSIONING_STRATEGIES } from '../constants/constants';
 import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
 export interface Project {
@@ -39,7 +40,7 @@ export interface Project {
    *
    * Default: false
    */
-  versioningStrategy: 'calver' | 'semver';
+  versioningStrategy: keyof typeof VERSIONING_STRATEGIES;
   /**
    * Project props was provided via props
    *
