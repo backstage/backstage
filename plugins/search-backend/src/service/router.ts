@@ -21,7 +21,7 @@ import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 
 type RouterOptions = {
-  engine?: SearchEngine;
+  engine: SearchEngine;
   logger: Logger;
 };
 
