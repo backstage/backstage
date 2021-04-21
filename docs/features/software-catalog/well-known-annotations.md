@@ -283,9 +283,9 @@ metadata:
 ```
 
 The value of this annotation controls the code-coverage backstage plugin. If set
-to smc-only the plugin will only take into account files stored in source
-control (e.g. ignoring generated code). If set to any other non-false:y value
-all files covered by a coverage report will be taken into account.
+to `scm-only`, the plugin will only take into account files stored in source
+control (e.g. ignoring generated code). If set to `enabled`, all files covered
+by a coverage report will be taken into account.
 
 ## Deprecated Annotations
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BranchHit, FileEntry } from '../jsoncoverage-types';
+import { BranchHit, FileEntry } from '../types';
 import { JacocoSourceFile, JacocoXML } from './types';
 import { Logger } from 'winston';
 import { Converter } from './Converter';
@@ -35,7 +35,7 @@ export class Jacoco implements Converter {
    * Converts jacoco into shared json coverage format
    *
    * @param xml jacoco xml object
-   * @param scmFiles list of files that are commited to SCM
+   * @param scmFiles list of files that are committed to SCM
    */
   convert(xml: JacocoXML, scmFiles: Array<string>): Array<FileEntry> {
     const jscov: Array<FileEntry> = [];
@@ -64,7 +64,7 @@ export class Jacoco implements Converter {
 
         const packageAndFilename = `${packageName}/${fileName}`;
         const currentFile = scmFiles.find(f => f.endsWith(packageAndFilename));
-        this.logger.info(`matched ${packageAndFilename} to ${currentFile}`);
+        this.logger.debug(`matched ${packageAndFilename} to ${currentFile}`);
         if (Object.keys(lineHits).length > 0 && currentFile) {
           jscov.push({
             filename: currentFile,

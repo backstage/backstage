@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BranchHit, FileEntry } from '../jsoncoverage-types';
+import { BranchHit, FileEntry } from '../types';
 import { CoberturaXML, InnerClass, LineHit } from './types';
 import { Logger } from 'winston';
 import { Converter } from './Converter';
@@ -63,7 +63,7 @@ export class Cobertura implements Converter {
       });
 
       const currentFile = scmFiles.find(f => f.endsWith(packageAndFilename));
-      this.logger.info(`matched ${packageAndFilename} to ${currentFile}`);
+      this.logger.debug(`matched ${packageAndFilename} to ${currentFile}`);
       if (
         scmFiles.length === 0 ||
         (Object.keys(lineHits).length > 0 && currentFile)

@@ -1616,7 +1616,7 @@
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.0", "@babel/runtime@^7.10.1", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.3", "@babel/runtime@^7.10.4", "@babel/runtime@^7.10.5", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.0", "@babel/runtime@^7.10.1", "@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.10.5", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.3.1", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.6.0", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.13.10"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.13.10.tgz#47d42a57b6095f4468da440388fdbad8bebf0d7d"
   integrity sha512-4QPkjJq6Ns3V/RgpEahRk+AGfL0eO6RHHtTWoNNr5mO49G6B5+X6d6THgWEAvTrznU5xYpbAlVKRYcsCgh/Akw==
@@ -1678,95 +1678,6 @@
     "@babel/helper-validator-identifier" "^7.12.11"
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
-
-"@backstage/backend-common@^0.5.4":
-  version "0.5.6"
-  resolved "https://registry.npmjs.org/@backstage/backend-common/-/backend-common-0.5.6.tgz#e49840eaa6738f6697319ccdfff04ce40cc54b72"
-  integrity sha512-BzKlcTZLAVDpH87fi2TCWIFO9DfVdaPIIZ8gZSorCuLLErG4X7CS/zQiujJZ/zD5HGtO2QB57fuRkwjBMhJhhw==
-  dependencies:
-    "@backstage/cli-common" "^0.1.1"
-    "@backstage/config" "^0.1.2"
-    "@backstage/config-loader" "^0.5.1"
-    "@backstage/integration" "^0.5.1"
-    "@octokit/rest" "^18.0.12"
-    "@types/cors" "^2.8.6"
-    "@types/dockerode" "^3.2.1"
-    "@types/express" "^4.17.6"
-    archiver "^5.0.2"
-    compression "^1.7.4"
-    concat-stream "^2.0.0"
-    cors "^2.8.5"
-    cross-fetch "^3.0.6"
-    dockerode "^3.2.1"
-    express "^4.17.1"
-    express-promise-router "^3.0.3"
-    fs-extra "^9.0.1"
-    git-url-parse "^11.4.4"
-    helmet "^4.0.0"
-    isomorphic-git "^1.8.0"
-    knex "^0.95.1"
-    lodash "^4.17.15"
-    logform "^2.1.1"
-    minimatch "^3.0.4"
-    minimist "^1.2.5"
-    morgan "^1.10.0"
-    selfsigned "^1.10.7"
-    stoppable "^1.1.0"
-    tar "^6.0.5"
-    unzipper "^0.10.11"
-    winston "^3.2.1"
-
-"@backstage/config-loader@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.npmjs.org/@backstage/config-loader/-/config-loader-0.5.1.tgz#a80f2047e209d2f41b17ad715c632ab142385b39"
-  integrity sha512-PmwXERs5BIf77sUIg3Fhp/elkR6ELj0czmpUgP4cuEdtazi0WcmdjCUC2DjgsKJWvYggsL1o372QKHh/M5AMTQ==
-  dependencies:
-    "@backstage/cli-common" "^0.1.1"
-    "@backstage/config" "^0.1.1"
-    ajv "^7.0.3"
-    fs-extra "^9.0.0"
-    json-schema "^0.2.5"
-    json-schema-merge-allof "^0.7.0"
-    typescript-json-schema "^0.47.0"
-    yaml "^1.9.2"
-    yup "^0.29.3"
-
-"@backstage/plugin-catalog-backend@^0.6.5":
-  version "0.6.7"
-  resolved "https://registry.npmjs.org/@backstage/plugin-catalog-backend/-/plugin-catalog-backend-0.6.7.tgz#97d0ed6db6aeb04e09ed0fee05e76bacf66cc179"
-  integrity sha512-Ey9PXyUjmi8IxQNSXBhF6Sl2SmZ/iXCFHXnffH8XCdBFTZS8HDRE2tSOlIIU4XQKd6lJVuAGTekas2DkaS9/lA==
-  dependencies:
-    "@azure/msal-node" "^1.0.0-beta.3"
-    "@backstage/backend-common" "^0.6.0"
-    "@backstage/catalog-model" "^0.7.4"
-    "@backstage/config" "^0.1.4"
-    "@backstage/errors" "^0.1.1"
-    "@backstage/integration" "^0.5.1"
-    "@backstage/plugin-search-backend-node" "^0.1.2"
-    "@backstage/search-common" "^0.1.1"
-    "@octokit/graphql" "^4.5.8"
-    "@types/express" "^4.17.6"
-    "@types/ldapjs" "^1.0.9"
-    aws-sdk "^2.840.0"
-    codeowners-utils "^1.0.2"
-    core-js "^3.6.5"
-    cross-fetch "^3.0.6"
-    express "^4.17.1"
-    express-promise-router "^4.1.0"
-    fs-extra "^9.0.0"
-    git-url-parse "^11.4.4"
-    glob "^7.1.6"
-    knex "^0.95.1"
-    ldapjs "^2.2.0"
-    lodash "^4.17.15"
-    morgan "^1.10.0"
-    p-limit "^3.0.2"
-    qs "^6.9.4"
-    uuid "^8.0.0"
-    winston "^3.2.1"
-    yaml "^1.9.2"
-    yn "^4.0.0"
-    yup "^0.29.3"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -5609,20 +5520,6 @@
     lz-string "^1.4.4"
     pretty-format "^26.6.2"
 
-"@testing-library/dom@^7.22.3":
-  version "7.30.3"
-  resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-7.30.3.tgz#779ea9bbb92d63302461800a388a5a890ac22519"
-  integrity sha512-7JhIg2MW6WPwyikH2iL3o7z+FTVgSOd2jqCwTAHqK7Qal2gRRYiUQyURAxtbK9VXm/UTyG9bRihv8C5Tznr2zw==
-  dependencies:
-    "@babel/code-frame" "^7.10.4"
-    "@babel/runtime" "^7.12.5"
-    "@types/aria-query" "^4.2.0"
-    aria-query "^4.2.2"
-    chalk "^4.1.0"
-    dom-accessibility-api "^0.5.4"
-    lz-string "^1.4.4"
-    pretty-format "^26.6.2"
-
 "@testing-library/jest-dom@^5.10.1":
   version "5.11.9"
   resolved "https://registry.npmjs.org/@testing-library/jest-dom/-/jest-dom-5.11.9.tgz#e6b3cd687021f89f261bd53cbe367041fbd3e975"
@@ -5652,14 +5549,6 @@
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@types/testing-library__react-hooks" "^3.4.0"
-
-"@testing-library/react@^10.4.1":
-  version "10.4.9"
-  resolved "https://registry.npmjs.org/@testing-library/react/-/react-10.4.9.tgz#9faa29c6a1a217bf8bbb96a28bd29d7a847ca150"
-  integrity sha512-pHZKkqUy0tmiD81afs8xfiuseXfU/N7rAX3iKjeZYje86t9VaB0LrxYVa+OOsvkrveX5jCK3IjajVn2MbePvqA==
-  dependencies:
-    "@babel/runtime" "^7.10.3"
-    "@testing-library/dom" "^7.22.3"
 
 "@testing-library/react@^11.2.5":
   version "11.2.6"
@@ -6438,11 +6327,6 @@
   version "10.17.35"
   resolved "https://registry.npmjs.org/@types/node/-/node-10.17.35.tgz#58058f29b870e6ae57b20e4f6e928f02b7129f56"
   integrity sha512-gXx7jAWpMddu0f7a+L+txMplp3FnHl53OhQIF9puXKq3hDGY/GjH+MF04oWnV/adPSCrbtHumDCFwzq2VhltWA==
-
-"@types/node@^12.0.0":
-  version "12.20.10"
-  resolved "https://registry.npmjs.org/@types/node/-/node-12.20.10.tgz#4dcb8a85a8f1211acafb88d72fafc7e3d2685583"
-  integrity sha512-TxCmnSSppKBBOzYzPR2BR25YlX5Oay8z2XGwFBInuA/Co0V9xJhLlW4kjbxKtgeNo3NOMbQP1A5Rc03y+XecPw==
 
 "@types/node@^12.7.1":
   version "12.12.58"
@@ -12974,15 +12858,6 @@ expect@^26.6.2:
     jest-matcher-utils "^26.6.2"
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
-
-express-promise-router@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.npmjs.org/express-promise-router/-/express-promise-router-3.0.3.tgz#5e6d22a5a3f013d71833172fe8d7ab780c3f6b70"
-  integrity sha1-Xm0ipaPwE9cYMxcv6NereAw/a3A=
-  dependencies:
-    is-promise "^2.1.0"
-    lodash.flattendeep "^4.0.0"
-    methods "^1.0.0"
 
 express-promise-router@^4.1.0:
   version "4.1.0"
@@ -25777,17 +25652,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typescript-json-schema@^0.47.0:
-  version "0.47.0"
-  resolved "https://registry.npmjs.org/typescript-json-schema/-/typescript-json-schema-0.47.0.tgz#84dde5460b127c6774da81bf70b23c7e04857b13"
-  integrity sha512-A6NVwSOTSsNDHfaqDcDeKwwyXEeKqBHoAr20jcetnYj4e8C6zVFofAVhAuwsBXCRYiWEE/lyHrcxpsSpbIk0Mg==
-  dependencies:
-    "@types/json-schema" "^7.0.6"
-    glob "^7.1.6"
-    json-stable-stringify "^1.0.1"
-    typescript "^4.1.3"
-    yargs "^16.2.0"
 
 typescript-json-schema@^0.49.0:
   version "0.49.0"

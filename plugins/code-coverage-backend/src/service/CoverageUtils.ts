@@ -22,11 +22,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ScmIntegration, ScmIntegrations } from '@backstage/integration';
-import {
-  AggregateCoverage,
-  FileEntry,
-  JsonCodeCoverage,
-} from './jsoncoverage-types';
+import { AggregateCoverage, FileEntry, JsonCodeCoverage } from './types';
 
 export const calculatePercentage = (
   available: number,

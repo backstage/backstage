@@ -20,14 +20,23 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  // Note for the reader: the knex increments types automatically make it a
+  // primary column, whether you like it or not. That's why the id column is
+  // not marked as primary as one might have expected; it's only used for
+  // lookups by ID. Because, SQLite and MySQL don't return RETURNING on
+  // inserts ... so we want a manually generated key for lookups (an uuid),
+  // and also an index for ordering guarantees :)
   await knex.schema.createTable('code_coverage', table => {
     table.comment('The table of code coverage');
     table
-      .uuid('id')
-      .primary()
+      .bigIncrements('index')
       .notNullable()
-      .comment('The ID of the code coverage');
-    table.text('entity').notNullable().comment('entity string reference');
+      .comment('An insert counter to ensure ordering');
+    table.uuid('id').notNullable().comment('The ID of the code coverage');
+    table
+      .text('entity')
+      .notNullable()
+      .comment('The entity ref that this code coverage applies to');
     table
       .text('coverage')
       .notNullable()
@@ -37,6 +46,9 @@ exports.up = async function up(knex) {
       .defaultTo(knex.fn.now())
       .notNullable()
       .comment('The timestamp when this entry was created');
+    table.index('index', 'code_coverage_index_idx');
+    table.index('id', 'code_coverage_id_idx');
+    table.index('entity', 'code_coverage_entity_idx');
   });
 };
 
@@ -44,5 +56,10 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
+  await knex.schema.alterTable('code_coverage', table => {
+    table.dropIndex([], 'code_coverage_index_idx');
+    table.dropIndex([], 'code_coverage_id_idx');
+    table.dropIndex([], 'code_coverage_entity_idx');
+  });
   await knex.schema.dropTable('code_coverage');
 };

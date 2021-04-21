@@ -58,7 +58,6 @@ export const makeRouter = async (
 
   const codeCoverageDatabase = await CodeCoverageDatabase.create(
     await database.getClient(),
-    logger,
   );
   const codecovUrl = await discovery.getExternalBaseUrl('code-coverage');
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
@@ -147,8 +146,8 @@ export const makeRouter = async (
     const scmTree = await urlReader.readTree(sourceLocation.target);
     const scmFile = (await scmTree.files()).find(f => f.path === path);
     if (!scmFile) {
-      res.status(400).json({
-        message: "couldn't find file in SCM",
+      res.status(404).json({
+        message: "Couldn't find file in SCM",
         file: path,
         scm: vcs.title,
       });
@@ -157,7 +156,7 @@ export const makeRouter = async (
     const content = await scmFile?.content();
     if (!content) {
       res.status(400).json({
-        message: "couldn't process content of file in SCM",
+        message: "Couldn't process content of file in SCM",
         file: path,
         scm: vcs.title,
       });
@@ -187,7 +186,7 @@ export const makeRouter = async (
     } else if (coverageType === 'cobertura') {
       converter = new Cobertura(logger);
     } else {
-      throw new NotFoundError(`unsupported coverage type '${coverageType}`);
+      throw new InputError(`Unsupported coverage type '${coverageType}`);
     }
 
     const {

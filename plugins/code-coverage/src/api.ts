@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { EntityName, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  JsonCodeCoverage,
-  JsonCoverageHistory,
-} from '@backstage/plugin-code-coverage-backend';
+import { createApiRef, DiscoveryApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
-
-export class FetchError extends Error {
-  get name(): string {
-    return this.constructor.name;
-  }
-
-  static async forResponse(resp: Response): Promise<FetchError> {
-    return new FetchError(
-      `Request failed with status code ${
-        resp.status
-      }.\nReason: ${await resp.text()}`,
-    );
-  }
-}
+import { JsonCodeCoverage, JsonCoverageHistory } from './types';
 
 export type CodeCoverageApi = {
   discovery: DiscoveryApi;
@@ -79,7 +62,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
   async getCoverageForEntity(
     entityName: EntityName,
   ): Promise<JsonCodeCoverage> {
-    const entity = encodeURI(stringifyEntityRef(entityName));
+    const entity = encodeURIComponent(stringifyEntityRef(entityName));
     return (await this.fetch<JsonCodeCoverage>(
       `/report?entity=${entity}`,
     )) as JsonCodeCoverage;
@@ -89,7 +72,7 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     entityName: EntityName,
     filePath: string,
   ): Promise<string> {
-    const entity = encodeURI(stringifyEntityRef(entityName));
+    const entity = encodeURIComponent(stringifyEntityRef(entityName));
     return await this.fetch<string>(
       `/file-content?entity=${entity}&path=${encodeURI(filePath)}`,
     );
@@ -99,11 +82,11 @@ export class CodeCoverageRestApi implements CodeCoverageApi {
     entityName: EntityName,
     limit?: number,
   ): Promise<JsonCoverageHistory> {
-    const entity = encodeURI(stringifyEntityRef(entityName));
+    const entity = encodeURIComponent(stringifyEntityRef(entityName));
     const hasValidLimit = limit && limit > 0;
     return (await this.fetch<JsonCoverageHistory>(
       `/history?entity=${entity}${
-        hasValidLimit ? `&limit=${encodeURI(`${limit}`)}` : ''
+        hasValidLimit ? `&limit=${encodeURIComponent(String(limit))}` : ''
       }`,
     )) as JsonCoverageHistory;
   }

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 
-// styles
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -64,7 +63,8 @@ type CodeRowProps = {
   lineContent: string;
   lineHits?: number | null;
 };
-const CodeRow = ({
+
+export const CodeRow = ({
   lineNumber,
   lineContent,
   lineHits = null,
@@ -98,5 +98,3 @@ const CodeRow = ({
     </tr>
   );
 };
-
-export default CodeRow;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Progress,
   ResponseErrorPanel,
   Table,
   TableColumn,
+  useApi,
 } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Card,
@@ -30,13 +30,13 @@ import {
   Modal,
   Tooltip,
 } from '@material-ui/core';
+import DescriptionIcon from '@material-ui/icons/Description';
+import { Alert } from '@material-ui/lab';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
-import DescriptionIcon from '@material-ui/icons/Description';
+import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';
-import { Alert } from '@material-ui/lab';
-import { FileEntry } from '@backstage/plugin-code-coverage-backend';
 
 type FileStructureObject = Record<string, any>;
 

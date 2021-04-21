@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { FileEntry } from '../jsoncoverage-types';
+import { FileEntry } from '../types';
 
 export interface Converter {
   convert(xml: unknown, scmFiles: Array<string>): Array<FileEntry>;

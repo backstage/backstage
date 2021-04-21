@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { useApi } from '@backstage/core-api';
+import { Progress, ResponseErrorPanel, useApi } from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { makeStyles, Paper } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import React from 'react';
 import { useAsync } from 'react-use';
 import { codeCoverageApiRef } from '../../api';
-import { Progress, ResponseErrorPanel } from '@backstage/core';
-import { Alert } from '@material-ui/lab';
-import { makeStyles, Paper } from '@material-ui/core';
+import { FileEntry } from '../../types';
+import { CodeRow } from './CodeRow';
 import { highlightLines } from './Highlighter';
-import CoverageRow from './CoverageRow';
-import { FileEntry } from '@backstage/plugin-code-coverage-backend';
 
 type Props = {
   filename: string;
@@ -61,7 +60,7 @@ const FormattedLines = ({
       {highlightedLines.map((lineContent, idx) => {
         const line = idx + 1;
         return (
-          <CoverageRow
+          <CodeRow
             key={line}
             lineNumber={line}
             lineContent={lineContent}

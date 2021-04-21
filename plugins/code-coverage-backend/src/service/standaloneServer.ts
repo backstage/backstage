@@ -22,9 +22,9 @@ import {
   useHotMemoize,
 } from '@backstage/backend-common';
 import { Server } from 'http';
+import knexFactory from 'knex';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { DatabaseManager } from '@backstage/plugin-catalog-backend';
 
 export interface ServerOptions {
   port: number;
@@ -38,13 +38,23 @@ export async function startStandaloneServer(
   const logger = options.logger.child({ service: 'code-coverage-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
 
-  const db = useHotMemoize(module, () =>
-    DatabaseManager.createInMemoryDatabaseConnection(),
-  );
+  const db = useHotMemoize(module, () => {
+    const knex = knexFactory({
+      client: 'sqlite3',
+      connection: ':memory:',
+      useNullAsDefault: true,
+    });
+
+    knex.client.pool.on('createSuccess', (_eventId: any, resource: any) => {
+      resource.run('PRAGMA foreign_keys = ON', () => {});
+    });
+
+    return knex;
+  });
 
   logger.debug('Starting application server...');
   const router = await createRouter({
-    database: { getClient: () => db },
+    database: { getClient: async () => db },
     config,
     discovery: SingleHostDiscovery.fromConfig(config),
     urlReader: UrlReaders.default({ logger, config }),

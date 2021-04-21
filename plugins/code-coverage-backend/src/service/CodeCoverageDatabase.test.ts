@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  getVoidLogger,
-  SingleConnectionDatabaseManager,
-} from '@backstage/backend-common';
+import { SingleConnectionDatabaseManager } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import {
   CodeCoverageDatabase,
   CodeCoverageStore,
 } from './CodeCoverageDatabase';
-import { JsonCodeCoverage } from './jsoncoverage-types';
+import { JsonCodeCoverage } from './types';
 
 const db = SingleConnectionDatabaseManager.fromConfig(
   new ConfigReader({
@@ -103,10 +100,9 @@ let database: CodeCoverageStore;
 describe('CodeCoverageDatabase', () => {
   beforeAll(async () => {
     const client = await db.getClient();
-    database = await CodeCoverageDatabase.create(client, getVoidLogger());
-    database.insertCodeCoverage(coverage[0]);
-    await new Promise(r => setTimeout(r, 1000));
-    database.insertCodeCoverage(coverage[1]);
+    database = await CodeCoverageDatabase.create(client);
+    await database.insertCodeCoverage(coverage[0]);
+    await database.insertCodeCoverage(coverage[1]);
   });
 
   describe('insertCodeCoverage', () => {

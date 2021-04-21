@@ -18,15 +18,15 @@ import { NotFoundError } from '@backstage/errors';
 import { parseEntityName, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { aggregateCoverage } from './CoverageUtils';
-import { JsonCodeCoverage, JsonCoverageHistory } from './jsoncoverage-types';
+import { JsonCodeCoverage, JsonCoverageHistory } from './types';
 
 export type RawDbCoverageRow = {
   id: string;
   entity: string;
   coverage: string;
 };
+
 export interface CodeCoverageStore {
   insertCodeCoverage(
     coverage: JsonCodeCoverage,
@@ -39,44 +39,49 @@ const migrationsDir = resolvePackagePath(
   '@backstage/plugin-code-coverage-backend',
   'migrations',
 );
+
 export class CodeCoverageDatabase implements CodeCoverageStore {
-  static async create(knex: Knex, logger: Logger): Promise<CodeCoverageStore> {
+  static async create(knex: Knex): Promise<CodeCoverageStore> {
     await knex.migrate.latest({
       directory: migrationsDir,
     });
-    return new CodeCoverageDatabase(knex, logger);
+    return new CodeCoverageDatabase(knex);
   }
 
-  constructor(private readonly db: Knex, private readonly logger: Logger) {}
+  constructor(private readonly db: Knex) {}
 
   async insertCodeCoverage(
     coverage: JsonCodeCoverage,
   ): Promise<{ codeCoverageId: string }> {
     const codeCoverageId = uuid();
-    this.logger.error(JSON.stringify(coverage.entity));
     const entity = stringifyEntityRef({
       kind: coverage.entity.kind,
       namespace: coverage.entity.namespace,
       name: coverage.entity.name,
     });
+
     await this.db<RawDbCoverageRow>('code_coverage').insert({
       id: codeCoverageId,
       entity: entity,
       coverage: JSON.stringify(coverage),
     });
+
     return { codeCoverageId };
   }
+
   async getCodeCoverage(entity: string): Promise<JsonCodeCoverage> {
     const [result] = await this.db<RawDbCoverageRow>('code_coverage')
       .where({ entity: entity })
-      .orderBy('created_at', 'desc')
+      .orderBy('index', 'desc')
       .limit(1)
       .select();
+
     if (!result) {
       throw new NotFoundError(
         `No coverage for entity '${JSON.stringify(entity)}' found`,
       );
     }
+
     try {
       return JSON.parse(result.coverage);
     } catch (error) {
@@ -90,7 +95,7 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
   ): Promise<JsonCoverageHistory> {
     const res = await this.db<RawDbCoverageRow>('code_coverage')
       .where({ entity: entity })
-      .orderBy('created_at', 'desc')
+      .orderBy('index', 'desc')
       .limit(limit)
       .select();
 
@@ -99,6 +104,7 @@ export class CodeCoverageDatabase implements CodeCoverageStore {
       .map(c => aggregateCoverage(c));
 
     const entityName = parseEntityName(entity);
+
     return {
       entity: {
         name: entityName.name,

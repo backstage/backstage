@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Progress, ResponseErrorPanel, useApi } from '@backstage/core';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { BackstageTheme } from '@backstage/theme';
 import {
   Box,
   Card,
@@ -23,27 +25,24 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import TrendingDownIcon from '@material-ui/icons/TrendingDown';
+import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
+import TrendingUpIcon from '@material-ui/icons/TrendingUp';
+import { Alert } from '@material-ui/lab';
+import { ClassNameMap } from '@material-ui/styles';
+import React from 'react';
+import { useAsync } from 'react-use';
 import {
-  LineChart,
-  XAxis,
-  YAxis,
-  Tooltip,
+  CartesianGrid,
   Legend,
   Line,
-  CartesianGrid,
+  LineChart,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
-import { useAsync } from 'react-use';
-import { useApi } from '@backstage/core-api';
-import { useEntity } from '@backstage/plugin-catalog-react';
 import { codeCoverageApiRef } from '../../api';
-import { Progress, ResponseErrorPanel } from '@backstage/core';
-import { Alert } from '@material-ui/lab';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';
-import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
-import { BackstageTheme } from '@backstage/theme';
-import { ClassNameMap } from '@material-ui/styles';
 
 type Coverage = 'line' | 'branch';
 
