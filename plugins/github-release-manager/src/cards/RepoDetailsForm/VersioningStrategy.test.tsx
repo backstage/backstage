@@ -15,22 +15,23 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 
 import {
-  mockCalverProject,
+  mockSemverProject,
   mockSearchCalver,
 } from '../../test-helpers/test-helpers';
-import { TEST_IDS } from '../../test-helpers/test-ids';
+
+const mockNavigate = jest.fn();
 
 jest.mock('react-router', () => ({
-  useNavigate: jest.fn(),
+  useNavigate: () => mockNavigate,
   useLocation: jest.fn(() => ({
     search: mockSearchCalver,
   })),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: jest.fn(() => mockSemverProject),
 }));
 
 import { VersioningStrategy } from './VersioningStrategy';
@@ -38,11 +39,25 @@ import { VersioningStrategy } from './VersioningStrategy';
 describe('Repo', () => {
   beforeEach(jest.clearAllMocks);
 
-  it('should render radio group', async () => {
-    const { getByTestId } = render(<VersioningStrategy />);
+  it('should render radio group with default values and handle changes', async () => {
+    const { getByLabelText } = render(<VersioningStrategy />);
 
-    expect(
-      getByTestId(TEST_IDS.form.versioningStrategy.radioGroup),
-    ).toBeInTheDocument();
+    const radio1 = getByLabelText('Semantic versioning');
+    const radio2 = getByLabelText('Calendar versioning');
+
+    expect(radio1).toBeChecked();
+    expect(radio2).not.toBeChecked();
+
+    fireEvent.click(radio2);
+    expect(mockNavigate.mock.calls).toMatchInlineSnapshot(`
+      Array [
+        Array [
+          "?versioningStrategy=calver&owner=mock_owner&repo=mock_repo",
+          Object {
+            "replace": true,
+          },
+        ],
+      ]
+    `);
   });
 });

@@ -30,6 +30,10 @@ describe('constants', () => {
           "minor": "minor",
           "patch": "patch",
         },
+        "VERSIONING_STRATEGIES": Object {
+          "calver": "calver",
+          "semver": "semver",
+        },
       }
     `);
   });
