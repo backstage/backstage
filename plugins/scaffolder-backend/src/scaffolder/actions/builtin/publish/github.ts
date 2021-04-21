@@ -43,7 +43,7 @@ export function createPublishGithubAction(options: {
     description?: string;
     access?: string;
     sourcePath?: string;
-    skipIfExists?: string;
+    skipIfExists?: boolean;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
   }>({
