@@ -30,7 +30,7 @@ jest.mock('../contexts/ProjectContext', () => ({
 import { Cards } from './Cards';
 
 describe('Cards', () => {
-  it('should render info', async () => {
+  it('should omit cards omitted via configuration', async () => {
     const { getByTestId } = render(
       <Cards
         components={{

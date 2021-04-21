@@ -20,8 +20,8 @@ import { render } from '@testing-library/react';
 import {
   mockCalverProject,
   mockReleaseBranch,
+  mockReleaseCandidateCalver,
 } from '../../test-helpers/test-helpers';
-import { TEST_IDS } from '../../test-helpers/test-ids';
 
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => mockCalverProject),
@@ -30,11 +30,52 @@ jest.mock('../../contexts/ProjectContext', () => ({
 import { Info } from './Info';
 
 describe('Info', () => {
-  it('should return early if no latestRelease exists', () => {
-    const { getByTestId } = render(
-      <Info latestRelease={null} releaseBranch={mockReleaseBranch} />,
+  it('should return early if no latestRelease exists', async () => {
+    const { findByText } = render(
+      <Info
+        latestRelease={mockReleaseCandidateCalver}
+        releaseBranch={mockReleaseBranch}
+      />,
     );
 
-    expect(getByTestId(TEST_IDS.info.info)).toBeInTheDocument();
+    expect(await findByText(mockReleaseBranch.name)).toMatchInlineSnapshot(`
+      <span
+        data-testid="grm--differ-next"
+        style="font-weight: bold;"
+      >
+        rc/1.2.3
+      </span>
+    `);
+
+    expect(
+      await findByText(`${mockCalverProject.owner}/${mockCalverProject.repo}`),
+    ).toMatchInlineSnapshot(`
+      <span
+        data-testid="grm--differ-next"
+        style="font-weight: bold;"
+      >
+        mock_owner/mock_repo
+      </span>
+    `);
+
+    expect(await findByText(mockCalverProject.versioningStrategy))
+      .toMatchInlineSnapshot(`
+      <span
+        data-testid="grm--differ-next"
+        style="font-weight: bold;"
+      >
+        calver
+      </span>
+    `);
+
+    expect(await findByText(mockReleaseCandidateCalver.tagName))
+      .toMatchInlineSnapshot(`
+      <span
+        data-testid="grm--differ-next"
+        style="font-weight: bold;"
+      >
+        rc-2020.01.01_1
+      </span>
+    `);
   });
 });
