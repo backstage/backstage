@@ -27,6 +27,7 @@ import {
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
+import { VERSIONING_STRATEGIES } from '../../constants/constants';
 
 export function VersioningStrategy() {
   const navigate = useNavigate();
@@ -59,9 +60,9 @@ export function VersioningStrategy() {
         aria-label="calendar-strategy"
         name="calendar-strategy"
         value={project.versioningStrategy}
-        defaultValue="semver"
+        defaultValue={VERSIONING_STRATEGIES.semver}
         onChange={event => {
-          const queryParams = getQueryParamsWithUpdates({
+          const { queryParams } = getQueryParamsWithUpdates({
             updates: [{ key: 'versioningStrategy', value: event.target.value }],
           });
 
@@ -69,12 +70,12 @@ export function VersioningStrategy() {
         }}
       >
         <FormControlLabel
-          value="semver"
+          value={VERSIONING_STRATEGIES.semver}
           control={<Radio />}
           label="Semantic versioning"
         />
         <FormControlLabel
-          value="calver"
+          value={VERSIONING_STRATEGIES.calver}
           control={<Radio />}
           label="Calendar versioning"
         />
