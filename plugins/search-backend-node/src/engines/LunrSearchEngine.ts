@@ -78,7 +78,9 @@ export class LunrSearchEngine implements SearchEngine {
   }
 
   query(query: SearchQuery): Promise<SearchResultSet> {
-    const { lunrQueryString, documentTypes } = this.translator(query);
+    const { lunrQueryString, documentTypes } = this.translator(
+      query,
+    ) as ConcreteLunrQuery;
     const results: lunr.Index.Result[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
