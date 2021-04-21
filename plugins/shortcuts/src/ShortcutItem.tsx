@@ -36,7 +36,7 @@ const getIconText = (title: string) =>
       title[0].toUpperCase() + title[1].toLowerCase()
     : // If there's more than one word, take the first character of the first two words
       title
-        .replace(/\W+/g, ' ')
+        .replace(/\B\W/g, '')
         .split(' ')
         .map(s => s[0])
         .join('')
