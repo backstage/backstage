@@ -49,7 +49,7 @@ spec:
                   name: {{ include "backend.postgresql.passwordSecret" .}}
                   key: postgresql-password
           volumeMounts:
-            {{- if .Values.postgresql.enabled }}
+            {{- if .Values.backend.postgresCertMountEnabled }}
             - name: postgres-ca
               mountPath: {{ include "backstage.backend.postgresCaDir" . }}
             {{- end }}
@@ -58,7 +58,7 @@ spec:
               subPath: {{ include "backstage.appConfigFilename" . }}
 
       volumes:
-        {{- if .Values.postgresql.enabled }}
+        {{- if .Values.backend.postgresCertMountEnabled }}
         - name: postgres-ca
           configMap:
             name: {{ include "backstage.fullname" . }}-postgres-ca

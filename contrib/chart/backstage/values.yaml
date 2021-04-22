@@ -28,6 +28,7 @@ backend:
     pullPolicy: IfNotPresent
   containerPort: 7000
   serviceType: ClusterIP
+  postgresCertMountEnabled: true
   resources:
     requests:
       memory: 512Mi
@@ -43,6 +44,7 @@ lighthouse:
     pullPolicy: IfNotPresent
   containerPort: 3003
   serviceType: ClusterIP
+  postgresCertMountEnabled: true
   resources:
     requests:
       memory: 128Mi
