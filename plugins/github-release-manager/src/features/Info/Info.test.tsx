@@ -37,6 +37,7 @@ describe('Info', () => {
       <Info
         latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
+        statsEnabled
       />,
     );
 

@@ -37,7 +37,7 @@ describe('Features', () => {
   it('should omit features omitted via configuration', async () => {
     const { getByTestId } = render(
       <Features
-        components={{
+        features={{
           info: { omit: false },
           createRc: { omit: true },
           promoteRc: { omit: true },

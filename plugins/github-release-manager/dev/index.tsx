@@ -74,7 +74,7 @@ createDevApp()
       <DevWrapper>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
-          <Typography>Each components can be omitted</Typography>
+          <Typography>Each feature can be omitted</Typography>
           <Typography>Success callbacks can also be added</Typography>
         </InfoCardPlus>
 
@@ -84,7 +84,7 @@ createDevApp()
             repo: 'playground-semver',
             versioningStrategy: 'semver',
           }}
-          components={{
+          features={{
             createRc: {
               successCb: ({
                 comparisonUrl,
