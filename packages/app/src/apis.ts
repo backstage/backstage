@@ -20,6 +20,7 @@ import {
   createApiFactory,
   errorApiRef,
   githubAuthApiRef,
+  WebStorage,
 } from '@backstage/core';
 import {
   ScmIntegrationsApi,
@@ -33,6 +34,10 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
+import {
+  LocalStoredShortcuts,
+  shortcutsApiRef,
+} from '@backstage/plugin-shortcuts';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -61,4 +66,13 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+
+  createApiFactory({
+    api: shortcutsApiRef,
+    deps: { errorApi: errorApiRef },
+    factory: ({ errorApi }) =>
+      new LocalStoredShortcuts(
+        WebStorage.create({ namespace: '@backstage/shortcuts', errorApi }),
+      ),
+  }),
 ];

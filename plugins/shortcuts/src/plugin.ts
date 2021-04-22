@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  createApiFactory,
-  createComponentExtension,
-  createPlugin,
-  errorApiRef,
-  WebStorage,
-} from '@backstage/core';
-import { shortcutsApiRef, LocalStoredShortcuts } from './api';
+import { createComponentExtension, createPlugin } from '@backstage/core';
 
 export const shortcutsPlugin = createPlugin({
   id: 'shortcuts',
-  apis: [
-    createApiFactory({
-      api: shortcutsApiRef,
-      deps: { errorApi: errorApiRef },
-      factory: ({ errorApi }) =>
-        new LocalStoredShortcuts(
-          WebStorage.create({ namespace: '@backstage/shortcuts', errorApi }),
-        ),
-    }),
-  ],
 });
 
 export const Shortcuts = shortcutsPlugin.provide(
