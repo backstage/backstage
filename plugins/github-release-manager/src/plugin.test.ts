@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { gitHubReleaseManagerPlugin } from './plugin';
+import * as plugin from './plugin';
 
 describe('github-release-manager', () => {
-  it('should export plugin', () => {
-    expect(gitHubReleaseManagerPlugin).toBeDefined();
+  it('should export plugin & friends', () => {
+    expect(Object.keys(plugin)).toMatchInlineSnapshot(`
+      Array [
+        "githubReleaseManagerApiRef",
+        "gitHubReleaseManagerPlugin",
+        "GitHubReleaseManagerPage",
+      ]
+    `);
   });
 });
