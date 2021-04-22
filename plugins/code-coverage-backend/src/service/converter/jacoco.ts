@@ -63,7 +63,9 @@ export class Jacoco implements Converter {
         });
 
         const packageAndFilename = `${packageName}/${fileName}`;
-        const currentFile = scmFiles.find(f => f.endsWith(packageAndFilename));
+        const currentFile = scmFiles
+          .map(f => f.trimEnd())
+          .find(f => f.endsWith(packageAndFilename));
         this.logger.debug(`matched ${packageAndFilename} to ${currentFile}`);
         if (Object.keys(lineHits).length > 0 && currentFile) {
           jscov.push({

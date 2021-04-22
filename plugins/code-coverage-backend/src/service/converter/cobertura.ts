@@ -62,7 +62,9 @@ export class Cobertura implements Converter {
         }
       });
 
-      const currentFile = scmFiles.find(f => f.endsWith(packageAndFilename));
+      const currentFile = scmFiles
+        .map(f => f.trimEnd())
+        .find(f => f.endsWith(packageAndFilename));
       this.logger.debug(`matched ${packageAndFilename} to ${currentFile}`);
       if (
         scmFiles.length === 0 ||

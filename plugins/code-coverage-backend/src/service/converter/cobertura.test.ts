@@ -15,6 +15,7 @@
  */
 import { parseString } from 'xml2js';
 import fs from 'fs';
+import path from 'path';
 import { Cobertura } from './cobertura';
 import { CoberturaXML } from './types';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -27,7 +28,12 @@ describe('convert cobertura', () => {
     let fixture: CoberturaXML;
     parseString(
       fs.readFileSync(
-        `${__dirname}/../__fixtures__/cobertura-testdata-${idx}.xml`,
+        path.resolve(
+          __dirname,
+          '..',
+          '__fixtures__',
+          `cobertura-testdata-${idx}.xml`,
+        ),
       ),
       (_e, r) => {
         fixture = r;
@@ -36,13 +42,23 @@ describe('convert cobertura', () => {
     const expected = JSON.parse(
       fs
         .readFileSync(
-          `${__dirname}/../__fixtures__/cobertura-jsoncoverage-files-${idx}.json`,
+          path.resolve(
+            __dirname,
+            '..',
+            '__fixtures__',
+            `cobertura-jsoncoverage-files-${idx}.json`,
+          ),
         )
         .toString(),
     );
     const scmFiles = fs
       .readFileSync(
-        `${__dirname}/../__fixtures__/cobertura-sourcefiles-${idx}.txt`,
+        path.resolve(
+          __dirname,
+          '..',
+          '__fixtures__',
+          `cobertura-sourcefiles-${idx}.txt`,
+        ),
       )
       .toString()
       .split('\n');
