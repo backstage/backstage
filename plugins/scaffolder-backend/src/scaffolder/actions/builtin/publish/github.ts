@@ -67,13 +67,13 @@ export function createPublishGithubAction(options: {
             type: 'string',
           },
           repoVisibility: {
-            title: 'Repository Visiblity',
+            title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public', 'internal'],
           },
           sourcePath: {
             title:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
           collaborators: {
@@ -180,7 +180,7 @@ export function createPublishGithubAction(options: {
           repo,
           permission: 'admin',
         });
-        // no need to add access if it's the person who own's the personal account
+        // No need to add access if it's the person who owns the personal account
       } else if (access && access !== owner) {
         await client.repos.addCollaborator({
           owner,
