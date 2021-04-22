@@ -201,6 +201,64 @@ describe('LunrSearchEngine', () => {
         ],
       });
     });
+
+    it('should perform search query and return search results on match, scoped to specific index', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location2',
+        },
+      ];
+
+      const mockDocuments2 = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location3',
+        },
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location4',
+        },
+      ];
+
+      // Mock 2 indices with 2 documents each
+      testLunrSearchEngine.index('test-index', mockDocuments);
+      testLunrSearchEngine.index('test-index-2', mockDocuments2);
+
+      // Perform search query scoped to "test-index-2"
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitle',
+        types: ['test-index-2'],
+        pageCursor: '',
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              location: 'test/location3',
+              text: 'testText',
+              title: 'testTitle',
+            },
+          },
+          {
+            document: {
+              location: 'test/location4',
+              text: 'testText',
+              title: 'testTitle',
+            },
+          },
+        ],
+      });
+    });
   });
 
   describe('index', () => {

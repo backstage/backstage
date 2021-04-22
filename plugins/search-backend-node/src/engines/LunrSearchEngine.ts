@@ -41,6 +41,7 @@ export class LunrSearchEngine implements SearchEngine {
   translator: QueryTranslator = ({
     term,
     filters,
+    types,
   }: SearchQuery): ConcreteLunrQuery => {
     let lunrQueryFilters;
     if (filters) {
@@ -51,7 +52,7 @@ export class LunrSearchEngine implements SearchEngine {
 
     return {
       lunrQueryString: `${term}${lunrQueryFilters || ''}`,
-      documentTypes: ['*'],
+      documentTypes: types || ['*'],
     };
   };
 
