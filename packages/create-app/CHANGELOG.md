@@ -1,5 +1,57 @@
 # @backstage/create-app
 
+## 1.0.0
+
+### Patch Changes
+
+- ee22773e9: Removed `plugins.ts` from the app, as plugins are now discovered through the react tree.
+
+  To apply this change to an existing app, simply delete `packages/app/src/plugins.ts` along with the import and usage in `packages/app/src/App.tsx`.
+
+  Note that there are a few plugins that require explicit registration, in which case you would need to keep them in `plugins.ts`. The set of plugins that need explicit registration is any plugin that doesn't have a component extension that gets rendered as part of the app element tree. An example of such a plugin in the main Backstage repo is `@backstage/plugin-badges`. In the case of the badges plugin this is because there is not yet a component-based API for adding context menu items to the entity layout.
+
+  If you have plugins that still rely on route registration through the `register` method of `createPlugin`, these need to be kept in `plugins.ts` as well. However, it is recommended to migrate these to export an extensions component instead.
+
+- 670acd88e: Fix system diagram card to be on the system page
+
+  To apply the same fix to an existing application, in `EntityPage.tsx` simply move the `<EntityLayout.route>` for the `/diagram` path from the `groupPage` down into the `systemPage` element.
+
+- Updated dependencies [94da20976]
+- Updated dependencies [84c54474d]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [4e5c94249]
+- Updated dependencies [99fbef232]
+- Updated dependencies [cb0206b2b]
+- Updated dependencies [1373f4f12]
+- Updated dependencies [29a7e4be8]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [49574a8a3]
+- Updated dependencies [d367f63b5]
+- Updated dependencies [96728a2af]
+- Updated dependencies [5fe62f124]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [87c4f59de]
+- Updated dependencies [09b5fcf2e]
+- Updated dependencies [b42531cfe]
+- Updated dependencies [c2306f898]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+- Updated dependencies [ac6025f63]
+- Updated dependencies [e292e393f]
+- Updated dependencies [479b29124]
+  - @backstage/core@0.7.6
+  - @backstage/plugin-scaffolder-backend@0.10.0
+  - @backstage/cli@0.6.9
+  - @backstage/plugin-scaffolder@0.9.1
+  - @backstage/plugin-catalog-import@0.5.3
+  - @backstage/plugin-rollbar-backend@0.1.9
+  - @backstage/backend-common@0.6.3
+  - @backstage/plugin-catalog@0.5.5
+  - @backstage/plugin-catalog-backend@0.8.0
+  - @backstage/theme@0.2.6
+  - @backstage/plugin-techdocs@0.8.0
+
 ## 0.3.18
 
 ### Patch Changes

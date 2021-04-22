@@ -1,5 +1,29 @@
 # example-backend
 
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies [b9b2b4b76]
+- Updated dependencies [84c54474d]
+- Updated dependencies [49574a8a3]
+- Updated dependencies [d367f63b5]
+- Updated dependencies [5fe62f124]
+- Updated dependencies [09b5fcf2e]
+- Updated dependencies [55b2fc0c0]
+- Updated dependencies [c42cd1daa]
+- Updated dependencies [b42531cfe]
+- Updated dependencies [c2306f898]
+  - @backstage/plugin-search-backend@0.1.3
+  - @backstage/plugin-search-backend-node@0.1.3
+  - @backstage/plugin-scaffolder-backend@0.10.0
+  - @backstage/plugin-rollbar-backend@0.1.9
+  - @backstage/backend-common@0.6.3
+  - @backstage/plugin-catalog-backend@0.8.0
+  - @backstage/plugin-code-coverage-backend@0.1.2
+  - @backstage/plugin-kubernetes-backend@0.3.5
+  - example-app@0.2.25
+
 ## 0.2.22
 
 ### Patch Changes
