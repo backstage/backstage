@@ -35,10 +35,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   constructor(private readonly db: Database) {}
 
   createLocation(spec: LocationSpec): Promise<Location> {
-    if (!this.connection) {
-      throw new Error('location store is not initialized');
-    }
-
     return this.db.transaction(async tx => {
       // TODO: id should really be type and target combined and not a uuid.
 

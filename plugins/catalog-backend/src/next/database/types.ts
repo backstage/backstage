@@ -50,6 +50,19 @@ export type GetProcessableEntitiesResult = {
   items: RefreshStateItem[];
 };
 
+export type ReplaceUnprocessedEntitiesOptions =
+  | {
+      sourceKey: string;
+      items: Entity[];
+      type: 'full';
+    }
+  | {
+      sourceKey: string;
+      added: Entity[];
+      removed: Entity[];
+      type: 'delta';
+    };
+
 export interface ProcessingDatabase {
   transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T>;
 
@@ -58,6 +71,10 @@ export interface ProcessingDatabase {
     options: AddUnprocessedEntitiesOptions,
   ): Promise<void>;
 
+  replaceUnprocessedEntities(
+    txOpaque: Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<void>;
   getProcessableEntities(
     txOpaque: Transaction,
     request: { processBatchSize: number },

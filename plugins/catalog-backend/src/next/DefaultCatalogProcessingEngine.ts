@@ -30,9 +30,31 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Stitcher } from './Stitcher';
 
 class Connection implements EntityProviderConnection {
-  constructor(private readonly stateManager: ProcessingStateManager) {}
+  constructor(
+    private readonly config: {
+      stateManager: ProcessingStateManager;
+      id: string;
+    },
+  ) {}
 
-  async applyMutation(mutation: EntityProviderMutation): Promise<void> {}
+  async applyMutation(mutation: EntityProviderMutation): Promise<void> {
+    if (mutation.type === 'full') {
+      await this.config.stateManager.replaceProcessingItems({
+        id: this.config.id,
+        type: 'full',
+        items: mutation.entities,
+      });
+
+      return;
+    }
+
+    await this.config.stateManager.replaceProcessingItems({
+      id: this.config.id,
+      type: 'delta',
+      added: mutation.added,
+      removed: mutation.removed,
+    });
+  }
 }
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
@@ -48,7 +70,9 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
-      provider.connect(new Connection(this.stateManager));
+      // TODO: this ID should be some form of identifier for the EntityProvider
+      const id = 'databaseProvider';
+      provider.connect(new Connection({ stateManager: this.stateManager, id }));
     }
 
     this.running = true;
@@ -57,12 +81,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       const {
         id,
         entity,
-        state: intialState,
+        state: initialState,
       } = await this.stateManager.getNextProcessingItem();
 
       const result = await this.orchestrator.process({
         entity,
-        state: intialState,
+        state: initialState,
       });
 
       for (const error of result.errors) {
@@ -95,10 +119,6 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async stop() {
     this.running = false;
-
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe();
-    }
   }
 
   private async onNext(id: string, message: EntityMessage) {
