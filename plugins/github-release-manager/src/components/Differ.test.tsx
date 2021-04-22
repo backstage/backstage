@@ -30,11 +30,11 @@ describe('Differ', () => {
     const { getByTestId, queryByTestId } = render(<Differ icon="branch" />);
 
     const icon = getByTestId(TEST_IDS.components.differ.icons.branch);
-    const current = getByTestId(TEST_IDS.components.differ.current);
+    const current = queryByTestId(TEST_IDS.components.differ.current);
     const next = queryByTestId(TEST_IDS.components.differ.next);
 
     expect(icon).toBeInTheDocument();
-    expect(current.innerHTML).toMatchInlineSnapshot(`"None"`);
+    expect(current).toMatchInlineSnapshot(`null`);
     expect(next).not.toBeInTheDocument();
   });
 

@@ -40,14 +40,17 @@ export const Differ = ({ current, next, icon }: DifferProps) => {
         </span>
       )}
 
-      <span
-        data-testid={TEST_IDS.components.differ.current}
-        style={{ color: grey[700] }}
-      >
-        {current ?? 'None'}
-      </span>
+      {!!current && (
+        <span
+          data-testid={TEST_IDS.components.differ.current}
+          style={{ color: grey[700] }}
+        >
+          {current ?? 'None'}
+        </span>
+      )}
 
-      {next && <span>{'  →  '}</span>}
+      {current && next && <span>{'  →  '}</span>}
+
       {next && (
         <span
           data-testid={TEST_IDS.components.differ.next}
