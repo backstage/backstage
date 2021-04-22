@@ -18,7 +18,7 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { useOwnUser } from '../hooks';
 import { isOwnerOf } from '@backstage/plugin-catalog-react';
-import { WidgetType, TechDocsCustomHome } from './TechDocsCustomHome';
+import { PanelType, TechDocsCustomHome } from './TechDocsCustomHome';
 
 export const TechDocsHome = () => {
   const { value: user } = useOwnUser();
@@ -26,23 +26,24 @@ export const TechDocsHome = () => {
   const tabsConfig = [
     {
       label: 'Overview',
-      widgets: [
+      panels: [
         {
           title: 'Overview',
           description:
             'Explore your internal technical ecosystem through documentation.',
-          widgetType: 'DocsCardGrid' as WidgetType,
+          panelType: 'DocsCardGrid' as PanelType,
           filterPredicate: () => true,
         },
       ],
     },
     {
       label: 'Owned',
-      widgets: [
+      panels: [
         {
           title: 'Owned documents',
           description: 'Access your documentation.',
-          widgetType: 'DocsTable' as WidgetType,
+          panelType: 'DocsTable' as PanelType,
+          paneCSS: { maxHeight: '200px' },
           filterPredicate: (entity: Entity) => {
             if (!user) {
               return false;

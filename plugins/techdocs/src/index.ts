@@ -27,4 +27,4 @@ export {
 export { Router, EmbeddedDocsRouter } from './Router';
 export * from './reader';
 export * from './api';
-export type { WidgetType } from './home/components/TechDocsCustomHome';
+export type { PanelType } from './home/components/TechDocsCustomHome';

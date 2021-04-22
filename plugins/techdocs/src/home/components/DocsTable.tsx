@@ -90,7 +90,11 @@ export const DocsTable = ({
     <>
       {documents && documents.length > 0 ? (
         <Table
-          options={{ paging: true, pageSize: 20, search: true }}
+          options={{
+            paging: true,
+            pageSize: 20,
+            search: true,
+          }}
           data={documents}
           columns={columns}
           title={

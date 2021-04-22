@@ -37,46 +37,46 @@ import {
 import { DocsTable } from './DocsTable';
 import { DocsCardGrid } from './DocsCardGrid';
 
-const widgets = {
+const panels = {
   DocsTable: DocsTable,
   DocsCardGrid: DocsCardGrid,
 };
 
-export type WidgetType = 'DocsCardGrid' | 'DocsTable';
+export type PanelType = 'DocsCardGrid' | 'DocsTable';
 
-export interface WidgetConfig {
+export interface PanelConfig {
   title: string;
   description: string;
-  widgetType: WidgetType;
-  widgetMaxHeight?: string;
+  panelType: PanelType;
+  panelCSS?: {};
   filterPredicate: (entity: Entity) => boolean;
 }
 
 export interface TabConfig {
   label: string;
-  widgets: WidgetConfig[];
+  panels: PanelConfig[];
 }
 
 export type TabsConfig = TabConfig[];
 
-const CustomWidget = ({
+const CustomPanel = ({
   config,
   entities,
   index,
 }: {
-  config: WidgetConfig;
+  config: PanelConfig;
   entities: Entity[];
   index: number;
 }) => {
   const useStyles = makeStyles({
-    widgetContainer: {
-      maxHeight: config.widgetMaxHeight || 'inherit',
+    panelContainer: {
       marginBottom: '2rem',
       overflow: 'auto',
+      ...(config.panelCSS ? config.panelCSS : {}),
     },
   });
   const classes = useStyles();
-  const Widget = widgets[config.widgetType];
+  const Panel = panels[config.panelType];
   const shownEntities = entities.filter(config.filterPredicate);
   return (
     <>
@@ -87,8 +87,8 @@ const CustomWidget = ({
           </SupportButton>
         ) : null}
       </ContentHeader>
-      <div className={classes.widgetContainer}>
-        <Widget entities={shownEntities} />
+      <div className={classes.panelContainer}>
+        <Panel entities={shownEntities} />
       </div>
     </>
   );
@@ -155,8 +155,8 @@ export const TechDocsCustomHome = ({
         }))}
       />
       <Content>
-        {currentTabConfig.widgets.map((config, index) => (
-          <CustomWidget
+        {currentTabConfig.panels.map((config, index) => (
+          <CustomPanel
             key={index}
             config={config}
             entities={!!entities ? entities : []}

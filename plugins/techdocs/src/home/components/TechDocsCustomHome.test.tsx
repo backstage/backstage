@@ -19,7 +19,7 @@ import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import { TechDocsCustomHome, WidgetType } from './TechDocsCustomHome';
+import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 
 describe('TechDocsCustomHome', () => {
   const catalogApi: Partial<CatalogApi> = {
@@ -32,22 +32,22 @@ describe('TechDocsCustomHome', () => {
     const tabsConfig = [
       {
         label: 'First Tab',
-        widgets: [
+        panels: [
           {
             title: 'First Tab',
             description: 'First Tab Description',
-            widgetType: 'DocsCardGrid' as WidgetType,
+            panelType: 'DocsCardGrid' as PanelType,
             filterPredicate: () => true,
           },
         ],
       },
       {
         label: 'Second Tab ',
-        widgets: [
+        panels: [
           {
             title: 'Second Tab',
             description: 'Second Tab Description',
-            widgetType: 'DocsTable' as WidgetType,
+            panelType: 'DocsTable' as PanelType,
             filterPredicate: () => true,
           },
         ],

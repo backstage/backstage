@@ -92,7 +92,7 @@ In your main App.tsx:
 ```tsx
 import {
   TechDocsCustomHome,
-  WidgetType,
+  PanelType,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { Entity } from '@backstage/catalog-model';
@@ -105,17 +105,17 @@ const tabsConfig = [
         title: 'Custom Documents Cards 1',
         description:
           'Explore your internal technical ecosystem through documentation.',
-        // sets maximum height of widget, as CSS maxHeight attribute
-        widgetMaxHeight: '400px'
-        widgetType: 'DocsCardGrid' as WidgetType,
+        panelType: 'DocsCardGrid' as PanelType,
+        // optional, is applied to a container of the panel (excludes header of panel)
+        panelCSS: { maxHeight: '400px' },
         filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationOne'];
     },
       {
         title: 'Custom Documents Cards 2',
         description:
           'Explore your internal technical ecosystem through documentation.',
-        widgetMaxHeight: '400px'
-        widgetType: 'DocsCardGrid' as WidgetType,
+        panelType: 'DocsCardGrid' as PanelType,
+        panelCSS: { maxHeight: '400px' },
         filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationTwo'];
       },
     ],
@@ -127,7 +127,7 @@ const tabsConfig = [
         title: 'Overview',
         description:
           'Explore your internal technical ecosystem through documentation.',
-        widgetType: 'DocsTable' as WidgetType,
+        panelType: 'DocsTable' as PanelType,
         filterPredicate: () => true,
       },
     ],
@@ -149,6 +149,10 @@ const routes = (
 
 An example of tabsConfig that corresponds to the default documentation home page
 can be found at `plugins/techdocs/src/home/components/TechDocsHome.tsx`.
+
+Currently `panelType` has DocsCardGrid and DocsTable available. We currently
+recommend that DocsCardGrid can be optionally vertically stacked by setting a
+maxHeight using `panelCSS`, and DocsTable to be in a tab by itself.
 
 ### 2nd way: Custom home page plugin
 
