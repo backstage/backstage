@@ -1,13 +1,39 @@
 # shortcuts
 
-Welcome to the shortcuts plugin!
+`shortcuts-plugin` allows a user to have easy access to pages within a Backstage app by storing them as "shortcuts" in the Sidebar.
 
-_This plugin was created through the Backstage CLI_
+## Usage
 
-## Getting started
+Add the `<Shortcuts />` component within your `<Sidebar>`:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/shortcuts](http://localhost:3000/shortcuts).
+```ts
+import { Shortcuts } from '@backstage/plugin-shortcuts';
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+<Sidebar>
+  {/* ... */}
+  <SidebarDivider />
+  <Shortcuts />
+  <SidebarSpace />
+</Sidebar>;
+```
+
+The plugin exports a `shortcutApiRef` and an implementation of the `ShortcutApi` that uses `localStorage` for storage, that you can use to get started quickly. To use it add it to your app's `apis.ts`:
+
+```ts
+import {
+  LocalStoredShortcuts,
+  shortcutsApiRef,
+} from '@backstage/plugin-shortcuts';
+
+export const apis = [
+  // ...
+  createApiFactory({
+    api: shortcutsApiRef,
+    deps: { errorApi: errorApiRef },
+    factory: ({ errorApi }) =>
+      new LocalStoredShortcuts(
+        WebStorage.create({ namespace: '@backstage/shortcuts', errorApi }),
+      ),
+  }),
+];
+```
