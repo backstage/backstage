@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.6.9
+
+### Patch Changes
+
+- 4e5c94249: Add `config:docs` command that opens up reference documentation for the local configuration schema in a browser.
+- 1373f4f12: No longer add newly created plugins to `plugins.ts` in the app, as it is no longer needed.
+- 479b29124: Added support for Datadog rum events
+
 ## 0.6.8
 
 ### Patch Changes

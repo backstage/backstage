@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.5
+
+### Patch Changes
+
+- c42cd1daa: Kubernetes client TLS verification is now configurable and defaults to true
+- Updated dependencies [d367f63b5]
+- Updated dependencies [b42531cfe]
+  - @backstage/backend-common@0.6.3
+
 ## 0.3.4
 
 ### Patch Changes

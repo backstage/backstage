@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.10.0
+
+### Minor Changes
+
+- 49574a8a3: Fix some `spleling`.
+
+  The `scaffolder-backend` has a configuration schema change that may be breaking
+  in rare circumstances. Due to a typo in the schema, the
+  `scaffolder.github.visibility`, `scaffolder.gitlab.visibility`, and
+  `scaffolder.bitbucket.visibility` did not get proper validation that the value
+  is one of the supported strings (`public`, `internal` (not available for
+  Bitbucket), and `private`). If you had a value that was not one of these three,
+  you may have to adjust your config.
+
+### Patch Changes
+
+- 84c54474d: Forward user token to scaffolder task for subsequent api requests
+- Updated dependencies [d367f63b5]
+- Updated dependencies [b42531cfe]
+  - @backstage/backend-common@0.6.3
+
 ## 0.9.6
 
 ### Patch Changes
