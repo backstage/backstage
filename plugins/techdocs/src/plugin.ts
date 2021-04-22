@@ -30,21 +30,17 @@
  */
 
 import {
-  createPlugin,
-  createRouteRef,
-  createApiFactory,
   configApiRef,
+  createApiFactory,
+  createComponentExtension,
+  createPlugin,
+  createRoutableExtension,
+  createRouteRef,
   discoveryApiRef,
   identityApiRef,
-  createRoutableExtension,
-  createComponentExtension,
 } from '@backstage/core';
-import {
-  techdocsStorageApiRef,
-  TechDocsStorageApi,
-  techdocsApiRef,
-  TechDocsApi,
-} from './api';
+import { techdocsApiRef, techdocsStorageApiRef } from './api';
+import { TechDocsClient, TechDocsStorageClient } from './client';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -72,7 +68,7 @@ export const techdocsPlugin = createPlugin({
         identityApi: identityApiRef,
       },
       factory: ({ configApi, discoveryApi, identityApi }) =>
-        new TechDocsStorageApi({
+        new TechDocsStorageClient({
           configApi,
           discoveryApi,
           identityApi,
@@ -86,7 +82,7 @@ export const techdocsPlugin = createPlugin({
         identityApi: identityApiRef,
       },
       factory: ({ configApi, discoveryApi, identityApi }) =>
-        new TechDocsApi({
+        new TechDocsClient({
           configApi,
           discoveryApi,
           identityApi,
