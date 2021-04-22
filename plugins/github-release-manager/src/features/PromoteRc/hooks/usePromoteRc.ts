@@ -17,29 +17,25 @@
 import { useState, useEffect } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 
-import {
-  GetLatestReleaseResult,
-  IPluginApiClient,
-} from '../../../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
-import { Project } from '../../../contexts/ProjectContext';
+import { useProjectContext } from '../../../contexts/ProjectContext';
+import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
 interface PromoteRc {
-  pluginApiClient: IPluginApiClient;
-  project: Project;
   rcRelease: NonNullable<GetLatestReleaseResult>;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 
 export function usePromoteRc({
-  pluginApiClient,
-  project,
   rcRelease,
   releaseVersion,
   successCb,
 }: PromoteRc): CardHook<void> {
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const {
     responseSteps,
     addStepToResponseSteps,

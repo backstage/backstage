@@ -20,19 +20,18 @@ import { useAsync, useAsyncFn } from 'react-use';
 import {
   GetLatestReleaseResult,
   GetRepositoryResult,
-  IPluginApiClient,
 } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
 import { getRcGitHubInfo } from '../../../helpers/getRcGitHubInfo';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
+import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 
 interface CreateRC {
   defaultBranch: GetRepositoryResult['defaultBranch'];
   latestRelease: GetLatestReleaseResult;
   nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
-  pluginApiClient: IPluginApiClient;
   project: Project;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
@@ -41,10 +40,11 @@ export function useCreateRc({
   defaultBranch,
   latestRelease,
   nextGitHubInfo,
-  pluginApiClient,
   project,
   successCb,
 }: CreateRC): CardHook<void> {
+  const { pluginApiClient } = usePluginApiClientContext();
+
   if (nextGitHubInfo.error) {
     throw new GitHubReleaseManagerError(
       `Unexpected error: ${

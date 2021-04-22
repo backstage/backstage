@@ -38,7 +38,6 @@ import { ResponseStepDialog } from '../../components/ResponseStepDialog/Response
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useCreateRc } from './hooks/useCreateRc';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 
@@ -67,7 +66,6 @@ export const CreateRc = ({
   releaseBranch,
   successCb,
 }: CreateRcProps) => {
-  const { pluginApiClient } = usePluginApiClientContext();
   const { project } = useProjectContext();
   const classes = useStyles();
 
@@ -88,7 +86,6 @@ export const CreateRc = ({
     defaultBranch,
     latestRelease,
     nextGitHubInfo,
-    pluginApiClient,
     project,
     successCb,
   });

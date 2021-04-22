@@ -27,6 +27,12 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { usePatch } from './usePatch';
 
+jest.mock('../../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
+}));
+
 describe('patch', () => {
   beforeEach(jest.clearAllMocks);
 
@@ -35,7 +41,6 @@ describe('patch', () => {
       usePatch({
         bumpedTag: mockBumpedTag,
         latestRelease: mockReleaseVersionCalver,
-        pluginApiClient: mockApiClient,
         project: mockCalverProject,
         tagParts: mockTagParts,
       }),
@@ -54,7 +59,6 @@ describe('patch', () => {
       usePatch({
         bumpedTag: mockBumpedTag,
         latestRelease: mockReleaseVersionCalver,
-        pluginApiClient: mockApiClient,
         project: mockCalverProject,
         tagParts: mockTagParts,
         successCb: jest.fn(),

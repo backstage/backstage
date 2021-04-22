@@ -20,18 +20,17 @@ import { useAsync, useAsyncFn } from 'react-use';
 import {
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
-  IPluginApiClient,
 } from '../../../api/PluginApiClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch, CardHook } from '../../../types/types';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
+import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
 interface Patch {
   bumpedTag: string;
   latestRelease: NonNullable<GetLatestReleaseResult>;
-  pluginApiClient: IPluginApiClient;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
   successCb?: ComponentConfigPatch['successCb'];
@@ -41,11 +40,11 @@ interface Patch {
 export function usePatch({
   bumpedTag,
   latestRelease,
-  pluginApiClient,
   project,
   tagParts,
   successCb,
 }: Patch): CardHook<GetRecentCommitsResultSingle> {
+  const { pluginApiClient } = usePluginApiClientContext();
   const {
     responseSteps,
     addStepToResponseSteps,

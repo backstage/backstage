@@ -17,23 +17,9 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import {
-  mockApiClient,
-  mockCalverProject,
-  mockReleaseCandidateCalver,
-} from '../../test-helpers/test-helpers';
+import { mockReleaseCandidateCalver } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
-}));
-jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: () => ({
-    project: mockCalverProject,
-  }),
-}));
 jest.mock('./hooks/usePromoteRc', () => ({
   usePromoteRc: () => ({
     run: jest.fn(),

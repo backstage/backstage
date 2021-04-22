@@ -18,7 +18,6 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import {
-  mockApiClient,
   mockCalverProject,
   mockNextGitHubInfoSemver,
   mockReleaseBranch,
@@ -29,11 +28,6 @@ import {
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useCreateRc } from './hooks/useCreateRc';
 
-jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
-}));
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => ({
     project: mockCalverProject,

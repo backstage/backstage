@@ -22,8 +22,6 @@ import { Differ } from '../../components/Differ';
 import { GetLatestReleaseResult } from '../../api/PluginApiClient';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
-import { useProjectContext } from '../../contexts/ProjectContext';
 import { usePromoteRc } from './hooks/usePromoteRc';
 import { useStyles } from '../../styles/styles';
 
@@ -33,14 +31,10 @@ interface PromoteRcBodyProps {
 }
 
 export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
-  const { pluginApiClient } = usePluginApiClientContext();
-  const { project } = useProjectContext();
   const classes = useStyles();
   const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
 
   const { progress, responseSteps, run, runInvoked } = usePromoteRc({
-    pluginApiClient,
-    project,
     rcRelease,
     releaseVersion,
     successCb,

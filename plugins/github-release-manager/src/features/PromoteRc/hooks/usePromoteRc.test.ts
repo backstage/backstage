@@ -19,10 +19,21 @@ import { waitFor } from '@testing-library/react';
 
 import {
   mockApiClient,
+  mockCalverProject,
   mockReleaseCandidateCalver,
-  mockSemverProject,
 } from '../../../test-helpers/test-helpers';
 import { usePromoteRc } from './usePromoteRc';
+
+jest.mock('../../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
+}));
+jest.mock('../../../contexts/ProjectContext', () => ({
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
+}));
 
 describe('usePromoteRc', () => {
   beforeEach(jest.clearAllMocks);
@@ -30,8 +41,6 @@ describe('usePromoteRc', () => {
   it('should return the expected responseSteps and progress', async () => {
     const { result } = renderHook(() =>
       usePromoteRc({
-        pluginApiClient: mockApiClient,
-        project: mockSemverProject,
         rcRelease: mockReleaseCandidateCalver,
         releaseVersion: 'version-1.2.3',
       }),
@@ -48,8 +57,6 @@ describe('usePromoteRc', () => {
   it('should return the expected responseSteps and progress (with successCb)', async () => {
     const { result } = renderHook(() =>
       usePromoteRc({
-        pluginApiClient: mockApiClient,
-        project: mockSemverProject,
         rcRelease: mockReleaseCandidateCalver,
         releaseVersion: 'version-1.2.3',
         successCb: jest.fn(),

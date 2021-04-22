@@ -94,7 +94,6 @@ export const PatchBody = ({
   const { progress, responseSteps, run, runInvoked } = usePatch({
     bumpedTag,
     latestRelease,
-    pluginApiClient,
     project,
     tagParts,
     successCb,

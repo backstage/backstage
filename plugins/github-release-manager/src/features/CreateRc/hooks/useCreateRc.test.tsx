@@ -26,6 +26,12 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { useCreateRc } from './useCreateRc';
 
+jest.mock('../../../contexts/PluginApiClientContext', () => ({
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
+}));
+
 describe('useCreateRc', () => {
   beforeEach(jest.clearAllMocks);
 
@@ -35,7 +41,6 @@ describe('useCreateRc', () => {
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
         nextGitHubInfo: mockNextGitHubInfoCalver,
-        pluginApiClient: mockApiClient,
         project: mockCalverProject,
       }),
     );
@@ -54,7 +59,6 @@ describe('useCreateRc', () => {
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
         nextGitHubInfo: mockNextGitHubInfoCalver,
-        pluginApiClient: mockApiClient,
         project: mockCalverProject,
         successCb: jest.fn(),
       }),
