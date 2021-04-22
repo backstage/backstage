@@ -31,7 +31,7 @@ import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
 import { validateTagName } from '../helpers/tagParts/validateTagName';
 
-export function Cards({
+export function Features({
   components,
 }: {
   components: GitHubReleaseManagerProps['components'];

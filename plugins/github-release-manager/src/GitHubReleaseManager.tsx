@@ -25,14 +25,14 @@ import {
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
 } from './types/types';
-import { Cards } from './cards/Cards';
+import { Features } from './features/Features';
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
 import { PluginApiClientContext } from './contexts/PluginApiClientContext';
 import { ProjectContext, Project } from './contexts/ProjectContext';
-import { RepoDetailsForm } from './cards/RepoDetailsForm/RepoDetailsForm';
+import { RepoDetailsForm } from './features/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
 import { useStyles } from './styles/styles';
 
@@ -90,7 +90,9 @@ export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
             <RepoDetailsForm username={usernameResponse.value.username} />
           </InfoCardPlus>
 
-          {isProjectValid(project) && <Cards components={props.components} />}
+          {isProjectValid(project) && (
+            <Features components={props.components} />
+          )}
         </div>
       </ProjectContext.Provider>
     </PluginApiClientContext.Provider>

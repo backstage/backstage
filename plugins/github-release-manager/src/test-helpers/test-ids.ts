@@ -17,7 +17,7 @@
 export const TEST_IDS = {
   info: {
     info: 'grm--info',
-    infoCardPlus: 'grm--info-card-plus',
+    infoFeaturePlus: 'grm--info-feature-plus',
   },
   createRc: {
     cta: 'grm--create-rc--cta',

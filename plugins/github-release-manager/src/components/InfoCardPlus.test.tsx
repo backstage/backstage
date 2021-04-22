@@ -24,6 +24,6 @@ describe('InfoCardPlus', () => {
   it('render InfoCardPlus', () => {
     const { getByTestId } = render(<InfoCardPlus />);
 
-    expect(getByTestId(TEST_IDS.info.infoCardPlus)).toBeInTheDocument();
+    expect(getByTestId(TEST_IDS.info.infoFeaturePlus)).toBeInTheDocument();
   });
 });

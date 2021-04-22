@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { Link, Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Link, Typography, Button } from '@material-ui/core';
 
-import { Differ } from '../../components/Differ';
-import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
-import flowImage from './flow.png';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
 } from '../../api/PluginApiClient';
+import { Differ } from '../../components/Differ';
+import { InfoCardPlus } from '../../components/InfoCardPlus';
+import { Stats } from '../../components/Stats/Stats';
+import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useStyles } from '../../styles/styles';
+import flowImage from './flow.png';
 
 interface InfoCardProps {
   releaseBranch: GetBranchResult | null;
@@ -36,6 +37,7 @@ interface InfoCardProps {
 export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
   const { project } = useProjectContext();
   const classes = useStyles();
+  const [showStats, setShowStats] = useState(false);
 
   return (
     <InfoCardPlus>
@@ -63,6 +65,15 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
           <strong>Release Version</strong>: A GitHub release intended for end
           users
         </Typography>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => setShowStats(true)}
+        >
+          Show stats
+        </Button>
+        {showStats && <Stats setShowStats={setShowStats} />}
       </div>
 
       <div style={{ marginBottom: '1em' }}>

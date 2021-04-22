@@ -31,12 +31,12 @@ jest.mock('../contexts/ProjectContext', () => ({
   }),
 }));
 
-import { Cards } from './Cards';
+import { Features } from './Features';
 
-describe('Cards', () => {
-  it('should omit cards omitted via configuration', async () => {
+describe('Features', () => {
+  it('should omit features omitted via configuration', async () => {
     const { getByTestId } = render(
-      <Cards
+      <Features
         components={{
           info: { omit: false },
           createRc: { omit: true },
@@ -98,6 +98,20 @@ describe('Cards', () => {
           </strong>
           : A GitHub release intended for end users
         </p>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSecondary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Show stats
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     `);
   });

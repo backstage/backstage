@@ -10,7 +10,7 @@ What `GRM` does is manage your **[releases](https://docs.github.com/en/github/ad
 
 `GRM` is built with industry standards in mind and the flow is as follows:
 
-![](./src/cards/info/flow.png)
+![](./src/features/Info/flow.png)
 
 > **GitHub**: The source control system where releases reside in a practical sense. Read more about [GitHub releases](https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository). (Note that this plugin works just as well with GitHub Enterprise.)
 >

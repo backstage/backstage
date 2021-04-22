@@ -67,7 +67,7 @@ describe('test-ids', () => {
           },
           "info": Object {
             "info": "grm--info",
-            "infoCardPlus": "grm--info-card-plus",
+            "infoFeaturePlus": "grm--info-feature-plus",
           },
           "patch": Object {
             "body": "grm--patch-body",

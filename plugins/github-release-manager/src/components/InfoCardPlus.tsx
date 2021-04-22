@@ -21,7 +21,7 @@ import { makeStyles } from '@material-ui/core';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 const useStyles = makeStyles(() => ({
-  card: {
+  feature: {
     marginBottom: '3em',
   },
 }));
@@ -32,9 +32,9 @@ export const InfoCardPlus = ({ children }: { children?: React.ReactNode }) => {
   return (
     <div
       style={{ position: 'relative' }}
-      data-testid={TEST_IDS.info.infoCardPlus}
+      data-testid={TEST_IDS.info.infoFeaturePlus}
     >
-      <InfoCard className={classes.card}>{children}</InfoCard>
+      <InfoCard className={classes.feature}>{children}</InfoCard>
     </div>
   );
 };
