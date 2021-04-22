@@ -69,6 +69,7 @@ export const ResponseStepDialog = ({
       <DialogActions style={{ padding: 20 }}>
         <Button
           onClick={() => setRefetchTrigger(Date.now())}
+          disabled={progress < 100}
           variant="contained"
           size="large"
           color="primary"
