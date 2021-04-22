@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Typography } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 import {
   GetBranchResult,
@@ -40,34 +41,7 @@ export const Patch = ({
   releaseBranch,
   successCb,
 }: PatchProps) => {
-  const { project } = useProjectContext();
   const classes = useStyles();
-
-  function Body() {
-    if (latestRelease === null) {
-      return <NoLatestRelease />;
-    }
-
-    if (releaseBranch === null) {
-      return <NoLatestRelease />;
-    }
-
-    const { bumpedTag, tagParts } = getBumpedTag({
-      project,
-      tag: latestRelease.tagName,
-      bumpLevel: 'patch',
-    });
-
-    return (
-      <PatchBody
-        bumpedTag={bumpedTag}
-        latestRelease={latestRelease}
-        releaseBranch={releaseBranch}
-        successCb={successCb}
-        tagParts={tagParts}
-      />
-    );
-  }
 
   return (
     <InfoCardPlus>
@@ -75,7 +49,51 @@ export const Patch = ({
         Patch Release {latestRelease?.prerelease ? 'Candidate' : 'Version'}
       </Typography>
 
-      <Body />
+      <BodyWrapper
+        latestRelease={latestRelease}
+        releaseBranch={releaseBranch}
+        successCb={successCb}
+      />
     </InfoCardPlus>
   );
 };
+
+function BodyWrapper({ latestRelease, releaseBranch, successCb }: PatchProps) {
+  const { project } = useProjectContext();
+
+  if (latestRelease === null) {
+    return <NoLatestRelease />;
+  }
+
+  if (releaseBranch === null) {
+    return <NoLatestRelease />;
+  }
+
+  const bumpedTag = getBumpedTag({
+    project,
+    tag: latestRelease.tagName,
+    bumpLevel: 'patch',
+  });
+
+  if (bumpedTag.error !== undefined) {
+    return (
+      <Alert severity="error">
+        {bumpedTag.error.title && (
+          <AlertTitle>{bumpedTag.error.title}</AlertTitle>
+        )}
+
+        {bumpedTag.error.subtitle}
+      </Alert>
+    );
+  }
+
+  return (
+    <PatchBody
+      bumpedTag={bumpedTag.bumpedTag}
+      latestRelease={latestRelease}
+      releaseBranch={releaseBranch}
+      successCb={successCb}
+      tagParts={bumpedTag.tagParts}
+    />
+  );
+}

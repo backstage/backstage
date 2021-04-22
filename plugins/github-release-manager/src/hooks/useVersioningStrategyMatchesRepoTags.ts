@@ -35,13 +35,9 @@ export const useVersioningStrategyMatchesRepoTags = ({
     setVersioningStrategyMatches(false);
 
     if (latestReleaseTagName) {
-      try {
-        if (project.repo === repositoryName) {
-          getTagParts({ project, tag: latestReleaseTagName });
-          setVersioningStrategyMatches(true);
-        }
-      } catch (error) {
-        setVersioningStrategyMatches(false);
+      if (project.repo === repositoryName) {
+        const { error } = getTagParts({ project, tag: latestReleaseTagName });
+        setVersioningStrategyMatches(error === undefined);
       }
     }
   }, [latestReleaseTagName, project, repositoryName]);

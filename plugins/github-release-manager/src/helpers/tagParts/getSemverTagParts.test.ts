@@ -21,43 +21,80 @@ import {
 import { getSemverTagParts } from './getSemverTagParts';
 
 describe('getSemverTagParts', () => {
-  it('should return tagParts for RC tag', () =>
-    expect(getSemverTagParts(mockReleaseCandidateSemver.tagName))
-      .toMatchInlineSnapshot(`
-        Object {
-          "major": 1,
-          "minor": 2,
-          "patch": 3,
-          "prefix": "rc",
-        }
-      `));
+  describe('happy path', () => {
+    it('should return tagParts for RC tag', () => {
+      const semverTagParts = getSemverTagParts(
+        mockReleaseCandidateSemver.tagName,
+      );
 
-  it('should return tagParts for Version tag', () =>
-    expect(getSemverTagParts(mockReleaseVersionSemver.tagName))
-      .toMatchInlineSnapshot(`
-        Object {
-          "major": 1,
-          "minor": 2,
-          "patch": 3,
-          "prefix": "version",
-        }
-      `));
+      expect(semverTagParts).toMatchInlineSnapshot(`
+              Object {
+                "tagParts": Object {
+                  "major": 1,
+                  "minor": 2,
+                  "patch": 3,
+                  "prefix": "rc",
+                },
+              }
+          `);
+    });
 
-  it('should throw for invalid prefix', () => {
-    expect(() =>
-      getSemverTagParts('invalid-1.2.3'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid semver tag"`);
+    it('should return tagParts for Version tag', () => {
+      const semverTagParts = getSemverTagParts(
+        mockReleaseVersionSemver.tagName,
+      );
+
+      expect(semverTagParts).toMatchInlineSnapshot(`
+              Object {
+                "tagParts": Object {
+                  "major": 1,
+                  "minor": 2,
+                  "patch": 3,
+                  "prefix": "version",
+                },
+              }
+          `);
+    });
   });
 
-  it('should throw for invalid semver (missing patch)', () => {
-    expect(() =>
-      getSemverTagParts('rc-1.2'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid semver tag"`);
-  });
+  describe('invalid semver tags', () => {
+    it('should return error for invalid prefix', () => {
+      const semverTagParts = getSemverTagParts('invalid-1.2.3');
 
-  it('should throw for invalid semver (founds calver)', () => {
-    expect(() =>
-      getSemverTagParts('rc-1337.01.01_1'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid semver tag, found calver"`);
+      expect(semverTagParts).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found \\"invalid-1.2.3\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
+    });
+
+    it('should return error for invalid semver (missing patch)', () => {
+      const semverTagParts = getSemverTagParts('rc-1.2');
+
+      expect(semverTagParts).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found \\"rc-1.2\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
+    });
+
+    it('should return error for invalid semver (founds calver)', () => {
+      const semverTagParts = getSemverTagParts('rc-1337.01.01_1');
+
+      expect(semverTagParts).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected semver matching \\"/(rc|version)-([0-9]+)\\\\.([0-9]+)\\\\.([0-9]+)/\\", found calver \\"rc-1337.01.01_1\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
+    });
   });
 });

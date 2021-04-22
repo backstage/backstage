@@ -32,6 +32,7 @@ describe('getBumpedTag', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "bumpedTag": "rc-2020.01.01_2",
+          "error": undefined,
           "tagParts": Object {
             "calver": "2020.01.01",
             "patch": 2,
@@ -51,6 +52,7 @@ describe('getBumpedTag', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "bumpedTag": "rc-2020.01.01_2",
+          "error": undefined,
           "tagParts": Object {
             "calver": "2020.01.01",
             "patch": 2,
@@ -72,6 +74,7 @@ describe('getBumpedTag', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "bumpedTag": "rc-1.2.4",
+          "error": undefined,
           "tagParts": Object {
             "major": 1,
             "minor": 2,
@@ -92,6 +95,7 @@ describe('getBumpedTag', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "bumpedTag": "rc-1.3.0",
+          "error": undefined,
           "tagParts": Object {
             "major": 1,
             "minor": 3,
@@ -112,11 +116,31 @@ describe('getBumpedTag', () => {
       expect(result).toMatchInlineSnapshot(`
         Object {
           "bumpedTag": "rc-2.0.0",
+          "error": undefined,
           "tagParts": Object {
             "major": 2,
             "minor": 0,
             "patch": 0,
             "prefix": "rc",
+          },
+        }
+      `);
+    });
+  });
+
+  describe('errors', () => {
+    it('should propagate errors for invalid tags', () => {
+      const result = getBumpedTag({
+        project: mockCalverProject,
+        tag: '😬',
+        bumpLevel: 'patch',
+      });
+
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"😬\\"",
+            "title": "Invalid tag",
           },
         }
       `);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
+import { AlertError } from '../../types/types';
 import { calverRegexp } from './getCalverTagParts';
 
 export type SemverTagParts = {
@@ -24,23 +24,41 @@ export type SemverTagParts = {
   patch: number;
 };
 
-export function getSemverTagParts(tag: string) {
-  const result = tag.match(/(rc|version)-([0-9]+)\.([0-9]+)\.([0-9]+)/);
+export const semverRegexp = /(rc|version)-([0-9]+)\.([0-9]+)\.([0-9]+)/;
 
-  if (result === null || result.length < 4) {
-    throw new GitHubReleaseManagerError('Invalid semver tag');
+export function getSemverTagParts(tag: string) {
+  const match = tag.match(semverRegexp);
+
+  if (match === null || match.length < 4) {
+    const error: AlertError = {
+      title: 'Invalid tag',
+      subtitle: `Expected semver matching "${semverRegexp}", found "${tag}"`,
+    };
+
+    return {
+      error,
+    };
   }
 
   if (tag.match(calverRegexp)) {
-    throw new GitHubReleaseManagerError('Invalid semver tag, found calver');
+    const error: AlertError = {
+      title: 'Invalid tag',
+      subtitle: `Expected semver matching "${semverRegexp}", found calver "${tag}"`,
+    };
+
+    return {
+      error,
+    };
   }
 
   const tagParts: SemverTagParts = {
-    prefix: result[1],
-    major: parseInt(result[2], 10),
-    minor: parseInt(result[3], 10),
-    patch: parseInt(result[4], 10),
+    prefix: match[1],
+    major: parseInt(match[2], 10),
+    minor: parseInt(match[3], 10),
+    patch: parseInt(match[4], 10),
   };
 
-  return tagParts;
+  return {
+    tagParts,
+  };
 }

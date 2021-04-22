@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-import { AlertError } from '../../types/types';
+import { getCalverTagParts } from './getCalverTagParts';
+import { getSemverTagParts } from './getSemverTagParts';
+import { Project } from '../../contexts/ProjectContext';
 
-export type CalverTagParts = {
-  prefix: string;
-  calver: string;
-  patch: number;
-};
-
-export const calverRegexp = /(rc|version)-([0-9]{4}\.[0-9]{2}\.[0-9]{2})_([0-9]+)/;
-
-export function getCalverTagParts(tag: string) {
-  const match = tag.match(calverRegexp);
-
-  if (match === null || match.length < 4) {
-    const error: AlertError = {
-      title: 'Invalid tag',
-      subtitle: `Expected calver matching "${calverRegexp}", found "${tag}"`,
-    };
-
+export const validateTagName = ({
+  project,
+  tagName,
+}: {
+  project: Project;
+  tagName?: string;
+}) => {
+  if (!tagName) {
     return {
-      error,
+      tagNameError: null,
     };
   }
 
-  const tagParts: CalverTagParts = {
-    prefix: match[1],
-    calver: match[2],
-    patch: parseInt(match[3], 10),
-  };
+  if (project.versioningStrategy === 'calver') {
+    const { error } = getCalverTagParts(tagName);
+
+    return {
+      tagNameError: error,
+    };
+  }
+
+  const { error } = getSemverTagParts(tagName);
 
   return {
-    tagParts,
+    tagNameError: error,
   };
-}
+};

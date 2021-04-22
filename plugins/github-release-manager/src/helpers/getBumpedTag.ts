@@ -32,11 +32,17 @@ export function getBumpedTag({
 }) {
   const tagParts = getTagParts({ project, tag });
 
-  if (isCalverTagParts(project, tagParts)) {
-    return getPatchedCalverTag(tagParts);
+  if (tagParts.error !== undefined) {
+    return {
+      error: tagParts.error,
+    };
   }
 
-  return getBumpedSemverTag(tagParts, bumpLevel);
+  if (isCalverTagParts(project, tagParts.tagParts)) {
+    return getPatchedCalverTag(tagParts.tagParts);
+  }
+
+  return getBumpedSemverTag(tagParts.tagParts, bumpLevel);
 }
 
 function getPatchedCalverTag(tagParts: CalverTagParts) {
@@ -49,6 +55,7 @@ function getPatchedCalverTag(tagParts: CalverTagParts) {
   return {
     bumpedTag,
     tagParts: bumpedTagParts,
+    error: undefined,
   };
 }
 
@@ -63,6 +70,7 @@ function getBumpedSemverTag(
   return {
     bumpedTag,
     tagParts: bumpedTagParts,
+    error: undefined,
   };
 }
 

@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import React, { forwardRef, Ref } from 'react';
+import React from 'react';
 import {
   Button,
   Dialog as MaterialDialog,
   DialogActions,
   DialogTitle,
-  Slide,
 } from '@material-ui/core';
-import { TransitionProps } from '@material-ui/core/transitions';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { ResponseStep } from '../../types/types';
 import { ResponseStepList } from './ResponseStepList';
+import { Transition } from '../Transition';
 import { useRefetchContext } from '../../contexts/RefetchContext';
 
 interface DialogProps {
@@ -35,13 +34,6 @@ interface DialogProps {
   responseSteps: ResponseStep[];
   title: string;
 }
-
-const Transition = forwardRef(function Transition(
-  props: { children?: React.ReactElement<any, any> } & TransitionProps,
-  ref: Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 export const ResponseStepDialog = ({
   progress,

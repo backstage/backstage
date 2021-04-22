@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { ErrorBoundary } from '@backstage/core';
-import { Alert } from '@material-ui/lab';
 
 import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
 import { CreateRc } from './CreateRc/CreateRc';
@@ -29,6 +29,7 @@ import { useGetGitHubBatchInfo } from '../hooks/useGetGitHubBatchInfo';
 import { usePluginApiClientContext } from '../contexts/PluginApiClientContext';
 import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
+import { validateTagName } from '../helpers/tagParts/validateTagName';
 
 export function Cards({
   components,
@@ -74,6 +75,19 @@ export function Cards({
       <Alert severity="error">
         You lack push permissions for repository "{project.owner}/{project.repo}
         "
+      </Alert>
+    );
+  }
+
+  const { tagNameError } = validateTagName({
+    project,
+    tagName: gitHubBatchInfo.value.latestRelease?.tagName,
+  });
+  if (tagNameError) {
+    return (
+      <Alert severity="error">
+        {tagNameError.title && <AlertTitle>{tagNameError.title}</AlertTitle>}
+        {tagNameError.subtitle}
       </Alert>
     );
   }

@@ -20,7 +20,6 @@ import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { DISABLE_CACHE } from '../constants/constants';
-import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
 import { Project } from '../contexts/ProjectContext';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 
@@ -298,19 +297,23 @@ export class PluginApiClient implements IPluginApiClient {
     createRelease: async ({
       owner,
       repo,
-      nextGitHubInfo,
+      rcReleaseTag,
+      releaseName,
+      rcBranch,
       releaseBody,
     }: {
-      nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
+      rcReleaseTag: string;
+      releaseName: string;
+      rcBranch: string;
       releaseBody: string;
     } & OwnerRepo) => {
       const { octokit } = await this.getOctokit();
       const createReleaseResponse = await octokit.repos.createRelease({
         owner,
         repo,
-        tag_name: nextGitHubInfo.rcReleaseTag,
-        name: nextGitHubInfo.releaseName,
-        target_commitish: nextGitHubInfo.rcBranch,
+        tag_name: rcReleaseTag,
+        name: releaseName,
+        target_commitish: rcBranch,
         body: releaseBody,
         prerelease: true,
       });
@@ -697,7 +700,9 @@ export type GetComparisonResult = UnboxReturnedPromise<GetComparison>;
 
 type CreateRelease = (
   args: {
-    nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
+    rcReleaseTag: string;
+    releaseName: string;
+    rcBranch: string;
     releaseBody: string;
   } & OwnerRepo,
 ) => Promise<{

@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Alert } from '@material-ui/lab';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Button,
   FormControl,
@@ -48,6 +48,18 @@ interface CreateRcProps {
   releaseBranch: GetBranchResult | null;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
+
+const InfoCardPlusWrapper = ({ children }: { children: React.ReactNode }) => {
+  const classes = useStyles();
+  return (
+    <InfoCardPlus>
+      <Typography variant="h4" className={classes.paragraph}>
+        Create Release Candidate
+      </Typography>
+      {children}
+    </InfoCardPlus>
+  );
+};
 
 export const CreateRc = ({
   defaultBranch,
@@ -90,71 +102,28 @@ export const CreateRc = ({
     );
   }
 
+  if (nextGitHubInfo.error !== undefined) {
+    return (
+      <InfoCardPlusWrapper>
+        <Alert severity="error">
+          {nextGitHubInfo.error.title && (
+            <AlertTitle>{nextGitHubInfo.error.title}</AlertTitle>
+          )}
+
+          {nextGitHubInfo.error.subtitle}
+        </Alert>
+      </InfoCardPlusWrapper>
+    );
+  }
+
   const tagAlreadyExists =
     latestRelease !== null &&
     latestRelease.tagName === nextGitHubInfo.rcReleaseTag;
   const conflictingPreRelease =
     latestRelease !== null && latestRelease.prerelease;
 
-  function Description() {
-    if (conflictingPreRelease) {
-      return (
-        <Alert className={classes.paragraph} severity="warning">
-          The most recent release is already a Release Candidate
-        </Alert>
-      );
-    }
-
-    if (tagAlreadyExists) {
-      return (
-        <Alert className={classes.paragraph} severity="warning">
-          There's already a tag named{' '}
-          <strong>{nextGitHubInfo.rcReleaseTag}</strong>
-        </Alert>
-      );
-    }
-
-    return (
-      <div className={classes.paragraph}>
-        <Typography>
-          <Differ
-            icon="branch"
-            current={releaseBranch?.name}
-            next={nextGitHubInfo.rcBranch}
-          />
-        </Typography>
-
-        <Typography>
-          <Differ
-            icon="tag"
-            current={latestRelease?.tagName}
-            next={nextGitHubInfo.rcReleaseTag}
-          />
-        </Typography>
-      </div>
-    );
-  }
-
-  function CTA() {
-    return (
-      <Button
-        data-testid={TEST_IDS.createRc.cta}
-        disabled={conflictingPreRelease || tagAlreadyExists || runInvoked}
-        variant="contained"
-        color="primary"
-        onClick={() => run()}
-      >
-        Create Release Candidate
-      </Button>
-    );
-  }
-
   return (
-    <InfoCardPlus>
-      <Typography variant="h4" className={classes.paragraph}>
-        Create Release Candidate
-      </Typography>
-
+    <InfoCardPlusWrapper>
       {project.versioningStrategy === 'semver' &&
         latestRelease &&
         !conflictingPreRelease && (
@@ -182,9 +151,50 @@ export const CreateRc = ({
           </div>
         )}
 
-      <Description />
+      {conflictingPreRelease || tagAlreadyExists ? (
+        <>
+          {conflictingPreRelease && (
+            <Alert className={classes.paragraph} severity="warning">
+              The most recent release is already a Release Candidate
+            </Alert>
+          )}
 
-      <CTA />
-    </InfoCardPlus>
+          {tagAlreadyExists && (
+            <Alert className={classes.paragraph} severity="warning">
+              There's already a tag named{' '}
+              <strong>{nextGitHubInfo.rcReleaseTag}</strong>
+            </Alert>
+          )}
+        </>
+      ) : (
+        <div className={classes.paragraph}>
+          <Typography>
+            <Differ
+              icon="branch"
+              current={releaseBranch?.name}
+              next={nextGitHubInfo.rcBranch}
+            />
+          </Typography>
+
+          <Typography>
+            <Differ
+              icon="tag"
+              current={latestRelease?.tagName}
+              next={nextGitHubInfo.rcReleaseTag}
+            />
+          </Typography>
+        </div>
+      )}
+
+      <Button
+        data-testid={TEST_IDS.createRc.cta}
+        disabled={conflictingPreRelease || tagAlreadyExists || runInvoked}
+        variant="contained"
+        color="primary"
+        onClick={() => run()}
+      >
+        Create Release Candidate
+      </Button>
+    </InfoCardPlusWrapper>
   );
 };

@@ -49,8 +49,17 @@ export const getRcGitHubInfo = ({
     };
   }
 
-  const tagParts = getSemverTagParts(latestRelease.tagName);
-  const { bumpedTagParts } = getBumpedSemverTagParts(tagParts, semverBumpLevel);
+  const semverTagParts = getSemverTagParts(latestRelease.tagName);
+  if (semverTagParts.error !== undefined) {
+    return {
+      error: semverTagParts.error,
+    };
+  }
+
+  const { bumpedTagParts } = getBumpedSemverTagParts(
+    semverTagParts.tagParts,
+    semverBumpLevel,
+  );
 
   const bumpedTag = `${bumpedTagParts.major}.${bumpedTagParts.minor}.${bumpedTagParts.patch}`;
 

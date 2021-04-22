@@ -45,6 +45,16 @@ export function useCreateRc({
   project,
   successCb,
 }: CreateRC): CardHook<void> {
+  if (nextGitHubInfo.error) {
+    throw new GitHubReleaseManagerError(
+      `Unexpected error: ${
+        nextGitHubInfo.error.title
+          ? `${nextGitHubInfo.error.title} (${nextGitHubInfo.error.subtitle})`
+          : nextGitHubInfo.error.subtitle
+      }`,
+    );
+  }
+
   const {
     responseSteps,
     addStepToResponseSteps,
@@ -162,7 +172,9 @@ export function useCreateRc({
       .createRelease({
         owner: project.owner,
         repo: project.repo,
-        nextGitHubInfo: nextGitHubInfo,
+        rcReleaseTag: nextGitHubInfo.rcReleaseTag,
+        releaseName: nextGitHubInfo.releaseName,
+        rcBranch: nextGitHubInfo.rcBranch,
         releaseBody: getComparisonRes.value.releaseBody,
       })
       .catch(asyncCatcher);

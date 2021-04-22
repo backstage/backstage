@@ -21,51 +21,87 @@ import {
 import { getCalverTagParts } from './getCalverTagParts';
 
 describe('getCalverTagParts', () => {
-  it('should return tagParts for RC tag', () => {
-    const result = getCalverTagParts(mockReleaseCandidateCalver.tagName);
+  describe('happy path', () => {
+    it('should return tagParts for RC tag', () => {
+      const result = getCalverTagParts(mockReleaseCandidateCalver.tagName);
 
-    expect(result).toMatchInlineSnapshot(`
+      expect(result).toMatchInlineSnapshot(`
+              Object {
+                "tagParts": Object {
+                  "calver": "2020.01.01",
+                  "patch": 1,
+                  "prefix": "rc",
+                },
+              }
+          `);
+    });
+
+    it('should return tagParts for Version tag', () => {
+      const result = getCalverTagParts(mockReleaseVersionCalver.tagName);
+
+      expect(result).toMatchInlineSnapshot(`
+              Object {
+                "tagParts": Object {
+                  "calver": "2020.01.01",
+                  "patch": 1,
+                  "prefix": "version",
+                },
+              }
+          `);
+    });
+  });
+
+  describe('invalid calver tags', () => {
+    it('should return error for invalid prefix', () => {
+      const result = getCalverTagParts('invalid-2020.01.01_1');
+
+      expect(result).toMatchInlineSnapshot(`
         Object {
-          "calver": "2020.01.01",
-          "patch": 1,
-          "prefix": "rc",
+          "error": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"invalid-2020.01.01_1\\"",
+            "title": "Invalid tag",
+          },
         }
       `);
-  });
+    });
 
-  it('should return tagParts for Version tag', () => {
-    const result = getCalverTagParts(mockReleaseVersionCalver.tagName);
+    it('should return error for invalid calver (missing padded zero)', () => {
+      const result = getCalverTagParts('rc-2020.1.01_1');
 
-    expect(result).toMatchInlineSnapshot(`
+      expect(result).toMatchInlineSnapshot(`
         Object {
-          "calver": "2020.01.01",
-          "patch": 1,
-          "prefix": "version",
+          "error": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.1.01_1\\"",
+            "title": "Invalid tag",
+          },
         }
       `);
-  });
+    });
 
-  it('should return null for invalid prefix', () => {
-    expect(() =>
-      getCalverTagParts('invalid-2020.01.01_1'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid calver tag"`);
-  });
+    it('should return error for invalid calver (missing day)', () => {
+      const result = getCalverTagParts('rc-2020.01_1');
 
-  it('should return null for invalid calver (missing padded zero)', () => {
-    expect(() =>
-      getCalverTagParts('rc-2020.1.01_1'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid calver tag"`);
-  });
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.01_1\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
+    });
 
-  it('should return null for invalid calver (missing day)', () => {
-    expect(() =>
-      getCalverTagParts('rc-2020.01_1'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid calver tag"`);
-  });
+    it('should return error for invalid patch (letter instead of number)', () => {
+      const result = getCalverTagParts('rc-2020.01.01_a');
 
-  it('should return null for invalid patch (letter instead of number)', () => {
-    expect(() =>
-      getCalverTagParts('rc-2020.01.01_a'),
-    ).toThrowErrorMatchingInlineSnapshot(`"Invalid calver tag"`);
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "error": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-2020.01.01_a\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
+    });
   });
 });

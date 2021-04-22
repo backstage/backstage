@@ -61,3 +61,8 @@ export interface CardHook<RunArgs> {
   run: (args: RunArgs) => Promise<any>;
   runInvoked: boolean;
 }
+
+export interface AlertError {
+  title?: string;
+  subtitle: string;
+}
