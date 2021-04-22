@@ -562,6 +562,43 @@ ${selectedPatchCommit.commit.message}`,
       };
     },
   };
+
+  stats = {
+    getAllTags: async ({ owner, repo }: OwnerRepo) => {
+      const { octokit } = await this.getOctokit();
+
+      const tags = await octokit.paginate(octokit.repos.listTags, {
+        owner,
+        repo,
+        per_page: 100,
+        ...DISABLE_CACHE,
+      });
+
+      return tags.map(tag => ({
+        tagName: tag.name,
+      }));
+    },
+
+    getAllReleases: async ({ owner, repo }: OwnerRepo) => {
+      const { octokit } = await this.getOctokit();
+
+      const releases = await octokit.paginate(octokit.repos.listReleases, {
+        owner,
+        repo,
+        per_page: 100,
+        ...DISABLE_CACHE,
+      });
+
+      return releases.map(release => ({
+        release,
+        id: release.id,
+        name: release.name,
+        tagName: release.tag_name,
+        createdAt: release.published_at,
+        htmlUrl: release.html_url,
+      }));
+    },
+  };
 }
 
 type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
@@ -622,6 +659,28 @@ type GetRecentCommits = (
 >;
 export type GetRecentCommitsResult = UnboxReturnedPromise<GetRecentCommits>;
 export type GetRecentCommitsResultSingle = UnboxArray<GetRecentCommitsResult>;
+
+type GetAllTags = (
+  args: OwnerRepo,
+) => Promise<
+  Array<{
+    tagName: string;
+  }>
+>;
+export type GetAllTagsResult = UnboxReturnedPromise<GetAllTags>;
+
+type GetAllReleases = (
+  args: OwnerRepo,
+) => Promise<
+  Array<{
+    id: number;
+    name: string | null;
+    tagName: string;
+    createdAt: string | null;
+    htmlUrl: string;
+  }>
+>;
+export type GetAllReleasesResult = UnboxReturnedPromise<GetAllReleases>;
 
 type GetLatestRelease = (
   args: OwnerRepo,
@@ -857,5 +916,9 @@ export interface IPluginApiClient {
   };
   promoteRc: {
     promoteRelease: PromoteRelease;
+  };
+  stats: {
+    getAllTags: GetAllTags;
+    getAllReleases: GetAllReleases;
   };
 }

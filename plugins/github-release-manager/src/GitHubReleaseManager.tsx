@@ -38,8 +38,9 @@ import { useStyles } from './styles/styles';
 
 export interface GitHubReleaseManagerProps {
   project?: Omit<Project, 'isProvidedViaProps'>;
-  components?: {
+  features?: {
     info?: Pick<ComponentConfig<void>, 'omit'>;
+    stats?: Pick<ComponentConfig<void>, 'omit'>;
     createRc?: ComponentConfigCreateRc;
     promoteRc?: ComponentConfigPromoteRc;
     patch?: ComponentConfigPatch;
@@ -90,9 +91,7 @@ export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
             <RepoDetailsForm username={usernameResponse.value.username} />
           </InfoCardPlus>
 
-          {isProjectValid(project) && (
-            <Features components={props.components} />
-          )}
+          {isProjectValid(project) && <Features features={props.features} />}
         </div>
       </ProjectContext.Provider>
     </PluginApiClientContext.Provider>

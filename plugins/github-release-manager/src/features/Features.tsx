@@ -32,9 +32,9 @@ import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStra
 import { validateTagName } from '../helpers/tagParts/validateTagName';
 
 export function Features({
-  components,
+  features,
 }: {
-  components: GitHubReleaseManagerProps['components'];
+  features: GitHubReleaseManagerProps['features'];
 }) {
   const { pluginApiClient } = usePluginApiClientContext();
   const { project } = useProjectContext();
@@ -114,34 +114,35 @@ export function Features({
           </Alert>
         )}
 
-        {!components?.info?.omit && (
+        {!features?.info?.omit && (
           <Info
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            statsEnabled={features?.stats?.omit !== true}
           />
         )}
 
-        {!components?.createRc?.omit && (
+        {!features?.createRc?.omit && (
           <CreateRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
             defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
-            successCb={components?.createRc?.successCb}
+            successCb={features?.createRc?.successCb}
           />
         )}
 
-        {!components?.promoteRc?.omit && (
+        {!features?.promoteRc?.omit && (
           <PromoteRc
             latestRelease={gitHubBatchInfo.value.latestRelease}
-            successCb={components?.promoteRc?.successCb}
+            successCb={features?.promoteRc?.successCb}
           />
         )}
 
-        {!components?.patch?.omit && (
+        {!features?.patch?.omit && (
           <Patch
             latestRelease={gitHubBatchInfo.value.latestRelease}
             releaseBranch={gitHubBatchInfo.value.releaseBranch}
-            successCb={components?.patch?.successCb}
+            successCb={features?.patch?.successCb}
           />
         )}
       </ErrorBoundary>

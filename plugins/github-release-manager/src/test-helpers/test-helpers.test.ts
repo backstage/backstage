@@ -49,6 +49,10 @@ describe('testHelpers', () => {
           "promoteRc": Object {
             "promoteRelease": [MockFunction],
           },
+          "stats": Object {
+            "getAllReleases": [MockFunction],
+            "getAllTags": [MockFunction],
+          },
         },
         "mockBumpedTag": "rc-2020.01.01_1337",
         "mockCalverProject": Object {

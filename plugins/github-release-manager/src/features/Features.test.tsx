@@ -52,8 +52,8 @@ describe('Features', () => {
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
+        class="MuiBox-root MuiBox-root-11"
         data-testid="grm--info"
-        style="margin-bottom: 1em;"
       >
         <h6
           class="MuiTypography-root MuiTypography-h6"
@@ -98,20 +98,6 @@ describe('Features', () => {
           </strong>
           : A GitHub release intended for end users
         </p>
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedSecondary"
-          tabindex="0"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            Show stats
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
       </div>
     `);
   });

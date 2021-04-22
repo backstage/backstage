@@ -278,4 +278,14 @@ export const mockApiClient: IPluginApiClient = {
       htmlUrl: 'mock_release_html_url',
     })),
   },
+
+  stats: {
+    getAllTags: jest.fn(async () => {
+      throw new Error('Not implemented');
+    }),
+
+    getAllReleases: jest.fn(async () => {
+      throw new Error('Not implemented');
+    }),
+  },
 };

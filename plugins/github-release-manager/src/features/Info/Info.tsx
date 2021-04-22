@@ -15,7 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import { Link, Typography, Button } from '@material-ui/core';
+import { Link, Typography, Button, Box } from '@material-ui/core';
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 import {
   GetBranchResult,
@@ -23,7 +24,7 @@ import {
 } from '../../api/PluginApiClient';
 import { Differ } from '../../components/Differ';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
-import { Stats } from '../../components/Stats/Stats';
+import { Stats } from '../Stats/Stats';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
@@ -32,16 +33,21 @@ import flowImage from './flow.png';
 interface InfoCardProps {
   releaseBranch: GetBranchResult | null;
   latestRelease: GetLatestReleaseResult;
+  statsEnabled: boolean;
 }
 
-export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
+export const Info = ({
+  releaseBranch,
+  latestRelease,
+  statsEnabled,
+}: InfoCardProps) => {
   const { project } = useProjectContext();
   const classes = useStyles();
   const [showStats, setShowStats] = useState(false);
 
   return (
     <InfoCardPlus>
-      <div style={{ marginBottom: '1em' }} data-testid={TEST_IDS.info.info}>
+      <Box marginBottom={1} data-testid={TEST_IDS.info.info}>
         <Typography variant="h6">Terminology</Typography>
 
         <Typography>
@@ -65,18 +71,9 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
           <strong>Release Version</strong>: A GitHub release intended for end
           users
         </Typography>
+      </Box>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => setShowStats(true)}
-        >
-          Show stats
-        </Button>
-        {showStats && <Stats setShowStats={setShowStats} />}
-      </div>
-
-      <div style={{ marginBottom: '1em' }}>
+      <Box marginBottom={1}>
         <Typography variant="h6">Flow</Typography>
 
         <Typography className={classes.paragraph}>
@@ -90,9 +87,9 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
         </Typography>
 
         <img alt="flow" src={flowImage} style={{ width: '100%' }} />
-      </div>
+      </Box>
 
-      <div style={{ marginBottom: '1em' }}>
+      <Box marginBottom={1}>
         <Typography variant="h6">Details</Typography>
 
         <Typography>
@@ -113,7 +110,23 @@ export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
         <Typography>
           Latest release: <Differ icon="tag" next={latestRelease?.tagName} />
         </Typography>
-      </div>
+      </Box>
+
+      {statsEnabled && (
+        <Box>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => setShowStats(true)}
+            startIcon={<BarChartIcon />}
+            size="small"
+          >
+            Show stats
+          </Button>
+
+          {showStats && <Stats setShowStats={setShowStats} />}
+        </Box>
+      )}
     </InfoCardPlus>
   );
 };

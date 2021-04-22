@@ -57,6 +57,10 @@ describe('PluginApiClient', () => {
         "promoteRc": Object {
           "promoteRelease": [Function],
         },
+        "stats": Object {
+          "getAllReleases": [Function],
+          "getAllTags": [Function],
+        },
       }
     `);
   });
