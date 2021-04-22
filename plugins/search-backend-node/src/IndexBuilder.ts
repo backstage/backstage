@@ -16,9 +16,11 @@
 
 import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 import { Logger } from 'winston';
+
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
 } from './types';
 
 interface CollatorEnvelope {
@@ -27,18 +29,25 @@ interface CollatorEnvelope {
 }
 
 type IndexBuilderOptions = {
+  searchEngine: SearchEngine;
   logger: Logger;
 };
 
 export class IndexBuilder {
   private collators: Record<string, CollatorEnvelope>;
   private decorators: Record<string, DocumentDecorator[]>;
+  private searchEngine: SearchEngine;
   private logger: Logger;
 
-  constructor({ logger }: IndexBuilderOptions) {
+  constructor({ logger, searchEngine }: IndexBuilderOptions) {
     this.collators = {};
     this.decorators = {};
     this.logger = logger;
+    this.searchEngine = searchEngine;
+  }
+
+  getSearchEngine(): SearchEngine {
+    return this.searchEngine;
   }
 
   /**
@@ -106,7 +115,13 @@ export class IndexBuilder {
           documents = await decorators[i].execute(documents);
         }
 
-        // TODO: push documents to a configured search engine.
+        if (!documents || documents.length === 0) {
+          this.logger.info(`No documents for type "${type}" to index`);
+          return;
+        }
+
+        // pushing documents to index to a configured search engine.
+        this.searchEngine.index(type, documents);
       }),
     );
   }

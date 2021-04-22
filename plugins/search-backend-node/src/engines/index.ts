@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { IndexBuilder } from './IndexBuilder';
-export { LunrSearchEngine } from './engines';
-export type { SearchEngine } from './types';
+export { LunrSearchEngine } from './LunrSearchEngine';

@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "@backstage/search-common": "^0.1.1",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "lunr": "^2.3.9",
+    "@types/lunr": "^2.3.3"
   },
   "devDependencies": {
     "@backstage/backend-common": "^0.6.0",
