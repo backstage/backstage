@@ -22,7 +22,6 @@ import { costFormatter, formatChange } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';
 import { BarChartOptions, ChangeStatistic, Entity } from '../../types';
-import { isUndefined } from '../../utils/assert';
 
 export type ProductEntityTableOptions = Partial<
   Pick<BarChartOptions, 'previousName' | 'currentName'>

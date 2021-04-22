@@ -30,8 +30,6 @@ import { mapFiltersToProps } from './selector';
 import { formatChange } from '../../utils/formatters';
 import { CostGrowth } from '../CostGrowth';
 
-import { notEmpty } from '../../utils/assert';
-
 type CostOverviewLegendProps = {
   metric: Maybe<Metric>;
   metricData: Maybe<MetricData>;
