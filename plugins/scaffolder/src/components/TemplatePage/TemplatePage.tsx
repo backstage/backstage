@@ -145,6 +145,11 @@ export const TemplatePage = () => {
   const { templateName } = useParams();
   const navigate = useNavigate();
   const rootLink = useRouteRef(rootRouteRef);
+  const fields = {
+    RepoUrlPicker,
+    OwnerPicker,
+    ...scaffolderApi.getRegisteredFields(),
+  };
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
@@ -194,7 +199,7 @@ export const TemplatePage = () => {
           >
             <MultistepJsonForm
               formData={formState}
-              fields={{ RepoUrlPicker, OwnerPicker }}
+              fields={fields}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}

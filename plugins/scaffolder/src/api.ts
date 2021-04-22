@@ -24,6 +24,7 @@ import {
 } from '@backstage/core';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import ObservableImpl from 'zen-observable';
+import { Field } from '@rjsf/core';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
 export const scaffolderApiRef = createApiRef<ScaffolderApi>({
@@ -81,12 +82,17 @@ export interface ScaffolderApi {
     taskId: string;
     after?: number;
   }): Observable<LogEvent>;
+
+  registerField(name: string, field: Field): void;
+
+  getRegisteredFields(): Record<string, Field>;
 }
 
 export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
+  private readonly registeredFields: Record<string, Field> = {};
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
@@ -234,5 +240,16 @@ export class ScaffolderClient implements ScaffolderApi {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const response = await fetch(`${baseUrl}/v2/actions`);
     return await response.json();
+  }
+
+  registerField(name: string, field: Field): void {
+    if (this.registeredFields.hasOwnProperty(name)) {
+      throw new Error(`Field '${name}' is already registered`);
+    }
+    this.registeredFields[name] = field;
+  }
+
+  getRegisteredFields(): Record<string, Field> {
+    return this.registeredFields;
   }
 }
