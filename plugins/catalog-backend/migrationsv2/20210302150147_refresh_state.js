@@ -59,13 +59,14 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('JSON array containing all errors related to entity');
     table
-      .dateTime('next_update_at')
+      .dateTime('next_update_at') // TOOD: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('Timestamp of when entity should be updated');
     table
-      .dateTime('last_discovery_at')
+      .dateTime('last_discovery_at') // TOOD: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('The last timestamp of which this entity was discovered');
+    table.index('entity_id', 'refresh_state_entity_id_idx');
     table.index('entity_ref', 'refresh_state_entity_ref_idx');
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
   });
@@ -94,38 +95,35 @@ exports.up = async function up(knex) {
       'Holds edges between refresh state rows. Every time when an entity is processed and emits another entity, an edge will be stored to represent that fact. This is used to detect orphans and ultimately deletions.',
     );
     table
-      .text('source_special_key')
+      .text('source_key')
       .nullable()
       .comment(
         'When the reference source is not an entity, this is an opaque identifier for that source.',
       );
     table
-      .text('source_entity_id')
+      .text('source_entity_ref')
       .nullable()
-      .references('entity_id')
+      .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment(
-        'When the reference source is an entity, this is the ID of the source entity.',
+        'When the reference source is an entity, this is the EntityRef of the source entity.',
       );
     table
-      .text('target_entity_id')
+      .text('target_entity_ref')
       .notNullable()
-      .references('entity_id')
+      .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
-      .comment('The ID of the target entity.');
+      .comment('The EntityRef of the target entity.');
+    table.index('source_key', 'refresh_state_references_source_key_idx');
     table.index(
-      'source_special_key',
-      'refresh_state_references_source_special_key_idx',
+      'source_entity_ref',
+      'refresh_state_references_source_entity_ref_idx',
     );
     table.index(
-      'source_entity_id',
-      'refresh_state_references_source_entity_id_idx',
-    );
-    table.index(
-      'target_entity_id',
-      'refresh_state_references_target_entity_id_idx',
+      'target_entity_ref',
+      'refresh_state_references_target_entity_ref_idx',
     );
   });
 
@@ -165,6 +163,7 @@ exports.down = async function down(knex) {
     table.dropIndex([], 'refresh_state_references_target_entity_id_idx');
   });
   await knex.schema.alterTable('refresh_state', table => {
+    table.dropIndex([], 'refresh_state_entity_id_idx');
     table.dropIndex([], 'refresh_state_entity_ref_idx');
     table.dropIndex([], 'refresh_state_next_update_at_idx');
   });

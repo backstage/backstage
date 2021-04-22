@@ -15,6 +15,7 @@
  */
 
 import { ConflictError, NotFoundError } from '@backstage/errors';
+import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { Transaction } from '../../database';
 import lodash from 'lodash';
@@ -24,20 +25,21 @@ import {
   AddUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
   GetProcessableEntitiesResult,
+  ReplaceUnprocessedEntitiesOptions,
 } from './types';
 import type { Logger } from 'winston';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+
 import { v4 as uuid } from 'uuid';
 
 export type DbRefreshStateRow = {
   entity_id: string;
   entity_ref: string;
   unprocessed_entity: string;
-  processed_entity: string;
-  cache: string;
+  processed_entity?: string;
+  cache?: string;
   next_update_at: string;
   last_discovery_at: string; // remove?
-  errors: string;
+  errors?: string;
 };
 
 export type DbRelationsRow = {
@@ -47,10 +49,10 @@ export type DbRelationsRow = {
   type: string;
 };
 
-export type DbRefreshStateReferences = {
-  source_special_key?: string;
-  source_entity_id?: string;
-  target_entity_id: string;
+export type DbRefreshStateReferencesRow = {
+  source_key?: string;
+  source_entity_ref?: string;
+  target_entity_ref: string;
 };
 
 // The number of items that are sent per batch to the database layer, when
@@ -128,6 +130,164 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
   }
 
+  async replaceUnprocessedEntities(
+    txOpaque: Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const entityIds = new Array<string>();
+
+    if (options.type === 'full') {
+      const oldRefs = await tx<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        .where({ source_key: options.sourceKey })
+        .select('target_entity_ref')
+        .then(rows => rows.map(r => r.target_entity_ref));
+
+      const items = options.items.map(entity => ({
+        entity,
+        ref: stringifyEntityRef(entity),
+        id: uuid(),
+      }));
+
+      const oldRefsSet = new Set(oldRefs);
+      const newRefsSet = new Set(items.map(item => item.ref));
+      const toAdd = items.filter(item => !oldRefsSet.has(item.ref));
+      const toRemove = oldRefs.filter(ref => !newRefsSet.has(ref));
+
+      if (toRemove.length) {
+        // TODO(freben): Batch split, to not hit variable limits?
+
+        // get all refs where source = any of the toRemove
+        // delete all state rows matching any of the toRemove
+        // revisit the targets of all of those refs
+        // verify if they have references, otherwise delete from refresh_state
+
+        const current = [...toRemove];
+        while (true) {
+
+          tx.withRecursive('r', function refs() {
+            return tx.select({  })
+              .from({ r1: 'refresh_state_references' })
+              .where({ source_key: options.sourceKey })
+              .whereIn('target_entity_ref', toRemove)
+              .unionAll(function recurse() {
+                return tx.select({  })
+                  .from({ r2: 'refresh_state_references' })
+                  .whereNotExists()
+              })
+          })
+          .select().from('refs');
+
+          const nextLayerToRemove = await tx<DbRefreshStateReferencesRow>(
+            'refresh_state_references',
+          )
+            .whereIn('source_entity_ref', toRemove)
+            .leftOuterJoin('refresh_state_references AS b', function f() {
+
+            })
+
+            .whereNotNull('b.source_target_ref')
+            .select('target_entity_ref');
+
+          await tx<DbRefreshStateRow>('refresh_state')
+            .whereIn('entity_ref', toRemove)
+            .delete();
+
+          const refsThatStillHaveASourcePointingAtThe = await tx<DbRefreshStateReferencesRow>(
+            'refresh_state_references',
+          )
+            .whereIn('target_entity_ref', nextLayerTargetRefs)
+            .groupBy('target_entity_ref')
+            .select('target_entity_ref');
+
+      }
+
+
+
+
+      if (toAdd.length) {
+        const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(item => ({
+          entity_id: item.id,
+          entity_ref: item.ref,
+          unprocessed_entity: JSON.stringify(item.entity),
+          errors: '',
+          next_update_at: tx.fn.now(),
+          last_discovery_at: tx.fn.now(),
+        }));
+        const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
+          item => ({
+            source_key: options.sourceKey,
+            target_entity_ref: item.ref,
+          }),
+        );
+        // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
+        await tx.batchInsert('refresh_state', state, BATCH_SIZE);
+        await tx.batchInsert('refresh_state_references', stateReferences, BATCH_SIZE);
+      }
+
+
+      for (const entity of options.items) {
+        const entityRef = stringifyEntityRef(entity);
+        await tx<DbRefreshStateRow>('refresh_state')
+          .insert({
+            entity_id: uuid(),
+            entity_ref: entityRef,
+            unprocessed_entity: JSON.stringify(entity),
+            errors: '',
+            next_update_at: tx.fn.now(),
+            last_discovery_at: tx.fn.now(),
+          })
+          .onConflict('entity_ref')
+          .merge(['unprocessed_entity', 'last_discovery_at']);
+
+        const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
+          'refresh_state',
+        ).where({ entity_ref: entityRef });
+        entityIds.push(entityId);
+      }
+      const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
+        entityId => ({
+          source_key: options.sourceKey,
+          target_entityRef: entityRef,
+        }),
+      );
+      await tx.batchInsert(
+        'refresh_state_references',
+        referenceRows,
+        BATCH_SIZE,
+      );
+      return;
+    }
+
+    for (const entity of options.removed) {
+      const entityRef = stringifyEntityRef(entity);
+      const [result] = await tx<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: entityRef })
+        .select('entity_id');
+
+      if (!result) {
+        this.logger.info(
+          `Unable to delete entity '${entityRef}', entity does not exist in refresh state`,
+        );
+        continue;
+      }
+
+      const referenceResults = await tx<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      )
+        // todo correct key?
+        .where({ source_entity_id: result.entity_id })
+        .select();
+
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+        // todo correct key?
+        .where({ source_entity_id: result.entity_id })
+        .delete();
+    }
+  }
+
   async addUnprocessedEntities(
     txOpaque: Transaction,
     options: AddUnprocessedEntitiesOptions,
@@ -160,11 +320,11 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         ? { source_special_key: options.id }
         : { source_entity_id: options.id };
     // copied from update refs
-    await tx<DbRefreshStateReferences>('refresh_state_references')
+    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
       .where(key)
       .delete();
 
-    const referenceRows: DbRefreshStateReferences[] = entityIds.map(
+    const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
       entityId => ({
         ...key,
         target_entity_id: entityId,

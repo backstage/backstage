@@ -17,13 +17,22 @@
 import { ProcessingDatabase, RefreshStateItem } from './database/types';
 import {
   AddProcessingItemRequest,
-  ProccessingItem,
+  ProcessingItem,
   ProcessingItemResult,
   ProcessingStateManager,
+  ReplaceProcessingItemsRequest,
 } from './types';
 
 export class DefaultProcessingStateManager implements ProcessingStateManager {
   constructor(private readonly db: ProcessingDatabase) {}
+
+  replaceProcessingItems(
+    request: ReplaceProcessingItemsRequest,
+  ): Promise<void> {
+    return this.db.transaction(async tx => {
+      await this.db.replaceUnprocessedEntities(tx, request);
+    });
+  }
 
   async setProcessingItemResult(result: ProcessingItemResult) {
     return this.db.transaction(async tx => {
@@ -44,7 +53,7 @@ export class DefaultProcessingStateManager implements ProcessingStateManager {
     });
   }
 
-  async getNextProcessingItem(): Promise<ProccessingItem> {
+  async getNextProcessingItem(): Promise<ProcessingItem> {
     const entities = await new Promise<RefreshStateItem[]>(resolve =>
       this.popFromQueue(resolve),
     );

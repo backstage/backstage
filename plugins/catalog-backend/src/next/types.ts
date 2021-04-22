@@ -58,8 +58,8 @@ export interface CatalogProcessingEngine {
 }
 
 export type EntityProviderMutation =
-  | { type: 'full'; entities: Iterable<Entity> }
-  | { type: 'delta'; added: Iterable<Entity>; removed: Iterable<Entity> };
+  | { type: 'full'; entities: Entity[] }
+  | { type: 'delta'; added: Entity[]; removed: Entity[] };
 
 export interface EntityProviderConnection {
   applyMutation(mutation: EntityProviderMutation): Promise<void>;
@@ -108,14 +108,27 @@ export type AddProcessingItemRequest = {
   entities: Entity[];
 };
 
-export type ProccessingItem = {
+export type ProcessingItem = {
   id: string;
   entity: Entity;
   state: Map<string, JsonObject>;
 };
 
+export type ReplaceProcessingItemsRequest =
+  | {
+      id: string;
+      items: Entity[];
+      type: 'full';
+    }
+  | {
+      id: string;
+      added: Entity[];
+      removed: Entity[];
+      type: 'delta';
+    };
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
-  getNextProcessingItem(): Promise<ProccessingItem>;
+  getNextProcessingItem(): Promise<ProcessingItem>;
   addProcessingItems(request: AddProcessingItemRequest): Promise<void>;
+  replaceProcessingItems(request: ReplaceProcessingItemsRequest): Promise<void>;
 }
