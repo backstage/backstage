@@ -62,5 +62,5 @@ spec:
     app: backstage
     component: frontend
 
-  type: ClusterIP
+  type: {{ .Values.frontend.serviceType }}
 {{- end }}

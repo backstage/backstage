@@ -10,6 +10,7 @@ frontend:
     tag: test1
     pullPolicy: IfNotPresent
   containerPort: 80
+  serviceType: ClusterIP
   resources:
     requests:
       memory: 128Mi
@@ -26,6 +27,7 @@ backend:
     tag: test1
     pullPolicy: IfNotPresent
   containerPort: 7000
+  serviceType: ClusterIP
   resources:
     requests:
       memory: 512Mi
@@ -40,6 +42,7 @@ lighthouse:
     tag: latest
     pullPolicy: IfNotPresent
   containerPort: 3003
+  serviceType: ClusterIP
   resources:
     requests:
       memory: 128Mi
