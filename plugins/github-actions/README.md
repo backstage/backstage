@@ -30,7 +30,7 @@ TBD
    spec:
      type: website
      lifecycle: production
-     owner: guest
+     owner: user:guest
    ```
 
 ### Standalone app requirements

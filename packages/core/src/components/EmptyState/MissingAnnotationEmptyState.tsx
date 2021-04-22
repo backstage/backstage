@@ -30,7 +30,7 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: guest`;
+  owner: user:guest`;
 
 type Props = {
   annotation: string;
