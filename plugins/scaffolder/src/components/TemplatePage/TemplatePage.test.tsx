@@ -40,6 +40,8 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   getTask: jest.fn(),
   streamLogs: jest.fn(),
   listActions: jest.fn(),
+  getRegisteredFields: jest.fn(),
+  registerField: jest.fn(),
 };
 
 const errorApiMock = { post: jest.fn(), error$: jest.fn() };
