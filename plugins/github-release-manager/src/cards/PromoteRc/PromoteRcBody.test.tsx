@@ -25,10 +25,14 @@ import {
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: jest.fn(() => mockApiClient),
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
 }));
 jest.mock('./hooks/usePromoteRc', () => ({
   usePromoteRc: () => ({

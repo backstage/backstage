@@ -49,14 +49,18 @@ export interface Project {
   isProvidedViaProps: boolean;
 }
 
-export const ProjectContext = createContext<Project | undefined>(undefined);
+export const ProjectContext = createContext<{ project: Project } | undefined>(
+  undefined,
+);
 
 export const useProjectContext = () => {
-  const project = useContext(ProjectContext);
+  const { project } = useContext(ProjectContext) ?? {};
 
   if (!project) {
     throw new GitHubReleaseManagerError('project not found');
   }
 
-  return project;
+  return {
+    project,
+  };
 };

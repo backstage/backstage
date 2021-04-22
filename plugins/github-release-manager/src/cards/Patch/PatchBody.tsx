@@ -65,8 +65,8 @@ export const PatchBody = ({
   successCb,
   tagParts,
 }: PatchBodyProps) => {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 
   const githubDataResponse = useAsync(async () => {

@@ -24,7 +24,9 @@ import {
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
 }));
 
 import { Patch } from './Patch';

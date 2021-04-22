@@ -21,10 +21,14 @@ import { mockApiClient, mockCalverProject } from '../test-helpers/test-helpers';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 jest.mock('../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => mockApiClient,
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
 }));
 
 import { Cards } from './Cards';

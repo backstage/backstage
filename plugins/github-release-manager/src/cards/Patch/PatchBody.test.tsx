@@ -28,10 +28,14 @@ import {
 } from '../../test-helpers/test-helpers';
 
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: jest.fn(() => mockApiClient),
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
 }));
 jest.mock('./hooks/usePatch', () => ({
   usePatch: () => ({

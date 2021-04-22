@@ -34,8 +34,7 @@ interface InfoCardProps {
 }
 
 export const Info = ({ releaseBranch, latestRelease }: InfoCardProps) => {
-  const project = useProjectContext();
-
+  const { project } = useProjectContext();
   const classes = useStyles();
 
   return (

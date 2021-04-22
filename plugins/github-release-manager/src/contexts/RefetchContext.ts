@@ -18,12 +18,13 @@ import { createContext, useContext } from 'react';
 
 import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
-export interface Refetch {
-  refetchTrigger: number;
-  setRefetchTrigger: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export const RefetchContext = createContext<Refetch | undefined>(undefined);
+export const RefetchContext = createContext<
+  | {
+      refetchTrigger: number;
+      setRefetchTrigger: React.Dispatch<React.SetStateAction<number>>;
+    }
+  | undefined
+>(undefined);
 
 export const useRefetchContext = () => {
   const refetch = useContext(RefetchContext);

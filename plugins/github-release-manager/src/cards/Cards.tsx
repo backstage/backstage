@@ -35,8 +35,8 @@ export function Cards({
 }: {
   components: GitHubReleaseManagerProps['components'];
 }) {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const { gitHubBatchInfo } = useGetGitHubBatchInfo({
     pluginApiClient,

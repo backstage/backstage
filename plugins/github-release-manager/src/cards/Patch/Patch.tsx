@@ -40,7 +40,7 @@ export const Patch = ({
   releaseBranch,
   successCb,
 }: PatchProps) => {
-  const project = useProjectContext();
+  const { project } = useProjectContext();
   const classes = useStyles();
 
   function Body() {

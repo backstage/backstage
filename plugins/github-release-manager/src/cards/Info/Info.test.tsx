@@ -24,7 +24,9 @@ import {
 } from '../../test-helpers/test-helpers';
 
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: () => ({
+    project: mockCalverProject,
+  }),
 }));
 
 import { Info } from './Info';

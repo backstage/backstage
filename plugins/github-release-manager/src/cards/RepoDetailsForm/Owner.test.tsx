@@ -31,10 +31,14 @@ jest.mock('react-router', () => ({
   })),
 }));
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: jest.fn(() => mockApiClient),
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: jest.fn(() => ({
+    project: mockCalverProject,
+  })),
 }));
 
 import { useProjectContext } from '../../contexts/ProjectContext';
@@ -55,10 +59,9 @@ describe('Owner', () => {
   });
 
   it('should render select for empty owners', async () => {
-    (useProjectContext as jest.Mock).mockImplementation(() => ({
-      ...mockCalverProject,
-      owner: '',
-    }));
+    (useProjectContext as jest.Mock).mockReturnValue({
+      project: { ...mockCalverProject, owner: '' },
+    });
 
     const { getAllByTestId, getByTestId } = render(
       <Owner username={mockCalverProject.owner} />,

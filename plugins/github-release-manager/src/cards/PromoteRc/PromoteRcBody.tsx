@@ -33,8 +33,8 @@ interface PromoteRcBodyProps {
 }
 
 export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const classes = useStyles();
   const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
 

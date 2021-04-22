@@ -81,8 +81,8 @@ export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
   }
 
   return (
-    <PluginApiClientContext.Provider value={pluginApiClient}>
-      <ProjectContext.Provider value={project}>
+    <PluginApiClientContext.Provider value={{ pluginApiClient }}>
+      <ProjectContext.Provider value={{ project }}>
         <div className={classes.root}>
           <ContentHeader title="GitHub Release Manager" />
 

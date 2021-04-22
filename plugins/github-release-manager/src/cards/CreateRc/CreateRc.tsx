@@ -55,8 +55,8 @@ export const CreateRc = ({
   releaseBranch,
   successCb,
 }: CreateRcProps) => {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const classes = useStyles();
 
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(

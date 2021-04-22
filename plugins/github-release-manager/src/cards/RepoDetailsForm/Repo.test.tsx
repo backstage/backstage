@@ -31,10 +31,14 @@ jest.mock('react-router', () => ({
   })),
 }));
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: jest.fn(() => mockApiClient),
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: jest.fn(() => ({
+    project: mockCalverProject,
+  })),
 }));
 
 import { useProjectContext } from '../../contexts/ProjectContext';
@@ -53,10 +57,9 @@ describe('Repo', () => {
   });
 
   it('should render select for empty repo', async () => {
-    (useProjectContext as jest.Mock).mockImplementation(() => ({
-      ...mockCalverProject,
-      repo: '',
-    }));
+    (useProjectContext as jest.Mock).mockReturnValue({
+      project: { ...mockCalverProject, repo: '' },
+    });
 
     const { getAllByTestId, getByTestId } = render(<Repo />);
 

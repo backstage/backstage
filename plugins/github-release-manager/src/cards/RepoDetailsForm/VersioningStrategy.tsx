@@ -31,7 +31,7 @@ import { VERSIONING_STRATEGIES } from '../../constants/constants';
 
 export function VersioningStrategy() {
   const navigate = useNavigate();
-  const project = useProjectContext();
+  const { project } = useProjectContext();
   const { getParsedQuery, getQueryParamsWithUpdates } = useQueryHandler();
 
   useEffect(() => {

@@ -20,15 +20,17 @@ import { IPluginApiClient } from '../api/PluginApiClient';
 import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
 
 export const PluginApiClientContext = createContext<
-  IPluginApiClient | undefined
+  { pluginApiClient: IPluginApiClient } | undefined
 >(undefined);
 
 export const usePluginApiClientContext = () => {
-  const pluginApiClient = useContext(PluginApiClientContext);
+  const { pluginApiClient } = useContext(PluginApiClientContext) ?? {};
 
   if (!pluginApiClient) {
     throw new GitHubReleaseManagerError('pluginApiClient not found');
   }
 
-  return pluginApiClient;
+  return {
+    pluginApiClient,
+  };
 };

@@ -33,10 +33,10 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
 
 export function Owner({ username }: { username: string }) {
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const formClasses = useFormClasses();
   const navigate = useNavigate();
-  const pluginApiClient = usePluginApiClientContext();
   const { getQueryParamsWithUpdates } = useQueryHandler();
 
   const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());

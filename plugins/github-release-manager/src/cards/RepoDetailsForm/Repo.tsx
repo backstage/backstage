@@ -33,8 +33,8 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
 
 export function Repo() {
-  const pluginApiClient = usePluginApiClientContext();
-  const project = useProjectContext();
+  const { pluginApiClient } = usePluginApiClientContext();
+  const { project } = useProjectContext();
   const navigate = useNavigate();
   const formClasses = useFormClasses();
   const { getQueryParamsWithUpdates } = useQueryHandler();

@@ -30,10 +30,14 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useCreateRc } from './hooks/useCreateRc';
 
 jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => mockApiClient,
+  usePluginApiClientContext: () => ({
+    pluginApiClient: mockApiClient,
+  }),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockCalverProject),
+  useProjectContext: jest.fn(() => ({
+    project: mockCalverProject,
+  })),
 }));
 jest.mock('../../helpers/getRcGitHubInfo', () => ({
   getRcGitHubInfo: () => mockNextGitHubInfoSemver,
@@ -65,7 +69,9 @@ describe('CreateRc', () => {
   });
 
   it('should display select element for semver', () => {
-    (useProjectContext as jest.Mock).mockReturnValue(mockSemverProject);
+    (useProjectContext as jest.Mock).mockReturnValue({
+      project: mockSemverProject,
+    });
 
     const { getByTestId } = render(
       <CreateRc

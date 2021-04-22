@@ -31,7 +31,9 @@ jest.mock('react-router', () => ({
   })),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
-  useProjectContext: jest.fn(() => mockSemverProject),
+  useProjectContext: () => ({
+    project: mockSemverProject,
+  }),
 }));
 
 import { VersioningStrategy } from './VersioningStrategy';
