@@ -82,19 +82,38 @@ export class LunrSearchEngine implements SearchEngine {
     const { lunrQueryString, documentTypes } = this.translator(
       query,
     ) as ConcreteLunrQuery;
+
     const results: lunr.Index.Result[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
-      // Iterate over all this.lunrIndex keys.
+      // Iterate over all this.lunrIndex values.
       Object.values(this.lunrIndices).forEach(i => {
-        results.push(...i.search(lunrQueryString));
+        try {
+          results.push(...i.search(lunrQueryString));
+        } catch (err) {
+          // if a field does not exist on a index, we can see that as a no-match
+          if (
+            err instanceof lunr.QueryParseError &&
+            err.message.startsWith('unrecognised field')
+          )
+            return;
+        }
       });
     } else {
       // Iterate over the filtered list of this.lunrIndex keys.
       Object.keys(this.lunrIndices)
         .filter(d => documentTypes.includes(d))
         .forEach(d => {
-          results.push(...this.lunrIndices[d].search(lunrQueryString));
+          try {
+            results.push(...this.lunrIndices[d].search(lunrQueryString));
+          } catch (err) {
+            // if a field does not exist on a index, we can see that as a no-match
+            if (
+              err instanceof lunr.QueryParseError &&
+              err.message.startsWith('unrecognised field')
+            )
+              return;
+          }
         });
     }
 

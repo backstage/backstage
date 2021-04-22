@@ -202,6 +202,48 @@ describe('LunrSearchEngine', () => {
       });
     });
 
+    it('should perform search query and return search results on match with filter and not fail on missing field', async () => {
+      const mockDocuments = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ];
+
+      const mockDocuments2 = [
+        {
+          title: 'testTitle',
+          text: 'testText',
+          location: 'test/location2',
+          extraField: 'testExtraField',
+        },
+      ];
+
+      // Mock 2 indices with 1 document each
+      testLunrSearchEngine.index('test-index', mockDocuments);
+      testLunrSearchEngine.index('test-index-2', mockDocuments2);
+      // Perform search query scoped to "test-index-2" with a filter on the field "extraField"
+      const mockedSearchResult = await testLunrSearchEngine.query({
+        term: 'testTitle',
+        pageCursor: '',
+        filters: { extraField: 'testExtraField' },
+      });
+
+      expect(mockedSearchResult).toMatchObject({
+        results: [
+          {
+            document: {
+              title: 'testTitle',
+              text: 'testText',
+              location: 'test/location2',
+              extraField: 'testExtraField',
+            },
+          },
+        ],
+      });
+    });
+
     it('should perform search query and return search results on match, scoped to specific index', async () => {
       const mockDocuments = [
         {
