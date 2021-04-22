@@ -161,7 +161,6 @@ export function createPublishGithubAction(options: {
         username: owner,
       });
 
-      let exists = false;
       if (ctx.input.skipIfExists) {
         ctx.logger.info('Checking if repository exists');
         try {
@@ -170,13 +169,13 @@ export function createPublishGithubAction(options: {
             owner: owner,
           });
 
-          exists = repoExistsPromise.status === 200 ? true : false;
           ctx.logger.info('The repository already exists, skipping publish');
           ctx.output('remoteUrl', repoExistsPromise.data.clone_url);
           ctx.output(
             'repoContentsUrl',
             `${repoExistsPromise.data.html_url}/blob/master`,
           );
+          return;
         } catch (err) {
           if (err.status !== 404) {
             ctx.logger.error(
@@ -188,79 +187,77 @@ export function createPublishGithubAction(options: {
         }
       }
 
-      if (!exists) {
-        const repoCreationPromise =
-          user.data.type === 'Organization'
-            ? client.repos.createInOrg({
-                name: repo,
-                org: owner,
-                private: repoVisibility === 'private',
-                visibility: repoVisibility,
-                description: description,
-              })
-            : client.repos.createForAuthenticatedUser({
-                name: repo,
-                private: repoVisibility === 'private',
-                description: description,
-              });
+      const repoCreationPromise =
+        user.data.type === 'Organization'
+          ? client.repos.createInOrg({
+              name: repo,
+              org: owner,
+              private: repoVisibility === 'private',
+              visibility: repoVisibility,
+              description: description,
+            })
+          : client.repos.createForAuthenticatedUser({
+              name: repo,
+              private: repoVisibility === 'private',
+              description: description,
+            });
 
-        const { data } = await repoCreationPromise;
-        if (access?.startsWith(`${owner}/`)) {
-          const [, team] = access.split('/');
-          await client.teams.addOrUpdateRepoPermissionsInOrg({
-            org: owner,
-            team_slug: team,
-            owner,
-            repo,
-            permission: 'admin',
-          });
-          // no need to add access if it's the person who own's the personal account
-        } else if (access && access !== owner) {
-          await client.repos.addCollaborator({
-            owner,
-            repo,
-            username: access,
-            permission: 'admin',
-          });
-        }
+      const { data } = await repoCreationPromise;
+      if (access?.startsWith(`${owner}/`)) {
+        const [, team] = access.split('/');
+        await client.teams.addOrUpdateRepoPermissionsInOrg({
+          org: owner,
+          team_slug: team,
+          owner,
+          repo,
+          permission: 'admin',
+        });
+        // no need to add access if it's the person who own's the personal account
+      } else if (access && access !== owner) {
+        await client.repos.addCollaborator({
+          owner,
+          repo,
+          username: access,
+          permission: 'admin',
+        });
+      }
 
-        if (collaborators) {
-          for (const {
-            access: permission,
-            username: team_slug,
-          } of collaborators) {
-            try {
-              await client.teams.addOrUpdateRepoPermissionsInOrg({
-                org: owner,
-                team_slug,
-                owner,
-                repo,
-                permission,
-              });
-            } catch (e) {
-              ctx.logger.warn(
-                `Skipping ${permission} access for ${team_slug}, ${e.message}`,
-              );
-            }
+      if (collaborators) {
+        for (const {
+          access: permission,
+          username: team_slug,
+        } of collaborators) {
+          try {
+            await client.teams.addOrUpdateRepoPermissionsInOrg({
+              org: owner,
+              team_slug,
+              owner,
+              repo,
+              permission,
+            });
+          } catch (e) {
+            ctx.logger.warn(
+              `Skipping ${permission} access for ${team_slug}, ${e.message}`,
+            );
           }
         }
-
-        const remoteUrl = data.clone_url;
-        const repoContentsUrl = `${data.html_url}/blob/master`;
-
-        await initRepoAndPush({
-          dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
-          remoteUrl,
-          auth: {
-            username: 'x-access-token',
-            password: token,
-          },
-          logger: ctx.logger,
-        });
-
-        ctx.output('remoteUrl', remoteUrl);
-        ctx.output('repoContentsUrl', repoContentsUrl);
       }
+
+      const remoteUrl = data.clone_url;
+      const repoContentsUrl = `${data.html_url}/blob/master`;
+
+      await initRepoAndPush({
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
+        remoteUrl,
+        auth: {
+          username: 'x-access-token',
+          password: token,
+        },
+        logger: ctx.logger,
+      });
+
+      ctx.output('remoteUrl', remoteUrl);
+      ctx.output('repoContentsUrl', repoContentsUrl);
     },
   });
 }
