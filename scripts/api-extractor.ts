@@ -247,7 +247,7 @@ async function runApiExtraction({
 }
 
 function isComponentMember(member: any) {
-  // React components are annotated with @components, and we want to skip those
+  // React components are annotated with @component, and we want to skip those
   return Boolean(member.docComment.match(/\n\s*\**\s*@component/m));
 }
 
