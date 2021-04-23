@@ -19,8 +19,7 @@ app:
 backend:
   baseUrl: http://localhost:7000
   listen:
-    port: 
-      $env: BACKEND_LISTEN_PORT
+    port: 7000
   database:
     client: pg
     connection: 
