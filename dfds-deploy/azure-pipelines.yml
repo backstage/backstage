@@ -102,36 +102,36 @@ stages:
           dockerComposeCommand: 'build'
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
-  #     - task: ECRPushImage@1
-  #       displayName: 'Push frontend image to Shared ECR'
-  #       inputs:
-  #         awsCredentials: 'Shared-Prod ECR-Push'
-  #         regionName: 'eu-central-1'
-  #         imageSource: 'imagename'
-  #         sourceImageName: 'backstage-backend'
-  #         repositoryName: 'selfservice/backstage-backend'
-  #         pushTag: '$(Build.BuildId)'
+      - task: ECRPushImage@1
+        displayName: 'Push frontend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage-backend'
+          repositoryName: 'selfservice/backstage-backend'
+          pushTag: '$(Build.BuildId)'
 
-  #     - task: ECRPushImage@1
-  #       displayName: 'Push frontend image to Shared ECR'
-  #       inputs:
-  #         awsCredentials: 'Shared-Prod ECR-Push'
-  #         regionName: 'eu-central-1'
-  #         imageSource: 'imagename'
-  #         sourceImageName: 'backstage-frontend'
-  #         repositoryName: 'selfservice/backstage'
-  #         pushTag: '$(Build.BuildId)'
+      - task: ECRPushImage@1
+        displayName: 'Push frontend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage-frontend'
+          repositoryName: 'selfservice/backstage'
+          pushTag: '$(Build.BuildId)'
      
   
-  # - job: PublishArtifacts
-  #   dependsOn: 
-  #   - BuildImages 
-  #   steps:
-  #     - task: PublishPipelineArtifact@1
-  #       inputs:
-  #         targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
-  #         artifact: 'manifests'
-  #         publishLocation: 'pipeline'   
+  - job: PublishArtifacts
+    dependsOn: 
+    - BuildImages 
+    steps:
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
+          artifact: 'manifests'
+          publishLocation: 'pipeline'   
 
 # - stage: CD
 #   displayName: 'Continuous Deployment'
