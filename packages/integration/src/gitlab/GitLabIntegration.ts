@@ -38,6 +38,13 @@ export class GitLabIntegration implements ScmIntegration {
     return 'gitlab';
   }
 
+  /**
+   * The prefix used for entity metadata.annotations for the integration.
+   */
+  get annotationPrefix(): string {
+    return 'gitlab.com';
+  }
+
   get title(): string {
     return this.integrationConfig.host;
   }

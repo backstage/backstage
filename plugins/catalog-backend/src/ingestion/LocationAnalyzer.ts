@@ -16,6 +16,8 @@
 
 import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
+import { Entity } from '@backstage/catalog-model';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -24,24 +26,31 @@ import {
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
   private readonly logger: Logger;
+  private readonly scmIntegrations: ScmIntegrationRegistry;
 
-  constructor(logger: Logger) {
+  constructor(logger: Logger, scmIntegrations: ScmIntegrationRegistry) {
     this.logger = logger;
+    this.scmIntegrations = scmIntegrations;
   }
   async analyzeLocation(
     request: AnalyzeLocationRequest,
   ): Promise<AnalyzeLocationResponse> {
-    const { owner, name, source } = parseGitUrl(request.location.target);
-    const entity = {
+    const { owner, name } = parseGitUrl(request.location.target);
+    const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         name: name,
-        // Probably won't handle properly self-hosted git providers with custom url
-        annotations: { [`${source}/project-slug`]: `${owner}/${name}` },
       },
       spec: { type: 'other', lifecycle: 'unknown' },
     };
+
+    const integration = this.scmIntegrations.byUrl(request.location.target);
+    if (integration) {
+      entity.metadata.annotations = {
+        [`${integration.annotationPrefix}/project-slug`]: `${owner}/${name}`,
+      };
+    }
 
     this.logger.debug(`entity created for ${request.location.target}`);
     return {

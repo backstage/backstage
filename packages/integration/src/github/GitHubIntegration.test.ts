@@ -46,6 +46,7 @@ describe('GitHubIntegration', () => {
       token: 't',
     });
     expect(integration.type).toBe('github');
+    expect(integration.annotationPrefix).toBe('github.com');
     expect(integration.title).toBe('h.com');
     expect(integration.config.host).toBe('h.com');
   });
