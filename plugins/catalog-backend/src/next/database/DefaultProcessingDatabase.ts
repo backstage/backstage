@@ -130,34 +130,48 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
   }
 
+  private async createDelta(
+    tx: Knex.Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<{ toAdd: Entity[]; toRemove: string[] }> {
+    if (options.type === 'delta') {
+      return {
+        toAdd: options.added,
+        toRemove: options.removed.map(e => stringifyEntityRef(e)),
+      };
+    }
+
+    const oldRefs = await tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
+      .where({ source_key: options.sourceKey })
+      .select('target_entity_ref')
+      .then(rows => rows.map(r => r.target_entity_ref));
+
+    const items = options.items.map(entity => ({
+      entity,
+      ref: stringifyEntityRef(entity),
+    }));
+
+    const oldRefsSet = new Set(oldRefs);
+    const newRefsSet = new Set(items.map(item => item.ref));
+    const toAdd = items.filter(item => !oldRefsSet.has(item.ref));
+    const toRemove = oldRefs.filter(ref => !newRefsSet.has(ref));
+
+    return { toAdd: toAdd.map(({ entity }) => entity), toRemove };
+  }
+
   async replaceUnprocessedEntities(
     txOpaque: Transaction,
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
 
-    if (options.type === 'full') {
-      const oldRefs = await tx<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        .where({ source_key: options.sourceKey })
-        .select('target_entity_ref')
-        .then(rows => rows.map(r => r.target_entity_ref));
+    const { toAdd, toRemove } = await this.createDelta(tx, options);
 
-      const items = options.items.map(entity => ({
-        entity,
-        ref: stringifyEntityRef(entity),
-        id: uuid(),
-      }));
-
-      const oldRefsSet = new Set(oldRefs);
-      const newRefsSet = new Set(items.map(item => item.ref));
-      const toAdd = items.filter(item => !oldRefsSet.has(item.ref));
-      const toRemove = oldRefs.filter(ref => !newRefsSet.has(ref));
-
-      if (toRemove.length) {
-        // TODO(freben): Batch split, to not hit variable limits?
-        /*
+    if (toRemove.length) {
+      // TODO(freben): Batch split, to not hit variable limits?
+      /*
             WITH RECURSIVE
               -- All the refs that can be reached from each individual root
               root_reach(id, entity_ref) AS (
@@ -188,119 +202,87 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               AND refresh_state_references.target_entity_ref = "A"
               AND them.id IS NULL;
         */
-        const removedCount = await tx<DbRefreshStateRow>('refresh_state')
-          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
-            return (
-              orphans
-                // All the refs that can be reached from each individual root
-                .withRecursive('root_reach', function rootReach(outer) {
-                  // Start with all roots
-                  return outer
-                    .select({ id: 'id', entity_ref: 'target_entity_ref' })
-                    .from('refresh_state_references')
-                    .whereNotNull('source_key')
-                    .union(function recurse(inner) {
-                      return (
-                        inner
-                          // For each match, select all children
-                          .select({
-                            id: 'root_reach.id',
-                            entity_ref:
-                              'refresh_state_references.target_entity_ref',
-                          })
-                          .from('refresh_state_references')
-                          .crossJoin('root_reach', {
-                            'root_reach.entity_ref':
-                              'refresh_state_references.source_entity_ref',
-                          })
-                      );
-                    });
-                })
-                .select('us.entity_ref')
-                // Start out with our own matching row
-                .from('refresh_state_references')
-                .where('source_key', options.sourceKey)
-                .whereIn('target_entity_ref', toRemove)
-                // Expand the entire tree that emanates from that row
-                .leftJoin({ us: 'root_reach' }, function us() {
-                  this.on('us.id', '=', 'refresh_state_references.id');
-                })
-                // Expand with all roots that target the same node but aren't ourselves
-                .leftOuterJoin({ them: 'root_reach' }, function them() {
-                  this.on('them.entity_ref', '=', 'us.entity_ref');
-                  this.andOn('them.id', '!=', 'us.id');
-                })
-                // Keep only the matches that had no other rooots
-                .whereNull('them.id')
-            );
-          })
-          .delete();
+      const removedCount = await tx<DbRefreshStateRow>('refresh_state')
+        .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
+          return (
+            orphans
+              // All the refs that can be reached from each individual root
+              .withRecursive('root_reach', function rootReach(outer) {
+                // Start with all roots
+                return outer
+                  .select({ id: 'id', entity_ref: 'target_entity_ref' })
+                  .from('refresh_state_references')
+                  .whereNotNull('source_key')
+                  .union(function recurse(inner) {
+                    return (
+                      inner
+                        // For each match, select all children
+                        .select({
+                          id: 'root_reach.id',
+                          entity_ref:
+                            'refresh_state_references.target_entity_ref',
+                        })
+                        .from('refresh_state_references')
+                        .crossJoin('root_reach', {
+                          'root_reach.entity_ref':
+                            'refresh_state_references.source_entity_ref',
+                        })
+                    );
+                  });
+              })
+              .select('us.entity_ref')
+              // Start out with our own matching row
+              .from('refresh_state_references')
+              .where('source_key', options.sourceKey)
+              .whereIn('target_entity_ref', toRemove)
+              // Expand the entire tree that emanates from that row
+              .leftJoin({ us: 'root_reach' }, function us() {
+                this.on('us.id', '=', 'refresh_state_references.id');
+              })
+              // Expand with all roots that target the same node but aren't ourselves
+              .leftOuterJoin({ them: 'root_reach' }, function them() {
+                this.on('them.entity_ref', '=', 'us.entity_ref');
+                this.andOn('them.id', '!=', 'us.id');
+              })
+              // Keep only the matches that had no other rooots
+              .whereNull('them.id')
+          );
+        })
+        .delete();
 
-        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-          .where('source_key', '=', options.sourceKey)
-          .whereIn('target_entity_ref', toRemove)
-          .delete();
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where('source_key', '=', options.sourceKey)
+        .whereIn('target_entity_ref', toRemove)
+        .delete();
 
-        console.log(
-          `REMOVED, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
-        );
-      }
+      this.logger.debug(
+        `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
+      );
+    }
 
-      if (toAdd.length) {
-        const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(item => ({
-          entity_id: item.id,
-          entity_ref: item.ref,
-          unprocessed_entity: JSON.stringify(item.entity),
-          errors: '',
-          next_update_at: tx.fn.now(),
-          last_discovery_at: tx.fn.now(),
-        }));
-        const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
-          item => ({
-            source_key: options.sourceKey,
-            target_entity_ref: item.ref,
-          }),
-        );
-        // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
-        await tx.batchInsert('refresh_state', state, BATCH_SIZE);
-        await tx.batchInsert(
-          'refresh_state_references',
-          stateReferences,
-          BATCH_SIZE,
-        );
-      }
+    if (toAdd.length) {
+      const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(entity => ({
+        entity_id: uuid(),
+        entity_ref: stringifyEntityRef(entity),
+        unprocessed_entity: JSON.stringify(entity),
+        errors: '',
+        next_update_at: tx.fn.now(),
+        last_discovery_at: tx.fn.now(),
+      }));
 
-      //   for (const entity of options.items) {
-      //     const entityRef = stringifyEntityRef(entity);
-      //     await tx<DbRefreshStateRow>('refresh_state')
-      //       .insert({
-      //         entity_id: uuid(),
-      //         entity_ref: entityRef,
-      //         unprocessed_entity: JSON.stringify(entity),
-      //         errors: '',
-      //         next_update_at: tx.fn.now(),
-      //         last_discovery_at: tx.fn.now(),
-      //       })
-      //       .onConflict('entity_ref')
-      //       .merge(['unprocessed_entity', 'last_discovery_at']);
-
-      //     const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
-      //       'refresh_state',
-      //     ).where({ entity_ref: entityRef });
-      //     entityIds.push(entityId);
-      //   }
-      //   const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
-      //     entityId => ({
-      //       source_key: options.sourceKey,
-      //       target_entityRef: entityRef,
-      //     }),
-      //   );
-      //   await tx.batchInsert(
-      //     'refresh_state_references',
-      //     referenceRows,
-      //     BATCH_SIZE,
-      //   );
-      //   return;
+      const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
+        entity => ({
+          source_key: options.sourceKey,
+          target_entity_ref: stringifyEntityRef(entity),
+        }),
+      );
+      // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
+      await tx.batchInsert('refresh_state', state, BATCH_SIZE);
+      await tx.batchInsert(
+        'refresh_state_references',
+        stateReferences,
+        BATCH_SIZE,
+      );
     }
   }
 
