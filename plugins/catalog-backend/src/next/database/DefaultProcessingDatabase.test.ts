@@ -294,5 +294,94 @@ describe('Default Processing Database', () => {
         ),
       ).toBeFalsy();
     });
+
+    it('should add new locations using the delta options', async () => {
+      await processingDatabase!.transaction(async tx => {
+        await processingDatabase!.replaceUnprocessedEntities(tx, {
+          type: 'delta',
+          sourceKey: 'lols',
+          removed: [],
+          added: [
+            {
+              apiVersion: '1.0.0',
+              metadata: {
+                name: 'new-root',
+              },
+              kind: 'Location',
+            } as Entity,
+          ],
+        });
+      });
+
+      const currentRefreshState = await db!<DbRefreshStateRow>(
+        'refresh_state',
+      ).select();
+
+      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).select();
+
+      expect(
+        currentRefreshState.some(
+          t => t.entity_ref === 'location:default/new-root',
+        ),
+      ).toBeTruthy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_key === 'lols' &&
+            t.target_entity_ref === 'location:default/new-root',
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should remove old locations using the delta options', async () => {
+      await createLocations(['location:default/new-root']);
+
+      await insertRefRow({
+        source_key: 'lols',
+        target_entity_ref: 'location:default/new-root',
+      });
+
+      await processingDatabase!.transaction(async tx => {
+        await processingDatabase!.replaceUnprocessedEntities(tx, {
+          type: 'delta',
+          sourceKey: 'lols',
+          added: [],
+          removed: [
+            {
+              apiVersion: '1.0.0',
+              metadata: {
+                name: 'new-root',
+              },
+              kind: 'Location',
+            } as Entity,
+          ],
+        });
+      });
+
+      const currentRefreshState = await db!<DbRefreshStateRow>(
+        'refresh_state',
+      ).select();
+
+      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).select();
+
+      expect(
+        currentRefreshState.some(
+          t => t.entity_ref === 'location:default/new-root',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_key === 'lols' &&
+            t.target_entity_ref === 'location:default/new-root',
+        ),
+      ).toBeFalsy();
+    });
   });
 });
