@@ -43,7 +43,6 @@ export const TechDocsHome = () => {
           title: 'Owned documents',
           description: 'Access your documentation.',
           panelType: 'DocsTable' as PanelType,
-          paneCSS: { maxHeight: '200px' },
           filterPredicate: (entity: Entity) => {
             if (!user) {
               return false;
