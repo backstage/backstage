@@ -357,6 +357,14 @@ spec:
                 name: postgres-secrets
             - secretRef:
                 name: backstage-secrets
+          readinessProbe:
+            httpGet:
+              port: 7000
+              path: /healthcheck
+          livenessProbe:
+            httpGet:
+              port: 7000
+              path: /healthcheck
 ```
 
 For production deployments, the `image` reference will usually be a full URL to
