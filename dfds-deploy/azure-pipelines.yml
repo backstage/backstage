@@ -88,7 +88,6 @@ stages:
   #         publishLocation: 'pipeline'   
 
   - job: BuildImages
-    dependsOn: InstallYarn
     steps:
       - script: npm install yarn
       - script: yarn install
