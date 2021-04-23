@@ -102,7 +102,7 @@ stages:
         displayName: 'Build images'
         inputs:
           containerregistrytype: 'Container Registry'
-          dockerComposeFile: './dfds-deploy/docker-compose.production.yml'
+          dockerComposeFile: './dfds-deploy/docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
