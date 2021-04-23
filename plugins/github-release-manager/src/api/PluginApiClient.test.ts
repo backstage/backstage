@@ -60,6 +60,7 @@ describe('PluginApiClient', () => {
         "stats": Object {
           "getAllReleases": [Function],
           "getAllTags": [Function],
+          "getCommit": [Function],
         },
       }
     `);

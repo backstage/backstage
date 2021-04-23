@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { calverRegexp } from '../../helpers/tagParts/getCalverTagParts';
-import { GetAllTagsResult } from '../../api/PluginApiClient';
+import { calverRegexp } from '../../../helpers/tagParts/getCalverTagParts';
+import { GetAllTagsResult } from '../../../api/PluginApiClient';
 import { getMappedReleases } from './getMappedReleases';
-import { Project } from '../../contexts/ProjectContext';
-import { semverRegexp } from '../../helpers/tagParts/getSemverTagParts';
+import { Project } from '../../../contexts/ProjectContext';
+import { semverRegexp } from '../../../helpers/tagParts/getSemverTagParts';
 
 export function getTags({
   allTags,
@@ -52,20 +52,34 @@ export function getTags({
         return acc;
       }
 
-      if (
-        prefix === 'rc' &&
-        !mappedReleases.releases[baseVersion].candidates.includes(tag.tagName)
-      ) {
-        mappedReleases.releases[baseVersion].candidates.push(tag.tagName);
-        return acc;
+      if (prefix === 'rc') {
+        const existingEntry = mappedReleases.releases[
+          baseVersion
+        ].candidates.find(({ tagName }) => tagName === tag.tagName);
+
+        if (existingEntry) {
+          existingEntry.sha = tag.sha;
+        } else {
+          mappedReleases.releases[baseVersion].candidates.push({
+            tagName: tag.tagName,
+            sha: tag.sha,
+          });
+        }
       }
 
-      if (
-        prefix === 'version' &&
-        !mappedReleases.releases[baseVersion].versions.includes(tag.tagName)
-      ) {
-        mappedReleases.releases[baseVersion].versions.push(tag.tagName);
-        return acc;
+      if (prefix === 'version') {
+        const existingEntry = mappedReleases.releases[
+          baseVersion
+        ].versions.find(({ tagName }) => tagName === tag.tagName);
+
+        if (existingEntry) {
+          existingEntry.sha = tag.sha;
+        } else {
+          mappedReleases.releases[baseVersion].versions.push({
+            tagName: tag.tagName,
+            sha: tag.sha,
+          });
+        }
       }
 
       return acc;

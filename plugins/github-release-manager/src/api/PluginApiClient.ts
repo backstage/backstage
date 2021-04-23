@@ -576,6 +576,7 @@ ${selectedPatchCommit.commit.message}`,
 
       return tags.map(tag => ({
         tagName: tag.name,
+        sha: tag.commit.sha,
       }));
     },
 
@@ -597,6 +598,20 @@ ${selectedPatchCommit.commit.message}`,
         createdAt: release.published_at,
         htmlUrl: release.html_url,
       }));
+    },
+
+    getCommit: async ({ owner, repo, ref }: { ref: string } & OwnerRepo) => {
+      const { octokit } = await this.getOctokit();
+
+      const { data: commit } = await octokit.repos.getCommit({
+        owner,
+        repo,
+        ref,
+      });
+
+      return {
+        createdAt: commit.commit.committer?.date,
+      };
     },
   };
 }
@@ -660,28 +675,6 @@ type GetRecentCommits = (
 export type GetRecentCommitsResult = UnboxReturnedPromise<GetRecentCommits>;
 export type GetRecentCommitsResultSingle = UnboxArray<GetRecentCommitsResult>;
 
-type GetAllTags = (
-  args: OwnerRepo,
-) => Promise<
-  Array<{
-    tagName: string;
-  }>
->;
-export type GetAllTagsResult = UnboxReturnedPromise<GetAllTags>;
-
-type GetAllReleases = (
-  args: OwnerRepo,
-) => Promise<
-  Array<{
-    id: number;
-    name: string | null;
-    tagName: string;
-    createdAt: string | null;
-    htmlUrl: string;
-  }>
->;
-export type GetAllReleasesResult = UnboxReturnedPromise<GetAllReleases>;
-
 type GetLatestRelease = (
   args: OwnerRepo,
 ) => Promise<{
@@ -736,6 +729,9 @@ type GetBranch = (
 }>;
 export type GetBranchResult = UnboxReturnedPromise<GetBranch>;
 
+/**
+ * CreateRc
+ */
 type CreateRef = (
   args: {
     mostRecentSha: string;
@@ -771,6 +767,9 @@ type CreateRelease = (
 }>;
 export type CreateReleaseResult = UnboxReturnedPromise<CreateRelease>;
 
+/**
+ * Patch
+ */
 type CreateTempCommit = (
   args: {
     tagParts: SemverTagParts | CalverTagParts;
@@ -876,6 +875,9 @@ type UpdateRelease = (
 }>;
 export type UpdateReleaseResult = UnboxReturnedPromise<UpdateRelease>;
 
+/**
+ * PromoteRc
+ */
 type PromoteRelease = (
   args: {
     releaseId: NonNullable<GetLatestReleaseResult>['id'];
@@ -887,6 +889,41 @@ type PromoteRelease = (
   htmlUrl: string;
 }>;
 export type PromoteReleaseResult = UnboxReturnedPromise<PromoteRelease>;
+
+/**
+ * Stats
+ */
+type GetAllTags = (
+  args: OwnerRepo,
+) => Promise<
+  Array<{
+    tagName: string;
+    sha: string;
+  }>
+>;
+export type GetAllTagsResult = UnboxReturnedPromise<GetAllTags>;
+
+type GetAllReleases = (
+  args: OwnerRepo,
+) => Promise<
+  Array<{
+    id: number;
+    name: string | null;
+    tagName: string;
+    createdAt: string | null;
+    htmlUrl: string;
+  }>
+>;
+export type GetAllReleasesResult = UnboxReturnedPromise<GetAllReleases>;
+
+type GetCommit = (
+  args: {
+    ref: string;
+  } & OwnerRepo,
+) => Promise<{
+  createdAt: string | undefined;
+}>;
+export type GetCommitResult = UnboxReturnedPromise<GetCommit>;
 
 export interface IPluginApiClient {
   getHost: GetHost;
@@ -920,5 +957,6 @@ export interface IPluginApiClient {
   stats: {
     getAllTags: GetAllTags;
     getAllReleases: GetAllReleases;
+    getCommit: GetCommit;
   };
 }

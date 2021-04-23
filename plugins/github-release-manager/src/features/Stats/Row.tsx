@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { DateTime } from 'luxon';
+import { DateTime, DurationObject } from 'luxon';
 import {
   Box,
   Collapse,
@@ -29,7 +29,9 @@ import {
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import { getMappedReleases } from './getMappedReleases';
+import { getMappedReleases } from './helpers/getMappedReleases';
+import { useGetCommit } from './hooks/useGetCommit';
+import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 
 const useRowStyles = makeStyles({
   root: {
@@ -47,9 +49,6 @@ interface RowProps {
 export function Row({ baseVersion, mappedRelease }: RowProps) {
   const [open, setOpen] = useState(false);
   const classes = useRowStyles();
-  const versions = mappedRelease.versions.reverse();
-  const candidates = mappedRelease.candidates.reverse();
-  const isPrerelease = versions.length === 0;
 
   return (
     <React.Fragment>
@@ -67,7 +66,7 @@ export function Row({ baseVersion, mappedRelease }: RowProps) {
         <TableCell component="th" scope="row">
           <Link href={mappedRelease.htmlUrl} target="_blank">
             {baseVersion}
-            {isPrerelease ? ' (prerelease)' : ''}
+            {mappedRelease.versions.length === 0 ? ' (prerelease)' : ''}
           </Link>
         </TableCell>
 
@@ -79,53 +78,152 @@ export function Row({ baseVersion, mappedRelease }: RowProps) {
             : '-'}
         </TableCell>
 
-        <TableCell>{candidates.length}</TableCell>
+        <TableCell>{mappedRelease.candidates.length}</TableCell>
 
-        <TableCell>{Math.max(0, versions.length - 1)}</TableCell>
+        <TableCell>{Math.max(0, mappedRelease.versions.length - 1)}</TableCell>
       </TableRow>
 
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                }}
-              >
-                {!isPrerelease && (
-                  <Box margin={1}>
-                    {versions.map(version => (
-                      <Typography key={version} variant="body1">
-                        {version}
-                      </Typography>
-                    ))}
-                  </Box>
-                )}
-
-                {!isPrerelease && (
-                  <Box
-                    margin={1}
-                    style={{ transform: 'rotate(-45deg)', fontSize: 30 }}
-                  >
-                    {' 🚀 '}
-                  </Box>
-                )}
-
-                <Box margin={1}>
-                  {candidates.map(candidate => (
-                    <Typography key={candidate} variant="body1">
-                      {candidate}
-                    </Typography>
-                  ))}
-                </Box>
-              </div>
-            </Box>
+            <CollapsedEl mappedRelease={mappedRelease} />
           </Collapse>
         </TableCell>
       </TableRow>
     </React.Fragment>
+  );
+}
+
+function CollapsedEl({
+  mappedRelease,
+}: {
+  mappedRelease: ReturnType<typeof getMappedReleases>['releases']['0'];
+}) {
+  const reversedCandidates = [...mappedRelease.candidates].reverse();
+
+  const { commit: releaseCut } = useGetCommit({
+    ref: reversedCandidates[0]?.sha,
+  });
+  const { commit: releaseComplete } = useGetCommit({
+    ref: mappedRelease.versions[0]?.sha,
+  });
+
+  console.log('*** releaseCut > ', releaseCut.value); // eslint-disable-line no-console
+  console.log('*** releaseComplete > ', releaseComplete.value); // eslint-disable-line no-console
+
+  let diff = { days: -1 } as DurationObject;
+  if (releaseCut.value?.createdAt && releaseComplete.value?.createdAt) {
+    diff = DateTime.fromISO(releaseComplete.value.createdAt)
+      .diff(DateTime.fromISO(releaseCut.value.createdAt), ['days', 'hours'])
+      .toObject();
+  }
+
+  return (
+    <Box
+      margin={1}
+      style={{
+        display: 'flex',
+        alignItems: 'stretch',
+        paddingLeft: '20%',
+        paddingRight: '20%',
+      }}
+    >
+      <Box
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {mappedRelease.versions.length > 0 && (
+          <Box margin={1} style={{ position: 'relative' }}>
+            {mappedRelease.versions.map(version => (
+              <React.Fragment key={version.tagName}>
+                <Typography variant="body1">{version.tagName}</Typography>
+              </React.Fragment>
+            ))}
+          </Box>
+        )}
+
+        {mappedRelease.versions.length > 0 && (
+          <Box
+            margin={1}
+            style={{
+              position: 'relative',
+              transform: 'rotate(-45deg)',
+              fontSize: 30,
+            }}
+          >
+            {' 🚀 '}
+          </Box>
+        )}
+
+        <Box margin={1} style={{ position: 'relative' }}>
+          {mappedRelease.candidates.map(candidate => (
+            <React.Fragment key={candidate.tagName}>
+              <Typography variant="body1">{candidate.tagName}</Typography>
+            </React.Fragment>
+          ))}
+        </Box>
+      </Box>
+
+      <Box
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {releaseComplete.loading ? (
+          <CenteredCircularProgress />
+        ) : (
+          <>
+            <Box
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'flex-end',
+              }}
+            >
+              Release completed{' '}
+              {releaseComplete.value?.createdAt &&
+                DateTime.fromISO(releaseComplete.value.createdAt)
+                  .setLocale('sv-SE')
+                  .toFormat('yyyy-MM-dd')}
+            </Box>
+
+            <Box
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography variant="h4">
+                Release time: {diff.days} days
+              </Typography>
+            </Box>
+
+            <Box
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'flex-start',
+              }}
+            >
+              RC created{' '}
+              {releaseCut.value?.createdAt &&
+                DateTime.fromISO(releaseCut.value.createdAt)
+                  .setLocale('sv-SE')
+                  .toFormat('yyyy-MM-dd')}
+            </Box>
+          </>
+        )}
+      </Box>
+    </Box>
   );
 }

@@ -287,5 +287,9 @@ export const mockApiClient: IPluginApiClient = {
     getAllReleases: jest.fn(async () => {
       throw new Error('Not implemented');
     }),
+
+    getCommit: jest.fn(async () => {
+      throw new Error('Not implemented');
+    }),
   },
 };

@@ -52,6 +52,7 @@ describe('testHelpers', () => {
           "stats": Object {
             "getAllReleases": [MockFunction],
             "getAllTags": [MockFunction],
+            "getCommit": [MockFunction],
           },
         },
         "mockBumpedTag": "rc-2020.01.01_1337",

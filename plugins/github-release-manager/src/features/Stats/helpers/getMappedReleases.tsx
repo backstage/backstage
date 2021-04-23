@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { calverRegexp } from '../../helpers/tagParts/getCalverTagParts';
-import { GetAllReleasesResult } from '../../api/PluginApiClient';
-import { Project } from '../../contexts/ProjectContext';
-import { semverRegexp } from '../../helpers/tagParts/getSemverTagParts';
+import { calverRegexp } from '../../../helpers/tagParts/getCalverTagParts';
+import { GetAllReleasesResult } from '../../../api/PluginApiClient';
+import { Project } from '../../../contexts/ProjectContext';
+import { semverRegexp } from '../../../helpers/tagParts/getSemverTagParts';
 
 export function getMappedReleases({
   allReleases,
@@ -33,8 +33,14 @@ export function getMappedReleases({
         releases: {
           [baseVersion: string]: {
             createdAt: string | null;
-            candidates: string[];
-            versions: string[];
+            candidates: {
+              tagName: string;
+              sha: string;
+            }[];
+            versions: {
+              tagName: string;
+              sha: string;
+            }[];
             htmlUrl: string;
           };
         };
@@ -60,8 +66,10 @@ export function getMappedReleases({
       if (!acc.releases[baseVersion]) {
         acc.releases[baseVersion] = {
           createdAt: release.createdAt,
-          candidates: prefix === 'rc' ? [release.tagName] : [],
-          versions: prefix === 'version' ? [release.tagName] : [],
+          candidates:
+            prefix === 'rc' ? [{ tagName: release.tagName, sha: '' }] : [],
+          versions:
+            prefix === 'version' ? [{ tagName: release.tagName, sha: '' }] : [],
           htmlUrl: release.htmlUrl,
         };
         return acc;

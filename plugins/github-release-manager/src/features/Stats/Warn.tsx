@@ -17,8 +17,8 @@
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 
-import { getMappedReleases } from './getMappedReleases';
-import { getTags } from './getTags';
+import { getMappedReleases } from './helpers/getMappedReleases';
+import { getTags } from './helpers/getTags';
 import { Project } from '../../contexts/ProjectContext';
 
 interface WarnProps {

@@ -26,17 +26,17 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { getMappedReleases } from './getMappedReleases';
-import { getSummary } from './getSummary';
-import { getTags } from './getTags';
+import { getMappedReleases } from './helpers/getMappedReleases';
+import { getSummary } from './helpers/getSummary';
+import { getTags } from './helpers/getTags';
 import { Row } from './Row';
 import { useGetStats } from './hooks/useGetStats';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { Warn } from './Warn';
+import { Summary } from './Summary';
 
 const useStyles = makeStyles({
   table: {
@@ -81,80 +81,9 @@ export function DialogBody() {
     });
   }
 
-  const getDecimalNumber = (n: number) => {
-    if (isNaN(n)) {
-      return 0;
-    }
-
-    if (n.toString().includes('.')) {
-      return n.toFixed(2);
-    }
-
-    return n;
-  };
-
   return (
     <>
-      <Paper
-        variant="outlined"
-        style={{
-          padding: 20,
-          marginLeft: 25,
-          marginRight: 25,
-          marginBottom: 25,
-        }}
-      >
-        <Box margin={1}>
-          <Typography variant="h4">Summary</Typography>
-          <Typography variant="body2">
-            Total releases: {summary.totalReleases}
-          </Typography>
-        </Box>
-
-        <Box margin={1}>
-          <Typography variant="h6">Release Candidate</Typography>
-          <Typography variant="body2">
-            Release Candidate patches: {summary.totalCandidatePatches}
-          </Typography>
-
-          <Typography variant="body2">
-            Release Candidate patches per release:{' '}
-            {getDecimalNumber(
-              summary.totalCandidatePatches / summary.totalReleases,
-            )}
-          </Typography>
-        </Box>
-
-        <Box margin={1}>
-          <Typography variant="h6">Release Version</Typography>
-          <Typography variant="body2">
-            Release Version patches: {summary.totalVersionPatches}
-          </Typography>
-
-          <Typography variant="body2">
-            Release Version patches per release:{' '}
-            {getDecimalNumber(
-              summary.totalVersionPatches / summary.totalReleases,
-            )}
-          </Typography>
-        </Box>
-
-        <Box margin={1}>
-          <Typography variant="h6">Total</Typography>
-          <Typography variant="body2">
-            Patches:{' '}
-            {summary.totalCandidatePatches + summary.totalVersionPatches}
-          </Typography>
-
-          <Typography variant="body2">
-            Patches per release:{' '}
-            {getDecimalNumber(
-              (summary.totalCandidatePatches + summary.totalVersionPatches) /
-                summary.totalReleases,
-            )}
-          </Typography>
-        </Box>
-      </Paper>
+      <Summary summary={summary} />
 
       <TableContainer component={Paper}>
         <Table className={classes.table} size="small">
