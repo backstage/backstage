@@ -95,6 +95,9 @@ exports.up = async function up(knex) {
       'Holds edges between refresh state rows. Every time when an entity is processed and emits another entity, an edge will be stored to represent that fact. This is used to detect orphans and ultimately deletions.',
     );
     table
+      .increments('id')
+      .comment('Primary key to distinguish unique lines from each other');
+    table
       .text('source_key')
       .nullable()
       .comment(

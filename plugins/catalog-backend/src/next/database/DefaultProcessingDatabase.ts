@@ -135,7 +135,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: ReplaceUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const entityIds = new Array<string>();
 
     if (options.type === 'full') {
       const oldRefs = await tx<DbRefreshStateReferencesRow>(
@@ -158,54 +157,94 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
       if (toRemove.length) {
         // TODO(freben): Batch split, to not hit variable limits?
-
-        // get all refs where source = any of the toRemove
-        // delete all state rows matching any of the toRemove
-        // revisit the targets of all of those refs
-        // verify if they have references, otherwise delete from refresh_state
-
-        const current = [...toRemove];
-        while (true) {
-
-          tx.withRecursive('r', function refs() {
-            return tx.select({  })
-              .from({ r1: 'refresh_state_references' })
-              .where({ source_key: options.sourceKey })
-              .whereIn('target_entity_ref', toRemove)
-              .unionAll(function recurse() {
-                return tx.select({  })
-                  .from({ r2: 'refresh_state_references' })
-                  .whereNotExists()
-              })
+        /*
+            WITH RECURSIVE
+              -- All the refs that can be reached from each individual root
+              root_reach(id, entity_ref) AS (
+                -- Start with all roots
+                SELECT id, target_entity_ref
+                FROM refresh_state_references
+                WHERE source_key IS NOT NULL
+                UNION
+                -- For each match, select all children
+                SELECT root_reach.id, target_entity_ref
+                FROM refresh_state_references, root_reach
+                WHERE source_entity_ref = root_reach.entity_ref
+              )
+            -- Start out with our own matching row (see the WHERE that
+            -- matches on source_key and target_entity_ref below)
+            SELECT us.entity_ref
+            FROM refresh_state_references
+            -- Expand the entire tree that emanates from that row
+            JOIN root_reach AS us
+              ON us.id = refresh_state_references.id
+            -- Expand with all roots that target the same node but
+            -- aren't ourselves
+            LEFT OUTER JOIN root_reach AS them
+              ON them.entity_ref = us.entity_ref
+              AND them.id != us.id
+            -- Keep only the matches that had no other rooots
+            WHERE refresh_state_references.source_key = "R1"
+              AND refresh_state_references.target_entity_ref = "A"
+              AND them.id IS NULL;
+        */
+        const removedCount = await tx<DbRefreshStateRow>('refresh_state')
+          .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
+            return (
+              orphans
+                // All the refs that can be reached from each individual root
+                .withRecursive('root_reach', function rootReach(outer) {
+                  // Start with all roots
+                  return outer
+                    .select({ id: 'id', entity_ref: 'target_entity_ref' })
+                    .from('refresh_state_references')
+                    .whereNotNull('source_key')
+                    .union(function recurse(inner) {
+                      return (
+                        inner
+                          // For each match, select all children
+                          .select({
+                            id: 'root_reach.id',
+                            entity_ref:
+                              'refresh_state_references.target_entity_ref',
+                          })
+                          .from('refresh_state_references')
+                          .crossJoin('root_reach', {
+                            'root_reach.entity_ref':
+                              'refresh_state_references.source_entity_ref',
+                          })
+                      );
+                    });
+                })
+                .select('us.entity_ref')
+                // Start out with our own matching row
+                .from('refresh_state_references')
+                .where('source_key', options.sourceKey)
+                .whereIn('target_entity_ref', toRemove)
+                // Expand the entire tree that emanates from that row
+                .leftJoin({ us: 'root_reach' }, function us() {
+                  this.on('us.id', '=', 'refresh_state_references.id');
+                })
+                // Expand with all roots that target the same node but aren't ourselves
+                .leftOuterJoin({ them: 'root_reach' }, function them() {
+                  this.on('them.entity_ref', '=', 'us.entity_ref');
+                  this.andOn('them.id', '!=', 'us.id');
+                })
+                // Keep only the matches that had no other rooots
+                .whereNull('them.id')
+            );
           })
-          .select().from('refs');
+          .delete();
 
-          const nextLayerToRemove = await tx<DbRefreshStateReferencesRow>(
-            'refresh_state_references',
-          )
-            .whereIn('source_entity_ref', toRemove)
-            .leftOuterJoin('refresh_state_references AS b', function f() {
+        await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+          .where('source_key', '=', options.sourceKey)
+          .whereIn('target_entity_ref', toRemove)
+          .delete();
 
-            })
-
-            .whereNotNull('b.source_target_ref')
-            .select('target_entity_ref');
-
-          await tx<DbRefreshStateRow>('refresh_state')
-            .whereIn('entity_ref', toRemove)
-            .delete();
-
-          const refsThatStillHaveASourcePointingAtThe = await tx<DbRefreshStateReferencesRow>(
-            'refresh_state_references',
-          )
-            .whereIn('target_entity_ref', nextLayerTargetRefs)
-            .groupBy('target_entity_ref')
-            .select('target_entity_ref');
-
+        console.log(
+          `REMOVED, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
+        );
       }
-
-
-
 
       if (toAdd.length) {
         const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(item => ({
@@ -224,67 +263,44 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         );
         // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
         await tx.batchInsert('refresh_state', state, BATCH_SIZE);
-        await tx.batchInsert('refresh_state_references', stateReferences, BATCH_SIZE);
-      }
-
-
-      for (const entity of options.items) {
-        const entityRef = stringifyEntityRef(entity);
-        await tx<DbRefreshStateRow>('refresh_state')
-          .insert({
-            entity_id: uuid(),
-            entity_ref: entityRef,
-            unprocessed_entity: JSON.stringify(entity),
-            errors: '',
-            next_update_at: tx.fn.now(),
-            last_discovery_at: tx.fn.now(),
-          })
-          .onConflict('entity_ref')
-          .merge(['unprocessed_entity', 'last_discovery_at']);
-
-        const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
-          'refresh_state',
-        ).where({ entity_ref: entityRef });
-        entityIds.push(entityId);
-      }
-      const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
-        entityId => ({
-          source_key: options.sourceKey,
-          target_entityRef: entityRef,
-        }),
-      );
-      await tx.batchInsert(
-        'refresh_state_references',
-        referenceRows,
-        BATCH_SIZE,
-      );
-      return;
-    }
-
-    for (const entity of options.removed) {
-      const entityRef = stringifyEntityRef(entity);
-      const [result] = await tx<DbRefreshStateRow>('refresh_state')
-        .where({ entity_ref: entityRef })
-        .select('entity_id');
-
-      if (!result) {
-        this.logger.info(
-          `Unable to delete entity '${entityRef}', entity does not exist in refresh state`,
+        await tx.batchInsert(
+          'refresh_state_references',
+          stateReferences,
+          BATCH_SIZE,
         );
-        continue;
       }
 
-      const referenceResults = await tx<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      )
-        // todo correct key?
-        .where({ source_entity_id: result.entity_id })
-        .select();
+      //   for (const entity of options.items) {
+      //     const entityRef = stringifyEntityRef(entity);
+      //     await tx<DbRefreshStateRow>('refresh_state')
+      //       .insert({
+      //         entity_id: uuid(),
+      //         entity_ref: entityRef,
+      //         unprocessed_entity: JSON.stringify(entity),
+      //         errors: '',
+      //         next_update_at: tx.fn.now(),
+      //         last_discovery_at: tx.fn.now(),
+      //       })
+      //       .onConflict('entity_ref')
+      //       .merge(['unprocessed_entity', 'last_discovery_at']);
 
-      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-        // todo correct key?
-        .where({ source_entity_id: result.entity_id })
-        .delete();
+      //     const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
+      //       'refresh_state',
+      //     ).where({ entity_ref: entityRef });
+      //     entityIds.push(entityId);
+      //   }
+      //   const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
+      //     entityId => ({
+      //       source_key: options.sourceKey,
+      //       target_entityRef: entityRef,
+      //     }),
+      //   );
+      //   await tx.batchInsert(
+      //     'refresh_state_references',
+      //     referenceRows,
+      //     BATCH_SIZE,
+      //   );
+      //   return;
     }
   }
 
