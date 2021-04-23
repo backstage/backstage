@@ -16,16 +16,283 @@
 // import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import { DatabaseManager } from './DatabaseManager';
 import { Knex } from 'knex';
+import {
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+  DefaultProcessingDatabase,
+} from './DefaultProcessingDatabase';
+
+import { Entity } from '@backstage/catalog-model';
+import * as uuid from 'uuid';
+import { getVoidLogger } from '@backstage/backend-common';
 
 describe('Default Processing Database', () => {
   let db: Knex | undefined;
+  let processingDatabase: DefaultProcessingDatabase | undefined;
+
+  const logger = getVoidLogger();
 
   beforeEach(async () => {
     db = await DatabaseManager.createTestDatabaseConnection();
     await DatabaseManager.createDatabase(db);
+
+    processingDatabase = new DefaultProcessingDatabase(db!, logger);
   });
 
-  it('should write some stuff', async () => {
-    await db('refresh_state_referencess').select();
+  describe('replaceUnprocessedEntities', () => {
+    const insertRefRow = async (ref: DbRefreshStateReferencesRow) => {
+      return db!<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).insert(ref);
+    };
+
+    const insertRefreshStateRow = async (ref: DbRefreshStateRow) => {
+      await db!<DbRefreshStateRow>('refresh_state').insert(ref);
+    };
+
+    const createLocations = async (entityRefs: string[]) => {
+      for (const ref of entityRefs) {
+        await insertRefreshStateRow({
+          entity_id: uuid.v4(),
+          entity_ref: ref,
+          unprocessed_entity: '{}',
+          processed_entity: '{}',
+          errors: '',
+          next_update_at: 'now()',
+          last_discovery_at: 'now()',
+        });
+      }
+    };
+
+    it('replaces all existing state correctly for simple dependency chains', async () => {
+      /*
+        config -> location:default/root -> location:default/root-1 -> location:default/root-2
+        database -> location:default/second -> location:default/root-2
+      */
+      await createLocations([
+        'location:default/root',
+        'location:default/root-1',
+        'location:default/root-2',
+        'location:default/second',
+      ]);
+
+      await insertRefRow({
+        source_key: 'config',
+        target_entity_ref: 'location:default/root',
+      });
+
+      await insertRefRow({
+        source_key: 'database',
+        target_entity_ref: 'location:default/second',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root',
+        target_entity_ref: 'location:default/root-1',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root-1',
+        target_entity_ref: 'location:default/root-2',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/second',
+        target_entity_ref: 'location:default/root-2',
+      });
+
+      await processingDatabase!.transaction(async tx => {
+        await processingDatabase!.replaceUnprocessedEntities(tx, {
+          type: 'full',
+          sourceKey: 'config',
+          items: [
+            {
+              apiVersion: '1.0.0',
+              metadata: {
+                name: 'new-root',
+              },
+              kind: 'Location',
+            } as Entity,
+          ],
+        });
+      });
+
+      const currentRefreshState = await db!<DbRefreshStateRow>(
+        'refresh_state',
+      ).select();
+
+      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).select();
+
+      for (const ref of ['location:default/root', 'location:default/root-1']) {
+        expect(currentRefreshState.some(t => t.entity_ref === ref)).toBeFalsy();
+      }
+
+      expect(
+        currentRefreshState.some(
+          t => t.entity_ref === 'location:default/new-root',
+        ),
+      ).toBeTruthy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root' &&
+            t.target_entity_ref === 'location:default/root-1',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root-1' &&
+            t.target_entity_ref === 'location:default/root-2',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.target_entity_ref === 'location:default/root-1' &&
+            t.source_key === 'config',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.target_entity_ref === 'location:default/new-root' &&
+            t.source_key === 'config',
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should work for more complex chains', async () => {
+      /*
+        config -> location:default/root -> location:default/root-1 -> location:default/root-2
+        config -> location:default/root -> location:default/root-1a -> location:default/root-2
+      */
+      await createLocations([
+        'location:default/root',
+        'location:default/root-1',
+        'location:default/root-2',
+        'location:default/root-1a',
+      ]);
+
+      await insertRefRow({
+        source_key: 'config',
+        target_entity_ref: 'location:default/root',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root',
+        target_entity_ref: 'location:default/root-1',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root',
+        target_entity_ref: 'location:default/root-1a',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root-1',
+        target_entity_ref: 'location:default/root-2',
+      });
+
+      await insertRefRow({
+        source_entity_ref: 'location:default/root-1a',
+        target_entity_ref: 'location:default/root-2',
+      });
+
+      await processingDatabase!.transaction(async tx => {
+        await processingDatabase!.replaceUnprocessedEntities(tx, {
+          type: 'full',
+          sourceKey: 'config',
+          items: [
+            {
+              apiVersion: '1.0.0',
+              metadata: {
+                name: 'new-root',
+              },
+              kind: 'Location',
+            } as Entity,
+          ],
+        });
+      });
+
+      const currentRefreshState = await db!<DbRefreshStateRow>(
+        'refresh_state',
+      ).select();
+
+      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).select();
+
+      const deletedRefs = [
+        'location:default/root',
+        'location:default/root-1',
+        'location:default/root-1a',
+        'location:default/root-2',
+      ];
+
+      for (const ref of deletedRefs) {
+        expect(currentRefreshState.some(t => t.entity_ref === ref)).toBeFalsy();
+      }
+
+      expect(
+        currentRefreshState.some(
+          t => t.entity_ref === 'location:default/new-root',
+        ),
+      ).toBeTruthy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_key === 'config' &&
+            t.target_entity_ref === 'location:default/new-root',
+        ),
+      ).toBeTruthy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_key === 'config' &&
+            t.target_entity_ref === 'location:default/root',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root' &&
+            t.target_entity_ref === 'location:default/root-1',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root' &&
+            t.target_entity_ref === 'location:default/root-1a',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root-1' &&
+            t.target_entity_ref === 'location:default/root-2',
+        ),
+      ).toBeFalsy();
+
+      expect(
+        currentRefRowState.some(
+          t =>
+            t.source_entity_ref === 'location:default/root-1a' &&
+            t.target_entity_ref === 'location:default/root-2',
+        ),
+      ).toBeFalsy();
+    });
   });
 });
