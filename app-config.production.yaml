@@ -1,6 +1,6 @@
 app:
   title: DFDS Backstage
-  baseUrl: http://localhost:3000
+  baseUrl: https://backstage.dfds.cloud
   googleAnalyticsTrackingId: # UA-000000-0
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
@@ -17,10 +17,9 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: https://backstage.dfds.cloud/backend
   listen:
-    port: 
-      $env: BACKEND_LISTEN_PORT
+    port: 7000
   database:
     client: pg
     connection: 
@@ -32,9 +31,11 @@ backend:
         $env: DATABASE_USER
       password: 
         $env: DATABASE_PASSWORD
+      ssl:
+        ca: 
+          $file: ca/rds-ca-2019-root.pem        
   cors:
-    origin: 
-      $env: BACKEND_CORS_ORIGIN
+    origin: https://backstage.dfds.cloud
     methods: [GET, POST, PUT, DELETE]
     credentials: true
   csp:

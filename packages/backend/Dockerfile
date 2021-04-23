@@ -10,7 +10,10 @@
 # Once the commands have been run, you can build the image using `yarn build-image`
 
 FROM node:14-buster-slim
+ARG app_config_file=app-config.yaml
 
+
+RUN echo "app_config_file: $app_config_file"
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y curl
@@ -24,6 +27,8 @@ ADD yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
 RUN yarn install --frozen-lockfile --production --network-timeout 300000 && rm -rf "$(yarn cache dir)"
 
 # Then copy the rest of the backend bundle, along with any other files we might want.
-ADD packages/backend/dist/bundle.tar.gz app-config.yaml ./
+ADD packages/backend/dist/bundle.tar.gz $app_config_file ./ 
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+RUN mv $app_config_file app-config-current.yaml
+
+CMD ["node", "packages/backend", "--config", "app-config-current.yaml"]
