@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { useAsync } from 'react-use';
 import { makeStyles } from '@material-ui/core';
-
+import { CSSProperties } from '@material-ui/styles';
 import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -48,7 +48,7 @@ export interface PanelConfig {
   title: string;
   description: string;
   panelType: PanelType;
-  panelCSS?: {};
+  panelCSS?: CSSProperties;
   filterPredicate: (entity: Entity) => boolean;
 }
 
