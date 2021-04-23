@@ -26,7 +26,7 @@ import {
   IconComponent,
   Page,
   Progress,
-  TabbedLayout,
+  RoutedTabs,
 } from '@backstage/core';
 import {
   EntityContext,
@@ -34,13 +34,69 @@ import {
   getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
-import { Box } from '@material-ui/core';
+import { attachComponentData } from '@backstage/core-api';
+import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { default as React, useContext, useState } from 'react';
+import {
+  default as React,
+  Children,
+  Fragment,
+  isValidElement,
+  useContext,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+
+type SubRoute = {
+  path: string;
+  title: string;
+  children: JSX.Element;
+  if?: (entity: Entity) => boolean;
+  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+};
+
+const Route: (props: SubRoute) => null = () => null;
+
+// This causes all mount points that are discovered within this route to use the path of the route itself
+attachComponentData(Route, 'core.gatherMountPoints', true);
+
+function createSubRoutesFromChildren(
+  childrenProps: React.ReactNode,
+  entity: Entity | undefined,
+): SubRoute[] {
+  // Directly comparing child.type with Route will not work with in
+  // combination with react-hot-loader in storybook
+  // https://github.com/gaearon/react-hot-loader/issues/304
+  const routeType = (
+    <Route path="" title="">
+      <div />
+    </Route>
+  ).type;
+
+  return Children.toArray(childrenProps).flatMap(child => {
+    if (!isValidElement(child)) {
+      return [];
+    }
+
+    if (child.type === Fragment) {
+      return createSubRoutesFromChildren(child.props.children, entity);
+    }
+
+    if (child.type !== routeType) {
+      throw new Error('Child of EntityLayout must be an EntityLayout.Route');
+    }
+
+    const { path, title, children, if: condition, tabProps } = child.props;
+    if (condition && entity && !condition(entity)) {
+      return [];
+    }
+
+    return [{ path, title, children, tabProps }];
+  });
+}
 
 const EntityLayoutTitle = ({
   entity,
@@ -139,6 +195,7 @@ export const EntityLayout = ({
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
+  const routes = createSubRoutesFromChildren(children, entity);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
@@ -175,7 +232,7 @@ export const EntityLayout = ({
 
       {loading && <Progress />}
 
-      {entity && <TabbedLayout>{children}</TabbedLayout>}
+      {entity && <RoutedTabs routes={routes} />}
 
       {error && (
         <Content>
@@ -192,4 +249,4 @@ export const EntityLayout = ({
   );
 };
 
-EntityLayout.Route = TabbedLayout.Route;
+EntityLayout.Route = Route;
