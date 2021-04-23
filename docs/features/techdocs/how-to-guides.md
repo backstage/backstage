@@ -100,7 +100,7 @@ import { Entity } from '@backstage/catalog-model';
 const tabsConfig = [
   {
     label: 'Custom Tab',
-    widgets: [
+    panels: [
       {
         title: 'Custom Documents Cards 1',
         description:
