@@ -17,36 +17,36 @@
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 
-import { getMappedReleases } from './helpers/getMappedReleases';
-import { getTags } from './helpers/getTags';
+import { getReleasesWithTags } from './helpers/getReleasesWithTags';
 import { Project } from '../../contexts/ProjectContext';
 
 interface WarnProps {
-  tags: ReturnType<typeof getTags>;
-  mappedReleases: ReturnType<typeof getMappedReleases>;
+  releasesWithTags: ReturnType<typeof getReleasesWithTags>['releasesWithTags'];
   project: Project;
 }
 
-export const Warn = ({ tags, mappedReleases, project }: WarnProps) => {
+export const Warn = ({ releasesWithTags, project }: WarnProps) => {
   return (
     <Alert severity="warning" style={{ marginBottom: 10 }}>
-      {tags.unmappable.length > 0 && (
+      {releasesWithTags.unmappableTags.length > 0 && (
         <div>
-          Failed to map <strong>{tags.unmappable.length}</strong> tags to
+          Failed to map{' '}
+          <strong>{releasesWithTags.unmappableTags.length}</strong> tags to
           releases
         </div>
       )}
 
-      {tags.unmatched.length > 0 && (
+      {releasesWithTags.unmatchedTags.length > 0 && (
         <div>
-          Failed to match <strong>{tags.unmatched.length}</strong> tags to{' '}
+          Failed to match{' '}
+          <strong>{releasesWithTags.unmatchedTags.length}</strong> tags to{' '}
           {project.versioningStrategy}
         </div>
       )}
 
-      {mappedReleases.unmatched.length > 0 && (
+      {releasesWithTags.unmatched.length > 0 && (
         <div>
-          Failed to match <strong>{mappedReleases.unmatched.length}</strong>{' '}
+          Failed to match <strong>{releasesWithTags.unmatched.length}</strong>{' '}
           releases to {project.versioningStrategy}
         </div>
       )}

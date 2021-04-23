@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { getMappedReleases } from './getMappedReleases';
+import { getReleasesWithTags } from './getReleasesWithTags';
 
 export function getSummary({
-  mappedReleases,
+  releasesWithTags,
 }: {
-  mappedReleases: ReturnType<typeof getMappedReleases>;
+  releasesWithTags: ReturnType<typeof getReleasesWithTags>['releasesWithTags'];
 }) {
-  return Object.entries(mappedReleases.releases).reduce(
+  return Object.entries(releasesWithTags.releases).reduce(
     (
       acc: {
         totalReleases: number;

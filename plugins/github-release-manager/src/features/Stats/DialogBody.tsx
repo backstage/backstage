@@ -29,14 +29,14 @@ import {
 } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { getMappedReleases } from './helpers/getMappedReleases';
+import { getMappedReleases } from './helpers/mapReleases';
+import { getReleasesWithTags } from './helpers/getReleasesWithTags';
 import { getSummary } from './helpers/getSummary';
-import { getTags } from './helpers/getTags';
-import { Row } from './Row';
+import { Row } from './Row/Row';
+import { Summary } from './Summary';
 import { useGetStats } from './hooks/useGetStats';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { Warn } from './Warn';
-import { Summary } from './Summary';
 
 const useStyles = makeStyles({
   table: {
@@ -64,20 +64,24 @@ export function DialogBody() {
   }
 
   const { allReleases, allTags } = stats.value;
-  const mappedReleases = getMappedReleases({ allReleases, project });
-  const tags = getTags({ allTags, project, mappedReleases });
-  const summary = getSummary({ mappedReleases });
+  const { mappedReleases } = getMappedReleases({ allReleases, project });
+  const { releasesWithTags } = getReleasesWithTags({
+    mappedReleases,
+    allTags,
+    project,
+  });
+  const summary = getSummary({ releasesWithTags });
   const shouldWarn =
-    tags.unmappable.length > 0 ||
-    tags.unmatched.length > 0 ||
-    mappedReleases.unmatched.length > 0;
+    releasesWithTags.unmappableTags.length > 0 ||
+    releasesWithTags.unmatchedTags.length > 0 ||
+    releasesWithTags.unmatched.length > 0;
 
   if (shouldWarn) {
     // eslint-disable-next-line no-console
     console.log("⚠️ Here's a summary of unmapped/unmatched tags/releases", {
-      unmappableTags: tags.unmappable,
-      unmatchableTags: tags.unmatched,
-      unmatchableReleases: mappedReleases.unmatched,
+      unmappableTags: releasesWithTags.unmappableTags,
+      unmatchedTags: releasesWithTags.unmatchedTags,
+      unmatchedReleases: releasesWithTags.unmatched,
     });
   }
 
@@ -98,13 +102,13 @@ export function DialogBody() {
           </TableHead>
 
           <TableBody>
-            {Object.entries(mappedReleases.releases).map(
-              ([baseVersion, mappedRelease], index) => {
+            {Object.entries(releasesWithTags.releases).map(
+              ([baseVersion, releaseWithTags], index) => {
                 return (
                   <Row
                     key={`row-${index}`}
                     baseVersion={baseVersion}
-                    mappedRelease={mappedRelease}
+                    releaseWithTags={releaseWithTags}
                   />
                 );
               },
@@ -115,7 +119,7 @@ export function DialogBody() {
 
       <Box marginTop={2}>
         {shouldWarn && (
-          <Warn tags={tags} mappedReleases={mappedReleases} project={project} />
+          <Warn releasesWithTags={releasesWithTags} project={project} />
         )}
       </Box>
     </>
