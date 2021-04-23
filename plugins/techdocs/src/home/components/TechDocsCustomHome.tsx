@@ -71,7 +71,6 @@ const CustomPanel = ({
   const useStyles = makeStyles({
     panelContainer: {
       marginBottom: '2rem',
-      overflow: 'auto',
       ...(config.panelCSS ? config.panelCSS : {}),
     },
   });

@@ -87,7 +87,7 @@ implementation very soon.
 
 ### 1st way: TechDocsCustomHome with a custom configuration
 
-In your main App.tsx:
+As an example, in your main App.tsx:
 
 ```tsx
 import {
@@ -107,7 +107,7 @@ const tabsConfig = [
           'Explore your internal technical ecosystem through documentation.',
         panelType: 'DocsCardGrid' as PanelType,
         // optional, is applied to a container of the panel (excludes header of panel)
-        panelCSS: { maxHeight: '400px' },
+        panelCSS: { maxHeight: '400px', overflow:'auto' },
         filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationOne'];
     },
       {
@@ -115,7 +115,7 @@ const tabsConfig = [
         description:
           'Explore your internal technical ecosystem through documentation.',
         panelType: 'DocsCardGrid' as PanelType,
-        panelCSS: { maxHeight: '400px' },
+        panelCSS: { maxHeight: '400px', overflow:'auto' },
         filterPredicate: (entity: Entity) => !!entity.metadata.annotations?.['customCardAnnotationTwo'];
       },
     ],
