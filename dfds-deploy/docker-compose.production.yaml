@@ -5,8 +5,6 @@ services:
     container_name: backstage-db
     ports:
       - "5432:5432"
-    env_file: 
-      - .env    
   backstage-backend:
     depends_on:
       - database         
@@ -21,8 +19,6 @@ services:
       - '7000:7000'
     links:
       - database
-    env_file: 
-      - .env
   backstage-frontend:
     depends_on:
       - backstage-backend     
@@ -33,11 +29,9 @@ services:
       context: ../
     ports:
       - '3000:80'
-    env_file: 
-      - .env
-  ubuntu:
-    image: ubuntu:latest
-    entrypoint: bash -c
-    tty: true
-    command: 
-    - echo Hello $BACKEND_CORS_ORIGIN  
+  # ubuntu:
+  #   image: ubuntu:latest
+  #   entrypoint: bash -c
+  #   tty: true
+  #   command: 
+  #   - echo Hello $BACKEND_CORS_ORIGIN  
