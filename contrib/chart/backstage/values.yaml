@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 frontend:
-  enabled: true
+  enabled: false
   replicaCount: 1
   image:
     repository: martinaif/backstage-k8s-demo-frontend
@@ -23,7 +23,7 @@ backend:
   replicaCount: 1
   image:
     repository: martinaif/backstage-k8s-demo-backend
-    tag: test1
+    tag: 20210423T1550
     pullPolicy: IfNotPresent
   containerPort: 7000
   resources:
