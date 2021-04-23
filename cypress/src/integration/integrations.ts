@@ -18,33 +18,59 @@ import 'os';
 
 describe('Integrations', () => {
   describe('ReadTree', () => {
-    // it('should work for azure', () => {
-    //   cy.loginAsGuest();
-
-    //   cy.visit('/catalog-import');
-
-    //   cy.get('input[name=url]').type(
-    //     'https://dev.azure.com/backstage-verification/_git/test-repo?path=%2Fnested%2F*',
-    //   );
-
-    //   cy.contains('Analyze').click();
-    // });
-
     it('should work for github', () => {
       cy.loginAsGuest();
 
-      cy.visit('/catalog-import');
-
-      cy.get('input[name=url]').type(
-        'https://github.com/backstage-verification/test-repo',
-      );
-      cy.request('/api/catalog/locations', {
+      cy.request('POST', '/api/catalog/locations', {
         target:
           'https://github.com/backstage-verification/test-repo/blob/main/**/*',
         type: 'url',
       });
 
-      cy.contains('Analyze').click();
+      cy.visit('/catalog');
+      cy.contains('All').click();
+      cy.get('table').should('contain', 'github-repo');
+      cy.get('table').should('contain', 'github-repo-nested');
+    });
+
+    // it('should work for azure', () => {
+    //   cy.loginAsGuest();
+
+    //   cy.request('POST', '/api/catalog/locations', {
+    //     target:
+    //       'https://dev.azure.com/backstage-verification/_git/test-repo?path=*',
+    //     type: 'url',
+    //   });
+    // });
+
+    it('should work for gitlab', () => {
+      cy.loginAsGuest();
+
+      cy.request('POST', '/api/catalog/locations', {
+        target:
+          'https://gitlab.com/backstage-verification/test-repo/-/tree/master/**/*',
+        type: 'url',
+      });
+
+      cy.visit('/catalog');
+      cy.contains('All').click();
+      cy.get('table').should('contain', 'gitlab-repo');
+      cy.get('table').should('contain', 'gitlab-repo-nested');
+    });
+
+    it('should work for bitbucket', () => {
+      cy.loginAsGuest();
+
+      cy.request('POST', '/api/catalog/locations', {
+        target:
+          'https://bitbucket.org/backstage-verification/test-repo/src/master/**/*',
+        type: 'url',
+      });
+
+      cy.visit('/catalog');
+      cy.contains('All').click();
+      cy.get('table').should('contain', 'bitbucket-repo');
+      cy.get('table').should('contain', 'bitbucket-repo-nested');
     });
   });
 });
