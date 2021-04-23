@@ -100,28 +100,31 @@ export class IndexBuilder {
   async build() {
     return Promise.all(
       Object.keys(this.collators).map(async type => {
-        const decorators: DocumentDecorator[] = (
-          this.decorators['*'] || []
-        ).concat(this.decorators[type] || []);
+        setInterval(async () => {
+          const decorators: DocumentDecorator[] = (
+            this.decorators['*'] || []
+          ).concat(this.decorators[type] || []);
 
-        this.logger.info(
-          `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
-        );
-        let documents = await this.collators[type].collate.execute();
-        for (let i = 0; i < decorators.length; i++) {
           this.logger.info(
-            `Decorating ${type} documents via ${decorators[i].constructor.name}`,
+            `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
           );
-          documents = await decorators[i].execute(documents);
-        }
+          let documents = await this.collators[type].collate.execute();
+          for (let i = 0; i < decorators.length; i++) {
+            this.logger.info(
+              `Decorating ${type} documents via ${decorators[i].constructor.name}`,
+            );
+            documents = await decorators[i].execute(documents);
+          }
 
-        if (!documents || documents.length === 0) {
-          this.logger.info(`No documents for type "${type}" to index`);
-          return;
-        }
+          if (!documents || documents.length === 0) {
+            this.logger.info(`No documents for type "${type}" to index`);
+            return;
+          }
 
-        // pushing documents to index to a configured search engine.
-        this.searchEngine.index(type, documents);
+          // pushing documents to index to a configured search engine.
+          this.searchEngine.index(type, documents);
+          // refreshInterval configured in seconds, setInterval want milliseconds
+        }, this.collators[type].refreshInterval * 1000);
       }),
     );
   }

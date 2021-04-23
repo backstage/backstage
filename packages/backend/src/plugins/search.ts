@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
 import {
   IndexBuilder,
@@ -35,11 +34,7 @@ export default async function createPlugin({
     collator: new DefaultCatalogCollator(discovery),
   });
 
-  // TODO: Move refresh loop logic into the builder.
-  const timerId = setInterval(() => {
-    indexBuilder.build();
-  }, 60000);
-  useHotCleanup(module, () => clearInterval(timerId));
+  indexBuilder.build();
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
