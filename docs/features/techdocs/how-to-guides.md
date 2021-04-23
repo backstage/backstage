@@ -122,7 +122,7 @@ const tabsConfig = [
   },
   {
     label: 'Overview',
-    widgets: [
+    panels: [
       {
         title: 'Overview',
         description:
