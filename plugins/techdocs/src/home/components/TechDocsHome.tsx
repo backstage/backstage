@@ -37,7 +37,7 @@ export const TechDocsHome = () => {
       ],
     },
     {
-      label: 'Owned',
+      label: 'Owned Documents',
       panels: [
         {
           title: 'Owned documents',
