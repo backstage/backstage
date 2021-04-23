@@ -21,27 +21,91 @@ stages:
 - stage: CI
   displayName: 'Continuous Integration'  
   jobs:    
-  - job: InstallYarn
+  # - job: InstallYarn
+  #   steps:
+  #     - script: npm install yarn
+      
+  # - job: BuildBackendImage
+  #   dependsOn: InstallYarn
+  #   steps:      
+  #     - script: yarn install
+  #     - script: yarn tsc
+  #     - script: yarn build
+
+      # - task: Docker@2
+      #   displayName: 'Build backend image'
+      #   inputs:
+      #     command: 'build'
+      #     Dockerfile: './packages/backend/Dockerfile'
+      #     buildContext: $(System.DefaultWorkingDirectory)
+      #     arguments: '-t backstage-backend'
+
+
+  #     - task: ECRPushImage@1
+  #       displayName: 'Push backend image to Shared ECR'
+  #       inputs:
+  #         awsCredentials: 'Shared-Prod ECR-Push'
+  #         regionName: 'eu-central-1'
+  #         imageSource: 'imagename'
+  #         sourceImageName: 'backstage-backend'
+  #         repositoryName: 'selfservice/backstage-backend'
+  #         pushTag: '$(Build.BuildId)'
+
+  # - job: BuildFrontendImage
+  #   dependsOn: InstallYarn
+  #   steps:      
+  #     - script: yarn install
+  #     - script: yarn tsc
+  #     - script: yarn build
+
+  #     - task: Docker@2
+  #       displayName: 'Build frontend image'
+  #       inputs:
+  #         command: 'build'
+  #         Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
+  #         buildContext: $(System.DefaultWorkingDirectory)
+  #         arguments: '-t backstage'
+
+  #     - task: ECRPushImage@1
+  #       displayName: 'Push frontend image to Shared ECR'
+  #       inputs:
+  #         awsCredentials: 'Shared-Prod ECR-Push'
+  #         regionName: 'eu-central-1'
+  #         imageSource: 'imagename'
+  #         sourceImageName: 'backstage'
+  #         repositoryName: 'selfservice/backstage'
+  #         pushTag: '$(Build.BuildId)'
+
+  # - job: PublishArtifacts
+  #   dependsOn: 
+  #   - BuildBackendImage
+  #   - BuildFrontendImage  
+  #   steps:
+  #     - task: PublishPipelineArtifact@1
+  #       inputs:
+  #         targetPath: '$(System.DefaultWorkingDirectory)/dfds-deploy/k8s'
+  #         artifact: 'manifests'
+  #         publishLocation: 'pipeline'   
+
+  - job: BuildImages
+    dependsOn: InstallYarn
     steps:
       - script: npm install yarn
-      
-  - job: BuildBackendImage
-    dependsOn: InstallYarn
-    steps:      
       - script: yarn install
       - script: yarn tsc
       - script: yarn build
 
-      - task: Docker@2
-        displayName: 'Build backend image'
+      - task: DockerCompose@0
+        displayName: 'Build images'
         inputs:
-          command: 'build'
-          Dockerfile: './packages/backend/Dockerfile'
-          buildContext: $(System.DefaultWorkingDirectory)
-          arguments: '-t backstage-backend'
+          containerregistrytype: 'Container Registry'
+          dockerComposeFile: 'docker-compose.production.yml'
+          action: 'Run a Docker Compose command'
+          dockerComposeCommand: 'build'
+          # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
       - task: ECRPushImage@1
-        displayName: 'Push backend image to Shared ECR'
+        displayName: 'Push frontend image to Shared ECR'
         inputs:
           awsCredentials: 'Shared-Prod ECR-Push'
           regionName: 'eu-central-1'
@@ -50,35 +114,20 @@ stages:
           repositoryName: 'selfservice/backstage-backend'
           pushTag: '$(Build.BuildId)'
 
-  - job: BuildFrontendImage
-    dependsOn: InstallYarn
-    steps:      
-      - script: yarn install
-      - script: yarn tsc
-      - script: yarn build
-
-      - task: Docker@2
-        displayName: 'Build frontend image'
-        inputs:
-          command: 'build'
-          Dockerfile: './contrib/docker/multi-stage-frontend/Dockerfile'
-          buildContext: $(System.DefaultWorkingDirectory)
-          arguments: '-t backstage'
-
       - task: ECRPushImage@1
         displayName: 'Push frontend image to Shared ECR'
         inputs:
           awsCredentials: 'Shared-Prod ECR-Push'
           regionName: 'eu-central-1'
           imageSource: 'imagename'
-          sourceImageName: 'backstage'
+          sourceImageName: 'backstage-frontend'
           repositoryName: 'selfservice/backstage'
           pushTag: '$(Build.BuildId)'
-
+     
+  
   - job: PublishArtifacts
     dependsOn: 
-    - BuildBackendImage
-    - BuildFrontendImage  
+    - BuildImages 
     steps:
       - task: PublishPipelineArtifact@1
         inputs:
@@ -86,36 +135,38 @@ stages:
           artifact: 'manifests'
           publishLocation: 'pipeline'   
 
-- stage: CD
-  displayName: 'Continuous Deployment'
-  dependsOn: CI
-  condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
+# - stage: CD
+#   displayName: 'Continuous Deployment'
+#   dependsOn: CI
+#   condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
 
-  jobs:  
-  - deployment: K8s
-    displayName: 'Deploy to Kubernetes'
-    environment: 'Hellman'
-    strategy: 
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: manifests
-            displayName: 'Download Artifact: manifests'
+#   jobs:  
+#   - deployment: K8s
+#     displayName: 'Deploy to Kubernetes'
+#     environment: 'Hellman'
+#     strategy: 
+#       runOnce:
+#         deploy:
+#           steps:
+#           - download: current
+#             artifact: manifests
+#             displayName: 'Download Artifact: manifests'
           
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: 'Replace tokens in yaml files'
-            inputs:
-              rootDirectory: '$(Pipeline.Workspace)/manifests/'
-              targetFiles: '*.yaml'
-              tokenPrefix: '#('
-              tokenSuffix: ')'
+#           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+#             displayName: 'Replace tokens in yaml files'
+#             inputs:
+#               rootDirectory: '$(Pipeline.Workspace)/manifests/'
+#               targetFiles: '*.yaml'
+#               tokenPrefix: '#('
+#               tokenSuffix: ')'
 
-          - task: Kubernetes@1
-            displayName: 'Apply k8s manifests'
-            inputs:
-              connectionType: Kubernetes Service Connection
-              kubernetesServiceEndpoint: 'Kubernetes-Developer-Automation-Deploy'
-              namespace: 'developerautomation-xavgy'
-              command: apply
-              arguments: '-f $(Pipeline.Workspace)/manifests/'
+#           - task: Kubernetes@1
+#             displayName: 'Apply k8s manifests'
+#             inputs:
+#               connectionType: Kubernetes Service Connection
+#               kubernetesServiceEndpoint: 'Kubernetes-Developer-Automation-Deploy'
+#               namespace: 'developerautomation-xavgy'
+#               command: apply
+#               arguments: '-f $(Pipeline.Workspace)/manifests/'
+
+              
