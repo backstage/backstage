@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 import { wrapInTestApp } from '@backstage/test-utils';
 import { render } from '@testing-library/react';
 import React from 'react';
-import { OverviewContent } from './OverviewContent';
+import { DocsCardGrid } from './DocsCardGrid';
 
-describe('TechDocs Overview Content', () => {
-  it('should render all TechDocs Documents', async () => {
+describe('Entity Docs Card Grid', () => {
+  it('should render all entities passed ot it', async () => {
     const { findByText } = render(
       wrapInTestApp(
-        <OverviewContent
+        <DocsCardGrid
           entities={[
             {
               apiVersion: 'version',
@@ -49,13 +49,6 @@ describe('TechDocs Overview Content', () => {
         />,
       ),
     );
-
-    expect(await findByText('Overview')).toBeInTheDocument();
-    expect(
-      await findByText(
-        /Explore your internal technical ecosystem through documentation./i,
-      ),
-    ).toBeInTheDocument();
     expect(await findByText('testName')).toBeInTheDocument();
     expect(await findByText('testName2')).toBeInTheDocument();
   });
