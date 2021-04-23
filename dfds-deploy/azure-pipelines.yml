@@ -94,6 +94,10 @@ stages:
       # - script: yarn tsc
       # - script: yarn build
 
+      - script: |
+          pwd
+          echo "listing"
+          ls          
       - task: DockerCompose@0
         displayName: 'Build images'
         inputs:
