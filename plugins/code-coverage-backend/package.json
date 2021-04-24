@@ -44,6 +44,7 @@
     "xml2js": "^0.4.23"
   },
   "files": [
-    "dist"
+    "dist",
+    "migrations/**/*.{js,d.ts}"
   ]
 }
