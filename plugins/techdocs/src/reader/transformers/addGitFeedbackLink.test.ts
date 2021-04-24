@@ -18,10 +18,10 @@ import { createTestShadowDom } from '../../test-utils';
 import { addGitFeedbackLink } from './addGitFeedbackLink';
 
 const configApi = {
-  getConfigArray: function getConfigArray(key: string) {
+  getOptionalConfigArray: function getOptionalConfigArray(key: string) {
     return key === 'integrations.github'
       ? [{ data: { host: 'self-hosted-git-hub-provider.com' } }]
-      : [];
+      : undefined;
   },
 };
 
