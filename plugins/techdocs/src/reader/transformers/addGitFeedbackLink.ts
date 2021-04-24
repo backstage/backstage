@@ -35,20 +35,20 @@ export const addGitFeedbackLink = (configApi: any): Transformer => {
 
     const sourceURL = new URL(sourceAnchor.href);
     const githubHosts = configApi
-      .getConfigArray('integrations.github')
-      .map((integration: any) => integration.data.host);
+      .getOptionalConfigArray('integrations.github')
+      ?.map((integration: any) => integration.data.host);
     const gitlabHosts = configApi
-      .getConfigArray('integrations.gitlab')
-      .map((integration: any) => integration.data.host);
+      .getOptionalConfigArray('integrations.gitlab')
+      ?.map((integration: any) => integration.data.host);
 
     // don't show if can't identify edit link hostname as a gitlab/github hosting
     if (
-      githubHosts.includes(sourceURL.hostname) ||
+      githubHosts?.includes(sourceURL.hostname) ||
       sourceURL.origin.includes('github')
     ) {
       gitHost = 'github';
     } else if (
-      gitlabHosts.includes(sourceURL.hostname) ||
+      gitlabHosts?.includes(sourceURL.hostname) ||
       sourceURL.origin.includes('gitlab')
     ) {
       gitHost = 'gitlab';
