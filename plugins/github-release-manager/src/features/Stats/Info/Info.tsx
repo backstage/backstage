@@ -13,31 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Paper } from '@material-ui/core';
 
-import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
-import { ReleaseTagList } from './ReleaseTagList';
-import { ReleaseTime } from './ReleaseTime';
+import { InDepth } from './InDepth/InDepth';
+import { Summary } from './Summary';
 
-interface RowCollapsedProps {
-  releaseStat: ReleaseStats['releases']['0'];
-}
-
-export function RowCollapsed({ releaseStat }: RowCollapsedProps) {
+export function Info() {
   return (
-    <Box
-      margin={1}
+    <Paper
+      variant="outlined"
       style={{
+        padding: 20,
+        marginLeft: 25,
+        marginRight: 25,
+        marginBottom: 25,
         display: 'flex',
-        alignItems: 'stretch',
-        paddingLeft: '10%',
-        paddingRight: '10%',
+        flexDirection: 'column',
       }}
     >
-      <ReleaseTagList releaseStat={releaseStat} />
+      <Summary />
 
-      <ReleaseTime releaseStat={releaseStat} />
-    </Box>
+      <InDepth />
+    </Paper>
   );
 }

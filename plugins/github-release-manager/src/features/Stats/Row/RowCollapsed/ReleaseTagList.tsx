@@ -17,14 +17,12 @@
 import React from 'react';
 import { Box, Typography } from '@material-ui/core';
 
-import { getReleasesWithTags } from '../../helpers/getReleasesWithTags';
+import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
 
 export function ReleaseTagList({
-  releaseWithTags,
+  releaseStat,
 }: {
-  releaseWithTags: ReturnType<
-    typeof getReleasesWithTags
-  >['releasesWithTags']['releases']['0'];
+  releaseStat: ReleaseStats['releases']['0'];
 }) {
   return (
     <Box
@@ -36,9 +34,9 @@ export function ReleaseTagList({
         justifyContent: 'center',
       }}
     >
-      {releaseWithTags.versions.length > 0 && (
+      {releaseStat.versions.length > 0 && (
         <Box style={{ position: 'relative' }}>
-          {releaseWithTags.versions.map(version => (
+          {releaseStat.versions.map(version => (
             <Typography variant="body1" key={version.tagName}>
               {version.tagName}
             </Typography>
@@ -46,7 +44,7 @@ export function ReleaseTagList({
         </Box>
       )}
 
-      {releaseWithTags.versions.length > 0 && (
+      {releaseStat.versions.length > 0 && (
         <Box
           margin={1}
           style={{
@@ -60,7 +58,7 @@ export function ReleaseTagList({
       )}
 
       <Box style={{ position: 'relative' }}>
-        {releaseWithTags.candidates.map(candidate => (
+        {releaseStat.candidates.map(candidate => (
           <Typography variant="body1" key={candidate.tagName}>
             {candidate.tagName}
           </Typography>

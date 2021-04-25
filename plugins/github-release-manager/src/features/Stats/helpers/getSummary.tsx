@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-import { getReleasesWithTags } from './getReleasesWithTags';
+import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 
-export function getSummary({
-  releasesWithTags,
-}: {
-  releasesWithTags: ReturnType<typeof getReleasesWithTags>['releasesWithTags'];
-}) {
-  return Object.entries(releasesWithTags.releases).reduce(
-    (
-      acc: {
-        totalReleases: number;
-        totalCandidatePatches: number;
-        totalVersionPatches: number;
+export function getSummary({ releaseStats }: { releaseStats: ReleaseStats }) {
+  return {
+    summary: Object.entries(releaseStats.releases).reduce(
+      (
+        acc: {
+          totalReleases: number;
+          totalCandidatePatches: number;
+          totalVersionPatches: number;
+        },
+        [_baseVersion, mappedRelease],
+      ) => {
+        const candidatePatches =
+          Object.keys(mappedRelease.candidates).length - 1;
+        const versionPatches = Object.keys(mappedRelease.versions).length - 1;
+
+        acc.totalReleases += 1;
+        acc.totalCandidatePatches +=
+          candidatePatches >= 0 ? candidatePatches : 0;
+        acc.totalVersionPatches += versionPatches >= 0 ? versionPatches : 0;
+
+        return acc;
       },
-      [_baseVersion, mappedRelease],
-    ) => {
-      acc.totalReleases += 1;
-      acc.totalCandidatePatches += mappedRelease.candidates.length - 1;
-      acc.totalVersionPatches += mappedRelease.versions.length - 1;
-
-      return acc;
-    },
-    {
-      totalReleases: 0,
-      totalCandidatePatches: 0,
-      totalVersionPatches: 0,
-    },
-  );
+      {
+        totalReleases: 0,
+        totalCandidatePatches: 0,
+        totalVersionPatches: 0,
+      },
+    ),
+  };
 }

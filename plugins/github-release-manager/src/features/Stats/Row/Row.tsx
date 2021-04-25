@@ -27,7 +27,7 @@ import {
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
-import { getReleasesWithTags } from '../helpers/getReleasesWithTags';
+import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 import { RowCollapsed } from './RowCollapsed/RowCollapsed';
 
 const useRowStyles = makeStyles({
@@ -40,17 +40,15 @@ const useRowStyles = makeStyles({
 
 interface RowProps {
   baseVersion: string;
-  releaseWithTags: ReturnType<
-    typeof getReleasesWithTags
-  >['releasesWithTags']['releases']['0'];
+  releaseStat: ReleaseStats['releases']['0'];
 }
 
-export function Row({ baseVersion, releaseWithTags }: RowProps) {
+export function Row({ baseVersion, releaseStat }: RowProps) {
   const [open, setOpen] = useState(false);
   const classes = useRowStyles();
 
   return (
-    <React.Fragment>
+    <>
       <TableRow className={classes.root}>
         <TableCell>
           <IconButton
@@ -63,34 +61,32 @@ export function Row({ baseVersion, releaseWithTags }: RowProps) {
         </TableCell>
 
         <TableCell component="th" scope="row">
-          <Link href={releaseWithTags.htmlUrl} target="_blank">
+          <Link href={releaseStat.htmlUrl} target="_blank">
             {baseVersion}
-            {releaseWithTags.versions.length === 0 ? ' (prerelease)' : ''}
+            {releaseStat.versions.length === 0 ? ' (prerelease)' : ''}
           </Link>
         </TableCell>
 
         <TableCell>
-          {releaseWithTags.createdAt
-            ? DateTime.fromISO(releaseWithTags.createdAt)
+          {releaseStat.createdAt
+            ? DateTime.fromISO(releaseStat.createdAt)
                 .setLocale('sv-SE')
                 .toFormat('yyyy-MM-dd')
             : '-'}
         </TableCell>
 
-        <TableCell>{releaseWithTags.candidates.length}</TableCell>
+        <TableCell>{releaseStat.candidates.length}</TableCell>
 
-        <TableCell>
-          {Math.max(0, releaseWithTags.versions.length - 1)}
-        </TableCell>
+        <TableCell>{Math.max(0, releaseStat.versions.length - 1)}</TableCell>
       </TableRow>
 
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <RowCollapsed releaseWithTags={releaseWithTags} />
+            <RowCollapsed releaseStat={releaseStat} />
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }

@@ -591,7 +591,6 @@ ${selectedPatchCommit.commit.message}`,
       });
 
       return releases.map(release => ({
-        release,
         id: release.id,
         name: release.name,
         tagName: release.tag_name,

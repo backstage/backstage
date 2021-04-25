@@ -17,39 +17,37 @@
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 
-import { getReleasesWithTags } from './helpers/getReleasesWithTags';
-import { Project } from '../../contexts/ProjectContext';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { useReleaseStatsContext } from './contexts/ReleaseStatsContext';
 
-interface WarnProps {
-  releasesWithTags: ReturnType<typeof getReleasesWithTags>['releasesWithTags'];
-  project: Project;
-}
+export const Warn = () => {
+  const { releaseStats } = useReleaseStatsContext();
+  const { project } = useProjectContext();
 
-export const Warn = ({ releasesWithTags, project }: WarnProps) => {
   return (
     <Alert severity="warning" style={{ marginBottom: 10 }}>
-      {releasesWithTags.unmappableTags.length > 0 && (
+      {releaseStats.unmappableTags.length > 0 && (
         <div>
-          Failed to map{' '}
-          <strong>{releasesWithTags.unmappableTags.length}</strong> tags to
-          releases
+          Failed to map <strong>{releaseStats.unmappableTags.length}</strong>{' '}
+          tags to releases
         </div>
       )}
 
-      {releasesWithTags.unmatchedTags.length > 0 && (
+      {releaseStats.unmatchedTags.length > 0 && (
+        <div>
+          Failed to match <strong>{releaseStats.unmatchedTags.length}</strong>{' '}
+          tags to {project.versioningStrategy}
+        </div>
+      )}
+
+      {releaseStats.unmatchedReleases.length > 0 && (
         <div>
           Failed to match{' '}
-          <strong>{releasesWithTags.unmatchedTags.length}</strong> tags to{' '}
+          <strong>{releaseStats.unmatchedReleases.length}</strong> releases to{' '}
           {project.versioningStrategy}
         </div>
       )}
 
-      {releasesWithTags.unmatched.length > 0 && (
-        <div>
-          Failed to match <strong>{releasesWithTags.unmatched.length}</strong>{' '}
-          releases to {project.versioningStrategy}
-        </div>
-      )}
       <div>See full output in the console</div>
     </Alert>
   );

@@ -15,27 +15,23 @@
  */
 
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
 import { DateTime } from 'luxon';
-
-import { CenteredCircularProgress } from '../../../../components/CenteredCircularProgress';
-import { getReleasesWithTags } from '../../helpers/getReleasesWithTags';
-import { useGetCommit } from '../../hooks/useGetCommit';
+import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
+import { CenteredCircularProgress } from '../../../../components/CenteredCircularProgress';
+import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
+import { useGetCommit } from '../../hooks/useGetCommit';
+
 interface ReleaseTimeProps {
-  releaseWithTags: ReturnType<
-    typeof getReleasesWithTags
-  >['releasesWithTags']['releases']['0'];
+  releaseStat: ReleaseStats['releases']['0'];
 }
 
-export function ReleaseTime({ releaseWithTags }: ReleaseTimeProps) {
-  const reversedCandidates = [...releaseWithTags.candidates].reverse();
-
-  const firstCandidateSha = reversedCandidates[0]?.sha;
+export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
+  const firstCandidateSha = [...releaseStat.candidates].reverse()[0]?.sha;
   const { commit: releaseCut } = useGetCommit({ ref: firstCandidateSha });
 
-  const mostRecentVersionSha = releaseWithTags.versions[0]?.sha;
+  const mostRecentVersionSha = releaseStat.versions[0]?.sha;
   const { commit: releaseComplete } = useGetCommit({
     ref: mostRecentVersionSha,
   });
@@ -57,15 +53,6 @@ export function ReleaseTime({ releaseWithTags }: ReleaseTimeProps) {
     );
   }
 
-  if (releaseComplete.error) {
-    return (
-      <Alert severity="error">
-        Failed to fetch the final Release Version Commit (
-        {releaseComplete.error.message})
-      </Alert>
-    );
-  }
-
   const diff =
     releaseCut.value?.createdAt && releaseComplete.value?.createdAt
       ? DateTime.fromISO(releaseComplete.value.createdAt)
@@ -83,7 +70,7 @@ export function ReleaseTime({ releaseWithTags }: ReleaseTimeProps) {
         }}
       >
         <Typography variant="body1">
-          Release completed{' '}
+          {releaseStat.versions.length === 0 ? '-' : 'Release completed '}
           {releaseComplete.value?.createdAt &&
             DateTime.fromISO(releaseComplete.value.createdAt)
               .setLocale('sv-SE')
@@ -99,7 +86,11 @@ export function ReleaseTime({ releaseWithTags }: ReleaseTimeProps) {
         }}
       >
         <Typography variant="h5" color="secondary">
-          Release time: {diff.days} days
+          {diff.days === -1 ? (
+            <>Ongoing: {diff.days} days</>
+          ) : (
+            <>Completed in: {diff.days} days</>
+          )}
         </Typography>
       </Box>
 

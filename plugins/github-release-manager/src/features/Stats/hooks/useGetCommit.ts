@@ -16,20 +16,25 @@
 
 import { useAsync } from 'react-use';
 
+import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 
-export const useGetCommit = ({ ref }: { ref: string }) => {
+export const useGetCommit = ({ ref }: { ref?: string }) => {
   const { pluginApiClient } = usePluginApiClientContext();
   const { project } = useProjectContext();
 
-  const commit = useAsync(() =>
-    pluginApiClient.stats.getCommit({
+  const commit = useAsync(async () => {
+    if (!ref) {
+      throw new GitHubReleaseManagerError('Missing ref to get commit');
+    }
+
+    return pluginApiClient.stats.getCommit({
       owner: project.owner,
       repo: project.repo,
       ref,
-    }),
-  );
+    });
+  });
 
   return {
     commit,

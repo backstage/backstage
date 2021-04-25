@@ -19,7 +19,6 @@ import { Alert } from '@material-ui/lab';
 import {
   Box,
   makeStyles,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -29,11 +28,11 @@ import {
 } from '@material-ui/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { getMappedReleases } from './helpers/mapReleases';
-import { getReleasesWithTags } from './helpers/getReleasesWithTags';
-import { getSummary } from './helpers/getSummary';
+import { getMappedReleases } from './helpers/getMappedReleases';
+import { getReleaseStats } from './helpers/getReleaseStats';
+import { Info } from './Info/Info';
+import { ReleaseStatsContext } from './contexts/ReleaseStatsContext';
 import { Row } from './Row/Row';
-import { Summary } from './Summary';
 import { useGetStats } from './hooks/useGetStats';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { Warn } from './Warn';
@@ -65,31 +64,31 @@ export function DialogBody() {
 
   const { allReleases, allTags } = stats.value;
   const { mappedReleases } = getMappedReleases({ allReleases, project });
-  const { releasesWithTags } = getReleasesWithTags({
+  const { releaseStats } = getReleaseStats({
     mappedReleases,
     allTags,
     project,
   });
-  const summary = getSummary({ releasesWithTags });
+
   const shouldWarn =
-    releasesWithTags.unmappableTags.length > 0 ||
-    releasesWithTags.unmatchedTags.length > 0 ||
-    releasesWithTags.unmatched.length > 0;
+    releaseStats.unmappableTags.length > 0 ||
+    releaseStats.unmatchedTags.length > 0 ||
+    releaseStats.unmatchedReleases.length > 0;
 
   if (shouldWarn) {
     // eslint-disable-next-line no-console
     console.log("⚠️ Here's a summary of unmapped/unmatched tags/releases", {
-      unmappableTags: releasesWithTags.unmappableTags,
-      unmatchedTags: releasesWithTags.unmatchedTags,
-      unmatchedReleases: releasesWithTags.unmatched,
+      unmatchedReleases: releaseStats.unmatchedReleases,
+      unmatchedTags: releaseStats.unmatchedTags,
+      unmappableTags: releaseStats.unmappableTags,
     });
   }
 
   return (
-    <>
-      <Summary summary={summary} />
+    <ReleaseStatsContext.Provider value={{ releaseStats }}>
+      <Info />
 
-      <TableContainer component={Paper}>
+      <TableContainer>
         <Table className={classes.table} size="small">
           <TableHead>
             <TableRow>
@@ -102,26 +101,22 @@ export function DialogBody() {
           </TableHead>
 
           <TableBody>
-            {Object.entries(releasesWithTags.releases).map(
-              ([baseVersion, releaseWithTags], index) => {
+            {Object.entries(releaseStats.releases).map(
+              ([baseVersion, releaseStat], index) => {
                 return (
                   <Row
                     key={`row-${index}`}
                     baseVersion={baseVersion}
-                    releaseWithTags={releaseWithTags}
+                    releaseStat={releaseStat}
                   />
                 );
               },
             )}
           </TableBody>
         </Table>
-      </TableContainer>
 
-      <Box marginTop={2}>
-        {shouldWarn && (
-          <Warn releasesWithTags={releasesWithTags} project={project} />
-        )}
-      </Box>
-    </>
+        <Box marginTop={2}>{shouldWarn && <Warn />}</Box>
+      </TableContainer>
+    </ReleaseStatsContext.Provider>
   );
 }

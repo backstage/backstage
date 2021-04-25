@@ -17,6 +17,7 @@
 import { calverRegexp } from '../../../helpers/tagParts/getCalverTagParts';
 import { GetAllReleasesResult } from '../../../api/PluginApiClient';
 import { Project } from '../../../contexts/ProjectContext';
+import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 import { semverRegexp } from '../../../helpers/tagParts/getSemverTagParts';
 
 export function getMappedReleases({
@@ -28,61 +29,47 @@ export function getMappedReleases({
 }) {
   return {
     mappedReleases: allReleases.reduce(
-      (
-        acc: {
-          unmatched: string[];
-          releases: {
-            [baseVersion: string]: {
-              createdAt: string | null;
-              candidates: {
-                tagName: string;
-                sha: string;
-              }[];
-              versions: {
-                tagName: string;
-                sha: string;
-              }[];
-              htmlUrl: string;
-            };
-          };
-        },
-        release,
-      ) => {
+      (acc: ReleaseStats, release) => {
         const match =
           project.versioningStrategy === 'semver'
             ? release.tagName.match(semverRegexp)
             : release.tagName.match(calverRegexp);
 
         if (!match) {
-          acc.unmatched.push(release.tagName);
+          acc.unmatchedReleases.push(release.tagName);
           return acc;
         }
 
-        const prefix = match[1];
+        const prefix = match[1] as 'rc' | 'version';
         const baseVersion =
           project.versioningStrategy === 'semver'
             ? `${match[2]}.${match[3]}`
             : match[2];
 
         if (!acc.releases[baseVersion]) {
-          acc.releases[baseVersion] = {
-            createdAt: release.createdAt,
-            candidates:
-              prefix === 'rc' ? [{ tagName: release.tagName, sha: '' }] : [],
-            versions:
-              prefix === 'version'
-                ? [{ tagName: release.tagName, sha: '' }]
-                : [],
-            htmlUrl: release.htmlUrl,
+          const releaseEntry = {
+            tagName: release.tagName,
+            sha: '',
           };
+
+          acc.releases[baseVersion] = {
+            baseVersion,
+            createdAt: release.createdAt,
+            htmlUrl: release.htmlUrl,
+            candidates: prefix === 'rc' ? [releaseEntry] : [],
+            versions: prefix === 'version' ? [releaseEntry] : [],
+          };
+
           return acc;
         }
 
         return acc;
       },
       {
-        unmatched: [],
         releases: {},
+        unmappableTags: [],
+        unmatchedReleases: [],
+        unmatchedTags: [],
       },
     ),
   };

@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-export function getDecimalNumber(n: number, decimals = 2) {
-  if (isNaN(n)) {
-    return 0;
-  }
+import { getSummary } from './getSummary';
+import { mockReleaseStats } from '../../../test-helpers/stats';
 
-  if (n.toString().includes('.')) {
-    return parseFloat(n.toFixed(decimals));
-  }
+describe('getSummary', () => {
+  it('should get summary', () => {
+    const result = getSummary({ releaseStats: mockReleaseStats });
 
-  return n;
-}
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "summary": Object {
+          "totalCandidatePatches": 3,
+          "totalReleases": 2,
+          "totalVersionPatches": 1,
+        },
+      }
+    `);
+  });
+});

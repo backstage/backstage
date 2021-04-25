@@ -280,16 +280,25 @@ export const mockApiClient: IPluginApiClient = {
   },
 
   stats: {
-    getAllTags: jest.fn(async () => {
-      throw new Error('Not implemented');
-    }),
+    getAllTags: jest.fn(async () => [
+      {
+        tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+        sha: 'mock_sha',
+      },
+    ]),
 
-    getAllReleases: jest.fn(async () => {
-      throw new Error('Not implemented');
-    }),
+    getAllReleases: jest.fn(async () => [
+      {
+        id: 1,
+        name: 'mock_release_name',
+        tagName: 'mock_release_tag_name',
+        createdAt: 'mock_release_published_at',
+        htmlUrl: 'mock_release_html_url',
+      },
+    ]),
 
-    getCommit: jest.fn(async () => {
-      throw new Error('Not implemented');
-    }),
+    getCommit: jest.fn(async () => ({
+      createdAt: '2021-01-01T10:11:12Z',
+    })),
   },
 };
