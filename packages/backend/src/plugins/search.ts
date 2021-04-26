@@ -34,7 +34,10 @@ export default async function createPlugin({
     collator: new DefaultCatalogCollator(discovery),
   });
 
-  indexBuilder.build();
+  const { scheduler } = await indexBuilder.build();
+
+  scheduler.start();
+  useHotCleanup(module, () => scheduler.stop());
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),

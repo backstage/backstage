@@ -65,7 +65,8 @@ describe('IndexBuilder', () => {
       });
 
       // Build the index and ensure the collator was invoked.
-      await testIndexBuilder.build();
+      const { scheduler } = await testIndexBuilder.build();
+      scheduler.start();
       jest.advanceTimersByTime(6000);
       expect(collatorSpy).toHaveBeenCalled();
     });
@@ -89,7 +90,8 @@ describe('IndexBuilder', () => {
       });
 
       // Build the index and ensure the decorator was invoked.
-      await testIndexBuilder.build();
+      const { scheduler } = await testIndexBuilder.build();
+      scheduler.start();
       jest.advanceTimersByTime(6000);
       // wait for async decorator execution
       await Promise.resolve();
@@ -123,7 +125,8 @@ describe('IndexBuilder', () => {
       });
 
       // Build the index and ensure the decorator was invoked.
-      await testIndexBuilder.build();
+      const { scheduler } = await testIndexBuilder.build();
+      scheduler.start();
       jest.advanceTimersByTime(6000);
       // wait for async decorator execution
       await Promise.resolve();
@@ -138,7 +141,7 @@ describe('IndexBuilder', () => {
         text: 'Test text.',
         location: '/test/location',
       };
-      jest
+      const collatorSpy = jest
         .spyOn(testCollator, 'execute')
         .mockImplementation(async () => [docFixture]);
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
@@ -157,8 +160,10 @@ describe('IndexBuilder', () => {
       });
 
       // Build the index and ensure the decorator was not invoked.
-      await testIndexBuilder.build();
+      const { scheduler } = await testIndexBuilder.build();
+      scheduler.start();
       jest.advanceTimersByTime(6000);
+      expect(collatorSpy).toHaveBeenCalled();
       expect(decoratorSpy).not.toHaveBeenCalled();
     });
   });
