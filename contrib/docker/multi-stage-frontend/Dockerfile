@@ -1,11 +1,12 @@
 FROM node:12-buster AS build
+ARG app_config_file=app-config.yaml
 
 RUN mkdir /app
 COPY . /app
 WORKDIR /app
 
 RUN yarn install
-RUN yarn workspace example-app build
+RUN yarn workspace example-app build --config ../../$app_config_file
 
 # Contruct backstage-frontend image
 FROM nginx:mainline

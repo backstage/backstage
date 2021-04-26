@@ -27,6 +27,8 @@ services:
     build:
       dockerfile: ./contrib/docker/multi-stage-frontend/Dockerfile
       context: ../
+      args:
+        - app_config_file=app-config.production.yaml
     ports:
       - '3000:80'
   # ubuntu:
