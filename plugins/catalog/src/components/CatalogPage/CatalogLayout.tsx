@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  configApiRef,
-  Header,
-  HomepageTimer,
-  Page,
-  useApi,
-} from '@backstage/core';
+import { configApiRef, Header, Page, useApi } from '@backstage/core';
 import React from 'react';
 
 type Props = {
@@ -37,9 +31,7 @@ const CatalogLayout = ({ children }: Props) => {
         title={`${orgName} Catalog`}
         subtitle={`Index of software components in ${orgName}`}
         pageTitleOverride="Home"
-      >
-        <HomepageTimer />
-      </Header>
+      />
       {children}
     </Page>
   );
