@@ -101,12 +101,6 @@ export type ProcessingItemResult = {
   deferredEntities: Entity[];
 };
 
-export type AddProcessingItemRequest = {
-  type: 'entity' | 'provider';
-  id: string;
-  entities: Entity[];
-};
-
 export type ProcessingItem = {
   id: string;
   entity: Entity;
@@ -128,6 +122,5 @@ export type ReplaceProcessingItemsRequest =
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
   getNextProcessingItem(): Promise<ProcessingItem>;
-  addProcessingItems(request: AddProcessingItemRequest): Promise<void>;
   replaceProcessingItems(request: ReplaceProcessingItemsRequest): Promise<void>;
 }

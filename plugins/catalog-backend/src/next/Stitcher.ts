@@ -19,7 +19,7 @@ import { Logger } from 'winston';
 import { Transaction } from '../database';
 import { ConflictError } from '@backstage/errors';
 import {
-  DbRefreshStateReferences,
+  DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
 } from './database/DefaultProcessingDatabase';
@@ -73,7 +73,7 @@ export class Stitcher {
           return;
         }
 
-        const [reference_count_result] = await tx<DbRefreshStateReferences>(
+        const [reference_count_result] = await tx<DbRefreshStateReferencesRow>(
           'refresh_state_references',
         )
           .where({ target_entity_ref: entityRef })
