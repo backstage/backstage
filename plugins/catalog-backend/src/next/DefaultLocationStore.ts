@@ -104,5 +104,13 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   async connect(connection: EntityProviderConnection): Promise<void> {
     this._connection = connection;
+    const locations = await this.db.locations();
+    const entities = locations.map(location => {
+      return locationSpecToLocationEntity(location);
+    });
+    await this.connection.applyMutation({
+      type: 'full',
+      entities,
+    });
   }
 }

@@ -49,35 +49,28 @@ export class DefaultProcessingStateManager implements ProcessingStateManager {
 
   async addProcessingItems(request: AddProcessingItemRequest) {
     return this.db.transaction(async tx => {
-      await this.db.addUnprocessedEntities(tx, request);
+      // await this.db.addUnprocessedEntities(tx, request);
     });
   }
 
   async getNextProcessingItem(): Promise<ProcessingItem> {
-    const entities = await new Promise<RefreshStateItem[]>(resolve =>
-      this.popFromQueue(resolve),
-    );
-    const { id, state, unprocessedEntity } = entities[0];
-    return {
-      id,
-      entity: unprocessedEntity,
-      state,
-    };
-  }
-
-  async popFromQueue(resolve: (rows: RefreshStateItem[]) => void) {
-    const entities = await this.db.transaction(async tx => {
-      return this.db.getProcessableEntities(tx, {
-        processBatchSize: 1,
+    for (;;) {
+      const { items } = await this.db.transaction(async tx => {
+        return this.db.getProcessableEntities(tx, {
+          processBatchSize: 1,
+        });
       });
-    });
 
-    // No entities require refresh, wait and try again.
-    if (!entities.items.length) {
-      setTimeout(() => this.popFromQueue(resolve), 1000);
-      return;
+      if (items.length) {
+        const { id, state, unprocessedEntity } = items[0];
+        return {
+          id,
+          entity: unprocessedEntity,
+          state,
+        };
+      }
+
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
     }
-
-    resolve(entities.items);
   }
 }

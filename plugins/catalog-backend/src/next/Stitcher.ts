@@ -76,8 +76,8 @@ export class Stitcher {
         const [reference_count_result] = await tx<DbRefreshStateReferences>(
           'refresh_state_references',
         )
-          .where({ target_entity_id: entity.metadata.uid })
-          .count({ reference_count: 'target_entity_id' });
+          .where({ target_entity_ref: entityRef })
+          .count({ reference_count: 'target_entity_ref' });
 
         if (Number(reference_count_result.reference_count) === 0) {
           this.logger.debug(`${entityRef} is orphan`);

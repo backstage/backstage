@@ -26,10 +26,12 @@ import {
   UpdateProcessedEntityOptions,
   GetProcessableEntitiesResult,
   ReplaceUnprocessedEntitiesOptions,
+  RefreshStateItem,
 } from './types';
 import type { Logger } from 'winston';
 
 import { v4 as uuid } from 'uuid';
+import { JsonObject } from '@backstage/config';
 
 export type DbRefreshStateRow = {
   entity_id: string;
@@ -88,7 +90,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         errors,
       })
       .where('entity_id', id);
-
     if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
@@ -96,8 +97,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      id,
-      type: 'entity',
+      entityRef: stringifyEntityRef(processedEntity),
     });
 
     // Update fragments
@@ -172,80 +172,104 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     if (toRemove.length) {
       // TODO(freben): Batch split, to not hit variable limits?
       /*
-            WITH RECURSIVE
-              -- All the refs that can be reached from each individual root
-              root_reach(id, entity_ref) AS (
-                -- Start with all roots
-                SELECT id, target_entity_ref
-                FROM refresh_state_references
-                WHERE source_key IS NOT NULL
-                UNION
-                -- For each match, select all children
-                SELECT root_reach.id, target_entity_ref
-                FROM refresh_state_references, root_reach
-                WHERE source_entity_ref = root_reach.entity_ref
-              )
-            -- Start out with our own matching row (see the WHERE that
-            -- matches on source_key and target_entity_ref below)
-            SELECT us.entity_ref
-            FROM refresh_state_references
-            -- Expand the entire tree that emanates from that row
-            JOIN root_reach AS us
-              ON us.id = refresh_state_references.id
-            -- Expand with all roots that target the same node but
-            -- aren't ourselves
-            LEFT OUTER JOIN root_reach AS them
-              ON them.entity_ref = us.entity_ref
-              AND them.id != us.id
-            -- Keep only the matches that had no other rooots
-            WHERE refresh_state_references.source_key = "R1"
-              AND refresh_state_references.target_entity_ref = "A"
-              AND them.id IS NULL;
-        */
+      WITH RECURSIVE
+        -- All the nodes that can be reached downwards from our root
+        descendants(root_id, entity_ref) AS (
+          SELECT id, target_entity_ref
+          FROM refresh_state_references
+          WHERE source_key = "R1" AND target_entity_ref = "A"
+          UNION
+          SELECT descendants.root_id, target_entity_ref
+          FROM descendants
+          JOIN refresh_state_references ON source_entity_ref = descendants.entity_ref
+        ),
+        -- All the nodes that can be reached upwards from the descendants
+        ancestors(root_id, via_entity_ref, to_entity_ref) AS (
+          SELECT NULL, entity_ref, entity_ref
+          FROM descendants
+          UNION
+          SELECT
+            CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END,
+            source_entity_ref,
+            ancestors.to_entity_ref
+          FROM ancestors
+          JOIN refresh_state_references ON target_entity_ref = ancestors.via_entity_ref
+        )
+      -- Start out with all of the descendants
+      SELECT descendants.entity_ref
+      FROM descendants
+      -- Expand with all ancestors that point to those, but aren't the current root
+      LEFT OUTER JOIN ancestors
+        ON ancestors.to_entity_ref = descendants.entity_ref
+        AND ancestors.root_id IS NOT NULL
+        AND ancestors.root_id != descendants.root_id
+      -- Exclude all lines that had such a foreign ancestor
+      WHERE ancestors.root_id IS NULL;
+      */
       const removedCount = await tx<DbRefreshStateRow>('refresh_state')
         .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
           return (
             orphans
-              // All the refs that can be reached from each individual root
-              .withRecursive('root_reach', function rootReach(outer) {
-                // Start with all roots
+              // All the nodes that can be reached downwards from our root
+              .withRecursive('descendants', function descendants(outer) {
                 return outer
-                  .select({ id: 'id', entity_ref: 'target_entity_ref' })
+                  .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
                   .from('refresh_state_references')
-                  .whereNotNull('source_key')
-                  .union(function recurse(inner) {
-                    return (
-                      inner
-                        // For each match, select all children
-                        .select({
-                          id: 'root_reach.id',
-                          entity_ref:
-                            'refresh_state_references.target_entity_ref',
-                        })
-                        .from('refresh_state_references')
-                        .crossJoin('root_reach', {
-                          'root_reach.entity_ref':
-                            'refresh_state_references.source_entity_ref',
-                        })
-                    );
+                  .where('source_key', options.sourceKey)
+                  .whereIn('target_entity_ref', toRemove)
+                  .union(function recursive(inner) {
+                    return inner
+                      .select({
+                        root_id: 'descendants.root_id',
+                        entity_ref:
+                          'refresh_state_references.target_entity_ref',
+                      })
+                      .from('descendants')
+                      .join('refresh_state_references', {
+                        'descendants.entity_ref':
+                          'refresh_state_references.source_entity_ref',
+                      });
                   });
               })
-              .select('us.entity_ref')
-              // Start out with our own matching row
-              .from('refresh_state_references')
-              .where('source_key', options.sourceKey)
-              .whereIn('target_entity_ref', toRemove)
-              // Expand the entire tree that emanates from that row
-              .leftJoin({ us: 'root_reach' }, function us() {
-                this.on('us.id', '=', 'refresh_state_references.id');
+              // All the nodes that can be reached upwards from the descendants
+              .withRecursive('ancestors', function ancestors(outer) {
+                return outer
+                  .select({
+                    root_id: tx.raw('NULL', []),
+                    via_entity_ref: 'entity_ref',
+                    to_entity_ref: 'entity_ref',
+                  })
+                  .from('descendants')
+                  .union(function recursive(inner) {
+                    return inner
+                      .select({
+                        root_id: tx.raw(
+                          'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
+                          [],
+                        ),
+                        via_entity_ref: 'source_entity_ref',
+                        to_entity_ref: 'ancestors.to_entity_ref',
+                      })
+                      .from('ancestors')
+                      .join('refresh_state_references', {
+                        target_entity_ref: 'ancestors.via_entity_ref',
+                      });
+                  });
               })
-              // Expand with all roots that target the same node but aren't ourselves
-              .leftOuterJoin({ them: 'root_reach' }, function them() {
-                this.on('them.entity_ref', '=', 'us.entity_ref');
-                this.andOn('them.id', '!=', 'us.id');
+              // Start out with all of the descendants
+              .select('descendants.entity_ref')
+              .from('descendants')
+              // Expand with all ancestors that point to those, but aren't the current root
+              .leftOuterJoin('ancestors', function keepaliveRoots() {
+                this.on(
+                  'ancestors.to_entity_ref',
+                  '=',
+                  'descendants.entity_ref',
+                );
+                this.andOnNotNull('ancestors.root_id');
+                this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
               })
-              // Keep only the matches that had no other rooots
-              .whereNull('them.id')
+              .whereNull('ancestors.root_id')
           );
         })
         .delete();
@@ -291,44 +315,45 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     options: AddUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const entityIds = new Array<string>();
 
-    for (const entity of options.entities) {
-      const entityRef = stringifyEntityRef(entity);
-      await tx<DbRefreshStateRow>('refresh_state')
-        .insert({
+    const stateRows = options.entities.map(
+      entity =>
+        ({
           entity_id: uuid(),
-          entity_ref: entityRef,
+          entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
           errors: '',
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
-        })
+        } as Knex.DbRecord<DbRefreshStateRow>),
+    );
+    const stateReferenceRows = stateRows.map(
+      stateRow =>
+        ({
+          source_entity_ref: options.entityRef,
+          target_entity_ref: stateRow.entity_ref,
+        } as Knex.DbRecord<DbRefreshStateReferencesRow>),
+    );
+
+    // Upsert all of the unprocessed entities into the refresh_state table, by
+    // their entity ref.
+    // TODO(freben): Can this be batched somehow?
+    for (const row of stateRows) {
+      await tx<DbRefreshStateRow>('refresh_state')
+        .insert(row)
         .onConflict('entity_ref')
         .merge(['unprocessed_entity', 'last_discovery_at']);
-
-      const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
-        'refresh_state',
-      ).where({ entity_ref: entityRef });
-      entityIds.push(entityId);
     }
 
-    const key =
-      options.type === 'provider'
-        ? { source_special_key: options.id }
-        : { source_entity_id: options.id };
-    // copied from update refs
+    // Replace all references for the originating entity before creating new ones
     await tx<DbRefreshStateReferencesRow>('refresh_state_references')
-      .where(key)
+      .where({ source_entity_ref: options.entityRef })
       .delete();
-
-    const referenceRows: DbRefreshStateReferencesRow[] = entityIds.map(
-      entityId => ({
-        ...key,
-        target_entity_id: entityId,
-      }),
+    await tx.batchInsert(
+      'refresh_state_references',
+      stateReferenceRows,
+      BATCH_SIZE,
     );
-    await tx.batchInsert('refresh_state_references', referenceRows, BATCH_SIZE);
   }
 
   async getProcessableEntities(
@@ -356,16 +381,23 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       });
 
     return {
-      items: items.map(i => ({
-        id: i.entity_id,
-        entityRef: i.entity_ref,
-        unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
-        processedEntity: JSON.parse(i.processed_entity) as Entity,
-        nextUpdateAt: i.next_update_at,
-        lastDiscoveryAt: i.last_discovery_at,
-        state: JSON.parse(i.cache),
-        errors: i.errors,
-      })),
+      items: items.map(
+        i =>
+          ({
+            id: i.entity_id,
+            entityRef: i.entity_ref,
+            unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
+            processedEntity: i.processed_entity
+              ? (JSON.parse(i.processed_entity) as Entity)
+              : undefined,
+            nextUpdateAt: i.next_update_at,
+            lastDiscoveryAt: i.last_discovery_at,
+            state: i.cache
+              ? JSON.parse(i.cache)
+              : new Map<string, JsonObject>(),
+            errors: i.errors,
+          } as RefreshStateItem),
+      ),
     };
   }
 
