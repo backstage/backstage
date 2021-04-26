@@ -50,11 +50,9 @@ import {
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   LdapOrgReaderProcessor,
-  LocationEntityProcessor,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
-  StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
