@@ -103,7 +103,7 @@ stages:
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
       - task: ECRPushImage@1
-        displayName: 'Push frontend image to Shared ECR'
+        displayName: 'Push backend image to Shared ECR'
         inputs:
           awsCredentials: 'Shared-Prod ECR-Push'
           regionName: 'eu-central-1'
@@ -133,38 +133,38 @@ stages:
           artifact: 'manifests'
           publishLocation: 'pipeline'   
 
-# - stage: CD
-#   displayName: 'Continuous Deployment'
-#   dependsOn: CI
-#   condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
+- stage: CD
+  displayName: 'Continuous Deployment'
+  dependsOn: CI
+  condition: and(succeeded('CI'), eq(variables['Build.SourceBranch'], 'refs/heads/main')) 
 
-#   jobs:  
-#   - deployment: K8s
-#     displayName: 'Deploy to Kubernetes'
-#     environment: 'Hellman'
-#     strategy: 
-#       runOnce:
-#         deploy:
-#           steps:
-#           - download: current
-#             artifact: manifests
-#             displayName: 'Download Artifact: manifests'
+  jobs:  
+  - deployment: K8s
+    displayName: 'Deploy to Kubernetes'
+    environment: 'Hellman'
+    strategy: 
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: manifests
+            displayName: 'Download Artifact: manifests'
           
-#           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-#             displayName: 'Replace tokens in yaml files'
-#             inputs:
-#               rootDirectory: '$(Pipeline.Workspace)/manifests/'
-#               targetFiles: '*.yaml'
-#               tokenPrefix: '#('
-#               tokenSuffix: ')'
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: 'Replace tokens in yaml files'
+            inputs:
+              rootDirectory: '$(Pipeline.Workspace)/manifests/'
+              targetFiles: '*.yaml'
+              tokenPrefix: '#('
+              tokenSuffix: ')'
 
-#           - task: Kubernetes@1
-#             displayName: 'Apply k8s manifests'
-#             inputs:
-#               connectionType: Kubernetes Service Connection
-#               kubernetesServiceEndpoint: 'Kubernetes-Developer-Automation-Deploy'
-#               namespace: 'developerautomation-xavgy'
-#               command: apply
-#               arguments: '-f $(Pipeline.Workspace)/manifests/'
+          - task: Kubernetes@1
+            displayName: 'Apply k8s manifests'
+            inputs:
+              connectionType: Kubernetes Service Connection
+              kubernetesServiceEndpoint: 'Kubernetes-Developer-Automation-Deploy'
+              namespace: 'developerautomation-xavgy'
+              command: apply
+              arguments: '-f $(Pipeline.Workspace)/manifests/'
 
               
