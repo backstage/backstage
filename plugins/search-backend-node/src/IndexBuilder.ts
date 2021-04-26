@@ -105,19 +105,19 @@ export class IndexBuilder {
             this.decorators['*'] || []
           ).concat(this.decorators[type] || []);
 
-          this.logger.info(
+          this.logger.debug(
             `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
           );
           let documents = await this.collators[type].collate.execute();
           for (let i = 0; i < decorators.length; i++) {
-            this.logger.info(
+            this.logger.debug(
               `Decorating ${type} documents via ${decorators[i].constructor.name}`,
             );
             documents = await decorators[i].execute(documents);
           }
 
           if (!documents || documents.length === 0) {
-            this.logger.info(`No documents for type "${type}" to index`);
+            this.logger.debug(`No documents for type "${type}" to index`);
             return;
           }
 
