@@ -50,6 +50,7 @@ import {
   GithubDiscoveryProcessor,
   GithubOrgReaderProcessor,
   LdapOrgReaderProcessor,
+  LocationEntityProcessor,
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
@@ -73,6 +74,7 @@ import { CatalogProcessingEngine } from '../next/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
 import { CommonDatabase } from '../database/CommonDatabase';
+import { ConfigLocationProvider } from './ConfigLocationProvider';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -272,9 +274,10 @@ export class NextCatalogBuilder {
 
     const locationStore = new DefaultLocationStore(db);
     const stitcher = new Stitcher(dbClient, logger);
+    const configLocationProvider = new ConfigLocationProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      [locationStore], // entityproviders
+      [locationStore, configLocationProvider],
       stateManager,
       orchestrator,
       stitcher,
@@ -322,7 +325,6 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
       new BuiltinKindsEntityProcessor(),
     ];
@@ -338,7 +340,6 @@ export class NextCatalogBuilder {
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        //        new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor({ integrations }),
       );
     }
