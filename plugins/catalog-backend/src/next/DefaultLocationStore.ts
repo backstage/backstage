@@ -25,10 +25,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { locationSpecToLocationEntity } from './util';
 import { ConflictError } from '@backstage/errors';
 
-export type LocationMessage =
-  | { all: Location[] }
-  | { added: Location[]; removed: Location[] };
-
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
 

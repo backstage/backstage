@@ -16,7 +16,6 @@
 
 import {
   Entity,
-  EntityName,
   LocationSpec,
   Location,
   EntityRelationSpec,
@@ -116,12 +115,12 @@ export type ProcessingItem = {
 
 export type ReplaceProcessingItemsRequest =
   | {
-      id: string;
+      sourceKey: string;
       items: Entity[];
       type: 'full';
     }
   | {
-      id: string;
+      sourceKey: string;
       added: Entity[];
       removed: Entity[];
       type: 'delta';
