@@ -55,7 +55,6 @@
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3",
-    "swr": "^0.3.0",
     "use-immer": "^0.5.1",
     "zen-observable": "^0.8.15"
   },
