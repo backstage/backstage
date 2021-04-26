@@ -65,6 +65,7 @@ export interface EntityProviderConnection {
 }
 
 export interface EntityProvider {
+  getProviderName(): string;
   connect(connection: EntityProviderConnection): Promise<void>;
 }
 

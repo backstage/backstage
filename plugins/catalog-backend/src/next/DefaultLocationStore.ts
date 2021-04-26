@@ -30,6 +30,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   constructor(private readonly db: Database) {}
 
+  getProviderName(): string {
+    return 'DefaultLocationStore';
+  }
+
   createLocation(spec: LocationSpec): Promise<Location> {
     return this.db.transaction(async tx => {
       // TODO: id should really be type and target combined and not a uuid.

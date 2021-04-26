@@ -68,9 +68,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
-      // TODO: this ID should be some form of identifier for the EntityProvider
-      const id = 'databaseProvider';
-      provider.connect(new Connection({ stateManager: this.stateManager, id }));
+      provider.connect(
+        new Connection({
+          stateManager: this.stateManager,
+          id: provider.getProviderName(),
+        }),
+      );
     }
 
     this.running = true;
