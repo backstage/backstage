@@ -28,8 +28,13 @@ import {
 import React from 'react';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
+import { Entity } from '@backstage/catalog-model';
+import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
 const useStyles = makeStyles({
+  cardHeader: {
+    position: 'relative',
+  },
   title: {
     backgroundImage: ({ backgroundImage }: any) => backgroundImage,
   },
@@ -48,6 +53,7 @@ export type TemplateCardProps = {
   title: string;
   type: string;
   name: string;
+  entityTemplate: Entity;
 };
 
 export const TemplateCard = ({
@@ -56,6 +62,7 @@ export const TemplateCard = ({
   title,
   type,
   name,
+  entityTemplate,
 }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
@@ -69,7 +76,8 @@ export const TemplateCard = ({
 
   return (
     <Card>
-      <CardMedia>
+      <CardMedia className={classes.cardHeader}>
+        <FavouriteTemplate entity={entityTemplate} />
         <ItemCardHeader
           title={title}
           subtitle={type}

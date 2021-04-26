@@ -61,6 +61,7 @@ const getTemplateCardProps = (
     type: template.spec.type ?? '',
     description: template.metadata.description ?? '-',
     tags: (template.metadata?.tags as string[]) ?? [],
+    entityTemplate: template,
   };
 };
 
