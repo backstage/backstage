@@ -20,7 +20,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Logger } from 'winston';
 import { CommonDatabase } from '../../database/CommonDatabase';
 import { Database } from '../../database/types';
-import fs from 'fs-extra';
 
 export type CreateDatabaseOptions = {
   logger: Logger;
@@ -35,16 +34,10 @@ export class DatabaseManager {
     knex: Knex,
     options: Partial<CreateDatabaseOptions> = {},
   ): Promise<Database> {
-    const allMigrations = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrations',
-    );
-
     const migrationsDir = resolvePackagePath(
       '@backstage/plugin-catalog-backend',
       'migrationsv2',
     );
-    await fs.copy(allMigrations, migrationsDir);
 
     await knex.migrate.latest({
       directory: migrationsDir,
@@ -79,14 +72,6 @@ export class DatabaseManager {
 
   public static async createTestDatabaseConnection(): Promise<Knex> {
     const config: Knex.Config<any> = {
-      /*
-      client: 'pg',
-      connection: {
-        host: 'localhost',
-        user: 'postgres',
-        password: 'postgres',
-      },
-      */
       client: 'sqlite3',
       connection: ':memory:',
       useNullAsDefault: true,
