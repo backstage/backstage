@@ -197,9 +197,20 @@ export const Reader = ({ entityId, onReady }: Props) => {
           }
           .md-nav--primary > .md-nav__title [for="none"] {
             padding-top: 0;
-          } 
+          }
         }
       `,
+      }),
+      injectCss({
+        // Disable CSS animations on link colors as they lead to issues in dark
+        // mode. The dark mode color theme is applied later and theirfore there
+        // is always an animation from light to dark mode when navigation
+        // between pages.
+        css: `
+        .md-nav__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
+          transition: none;
+        }
+        `,
       }),
       injectCss({
         // Admonitions and others are using SVG masks to define icons. These
