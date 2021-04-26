@@ -25,14 +25,7 @@ import {
 } from '@backstage/core';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Link,
-} from '@material-ui/core';
+import { Button, Link } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { GITHUB_ACTIONS_ANNOTATION } from '../useProjectName';
@@ -82,26 +75,22 @@ export const RecentWorkflowRunsCard = ({
   const githubHost = hostname || 'github.com';
 
   return !runs.length ? (
-    <Card>
-      <CardHeader title="Recent Workflow Runs" />
-      <Divider />
-      <CardContent>
-        <EmptyState
-          missing="data"
-          title="No Workflow Data"
-          description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
-          action={
-            <Button
-              variant="contained"
-              color="primary"
-              href={`https://${githubHost}/${owner}/${repo}/actions/new`}
-            >
-              Create new Workflow
-            </Button>
-          }
-        />
-      </CardContent>
-    </Card>
+    <InfoCard title="Recent Workflow Runs" variant={variant}>
+      <EmptyState
+        missing="data"
+        title="No Workflow Data"
+        description="This component has GitHub Actions enabled, but no data was found. Have you created any Workflows? Click the button below to create a new Workflow."
+        action={
+          <Button
+            variant="contained"
+            color="primary"
+            href={`https://${githubHost}/${owner}/${repo}/actions/new`}
+          >
+            Create new Workflow
+          </Button>
+        }
+      />
+    </InfoCard>
   ) : (
     <InfoCard
       title="Recent Workflow Runs"
