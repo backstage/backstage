@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import { useApi, configApiRef } from '@backstage/core';
+import { configApiRef, useApi } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -24,6 +24,7 @@ import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
 import transformer, {
   addBaseUrl,
+  addGitFeedbackLink,
   addLinkClickListener,
   injectCss,
   onCssReady,
@@ -31,10 +32,10 @@ import transformer, {
   rewriteDocLinks,
   sanitizeDOM,
   simplifyMkdocsFooter,
-  addGitFeedbackLink,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';
+import { useRawPage } from './useRawPage';
 
 type Props = {
   entityId: EntityName;
@@ -69,20 +70,20 @@ export const Reader = ({ entityId, onReady }: Props) => {
       });
     }
     return techdocsStorageApi.syncEntityDocs({ kind, namespace, name });
-  });
+  }, [techdocsStorageApi, kind, namespace, name]);
 
   const {
     value: rawPage,
     loading: docLoading,
     error: docLoadError,
-  } = useAsync(async () => {
-    // do not automatically load same page again if URL has not changed,
-    // happens when generating new docs finishes
-    if (newerDocsExist && path === loadedPath) {
-      return null;
+    retry,
+  } = useRawPage(path, kind, namespace, name);
+
+  useEffect(() => {
+    if (isSynced && newerDocsExist && path !== loadedPath) {
+      retry();
     }
-    return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
-  }, [techdocsStorageApi, kind, namespace, name, path, isSynced]);
+  });
 
   useEffect(() => {
     const updateSidebarPosition = () => {
@@ -134,12 +135,12 @@ export const Reader = ({ entityId, onReady }: Props) => {
       onReady();
     }
     // Pre-render
-    const transformedElement = transformer(rawPage as string, [
+    const transformedElement = transformer(rawPage.content, [
       sanitizeDOM(),
       addBaseUrl({
         techdocsStorageApi,
-        entityId: entityId,
-        path,
+        entityId: rawPage.entityId,
+        path: rawPage.path,
       }),
       rewriteDocLinks(),
       removeMkdocsHeader(),
@@ -315,16 +316,15 @@ export const Reader = ({ entityId, onReady }: Props) => {
     ]);
   }, [
     rawPage,
-    entityId,
     navigate,
     onReady,
     shadowDomRef,
-    path,
     techdocsStorageApi,
-    theme,
-    kind,
-    namespace,
-    name,
+    theme.typography.fontFamily,
+    theme.palette.text.primary,
+    theme.palette.primary.main,
+    theme.palette.background.paper,
+    theme.palette.background.default,
     newerDocsExist,
     isSynced,
     configApi,

@@ -15,7 +15,7 @@
  */
 
 import { Content, Page, useApi } from '@backstage/core';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsApiRef } from '../../api';
@@ -40,9 +40,9 @@ export const TechDocsPage = () => {
     return techdocsApi.getEntityMetadata({ kind, namespace, name });
   }, [kind, namespace, name, techdocsApi]);
 
-  const onReady = () => {
+  const onReady = useCallback(() => {
     setDocumentReady(true);
-  };
+  }, [setDocumentReady]);
 
   return (
     <Page themeId="documentation">
