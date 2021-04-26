@@ -359,16 +359,26 @@ describe('Default Processing Database', () => {
         });
       });
 
+      const currentRefreshState = await db<DbRefreshStateRow>(
+        'refresh_state',
+      ).select();
+
       const currentRefRowState = await db<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       ).select();
 
-      expect(currentRefRowState).toEqual({
-        source_key: 'config-2',
-        target_entity_ref: 'location:default/root',
-      });
+      expect(currentRefRowState).toEqual([
+        expect.objectContaining({
+          source_key: 'config-2',
+          target_entity_ref: 'location:default/root',
+        }),
+      ]);
 
-      // TODO: assert that root wasn't removed
+      expect(currentRefreshState).toEqual([
+        expect.objectContaining({
+          entity_ref: 'location:default/root',
+        }),
+      ]);
     });
 
     it('should remove old locations using the delta options', async () => {
