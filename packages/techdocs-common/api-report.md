@@ -138,6 +138,7 @@ export class Publisher {
 export interface PublisherBase {
     docsRouter(): express.Handler;
     fetchTechDocsMetadata(entityName: EntityName): Promise<TechDocsMetadata>;
+    getReadiness(): Promise<ReadinessResponse>;
     hasDocsBeenGenerated(entityName: Entity): Promise<boolean>;
     publish(request: PublishRequest): Promise<PublishResponse>;
 }

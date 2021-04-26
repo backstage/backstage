@@ -33,6 +33,8 @@ export interface SearchQuery {
     pageCursor: string;
     // (undocumented)
     term: string;
+    // (undocumented)
+    types?: string[];
 }
 
 // @public (undocumented)
