@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import { ProcessingDatabase } from './database/types';
 import {
-  AddProcessingItemRequest,
   ProcessingItem,
   ProcessingItemResult,
   ProcessingStateManager,
@@ -44,12 +43,6 @@ export class DefaultProcessingStateManager implements ProcessingStateManager {
         relations: result.relations,
         deferredEntities: result.deferredEntities,
       });
-    });
-  }
-
-  async addProcessingItems(request: AddProcessingItemRequest) {
-    return this.db.transaction(async tx => {
-      // await this.db.addUnprocessedEntities(tx, request);
     });
   }
 
