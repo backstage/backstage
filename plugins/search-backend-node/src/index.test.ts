@@ -54,29 +54,32 @@ describe('IndexBuilder', () => {
 
   describe('addCollator', () => {
     it('adds a collator', async () => {
+      jest.useFakeTimers();
       const collatorSpy = jest.spyOn(testCollator, 'execute');
 
       // Add a collator.
       testIndexBuilder.addCollator({
         type: 'anything',
-        defaultRefreshIntervalSeconds: 600,
+        defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
       // Build the index and ensure the collator was invoked.
       await testIndexBuilder.build();
+      jest.advanceTimersByTime(6000);
       expect(collatorSpy).toHaveBeenCalled();
     });
   });
 
   describe('addDecorator', () => {
     it('adds a decorator', async () => {
+      jest.useFakeTimers();
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Add a collator.
       testIndexBuilder.addCollator({
         type: 'anything',
-        defaultRefreshIntervalSeconds: 600,
+        defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
@@ -87,10 +90,14 @@ describe('IndexBuilder', () => {
 
       // Build the index and ensure the decorator was invoked.
       await testIndexBuilder.build();
+      jest.advanceTimersByTime(6000);
+      // wait for async decorator execution
+      await Promise.resolve();
       expect(decoratorSpy).toHaveBeenCalled();
     });
 
     it('adds a type-specific decorator', async () => {
+      jest.useFakeTimers();
       const expectedType = 'an-expected-type';
       const docFixture = {
         title: 'Test',
@@ -105,7 +112,7 @@ describe('IndexBuilder', () => {
       // Add a collator.
       testIndexBuilder.addCollator({
         type: expectedType,
-        defaultRefreshIntervalSeconds: 600,
+        defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
@@ -117,6 +124,9 @@ describe('IndexBuilder', () => {
 
       // Build the index and ensure the decorator was invoked.
       await testIndexBuilder.build();
+      jest.advanceTimersByTime(6000);
+      // wait for async decorator execution
+      await Promise.resolve();
       expect(decoratorSpy).toHaveBeenCalled();
       expect(decoratorSpy).toHaveBeenCalledWith([docFixture]);
     });
@@ -136,7 +146,7 @@ describe('IndexBuilder', () => {
       // Add a collator.
       testIndexBuilder.addCollator({
         type: expectedType,
-        defaultRefreshIntervalSeconds: 600,
+        defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
@@ -148,6 +158,7 @@ describe('IndexBuilder', () => {
 
       // Build the index and ensure the decorator was not invoked.
       await testIndexBuilder.build();
+      jest.advanceTimersByTime(6000);
       expect(decoratorSpy).not.toHaveBeenCalled();
     });
   });
