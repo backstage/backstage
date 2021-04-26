@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs': patch
+'@backstage/plugin-techdocs': minor
 ---
 
 Make `techdocsStorageApiRef` and `techdocsApiRef` use interfaces instead of the
