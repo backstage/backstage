@@ -16,7 +16,7 @@
 
 import { DocumentCollator, DocumentDecorator } from '@backstage/search-common';
 import { Logger } from 'winston';
-
+import { Scheduler } from './index';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
@@ -92,40 +92,42 @@ export class IndexBuilder {
   }
 
   /**
-   * Starts the process of executing collators and decorators and building the
-   * search index.
-   *
-   * TODO: But like with coordination, timing, error handling, and what have you.
+   * Compiles collators and decorators into tasks, which are added to a
+   * scheduler returned to the caller.
    */
-  async build() {
-    return Promise.all(
-      Object.keys(this.collators).map(async type => {
-        setInterval(async () => {
-          const decorators: DocumentDecorator[] = (
-            this.decorators['*'] || []
-          ).concat(this.decorators[type] || []);
+  async build(): Promise<{ scheduler: Scheduler }> {
+    const scheduler = new Scheduler({ logger: this.logger });
 
+    Object.keys(this.collators).map(type => {
+      scheduler.addToSchedule(async () => {
+        // Collate, Decorate, Index.
+        const decorators: DocumentDecorator[] = (
+          this.decorators['*'] || []
+        ).concat(this.decorators[type] || []);
+
+        this.logger.debug(
+          `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
+        );
+        let documents = await this.collators[type].collate.execute();
+        for (let i = 0; i < decorators.length; i++) {
           this.logger.debug(
-            `Collating documents for ${type} via ${this.collators[type].collate.constructor.name}`,
+            `Decorating ${type} documents via ${decorators[i].constructor.name}`,
           );
-          let documents = await this.collators[type].collate.execute();
-          for (let i = 0; i < decorators.length; i++) {
-            this.logger.debug(
-              `Decorating ${type} documents via ${decorators[i].constructor.name}`,
-            );
-            documents = await decorators[i].execute(documents);
-          }
+          documents = await decorators[i].execute(documents);
+        }
 
-          if (!documents || documents.length === 0) {
-            this.logger.debug(`No documents for type "${type}" to index`);
-            return;
-          }
+        if (!documents || documents.length === 0) {
+          this.logger.debug(`No documents for type "${type}" to index`);
+          return;
+        }
 
-          // pushing documents to index to a configured search engine.
-          this.searchEngine.index(type, documents);
-          // refreshInterval configured in seconds, setInterval want milliseconds
-        }, this.collators[type].refreshInterval * 1000);
-      }),
-    );
+        // pushing documents to index to a configured search engine.
+        this.searchEngine.index(type, documents);
+      }, this.collators[type].refreshInterval * 1000);
+    });
+
+    return {
+      scheduler,
+    };
   }
 }
