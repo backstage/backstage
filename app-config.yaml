@@ -2,9 +2,9 @@ app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
-  datadogRum:
-    clientToken: '123456789'
-    applicationId: qwerty
+  #datadogRum:
+  #  clientToken: '123456789'
+  #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
 

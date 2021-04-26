@@ -51,8 +51,19 @@ describe('<TechDocsPage />', () => {
     });
 
     const techdocsApi: Partial<TechDocsApi> = {
-      getEntityMetadata: () => Promise.resolve([]),
-      getTechDocsMetadata: () => Promise.resolve([]),
+      getEntityMetadata: () =>
+        Promise.resolve({
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: {
+            name: 'backstage',
+          },
+        }),
+      getTechDocsMetadata: () =>
+        Promise.resolve({
+          site_name: 'string',
+          site_description: 'string',
+        }),
     };
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {
       getEntityDocs: (): Promise<string> => Promise.resolve('String'),
