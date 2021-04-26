@@ -67,7 +67,6 @@ import { LocationAnalyzer } from '../ingestion/types';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
-import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
 import { CatalogProcessingEngine } from '../next/types';

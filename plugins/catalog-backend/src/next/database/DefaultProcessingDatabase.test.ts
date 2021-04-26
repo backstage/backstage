@@ -27,27 +27,26 @@ import * as uuid from 'uuid';
 import { getVoidLogger } from '@backstage/backend-common';
 
 describe('Default Processing Database', () => {
-  let db: Knex | undefined;
-  let processingDatabase: DefaultProcessingDatabase | undefined;
-
+  let db: Knex;
+  let processingDatabase: DefaultProcessingDatabase;
   const logger = getVoidLogger();
 
   beforeEach(async () => {
     db = await DatabaseManager.createTestDatabaseConnection();
     await DatabaseManager.createDatabase(db);
 
-    processingDatabase = new DefaultProcessingDatabase(db!, logger);
+    processingDatabase = new DefaultProcessingDatabase(db, logger);
   });
 
   describe('replaceUnprocessedEntities', () => {
     const insertRefRow = async (ref: DbRefreshStateReferencesRow) => {
-      return db!<DbRefreshStateReferencesRow>(
-        'refresh_state_references',
-      ).insert(ref);
+      return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
+        ref,
+      );
     };
 
     const insertRefreshStateRow = async (ref: DbRefreshStateRow) => {
-      await db!<DbRefreshStateRow>('refresh_state').insert(ref);
+      await db<DbRefreshStateRow>('refresh_state').insert(ref);
     };
 
     const createLocations = async (entityRefs: string[]) => {
@@ -101,8 +100,8 @@ describe('Default Processing Database', () => {
         target_entity_ref: 'location:default/root-2',
       });
 
-      await processingDatabase!.transaction(async tx => {
-        await processingDatabase!.replaceUnprocessedEntities(tx, {
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.replaceUnprocessedEntities(tx, {
           type: 'full',
           sourceKey: 'config',
           items: [
@@ -117,11 +116,11 @@ describe('Default Processing Database', () => {
         });
       });
 
-      const currentRefreshState = await db!<DbRefreshStateRow>(
+      const currentRefreshState = await db<DbRefreshStateRow>(
         'refresh_state',
       ).select();
 
-      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+      const currentRefRowState = await db<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       ).select();
 
@@ -205,8 +204,8 @@ describe('Default Processing Database', () => {
         target_entity_ref: 'location:default/root-2',
       });
 
-      await processingDatabase!.transaction(async tx => {
-        await processingDatabase!.replaceUnprocessedEntities(tx, {
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.replaceUnprocessedEntities(tx, {
           type: 'full',
           sourceKey: 'config',
           items: [
@@ -221,11 +220,11 @@ describe('Default Processing Database', () => {
         });
       });
 
-      const currentRefreshState = await db!<DbRefreshStateRow>(
+      const currentRefreshState = await db<DbRefreshStateRow>(
         'refresh_state',
       ).select();
 
-      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+      const currentRefRowState = await db<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       ).select();
 
@@ -296,8 +295,8 @@ describe('Default Processing Database', () => {
     });
 
     it('should add new locations using the delta options', async () => {
-      await processingDatabase!.transaction(async tx => {
-        await processingDatabase!.replaceUnprocessedEntities(tx, {
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.replaceUnprocessedEntities(tx, {
           type: 'delta',
           sourceKey: 'lols',
           removed: [],
@@ -313,11 +312,11 @@ describe('Default Processing Database', () => {
         });
       });
 
-      const currentRefreshState = await db!<DbRefreshStateRow>(
+      const currentRefreshState = await db<DbRefreshStateRow>(
         'refresh_state',
       ).select();
 
-      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+      const currentRefRowState = await db<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       ).select();
 
@@ -336,6 +335,42 @@ describe('Default Processing Database', () => {
       ).toBeTruthy();
     });
 
+    it('should not remove locations that are referenced elsewhere', async () => {
+      /*
+        config-1 -> location:default/root
+        config-2 -> location:default/root
+      */
+      await createLocations(['location:default/root']);
+
+      await insertRefRow({
+        source_key: 'config-1',
+        target_entity_ref: 'location:default/root',
+      });
+      await insertRefRow({
+        source_key: 'config-2',
+        target_entity_ref: 'location:default/root',
+      });
+
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.replaceUnprocessedEntities(tx, {
+          type: 'full',
+          sourceKey: 'config-1',
+          items: [],
+        });
+      });
+
+      const currentRefRowState = await db<DbRefreshStateReferencesRow>(
+        'refresh_state_references',
+      ).select();
+
+      expect(currentRefRowState).toEqual({
+        source_key: 'config-2',
+        target_entity_ref: 'location:default/root',
+      });
+
+      // TODO: assert that root wasn't removed
+    });
+
     it('should remove old locations using the delta options', async () => {
       await createLocations(['location:default/new-root']);
 
@@ -344,8 +379,8 @@ describe('Default Processing Database', () => {
         target_entity_ref: 'location:default/new-root',
       });
 
-      await processingDatabase!.transaction(async tx => {
-        await processingDatabase!.replaceUnprocessedEntities(tx, {
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.replaceUnprocessedEntities(tx, {
           type: 'delta',
           sourceKey: 'lols',
           added: [],
@@ -361,11 +396,11 @@ describe('Default Processing Database', () => {
         });
       });
 
-      const currentRefreshState = await db!<DbRefreshStateRow>(
+      const currentRefreshState = await db<DbRefreshStateRow>(
         'refresh_state',
       ).select();
 
-      const currentRefRowState = await db!<DbRefreshStateReferencesRow>(
+      const currentRefRowState = await db<DbRefreshStateReferencesRow>(
         'refresh_state_references',
       ).select();
 

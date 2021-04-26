@@ -19,8 +19,7 @@ import { JsonObject } from '@backstage/config';
 import { Transaction } from '../../database/types';
 
 export type AddUnprocessedEntitiesOptions = {
-  type: 'entity' | 'provider';
-  id: string;
+  entityRef: string;
   entities: Entity[];
 };
 
@@ -39,11 +38,11 @@ export type RefreshStateItem = {
   id: string;
   entityRef: string;
   unprocessedEntity: Entity;
-  processedEntity: Entity;
+  processedEntity?: Entity;
   nextUpdateAt: string;
   lastDiscoveryAt: string; // remove?
   state: Map<string, JsonObject>;
-  errors: string;
+  errors?: string;
 };
 
 export type GetProcessableEntitiesResult = {
