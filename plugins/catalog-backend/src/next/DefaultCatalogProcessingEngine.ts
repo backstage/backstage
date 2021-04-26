@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Subscription } from '@backstage/core';
 import {
   CatalogProcessingEngine,
   EntityProvider,
-  EntityMessage,
   EntityProviderConnection,
   EntityProviderMutation,
   ProcessingStateManager,
@@ -40,7 +38,7 @@ class Connection implements EntityProviderConnection {
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     if (mutation.type === 'full') {
       await this.config.stateManager.replaceProcessingItems({
-        id: this.config.id,
+        sourceKey: this.config.id,
         type: 'full',
         items: mutation.entities,
       });
@@ -49,7 +47,7 @@ class Connection implements EntityProviderConnection {
     }
 
     await this.config.stateManager.replaceProcessingItems({
-      id: this.config.id,
+      sourceKey: this.config.id,
       type: 'delta',
       added: mutation.added,
       removed: mutation.removed,
@@ -119,26 +117,5 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async stop() {
     this.running = false;
-  }
-
-  private async onNext(id: string, message: EntityMessage) {
-    if ('all' in message) {
-      // TODO unhandled rejection
-      await this.stateManager.addProcessingItems({
-        id,
-        type: 'provider',
-        entities: message.all,
-      });
-    }
-
-    if ('added' in message) {
-      await this.stateManager.addProcessingItems({
-        id,
-        type: 'provider',
-        entities: message.added,
-      });
-
-      // TODO deletions of message.removed
-    }
   }
 }
