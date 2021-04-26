@@ -2,4 +2,4 @@
 '@backstage/plugin-search-backend-node': patch
 ---
 
-Moved refresh loop to builder and use configured refreshInterval for each collator
+Introduced Scheduler which is responsible for adding new tasks to a schedule together with it's interval timer as well as starting and stopping the scheduler processes.
