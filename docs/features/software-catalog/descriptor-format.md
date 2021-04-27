@@ -44,7 +44,7 @@ metadata:
   name: artist-web
   description: The place to be, for great artists
   labels:
-    backstage.io/custom: ValueStuff
+    example.com/custom: custom_label_value
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
