@@ -154,7 +154,7 @@ kafka:
   clusters:
     - name: cluster
       brokers: 
-        - $env: localhost:9092
+        - $env: kafka:9092
       ssl: false
 
 integrations:

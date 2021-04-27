@@ -19,6 +19,7 @@ services:
       - '7000:7000'
     links:
       - database
+      - kafka
     env_file: 
       - .env
   backstage-frontend:
