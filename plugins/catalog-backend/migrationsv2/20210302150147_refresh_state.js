@@ -154,6 +154,28 @@ exports.up = async function up(knex) {
     table.index('source_entity_ref', 'relations_source_entity_ref_idx');
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
+
+  await knex.schema.createTable('search', table => {
+    table.comment(
+      'Flattened key-values from the entities, used for quick filtering',
+    );
+    table
+      .uuid('entity_id')
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
+      .comment('The entity that matches this key/value');
+    table
+      .string('key')
+      .notNullable()
+      .comment('A key that occurs in the entity');
+    table
+      .string('value')
+      .nullable()
+      .comment('The corresponding value to match on');
+    table.index(['key'], 'search_key_idx');
+    table.index(['value'], 'search_value_idx');
+  });
 };
 
 /**
@@ -177,6 +199,12 @@ exports.down = async function down(knex) {
     table.index('source_entity_ref', 'relations_source_entity_ref_idx');
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
+  await knex.schema.alterTable('search', table => {
+    table.dropIndex([], 'search_key_idx');
+    table.dropIndex([], 'search_value_idx');
+  });
+
+  await knex.schema.dropTable('search');
   await knex.schema.dropTable('final_entities');
   await knex.schema.dropTable('relations');
   await knex.schema.dropTable('references');
