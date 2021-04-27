@@ -160,7 +160,7 @@ exports.up = async function up(knex) {
       'Flattened key-values from the entities, used for quick filtering',
     );
     table
-      .uuid('entity_id')
+      .text('entity_id')
       .references('entity_id')
       .inTable('refresh_state')
       .onDelete('CASCADE')
