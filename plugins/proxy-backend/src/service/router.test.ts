@@ -60,7 +60,7 @@ describe('buildMiddleware', () => {
   });
 
   it('accepts strings', async () => {
-    buildMiddleware('/api/', logger, 'test', 'http://mocked');
+    buildMiddleware('/proxy', logger, '/test', 'http://mocked');
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
@@ -74,13 +74,13 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/api/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
 
   it('limits allowedMethods', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedMethods: ['GET', 'DELETE'],
     });
@@ -97,13 +97,13 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(false);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/api/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
 
   it('permits default headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
     });
 
@@ -143,7 +143,7 @@ describe('buildMiddleware', () => {
   });
 
   it('permits default and configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       headers: {
         Authorization: 'my-token',
@@ -176,7 +176,7 @@ describe('buildMiddleware', () => {
   });
 
   it('permits configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedHeaders: ['authorization', 'cookie'],
     });
@@ -208,7 +208,7 @@ describe('buildMiddleware', () => {
   });
 
   it('responds default headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
     });
 
@@ -251,7 +251,7 @@ describe('buildMiddleware', () => {
   });
 
   it('responds configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedHeaders: ['set-cookie'],
     });
@@ -282,10 +282,10 @@ describe('buildMiddleware', () => {
 
   it('rejects malformed target URLs', async () => {
     expect(() =>
-      buildMiddleware('/api/', logger, 'test', 'backstage.io'),
+      buildMiddleware('/proxy', logger, '/test', 'backstage.io'),
     ).toThrowError(/Proxy target is not a valid URL/);
     expect(() =>
-      buildMiddleware('/api/', logger, 'test', { target: 'backstage.io' }),
+      buildMiddleware('/proxy', logger, '/test', { target: 'backstage.io' }),
     ).toThrowError(/Proxy target is not a valid URL/);
   });
 });
