@@ -23,14 +23,14 @@ stages:
   jobs:
   - job: BuildImages
     steps:
-      - displayName: Install Yarn
-        script: npm install yarn
-      - displayName: Yarn install
-        script: yarn install
-      - displayName: Yarn tsc
-        script: yarn tsc
-      - displayName: Yarn Build
-        script: yarn build
+      - script: npm install yarn
+        displayName: Install Yarn        
+      - script: yarn install
+        displayName: Yarn install        
+      - script: yarn tsc
+        displayName: Yarn tsc        
+      - script: yarn build
+        displayName: Yarn Build        
       - task: DockerCompose@0
         displayName: 'Build images'
         inputs:
