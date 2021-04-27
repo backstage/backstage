@@ -26,6 +26,14 @@ import {
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
+import { buildEntitySearch } from '../database/search';
+import { DbEntitiesSearchRow } from '../database/types';
+
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+const BATCH_SIZE = 50;
 
 export type DbFinalEntitiesRow = {
   entity_id: string;
@@ -49,64 +57,114 @@ export class Stitcher {
     for (const entityRef of entityRefs) {
       await this.transaction(async txOpaque => {
         const tx = txOpaque as Knex.Transaction;
-        const [result] = await tx<DbRefreshStateRow>('refresh_state')
-          .select('entity_id', 'processed_entity')
-          .where({ entity_ref: entityRef });
 
-        if (!result) {
+        const result: Array<{
+          entityId: string;
+          processedEntity?: string;
+          errors: string;
+          incomingReferenceCount: string | number;
+          previousEtag?: string;
+          relationType?: string;
+          relationTarget?: string;
+        }> = await tx
+          .with('incoming_references', function incomingReferences(builder) {
+            return builder
+              .from('refresh_state_references')
+              .where({ target_entity_ref: entityRef })
+              .count({ count: '*' });
+          })
+          .select({
+            entityId: 'refresh_state.entity_id',
+            processedEntity: 'refresh_state.processed_entity',
+            errors: 'refresh_state.errors',
+            incomingReferenceCount: 'incoming_references.count',
+            previousEtag: 'final_entities.etag',
+            relationType: 'relations.type',
+            relationTarget: 'relations.target_entity_ref',
+          })
+          .from('refresh_state')
+          .leftJoin('incoming_references', {})
+          .leftOuterJoin('final_entities', {
+            'final_entities.entity_id': 'refresh_state.entity_id',
+          })
+          .leftOuterJoin('relations', {
+            'relations.source_entity_ref': 'refresh_state.entity_ref',
+          })
+          .where({ 'refresh_state.entity_ref': entityRef });
+
+        if (!result.length) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
           );
           return;
-        } else if (!result.processed_entity) {
+        }
+
+        const {
+          entityId,
+          processedEntity,
+          errors,
+          incomingReferenceCount,
+          previousEtag,
+        } = result[0];
+
+        if (!processedEntity) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, the entity has not yet been processed`,
           );
           return;
         }
 
-        const entity: Entity = JSON.parse(result.processed_entity);
+        const entity = JSON.parse(processedEntity) as Entity;
+        const isOrphan = Number(incomingReferenceCount) === 0;
 
-        const entityId = entity?.metadata?.uid;
-        if (!entityId) {
-          this.logger.error(`missing ID in entity ${JSON.stringify(entity)}`);
-          return;
-        }
-
-        const [reference_count_result] = await tx<DbRefreshStateReferencesRow>(
-          'refresh_state_references',
-        )
-          .where({ target_entity_ref: entityRef })
-          .count({ reference_count: 'target_entity_ref' });
-
-        if (Number(reference_count_result.reference_count) === 0) {
-          this.logger.debug(`${entityRef} is orphan`);
+        if (isOrphan) {
+          this.logger.debug(`${entityRef} is an orphan`);
           entity.metadata.annotations = {
             ...entity.metadata.annotations,
             ['backstage.io/orphan']: 'true',
           };
         }
 
-        const relationResults = await tx<DbRelationsRow>('relations')
-          .where({ source_entity_ref: entityRef })
-          .select();
-
-        // TODO: entityRef is lower case and should be uppercase in the final result.
-        entity.relations = relationResults.map(relation => ({
-          type: relation.type,
-          target: parseEntityRef(relation.target_entity_ref),
-        }));
+        // TODO: entityRef is lower case and should be uppercase in the final result
+        entity.relations = result
+          .filter(row => row.relationType)
+          .map(row => ({
+            type: row.relationType!,
+            target: parseEntityRef(row.relationTarget!),
+          }));
         entity.metadata.generation = 1;
+
+        // If the output entity was actually not changed, just abort
         const etag = generateEntityEtag(entity);
+        if (etag === previousEtag) {
+          console.log(`Skipped stitching of ${entityRef}, no changes`);
+          return;
+        }
+
         entity.metadata.etag = etag;
+
         await tx<DbFinalEntitiesRow>('final_entities')
           .insert({
-            finalized_entity: JSON.stringify(entity),
             entity_id: entityId,
+            finalized_entity: JSON.stringify(entity),
             etag,
           })
           .onConflict('entity_id')
           .merge(['finalized_entity', 'etag']);
+
+        try {
+          const entries = buildEntitySearch(entityId, entity);
+          await tx<DbEntitiesSearchRow>('search')
+            .where({ entity_id: entityId })
+            .delete();
+          await tx.batchInsert('search', entries, BATCH_SIZE);
+        } catch (e) {
+          this.logger.debug(
+            `Failed to write search entries for ${entityId}`,
+            e,
+          );
+          // intentionally ignored
+        }
       });
     }
   }
