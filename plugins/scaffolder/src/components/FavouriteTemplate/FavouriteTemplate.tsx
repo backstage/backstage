@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps } from 'react';
+import React, { ComponentProps, useMemo } from 'react';
 import { useStarredEntities } from '@backstage/plugin-catalog-react';
 import { IconButton, makeStyles, Tooltip, withStyles } from '@material-ui/core';
 import StarBorder from '@material-ui/icons/StarBorder';
@@ -29,6 +29,12 @@ const YellowStar = withStyles({
   },
 })(Star);
 
+const WhiteBorderStar = withStyles({
+  root: {
+    color: '#ffffff',
+  },
+})(StarBorder);
+
 const useStyles = makeStyles(theme => ({
   starButton: {
     position: 'absolute',
@@ -42,7 +48,7 @@ export const favouriteTemplateTooltip = (isStarred: boolean) =>
   isStarred ? 'Remove from favorites' : 'Add to favorites';
 
 export const favouriteTemplateIcon = (isStarred: boolean) =>
-  isStarred ? <YellowStar /> : <StarBorder style={{ color: 'white' }} />;
+  isStarred ? <YellowStar /> : <WhiteBorderStar />;
 
 /**
  * IconButton for showing if a current entity is starred and adding/removing it from the favourite entities
@@ -51,7 +57,10 @@ export const favouriteTemplateIcon = (isStarred: boolean) =>
 export const FavouriteTemplate = (props: Props) => {
   const classes = useStyles();
   const { toggleStarredEntity, isStarredEntity } = useStarredEntities();
-  const isStarred = isStarredEntity(props.entity);
+  const isStarred = useMemo(() => isStarredEntity(props.entity), [
+    isStarredEntity,
+    props.entity,
+  ]);
   return (
     <IconButton
       color="inherit"
