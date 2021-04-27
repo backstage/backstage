@@ -34,12 +34,14 @@ export class ConfigLocationProvider implements EntityProvider {
     const locationConfigs =
       this.config.getOptionalConfigArray('catalog.locations') ?? [];
 
-    const entities = locationConfigs.map(location =>
-      locationSpecToLocationEntity({
-        type: location.getString('type'),
-        target: path.resolve(location.getString('target')),
-      }),
-    );
+    const entities = locationConfigs.map(location => {
+      const type = location.getString('type');
+      const target = location.getString('target');
+      return locationSpecToLocationEntity({
+        type,
+        target: type === 'file' ? path.resolve(target) : target,
+      });
+    });
 
     await this.connection.applyMutation({
       type: 'full',
