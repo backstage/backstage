@@ -59,8 +59,48 @@ describe('buildMiddleware', () => {
     mockCreateProxyMiddleware.mockClear();
   });
 
-  it('accepts strings', async () => {
+  it('accepts strings prefixed by /', async () => {
     buildMiddleware('/proxy', logger, '/test', 'http://mocked');
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
+      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
+      ProxyMiddlewareConfig,
+    ];
+    expect(filter('', { method: 'GET', headers: {} })).toBe(true);
+    expect(filter('', { method: 'POST', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PUT', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
+    expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
+
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.changeOrigin).toBe(true);
+    expect(fullConfig.logProvider!(logger)).toBe(logger);
+  });
+
+  it('accepts routes not prefixed with / when path is not suffixed with /', async () => {
+    buildMiddleware('/proxy', logger, 'test', 'http://mocked');
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
+      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
+      ProxyMiddlewareConfig,
+    ];
+    expect(filter('', { method: 'GET', headers: {} })).toBe(true);
+    expect(filter('', { method: 'POST', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PUT', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
+    expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
+
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.changeOrigin).toBe(true);
+    expect(fullConfig.logProvider!(logger)).toBe(logger);
+  });
+
+  it('accepts routes prefixed with / when path is suffixed with /', async () => {
+    buildMiddleware('/proxy/', logger, '/test', 'http://mocked');
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
