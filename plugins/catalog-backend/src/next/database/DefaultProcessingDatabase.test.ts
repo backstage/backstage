@@ -429,4 +429,66 @@ describe('Default Processing Database', () => {
       ).toBeFalsy();
     });
   });
+
+  describe('updateProcessedEntity', () => {
+    it('should throw if the entity does not exist', async () => {
+      await processingDatabase.transaction(async tx => {
+        await expect(
+          processingDatabase.updateProcessedEntity(tx, {
+            id: '9',
+            processedEntity: {
+              apiVersion: '1.0.0',
+              metadata: {
+                name: 'new-root',
+              },
+              kind: 'Location',
+            } as Entity,
+            deferredEntities: [],
+            relations: [],
+          }),
+        ).rejects.toThrow('Processing state not found for 9');
+      });
+    });
+
+    it('should update a processed entity', async () => {
+      await db<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: '123',
+        entity_ref: 'Component:default/wacka',
+        unprocessed_entity: '',
+        errors: '',
+        next_update_at: 'now()',
+        last_discovery_at: 'now()',
+      });
+
+      const deferredEntity = {
+        apiVersion: '1.0.0',
+        metadata: {
+          name: 'deferred',
+        },
+        kind: 'Location',
+      } as Entity;
+
+      await processingDatabase.transaction(async tx => {
+        await processingDatabase.updateProcessedEntity(tx, {
+          id: '123',
+          processedEntity: {
+            apiVersion: '1.0.0',
+            metadata: {
+              name: 'new-root',
+            },
+            kind: 'Location',
+          } as Entity,
+          deferredEntities: [deferredEntity],
+          relations: [],
+        });
+      });
+
+      console.log(
+        await db<DbRefreshStateRow>('refresh_state')
+          .where({ entity_ref: 'deferred' })
+          .select(),
+      );
+      expect(1).toBeDefined();
+    });
+  });
 });
