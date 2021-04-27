@@ -70,6 +70,27 @@ describe('readEnvConfig', () => {
     ]);
   });
 
+  it('should accept keys with /', () => {
+    expect(
+      readEnvConfig({
+        'APP_CONFIG_proxy_/foo': 'http://localhost:1337',
+        'APP_CONFIG_proxy_/bar/v1_target': 'http://localhost:1337',
+      }),
+    ).toEqual([
+      {
+        data: {
+          proxy: {
+            '/foo': 'http://localhost:1337',
+            '/bar/v1': {
+              target: 'http://localhost:1337',
+            },
+          },
+        },
+        context: 'env',
+      },
+    ]);
+  });
+
   it('should accept complex objects', () => {
     expect(
       readEnvConfig({
@@ -91,7 +112,6 @@ describe('readEnvConfig', () => {
     ['APP_CONFIG__foo'],
     ['APP_CONFIG_foo_'],
     ['APP_CONFIG_fo_0'],
-    ['APP_CONFIG_fo/o'],
     ['APP_CONFIG_fo o'],
     ['APP_CONFIG_foo_(foo)_foo'],
   ])('should reject invalid key %p', key => {

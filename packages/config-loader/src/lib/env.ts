@@ -19,7 +19,7 @@ import { AppConfig, JsonObject } from '@backstage/config';
 const ENV_PREFIX = 'APP_CONFIG_';
 
 // Update the same pattern in config package if this is changed
-const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_][a-z][a-z0-9]*)*$/i;
+const CONFIG_KEY_PART_PATTERN = /^[a-z/][a-z0-9/]*(?:[-_/][a-z][a-z0-9]*)*$/i;
 
 /**
  * Read runtime configuration from the environment.
