@@ -23,7 +23,7 @@ export type CatalogEntitiesRequestWhereOne = {
 
 export type CatalogEntitiesRequestWhereMany = {
   operator: 'in' | 'not-in';
-  operand: Array<string> | Array<number> | Array<boolean>;
+  operand: Array<string>;
 };
 
 export type CatalogEntitiesRequestWhere =
