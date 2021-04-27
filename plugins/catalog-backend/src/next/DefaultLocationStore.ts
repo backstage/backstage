@@ -34,10 +34,8 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return 'DefaultLocationStore';
   }
 
-  createLocation(spec: LocationSpec): Promise<Location> {
+  async createLocation(spec: LocationSpec): Promise<Location> {
     return this.db.transaction(async tx => {
-      // TODO: id should really be type and target combined and not a uuid.
-
       // Attempt to find a previous location matching the spec
       const previousLocations = await this.listLocations();
       const previousLocation = previousLocations.some(
@@ -50,6 +48,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         );
       }
 
+      // TODO: id should really be type and target combined and not a uuid.
       const location = await this.db.addLocation(tx, {
         id: uuidv4(),
         type: spec.type,
@@ -68,11 +67,17 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   async listLocations(): Promise<Location[]> {
     const dbLocations = await this.db.locations();
-    return dbLocations.map(item => ({
-      id: item.id,
-      target: item.target,
-      type: item.type,
-    }));
+    return (
+      dbLocations
+        // TODO(blam): We should create a mutation to remove this location for everyone
+        // eventually when it's all done and dusted
+        .filter(({ type }) => type !== 'bootstrap')
+        .map(item => ({
+          id: item.id,
+          target: item.target,
+          type: item.type,
+        }))
+    );
   }
 
   getLocation(id: string): Promise<Location> {
@@ -86,9 +91,6 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
     return this.db.transaction(async tx => {
       const location = await this.db.location(id);
-      if (!location) {
-        throw new ConflictError(`No location found with id: ${id}`);
-      }
       await this.db.removeLocation(tx, id);
       await this.connection.applyMutation({
         type: 'delta',
@@ -108,7 +110,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   async connect(connection: EntityProviderConnection): Promise<void> {
     this._connection = connection;
-    const locations = await this.db.locations();
+    const locations = await this.listLocations();
     const entities = locations.map(location => {
       return locationSpecToLocationEntity(location);
     });
