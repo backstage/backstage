@@ -23,7 +23,7 @@ Some features are not yet available for all supported Git providers.
 yarn add @backstage/plugin-catalog-import
 ```
 
-2. Add the `CatalogImportPage` extensions to the app:
+2. Add the `CatalogImportPage` extension to the app:
 
 ```tsx
 // packages/app/src/App.tsx

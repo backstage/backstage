@@ -33,7 +33,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 yarn add @backstage/plugin-api-docs
 ```
 
-2. Add the `ApiExplorerPage` extensions to the app:
+2. Add the `ApiExplorerPage` extension to the app:
 
 ```tsx
 // packages/app/src/App.tsx

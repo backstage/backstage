@@ -30,7 +30,7 @@ const serviceEntityPage = (
 );
 ```
 
-4. Setup the `app.config.yaml` and account token environment variable
+4. Setup the `app-config.yaml` and account token environment variable
 
 ```yaml
 # app.config.yaml

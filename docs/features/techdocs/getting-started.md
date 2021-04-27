@@ -29,7 +29,7 @@ yarn add @backstage/plugin-techdocs
 
 Once the package has been installed, you need to import the plugin in your app.
 
-In `packages/app/src/App.tsx`, import TechDocsPage and add the following to
+In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
 `FlatRoutes`:
 
 ```tsx

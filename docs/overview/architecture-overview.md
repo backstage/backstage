@@ -95,10 +95,10 @@ any route we want for the page, as long as it doesn't collide with the routes
 that we choose for the other plugins in the app.
 
 These components that are exported from plugins are referred to as "Plugin
-Extension Components", or "Extensions Components". They are regular React
+Extension Components", or "Extension Components". They are regular React
 components, but in addition to being able to be rendered by React, they also
-contain various pieces of metadata that is used to write together the entire
-app. Extensions components are created using `create*Extension` methods, which
+contain various pieces of metadata that is used to wire together the entire
+app. Extension components are created using `create*Extension` methods, which
 you can read more about in the
 [composability documentation](../plugins/composability.md).
 
