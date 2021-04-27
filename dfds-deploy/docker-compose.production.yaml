@@ -31,9 +31,4 @@ services:
         - app_config_file=app-config.production.yaml
     ports:
       - '3000:80'
-  # ubuntu:
-  #   image: ubuntu:latest
-  #   entrypoint: bash -c
-  #   tty: true
-  #   command: 
-  #   - echo Hello $BACKEND_CORS_ORIGIN  
+
