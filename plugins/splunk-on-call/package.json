@@ -59,6 +59,8 @@
     "node-fetch": "^2.6.1"
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "schema.d.ts"
+  ],
+  "configSchema": "schema.d.ts"
 }
