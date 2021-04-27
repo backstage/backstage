@@ -72,6 +72,7 @@ export class GithubPublisher implements PublisherBase {
     const client = new Octokit({
       auth: token,
       baseUrl: this.config.apiBaseUrl,
+      previews: ['nebula-preview'],
     });
 
     const description = values.description as string;
