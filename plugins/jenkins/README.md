@@ -14,11 +14,22 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 yarn add @backstage/plugin-jenkins
 ```
 
-2. Add plugin:
+2. Add the `EntityJenkinsContent` extension to the entity page in the app:
 
-```js
-// packages/app/src/plugins.ts
-export { plugin as Jenkins } from '@backstage/plugin-jenkins';
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+import { EntityJenkinsContent } from '@backstage/plugin-circleci';
+
+// ...
+const serviceEntityPage = (
+  <EntityPageLayout>
+    ...
+    <EntityLayout.Route path="/jenkins" title="Jenkins">
+      <EntityJenkinsContent />
+    </EntityLayout.Route>
+    ...
+  </EntityPageLayout>
+);
 ```
 
 3. Add proxy configuration to `app-config.yaml`

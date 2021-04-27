@@ -26,14 +26,8 @@ yarn add @backstage/plugin-scaffolder
 
 ### Adding the Plugin to your `packages/app`
 
-Add the following entry to the head of your `packages/app/src/plugins.ts`:
-
-```ts
-export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-```
-
-Next we need to install the root page that the Scaffolder plugin provides. You
-can choose any path for the route, but we recommend the following:
+Add the root page that the Scaffolder plugin provides to your app. You can
+choose any path for the route, but we recommend the following:
 
 ```tsx
 import { ScaffolderPage } from '@backstage/plugin-scaffolder';
