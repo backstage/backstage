@@ -13,6 +13,7 @@
 /packages/techdocs-common          @backstage/techdocs-core
 /plugins/cloudbuild                @trivago/ebarrios
 /plugins/cost-insights             @backstage/silver-lining
+/plugins/dfds-capability-overview  @DFDS
 /plugins/dfds-capability-plugin    @dfds
 /plugins/dfds-capability-plugin-v2 @dfds
 /plugins/search                    @backstage/techdocs-core

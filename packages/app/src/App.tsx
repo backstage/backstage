@@ -53,6 +53,7 @@ import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 import { DfdsCapabilityPluginPage } from '@backstage/plugin-dfds-capability-plugin';
+import { DfdsCapabilityOverviewPage } from '@backstage/plugin-dfds-capability-overview';
 
 const app = createApp({
   apis,
@@ -130,6 +131,10 @@ const routes = (
     <Route
       path="/dfds-capability-plugin"
       element={<DfdsCapabilityPluginPage />}
+    />
+    <Route
+      path="/dfds-capability-overview"
+      element={<DfdsCapabilityOverviewPage />}
     />
   </FlatRoutes>
 );
