@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
@@ -156,6 +160,12 @@ export const OwnershipCard = ({
         'spec.type',
         'relations',
       ],
+      where: {
+        [RELATION_OWNED_BY]: {
+          operator: 'equal',
+          operand: stringifyEntityRef(entity),
+        },
+      },
     });
 
     const ownedEntitiesList = entitiesList.items.filter(component =>

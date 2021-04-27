@@ -17,6 +17,7 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   GroupEntity,
   RELATION_MEMBER_OF,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import {
@@ -44,7 +45,7 @@ import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(theme =>
   createStyles({
     card: {
       border: `1px solid ${theme.palette.divider}`,
@@ -123,6 +124,12 @@ export const MembersListCard = (_props: {
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: { kind: 'User' },
+      where: {
+        [RELATION_MEMBER_OF]: {
+          operator: 'equal',
+          operand: stringifyEntityRef({ kind: 'group', name: groupName }),
+        },
+      },
     });
     const groupMembersList = (membersList.items as UserEntity[]).filter(
       member =>

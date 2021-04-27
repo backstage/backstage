@@ -16,9 +16,24 @@
 
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
+export type CatalogEntitiesRequestWhereOne = {
+  operator: 'equal' | 'not-equal';
+  operand: string | number | boolean;
+};
+
+export type CatalogEntitiesRequestWhereMany = {
+  operator: 'in' | 'not-in';
+  operand: Array<string> | Array<number> | Array<boolean>;
+};
+
+export type CatalogEntitiesRequestWhere =
+  | CatalogEntitiesRequestWhereOne
+  | CatalogEntitiesRequestWhereMany;
+
 export type CatalogEntitiesRequest = {
   filter?: Record<string, string | string[]> | undefined;
   fields?: string[] | undefined;
+  where?: Record<string, CatalogEntitiesRequestWhere>;
 };
 
 export type CatalogListResponse<T> = {
