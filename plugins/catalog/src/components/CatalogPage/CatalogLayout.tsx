@@ -29,7 +29,7 @@ const CatalogLayout = ({ children }: Props) => {
     <Page themeId="home">
       <Header
         title={`${orgName} Catalog`}
-        subtitle={`Index of software components in ${orgName}`}
+        subtitle={`Catalog of software components at ${orgName}`}
         pageTitleOverride="Home"
       />
       {children}
