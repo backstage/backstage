@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Card, Box } from '@material-ui/core';
+import { Card, Box, Typography } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import { AWS } from './Aws';
 import React from 'react';
@@ -91,7 +91,7 @@ export const ProvidersTab = () => {
           style={{ marginRight: 5, color: grey[800] }}
           fontSize="small"
         />
-        <div style={{ color: grey[800] }}>Providers</div>
+        <Typography color="textPrimary">Providers</Typography>
         <Box flex={1} />
 
         <SvgComponent1 />

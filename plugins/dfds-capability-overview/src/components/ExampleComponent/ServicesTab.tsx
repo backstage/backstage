@@ -205,7 +205,7 @@ export const ServicesCard = ({ services }: any) => {
           style={{ marginRight: 5, color: grey[800] }}
           fontSize="small"
         />
-        <div style={{ color: grey[800] }}>Services</div>
+        <Typography>Services</Typography>
         <Box flex={1} />
         <Typography style={{ marginRight: 5 }}>{services.length}</Typography>
         <CloudIcon style={{ marginRight: 5 }} fontSize="small" />

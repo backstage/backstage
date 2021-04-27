@@ -56,7 +56,7 @@ export const CapabilityCard = ({ name, description, ...rest }: any) => {
               <Typography variant="h5" color="textPrimary">
                 <Link href={`/dfds-capability-plugin?id=${name}`}>{name}</Link>
               </Typography>
-              <Typography variant="caption" style={{ color: grey[600] }}>
+              <Typography variant="caption" color="textPrimary">
                 {description}
               </Typography>
             </Box>
@@ -119,12 +119,14 @@ export const CapabilityCard = ({ name, description, ...rest }: any) => {
           )}
           <Divider />
           <Box p={3} pt={2} pb={2} display="flex" alignItems="center">
-            {/* <Typography variant="subtitle2" style={{ color: grey[800] }}>
+            <Typography variant="subtitle2" color="textPrimary">
               Status:
-            </Typography> */}
-            <Box display="flex">{rest.status}</Box>
+            </Typography>
+            <Box display="flex" ml={1}>
+              {rest.status}
+            </Box>
             <Box ml={1}>
-              <Typography variant="caption" style={{ color: grey[600] }}>
+              <Typography variant="caption" color="textPrimary">
                 {rest.updated || 'updated 2 hours ago'}
               </Typography>
             </Box>
