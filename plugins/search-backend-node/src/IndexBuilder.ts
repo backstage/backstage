@@ -98,7 +98,7 @@ export class IndexBuilder {
   async build(): Promise<{ scheduler: Scheduler }> {
     const scheduler = new Scheduler({ logger: this.logger });
 
-    Object.keys(this.collators).map(type => {
+    Object.keys(this.collators).forEach(type => {
       scheduler.addToSchedule(async () => {
         // Collate, Decorate, Index.
         const decorators: DocumentDecorator[] = (
