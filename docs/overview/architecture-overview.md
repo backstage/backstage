@@ -97,9 +97,9 @@ that we choose for the other plugins in the app.
 These components that are exported from plugins are referred to as "Plugin
 Extension Components", or "Extension Components". They are regular React
 components, but in addition to being able to be rendered by React, they also
-contain various pieces of metadata that is used to wire together the entire
-app. Extension components are created using `create*Extension` methods, which
-you can read more about in the
+contain various pieces of metadata that is used to wire together the entire app.
+Extension components are created using `create*Extension` methods, which you can
+read more about in the
 [composability documentation](../plugins/composability.md).
 
 As of this moment, there is no config based install procedure for plugins. Some
