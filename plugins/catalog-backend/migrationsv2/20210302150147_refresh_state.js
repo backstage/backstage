@@ -33,7 +33,6 @@ exports.up = async function up(knex) {
       );
     table
       .text('entity_ref')
-      .unique()
       .notNullable()
       .comment('A reference to the entity that the refresh state is tied to');
     table
@@ -59,13 +58,15 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('JSON array containing all errors related to entity');
     table
-      .dateTime('next_update_at')
+      .dateTime('next_update_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('Timestamp of when entity should be updated');
     table
-      .dateTime('last_discovery_at')
+      .dateTime('last_discovery_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('The last timestamp of which this entity was discovered');
+    table.unique(['entity_ref'], 'refresh_state_entity_ref_uniq');
+    table.index('entity_id', 'refresh_state_entity_id_idx');
     table.index('entity_ref', 'refresh_state_entity_ref_idx');
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
   });
@@ -94,38 +95,38 @@ exports.up = async function up(knex) {
       'Holds edges between refresh state rows. Every time when an entity is processed and emits another entity, an edge will be stored to represent that fact. This is used to detect orphans and ultimately deletions.',
     );
     table
-      .text('source_special_key')
+      .increments('id')
+      .comment('Primary key to distinguish unique lines from each other');
+    table
+      .text('source_key')
       .nullable()
       .comment(
         'When the reference source is not an entity, this is an opaque identifier for that source.',
       );
     table
-      .text('source_entity_id')
+      .text('source_entity_ref')
       .nullable()
-      .references('entity_id')
+      .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment(
-        'When the reference source is an entity, this is the ID of the source entity.',
+        'When the reference source is an entity, this is the EntityRef of the source entity.',
       );
     table
-      .text('target_entity_id')
+      .text('target_entity_ref')
       .notNullable()
-      .references('entity_id')
+      .references('entity_ref')
       .inTable('refresh_state')
       .onDelete('CASCADE')
-      .comment('The ID of the target entity.');
+      .comment('The EntityRef of the target entity.');
+    table.index('source_key', 'refresh_state_references_source_key_idx');
     table.index(
-      'source_special_key',
-      'refresh_state_references_source_special_key_idx',
+      'source_entity_ref',
+      'refresh_state_references_source_entity_ref_idx',
     );
     table.index(
-      'source_entity_id',
-      'refresh_state_references_source_entity_id_idx',
-    );
-    table.index(
-      'target_entity_id',
-      'refresh_state_references_target_entity_id_idx',
+      'target_entity_ref',
+      'refresh_state_references_target_entity_ref_idx',
     );
   });
 
@@ -153,6 +154,29 @@ exports.up = async function up(knex) {
     table.index('source_entity_ref', 'relations_source_entity_ref_idx');
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
+
+  await knex.schema.createTable('search', table => {
+    table.comment(
+      'Flattened key-values from the entities, used for quick filtering',
+    );
+    table
+      .text('entity_id')
+      .references('entity_id')
+      .inTable('refresh_state')
+      .onDelete('CASCADE')
+      .comment('The entity that matches this key/value');
+    table
+      .string('key')
+      .notNullable()
+      .comment('A key that occurs in the entity');
+    table
+      .string('value')
+      .nullable()
+      .comment('The corresponding value to match on');
+    table.index(['entity_id'], 'search_entity_id_idx');
+    table.index(['key'], 'search_key_idx');
+    table.index(['value'], 'search_value_idx');
+  });
 };
 
 /**
@@ -165,6 +189,8 @@ exports.down = async function down(knex) {
     table.dropIndex([], 'refresh_state_references_target_entity_id_idx');
   });
   await knex.schema.alterTable('refresh_state', table => {
+    table.dropUnique([], 'refresh_state_entity_ref_uniq');
+    table.dropIndex([], 'refresh_state_entity_id_idx');
     table.dropIndex([], 'refresh_state_entity_ref_idx');
     table.dropIndex([], 'refresh_state_next_update_at_idx');
   });
@@ -175,6 +201,13 @@ exports.down = async function down(knex) {
     table.index('source_entity_ref', 'relations_source_entity_ref_idx');
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
+  await knex.schema.alterTable('search', table => {
+    table.dropIndex([], 'search_entity_id_idx');
+    table.dropIndex([], 'search_key_idx');
+    table.dropIndex([], 'search_value_idx');
+  });
+
+  await knex.schema.dropTable('search');
   await knex.schema.dropTable('final_entities');
   await knex.schema.dropTable('relations');
   await knex.schema.dropTable('references');

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { ConflictError } from '@backstage/errors';
+import { createHash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { Transaction } from '../database';
-import { ConflictError } from '@backstage/errors';
-import {
-  DbRefreshStateReferences,
-  DbRefreshStateRow,
-  DbRelationsRow,
-} from './database/DefaultProcessingDatabase';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
-import stableStringify from 'fast-json-stable-stringify';
+import { buildEntitySearch, DbSearchRow } from './search';
+
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+const BATCH_SIZE = 50;
 
 export type DbFinalEntitiesRow = {
   entity_id: string;
@@ -49,64 +51,123 @@ export class Stitcher {
     for (const entityRef of entityRefs) {
       await this.transaction(async txOpaque => {
         const tx = txOpaque as Knex.Transaction;
-        const [result] = await tx<DbRefreshStateRow>('refresh_state')
-          .select('entity_id', 'processed_entity')
-          .where({ entity_ref: entityRef });
 
-        if (!result) {
+        // Selecting from refresh_state and final_entities should yield exactly
+        // one row (except in abnormal cases where the stitch was invoked for
+        // something that didn't exist at all, in which case it's zero rows).
+        // The join with the temporary incoming_references still gives one row.
+        // The only result set "expanding" join is the one with relations, so
+        // the output should be at least one row (if zero or one relations were
+        // found), or at most the same number of rows as relations.
+        const result: Array<{
+          entityId: string;
+          processedEntity?: string;
+          errors: string;
+          incomingReferenceCount: string | number;
+          previousEtag?: string;
+          relationType?: string;
+          relationTarget?: string;
+        }> = await tx
+          .with('incoming_references', function incomingReferences(builder) {
+            return builder
+              .from('refresh_state_references')
+              .where({ target_entity_ref: entityRef })
+              .count({ count: '*' });
+          })
+          .select({
+            entityId: 'refresh_state.entity_id',
+            processedEntity: 'refresh_state.processed_entity',
+            errors: 'refresh_state.errors',
+            incomingReferenceCount: 'incoming_references.count',
+            previousEtag: 'final_entities.etag',
+            relationType: 'relations.type',
+            relationTarget: 'relations.target_entity_ref',
+          })
+          .from('refresh_state')
+          .leftJoin('incoming_references', {})
+          .leftOuterJoin('final_entities', {
+            'final_entities.entity_id': 'refresh_state.entity_id',
+          })
+          .leftOuterJoin('relations', {
+            'relations.source_entity_ref': 'refresh_state.entity_ref',
+          })
+          .where({ 'refresh_state.entity_ref': entityRef })
+          .orderBy('relationType', 'asc')
+          .orderBy('relationTarget', 'asc');
+
+        // If there were no rows returned, it would mean that there was no
+        // matching row even in the refresh_state. This can happen for example
+        // if we emit a relation to something that hasn't been ingested yet.
+        // It's safe to ignore this stitch attempt in that case.
+        if (!result.length) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
           );
           return;
-        } else if (!result.processed_entity) {
+        }
+
+        const {
+          entityId,
+          processedEntity,
+          // errors,
+          incomingReferenceCount,
+          previousEtag,
+        } = result[0];
+
+        // If there was no processed entity in place, the target hasn't been
+        // through the processing steps yet. It's safe to ignore this stitch
+        // attempt in that case, since another stitch will be triggered when
+        // that processing has finished.
+        if (!processedEntity) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, the entity has not yet been processed`,
           );
           return;
         }
 
-        const entity: Entity = JSON.parse(result.processed_entity);
+        // Grab the processed entity and stitch all of the relevant data into it
+        const entity = JSON.parse(processedEntity) as Entity;
+        const isOrphan = Number(incomingReferenceCount) === 0;
 
-        const entityId = entity?.metadata?.uid;
-        if (!entityId) {
-          this.logger.error(`missing ID in entity ${JSON.stringify(entity)}`);
-          return;
-        }
-
-        const [reference_count_result] = await tx<DbRefreshStateReferences>(
-          'refresh_state_references',
-        )
-          .where({ target_entity_id: entity.metadata.uid })
-          .count({ reference_count: 'target_entity_id' });
-
-        if (Number(reference_count_result.reference_count) === 0) {
-          this.logger.debug(`${entityRef} is orphan`);
+        if (isOrphan) {
+          this.logger.debug(`${entityRef} is an orphan`);
           entity.metadata.annotations = {
             ...entity.metadata.annotations,
             ['backstage.io/orphan']: 'true',
           };
         }
 
-        const relationResults = await tx<DbRelationsRow>('relations')
-          .where({ source_entity_ref: entityRef })
-          .select();
+        // TODO: entityRef is lower case and should be uppercase in the final result
+        entity.relations = result
+          .filter(row => row.relationType)
+          .map(row => ({
+            type: row.relationType!,
+            target: parseEntityRef(row.relationTarget!),
+          }));
 
-        // TODO: entityRef is lower case and should be uppercase in the final result.
-        entity.relations = relationResults.map(relation => ({
-          type: relation.type,
-          target: parseEntityRef(relation.target_entity_ref),
-        }));
-        entity.metadata.generation = 1;
+        // If the output entity was actually not changed, just abort
         const etag = generateEntityEtag(entity);
+        if (etag === previousEtag) {
+          this.logger.debug(`Skipped stitching of ${entityRef}, no changes`);
+          return;
+        }
+
+        entity.metadata.uid = entityId;
+        entity.metadata.generation = 1;
         entity.metadata.etag = etag;
+
         await tx<DbFinalEntitiesRow>('final_entities')
           .insert({
-            finalized_entity: JSON.stringify(entity),
             entity_id: entityId,
+            finalized_entity: JSON.stringify(entity),
             etag,
           })
           .onConflict('entity_id')
           .merge(['finalized_entity', 'etag']);
+
+        const searchEntries = buildEntitySearch(entityId, entity);
+        await tx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
+        await tx.batchInsert('search', searchEntries, BATCH_SIZE);
       });
     }
   }
