@@ -23,14 +23,14 @@ const transactionContextKey = new ContextKey<Knex.Transaction | undefined>(
 );
 
 /**
- * TransactionContext handles the wrapping of a knex transaction in a Context.
+ * TransactionValue handles the wrapping of a knex transaction in a Context.
  */
-export class TransactionContext {
-  static create(tx: Knex.Transaction, parent?: Context) {
-    return ContextWithValue.create(transactionContextKey, tx, parent);
+export class TransactionValue {
+  static in(parent: Context, tx: Knex.Transaction) {
+    return ContextWithValue.create(parent, transactionContextKey, tx);
   }
 
-  static getTransaction(context: Context): Knex.Transaction {
+  static from(context: Context): Knex.Transaction {
     const transaction = context.getContextValue(transactionContextKey);
     if (!transaction) {
       throw new Error(`No transaction available in context`);

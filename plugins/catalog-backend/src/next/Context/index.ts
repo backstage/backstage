@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export { BaseContext } from './BaseContext';
+export { BackgroundContext } from './BackgroundContext';
 export { ContextWithValue } from './ContextWithValue';
-export { TransactionContext } from './TransactionContext';
+export { TransactionValue } from './TransactionValue';
 export { ContextKey } from './types';
 export type { Context } from './types';

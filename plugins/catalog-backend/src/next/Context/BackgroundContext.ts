@@ -19,7 +19,7 @@ import { Context, ContextKey } from './types';
 /**
  * A base Context implementation that does not hold any value.
  */
-export class BaseContext implements Context {
+export class BackgroundContext implements Context {
   getContextValue<T>(key: ContextKey<T>): T {
     return key.defaultValue;
   }

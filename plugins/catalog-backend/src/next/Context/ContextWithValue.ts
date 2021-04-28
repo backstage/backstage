@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { BaseContext } from './BaseContext';
 import { Context, ContextKey } from './types';
 
 /**
  * A Context implementation that holds a single value, optionally extending an existing context.
  */
 export class ContextWithValue implements Context {
-  static create(key: ContextKey<unknown>, value: unknown, parent?: Context) {
-    return new ContextWithValue(parent ?? new BaseContext(), key, value);
+  static create(parent: Context, key: ContextKey<unknown>, value: unknown) {
+    return new ContextWithValue(parent, key, value);
   }
 
   private constructor(
