@@ -78,7 +78,6 @@
   "files": [
     "dist",
     "migrations/**/*.{js,d.ts}",
-    "migrationsv2/**/*.{js,d.ts}",
     "config.d.ts"
   ],
   "configSchema": "config.d.ts"
