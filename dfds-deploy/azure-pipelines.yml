@@ -38,7 +38,7 @@ stages:
           dockerComposeFile: './dfds-deploy/docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
-          arguments: 'build backstage-frontend' 
+          arguments: 'backstage-frontend' 
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
       - task: ECRPushImage@1
@@ -68,7 +68,7 @@ stages:
           dockerComposeFile: './dfds-deploy/docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
-          arguments: 'build backstage-backend' 
+          arguments: 'backstage-backend' 
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
       - task: ECRPushImage@1
