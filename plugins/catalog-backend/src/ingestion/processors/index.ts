@@ -36,6 +36,5 @@ export { UrlReaderProcessor } from './UrlReaderProcessor';
 export { parseEntityYaml } from './util/parse';
 export { results };
 
-export * from './bitbucket/types';
 export { BitbucketClient } from './bitbucket';
-export type { BitbucketRepositoryParser } from './bitbucket';
+export type { BitbucketRepositoryParser, Bitbucket } from './bitbucket';

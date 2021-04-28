@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export type Project = {
-  key: string;
-};
+export namespace Bitbucket {
+  export type Project = {
+    key: string;
+  };
 
-export type Repository = {
-  project: Project;
-  slug: string;
-  links: Record<string, Link[]>;
-};
+  export type Repository = {
+    project: Project;
+    slug: string;
+    links: Record<string, Link[]>;
+  };
 
-export type Link = {
-  href: string;
-};
+  export type Link = {
+    href: string;
+  };
+}

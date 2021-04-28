@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { defaultRepositoryParser } from './BitbucketRepositoryParser';
-import { Project, Repository } from './types';
+import { Bitbucket } from './types';
 import { BitbucketClient } from './client';
 import { results } from '../index';
 
@@ -36,12 +36,12 @@ describe('BitbucketRepositoryParser', () => {
       const actual = await defaultRepositoryParser({
         client: {} as BitbucketClient,
         repository: {
-          project: {} as Project,
+          project: {} as Bitbucket.Project,
           slug: 'repo-slug',
           links: {
             self: [{ href: browseUrl }],
           },
-        } as Repository,
+        } as Bitbucket.Repository,
         path: path,
       });
 

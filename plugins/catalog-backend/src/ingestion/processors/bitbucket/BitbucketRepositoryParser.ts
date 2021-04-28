@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Repository } from './types';
+import { Bitbucket } from './types';
 import { CatalogProcessorResult } from '../types';
 import { results } from '../index';
 import { BitbucketClient } from './client';
 
 export type BitbucketRepositoryParser = (options: {
   client: BitbucketClient;
-  repository: Repository;
+  repository: Bitbucket.Repository;
   path: string;
 }) => AsyncIterable<CatalogProcessorResult>;
 

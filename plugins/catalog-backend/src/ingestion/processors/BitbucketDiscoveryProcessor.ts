@@ -22,7 +22,7 @@ import {
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/catalog-model';
 import {
-  Repository,
+  Bitbucket,
   BitbucketRepositoryParser,
   BitbucketClient,
   defaultRepositoryParser,
@@ -159,5 +159,5 @@ function escapeRegExp(str: string): RegExp {
 
 type Result = {
   scanned: number;
-  matches: Repository[];
+  matches: Bitbucket.Repository[];
 };
