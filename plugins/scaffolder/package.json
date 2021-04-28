@@ -44,7 +44,7 @@
     "@rjsf/core": "^2.4.0",
     "@rjsf/material-ui": "^2.4.0",
     "classnames": "^2.2.6",
-    "json-schema": "^0.2.5",
+    "json-schema": "^0.3.0",
     "git-url-parse": "^11.4.4",
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
