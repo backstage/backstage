@@ -114,7 +114,7 @@ $ ILERT_AUTH_HEADER='Basic <TOKEN>' yarn start
 
 ## Integration Key
 
-The information displayed for each entity is based on the [alert source integration key](https://docs.ilert.com/integrations/backstage).
+The information displayed for each entity is based on the alert source integration key.
 
 ### Adding the integration key to the entity annotation
 
