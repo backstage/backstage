@@ -22,18 +22,6 @@ import {
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 
-export interface LocationEntity {
-  apiVersion: 'backstage.io/v1alpha1';
-  kind: 'Location';
-  metadata: {
-    name: string; // type:target
-    namespace: 'default';
-  };
-  spec: {
-    location: { type: string; target: string };
-  };
-}
-
 export interface LocationService {
   createLocation(
     spec: LocationSpec,
@@ -80,7 +68,7 @@ export type EntityProcessingResult =
       ok: true;
       state: Map<string, JsonObject>;
       completedEntity: Entity;
-      deferredEntites: Entity[];
+      deferredEntities: Entity[];
       relations: EntityRelationSpec[];
       errors: Error[];
     }
