@@ -173,6 +173,7 @@ exports.up = async function up(knex) {
       .string('value')
       .nullable()
       .comment('The corresponding value to match on');
+    table.index(['entity_id'], 'search_entity_id_idx');
     table.index(['key'], 'search_key_idx');
     table.index(['value'], 'search_value_idx');
   });
@@ -201,6 +202,7 @@ exports.down = async function down(knex) {
     table.index('originating_entity_id', 'relations_source_entity_id_idx');
   });
   await knex.schema.alterTable('search', table => {
+    table.dropIndex([], 'search_entity_id_idx');
     table.dropIndex([], 'search_key_idx');
     table.dropIndex([], 'search_value_idx');
   });
