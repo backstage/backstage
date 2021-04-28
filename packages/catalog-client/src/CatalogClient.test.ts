@@ -76,7 +76,7 @@ describe('CatalogClient', () => {
       expect(response).toEqual(defaultResponse);
     });
 
-    it('builds entity search filters properly', async () => {
+    it('builds multiple entity search filters properly', async () => {
       expect.assertions(2);
 
       server.use(
@@ -107,7 +107,7 @@ describe('CatalogClient', () => {
       expect(response.items).toEqual([]);
     });
 
-    it('builds entity legacy search filters properly', async () => {
+    it('builds single entity search filter properly', async () => {
       expect.assertions(2);
 
       server.use(
@@ -119,7 +119,6 @@ describe('CatalogClient', () => {
 
       const response = await client.getEntities(
         {
-          // The legacy value of filter is not an array
           filter: {
             a: '1',
             b: ['2', '3'],
