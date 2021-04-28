@@ -22,7 +22,6 @@ import React from 'react';
 import {
   apiDocsConfigRef,
   ApiExplorerPage,
-  ApiExplorerPageBase,
   defaultDefinitionWidgets,
   EntityApiDefinitionCard,
 } from '../src';
@@ -32,6 +31,9 @@ import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 import customMetadataApiEntity from './custom-metadata-example.api.yaml';
 import { CustomTable } from './customizations';
+// eslint-disable-next-line
+import { CatalogIndexBasePage as ApiExplorerBasePage } from '@backstage/plugin-catalog/src';
+import { ApiExplorerLayout } from '../src/components/ApiExplorerPage/ApiExplorerLayout';
 
 createDevApp()
   .registerApi({
@@ -120,11 +122,14 @@ createDevApp()
   .addPage({
     title: 'With Custom Table',
     element: (
-      <ApiExplorerPageBase
-        includeRegisterButton={false}
+      <ApiExplorerBasePage
+        createComponentLinkText="Register Existing API"
+        showHeaderTabs={false}
+        showManagedFilters={false}
         showSupportButton
-        TableComponent={CustomTable}
-      />
+        supportButtonText="All Your APIs"
+        LayoutComponent={ApiExplorerLayout}
+        TableComponent={CustomTable} />
     ),
   })
   .render();

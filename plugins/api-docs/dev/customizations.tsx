@@ -20,12 +20,15 @@ import {
   defaultColumns,
   defaultFilters,
 } from '../src/components/ApiExplorerTable/presets';
-import { Table, TableFilter } from '@backstage/core';
+import { Table, TableFilter, TableState, useApi, useQueryParamState } from '@backstage/core';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import {
   Columns,
   Filters,
   EntityRow,
 } from '../src/components/ApiExplorerTable/types';
+import {useAsync} from 'react-use';
+import {getRows} from '../src/components/ApiExplorerTable/ApiExplorerTable';
 
 const domainColumn = { title: 'Domain', field: 'entity.metadata.domain' };
 const capabilitiesColumn = {
@@ -82,27 +85,31 @@ const customFilters = getFilters();
 
 export const CustomTable = (props: any) => {
   const {
-    isLoading = false,
-    data,
     options: defaultOptions,
-    initialState,
-    onStateChange,
   } = props;
   const {
     columns,
     filters,
     options = {},
   } = CustomTable;
+  const [queryParamState, setQueryParamState] = useQueryParamState<TableState>(
+    'apiTable',
+  );
+  const catalogApi = useApi(catalogApiRef);
+  const { loading, value: catalogResponse } = useAsync(async () => {
+    return await catalogApi.getEntities({ filter: { kind: 'API' } });
+ }, [catalogApi]);
+  const rows = getRows(catalogResponse?.items ?? []);
 
   return (
     <Table<EntityRow>
-      isLoading={isLoading}
+      isLoading={loading}
       columns={columns}
       filters={filters}
       options={{ ...defaultOptions, ...options }}
-      data={data}
-      initialState={initialState}
-      onStateChange={onStateChange}
+      data={rows}
+      initialState={queryParamState}
+      onStateChange={setQueryParamState}
     />
   );
 };

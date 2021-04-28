@@ -20,7 +20,6 @@ export {
   apiDocsPlugin,
   apiDocsPlugin as plugin,
   ApiExplorerPage,
-  ApiExplorerPageBase,
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
   EntityConsumingComponentsCard,

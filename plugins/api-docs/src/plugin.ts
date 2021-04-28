@@ -23,7 +23,6 @@ import {
 } from '@backstage/core';
 import { defaultDefinitionWidgets } from './components/ApiDefinitionCard';
 import { ApiExplorerPage as Page } from './components/ApiExplorerPage/ApiExplorerPage';
-import { ApiExplorerPageBase as BasePage } from './components/ApiExplorerPage/ApiExplorerPageBase';
 import { apiDocsConfigRef } from './config';
 import { createComponentRouteRef, rootRoute } from './routes';
 
@@ -58,14 +57,6 @@ export const ApiExplorerPage = apiDocsPlugin.provide(
   createRoutableExtension({
     component: () =>
       import('./components/ApiExplorerPage').then(m => m.ApiExplorerPage),
-    mountPoint: rootRoute,
-  }),
-);
-
-export const ApiExplorerPageBase = apiDocsPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ApiExplorerPage').then(m => m.ApiExplorerPageBase),
     mountPoint: rootRoute,
   }),
 );
