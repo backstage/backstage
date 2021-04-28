@@ -19,10 +19,11 @@ import { Knex } from 'knex';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
+  DbRelationsRow,
   DefaultProcessingDatabase,
 } from './DefaultProcessingDatabase';
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import { getVoidLogger } from '@backstage/backend-common';
 
@@ -452,8 +453,8 @@ describe('Default Processing Database', () => {
 
     it('should update a processed entity', async () => {
       await db<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: '123',
-        entity_ref: 'Component:default/wacka',
+        entity_id: '321',
+        entity_ref: 'location:default/new-root',
         unprocessed_entity: '',
         errors: '',
         next_update_at: 'now()',
@@ -468,9 +469,23 @@ describe('Default Processing Database', () => {
         kind: 'Location',
       } as Entity;
 
+      const relation: EntityRelationSpec = {
+        source: {
+          kind: 'Component',
+          namespace: 'Default',
+          name: 'foo',
+        },
+        target: {
+          kind: 'Component',
+          namespace: 'Default',
+          name: 'foo',
+        },
+        type: 'url',
+      };
+
       await processingDatabase.transaction(async tx => {
         await processingDatabase.updateProcessedEntity(tx, {
-          id: '123',
+          id: '321',
           processedEntity: {
             apiVersion: '1.0.0',
             metadata: {
@@ -479,16 +494,24 @@ describe('Default Processing Database', () => {
             kind: 'Location',
           } as Entity,
           deferredEntities: [deferredEntity],
-          relations: [],
+          relations: [relation],
         });
       });
 
-      console.log(
-        await db<DbRefreshStateRow>('refresh_state')
-          .where({ entity_ref: 'deferred' })
-          .select(),
-      );
-      expect(1).toBeDefined();
+      const deferredResult = await db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: 'location:default/deferred' })
+        .select();
+      expect(deferredResult.length).toBe(1);
+
+      const [relations] = await db<DbRelationsRow>('relations')
+        .where({ originating_entity_id: '321' })
+        .select();
+      expect(relations).toEqual({
+        originating_entity_id: '321',
+        source_entity_ref: 'component:default/foo',
+        type: 'url',
+        target_entity_ref: 'component:default/foo',
+      });
     });
   });
 });
