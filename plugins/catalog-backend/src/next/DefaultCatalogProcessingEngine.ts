@@ -105,7 +105,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         state: result.state,
         errors: result.errors,
         relations: result.relations,
-        deferredEntities: result.deferredEntites,
+        deferredEntities: result.deferredEntities,
       });
 
       const setOfThingsToStitch = new Set<string>([
