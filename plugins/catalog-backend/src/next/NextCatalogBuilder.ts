@@ -19,7 +19,6 @@ import {
   resolvePackagePath,
   UrlReader,
 } from '@backstage/backend-common';
-import fs from 'fs-extra';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -39,6 +38,7 @@ import {
   EntitiesCatalog,
   LocationsCatalog,
 } from '../catalog';
+import { CommonDatabase } from '../database/CommonDatabase';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -63,16 +63,15 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
+import { CatalogProcessingEngine } from '../next/types';
+import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
+import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
-import { CatalogProcessingEngine } from '../next/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
-import { CommonDatabase } from '../database/CommonDatabase';
-import { ConfigLocationProvider } from './ConfigLocationProvider';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -266,7 +265,7 @@ export class NextCatalogBuilder {
 
     const locationStore = new DefaultLocationStore(db);
     const stitcher = new Stitcher(dbClient, logger);
-    const configLocationProvider = new ConfigLocationProvider(config);
+    const configLocationProvider = new ConfigLocationEntityProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
       [locationStore, configLocationProvider],

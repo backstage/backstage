@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { ConfigLocationProvider } from './ConfigLocationProvider';
-import { EntityProviderConnection } from './types';
-import { ConfigReader } from '@backstage/config';
 import { resolvePackagePath } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import path from 'path';
+import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
+import { EntityProviderConnection } from './types';
 
-describe('Config Location Provider', () => {
+describe('ConfigLocationEntityProvider', () => {
   it('should apply mutation with the correct paths in the config', async () => {
     const mockConfig = new ConfigReader({
       catalog: {
@@ -34,7 +34,7 @@ describe('Config Location Provider', () => {
     const mockConnection = ({
       applyMutation: jest.fn(),
     } as unknown) as EntityProviderConnection;
-    const locationProvider = new ConfigLocationProvider(mockConfig);
+    const locationProvider = new ConfigLocationEntityProvider(mockConfig);
 
     await locationProvider.connect(mockConnection);
 
