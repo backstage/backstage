@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { ConflictError } from '@backstage/errors';
+import { createHash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { Transaction } from '../database';
-import { ConflictError } from '@backstage/errors';
-import {
-  DbRefreshStateReferencesRow,
-  DbRefreshStateRow,
-  DbRelationsRow,
-} from './database/DefaultProcessingDatabase';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
-import stableStringify from 'fast-json-stable-stringify';
-import { buildEntitySearch } from '../database/search';
-import { DbEntitiesSearchRow } from '../database/types';
+import { buildEntitySearch, DbSearchRow } from './search';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -58,6 +52,13 @@ export class Stitcher {
       await this.transaction(async txOpaque => {
         const tx = txOpaque as Knex.Transaction;
 
+        // Selecting from refresh_state and final_entities should yield exactly
+        // one row (except in abnormal cases where the stitch was invoked for
+        // something that didn't exist at all, in which case it's zero rows).
+        // The join with the temporary incoming_references still gives one row.
+        // The only result set "expanding" join is the one with relations, so
+        // the output should be at least one row (if zero or one relations were
+        // found), or at most the same number of rows as relations.
         const result: Array<{
           entityId: string;
           processedEntity?: string;
@@ -90,8 +91,14 @@ export class Stitcher {
           .leftOuterJoin('relations', {
             'relations.source_entity_ref': 'refresh_state.entity_ref',
           })
-          .where({ 'refresh_state.entity_ref': entityRef });
+          .where({ 'refresh_state.entity_ref': entityRef })
+          .orderBy('relationType', 'asc')
+          .orderBy('relationTarget', 'asc');
 
+        // If there were no rows returned, it would mean that there was no
+        // matching row even in the refresh_state. This can happen for example
+        // if we emit a relation to something that hasn't been ingested yet.
+        // It's safe to ignore this stitch attempt in that case.
         if (!result.length) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
@@ -102,11 +109,15 @@ export class Stitcher {
         const {
           entityId,
           processedEntity,
-          errors,
+          // errors,
           incomingReferenceCount,
           previousEtag,
         } = result[0];
 
+        // If there was no processed entity in place, the target hasn't been
+        // through the processing steps yet. It's safe to ignore this stitch
+        // attempt in that case, since another stitch will be triggered when
+        // that processing has finished.
         if (!processedEntity) {
           this.logger.debug(
             `Unable to stitch ${entityRef}, the entity has not yet been processed`,
@@ -114,6 +125,7 @@ export class Stitcher {
           return;
         }
 
+        // Grab the processed entity and stitch all of the relevant data into it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
 
@@ -132,15 +144,16 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
-        entity.metadata.generation = 1;
 
         // If the output entity was actually not changed, just abort
         const etag = generateEntityEtag(entity);
         if (etag === previousEtag) {
-          console.log(`Skipped stitching of ${entityRef}, no changes`);
+          this.logger.debug(`Skipped stitching of ${entityRef}, no changes`);
           return;
         }
 
+        entity.metadata.uid = entityId;
+        entity.metadata.generation = 1;
         entity.metadata.etag = etag;
 
         await tx<DbFinalEntitiesRow>('final_entities')
@@ -152,19 +165,9 @@ export class Stitcher {
           .onConflict('entity_id')
           .merge(['finalized_entity', 'etag']);
 
-        try {
-          const entries = buildEntitySearch(entityId, entity);
-          await tx<DbEntitiesSearchRow>('search')
-            .where({ entity_id: entityId })
-            .delete();
-          await tx.batchInsert('search', entries, BATCH_SIZE);
-        } catch (e) {
-          this.logger.debug(
-            `Failed to write search entries for ${entityId}`,
-            e,
-          );
-          // intentionally ignored
-        }
+        const searchEntries = buildEntitySearch(entityId, entity);
+        await tx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
+        await tx.batchInsert('search', searchEntries, BATCH_SIZE);
       });
     }
   }

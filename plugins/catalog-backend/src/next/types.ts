@@ -120,6 +120,7 @@ export type ReplaceProcessingItemsRequest =
       removed: Entity[];
       type: 'delta';
     };
+
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
   getNextProcessingItem(): Promise<ProcessingItem>;

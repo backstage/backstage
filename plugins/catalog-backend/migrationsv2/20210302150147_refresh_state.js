@@ -33,7 +33,6 @@ exports.up = async function up(knex) {
       );
     table
       .text('entity_ref')
-      .unique()
       .notNullable()
       .comment('A reference to the entity that the refresh state is tied to');
     table
@@ -59,13 +58,14 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('JSON array containing all errors related to entity');
     table
-      .dateTime('next_update_at') // TOOD: timezone or change to epoch-millis or similar
+      .dateTime('next_update_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('Timestamp of when entity should be updated');
     table
-      .dateTime('last_discovery_at') // TOOD: timezone or change to epoch-millis or similar
+      .dateTime('last_discovery_at') // TODO: timezone or change to epoch-millis or similar
       .notNullable()
       .comment('The last timestamp of which this entity was discovered');
+    table.unique(['entity_ref'], 'refresh_state_entity_ref_uniq');
     table.index('entity_id', 'refresh_state_entity_id_idx');
     table.index('entity_ref', 'refresh_state_entity_ref_idx');
     table.index('next_update_at', 'refresh_state_next_update_at_idx');
@@ -188,6 +188,7 @@ exports.down = async function down(knex) {
     table.dropIndex([], 'refresh_state_references_target_entity_id_idx');
   });
   await knex.schema.alterTable('refresh_state', table => {
+    table.dropUnique([], 'refresh_state_entity_ref_uniq');
     table.dropIndex([], 'refresh_state_entity_id_idx');
     table.dropIndex([], 'refresh_state_entity_ref_idx');
     table.dropIndex([], 'refresh_state_next_update_at_idx');
