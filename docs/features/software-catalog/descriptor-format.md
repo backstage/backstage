@@ -77,7 +77,7 @@ This is the same entity as returned in JSON from the software catalog API:
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
     "generation": 1,
     "labels": {
-      "backstage.io/custom": "ValueStuff"
+      "example.com/custom": "custom_label_value"
     },
     "links": [{
       "url": "https://admin.example-org.com",
