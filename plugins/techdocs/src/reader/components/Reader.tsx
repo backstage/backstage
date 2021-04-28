@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import { configApiRef, useApi } from '@backstage/core';
+import { useApi } from '@backstage/core';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -54,7 +55,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const [loadedPath, setLoadedPath] = useState('');
   const [atInitialLoad, setAtInitialLoad] = useState(true);
   const [newerDocsExist, setNewerDocsExist] = useState(false);
-  const configApi = useApi(configApiRef);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
 
   const {
     value: isSynced,
@@ -145,7 +146,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
       rewriteDocLinks(),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
-      addGitFeedbackLink(configApi),
+      addGitFeedbackLink(scmIntegrationsApi),
       injectCss({
         css: `
         body {
@@ -327,7 +328,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
     theme.palette.background.default,
     newerDocsExist,
     isSynced,
-    configApi,
+    scmIntegrationsApi,
   ]);
 
   // docLoadError not considered an error state if sync request is still ongoing

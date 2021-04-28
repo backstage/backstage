@@ -15,12 +15,15 @@
  */
 
 import type { Transformer } from './index';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import FeedbackOutlinedIcon from '@material-ui/icons/FeedbackOutlined';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 // requires repo
-export const addGitFeedbackLink = (configApi: any): Transformer => {
+export const addGitFeedbackLink = (
+  scmIntegrationsApi: ScmIntegrationRegistry,
+): Transformer => {
   return dom => {
     // attempting to use selectors that are more likely to be static as MkDocs updates over time
     const sourceAnchor = dom.querySelector(
@@ -34,21 +37,13 @@ export const addGitFeedbackLink = (configApi: any): Transformer => {
     let gitHost = '';
 
     const sourceURL = new URL(sourceAnchor.href);
-    const githubHosts = configApi
-      .getOptionalConfigArray('integrations.github')
-      ?.map((integration: any) => integration.data.host);
-    const gitlabHosts = configApi
-      .getOptionalConfigArray('integrations.gitlab')
-      ?.map((integration: any) => integration.data.host);
+    const integration = scmIntegrationsApi.byUrl(sourceURL);
 
     // don't show if can't identify edit link hostname as a gitlab/github hosting
-    if (
-      githubHosts?.includes(sourceURL.hostname) ||
-      sourceURL.origin.includes('github')
-    ) {
+    if (integration?.type === 'github' || sourceURL.origin.includes('github')) {
       gitHost = 'github';
     } else if (
-      gitlabHosts?.includes(sourceURL.hostname) ||
+      integration?.type === 'gitlab' ||
       sourceURL.origin.includes('gitlab')
     ) {
       gitHost = 'gitlab';
