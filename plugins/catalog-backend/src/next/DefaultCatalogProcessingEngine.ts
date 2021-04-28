@@ -68,7 +68,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
-      provider.connect(
+      await provider.connect(
         new Connection({
           stateManager: this.stateManager,
           id: provider.getProviderName(),
