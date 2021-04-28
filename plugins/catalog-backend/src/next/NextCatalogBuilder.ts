@@ -243,19 +243,13 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    const allMigrations = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrations',
-    );
-
-    const migrationsDir = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrationsv2',
-    );
-    await fs.copy(allMigrations, migrationsDir);
     await dbClient.migrate.latest({
-      directory: migrationsDir,
+      directory: resolvePackagePath(
+        '@backstage/plugin-catalog-backend',
+        'migrationsv2',
+      ),
     });
+
     const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
