@@ -21,16 +21,16 @@ stages:
 - stage: CI
   displayName: 'Continuous Integration'  
   jobs:
-  - job: BuildImages
+  - job: BuildFrontend
     steps:
-      - script: npm install yarn
-        displayName: Install Yarn        
-      - script: yarn install
-        displayName: Yarn install        
-      - script: yarn tsc
-        displayName: Yarn tsc        
-      - script: yarn build
-        displayName: Yarn Build        
+      # - script: npm install yarn
+      #   displayName: Install Yarn        
+      # - script: yarn install
+      #   displayName: Yarn install        
+      # - script: yarn tsc
+      #   displayName: Yarn tsc        
+      # - script: yarn build
+      #   displayName: Yarn Build        
       - task: DockerCompose@0
         displayName: 'Build images'
         inputs:
@@ -38,6 +38,37 @@ stages:
           dockerComposeFile: './dfds-deploy/docker-compose.production.yaml'
           action: 'Run a Docker Compose command'
           dockerComposeCommand: 'build'
+          arguments: 'build backstage-frontend' 
+          # arguments: '--build-arg PAT=$(System.AccessToken)' 
+
+      - task: ECRPushImage@1
+        displayName: 'Push frontend image to Shared ECR'
+        inputs:
+          awsCredentials: 'Shared-Prod ECR-Push'
+          regionName: 'eu-central-1'
+          imageSource: 'imagename'
+          sourceImageName: 'backstage-frontend'
+          repositoryName: 'selfservice/backstage'
+          pushTag: '$(Build.BuildId)'
+
+  - job: BuildBackend
+    steps:
+      # - script: npm install yarn
+      #   displayName: Install Yarn        
+      # - script: yarn install
+      #   displayName: Yarn install        
+      # - script: yarn tsc
+      #   displayName: Yarn tsc        
+      # - script: yarn build
+      #   displayName: Yarn Build        
+      - task: DockerCompose@0
+        displayName: 'Build images'
+        inputs:
+          containerregistrytype: 'Container Registry'
+          dockerComposeFile: './dfds-deploy/docker-compose.production.yaml'
+          action: 'Run a Docker Compose command'
+          dockerComposeCommand: 'build'
+          arguments: 'build backstage-backend' 
           # arguments: '--build-arg PAT=$(System.AccessToken)' 
 
       - task: ECRPushImage@1
@@ -49,21 +80,11 @@ stages:
           sourceImageName: 'backstage-backend'
           repositoryName: 'selfservice/backstage-backend'
           pushTag: '$(Build.BuildId)'
-
-      - task: ECRPushImage@1
-        displayName: 'Push frontend image to Shared ECR'
-        inputs:
-          awsCredentials: 'Shared-Prod ECR-Push'
-          regionName: 'eu-central-1'
-          imageSource: 'imagename'
-          sourceImageName: 'backstage-frontend'
-          repositoryName: 'selfservice/backstage'
-          pushTag: '$(Build.BuildId)'
-     
   
   - job: PublishArtifacts
     dependsOn: 
-    - BuildImages 
+    - BuildBackend
+    - BuildFrontend 
     steps:
       - task: PublishPipelineArtifact@1
         inputs:
