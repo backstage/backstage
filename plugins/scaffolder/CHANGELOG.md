@@ -1,5 +1,66 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.1
+
+### Patch Changes
+
+- 99fbef232: Adding Headings for Accessibility on the Scaffolder Plugin
+- cb0206b2b: Respect top-level UI schema keys in scaffolder forms. Allows more advanced RJSF features such as explicit field ordering.
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
+## 0.9.0
+
+### Minor Changes
+
+- a360f9478: Expose the catalog-import route as an external route from the scaffolder.
+
+  This will make it possible to hide the "Register Existing Component" button
+  when you for example are running backstage with `catalog.readonly=true`.
+
+  As a consequence of this change you need add a new binding to your createApp call to
+  keep the button visible. However, if you instead want to hide the button you can safely
+  ignore the following example.
+
+  To bind the external route from the catalog-import plugin to the scaffolder template
+  index page, make sure you have the appropriate imports and add the following
+  to the createApp call:
+
+  ```typescript
+  import { catalogImportPlugin } from '@backstage/plugin-catalog-import';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      // ...
+      bind(scaffolderPlugin.externalRoutes, {
+        registerComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [442f34b87]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/catalog-client@0.3.10
+
 ## 0.8.2
 
 ### Patch Changes

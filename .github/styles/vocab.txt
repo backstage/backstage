@@ -10,16 +10,20 @@ Chai
 Changesets
 Chanwit
 Cloudformation
+Cobertura
 Codecov
 Codehilite
 Config
+Datadog
 Debounce
 Discoverability
 Dockerfile
+dockerfiles
 Dockerize
 Docusaurus
 Env
 Expedia
+Fargate
 Figma
 Firekube
 Fiverr
@@ -31,6 +35,7 @@ Hackathons
 Heroku
 Hostname
 Iain
+JaCoCo
 JavaScript
 Kaewkasi
 Knex
@@ -75,6 +80,7 @@ Tolerations
 WWW
 Weaveworks
 Webpack
+XML
 Zalando
 Zhou
 abc
@@ -114,6 +120,7 @@ dataflow
 deadnaming
 debounce
 declaratively
+deps
 destructured
 dev
 devops

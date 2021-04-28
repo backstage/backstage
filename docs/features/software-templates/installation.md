@@ -26,14 +26,8 @@ yarn add @backstage/plugin-scaffolder
 
 ### Adding the Plugin to your `packages/app`
 
-Add the following entry to the head of your `packages/app/src/plugins.ts`:
-
-```ts
-export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-```
-
-Next we need to install the root page that the Scaffolder plugin provides. You
-can choose any path for the route, but we recommend the following:
+Add the root page that the Scaffolder plugin provides to your app. You can
+choose any path for the route, but we recommend the following:
 
 ```tsx
 import { ScaffolderPage } from '@backstage/plugin-scaffolder';
@@ -189,8 +183,7 @@ public within the enterprise.
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
 
 scaffolder:
   github:
@@ -207,8 +200,7 @@ instance:
 integrations:
   gitlab:
     - host: gitlab.com
-      token:
-        $env: GITLAB_TOKEN
+      token: ${GITLAB_TOKEN}
 ```
 
 #### Bitbucket
@@ -221,8 +213,7 @@ following:
 integrations:
   bitbucket:
     - host: bitbucket.org
-      token:
-        $env: BITBUCKET_TOKEN
+      token: ${BITBUCKET_TOKEN}
 ```
 
 or
@@ -231,10 +222,8 @@ or
 integrations:
   bitbucket:
     - host: bitbucket.org
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
-      username:
-        $env: BITBUCKET_USERNAME
+      appPassword: ${BITBUCKET_APP_PASSWORD}
+      username: ${BITBUCKET_USERNAME}
 ```
 
 #### Azure DevOps
@@ -249,8 +238,7 @@ verified.
 integrations:
   azure:
     - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
 ```
 
 ### Running the Backend
@@ -271,7 +259,7 @@ the templates at [localhost:3000/create](http://localhost:3000/create) now!
 Software Templates use
 [Cookiecutter](https://github.com/cookiecutter/cookiecutter) as templating
 library. By default it will use the
-[spotify/backstage-cookiecutter](<[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)>)
+[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)
 docker image.
 
 If you are running backstage from a Docker container and you want to avoid

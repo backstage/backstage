@@ -16,8 +16,8 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  EntityName,
   ENTITY_DEFAULT_NAMESPACE,
+  EntityName,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
@@ -83,6 +83,35 @@ beforeEach(async () => {
 });
 
 describe('GoogleGCSPublish', () => {
+  describe('getReadiness', () => {
+    it('should validate correct config', async () => {
+      expect(await publisher.getReadiness()).toEqual({
+        isAvailable: true,
+      });
+    });
+
+    it('should reject incorrect config', async () => {
+      const mockConfig = new ConfigReader({
+        techdocs: {
+          requestUrl: 'http://localhost:7000',
+          publisher: {
+            type: 'googleGcs',
+            googleGcs: {
+              credentials: '{}',
+              bucketName: 'errorBucket',
+            },
+          },
+        },
+      });
+
+      const errorPublisher = GoogleGCSPublish.fromConfig(mockConfig, logger);
+
+      expect(await errorPublisher.getReadiness()).toEqual({
+        isAvailable: false,
+      });
+    });
+  });
+
   describe('publish', () => {
     beforeEach(() => {
       const entity = createMockEntity();

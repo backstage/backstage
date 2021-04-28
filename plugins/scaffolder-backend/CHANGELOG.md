@@ -1,5 +1,87 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.10.0
+
+### Minor Changes
+
+- 49574a8a3: Fix some `spleling`.
+
+  The `scaffolder-backend` has a configuration schema change that may be breaking
+  in rare circumstances. Due to a typo in the schema, the
+  `scaffolder.github.visibility`, `scaffolder.gitlab.visibility`, and
+  `scaffolder.bitbucket.visibility` did not get proper validation that the value
+  is one of the supported strings (`public`, `internal` (not available for
+  Bitbucket), and `private`). If you had a value that was not one of these three,
+  you may have to adjust your config.
+
+### Patch Changes
+
+- 84c54474d: Forward user token to scaffolder task for subsequent api requests
+- Updated dependencies [d367f63b5]
+- Updated dependencies [b42531cfe]
+  - @backstage/backend-common@0.6.3
+
+## 0.9.6
+
+### Patch Changes
+
+- d8ffec739: Add built-in publish action for creating GitHub pull requests.
+- 7abec4dbc: Fix for the `file://` protocol check in the `FilePreparer` being too strict, breaking Windows.
+- d840d30bc: Bitbucket server needs username to be set as well as the token or appPassword for the publishing process to work.
+
+  ```yaml
+  integrations:
+    bitbucket:
+      - host: bitbucket.mycompany.com
+        apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
+        token: token
+        username: username
+  ```
+
+- b25846562: Enable the JSON parsing of the response from templated variables in the `v2beta1` syntax. Previously if template parameters json strings they were left as strings, they are now parsed as JSON objects.
+
+  Before:
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: custom:run
+    input:
+      input: '{"hello":"ben"}'
+  ```
+
+  Now:
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: custom:run
+    input:
+      input:
+        hello: ben
+  ```
+
+  Also added the `parseRepoUrl` and `json` helpers to the parameters syntax. You can now use these helpers to parse work with some `json` or `repoUrl` strings in templates.
+
+  ```yaml
+  - id: test
+    name: test-action
+    action: cookiecutter:fetch
+    input:
+      destination: '{{ parseRepoUrl parameters.repoUrl }}'
+  ```
+
+  Will produce a parsed version of the `repoUrl` of type `{ repo: string, owner: string, host: string }` that you can use in your actions. Specifically `cookiecutter` with `{{ cookiecutter.destination.owner }}` like the `plugins/scaffolder-backend/sample-templates/v1beta2-demo/template.yaml` example.
+
+- a376e3ee8: Adds a collaborator field to GitHub publish action for multiple users and access levels
+- 423a514c3: Fix execution of the GitHub Pull Request publish action on Windows.
+- 0b7fd7a9d: Fix bug in pull request sample template.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+- Updated dependencies [442f34b87]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/catalog-client@0.3.10
+
 ## 0.9.5
 
 ### Patch Changes

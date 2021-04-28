@@ -1,5 +1,45 @@
 # @backstage/plugin-catalog
 
+## 0.5.5
+
+### Patch Changes
+
+- 96728a2af: SystemDiagramCard UI improvements
+- 87c4f59de: Add low german greeting
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
+## 0.5.4
+
+### Patch Changes
+
+- 5d0740563: Implemented missing support for the dependsOn/dependencyOf relationships
+  between `Component` and `Resource` catalog model objects.
+
+  Added support for generating the relevant relationships to the
+  `BuiltinKindsEntityProcessor`, and added simple support for fetching
+  relationships between `Components` and `Resources` for rendering in the
+  system diagram. All catalog-model changes backwards compatible.
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [442f34b87]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/catalog-client@0.3.10
+
 ## 0.5.3
 
 ### Patch Changes

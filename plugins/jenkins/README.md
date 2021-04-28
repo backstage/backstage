@@ -14,11 +14,22 @@ Website: [https://jenkins.io/](https://jenkins.io/)
 yarn add @backstage/plugin-jenkins
 ```
 
-2. Add plugin:
+2. Add the `EntityJenkinsContent` extension to the entity page in the app:
 
-```js
-// packages/app/src/plugins.ts
-export { plugin as Jenkins } from '@backstage/plugin-jenkins';
+```tsx
+// packages/app/src/components/catalog/EntityPage.tsx
+import { EntityJenkinsContent } from '@backstage/plugin-circleci';
+
+// ...
+const serviceEntityPage = (
+  <EntityPageLayout>
+    ...
+    <EntityLayout.Route path="/jenkins" title="Jenkins">
+      <EntityJenkinsContent />
+    </EntityLayout.Route>
+    ...
+  </EntityPageLayout>
+);
 ```
 
 3. Add proxy configuration to `app-config.yaml`
@@ -29,15 +40,13 @@ proxy:
     target: 'http://localhost:8080' # your Jenkins URL
     changeOrigin: true
     headers:
-      Authorization:
-        $env: JENKINS_BASIC_AUTH_HEADER
+      Authorization: Basic ${JENKINS_BASIC_AUTH_HEADER}
 ```
 
 4. Add an environment variable which contains the Jenkins credentials, (note: use an API token not your password). Here user is the name of the user created in Jenkins.
 
 ```shell
-HEADER=$(echo -n user:api-token | base64)
-export JENKINS_BASIC_AUTH_HEADER="Basic $HEADER"
+export JENKINS_BASIC_AUTH_HEADER=$(echo -n user:api-token | base64)
 ```
 
 5. Run app with `yarn start`

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.6.7",
+  "version": "0.6.9",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -62,7 +62,7 @@
     "commander": "^6.1.0",
     "css-loader": "^3.5.3",
     "dashify": "^2.0.0",
-    "diff": "^4.0.2",
+    "diff": "^5.0.0",
     "esbuild": "^0.8.56",
     "eslint": "^7.1.0",
     "eslint-config-prettier": "^6.0.0",
@@ -116,12 +116,12 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.6.2",
+    "@backstage/backend-common": "^0.6.3",
     "@backstage/config": "^0.1.4",
-    "@backstage/core": "^0.7.4",
+    "@backstage/core": "^0.7.6",
     "@backstage/dev-utils": "^0.1.13",
     "@backstage/test-utils": "^0.1.10",
-    "@backstage/theme": "^0.2.5",
+    "@backstage/theme": "^0.2.6",
     "@types/diff": "^5.0.0",
     "@types/express": "^4.17.6",
     "@types/fs-extra": "^9.0.1",
@@ -178,6 +178,36 @@
             "description": "Tracking ID for Google Analytics",
             "examples": [
               "UA-000000-0"
+            ]
+          },
+          "datadogRum": {
+            "type": "object",
+            "description": "Datadog RUM events configuration",
+            "properties": {
+              "env": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "Environment for Datadog RUM events"
+              },
+              "clientToken": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "clientToken for Datadog RUM events"
+              },
+              "applicationId": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "applicationId for Datadog RUM events"
+              },
+              "site": {
+                "type": "string",
+                "visibility": "frontend",
+                "description": "site for Datadog RUM events"
+              }
+            },
+            "required": [
+              "clientToken",
+              "applicationId"
             ]
           },
           "listen": {

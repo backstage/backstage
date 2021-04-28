@@ -13,26 +13,22 @@ Website: [https://circleci.com/](https://circleci.com/)
 yarn add @backstage/plugin-circleci
 ```
 
-2. Add plugin itself:
+2. Add the `EntityCircleCIContent` extension to the entity page in the app:
 
-```js
-// packages/app/src/plugins.ts
-export { plugin as Circleci } from '@backstage/plugin-circleci';
-```
-
-3. Register the plugin router:
-
-```jsx
+```tsx
 // packages/app/src/components/catalog/EntityPage.tsx
+import { EntityCircleCIContent } from '@backstage/plugin-circleci';
 
-import { Router as CircleCIRouter } from '@backstage/plugin-circleci';
-
-// Then somewhere inside <EntityPageLayout>
-<EntityPageLayout.Content
-  path="/ci-cd/*"
-  title="CI/CD"
-  element={<CircleCIRouter />}
-/>;
+// ...
+const serviceEntityPage = (
+  <EntityPageLayout>
+    ...
+    <EntityLayout.Route path="/circle-ci" title="Circle CI">
+      <EntityCircleCIContent />
+    </EntityLayout.Route>
+    ...
+  </EntityPageLayout>
+);
 ```
 
 4. Add proxy config:
@@ -43,8 +39,7 @@ proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
     headers:
-      Circle-Token:
-        $env: CIRCLECI_AUTH_TOKEN
+      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 ```
 
 5. Get and provide `CIRCLECI_AUTH_TOKEN` as env variable (https://circleci.com/docs/api/#add-an-api-token)

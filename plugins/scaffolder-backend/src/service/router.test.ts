@@ -301,4 +301,27 @@ describe('createRouter', () => {
       expect(response.status).toEqual(201);
     });
   });
+
+  describe('GET /v2/tasks/:taskId', () => {
+    it('does not divulge secrets', async () => {
+      const postResponse = await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', 'Bearer secret')
+        .send({
+          templateName: 'create-react-app-template',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+            component_id: '123',
+            name: 'test',
+            use_typescript: false,
+          },
+        });
+
+      const response = await request(app)
+        .get(`/v2/tasks/${postResponse.body.id}`)
+        .send();
+      expect(response.status).toEqual(200);
+      expect(response.body.secrets).toBeUndefined();
+    });
+  });
 });

@@ -519,6 +519,17 @@ consumed by the component, e.g. `artist-api`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------- |
 | [`API`](#kind-api) (default)            | Same as this entity, typically `default`   | [`consumesApi`, and reverse `apiConsumedBy`](well-known-relations.md#consumesapi-and-apiconsumedby) |
 
+### `spec.dependsOn` [optional]
+
+An array of [entity references](#string-references) to the components and
+resources that the component depends on, e.g. `artists-db`. This field is
+optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+| [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+
 ## Kind: Template
 
 The following describes the following entity kind:
@@ -628,22 +639,11 @@ A list of strings that can be associated with the template, e.g.
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
 
-### `spec.type` [optional]
+### `spec.type` [required]
 
-The type of component as a string, e.g. `website`. This field is optional but
-recommended.
-
-The software catalog accepts any type value, but an organization should take
-great care to establish a proper taxonomy for these. Tools including Backstage
-itself may read this field and behave differently depending on its value. For
-example, a website type component may present tooling in the Backstage interface
-that is specific to just websites.
-
-The current set of well-known and common values for this field is:
-
-- `service` - a backend service, typically exposing an API
-- `website` - a website
-- `library` - a software library, such as an npm module or a Java library
+The type of component created by the template, e.g. `website`. This is used for
+filtering templates, and should ideally match the Component
+[spec.type](#spectype-required) created by the template.
 
 ### `spec.parameters` [required]
 
@@ -1013,6 +1013,17 @@ belongs to, e.g. `artist-engagement-portal`. This field is optional.
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`System`](#kind-system) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+
+### `spec.dependsOn` [optional]
+
+An array of [entity references](#string-references) to the components and
+resources that the resource depends on, e.g. `artist-lookup`. This field is
+optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                                            |
+| --------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| [`Component`](#kind-component)          | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
+| [`Resource`](#kind-resource)            | Same as this entity, typically `default`   | [`dependsOn`, and reverse `dependencyOf`](well-known-relations.md#dependson-and-dependencyof) |
 
 ## Kind: System
 

@@ -81,27 +81,28 @@ import { EntitySentryContent } from '@backstage/plugin-sentry';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { EntityTodoContent } from '@backstage/plugin-todo';
 import { Button, Grid } from '@material-ui/core';
-// import {
-//   EntityBuildkiteContent,
-//   isBuildkiteAvailable,
-// } from '@roadiehq/backstage-plugin-buildkite';
-// import {
-//   EntityGitHubInsightsContent,
-//   EntityLanguagesCard,
-//   EntityReadMeCard,
-//   EntityReleasesCard,
-//   isGithubInsightsAvailable,
-// } from '@roadiehq/backstage-plugin-github-insights';
-// import {
-//   EntityGithubPullRequestsContent,
-//   EntityGithubPullRequestsOverviewCard,
-//   isGithubPullRequestsAvailable,
-// } from '@roadiehq/backstage-plugin-github-pull-requests';
-// import {
-//   EntityTravisCIContent,
-//   EntityTravisCIOverviewCard,
-//   isTravisciAvailable,
-// } from '@roadiehq/backstage-plugin-travis-ci';
+import {
+  EntityBuildkiteContent,
+  isBuildkiteAvailable,
+} from '@roadiehq/backstage-plugin-buildkite';
+import {
+  EntityGithubInsightsContent,
+  EntityGithubInsightsLanguagesCard,
+  EntityGithubInsightsReadmeCard,
+  EntityGithubInsightsReleasesCard,
+  isGithubInsightsAvailable,
+} from '@roadiehq/backstage-plugin-github-insights';
+import {
+  EntityGithubPullRequestsContent,
+  EntityGithubPullRequestsOverviewCard,
+  isGithubPullRequestsAvailable,
+} from '@roadiehq/backstage-plugin-github-pull-requests';
+import {
+  EntityTravisCIContent,
+  EntityTravisCIOverviewCard,
+  isTravisciAvailable,
+} from '@roadiehq/backstage-plugin-travis-ci';
+import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -135,9 +136,9 @@ export const cicdContent = (
       <EntityJenkinsContent />
     </EntitySwitch.Case>
 
-    {/* <EntitySwitch.Case if={isBuildkiteAvailable}>
+    <EntitySwitch.Case if={isBuildkiteAvailable}>
       <EntityBuildkiteContent />
-    </EntitySwitch.Case> */}
+    </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isCircleCIAvailable}>
       <EntityCircleCIContent />
@@ -147,9 +148,9 @@ export const cicdContent = (
       <EntityCloudbuildContent />
     </EntitySwitch.Case>
 
-    {/* <EntitySwitch.Case if={isTravisciAvailable}>
+    <EntitySwitch.Case if={isTravisciAvailable}>
       <EntityTravisCIContent />
-    </EntitySwitch.Case> */}
+    </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
@@ -182,11 +183,11 @@ const cicdCard = (
       </Grid>
     </EntitySwitch.Case>
 
-    {/* <EntitySwitch.Case if={isTravisciAvailable}>
+    <EntitySwitch.Case if={isTravisciAvailable}>
       <Grid item sm={6}>
         <EntityTravisCIOverviewCard />
       </Grid>
-    </EntitySwitch.Case> */}
+    </EntitySwitch.Case>
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <Grid item sm={6}>
@@ -228,17 +229,17 @@ const overviewContent = (
 
     {cicdCard}
 
-    {/* <EntitySwitch>
+    <EntitySwitch>
       <EntitySwitch.Case if={e => Boolean(isGithubInsightsAvailable(e))}>
         <Grid item md={6}>
-          <EntityLanguagesCard />
-          <EntityReleasesCard />
+          <EntityGithubInsightsLanguagesCard />
+          <EntityGithubInsightsReleasesCard />
         </Grid>
         <Grid item md={6}>
-          <EntityReadMeCard maxHeight={350} />
+          <EntityGithubInsightsReadmeCard maxHeight={350} />
         </Grid>
       </EntitySwitch.Case>
-    </EntitySwitch> */}
+    </EntitySwitch>
 
     <EntitySwitch>
       <EntitySwitch.Case if={isLighthouseAvailable}>
@@ -248,13 +249,13 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    {/* <EntitySwitch>
+    <EntitySwitch>
       <EntitySwitch.Case if={e => Boolean(isGithubPullRequestsAvailable(e))}>
         <Grid item sm={4}>
           <EntityGithubPullRequestsOverviewCard />
         </Grid>
       </EntitySwitch.Case>
-    </EntitySwitch> */}
+    </EntitySwitch>
 
     <Grid item md={6}>
       <EntityHasSubcomponentsCard variant="gridItem" />
@@ -295,13 +296,17 @@ const serviceEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    {/* <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
       <EntityGithubPullRequestsContent />
-    </EntityLayout.Route> */}
+    </EntityLayout.Route>
 
-    {/* <EntityLayout.Route path="/code-insights" title="Code Insights">
-      <EntityGitHubInsightsContent />
-    </EntityLayout.Route> */}
+    <EntityLayout.Route path="/code-insights" title="Code Insights">
+      <EntityGithubInsightsContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+      <EntityCodeCoverageContent />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/kafka" title="Kafka">
       <EntityKafkaContent />
@@ -339,13 +344,17 @@ const websiteEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
-    {/* <EntityLayout.Route path="/pull-requests" title="Pull Requests">
+    <EntityLayout.Route path="/pull-requests" title="Pull Requests">
       <EntityGithubPullRequestsContent />
-    </EntityLayout.Route> */}
+    </EntityLayout.Route>
 
-    {/* <EntityLayout.Route path="/code-insights" title="Code Insights">
+    <EntityLayout.Route path="/code-insights" title="Code Insights">
       <EntityGithubInsightsContent />
-    </EntityLayout.Route> */}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/code-coverage" title="Code Coverage">
+      <EntityCodeCoverageContent />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/todos" title="TODOs">
       <EntityTodoContent />
@@ -441,10 +450,6 @@ const groupPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
-
-    <EntityLayout.Route path="/diagram" title="Diagram">
-      <EntitySystemDiagramCard />
-    </EntityLayout.Route>
   </EntityLayoutWrapper>
 );
 
@@ -462,6 +467,9 @@ const systemPage = (
           <EntityHasApisCard variant="gridItem" />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/diagram" title="Diagram">
+      <EntitySystemDiagramCard />
     </EntityLayout.Route>
   </EntityLayoutWrapper>
 );

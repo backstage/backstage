@@ -1,5 +1,23 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.5
+
+### Patch Changes
+
+- c42cd1daa: Kubernetes client TLS verification is now configurable and defaults to true
+- Updated dependencies [d367f63b5]
+- Updated dependencies [b42531cfe]
+  - @backstage/backend-common@0.6.3
+
+## 0.3.4
+
+### Patch Changes
+
+- 7fd46f26d: Use `string` TypeScript type instead of `String`.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
 ## 0.3.3
 
 ### Patch Changes

@@ -49,19 +49,12 @@ When you have an instance running that Backstage can hook into, first install th
 $ yarn add @backstage/plugin-lighthouse
 \`\`\`
 
-Then make sure to export the plugin in your app's [\`plugins.ts\`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts) to enable the plugin:
+Modify your app routes in \`App.tsx\` to include the \`LighthousePage\` component exported from the plugin, for example:
 
-\`\`\`js
-export { plugin as LighthousePlugin } from '@backstage/plugin-lighthouse';
-\`\`\`
-
-Modify your app routes in \`App.tsx\` or \`App.jsx\` to include the Router component exported from the plugin, for example:
-
-\`\`\`js
+\`\`\`tsx
 // At the top imports
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 
-// Inside App component
 <FlatRoutes>
   // ...
   <Route path="/lighthouse" element={<LighthousePage />} />

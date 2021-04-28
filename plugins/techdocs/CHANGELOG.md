@@ -1,5 +1,43 @@
 # @backstage/plugin-techdocs
 
+## 0.8.0
+
+### Minor Changes
+
+- ac6025f63: Add feedback link icon in Techdocs Reader that directs to GitLab or GitHub repo issue page with pre-filled title and source link.
+  For link to appear, requires `repo_url` and `edit_uri` to be filled in mkdocs.yml, as per https://www.mkdocs.org/user-guide/configuration. An `edit_uri` will need to be specified for self-hosted GitLab/GitHub instances with a different host name.
+  To identify issue URL format as GitHub or GitLab, the host name of source in `repo_url` is checked if it contains `gitlab` or `github`. Alternately this is determined by matching to `host` values from `integrations` in app-config.yaml.
+
+### Patch Changes
+
+- e292e393f: Add a test id to the shadow root element of the Reader to access it easily in e2e tests
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
+## 0.7.2
+
+### Patch Changes
+
+- fef852ecd: Reworked the TechDocs plugin to support using the configured company name instead of
+  'Backstage' in the page title.
+- 18f7345a6: Add borders to TechDocs tables and increase font size. Fixes #5264 and #5276.
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+
 ## 0.7.1
 
 ### Patch Changes

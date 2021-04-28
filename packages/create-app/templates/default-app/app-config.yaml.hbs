@@ -25,14 +25,10 @@ backend:
   database:
     client: pg
     connection:
-      host:
-        $env: POSTGRES_HOST
-      port:
-        $env: POSTGRES_PORT
-      user:
-        $env: POSTGRES_USER
-      password:
-        $env: POSTGRES_PASSWORD
+      host: ${POSTGRES_HOST}
+      port: ${POSTGRES_PORT}
+      user: ${POSTGRES_USER}
+      password: ${POSTGRES_PASSWORD}
       # https://node-postgres.com/features/ssl
       #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
         #ca: # if you have a CA file and want to verify it you can uncomment this section
@@ -43,13 +39,11 @@ backend:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token:
-    #     $env: GHE_TOKEN
+    #   token: ${GHE_TOKEN}
 
 proxy:
   '/test':
@@ -73,8 +67,7 @@ auth:
 
 scaffolder:
   github:
-    token:
-      $env: GITHUB_TOKEN
+    token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
 
 catalog:

@@ -26,7 +26,7 @@ export const ApiExplorerLayout = ({ children }: Props) => {
     configApi.getOptionalString('organization.name') ?? 'Backstage'
   } API Explorer`;
   return (
-    <Page themeId="home">
+    <Page themeId="apis">
       <Header
         title="APIs"
         subtitle={generatedSubtitle}
