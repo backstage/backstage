@@ -74,12 +74,12 @@ describe('Stitcher', () => {
 
     await stitcher.stitch(new Set(['k:ns/n']));
 
-    let firstEtag: string;
+    let firstHash: string;
     await db.transaction(async tx => {
       const entities = await tx<DbFinalEntitiesRow>('final_entities');
 
       expect(entities.length).toBe(1);
-      const entity = JSON.parse(entities[0].finalized_entity);
+      const entity = JSON.parse(entities[0].final_entity);
       expect(entity).toEqual({
         relations: [
           {
@@ -105,12 +105,13 @@ describe('Stitcher', () => {
         },
       });
 
-      firstEtag = entity.metadata.etag;
+      expect(entity.metadata.etag).toEqual(entities[0].hash);
+      firstHash = entities[0].hash;
 
       const search = await tx<DbSearchRow>('search');
       expect(search).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations', value: 'looksat:k:ns/other' },
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
           { entity_id: 'my-id', key: 'apiversion', value: 'a' },
           { entity_id: 'my-id', key: 'kind', value: 'k' },
           { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
@@ -127,9 +128,9 @@ describe('Stitcher', () => {
     await db.transaction(async tx => {
       const entities = await tx<DbFinalEntitiesRow>('final_entities');
       expect(entities.length).toBe(1);
-      const entity = JSON.parse(entities[0].finalized_entity);
-      expect(entities[0].etag).toEqual(firstEtag);
-      expect(entity.metadata.etag).toEqual(firstEtag);
+      const entity = JSON.parse(entities[0].final_entity);
+      expect(entities[0].hash).toEqual(firstHash);
+      expect(entity.metadata.etag).toEqual(firstHash);
     });
 
     // Now add one more relation and re-stitch
@@ -150,7 +151,7 @@ describe('Stitcher', () => {
       const entities = await tx<DbFinalEntitiesRow>('final_entities');
 
       expect(entities.length).toBe(1);
-      const entity = JSON.parse(entities[0].finalized_entity);
+      const entity = JSON.parse(entities[0].final_entity);
       expect(entity).toEqual({
         relations: expect.arrayContaining([
           {
@@ -184,14 +185,14 @@ describe('Stitcher', () => {
         },
       });
 
-      expect(entities[0].etag).not.toEqual(firstEtag);
-      expect(entities[0].etag).toEqual(entity.metadata.etag);
+      expect(entities[0].hash).not.toEqual(firstHash);
+      expect(entities[0].hash).toEqual(entity.metadata.etag);
 
       const search = await tx<DbSearchRow>('search');
       expect(search).toEqual(
         expect.arrayContaining([
-          { entity_id: 'my-id', key: 'relations', value: 'looksat:k:ns/other' },
-          { entity_id: 'my-id', key: 'relations', value: 'looksat:k:ns/third' },
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/third' },
           { entity_id: 'my-id', key: 'apiversion', value: 'a' },
           { entity_id: 'my-id', key: 'kind', value: 'k' },
           { entity_id: 'my-id', key: 'metadata.name', value: 'n' },

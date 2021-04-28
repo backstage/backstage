@@ -182,8 +182,8 @@ export function buildEntitySearch(
   // Visit relations
   for (const relation of entity.relations ?? []) {
     raw.push({
-      key: 'relations',
-      value: `${relation.type}:${stringifyEntityRef(relation.target)}`,
+      key: `relations.${relation.type}`,
+      value: stringifyEntityRef(relation.target),
     });
   }
 

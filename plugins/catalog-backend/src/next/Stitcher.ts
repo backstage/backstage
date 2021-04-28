@@ -31,11 +31,11 @@ const BATCH_SIZE = 50;
 
 export type DbFinalEntitiesRow = {
   entity_id: string;
-  etag: string;
-  finalized_entity: string;
+  hash: string;
+  final_entity: string;
 };
 
-function generateEntityEtag(entity: Entity) {
+function generateStableHash(entity: Entity) {
   return createHash('sha1')
     .update(stableStringify({ ...entity }))
     .digest('hex');
@@ -64,7 +64,7 @@ export class Stitcher {
           processedEntity?: string;
           errors: string;
           incomingReferenceCount: string | number;
-          previousEtag?: string;
+          previousHash?: string;
           relationType?: string;
           relationTarget?: string;
         }> = await tx
@@ -79,7 +79,7 @@ export class Stitcher {
             processedEntity: 'refresh_state.processed_entity',
             errors: 'refresh_state.errors',
             incomingReferenceCount: 'incoming_references.count',
-            previousEtag: 'final_entities.etag',
+            previousHash: 'final_entities.hash',
             relationType: 'relations.type',
             relationTarget: 'relations.target_entity_ref',
           })
@@ -111,7 +111,7 @@ export class Stitcher {
           processedEntity,
           // errors,
           incomingReferenceCount,
-          previousEtag,
+          previousHash,
         } = result[0];
 
         // If there was no processed entity in place, the target hasn't been
@@ -125,7 +125,8 @@ export class Stitcher {
           return;
         }
 
-        // Grab the processed entity and stitch all of the relevant data into it
+        // Grab the processed entity and stitch all of the relevant data into
+        // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
 
@@ -137,33 +138,38 @@ export class Stitcher {
           };
         }
 
-        // TODO: entityRef is lower case and should be uppercase in the final result
+        // TODO: entityRef is lower case and should be uppercase in the final
+        // result
         entity.relations = result
-          .filter(row => row.relationType)
+          .filter(row => row.relationType /* exclude null row, if relevant */)
           .map(row => ({
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
 
         // If the output entity was actually not changed, just abort
-        const etag = generateEntityEtag(entity);
-        if (etag === previousEtag) {
+        const hash = generateStableHash(entity);
+        if (hash === previousHash) {
           this.logger.debug(`Skipped stitching of ${entityRef}, no changes`);
           return;
         }
 
         entity.metadata.uid = entityId;
         entity.metadata.generation = 1;
-        entity.metadata.etag = etag;
+        if (!entity.metadata.etag) {
+          // If the original data source did not have its own etag handling,
+          // use the hash as a good-quality etag
+          entity.metadata.etag = hash;
+        }
 
         await tx<DbFinalEntitiesRow>('final_entities')
           .insert({
             entity_id: entityId,
-            finalized_entity: JSON.stringify(entity),
-            etag,
+            final_entity: JSON.stringify(entity),
+            hash,
           })
           .onConflict('entity_id')
-          .merge(['finalized_entity', 'etag']);
+          .merge(['final_entity', 'hash']);
 
         const searchEntries = buildEntitySearch(entityId, entity);
         await tx<DbSearchRow>('search').where({ entity_id: entityId }).delete();

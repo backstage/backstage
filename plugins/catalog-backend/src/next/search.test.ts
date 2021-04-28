@@ -152,8 +152,8 @@ describe('search', () => {
           key: 'metadata.namespace',
           value: ENTITY_DEFAULT_NAMESPACE,
         },
-        { entity_id: 'eid', key: 'relations', value: 't1:k:ns/a' },
-        { entity_id: 'eid', key: 'relations', value: 't2:k:ns/b' },
+        { entity_id: 'eid', key: 'relations.t1', value: 'k:ns/a' },
+        { entity_id: 'eid', key: 'relations.t2', value: 'k:ns/b' },
       ]);
     });
   });

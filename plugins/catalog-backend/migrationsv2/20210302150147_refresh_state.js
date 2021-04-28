@@ -83,10 +83,18 @@ exports.up = async function up(knex) {
       .inTable('refresh_state')
       .onDelete('CASCADE')
       .comment(
-        'Entity ID which correspond to the ID in the refresh_state table',
+        'Entity ID which corresponds to the ID in the refresh_state table',
       );
-    table.text('etag').notNullable().comment('Etag to be used for caching');
-    table.text('finalized_entity').notNullable().comment('The final entity');
+    table
+      .text('hash')
+      .notNullable()
+      .comment(
+        'Stable hash of the entity data, to be used for caching and avoiding redundant work',
+      );
+    table
+      .text('final_entity')
+      .notNullable()
+      .comment('The JSON encoded final entity');
     table.index('entity_id', 'final_entities_entity_id_idx');
   });
 
