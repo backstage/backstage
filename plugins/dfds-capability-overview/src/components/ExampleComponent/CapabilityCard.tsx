@@ -20,10 +20,9 @@ import {
   Card,
   Typography,
   Link,
-  Tooltip,
-  IconButton,
   Divider,
   Button,
+  MenuItem,
 } from '@material-ui/core';
 import { blue, grey } from '@material-ui/core/colors';
 
@@ -62,11 +61,18 @@ export const CapabilityCard = ({ name, description, ...rest }: any) => {
             </Box>
             <Box flex={1} />
             <Box display="flex" alignItems="center">
-              <Tooltip title="source control">
+              {/* <Tooltip title="source control">
                 <IconButton size="small">
                   <SourceControlIcon />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
+              <PopOverProvider>
+                <MoreActions icon={<SourceControlIcon />}>
+                  {rest.repos?.map((repo: string) => (
+                    <MenuItem>{repo}</MenuItem>
+                  ))}
+                </MoreActions>
+              </PopOverProvider>
               <PopOverProvider>
                 <MoreActions>
                   <MenuActions />

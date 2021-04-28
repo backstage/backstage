@@ -16,7 +16,7 @@
 import React from 'react';
 
 export const AWS = () => (
-  <div style={{ width: 32, height: 16 }}>
+  <div style={{ width: 30, height: 16 }}>
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"

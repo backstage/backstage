@@ -42,7 +42,7 @@ function SvgComponent1(props: any) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={24}
+      width={22}
       viewBox="0 0 19.68 15.24"
       {...props}
     >
@@ -95,7 +95,7 @@ export const ProvidersTab = () => {
         <Box flex={1} />
 
         <SvgComponent1 />
-        <Box ml={1}>
+        <Box ml={1} mt={0.6}>
           <SvgComponent />
         </Box>
         <Box ml={1}>

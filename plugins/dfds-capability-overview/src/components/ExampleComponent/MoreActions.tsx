@@ -51,7 +51,7 @@ export const MenuActions = () => {
   );
 };
 
-export const MoreActions = ({ size, children }: any) => {
+export const MoreActions = ({ size, children, icon }: any) => {
   const { anchorEl, handleClose, handleClick } = usePopOverContext();
   return (
     <>
@@ -62,7 +62,7 @@ export const MoreActions = ({ size, children }: any) => {
           aria-controls="simple-menu"
           aria-haspopup="true"
         >
-          <MoreVertIcon />
+          {icon || <MoreVertIcon />}
         </IconButton>
       </Tooltip>
       <Menu

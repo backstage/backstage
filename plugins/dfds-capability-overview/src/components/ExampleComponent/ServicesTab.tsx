@@ -238,6 +238,15 @@ export const ServicesCard = ({ services }: any) => {
                             Service {index + 1}
                           </Typography>
                         </Box>
+
+                        <Typography
+                          variant="subtitle2"
+                          style={{ textAlign: 'center' }}
+                        >
+                          Lorem ipsum dolor sit amet, consectetur adipiscing
+                          elit.
+                        </Typography>
+
                         <Divider
                           flexItem
                           style={{ height: 1, marginTop: 8, marginBottom: 24 }}

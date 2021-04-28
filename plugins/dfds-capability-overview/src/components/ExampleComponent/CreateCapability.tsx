@@ -48,7 +48,9 @@ export const CreateCapability = () => {
         <DialogContent>
           <Box display="flex" flexDirection="column">
             <TextField label="name" variant="outlined" size="small" />
-            <TextField label="description" variant="outlined" size="small" />
+            <Box mt={1}>
+              <TextField label="description" variant="outlined" size="small" />
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>

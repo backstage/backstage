@@ -26,6 +26,7 @@ import {
   useMediaQuery,
   useTheme,
   CircularProgress,
+  IconButton,
 } from '@material-ui/core';
 import {
   Header,
@@ -41,6 +42,7 @@ import { orange, green } from '@material-ui/core/colors';
 
 import SearchIcon from '@material-ui/icons/Search';
 import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { MoreActions, PopOverProvider } from './MoreActions';
 import { CreateCapability } from './CreateCapability';
@@ -51,6 +53,7 @@ const capabilities = [
     name: 'dfdsdotcom',
     description: 'DFDS.com based on GatsbyJS',
     isMember: true,
+    repos: ['https://github.com/dfds-frontend/dotcom'],
     status: (
       <>
         <DoneIcon
@@ -68,6 +71,12 @@ const capabilities = [
     name: 'dfdsdotcom-legacy',
     description: 'DFDS.com based on legacy app',
     isMember: true,
+    repos: [
+      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom',
+      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_old',
+      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_wiki',
+      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsunified-infrastructure-as-code',
+    ],
     status: (
       <>
         <ReportProblemOutlinedIcon
@@ -86,6 +95,7 @@ const capabilities = [
     name: 'dynamic-forms-dxp',
     description: 'Dynamic forms enabled experience',
     isMember: false,
+    repos: ['https://github.com/dfds-frontend/dynamic-forms'],
     status: (
       <>
         <DoneIcon
@@ -103,6 +113,7 @@ const capabilities = [
     name: 'cloud-engineering',
     description: 'Zaradars lair',
     isMember: false,
+    repos: ['https://github.com/dfds'],
     status: (
       <>
         <DoneIcon
@@ -122,6 +133,7 @@ const test = {
   name: 'dfds-backstage',
   description: 'Backstage capability',
   isMember: false,
+  repos: ['https://github.com/dfds/backstage'],
   status: (
     <Box display="flex" alignItems="center">
       <CircularProgress size={12} style={{ marginRight: 5 }} color="inherit" />
@@ -172,6 +184,7 @@ export const ExampleComponent = () => {
       });
     }, 10000);
   }, []);
+
   return (
     <Page themeId="tool">
       <Header title="Welcome to Capability Discoverability!">
@@ -196,25 +209,47 @@ export const ExampleComponent = () => {
                       <SearchIcon />
                     </InputAdornment>
                   ),
+                  endAdornment: search.length > 0 && (
+                    <InputAdornment position="end">
+                      <IconButton size="small" onClick={() => setSearch('')}>
+                        <CloseIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
               <PopOverProvider>
                 <MoreActions size="medium">
-                  <Checkbox
-                    color="primary"
-                    value={!isCondensed}
-                    onChange={() => setIsCondensed(prev => !prev)}
-                  />
-                  <FormLabel>condensed</FormLabel>
-                  <Checkbox
-                    color="primary"
-                    value={!showOwned}
-                    onChange={() => setShowOwned(prev => !prev)}
-                  />
-                  <FormLabel>show only owned</FormLabel>
+                  <Box m={1} ml={2}>
+                    <Box>
+                      <Checkbox
+                        color="primary"
+                        value={!isCondensed}
+                        onChange={() => setIsCondensed(prev => !prev)}
+                      />
+                      <FormLabel>condensed</FormLabel>
+                    </Box>
+                    <Box>
+                      <Checkbox
+                        color="primary"
+                        value={!showOwned}
+                        onChange={() => setShowOwned(prev => !prev)}
+                      />
+                      <FormLabel>show only owned</FormLabel>
+                    </Box>
+                  </Box>
                 </MoreActions>
               </PopOverProvider>
             </ContentHeader>
+            {capabilitiesItems.filter(capability =>
+              capability.name.includes(search),
+            ).length === 0 && (
+              <Box m={5}>
+                <Typography variant="h5" style={{ textAlign: 'center' }}>
+                  No capabilities found :(
+                </Typography>
+              </Box>
+            )}
             {capabilitiesItems
               .filter(capability => capability.name.includes(search))
               .filter(capability => {
