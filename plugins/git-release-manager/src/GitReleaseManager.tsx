@@ -64,25 +64,25 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
         isProvidedViaProps: false,
       };
 
-  const usernameResponse = useAsync(() =>
+  const userResponse = useAsync(() =>
     pluginApiClient.getUser({ owner: project.owner, repo: project.repo }),
   );
 
-  if (usernameResponse.error) {
-    return <Alert severity="error">{usernameResponse.error.message}</Alert>;
+  if (userResponse.error) {
+    return <Alert severity="error">{userResponse.error.message}</Alert>;
   }
 
-  if (usernameResponse.loading) {
+  if (userResponse.loading) {
     return <CenteredCircularProgress />;
   }
 
-  if (!usernameResponse.value?.username) {
+  if (!userResponse.value?.username) {
     return <Alert severity="error">Unable to retrieve username</Alert>;
   }
 
   const user = {
-    username: usernameResponse.value.username,
-    email: usernameResponse.value.email,
+    username: userResponse.value.username,
+    email: userResponse.value.email,
   };
 
   return (
@@ -92,7 +92,7 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
           <ContentHeader title="Git Release Manager" />
 
           <InfoCardPlus>
-            <RepoDetailsForm username={usernameResponse.value.username} />
+            <RepoDetailsForm username={userResponse.value.username} />
           </InfoCardPlus>
 
           {isProjectValid(project) && <Features features={props.features} />}
