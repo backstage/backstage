@@ -26,13 +26,14 @@ import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { Config } from '@backstage/config';
 
 const createBitbucketCloudRepository = async (opts: {
-  owner: string;
+  workspace: string;
+  project: string;
   repo: string;
   description: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
 }) => {
-  const { owner, repo, description, repoVisibility, authorization } = opts;
+  const { workspace, project, repo, description, repoVisibility, authorization } = opts;
 
   const options: RequestInit = {
     method: 'POST',
@@ -40,6 +41,7 @@ const createBitbucketCloudRepository = async (opts: {
       scm: 'git',
       description: description,
       is_private: repoVisibility === 'private',
+      project: { key: project },
     }),
     headers: {
       Authorization: authorization,
@@ -50,7 +52,7 @@ const createBitbucketCloudRepository = async (opts: {
   let response: Response;
   try {
     response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${owner}/${repo}`,
+      `https://api.bitbucket.org/2.0/repositories/${workspace}/${repo}`,
       options,
     );
   } catch (e) {
@@ -80,7 +82,7 @@ const createBitbucketCloudRepository = async (opts: {
 
 const createBitbucketServerRepository = async (opts: {
   host: string;
-  owner: string;
+  project: string;
   repo: string;
   description: string;
   repoVisibility: 'private' | 'public';
@@ -89,7 +91,7 @@ const createBitbucketServerRepository = async (opts: {
 }) => {
   const {
     host,
-    owner,
+    project,
     repo,
     description,
     authorization,
@@ -258,7 +260,23 @@ export function createPublishBitbucketAction(options: {
         enableLFS = false,
       } = ctx.input;
 
-      const { owner, repo, host } = parseRepoUrl(repoUrl);
+      const { workspace, project, repo, host } = parseRepoUrl(repoUrl);
+
+      // Workspace is only required for bitbucket cloud
+      if (host === 'bitbucket.org') {
+        if (!workspace) {
+            throw new InputError(
+              `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing workspace`,
+            );
+          }
+      }
+
+      // Project is required for both bitbucket cloud and bitbucket server
+      if (!project) {
+        throw new InputError(
+          `Invalid URL provider was included in the repo URL to create ${ctx.input.repoUrl}, missing project`,
+        );
+      }
 
       const integrationConfig = integrations.bitbucket.byHost(host);
 
@@ -272,14 +290,15 @@ export function createPublishBitbucketAction(options: {
       const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
       const createMethod =
-        host === 'bitbucket.org'
-          ? createBitbucketCloudRepository
-          : createBitbucketServerRepository;
+      host === 'bitbucket.org'
+        ? createBitbucketCloudRepository
+        : createBitbucketServerRepository;
 
       const { remoteUrl, repoContentsUrl } = await createMethod({
         authorization,
         host,
-        owner,
+        workspace: workspace || '',
+        project,
         repo,
         repoVisibility,
         description,

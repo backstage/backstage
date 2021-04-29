@@ -79,10 +79,6 @@ export interface ScaffolderApi {
     allowedHosts: string[];
   }): Promise<{ type: string; title: string; host: string }[]>;
 
-  getIntegration(options: {
-    type: string;
-  }): Promise<AzureIntegration[] | BitbucketIntegration[] | GitHubIntegration[] | GitLabIntegration[] | undefined>;
-
   // Returns a list of all installed actions.
   listActions(): Promise<ListActionsResponse>;
 
@@ -119,23 +115,6 @@ export class ScaffolderClient implements ScaffolderApi {
     ]
       .map(c => ({ type: c.type, title: c.title, host: c.config.host }))
       .filter(c => options.allowedHosts.includes(c.host));
-  }
-
-  async getIntegration(options: { type: string }) {
-    switch (options.type) {
-      case 'azure':
-        return this.scmIntegrationsApi.azure.list()
-      case 'bitbucket':
-        return this.scmIntegrationsApi.bitbucket.list()
-      case 'github':
-        return this.scmIntegrationsApi.github.list()
-      case 'gitlab':
-        return this.scmIntegrationsApi.gitlab.list()
-      default:
-        throw new Error(
-          `No integration found for ${options.type}`,
-        );
-    }
   }
 
   async getTemplateParameterSchema(

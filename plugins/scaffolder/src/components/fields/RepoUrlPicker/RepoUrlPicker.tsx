@@ -28,36 +28,50 @@ import { Progress } from '@backstage/core-components';
 
 function splitFormData(url: string | undefined) {
   let host = undefined;
+  let type = undefined;
   let owner = undefined;
   let repo = undefined;
   let organization = undefined;
+  let workspace = undefined;
+  let project = undefined;
 
   try {
     if (url) {
       const parsed = new URL(`https://${url}`);
       host = parsed.host;
+      type = parsed.searchParams.get('type') || undefined;
       owner = parsed.searchParams.get('owner') || undefined;
       repo = parsed.searchParams.get('repo') || undefined;
       // This is azure dev ops specific. not used for any other provider.
       organization = parsed.searchParams.get('organization') || undefined;
+      // These are bitbucket specific, not used for any other provider.
+      workspace = parsed.searchParams.get('workspace') || undefined;
+      project = parsed.searchParams.get('project') || undefined;
     }
   } catch {
     /* ok */
   }
 
-  return { host, owner, repo, organization };
+  return { host, type, owner, repo, organization, workspace, project };
 }
 
 function serializeFormData(data: {
   host?: string;
+  type?: string;
   owner?: string;
   repo?: string;
   organization?: string;
+  workspace?: string;
+  project?: string;
 }) {
   if (!data.host) {
     return undefined;
   }
+
   const params = new URLSearchParams();
+  if (data.type) {
+    params.set('type', data.type);
+  }
   if (data.owner) {
     params.set('owner', data.owner);
   }
@@ -66,6 +80,12 @@ function serializeFormData(data: {
   }
   if (data.organization) {
     params.set('organization', data.organization);
+  }
+  if (data.workspace) {
+    params.set('workspace', data.workspace);
+  }
+  if (data.project) {
+    params.set('project', data.project);
   }
 
   return `${data.host}?${params.toString()}`;
@@ -84,18 +104,22 @@ export const RepoUrlPicker = ({
     return await api.getIntegrationsList({ allowedHosts });
   });
 
-  const { host, owner, repo, organization } = splitFormData(formData);
+  const { host, type, owner, repo, organization, workspace, project } = splitFormData(formData);
   const updateHost = useCallback(
-    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) => {
       onChange(
         serializeFormData({
           host: evt.target.value as string,
+          type: (integrations?getIntegrationTypeByHost(evt.target.value as string, integrations): undefined),
           owner,
           repo,
           organization,
+          workspace,
+          project,
         }),
-      ),
-    [onChange, owner, repo, organization],
+      )
+    },
+    [onChange, integrations, owner, repo, organization, workspace, project],
   );
 
   const updateOwner = useCallback(
@@ -103,12 +127,15 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
+          type,
           owner: evt.target.value as string,
           repo,
           organization,
+          workspace,
+          project,
         }),
       ),
-    [onChange, host, repo, organization],
+    [onChange, host, type, repo, organization, workspace, project],
   );
 
   const updateRepo = useCallback(
@@ -116,12 +143,15 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
+          type,
           owner,
           repo: evt.target.value as string,
           organization,
+          workspace,
+          project,
         }),
       ),
-    [onChange, host, owner, organization],
+    [onChange, host, type, owner, organization, workspace, project],
   );
 
   const updateOrganization = useCallback(
@@ -129,12 +159,47 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host,
+          type,
           owner,
           repo,
           organization: evt.target.value as string,
+          workspace,
+          project,
         }),
       ),
-    [onChange, host, owner, repo],
+    [onChange, host , type, owner, repo, workspace, project],
+  );
+
+  const updateWorkspace = useCallback(
+    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+      onChange(
+        serializeFormData({
+          host,
+          type,
+          owner,
+          repo,
+          organization,
+          workspace: evt.target.value as string,
+          project,
+        }),
+      ),
+    [onChange, host, type, owner, repo, organization, project],
+  );
+
+  const updateProject = useCallback(
+    (evt: React.ChangeEvent<{ name?: string; value: unknown }>) =>
+      onChange(
+        serializeFormData({
+          host,
+          type,
+          owner,
+          repo,
+          organization,
+          workspace,
+          project: evt.target.value as string,
+        }),
+      ),
+    [onChange, host, type, owner, repo, organization, workspace],
   );
 
   useEffect(() => {
@@ -142,13 +207,16 @@ export const RepoUrlPicker = ({
       onChange(
         serializeFormData({
           host: integrations[0].host,
+          type: integrations[0].type,
           owner,
           repo,
           organization,
+          workspace,
+          project,
         }),
       );
     }
-  }, [onChange, integrations, host, owner, repo, organization]);
+  }, [onChange, integrations, host, type, owner, repo, organization, workspace, project]);
 
   if (loading) {
     return <Progress />;
@@ -179,6 +247,7 @@ export const RepoUrlPicker = ({
           The host where the repository will be created
         </FormHelperText>
       </FormControl>
+      {/* Show this for dev.azure.com only */}
       {host === 'dev.azure.com' && (
         <FormControl
           margin="normal"
@@ -194,17 +263,52 @@ export const RepoUrlPicker = ({
           <FormHelperText>The name of the organization</FormHelperText>
         </FormControl>
       )}
-      <FormControl
-        margin="normal"
-        required
-        error={rawErrors?.length > 0 && !owner}
-      >
-        <InputLabel htmlFor="ownerInput">Owner</InputLabel>
-        <Input id="ownerInput" onChange={updateOwner} value={owner} />
-        <FormHelperText>
-          The organization, user or project that this repo will belong to
-        </FormHelperText>
-      </FormControl>
+      {/* Show this for bitbucket.org only */}
+      {type === 'bitbucket' && (
+        <>
+          {host === 'bitbucket.org' && (
+            <FormControl
+              margin="normal"
+              required
+              error={rawErrors?.length > 0 && !workspace}
+            >
+              <InputLabel htmlFor="wokrspaceInput">Workspace</InputLabel>
+              <Input id="wokrspaceInput" onChange={updateWorkspace} value={workspace} />
+              <FormHelperText>
+                The workspace where the repository will be created
+              </FormHelperText>
+            </FormControl>
+          )}
+          <FormControl
+            margin="normal"
+            required
+            error={rawErrors?.length > 0 && !project}
+          >
+            <InputLabel htmlFor="wokrspaceInput">Project</InputLabel>
+            <Input id="wokrspaceInput" onChange={updateProject} value={project} />
+            <FormHelperText>
+              The project where the repository will be created
+            </FormHelperText>
+          </FormControl>
+        </>
+      )}
+      {/* Show this for all hosts except bitbucket */}
+      {type !== 'bitbucket' && (
+        <>
+          <FormControl
+            margin="normal"
+            required
+            error={rawErrors?.length > 0 && !owner}
+          >
+            <InputLabel htmlFor="ownerInput">Owner</InputLabel>
+            <Input id="ownerInput" onChange={updateOwner} value={owner} />
+            <FormHelperText>
+              The organization, user or project that this repo will belong to
+            </FormHelperText>
+          </FormControl>
+        </>
+      )}
+      {/* Show this for all hosts */}
       <FormControl
         margin="normal"
         required

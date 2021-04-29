@@ -33,7 +33,6 @@ import {
 import {
   createPublishAzureAction,
   createPublishBitbucketAction,
-  createPublishBitbucketCloudAction,
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
@@ -78,9 +77,6 @@ export const createBuiltinActions = (options: {
     createPublishBitbucketAction({
       integrations,
       config,
-    }),
-    createPublishBitbucketCloudAction({
-      integrations,
     }),
     createPublishAzureAction({
       integrations,

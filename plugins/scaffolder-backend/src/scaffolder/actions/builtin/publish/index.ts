@@ -16,7 +16,6 @@
 
 export { createPublishAzureAction } from './azure';
 export { createPublishBitbucketAction } from './bitbucket';
-export { createPublishBitbucketCloudAction } from './bitbucketCloud';
 export { createPublishFileAction } from './file';
 export { createPublishGithubAction } from './github';
 export { createPublishGithubPullRequestAction } from './githubPullRequest';

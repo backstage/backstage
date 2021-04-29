@@ -47,19 +47,12 @@ export const parseRepoUrl = (repoUrl: string): RepoSpec => {
     );
   }
   const host = parsed.host;
+  const type = parsed.searchParams.get('type');
   const owner = parsed.searchParams.get('owner');
+  const workspace = parsed.searchParams.get('workspace');
+  const project = parsed.searchParams.get('project');
 
-  if (!owner) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher: ${repoUrl}, missing owner`,
-    );
-  }
-  const repo = parsed.searchParams.get('repo');
-  if (!repo) {
-    throw new InputError(
-      `Invalid repo URL passed to publisher: ${repoUrl}, missing repo`,
-    );
-  }
+  if (type === 'bitbucket') {
 
   const organization = parsed.searchParams.get('organization') ?? undefined;
 
@@ -84,23 +77,30 @@ export const parseRepoUrlForBitbucket = (repoUrl: string) => {
         `Invalid repo URL passed to publisher: ${repoUrl}, missing workspace`,
       );
     }
-
-    const project = parsed.searchParams.get('project');
     if (!project) {
       throw new InputError(
         `Invalid repo URL passed to publisher: ${repoUrl}, missing project`,
       );
     }
+  }
 
-    const repo = parsed.searchParams.get('repo');
-    if (!repo) {
+  else {
+    if (!owner) {
       throw new InputError(
-        `Invalid repo URL passed to publisher: ${repoUrl}, missing repo`,
+        `Invalid repo URL passed to publisher: ${repoUrl}, missing owner`,
       );
     }
+  }
 
-    const organization = parsed.searchParams.get('organization');
+  const repo = parsed.searchParams.get('repo');
+  if (!repo) {
+    throw new InputError(
+      `Invalid repo URL passed to publisher: ${repoUrl}, missing repo`,
+    );
+  }
 
-    return { host, workspace, project, repo, organization };
+  const organization = parsed.searchParams.get('organization');
 
+  return { host, owner, repo, organization, workspace, project };
 };
+
