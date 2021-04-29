@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.6
+
+### Patch Changes
+
+- 931b21a12: Replace the link color in dark theme
+
 ## 0.2.5
 
 ### Patch Changes

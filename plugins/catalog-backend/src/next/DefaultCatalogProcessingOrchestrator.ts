@@ -179,7 +179,7 @@ export class DefaultCatalogProcessingOrchestrator
         );
       }
 
-      // Backwards compatible processing of location entites
+      // Backwards compatible processing of location entities
       if (isLocationEntity(entity)) {
         const { type = location.type } = entity.spec;
         const targets = new Array<string>();
@@ -268,7 +268,7 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
 
   const errors = new Array<Error>();
   const relations = new Array<EntityRelationSpec>();
-  const deferredEntites = new Array<Entity>();
+  const deferredEntities = new Array<Entity>();
 
   const emit = (i: CatalogProcessorResult) => {
     if (done) {
@@ -282,7 +282,7 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
     if (i.type === 'entity') {
       const originLocation = getEntityOriginLocationRef(parentEntity);
 
-      deferredEntites.push({
+      deferredEntities.push({
         ...i.entity,
         metadata: {
           ...i.entity.metadata,
@@ -294,7 +294,7 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
         },
       });
     } else if (i.type === 'location') {
-      deferredEntites.push(
+      deferredEntities.push(
         locationSpecToLocationEntity(i.location, parentEntity),
       );
     } else if (i.type === 'relation') {
@@ -311,7 +311,7 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
       return {
         errors,
         relations,
-        deferredEntites,
+        deferredEntities,
       };
     },
   };

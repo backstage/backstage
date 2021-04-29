@@ -53,7 +53,6 @@ import {
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
-  StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
@@ -67,13 +66,13 @@ import { LocationAnalyzer } from '../ingestion/types';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
-import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
 import { CatalogProcessingEngine } from '../next/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
 import { CommonDatabase } from '../database/CommonDatabase';
+import { ConfigLocationProvider } from './ConfigLocationProvider';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -272,11 +271,11 @@ export class NextCatalogBuilder {
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
     const locationStore = new DefaultLocationStore(db);
-    const dbLocationProvider = new DatabaseLocationProvider(locationStore);
     const stitcher = new Stitcher(dbClient, logger);
+    const configLocationProvider = new ConfigLocationProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      [dbLocationProvider], // entityproviders
+      [locationStore, configLocationProvider],
       stateManager,
       orchestrator,
       stitcher,
@@ -324,7 +323,6 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
       new BuiltinKindsEntityProcessor(),
     ];
@@ -340,7 +338,6 @@ export class NextCatalogBuilder {
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        //        new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor({ integrations }),
       );
     }

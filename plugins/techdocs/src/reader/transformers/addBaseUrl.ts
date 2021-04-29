@@ -15,10 +15,10 @@
  */
 import { EntityName } from '@backstage/catalog-model';
 import type { Transformer } from './index';
-import { TechDocsStorage } from '../../api';
+import { TechDocsStorageApi } from '../../api';
 
 type AddBaseUrlOptions = {
-  techdocsStorageApi: TechDocsStorage;
+  techdocsStorageApi: TechDocsStorageApi;
   entityId: EntityName;
   path: string;
 };

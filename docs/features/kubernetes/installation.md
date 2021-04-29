@@ -23,16 +23,8 @@ cd packages/app
 yarn add @backstage/plugin-kubernetes
 ```
 
-Once the package has been installed, you need to import the plugin in your app.
-Add the following to `packages/app/src/plugins.ts`:
-
-`plugins.ts`:
-
-```typescript
-export { plugin as Kubernetes } from '@backstage/plugin-kubernetes';
-```
-
-Now, add the "Kubernetes" tab to the catalog entity page. In
+Once the package has been installed, you need to import the plugin in your app
+by adding the "Kubernetes" tab to the catalog entity page. In
 `packages/app/src/components/catalog/EntityPage.tsx`, you'll add a router to get
 to the tab, and add the tab itself.
 

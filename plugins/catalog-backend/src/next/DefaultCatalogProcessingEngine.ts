@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Subscription } from '@backstage/core';
 import {
   CatalogProcessingEngine,
   EntityProvider,
-  EntityMessage,
+  EntityProviderConnection,
+  EntityProviderMutation,
   ProcessingStateManager,
   CatalogProcessingOrchestrator,
 } from './types';
@@ -27,8 +27,35 @@ import { Logger } from 'winston';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Stitcher } from './Stitcher';
 
+class Connection implements EntityProviderConnection {
+  constructor(
+    private readonly config: {
+      stateManager: ProcessingStateManager;
+      id: string;
+    },
+  ) {}
+
+  async applyMutation(mutation: EntityProviderMutation): Promise<void> {
+    if (mutation.type === 'full') {
+      await this.config.stateManager.replaceProcessingItems({
+        sourceKey: this.config.id,
+        type: 'full',
+        items: mutation.entities,
+      });
+
+      return;
+    }
+
+    await this.config.stateManager.replaceProcessingItems({
+      sourceKey: this.config.id,
+      type: 'delta',
+      added: mutation.added,
+      removed: mutation.removed,
+    });
+  }
+}
+
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
-  private subscriptions: Subscription[] = [];
   private running: boolean = false;
 
   constructor(
@@ -41,11 +68,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async start() {
     for (const provider of this.entityProviders) {
-      const id = 'databaseProvider';
-      const subscription = provider
-        .entityChange$()
-        .subscribe({ next: m => this.onNext(id, m) });
-      this.subscriptions.push(subscription);
+      await provider.connect(
+        new Connection({
+          stateManager: this.stateManager,
+          id: provider.getProviderName(),
+        }),
+      );
     }
 
     this.running = true;
@@ -54,12 +82,12 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       const {
         id,
         entity,
-        state: intialState,
+        state: initialState,
       } = await this.stateManager.getNextProcessingItem();
 
       const result = await this.orchestrator.process({
         entity,
-        state: intialState,
+        state: initialState,
       });
 
       for (const error of result.errors) {
@@ -77,7 +105,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         state: result.state,
         errors: result.errors,
         relations: result.relations,
-        deferredEntities: result.deferredEntites,
+        deferredEntities: result.deferredEntities,
       });
 
       const setOfThingsToStitch = new Set<string>([
@@ -92,30 +120,5 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   async stop() {
     this.running = false;
-
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe();
-    }
-  }
-
-  private async onNext(id: string, message: EntityMessage) {
-    if ('all' in message) {
-      // TODO unhandled rejection
-      await this.stateManager.addProcessingItems({
-        id,
-        type: 'provider',
-        entities: message.all,
-      });
-    }
-
-    if ('added' in message) {
-      await this.stateManager.addProcessingItems({
-        id,
-        type: 'provider',
-        entities: message.added,
-      });
-
-      // TODO deletions of message.removed
-    }
   }
 }
