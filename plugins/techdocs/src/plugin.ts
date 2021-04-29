@@ -50,11 +50,6 @@ export const techdocsPlugin = createPlugin({
   id: 'techdocs',
   apis: [
     createApiFactory({
-      api: scmIntegrationsApiRef,
-      deps: { configApi: configApiRef },
-      factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
-    }),
-    createApiFactory({
       api: techdocsStorageApiRef,
       deps: {
         configApi: configApiRef,
