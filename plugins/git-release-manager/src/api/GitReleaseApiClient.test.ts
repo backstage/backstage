@@ -60,9 +60,7 @@ describe('GitReleaseApiClient', () => {
           "replaceTempCommit": [Function],
           "updateRelease": [Function],
         },
-        "promoteRc": Object {
-          "promoteRelease": [Function],
-        },
+        "promoteRelease": [Function],
         "stats": Object {
           "getAllReleases": [Function],
           "getAllTags": [Function],

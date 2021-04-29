@@ -280,13 +280,11 @@ export const mockApiClient: GitReleaseApi = {
     })),
   },
 
-  promoteRc: {
-    promoteRelease: jest.fn(async () => ({
-      name: 'mock_release_name',
-      tagName: 'mock_release_tag_name',
-      htmlUrl: 'mock_release_html_url',
-    })),
-  },
+  promoteRelease: jest.fn(async () => ({
+    name: 'mock_release_name',
+    tagName: 'mock_release_tag_name',
+    htmlUrl: 'mock_release_html_url',
+  })),
 
   stats: {
     getAllTags: jest.fn(async () => [
