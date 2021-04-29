@@ -22,14 +22,13 @@ import {
   mockReleaseBranch,
   mockReleaseCandidateCalver,
 } from '../../test-helpers/test-helpers';
+import { Info } from './Info';
 
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
     project: mockCalverProject,
   }),
 }));
-
-import { Info } from './Info';
 
 describe('Info', () => {
   it('should return early if no latestRelease exists', async () => {

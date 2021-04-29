@@ -25,8 +25,10 @@ import {
   mockReleaseVersionCalver,
   mockSemverProject,
 } from '../../test-helpers/test-helpers';
+import { CreateRc } from './CreateRc';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useCreateRc } from './hooks/useCreateRc';
+import { useProjectContext } from '../../contexts/ProjectContext';
 
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => ({
@@ -45,9 +47,6 @@ jest.mock('./hooks/useCreateRc', () => ({
       runInvoked: false,
     } as ReturnType<typeof useCreateRc>),
 }));
-
-import { useProjectContext } from '../../contexts/ProjectContext';
-import { CreateRc } from './CreateRc';
 
 describe('CreateRc', () => {
   it('should display CTA', () => {

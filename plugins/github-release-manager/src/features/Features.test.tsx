@@ -17,21 +17,23 @@
 import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 
+import { Features } from './Features';
 import { mockApiClient, mockCalverProject } from '../test-helpers/test-helpers';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
-jest.mock('../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
+jest.mock('@backstage/core', () => ({
+  useApi: () => mockApiClient,
+  createApiRef: jest.fn(),
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  InfoCard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 jest.mock('../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
     project: mockCalverProject,
   }),
 }));
-
-import { Features } from './Features';
 
 describe('Features', () => {
   it('should omit features omitted via configuration', async () => {
@@ -52,7 +54,7 @@ describe('Features', () => {
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-4"
         data-testid="grm--info"
       >
         <h6

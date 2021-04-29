@@ -24,10 +24,9 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { usePromoteRc } from './usePromoteRc';
 
-jest.mock('../../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
+jest.mock('@backstage/core', () => ({
+  useApi: () => mockApiClient,
+  createApiRef: jest.fn(),
 }));
 jest.mock('../../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({

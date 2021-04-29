@@ -21,6 +21,7 @@ import {
   mockSemverProject,
   mockSearchCalver,
 } from '../../test-helpers/test-helpers';
+import { VersioningStrategy } from './VersioningStrategy';
 
 const mockNavigate = jest.fn();
 
@@ -35,8 +36,6 @@ jest.mock('../../contexts/ProjectContext', () => ({
     project: mockSemverProject,
   }),
 }));
-
-import { VersioningStrategy } from './VersioningStrategy';
 
 describe('Repo', () => {
   beforeEach(jest.clearAllMocks);

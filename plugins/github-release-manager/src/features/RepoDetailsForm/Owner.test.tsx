@@ -23,6 +23,8 @@ import {
   mockSearchCalver,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { useProjectContext } from '../../contexts/ProjectContext';
+import { Owner } from './Owner';
 
 jest.mock('react-router', () => ({
   useNavigate: jest.fn(),
@@ -30,19 +32,15 @@ jest.mock('react-router', () => ({
     search: mockSearchCalver,
   })),
 }));
-jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
+jest.mock('@backstage/core', () => ({
+  useApi: () => mockApiClient,
+  createApiRef: jest.fn(),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: jest.fn(() => ({
     project: mockCalverProject,
   })),
 }));
-
-import { useProjectContext } from '../../contexts/ProjectContext';
-import { Owner } from './Owner';
 
 describe('Owner', () => {
   beforeEach(jest.clearAllMocks);

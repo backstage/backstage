@@ -18,14 +18,13 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 import { mockSearchSemver } from '../test-helpers/test-helpers';
+import { useQueryHandler } from './useQueryHandler';
 
 jest.mock('react-router', () => ({
   useLocation: jest.fn(() => ({
     search: mockSearchSemver,
   })),
 }));
-
-import { useQueryHandler } from './useQueryHandler';
 
 const TEST_ID = 'grm--use-query-handler';
 

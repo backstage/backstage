@@ -18,6 +18,9 @@ import {
   mockCalverProject,
   mockSemverProject,
 } from '../../test-helpers/test-helpers';
+import { getCalverTagParts } from './getCalverTagParts';
+import { getSemverTagParts } from './getSemverTagParts';
+import { getTagParts } from './getTagParts';
 
 jest.mock('./getCalverTagParts', () => ({
   getCalverTagParts: jest.fn(),
@@ -25,10 +28,6 @@ jest.mock('./getCalverTagParts', () => ({
 jest.mock('./getSemverTagParts', () => ({
   getSemverTagParts: jest.fn(),
 }));
-
-import { getCalverTagParts } from './getCalverTagParts';
-import { getSemverTagParts } from './getSemverTagParts';
-import { getTagParts } from './getTagParts';
 
 describe('getTagParts', () => {
   beforeEach(jest.resetAllMocks);

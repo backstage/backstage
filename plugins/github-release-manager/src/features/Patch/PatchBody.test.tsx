@@ -26,11 +26,12 @@ import {
   mockReleaseVersionCalver,
   mockTagParts,
 } from '../../test-helpers/test-helpers';
+import { PatchBody } from './PatchBody';
+import { TEST_IDS } from '../../test-helpers/test-ids';
 
-jest.mock('../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
+jest.mock('@backstage/core', () => ({
+  useApi: () => mockApiClient,
+  createApiRef: jest.fn(),
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
@@ -44,9 +45,6 @@ jest.mock('./hooks/usePatch', () => ({
     progress: 0,
   }),
 }));
-
-import { PatchBody } from './PatchBody';
-import { TEST_IDS } from '../../test-helpers/test-ids';
 
 describe('PatchBody', () => {
   beforeEach(jest.clearAllMocks);

@@ -22,14 +22,13 @@ import {
   mockReleaseVersionCalver,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { PromoteRc } from './PromoteRc';
 
 jest.mock('./PromoteRcBody', () => ({
   PromoteRcBody: () => (
     <div data-testid={TEST_IDS.promoteRc.mockedPromoteRcBody}>Hello</div>
   ),
 }));
-
-import { PromoteRc } from './PromoteRc';
 
 describe('PromoteRc', () => {
   it('return early if no latest release present', () => {

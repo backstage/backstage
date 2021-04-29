@@ -19,6 +19,7 @@ import { render } from '@testing-library/react';
 
 import { mockReleaseCandidateCalver } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { PromoteRcBody } from './PromoteRcBody';
 
 jest.mock('./hooks/usePromoteRc', () => ({
   usePromoteRc: () => ({
@@ -27,8 +28,6 @@ jest.mock('./hooks/usePromoteRc', () => ({
     progress: 0,
   }),
 }));
-
-import { PromoteRcBody } from './PromoteRcBody';
 
 describe('PromoteRcBody', () => {
   it('should display CTA', () => {

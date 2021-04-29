@@ -22,14 +22,13 @@ import {
   mockCalverProject,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
+import { Patch } from './Patch';
 
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
     project: mockCalverProject,
   }),
 }));
-
-import { Patch } from './Patch';
 
 describe('Patch', () => {
   it('should return early if no latestRelease exists', () => {

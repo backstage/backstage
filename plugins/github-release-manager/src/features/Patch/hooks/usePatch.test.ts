@@ -27,10 +27,9 @@ import {
 } from '../../../test-helpers/test-helpers';
 import { usePatch } from './usePatch';
 
-jest.mock('../../../contexts/PluginApiClientContext', () => ({
-  usePluginApiClientContext: () => ({
-    pluginApiClient: mockApiClient,
-  }),
+jest.mock('@backstage/core', () => ({
+  useApi: () => mockApiClient,
+  createApiRef: jest.fn(),
 }));
 
 describe('patch', () => {
