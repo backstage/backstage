@@ -69,22 +69,22 @@
   dependencies:
     tslib "~2.0.1"
 
-"@asyncapi/avro-schema-parser@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/@asyncapi/avro-schema-parser/-/avro-schema-parser-0.2.0.tgz#c9da2bb2858aca5a3b9e9a0e600084afd3765551"
-  integrity sha512-/oPDPudF82RGFXz5uhF77PSDZkAR+yHpdxUEbJ5jwk/X3RB74VRk8dqSgTqhUO+pLh+/Hut3x3VFacA8C9L2QA==
+"@asyncapi/avro-schema-parser@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@asyncapi/avro-schema-parser/-/avro-schema-parser-0.2.1.tgz#0b7d9953e12084e6f556db261ae08bd8f6690faa"
+  integrity sha512-RZJaHsdYM4dChYSrb/TWrVCn/r2qcus+9/8iLL8+SMINHb0ECgH8tFZFJpr3Tq+LV2SBFaRQ+9kuecjQ8BNDSA==
 
-"@asyncapi/openapi-schema-parser@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@asyncapi/openapi-schema-parser/-/openapi-schema-parser-2.0.0.tgz#80e2f38e92b6635dde19aae07b92e3caa0effc58"
-  integrity sha512-XfDp3EIs6ptar3jARQZzi3ObmS44l6Qozc5GJmZJUQ6mHLTTqUGJ0nxcrXAW88vosjilgJVaQ63oGolA6smSHQ==
+"@asyncapi/openapi-schema-parser@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@asyncapi/openapi-schema-parser/-/openapi-schema-parser-2.0.1.tgz#4d6e82cced907b14e0ad6f98261ff2562d968d96"
+  integrity sha512-algbtdM1gcAOa8+V8kp7WeBhdaNac82jmZUXx8YjyNfRVo02N2juDrjeBAGJd+FNva9Mb4MM7qfkJoAFpTL5VQ==
   dependencies:
     "@openapi-contrib/openapi-schema-to-json-schema" "^3.0.0"
 
-"@asyncapi/parser@^1.4.4":
-  version "1.4.4"
-  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.4.4.tgz#66f2642e3f9ae4166cdea2480b665250b1edbd59"
-  integrity sha512-HEYEDM0BzfCxXNAv/pIS5yZWe11xB8fQo9G/SmsbpJavOpcF0sVZVIELva/NxHVz/ZUKPMKCa4Gqz7DF/lMqpw==
+"@asyncapi/parser@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@asyncapi/parser/-/parser-1.5.0.tgz#d70616a1e6081c7dd86957befd5dccc46b9a77df"
+  integrity sha512-HzrehCcT6R+iqtktNmrUM9wRUEMBqnCeXIrGJT0txBMS1QduNRmXGjvuDpxqwyaATPH/xu1gSp2l6pFP/hyVbA==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^9.0.6"
     "@asyncapi/specs" "^2.7.7"
@@ -96,14 +96,14 @@
     node-fetch "^2.6.0"
     tiny-merge-patch "^0.1.2"
 
-"@asyncapi/react-component@^0.22.3":
-  version "0.22.3"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.22.3.tgz#6ea7fb1044308e6d46f8455218920389becf2b22"
-  integrity sha512-f47sboqEQ0jNp0z2A+WGzBYYMS3ASmTwAXG/q6SwLuHBW15bSjaIYOVK3E8bmftBl+wVcEgAqUc6RKGtD9iVJg==
+"@asyncapi/react-component@^0.23.0":
+  version "0.23.0"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.23.0.tgz#dce9a95cd0fb0d9f0364278088ad31194d411d52"
+  integrity sha512-mX70k3j5eSM7ets8BBZWnu6RsNXapLKD/7np+dMeXFk7KFbigVQXXr3hS0k2R+c8tRfkhlklicibq5ar1+fjDA==
   dependencies:
-    "@asyncapi/avro-schema-parser" "^0.2.0"
-    "@asyncapi/openapi-schema-parser" "^2.0.0"
-    "@asyncapi/parser" "^1.4.4"
+    "@asyncapi/avro-schema-parser" "^0.2.1"
+    "@asyncapi/openapi-schema-parser" "^2.0.1"
+    "@asyncapi/parser" "^1.5.0"
     constate "^1.2.0"
     dompurify "^2.1.1"
     markdown-it "^11.0.1"
