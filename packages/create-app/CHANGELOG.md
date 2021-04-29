@@ -1,5 +1,44 @@
 # @backstage/create-app
 
+## 0.3.20
+
+### Patch Changes
+
+- 73f3f5d78: Updates the end to end test in the app to match the new catalog index page title. To apply this change to an existing app, update `packages/app/cypress/integration/app.js` to search for `"My Company Catalog"` instead of `"My Company Service Catalog"`.
+- Updated dependencies [1ce80ff02]
+- Updated dependencies [4c42ecca2]
+- Updated dependencies [c614ede9a]
+- Updated dependencies [9afcac5af]
+- Updated dependencies [07a7806c3]
+- Updated dependencies [f6efa71ee]
+- Updated dependencies [19a4dd710]
+- Updated dependencies [a99e0bc42]
+- Updated dependencies [dcd54c7cd]
+- Updated dependencies [da546ce00]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6fbd7beca]
+- Updated dependencies [15cbe6815]
+- Updated dependencies [39bdaa004]
+- Updated dependencies [cb8c848a3]
+- Updated dependencies [21fddf452]
+- Updated dependencies [17915e29b]
+- Updated dependencies [a1783f306]
+- Updated dependencies [6eaecbd81]
+- Updated dependencies [23769512a]
+- Updated dependencies [1a142ae8a]
+  - @backstage/plugin-api-docs@0.4.12
+  - @backstage/plugin-github-actions@0.4.4
+  - @backstage/plugin-catalog-import@0.5.4
+  - @backstage/plugin-explore@0.3.4
+  - @backstage/plugin-lighthouse@0.2.15
+  - @backstage/core@0.7.7
+  - @backstage/plugin-scaffolder@0.9.2
+  - @backstage/plugin-catalog@0.5.6
+  - @backstage/plugin-catalog-backend@0.8.1
+  - @backstage/plugin-search@0.3.5
+  - @backstage/plugin-techdocs@0.9.0
+  - @backstage/plugin-scaffolder-backend@0.10.1
+
 ## 0.3.19
 
 ### Patch Changes

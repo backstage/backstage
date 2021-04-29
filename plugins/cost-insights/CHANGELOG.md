@@ -1,5 +1,16 @@
 # @backstage/plugin-cost-insights
 
+## 0.8.5
+
+### Patch Changes
+
+- b98de52ae: Support a `name` prop for Projects for display purposes
+- c614ede9a: Updated README to have up-to-date install instructions.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.8.4
 
 ### Patch Changes

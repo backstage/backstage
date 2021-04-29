@@ -1,5 +1,11 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.1.3
+
+### Patch Changes
+
+- d47c2628b: Include migrations
+
 ## 0.1.2
 
 ### Patch Changes

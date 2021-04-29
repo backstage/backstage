@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.10.1
+
+### Patch Changes
+
+- a1783f306: Added the `nebula-preview` preview to `Octokit` for repository visibility.
+
 ## 0.10.0
 
 ### Minor Changes
