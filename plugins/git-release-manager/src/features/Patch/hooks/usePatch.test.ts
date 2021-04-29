@@ -106,7 +106,7 @@ describe('patch', () => {
             "secondaryMessage": "with name \\"mock_tag_object_tag\\"",
           },
           Object {
-            "message": "Created new reference \\"mock_reference_ref\\"",
+            "message": "Created new reference \\"mock_createRef_ref\\"",
             "secondaryMessage": "for tag object \\"mock_tag_object_tag\\"",
           },
           Object {

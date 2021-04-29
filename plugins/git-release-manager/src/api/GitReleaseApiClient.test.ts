@@ -54,7 +54,6 @@ describe('GitReleaseApiClient', () => {
         "host": "github.com",
         "patch": Object {
           "createCherryPickCommit": [Function],
-          "createReference": [Function],
           "createTempCommit": [Function],
           "forceBranchHeadToTempCommit": [Function],
           "merge": [Function],

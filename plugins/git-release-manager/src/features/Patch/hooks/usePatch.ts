@@ -271,12 +271,12 @@ export function usePatch({
     abortIfError(createdTagObjRes.error);
     if (!createdTagObjRes.value) return undefined;
 
-    const reference = await pluginApiClient.patch
-      .createReference({
+    const reference = await pluginApiClient
+      .createRef({
         owner: project.owner,
         repo: project.repo,
-        bumpedTag,
-        createdTagObject: createdTagObjRes.value,
+        ref: `refs/tags/${bumpedTag}`,
+        sha: createdTagObjRes.value.tagSha,
       })
       .catch(asyncCatcher);
 

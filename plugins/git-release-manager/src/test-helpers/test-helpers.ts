@@ -248,10 +248,6 @@ export const mockApiClient: GitReleaseApi = {
       sha: 'mock_cherrypick_sha',
     })),
 
-    createReference: jest.fn(async () => ({
-      ref: 'mock_reference_ref',
-    })),
-
     createTempCommit: jest.fn(async () => ({
       message: 'mock_commit_message',
       sha: 'mock_commit_sha',

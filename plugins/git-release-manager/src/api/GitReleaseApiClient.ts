@@ -443,20 +443,6 @@ ${messageSuffix}`,
       };
     },
 
-    createReference: async ({ owner, repo, bumpedTag, createdTagObject }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: reference } = await octokit.git.createRef({
-        owner,
-        repo,
-        ref: `refs/tags/${bumpedTag}`,
-        sha: createdTagObject.tagSha,
-      });
-
-      return {
-        ref: reference.ref,
-      };
-    },
-
     updateRelease: async ({
       owner,
       repo,
@@ -779,15 +765,6 @@ export interface GitReleaseApi {
       };
     }>;
 
-    createReference: (
-      args: {
-        bumpedTag: string;
-        createdTagObject: CreateTagObjectResult;
-      } & OwnerRepo,
-    ) => Promise<{
-      ref: string;
-    }>;
-
     updateRelease: (
       args: {
         bumpedTag: string;
@@ -896,9 +873,6 @@ export type ReplaceTempCommitResult = UnboxReturnedPromise<
 >;
 export type CreateTagObjectResult = UnboxReturnedPromise<
   GitReleaseApi['createTagObject']
->;
-export type CreateReferenceResult = UnboxReturnedPromise<
-  GitReleaseApi['patch']['createReference']
 >;
 export type UpdateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['patch']['updateRelease']
