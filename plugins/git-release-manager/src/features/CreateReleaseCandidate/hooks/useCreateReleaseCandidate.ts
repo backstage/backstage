@@ -135,7 +135,7 @@ export function useCreateReleaseCandidate({
         owner: project.owner,
         repo: project.repo,
         tag: releaseCandidateGitInfo.rcReleaseTag,
-        objectSha: releaseBranchRes.value.objectSha,
+        object: releaseBranchRes.value.objectSha,
         taggerName: user.username,
         taggerEmail: user.email,
         message: TAG_OBJECT_MESSAGE,

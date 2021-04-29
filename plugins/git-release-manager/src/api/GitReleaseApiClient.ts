@@ -214,30 +214,26 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   };
 
-  getBranch: GitReleaseApi['getBranch'] = async ({
-    owner,
-    repo,
-    branchName,
-  }) => {
+  getBranch: GitReleaseApi['getBranch'] = async ({ owner, repo, branch }) => {
     const { octokit } = await this.getOctokit();
 
-    const { data: branch } = await octokit.repos.getBranch({
+    const { data: branchData } = await octokit.repos.getBranch({
       owner,
       repo,
-      branch: branchName,
+      branch,
       ...DISABLE_CACHE,
     });
 
     return {
-      name: branch.name,
+      name: branchData.name,
       links: {
-        html: branch._links.html,
+        html: branchData._links.html,
       },
       commit: {
-        sha: branch.commit.sha,
+        sha: branchData.commit.sha,
         commit: {
           tree: {
-            sha: branch.commit.commit.tree.sha,
+            sha: branchData.commit.commit.tree.sha,
           },
         },
       },
@@ -309,7 +305,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
     owner,
     repo,
     tag,
-    objectSha,
+    object,
     taggerName,
     taggerEmail,
     message,
@@ -320,7 +316,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       repo,
       message,
       tag,
-      object: objectSha,
+      object,
       type: 'commit',
       tagger: {
         date: new Date().toISOString(),
@@ -357,18 +353,31 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   };
 
-  patch: GitReleaseApi['patch'] = {
-    forceBranchHeadToTempCommit: async ({ owner, repo, ref, sha }) => {
-      const { octokit } = await this.getOctokit();
-      await octokit.git.updateRef({
-        owner,
-        repo,
-        ref,
-        sha,
-        force: true,
-      });
-    },
+  updateRef: GitReleaseApi['updateRef'] = async ({
+    owner,
+    repo,
+    ref,
+    sha,
+    force,
+  }) => {
+    const { octokit } = await this.getOctokit();
+    const { data: updatedRef } = await octokit.git.updateRef({
+      owner,
+      repo,
+      ref,
+      sha,
+      force,
+    });
 
+    return {
+      ref: updatedRef.ref,
+      object: {
+        sha: updatedRef.object.sha,
+      },
+    };
+  };
+
+  patch: GitReleaseApi['patch'] = {
     merge: async ({ owner, repo, base, head }) => {
       const { octokit } = await this.getOctokit();
       const { data: merge } = await octokit.repos.merge({
@@ -412,29 +421,6 @@ ${messageSuffix}`,
       return {
         message: cherryPickCommit.message,
         sha: cherryPickCommit.sha,
-      };
-    },
-
-    replaceTempCommit: async ({
-      owner,
-      repo,
-      releaseBranchName,
-      cherryPickCommit,
-    }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: updatedReference } = await octokit.git.updateRef({
-        owner,
-        repo,
-        ref: `heads/${releaseBranchName}`,
-        sha: cherryPickCommit.sha,
-        force: true,
-      });
-
-      return {
-        ref: updatedReference.ref,
-        object: {
-          sha: updatedReference.object.sha,
-        },
       };
     },
 
@@ -627,7 +613,7 @@ export interface GitReleaseApi {
 
   getBranch: (
     args: {
-      branchName: string;
+      branch: string;
     } & OwnerRepo,
   ) => Promise<{
     name: string;
@@ -682,7 +668,7 @@ export interface GitReleaseApi {
       tag: string;
       taggerEmail?: string;
       message: string;
-      objectSha: string;
+      object: string;
       taggerName: string;
     } & OwnerRepo,
   ) => Promise<{
@@ -701,14 +687,20 @@ export interface GitReleaseApi {
     sha: string;
   }>;
 
-  patch: {
-    forceBranchHeadToTempCommit: (
-      args: {
-        sha: string;
-        ref: string;
-      } & OwnerRepo,
-    ) => Promise<void>;
+  updateRef: (
+    args: {
+      sha: string;
+      ref: string;
+      force: boolean;
+    } & OwnerRepo,
+  ) => Promise<{
+    ref: string;
+    object: {
+      sha: string;
+    };
+  }>;
 
+  patch: {
     merge: (
       args: {
         base: string;
@@ -737,20 +729,6 @@ export interface GitReleaseApi {
     ) => Promise<{
       message: string;
       sha: string;
-    }>;
-
-    replaceTempCommit: (
-      args: {
-        releaseBranchName: string;
-        cherryPickCommit: UnboxReturnedPromise<
-          GitReleaseApi['patch']['createCherryPickCommit']
-        >;
-      } & OwnerRepo,
-    ) => Promise<{
-      ref: string;
-      object: {
-        sha: string;
-      };
     }>;
 
     updateRelease: (
@@ -847,15 +825,9 @@ export type GetComparisonResult = UnboxReturnedPromise<
 export type CreateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['createRelease']
 >;
-export type ForceBranchHeadToTempCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['patch']['forceBranchHeadToTempCommit']
->;
 export type MergeResult = UnboxReturnedPromise<GitReleaseApi['patch']['merge']>;
 export type CreateCherryPickCommitResult = UnboxReturnedPromise<
   GitReleaseApi['patch']['createCherryPickCommit']
->;
-export type ReplaceTempCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['patch']['replaceTempCommit']
 >;
 export type CreateTagObjectResult = UnboxReturnedPromise<
   GitReleaseApi['createTagObject']

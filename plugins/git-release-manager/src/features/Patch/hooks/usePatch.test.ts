@@ -99,7 +99,7 @@ describe('patch', () => {
             "secondaryMessage": "with message \\"mock_cherrypick_message\\"",
           },
           Object {
-            "message": "Updated reference \\"mock_reference_ref\\"",
+            "message": "Updated reference \\"mock_update_ref_ref\\"",
           },
           Object {
             "message": "Created new tag object",

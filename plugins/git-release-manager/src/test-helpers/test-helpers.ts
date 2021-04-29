@@ -246,13 +246,18 @@ export const mockApiClient: GitReleaseApi = {
     sha: 'mock_commit_sha',
   })),
 
+  updateRef: jest.fn(async () => ({
+    ref: 'mock_update_ref_ref',
+    object: {
+      sha: 'mock_update_ref_object_sha',
+    },
+  })),
+
   patch: {
     createCherryPickCommit: jest.fn(async () => ({
       message: 'mock_cherrypick_message',
       sha: 'mock_cherrypick_sha',
     })),
-
-    forceBranchHeadToTempCommit: jest.fn(async () => undefined),
 
     merge: jest.fn(async () => ({
       htmlUrl: 'mock_merge_html_url',
@@ -261,13 +266,6 @@ export const mockApiClient: GitReleaseApi = {
         tree: {
           sha: 'mock_merge_commit_tree_sha',
         },
-      },
-    })),
-
-    replaceTempCommit: jest.fn(async () => ({
-      ref: 'mock_reference_ref',
-      object: {
-        sha: 'mock_reference_object_sha',
       },
     })),
 

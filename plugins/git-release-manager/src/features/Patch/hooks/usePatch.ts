@@ -71,7 +71,7 @@ export function usePatch({
         .getBranch({
           owner: project.owner,
           repo: project.repo,
-          branchName: releaseBranchName,
+          branch: releaseBranchName,
         })
         .catch(asyncCatcher);
 
@@ -127,12 +127,13 @@ export function usePatch({
     abortIfError(tempCommitRes.error);
     if (!tempCommitRes.value) return undefined;
 
-    await pluginApiClient.patch
-      .forceBranchHeadToTempCommit({
+    await pluginApiClient
+      .updateRef({
         owner: project.owner,
         repo: project.repo,
         sha: tempCommitRes.value.sha,
         ref: `heads/${releaseBranchName}`,
+        force: true,
       })
       .catch(asyncCatcher);
 
@@ -216,12 +217,13 @@ export function usePatch({
     abortIfError(cherryPickRes.error);
     if (!cherryPickRes.value) return undefined;
 
-    const updatedReference = await pluginApiClient.patch
-      .replaceTempCommit({
+    const updatedReference = await pluginApiClient
+      .updateRef({
         owner: project.owner,
         repo: project.repo,
-        cherryPickCommit: cherryPickRes.value,
-        releaseBranchName,
+        ref: `heads/${releaseBranchName}`,
+        sha: cherryPickRes.value.sha,
+        force: true,
       })
       .catch(asyncCatcher);
 
@@ -247,7 +249,7 @@ export function usePatch({
         owner: project.owner,
         repo: project.repo,
         tag: bumpedTag,
-        objectSha: updatedRefRes.value.object.sha,
+        object: updatedRefRes.value.object.sha,
         message: TAG_OBJECT_MESSAGE,
         taggerName: user.username,
         taggerEmail: user.email,

@@ -56,12 +56,11 @@ describe('GitReleaseApiClient', () => {
         "host": "github.com",
         "patch": Object {
           "createCherryPickCommit": [Function],
-          "forceBranchHeadToTempCommit": [Function],
           "merge": [Function],
-          "replaceTempCommit": [Function],
           "updateRelease": [Function],
         },
         "promoteRelease": [Function],
+        "updateRef": [Function],
       }
     `);
   });

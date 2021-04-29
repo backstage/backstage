@@ -82,7 +82,7 @@ export function usePromoteRc({
         owner: project.owner,
         repo: project.repo,
         tag: releaseVersion,
-        objectSha: latestReleaseBranchCommitSha.value.sha,
+        object: latestReleaseBranchCommitSha.value.sha,
         taggerName: user.username,
         taggerEmail: user.email,
         message: TAG_OBJECT_MESSAGE,
