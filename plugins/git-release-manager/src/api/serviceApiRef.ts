@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/core';
+import { createApiRef } from '@backstage/core';
 
-export const rootRouteRef = createRouteRef({
-  title: 'github-release-manager',
+import { IPluginApiClient } from './PluginApiClient';
+
+export const githubReleaseManagerApiRef = createApiRef<IPluginApiClient>({
+  id: 'plugin.git-release-manager.service',
+  description: 'Used by the Git Release Manager plugin to make requests',
 });

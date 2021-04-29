@@ -29,7 +29,7 @@ import { rootRouteRef } from './routes';
 export { githubReleaseManagerApiRef };
 
 export const gitHubReleaseManagerPlugin = createPlugin({
-  id: 'github-release-manager',
+  id: 'git-release-manager',
   routes: {
     root: rootRouteRef,
   },

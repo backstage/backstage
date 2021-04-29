@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import { githubReleaseManagerApiRef } from './serviceApiRef';
+import * as plugin from './plugin';
 
-describe('githubReleaseManagerApiRef', () => {
-  it('should work', () => {
-    const result = githubReleaseManagerApiRef;
-
-    expect(result).toMatchInlineSnapshot(`
-      ApiRefImpl {
-        "config": Object {
-          "description": "Used by the GitHub Release Manager plugin to make requests",
-          "id": "plugin.github-release-manager.service",
-        },
-      }
+describe('git-release-manager', () => {
+  it('should export plugin & friends', () => {
+    expect(Object.keys(plugin)).toMatchInlineSnapshot(`
+      Array [
+        "githubReleaseManagerApiRef",
+        "gitHubReleaseManagerPlugin",
+        "GitHubReleaseManagerPage",
+      ]
     `);
   });
 });

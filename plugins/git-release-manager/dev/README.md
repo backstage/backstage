@@ -1,12 +1,12 @@
-# github-release-manager
+# git-release-manager
 
-Welcome to the github-release-manager plugin!
+Welcome to the git-release-manager plugin!
 
 _This plugin was created through the Backstage CLI_
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/github-release-manager](http://localhost:3000/github-release-manager).
+Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/git-release-manager](http://localhost:3000/git-release-manager).
 
 You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
 This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
