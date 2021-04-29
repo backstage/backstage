@@ -51,25 +51,24 @@ export const Info = ({
         <Typography variant="h6">Terminology</Typography>
 
         <Typography>
-          <strong>GitHub</strong>: The source control system where releases
-          reside in a practical sense. Read more about{' '}
+          <strong>Git</strong>: The source control system where releases reside
+          in a practical sense. Read more about{' '}
           <Link
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
           >
-            GitHub releases
+            Git releases
           </Link>
-          . (Note that this plugin works just as well with GitHub Enterprise.)
+          .
         </Typography>
 
         <Typography>
-          <strong>Release Candidate</strong>: A GitHub <i>prerelease</i>{' '}
-          intended primarily for internal testing
+          <strong>Release Candidate</strong>: A Git <i>prerelease</i> intended
+          primarily for internal testing
         </Typography>
 
         <Typography>
-          <strong>Release Version</strong>: A GitHub release intended for end
-          users
+          <strong>Release Version</strong>: A Git release intended for end users
         </Typography>
       </Box>
 
@@ -77,7 +76,7 @@ export const Info = ({
         <Typography variant="h6">Flow</Typography>
 
         <Typography className={classes.paragraph}>
-          GitHub Release Manager is built with a specific flow in mind. For
+          Git Release Manager is built with a specific flow in mind. For
           example, it assumes your project is configured to react to tags
           prefixed with <b>rc</b> or <b>version</b>.
         </Typography>

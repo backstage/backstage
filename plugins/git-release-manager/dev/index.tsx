@@ -18,14 +18,11 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { Box, Typography } from '@material-ui/core';
 
-import {
-  gitHubReleaseManagerPlugin,
-  GitHubReleaseManagerPage,
-} from '../src/plugin';
+import { gitReleaseManagerPlugin, GitReleaseManagerPage } from '../src/plugin';
 import { InfoCardPlus } from '../src/components/InfoCardPlus';
 
 createDevApp()
-  .registerPlugin(gitHubReleaseManagerPlugin)
+  .registerPlugin(gitReleaseManagerPlugin)
   .addPage({
     title: 'Dynamic',
     path: '/dynamic',
@@ -36,7 +33,7 @@ createDevApp()
           <Typography>Configure plugin via select inputs</Typography>
         </InfoCardPlus>
 
-        <GitHubReleaseManagerPage />
+        <GitReleaseManagerPage />
       </Box>
     ),
   })
@@ -53,7 +50,7 @@ createDevApp()
           </Typography>
         </InfoCardPlus>
 
-        <GitHubReleaseManagerPage
+        <GitReleaseManagerPage
           project={{
             owner: 'eengervall-playground',
             repo: 'RMaaS-semver',
@@ -74,7 +71,7 @@ createDevApp()
           <Typography>Success callbacks can also be added</Typography>
         </InfoCardPlus>
 
-        <GitHubReleaseManagerPage
+        <GitReleaseManagerPage
           project={{
             owner: 'eengervall-playground',
             repo: 'playground-semver',

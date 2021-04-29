@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, ComponentProps } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { ErrorBoundary, useApi } from '@backstage/core';
 
 import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
-import { CreateRc } from './CreateRc/CreateRc';
-import { githubReleaseManagerApiRef } from '../api/serviceApiRef';
-import { GitHubReleaseManagerProps } from '../GitHubReleaseManager';
+import { CreateReleaseCandidate } from './CreateReleaseCandidate/CreateReleaseCandidate';
+import { GitReleaseManager } from '../GitReleaseManager';
+import { gitReleaseManagerApiRef } from '../api/serviceApiRef';
 import { Info } from './Info/Info';
 import { Patch } from './Patch/Patch';
 import { PromoteRc } from './PromoteRc/PromoteRc';
 import { RefetchContext } from '../contexts/RefetchContext';
-import { useGetGitHubBatchInfo } from '../hooks/useGetGitHubBatchInfo';
+import { useGetGitBatchInfo } from '../hooks/useGetGitBatchInfo';
 import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
 import { validateTagName } from '../helpers/tagParts/validateTagName';
@@ -34,43 +34,43 @@ import { validateTagName } from '../helpers/tagParts/validateTagName';
 export function Features({
   features,
 }: {
-  features: GitHubReleaseManagerProps['features'];
+  features: ComponentProps<typeof GitReleaseManager>['features'];
 }) {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
-  const { gitHubBatchInfo } = useGetGitHubBatchInfo({
+  const { gitBatchInfo } = useGetGitBatchInfo({
     pluginApiClient,
     project,
     refetchTrigger,
   });
 
   const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
-    latestReleaseTagName: gitHubBatchInfo.value?.latestRelease?.tagName,
+    latestReleaseTagName: gitBatchInfo.value?.latestRelease?.tagName,
     project,
-    repositoryName: gitHubBatchInfo.value?.repository.name,
+    repositoryName: gitBatchInfo.value?.repository.name,
   });
 
-  if (gitHubBatchInfo.error) {
+  if (gitBatchInfo.error) {
     return (
       <Alert severity="error">
         Error occured while fetching information for "{project.owner}/
-        {project.repo}" ({gitHubBatchInfo.error.message})
+        {project.repo}" ({gitBatchInfo.error.message})
       </Alert>
     );
   }
 
-  if (gitHubBatchInfo.loading) {
+  if (gitBatchInfo.loading) {
     return <CenteredCircularProgress />;
   }
 
-  if (gitHubBatchInfo.value === undefined) {
+  if (gitBatchInfo.value === undefined) {
     return (
       <Alert severity="error">Failed to fetch latest GitHub release</Alert>
     );
   }
 
-  if (!gitHubBatchInfo.value.repository.pushPermissions) {
+  if (!gitBatchInfo.value.repository.pushPermissions) {
     return (
       <Alert severity="error">
         You lack push permissions for repository "{project.owner}/{project.repo}
@@ -81,7 +81,7 @@ export function Features({
 
   const { tagNameError } = validateTagName({
     project,
-    tagName: gitHubBatchInfo.value.latestRelease?.tagName,
+    tagName: gitBatchInfo.value.latestRelease?.tagName,
   });
   if (tagNameError) {
     return (
@@ -95,20 +95,20 @@ export function Features({
   return (
     <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
       <ErrorBoundary>
-        {gitHubBatchInfo.value.latestRelease && !versioningStrategyMatches && (
+        {gitBatchInfo.value.latestRelease && !versioningStrategyMatches && (
           <Alert severity="warning" style={{ marginBottom: 20 }}>
             Versioning mismatch, expected {project.versioningStrategy} version,
-            got "{gitHubBatchInfo.value.latestRelease.tagName}"
+            got "{gitBatchInfo.value.latestRelease.tagName}"
           </Alert>
         )}
 
-        {!gitHubBatchInfo.value.latestRelease && (
+        {!gitBatchInfo.value.latestRelease && (
           <Alert severity="info" style={{ marginBottom: 20 }}>
             This repository doesn't have any releases yet
           </Alert>
         )}
 
-        {!gitHubBatchInfo.value.releaseBranch && (
+        {!gitBatchInfo.value.releaseBranch && (
           <Alert severity="info" style={{ marginBottom: 20 }}>
             This repository doesn't have any release branches
           </Alert>
@@ -116,32 +116,32 @@ export function Features({
 
         {!features?.info?.omit && (
           <Info
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            latestRelease={gitBatchInfo.value.latestRelease}
+            releaseBranch={gitBatchInfo.value.releaseBranch}
             statsEnabled={features?.stats?.omit !== true}
           />
         )}
 
         {!features?.createRc?.omit && (
-          <CreateRc
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            releaseBranch={gitHubBatchInfo.value.releaseBranch}
-            defaultBranch={gitHubBatchInfo.value.repository.defaultBranch}
+          <CreateReleaseCandidate
+            latestRelease={gitBatchInfo.value.latestRelease}
+            releaseBranch={gitBatchInfo.value.releaseBranch}
+            defaultBranch={gitBatchInfo.value.repository.defaultBranch}
             successCb={features?.createRc?.successCb}
           />
         )}
 
         {!features?.promoteRc?.omit && (
           <PromoteRc
-            latestRelease={gitHubBatchInfo.value.latestRelease}
+            latestRelease={gitBatchInfo.value.latestRelease}
             successCb={features?.promoteRc?.successCb}
           />
         )}
 
         {!features?.patch?.omit && (
           <Patch
-            latestRelease={gitHubBatchInfo.value.latestRelease}
-            releaseBranch={gitHubBatchInfo.value.releaseBranch}
+            latestRelease={gitBatchInfo.value.latestRelease}
+            releaseBranch={gitBatchInfo.value.releaseBranch}
             successCb={features?.patch?.successCb}
           />
         )}

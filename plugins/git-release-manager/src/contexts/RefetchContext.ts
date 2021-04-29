@@ -16,7 +16,7 @@
 
 import { createContext, useContext } from 'react';
 
-import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
+import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 
 export const RefetchContext = createContext<
   | {
@@ -30,7 +30,7 @@ export const useRefetchContext = () => {
   const refetch = useContext(RefetchContext);
 
   if (!refetch) {
-    throw new GitHubReleaseManagerError('refetch not found');
+    throw new GitReleaseManagerError('refetch not found');
   }
 
   return {

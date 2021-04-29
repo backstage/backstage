@@ -20,9 +20,9 @@ describe('git-release-manager', () => {
   it('should export plugin & friends', () => {
     expect(Object.keys(plugin)).toMatchInlineSnapshot(`
       Array [
-        "githubReleaseManagerApiRef",
-        "gitHubReleaseManagerPlugin",
-        "GitHubReleaseManagerPage",
+        "gitReleaseManagerApiRef",
+        "gitReleaseManagerPlugin",
+        "GitReleaseManagerPage",
       ]
     `);
   });

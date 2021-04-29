@@ -22,7 +22,7 @@ import { getSemverTagParts } from './tagParts/getSemverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { SEMVER_PARTS } from '../constants/constants';
 
-export const getRcGitHubInfo = ({
+export const getReleaseCandidateGitInfo = ({
   project,
   latestRelease,
   semverBumpLevel,

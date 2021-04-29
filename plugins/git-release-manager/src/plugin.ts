@@ -22,26 +22,26 @@ import {
   createRoutableExtension,
 } from '@backstage/core';
 
-import { githubReleaseManagerApiRef } from './api/serviceApiRef';
-import { PluginApiClient } from './api/PluginApiClient';
+import { gitReleaseManagerApiRef } from './api/serviceApiRef';
+import { GitReleaseApiClient } from './api/PluginApiClient';
 import { rootRouteRef } from './routes';
 
-export { githubReleaseManagerApiRef };
+export { gitReleaseManagerApiRef };
 
-export const gitHubReleaseManagerPlugin = createPlugin({
+export const gitReleaseManagerPlugin = createPlugin({
   id: 'git-release-manager',
   routes: {
     root: rootRouteRef,
   },
   apis: [
     createApiFactory({
-      api: githubReleaseManagerApiRef,
+      api: gitReleaseManagerApiRef,
       deps: {
         configApi: configApiRef,
         githubAuthApi: githubAuthApiRef,
       },
       factory: ({ configApi, githubAuthApi }) => {
-        return new PluginApiClient({
+        return new GitReleaseApiClient({
           configApi,
           githubAuthApi,
         });
@@ -50,10 +50,10 @@ export const gitHubReleaseManagerPlugin = createPlugin({
   ],
 });
 
-export const GitHubReleaseManagerPage = gitHubReleaseManagerPlugin.provide(
+export const GitReleaseManagerPage = gitReleaseManagerPlugin.provide(
   createRoutableExtension({
     component: () =>
-      import('./GitHubReleaseManager').then(m => m.GitHubReleaseManager),
+      import('./GitReleaseManager').then(m => m.GitReleaseManager),
     mountPoint: rootRouteRef,
   }),
 );

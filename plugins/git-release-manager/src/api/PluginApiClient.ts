@@ -23,7 +23,7 @@ import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 
-export class PluginApiClient implements IPluginApiClient {
+export class GitReleaseApiClient implements GitReleaseApi {
   private readonly githubAuthApi: OAuthApi;
   private readonly baseUrl: string;
   readonly host: string;
@@ -774,7 +774,7 @@ type CreateTempCommit = (
     tagParts: SemverTagParts | CalverTagParts;
     releaseBranchTree: string;
     selectedPatchCommit: UnboxArray<
-      UnboxReturnedPromise<IPluginApiClient['getRecentCommits']>
+      UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
     >;
   } & OwnerRepo,
 ) => Promise<{
@@ -812,7 +812,7 @@ type CreateCherryPickCommit = (
   args: {
     bumpedTag: string;
     selectedPatchCommit: UnboxArray<
-      UnboxReturnedPromise<IPluginApiClient['getRecentCommits']>
+      UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
     >;
     mergeTree: string;
     releaseBranchSha: string;
@@ -827,7 +827,7 @@ type ReplaceTempCommit = (
   args: {
     releaseBranchName: string;
     cherryPickCommit: UnboxReturnedPromise<
-      IPluginApiClient['patch']['createCherryPickCommit']
+      GitReleaseApi['patch']['createCherryPickCommit']
     >;
   } & OwnerRepo,
 ) => Promise<{
@@ -924,7 +924,7 @@ type GetCommit = (
 }>;
 export type GetCommitResult = UnboxReturnedPromise<GetCommit>;
 
-export interface IPluginApiClient {
+export interface GitReleaseApi {
   getHost: GetHost;
   getRepoPath: GetRepoPath;
   getOwners: GetOwners;

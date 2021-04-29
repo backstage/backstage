@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { githubReleaseManagerApiRef } from './serviceApiRef';
+import { gitReleaseManagerApiRef } from './serviceApiRef';
 
-describe('githubReleaseManagerApiRef', () => {
+describe('gitReleaseManagerApiRef', () => {
   it('should work', () => {
-    const result = githubReleaseManagerApiRef;
+    const result = gitReleaseManagerApiRef;
 
     expect(result).toMatchInlineSnapshot(`
       ApiRefImpl {

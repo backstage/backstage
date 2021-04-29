@@ -24,7 +24,7 @@ import {
 } from '../../../api/PluginApiClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch, CardHook } from '../../../types/types';
-import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
@@ -45,7 +45,7 @@ export function usePatch({
   tagParts,
   successCb,
 }: Patch): CardHook<GetRecentCommitsResultSingle> {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const {
     responseSteps,
     addStepToResponseSteps,

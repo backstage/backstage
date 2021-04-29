@@ -72,7 +72,7 @@ export const TEST_IDS = {
       icons: {
         tag: 'grm--differ--icons--tag',
         branch: 'grm--differ--icons--branch',
-        github: 'grm--differ--icons--github',
+        github: 'grm--differ--icons--git',
         slack: 'grm--differ--icons--slack',
         versioning: 'grm--differ--icons--versioning',
       },

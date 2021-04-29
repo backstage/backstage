@@ -66,7 +66,7 @@ describe('Features', () => {
           class="MuiTypography-root MuiTypography-body1"
         >
           <strong>
-            GitHub
+            Git
           </strong>
           : The source control system where releases reside in a practical sense. Read more about
            
@@ -75,9 +75,9 @@ describe('Features', () => {
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
           >
-            GitHub releases
+            Git releases
           </a>
-          . (Note that this plugin works just as well with GitHub Enterprise.)
+          .
         </p>
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -85,12 +85,11 @@ describe('Features', () => {
           <strong>
             Release Candidate
           </strong>
-          : A GitHub 
+          : A Git 
           <i>
             prerelease
           </i>
-           
-          intended primarily for internal testing
+           intended primarily for internal testing
         </p>
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -98,7 +97,7 @@ describe('Features', () => {
           <strong>
             Release Version
           </strong>
-          : A GitHub release intended for end users
+          : A Git release intended for end users
         </p>
       </div>
     `);

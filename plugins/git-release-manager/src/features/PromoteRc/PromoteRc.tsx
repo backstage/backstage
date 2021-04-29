@@ -46,9 +46,7 @@ export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
           className={classes.paragraph}
           severity="warning"
         >
-          <AlertTitle>
-            Latest GitHub release is not a Release Candidate
-          </AlertTitle>
+          <AlertTitle>Latest Git release is not a Release Candidate</AlertTitle>
           One can only promote Release Candidates to Release Versions
         </Alert>
       );

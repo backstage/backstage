@@ -16,21 +16,21 @@
 
 import { useAsync } from 'react-use';
 
-import { IPluginApiClient } from '../api/PluginApiClient';
+import { GitReleaseApi } from '../api/PluginApiClient';
 import { Project } from '../contexts/ProjectContext';
 
-interface GetGitHubBatchInfo {
+interface GetGitBatchInfo {
   project: Project;
-  pluginApiClient: IPluginApiClient;
+  pluginApiClient: GitReleaseApi;
   refetchTrigger: number;
 }
 
-export const useGetGitHubBatchInfo = ({
+export const useGetGitBatchInfo = ({
   project,
   pluginApiClient,
   refetchTrigger,
-}: GetGitHubBatchInfo) => {
-  const gitHubBatchInfo = useAsync(async () => {
+}: GetGitBatchInfo) => {
+  const gitBatchInfo = useAsync(async () => {
     const [repository, latestRelease] = await Promise.all([
       pluginApiClient.getRepository({ ...project }),
       pluginApiClient.getLatestRelease({ ...project }),
@@ -57,6 +57,6 @@ export const useGetGitHubBatchInfo = ({
   }, [project, refetchTrigger]);
 
   return {
-    gitHubBatchInfo,
+    gitBatchInfo,
   };
 };

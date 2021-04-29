@@ -22,7 +22,7 @@ import DynamicFeedIcon from '@material-ui/icons/DynamicFeed';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 
-import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
+import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 interface DifferProps {
@@ -115,6 +115,6 @@ function Icon({ icon }: IconProps) {
       );
 
     default:
-      throw new GitHubReleaseManagerError('Invalid Differ icon');
+      throw new GitReleaseManagerError('Invalid Differ icon');
   }
 }

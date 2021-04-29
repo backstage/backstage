@@ -32,16 +32,16 @@ import {
 } from '../../api/PluginApiClient';
 import { ComponentConfigCreateRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
-import { getRcGitHubInfo } from '../../helpers/getRcGitHubInfo';
+import { getReleaseCandidateGitInfo } from '../../helpers/getReleaseCandidateGitInfo';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useCreateRc } from './hooks/useCreateRc';
+import { useCreateReleaseCandidate } from './hooks/useCreateReleaseCandidate';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 
-interface CreateRcProps {
+interface CreateReleaseCandidateProps {
   defaultBranch: GetRepositoryResult['defaultBranch'];
   latestRelease: GetLatestReleaseResult;
   releaseBranch: GetBranchResult | null;
@@ -60,32 +60,37 @@ const InfoCardPlusWrapper = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const CreateRc = ({
+export const CreateReleaseCandidate = ({
   defaultBranch,
   latestRelease,
   releaseBranch,
   successCb,
-}: CreateRcProps) => {
+}: CreateReleaseCandidateProps) => {
   const { project } = useProjectContext();
   const classes = useStyles();
 
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(
     SEMVER_PARTS.minor,
   );
-  const [nextGitHubInfo, setNextGitHubInfo] = useState(
-    getRcGitHubInfo({ latestRelease, project, semverBumpLevel }),
+  const [releaseCandidateGitInfo, setReleaseCandidateGitInfo] = useState(
+    getReleaseCandidateGitInfo({ latestRelease, project, semverBumpLevel }),
   );
 
   useEffect(() => {
-    setNextGitHubInfo(
-      getRcGitHubInfo({ latestRelease, project, semverBumpLevel }),
+    setReleaseCandidateGitInfo(
+      getReleaseCandidateGitInfo({ latestRelease, project, semverBumpLevel }),
     );
-  }, [semverBumpLevel, setNextGitHubInfo, latestRelease, project]);
+  }, [semverBumpLevel, setReleaseCandidateGitInfo, latestRelease, project]);
 
-  const { progress, responseSteps, run, runInvoked } = useCreateRc({
+  const {
+    progress,
+    responseSteps,
+    run,
+    runInvoked,
+  } = useCreateReleaseCandidate({
     defaultBranch,
     latestRelease,
-    nextGitHubInfo,
+    releaseCandidateGitInfo,
     project,
     successCb,
   });
@@ -99,15 +104,15 @@ export const CreateRc = ({
     );
   }
 
-  if (nextGitHubInfo.error !== undefined) {
+  if (releaseCandidateGitInfo.error !== undefined) {
     return (
       <InfoCardPlusWrapper>
         <Alert severity="error">
-          {nextGitHubInfo.error.title && (
-            <AlertTitle>{nextGitHubInfo.error.title}</AlertTitle>
+          {releaseCandidateGitInfo.error.title && (
+            <AlertTitle>{releaseCandidateGitInfo.error.title}</AlertTitle>
           )}
 
-          {nextGitHubInfo.error.subtitle}
+          {releaseCandidateGitInfo.error.subtitle}
         </Alert>
       </InfoCardPlusWrapper>
     );
@@ -115,7 +120,7 @@ export const CreateRc = ({
 
   const tagAlreadyExists =
     latestRelease !== null &&
-    latestRelease.tagName === nextGitHubInfo.rcReleaseTag;
+    latestRelease.tagName === releaseCandidateGitInfo.rcReleaseTag;
   const conflictingPreRelease =
     latestRelease !== null && latestRelease.prerelease;
 
@@ -159,7 +164,7 @@ export const CreateRc = ({
           {tagAlreadyExists && (
             <Alert className={classes.paragraph} severity="warning">
               There's already a tag named{' '}
-              <strong>{nextGitHubInfo.rcReleaseTag}</strong>
+              <strong>{releaseCandidateGitInfo.rcReleaseTag}</strong>
             </Alert>
           )}
         </>
@@ -169,7 +174,7 @@ export const CreateRc = ({
             <Differ
               icon="branch"
               current={releaseBranch?.name}
-              next={nextGitHubInfo.rcBranch}
+              next={releaseCandidateGitInfo.rcBranch}
             />
           </Typography>
 
@@ -177,7 +182,7 @@ export const CreateRc = ({
             <Differ
               icon="tag"
               current={latestRelease?.tagName}
-              next={nextGitHubInfo.rcReleaseTag}
+              next={releaseCandidateGitInfo.rcReleaseTag}
             />
           </Typography>
         </div>

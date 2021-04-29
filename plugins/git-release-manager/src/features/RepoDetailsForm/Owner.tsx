@@ -27,14 +27,14 @@ import {
 import { useApi } from '@backstage/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
-import { githubReleaseManagerApiRef } from '../../api/serviceApiRef';
+import { gitReleaseManagerApiRef } from '../../api/serviceApiRef';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useFormClasses } from './styles';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
 
 export function Owner({ username }: { username: string }) {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
   const formClasses = useFormClasses();
   const navigate = useNavigate();

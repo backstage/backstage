@@ -17,17 +17,17 @@
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core';
 
-import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
-import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
+import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 
 export const useGetCommit = ({ ref }: { ref?: string }) => {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
 
   const commit = useAsync(async () => {
     if (!ref) {
-      throw new GitHubReleaseManagerError('Missing ref to get commit');
+      throw new GitReleaseManagerError('Missing ref to get commit');
     }
 
     return pluginApiClient.stats.getCommit({

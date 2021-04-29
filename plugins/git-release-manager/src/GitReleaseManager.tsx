@@ -27,7 +27,7 @@ import {
 } from './types/types';
 import { Features } from './features/Features';
 import { CenteredCircularProgress } from './components/CenteredCircularProgress';
-import { githubReleaseManagerApiRef } from './api/serviceApiRef';
+import { gitReleaseManagerApiRef } from './api/serviceApiRef';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
 import { ProjectContext, Project } from './contexts/ProjectContext';
@@ -35,7 +35,7 @@ import { RepoDetailsForm } from './features/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
 import { useStyles } from './styles/styles';
 
-export interface GitHubReleaseManagerProps {
+interface GitReleaseManagerProps {
   project?: Omit<Project, 'isProvidedViaProps'>;
   features?: {
     info?: Pick<ComponentConfig<void>, 'omit'>;
@@ -46,8 +46,8 @@ export interface GitHubReleaseManagerProps {
   };
 }
 
-export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+export function GitReleaseManager(props: GitReleaseManagerProps) {
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const classes = useStyles();
 
   const { getParsedQuery } = useQueryHandler();
@@ -83,7 +83,7 @@ export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
   return (
     <ProjectContext.Provider value={{ project }}>
       <div className={classes.root}>
-        <ContentHeader title="GitHub Release Manager" />
+        <ContentHeader title="Git Release Manager" />
 
         <InfoCardPlus>
           <RepoDetailsForm username={usernameResponse.value.username} />

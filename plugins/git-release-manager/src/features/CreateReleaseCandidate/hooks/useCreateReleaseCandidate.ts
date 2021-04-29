@@ -23,35 +23,35 @@ import {
   GetRepositoryResult,
 } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
-import { getRcGitHubInfo } from '../../../helpers/getRcGitHubInfo';
-import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
-import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
+import { getReleaseCandidateGitInfo } from '../../../helpers/getReleaseCandidateGitInfo';
+import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
-interface CreateRC {
+interface UseCreateReleaseCandidate {
   defaultBranch: GetRepositoryResult['defaultBranch'];
   latestRelease: GetLatestReleaseResult;
-  nextGitHubInfo: ReturnType<typeof getRcGitHubInfo>;
+  releaseCandidateGitInfo: ReturnType<typeof getReleaseCandidateGitInfo>;
   project: Project;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 
-export function useCreateRc({
+export function useCreateReleaseCandidate({
   defaultBranch,
   latestRelease,
-  nextGitHubInfo,
+  releaseCandidateGitInfo,
   project,
   successCb,
-}: CreateRC): CardHook<void> {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+}: UseCreateReleaseCandidate): CardHook<void> {
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
 
-  if (nextGitHubInfo.error) {
-    throw new GitHubReleaseManagerError(
+  if (releaseCandidateGitInfo.error) {
+    throw new GitReleaseManagerError(
       `Unexpected error: ${
-        nextGitHubInfo.error.title
-          ? `${nextGitHubInfo.error.title} (${nextGitHubInfo.error.subtitle})`
-          : nextGitHubInfo.error.subtitle
+        releaseCandidateGitInfo.error.title
+          ? `${releaseCandidateGitInfo.error.title} (${releaseCandidateGitInfo.error.subtitle})`
+          : releaseCandidateGitInfo.error.subtitle
       }`,
     );
   }
@@ -98,12 +98,12 @@ export function useCreateRc({
         owner: project.owner,
         repo: project.repo,
         mostRecentSha: latestCommitRes.value.latestCommit.sha,
-        targetBranch: nextGitHubInfo.rcBranch,
+        targetBranch: releaseCandidateGitInfo.rcBranch,
       })
       .catch(error => {
         if (error?.body?.message === 'Reference already exists') {
-          throw new GitHubReleaseManagerError(
-            `Branch "${nextGitHubInfo.rcBranch}" already exists: .../tree/${nextGitHubInfo.rcBranch}`,
+          throw new GitReleaseManagerError(
+            `Branch "${releaseCandidateGitInfo.rcBranch}" already exists: .../tree/${releaseCandidateGitInfo.rcBranch}`,
           );
         }
         throw error;
@@ -130,7 +130,7 @@ export function useCreateRc({
     const previousReleaseBranch = latestRelease
       ? latestRelease.targetCommitish
       : defaultBranch;
-    const nextReleaseBranch = nextGitHubInfo.rcBranch;
+    const nextReleaseBranch = releaseCandidateGitInfo.rcBranch;
     const comparison = await pluginApiClient.createRc
       .getComparison({
         owner: project.owner,
@@ -173,16 +173,16 @@ export function useCreateRc({
       .createRelease({
         owner: project.owner,
         repo: project.repo,
-        rcReleaseTag: nextGitHubInfo.rcReleaseTag,
-        releaseName: nextGitHubInfo.releaseName,
-        rcBranch: nextGitHubInfo.rcBranch,
+        rcReleaseTag: releaseCandidateGitInfo.rcReleaseTag,
+        releaseName: releaseCandidateGitInfo.releaseName,
+        rcBranch: releaseCandidateGitInfo.rcBranch,
         releaseBody: getComparisonRes.value.releaseBody,
       })
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
       message: `Created Release Candidate "${createReleaseResult.name}"`,
-      secondaryMessage: `with tag "${nextGitHubInfo.rcReleaseTag}"`,
+      secondaryMessage: `with tag "${releaseCandidateGitInfo.rcReleaseTag}"`,
       link: createReleaseResult.htmlUrl,
     });
 

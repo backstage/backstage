@@ -20,7 +20,7 @@ import { useApi } from '@backstage/core';
 
 import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
 import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
-import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
@@ -35,7 +35,7 @@ export function usePromoteRc({
   releaseVersion,
   successCb,
 }: PromoteRc): CardHook<void> {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
   const {
     responseSteps,

@@ -19,15 +19,15 @@ import { render } from '@testing-library/react';
 
 import {
   mockCalverProject,
-  mockNextGitHubInfoSemver,
+  mockNextGitInfoSemver,
   mockReleaseBranch,
   mockReleaseCandidateCalver,
   mockReleaseVersionCalver,
   mockSemverProject,
 } from '../../test-helpers/test-helpers';
-import { CreateRc } from './CreateRc';
+import { CreateReleaseCandidate } from './CreateReleaseCandidate';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useCreateRc } from './hooks/useCreateRc';
+import { useCreateReleaseCandidate } from './hooks/useCreateReleaseCandidate';
 import { useProjectContext } from '../../contexts/ProjectContext';
 
 jest.mock('../../contexts/ProjectContext', () => ({
@@ -35,23 +35,23 @@ jest.mock('../../contexts/ProjectContext', () => ({
     project: mockCalverProject,
   })),
 }));
-jest.mock('../../helpers/getRcGitHubInfo', () => ({
-  getRcGitHubInfo: () => mockNextGitHubInfoSemver,
+jest.mock('../../helpers/getReleaseCandidateGitInfo', () => ({
+  getReleaseCandidateGitInfo: () => mockNextGitInfoSemver,
 }));
-jest.mock('./hooks/useCreateRc', () => ({
-  useCreateRc: () =>
+jest.mock('./hooks/useCreateReleaseCandidate', () => ({
+  useCreateReleaseCandidate: () =>
     ({
       run: jest.fn(),
       responseSteps: [],
       progress: 0,
       runInvoked: false,
-    } as ReturnType<typeof useCreateRc>),
+    } as ReturnType<typeof useCreateReleaseCandidate>),
 }));
 
-describe('CreateRc', () => {
+describe('CreateReleaseCandidate', () => {
   it('should display CTA', () => {
     const { getByTestId } = render(
-      <CreateRc
+      <CreateReleaseCandidate
         defaultBranch="mockDefaultBranch"
         latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}
@@ -67,7 +67,7 @@ describe('CreateRc', () => {
     });
 
     const { getByTestId } = render(
-      <CreateRc
+      <CreateReleaseCandidate
         defaultBranch="mockDefaultBranch"
         latestRelease={mockReleaseVersionCalver}
         releaseBranch={mockReleaseBranch}

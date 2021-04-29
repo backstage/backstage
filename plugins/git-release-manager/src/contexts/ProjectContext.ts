@@ -17,7 +17,7 @@
 import { createContext, useContext } from 'react';
 
 import { VERSIONING_STRATEGIES } from '../constants/constants';
-import { GitHubReleaseManagerError } from '../errors/GitHubReleaseManagerError';
+import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 
 export interface Project {
   /**
@@ -57,7 +57,7 @@ export const useProjectContext = () => {
   const { project } = useContext(ProjectContext) ?? {};
 
   if (!project) {
-    throw new GitHubReleaseManagerError('project not found');
+    throw new GitReleaseManagerError('project not found');
   }
 
   return {

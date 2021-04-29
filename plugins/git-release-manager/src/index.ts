@@ -15,7 +15,7 @@
  */
 
 export {
-  gitHubReleaseManagerPlugin,
-  GitHubReleaseManagerPage,
-  githubReleaseManagerApiRef,
+  gitReleaseManagerPlugin,
+  GitReleaseManagerPage,
+  gitReleaseManagerApiRef,
 } from './plugin';

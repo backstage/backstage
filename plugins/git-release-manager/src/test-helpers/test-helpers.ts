@@ -18,11 +18,11 @@ import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
-  IPluginApiClient,
+  GitReleaseApi,
 } from '../api/PluginApiClient';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { Project } from '../contexts/ProjectContext';
-import { getRcGitHubInfo } from '../helpers/getRcGitHubInfo';
+import { getReleaseCandidateGitInfo } from '../helpers/getReleaseCandidateGitInfo';
 
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';
@@ -59,13 +59,17 @@ export const mockSearchSemver = `?versioningStrategy=${mockSemverProject.version
 
 export const mockDefaultBranch = 'mock_defaultBranch';
 
-export const mockNextGitHubInfoSemver: ReturnType<typeof getRcGitHubInfo> = {
+export const mockNextGitInfoSemver: ReturnType<
+  typeof getReleaseCandidateGitInfo
+> = {
   rcBranch: MOCK_RELEASE_BRANCH_NAME_SEMVER,
   rcReleaseTag: MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER,
   releaseName: MOCK_RELEASE_NAME_SEMVER,
 };
 
-export const mockNextGitHubInfoCalver: ReturnType<typeof getRcGitHubInfo> = {
+export const mockNextGitInfoCalver: ReturnType<
+  typeof getReleaseCandidateGitInfo
+> = {
   rcBranch: MOCK_RELEASE_BRANCH_NAME_CALVER,
   rcReleaseTag: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
   releaseName: MOCK_RELEASE_NAME_CALVER,
@@ -168,7 +172,7 @@ export const mockSelectedPatchCommit = createMockRecentCommit({
 /**
  * MOCK API CLIENT
  */
-export const mockApiClient: IPluginApiClient = {
+export const mockApiClient: GitReleaseApi = {
   getHost: jest.fn(() => 'github.com'),
 
   getRepoPath: jest.fn(() => `${mockOwner}/${mockRepo}`),

@@ -42,8 +42,8 @@ import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';
-import { githubReleaseManagerApiRef } from '../../api/serviceApiRef';
-import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
+import { gitReleaseManagerApiRef } from '../../api/serviceApiRef';
+import { GitReleaseManagerError } from '../../errors/GitReleaseManagerError';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -66,11 +66,11 @@ export const PatchBody = ({
   successCb,
   tagParts,
 }: PatchBodyProps) => {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 
-  const githubDataResponse = useAsync(async () => {
+  const gitDataResponse = useAsync(async () => {
     const [
       recentCommitsOnDefaultBranch,
       recentCommitsOnReleaseBranch,
@@ -109,15 +109,15 @@ export const PatchBody = ({
     );
   }
 
-  if (githubDataResponse.error) {
+  if (gitDataResponse.error) {
     return (
       <Alert data-testid={TEST_IDS.patch.error} severity="error">
-        Unexpected error: {githubDataResponse.error.message}
+        Unexpected error: {gitDataResponse.error.message}
       </Alert>
     );
   }
 
-  if (githubDataResponse.loading) {
+  if (gitDataResponse.loading) {
     return <CenteredCircularProgress data-testid={TEST_IDS.patch.loading} />;
   }
 
@@ -133,7 +133,7 @@ export const PatchBody = ({
             severity="info"
           >
             <AlertTitle>
-              The current GitHub release is a <b>Release Version</b>
+              The current Git release is a <b>Release Version</b>
             </AlertTitle>
             It's still possible to patch it, but be extra mindful of changes
           </Alert>
@@ -147,16 +147,16 @@ export const PatchBody = ({
   }
 
   function CommitList() {
-    if (!githubDataResponse.value?.recentCommitsOnDefaultBranch) {
+    if (!gitDataResponse.value?.recentCommitsOnDefaultBranch) {
       return null;
     }
 
     return (
       <List>
-        {githubDataResponse.value.recentCommitsOnDefaultBranch.map(
+        {gitDataResponse.value.recentCommitsOnDefaultBranch.map(
           (commit, index) => {
             // FIXME: Performance improvement opportunity: Convert to object lookup
-            const commitExistsOnReleaseBranch = !!githubDataResponse.value?.recentCommitsOnReleaseBranch.find(
+            const commitExistsOnReleaseBranch = !!gitDataResponse.value?.recentCommitsOnReleaseBranch.find(
               releaseBranchCommit =>
                 releaseBranchCommit.sha === commit.sha ||
                 releaseBranchCommit.commit.message.includes(commit.sha), // The selected patch commit's sha is included in the commit message
@@ -277,11 +277,11 @@ export const PatchBody = ({
         color="primary"
         onClick={() => {
           const selectedPatchCommit =
-            githubDataResponse.value?.recentCommitsOnDefaultBranch[
+            gitDataResponse.value?.recentCommitsOnDefaultBranch[
               checkedCommitIndex
             ];
           if (!selectedPatchCommit) {
-            throw new GitHubReleaseManagerError(
+            throw new GitReleaseManagerError(
               'Could not find selected patch commit',
             );
           }

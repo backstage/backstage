@@ -17,11 +17,11 @@
 import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 
-import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 
 export const useGetStats = () => {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
 
   const stats = useAsync(async () => {

@@ -21,25 +21,25 @@ import {
   mockApiClient,
   mockCalverProject,
   mockDefaultBranch,
-  mockNextGitHubInfoCalver,
+  mockNextGitInfoCalver,
   mockReleaseVersionCalver,
 } from '../../../test-helpers/test-helpers';
-import { useCreateRc } from './useCreateRc';
+import { useCreateReleaseCandidate } from './useCreateReleaseCandidate';
 
 jest.mock('@backstage/core', () => ({
   useApi: () => mockApiClient,
   createApiRef: jest.fn(),
 }));
 
-describe('useCreateRc', () => {
+describe('useCreateReleaseCandidate', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should return the expected responseSteps and progress', async () => {
     const { result } = renderHook(() =>
-      useCreateRc({
+      useCreateReleaseCandidate({
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
-        nextGitHubInfo: mockNextGitHubInfoCalver,
+        releaseCandidateGitInfo: mockNextGitInfoCalver,
         project: mockCalverProject,
       }),
     );
@@ -54,10 +54,10 @@ describe('useCreateRc', () => {
 
   it('should return the expected responseSteps and progress (with successCb)', async () => {
     const { result } = renderHook(() =>
-      useCreateRc({
+      useCreateReleaseCandidate({
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
-        nextGitHubInfo: mockNextGitHubInfoCalver,
+        releaseCandidateGitInfo: mockNextGitInfoCalver,
         project: mockCalverProject,
         successCb: jest.fn(),
       }),

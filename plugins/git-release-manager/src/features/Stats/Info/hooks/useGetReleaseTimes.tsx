@@ -20,7 +20,7 @@ import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core';
 
 import { getReleaseCommitPairs } from '../helpers/getReleaseCommitPairs';
-import { githubReleaseManagerApiRef } from '../../../../api/serviceApiRef';
+import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
 import { useProjectContext } from '../../../../contexts/ProjectContext';
 import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
 
@@ -46,7 +46,7 @@ type ReleaseTime = {
 };
 
 export function useGetReleaseTimes() {
-  const pluginApiClient = useApi(githubReleaseManagerApiRef);
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
   const { releaseStats } = useReleaseStatsContext();
   const [averageReleaseTime, setAverageReleaseTime] = useState<ReleaseTime[]>(

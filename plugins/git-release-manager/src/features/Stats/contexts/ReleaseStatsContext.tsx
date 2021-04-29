@@ -16,7 +16,7 @@
 
 import { createContext, useContext } from 'react';
 
-import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
+import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 
 export interface ReleaseStats {
   unmappableTags: string[];
@@ -55,7 +55,7 @@ export const useReleaseStatsContext = () => {
   const { releaseStats } = useContext(ReleaseStatsContext) ?? {};
 
   if (!releaseStats) {
-    throw new GitHubReleaseManagerError('releaseStats not found');
+    throw new GitReleaseManagerError('releaseStats not found');
   }
 
   return {

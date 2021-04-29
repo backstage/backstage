@@ -18,12 +18,12 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
 import { mockApiClient, mockSemverProject } from '../test-helpers/test-helpers';
-import { useGetGitHubBatchInfo } from './useGetGitHubBatchInfo';
+import { useGetGitBatchInfo } from './useGetGitBatchInfo';
 
-describe('useGetGitHubBatchInfo', () => {
+describe('useGetHubBatchInfo', () => {
   it('should handle repositories with releases', async () => {
     const { result } = renderHook(() =>
-      useGetGitHubBatchInfo({
+      useGetGitBatchInfo({
         pluginApiClient: mockApiClient,
         project: mockSemverProject,
         refetchTrigger: 1337,
@@ -31,10 +31,10 @@ describe('useGetGitHubBatchInfo', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.gitHubBatchInfo !== undefined);
+      await waitFor(() => result.current.gitBatchInfo !== undefined);
     });
 
-    expect(result.current.gitHubBatchInfo).toMatchInlineSnapshot(`
+    expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
       Object {
         "loading": false,
         "value": Object {
@@ -73,7 +73,7 @@ describe('useGetGitHubBatchInfo', () => {
     (mockApiClient.getLatestRelease as jest.Mock).mockResolvedValueOnce(null);
 
     const { result } = renderHook(() =>
-      useGetGitHubBatchInfo({
+      useGetGitBatchInfo({
         pluginApiClient: mockApiClient,
         project: mockSemverProject,
         refetchTrigger: 1337,
@@ -81,10 +81,10 @@ describe('useGetGitHubBatchInfo', () => {
     );
 
     await act(async () => {
-      await waitFor(() => result.current.gitHubBatchInfo !== undefined);
+      await waitFor(() => result.current.gitBatchInfo !== undefined);
     });
 
-    expect(result.current.gitHubBatchInfo).toMatchInlineSnapshot(`
+    expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
       Object {
         "loading": false,
         "value": Object {

@@ -16,9 +16,9 @@
 
 import { createApiRef } from '@backstage/core';
 
-import { IPluginApiClient } from './PluginApiClient';
+import { GitReleaseApi } from './PluginApiClient';
 
-export const githubReleaseManagerApiRef = createApiRef<IPluginApiClient>({
+export const gitReleaseManagerApiRef = createApiRef<GitReleaseApi>({
   id: 'plugin.git-release-manager.service',
   description: 'Used by the Git Release Manager plugin to make requests',
 });

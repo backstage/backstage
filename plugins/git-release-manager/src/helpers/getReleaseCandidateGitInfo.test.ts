@@ -22,9 +22,9 @@ import {
   mockReleaseVersionSemver,
   mockSemverProject,
 } from '../test-helpers/test-helpers';
-import { getRcGitHubInfo } from './getRcGitHubInfo';
+import { getReleaseCandidateGitInfo } from './getReleaseCandidateGitInfo';
 
-describe('getRcGitHubInfo', () => {
+describe('getReleaseCandidateGitInfo', () => {
   describe('DateTime', () => {
     it('should format dates as expected', () => {
       const formattedDate = DateTime.now().toFormat('yyyy.MM.dd');
@@ -36,7 +36,7 @@ describe('getRcGitHubInfo', () => {
   describe('calver', () => {
     it('should return correct GitHub info', () => {
       expect(
-        getRcGitHubInfo({
+        getReleaseCandidateGitInfo({
           project: mockCalverProject,
           latestRelease: mockReleaseVersionCalver,
           semverBumpLevel: 'minor',
@@ -55,7 +55,7 @@ describe('getRcGitHubInfo', () => {
   describe('semver', () => {
     it("should return correct GitHub info when there's previous releases", () => {
       expect(
-        getRcGitHubInfo({
+        getReleaseCandidateGitInfo({
           project: mockSemverProject,
           latestRelease: mockReleaseVersionSemver,
           semverBumpLevel: 'minor',
@@ -71,7 +71,7 @@ describe('getRcGitHubInfo', () => {
 
     it("should return correct GitHub info when there's no previous release", () => {
       expect(
-        getRcGitHubInfo({
+        getReleaseCandidateGitInfo({
           project: mockSemverProject,
           latestRelease: null,
           semverBumpLevel: 'minor',

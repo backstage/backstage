@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export class GitHubReleaseManagerError extends Error {
+export class GitReleaseManagerError extends Error {
   constructor(message: string) {
     super(message);
 
-    this.name = 'GitHubReleaseManagerError';
+    this.name = 'GitReleaseManagerError';
   }
 }
