@@ -19,7 +19,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import { Typography } from '@material-ui/core';
 
 import { ComponentConfigPromoteRc } from '../../types/types';
-import { GetLatestReleaseResult } from '../../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../../api/GitReleaseApiClient';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
 import { PromoteRcBody } from './PromoteRcBody';

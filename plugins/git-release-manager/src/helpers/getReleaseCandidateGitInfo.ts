@@ -17,7 +17,7 @@
 import { DateTime } from 'luxon';
 
 import { getBumpedSemverTagParts } from './getBumpedTag';
-import { GetLatestReleaseResult } from '../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../api/GitReleaseApiClient';
 import { getSemverTagParts } from './tagParts/getSemverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { SEMVER_PARTS } from '../constants/constants';

@@ -21,7 +21,7 @@ import { useApi } from '@backstage/core';
 import {
   GetLatestReleaseResult,
   GetRepositoryResult,
-} from '../../../api/PluginApiClient';
+} from '../../../api/GitReleaseApiClient';
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
 import { getReleaseCandidateGitInfo } from '../../../helpers/getReleaseCandidateGitInfo';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';

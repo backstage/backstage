@@ -37,7 +37,7 @@ import { useApi } from '@backstage/core';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
-} from '../../api/PluginApiClient';
+} from '../../api/GitReleaseApiClient';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';

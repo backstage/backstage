@@ -29,7 +29,7 @@ import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRepositoryResult,
-} from '../../api/PluginApiClient';
+} from '../../api/GitReleaseApiClient';
 import { ComponentConfigCreateRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { getReleaseCandidateGitInfo } from '../../helpers/getReleaseCandidateGitInfo';

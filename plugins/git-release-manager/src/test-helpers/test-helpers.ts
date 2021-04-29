@@ -19,7 +19,7 @@ import {
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
   GitReleaseApi,
-} from '../api/PluginApiClient';
+} from '../api/GitReleaseApiClient';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { getReleaseCandidateGitInfo } from '../helpers/getReleaseCandidateGitInfo';

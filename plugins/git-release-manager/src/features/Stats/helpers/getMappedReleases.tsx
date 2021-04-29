@@ -15,7 +15,7 @@
  */
 
 import { calverRegexp } from '../../../helpers/tagParts/getCalverTagParts';
-import { GetAllReleasesResult } from '../../../api/PluginApiClient';
+import { GetAllReleasesResult } from '../../../api/GitReleaseApiClient';
 import { Project } from '../../../contexts/ProjectContext';
 import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 import { semverRegexp } from '../../../helpers/tagParts/getSemverTagParts';

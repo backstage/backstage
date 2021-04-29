@@ -19,7 +19,7 @@ import { useAsync, useAsyncFn } from 'react-use';
 import { useApi } from '@backstage/core';
 
 import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
-import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
+import { GetLatestReleaseResult } from '../../../api/GitReleaseApiClient';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';

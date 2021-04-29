@@ -23,7 +23,7 @@ import {
 } from '@backstage/core';
 
 import { gitReleaseManagerApiRef } from './api/serviceApiRef';
-import { GitReleaseApiClient } from './api/PluginApiClient';
+import { GitReleaseApiClient } from './api/GitReleaseApiClient';
 import { rootRouteRef } from './routes';
 
 export { gitReleaseManagerApiRef };

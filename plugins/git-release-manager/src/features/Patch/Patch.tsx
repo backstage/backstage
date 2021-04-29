@@ -21,7 +21,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
-} from '../../api/PluginApiClient';
+} from '../../api/GitReleaseApiClient';
 import { ComponentConfigPatch } from '../../types/types';
 import { getBumpedTag } from '../../helpers/getBumpedTag';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
