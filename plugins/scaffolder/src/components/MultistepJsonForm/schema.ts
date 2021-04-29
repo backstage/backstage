@@ -26,7 +26,7 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
     return;
   }
 
-  const { properties } = schema;
+  const { properties, anyOf, oneOf, allOf } = schema;
 
   for (const propName in schema) {
     if (!schema.hasOwnProperty(propName)) {
@@ -39,22 +39,47 @@ function extractUiSchema(schema: JsonObject, uiSchema: JsonObject) {
     }
   }
 
-  if (!isObject(properties)) {
-    return;
+  if (isObject(properties)) {
+    for (const propName in properties) {
+      if (!properties.hasOwnProperty(propName)) {
+        continue;
+      }
+
+      const schemaNode = properties[propName];
+      if (!isObject(schemaNode)) {
+        continue;
+      }
+      const innerUiSchema = {};
+      uiSchema[propName] = innerUiSchema;
+      extractUiSchema(schemaNode, innerUiSchema);
+    }
   }
 
-  for (const propName in properties) {
-    if (!properties.hasOwnProperty(propName)) {
-      continue;
+  if (Array.isArray(anyOf)) {
+    for (const schemaNode of anyOf) {
+      if (!isObject(schemaNode)) {
+        continue;
+      }
+      extractUiSchema(schemaNode, uiSchema);
     }
+  }
 
-    const schemaNode = properties[propName];
-    if (!isObject(schemaNode)) {
-      continue;
+  if (Array.isArray(oneOf)) {
+    for (const schemaNode of oneOf) {
+      if (!isObject(schemaNode)) {
+        continue;
+      }
+      extractUiSchema(schemaNode, uiSchema);
     }
-    const innerUiSchema = {};
-    uiSchema[propName] = innerUiSchema;
-    extractUiSchema(schemaNode, innerUiSchema);
+  }
+
+  if (Array.isArray(allOf)) {
+    for (const schemaNode of allOf) {
+      if (!isObject(schemaNode)) {
+        continue;
+      }
+      extractUiSchema(schemaNode, uiSchema);
+    }
   }
 }
 

@@ -70,4 +70,220 @@ describe('transformSchemaToProps', () => {
       uiSchema: expectedUiSchema,
     });
   });
+
+  it('transforms schema with anyOf fields', () => {
+    const inputSchema = {
+      type: 'object',
+      anyOf: [
+        {
+          properties: {
+            field3: {
+              type: 'string',
+              default: 'Value 1',
+              'ui:readonly': true,
+            },
+          },
+        },
+        {
+          properties: {
+            field3: {
+              type: 'string',
+              default: 'Value 2',
+              'ui:readonly': true,
+            },
+          },
+        },
+      ],
+      oneOf: [
+        {
+          properties: {
+            field4: {
+              type: 'string',
+              default: 'Value 1',
+              'ui:readonly': true,
+            },
+          },
+        },
+      ],
+      allOf: [
+        {
+          properties: {
+            field5: {
+              type: 'string',
+              default: 'Value 1',
+              'ui:readonly': true,
+            },
+          },
+        },
+      ],
+      properties: {
+        field1: {
+          type: 'object',
+          anyOf: [
+            {
+              properties: {
+                field3: {
+                  type: 'string',
+                  default: 'Value 1',
+                  'ui:readonly': true,
+                },
+              },
+            },
+            {
+              properties: {
+                field3: {
+                  type: 'string',
+                  default: 'Value 2',
+                  'ui:readonly': true,
+                },
+              },
+            },
+          ],
+          oneOf: [
+            {
+              properties: {
+                field4: {
+                  type: 'string',
+                  default: 'Value 1',
+                  'ui:readonly': true,
+                },
+              },
+            },
+          ],
+          allOf: [
+            {
+              properties: {
+                field5: {
+                  type: 'string',
+                  default: 'Value 1',
+                  'ui:readonly': true,
+                },
+              },
+            },
+          ],
+        },
+        field2: {
+          type: 'string',
+          'ui:derp': 'xerp',
+        },
+      },
+    };
+    const expectedSchema = {
+      type: 'object',
+      anyOf: [
+        {
+          properties: {
+            field3: {
+              type: 'string',
+              default: 'Value 1',
+            },
+          },
+        },
+        {
+          properties: {
+            field3: {
+              type: 'string',
+              default: 'Value 2',
+            },
+          },
+        },
+      ],
+      oneOf: [
+        {
+          properties: {
+            field4: {
+              type: 'string',
+              default: 'Value 1',
+            },
+          },
+        },
+      ],
+      allOf: [
+        {
+          properties: {
+            field5: {
+              type: 'string',
+              default: 'Value 1',
+            },
+          },
+        },
+      ],
+      properties: {
+        field1: {
+          type: 'object',
+          anyOf: [
+            {
+              properties: {
+                field3: {
+                  type: 'string',
+                  default: 'Value 1',
+                },
+              },
+            },
+            {
+              properties: {
+                field3: {
+                  type: 'string',
+                  default: 'Value 2',
+                },
+              },
+            },
+          ],
+          oneOf: [
+            {
+              properties: {
+                field4: {
+                  type: 'string',
+                  default: 'Value 1',
+                },
+              },
+            },
+          ],
+          allOf: [
+            {
+              properties: {
+                field5: {
+                  type: 'string',
+                  default: 'Value 1',
+                },
+              },
+            },
+          ],
+        },
+        field2: {
+          type: 'string',
+        },
+      },
+    };
+    const expectedUiSchema = {
+      field3: {
+        'ui:readonly': true,
+      },
+      field4: {
+        'ui:readonly': true,
+      },
+      field5: {
+        'ui:readonly': true,
+      },
+      field1: {
+        field3: {
+          'ui:readonly': true,
+        },
+        field4: {
+          'ui:readonly': true,
+        },
+        field5: {
+          'ui:readonly': true,
+        },
+      },
+      field2: {
+        'ui:derp': 'xerp',
+      },
+    };
+
+    expect(transformSchemaToProps(inputSchema)).toEqual({
+      schema: expectedSchema,
+      uiSchema: expectedUiSchema,
+    });
+  });
 });

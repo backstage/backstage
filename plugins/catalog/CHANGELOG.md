@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog
 
+## 0.5.6
+
+### Patch Changes
+
+- 19a4dd710: Removed unused `swr` dependency.
+- da546ce00: Support `gridItem` variant for `EntityLinksCard`.
+- e0c9ed759: Add `if` prop to `EntityLayout.Route` to conditionally render tabs
+- 1a142ae8a: Switch out the time-based personal greeting for a plain title on the catalog index page, and remove the clocks for different timezones.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.5.5
 
 ### Patch Changes

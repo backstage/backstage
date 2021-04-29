@@ -1,5 +1,31 @@
 # @backstage/plugin-techdocs
 
+## 0.9.0
+
+### Minor Changes
+
+- 21fddf452: Make `techdocsStorageApiRef` and `techdocsApiRef` use interfaces instead of the
+  actual implementation classes.
+
+  This renames the classes `TechDocsApi` to `TechDocsClient` and `TechDocsStorageApi`
+  to `TechDocsStorageClient` and renames the interfaces `TechDocs` to `TechDocsApi`
+  and `TechDocsStorage` to `TechDocsStorageApi` to comply the pattern elsewhere in
+  the project. This also fixes the types returned by some methods on those
+  interfaces.
+
+### Patch Changes
+
+- 6fbd7beca: Use `EntityRefLink` in header and use relations to reference the owner of the
+  document.
+- 15cbe6815: Fix TechDocs landing page table wrong copied link
+- 39bdaa004: Add customization and exportable components for TechDocs landing page
+- cb8c848a3: Disable color transitions on links to avoid issues in dark mode.
+- 17915e29b: Rework state management to avoid rendering multiple while navigating between pages.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.8.0
 
 ### Minor Changes
