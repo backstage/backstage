@@ -163,7 +163,7 @@ export function useCreateReleaseCandidate({
   }, [createRcRes.value, createRcRes.error]);
 
   /**
-   * (4) Creates the release itself in GitHub
+   * (4) Creates the Git Release itself
    */
   const createReleaseRes = useAsync(async () => {
     abortIfError(getComparisonRes.error);
@@ -202,8 +202,8 @@ export function useCreateReleaseCandidate({
         await successCb({
           comparisonUrl: getComparisonRes.value.htmlUrl,
           createdTag: createReleaseRes.value.tagName,
-          gitHubReleaseName: createReleaseRes.value.name,
-          gitHubReleaseUrl: createReleaseRes.value.htmlUrl,
+          gitReleaseName: createReleaseRes.value.name,
+          gitReleaseUrl: createReleaseRes.value.htmlUrl,
           previousTag: latestRelease?.tagName,
         });
       } catch (error) {

@@ -77,8 +77,8 @@ export function usePromoteRc({
 
       try {
         await successCb?.({
-          gitHubReleaseUrl: promotedReleaseRes.value.htmlUrl,
-          gitHubReleaseName: promotedReleaseRes.value.name,
+          gitReleaseUrl: promotedReleaseRes.value.htmlUrl,
+          gitReleaseName: promotedReleaseRes.value.name,
           previousTagUrl: rcRelease.htmlUrl,
           previousTag: rcRelease.tagName,
           updatedTagUrl: promotedReleaseRes.value.htmlUrl,

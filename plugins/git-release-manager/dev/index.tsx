@@ -82,8 +82,8 @@ createDevApp()
               successCb: ({
                 comparisonUrl,
                 createdTag,
-                gitHubReleaseName,
-                gitHubReleaseUrl,
+                gitReleaseName,
+                gitReleaseUrl,
                 previousTag,
               }) => {
                 // eslint-disable-next-line no-console
@@ -91,8 +91,8 @@ createDevApp()
                   'Custom success callback for Create RC',
                   comparisonUrl,
                   createdTag,
-                  gitHubReleaseName,
-                  gitHubReleaseUrl,
+                  gitReleaseName,
+                  gitReleaseUrl,
                   previousTag,
                 );
               },

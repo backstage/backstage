@@ -34,7 +34,7 @@ describe('getReleaseCandidateGitInfo', () => {
   });
 
   describe('calver', () => {
-    it('should return correct GitHub info', () => {
+    it('should return correct Git info', () => {
       expect(
         getReleaseCandidateGitInfo({
           project: mockCalverProject,
@@ -53,7 +53,7 @@ describe('getReleaseCandidateGitInfo', () => {
   });
 
   describe('semver', () => {
-    it("should return correct GitHub info when there's previous releases", () => {
+    it("should return correct Git info when there's previous releases", () => {
       expect(
         getReleaseCandidateGitInfo({
           project: mockSemverProject,
@@ -69,7 +69,7 @@ describe('getReleaseCandidateGitInfo', () => {
       `);
     });
 
-    it("should return correct GitHub info when there's no previous release", () => {
+    it("should return correct Git info when there's no previous release", () => {
       expect(
         getReleaseCandidateGitInfo({
           project: mockSemverProject,

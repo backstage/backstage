@@ -65,9 +65,7 @@ export function Features({
   }
 
   if (gitBatchInfo.value === undefined) {
-    return (
-      <Alert severity="error">Failed to fetch latest GitHub release</Alert>
-    );
+    return <Alert severity="error">Failed to fetch latest Git release</Alert>;
   }
 
   if (!gitBatchInfo.value.repository.pushPermissions) {
