@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend
 
+## 0.8.1
+
+### Patch Changes
+
+- a99e0bc42: Entity lifecycle and owner are now indexed by the `DefaultCatalogCollator`. A `locationTemplate` may now optionally be provided to its constructor to reflect a custom catalog entity path in the Backstage frontend.
+- Updated dependencies [e1e757569]
+  - @backstage/plugin-search-backend-node@0.1.4
+
 ## 0.8.0
 
 ### Minor Changes

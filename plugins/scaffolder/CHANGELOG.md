@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.2
+
+### Patch Changes
+
+- f6efa71ee: Enable starred templates on Scaffolder frontend
+- 19a4dd710: Removed unused `swr` dependency.
+- 23769512a: Support `anyOf`, `oneOf` and `allOf` schemas in the scaffolder template.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.9.1
 
 ### Patch Changes
