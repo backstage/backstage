@@ -195,16 +195,12 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   };
 
-  getLatestCommit: GitReleaseApi['getLatestCommit'] = async ({
-    owner,
-    repo,
-    defaultBranch,
-  }) => {
+  getCommit: GitReleaseApi['getCommit'] = async ({ owner, repo, ref }) => {
     const { octokit } = await this.getOctokit();
     const { data: latestCommit } = await octokit.repos.getCommit({
       owner,
       repo,
-      ref: defaultBranch,
+      ref,
       ...DISABLE_CACHE,
     });
 
@@ -214,6 +210,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       commit: {
         message: latestCommit.commit.message,
       },
+      createdAt: latestCommit.commit.committer?.date,
     };
   };
 
@@ -527,20 +524,6 @@ ${selectedPatchCommit.commit.message}`,
       }));
     },
 
-    getCommit: async ({ owner, repo, ref }) => {
-      const { octokit } = await this.getOctokit();
-
-      const { data: commit } = await octokit.repos.getCommit({
-        owner,
-        repo,
-        ref,
-      });
-
-      return {
-        createdAt: commit.commit.committer?.date,
-      };
-    },
-
     getSingleTag: async ({ owner, repo, tagSha }) => {
       const { octokit } = await this.getOctokit();
       const singleTag = await octokit.git.getTag({
@@ -621,9 +604,9 @@ export interface GitReleaseApi {
     name: string;
   }>;
 
-  getLatestCommit: (
+  getCommit: (
     args: {
-      defaultBranch: string;
+      ref: string;
     } & OwnerRepo,
   ) => Promise<{
     sha: string;
@@ -631,6 +614,7 @@ export interface GitReleaseApi {
     commit: {
       message: string;
     };
+    createdAt?: string;
   }>;
 
   getBranch: (
@@ -812,14 +796,6 @@ export interface GitReleaseApi {
       }>
     >;
 
-    getCommit: (
-      args: {
-        ref: string;
-      } & OwnerRepo,
-    ) => Promise<{
-      createdAt: string | undefined;
-    }>;
-
     getSingleTag: (
       args: {
         tagSha: string;
@@ -848,7 +824,7 @@ export type GetRepositoryResult = UnboxReturnedPromise<
   GitReleaseApi['getRepository']
 >;
 export type GetLatestCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['getLatestCommit']
+  GitReleaseApi['getCommit']
 >;
 export type GetBranchResult = UnboxReturnedPromise<GitReleaseApi['getBranch']>;
 export type CreateRefResult = UnboxReturnedPromise<GitReleaseApi['createRef']>;
@@ -882,9 +858,6 @@ export type PromoteReleaseResult = UnboxReturnedPromise<
 >;
 export type GetAllTagsResult = UnboxReturnedPromise<
   GitReleaseApi['stats']['getAllTags']
->;
-export type GetCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['stats']['getCommit']
 >;
 export type GetAllReleasesResult = UnboxReturnedPromise<
   GitReleaseApi['stats']['getAllReleases']

@@ -30,7 +30,7 @@ export const useGetCommit = ({ ref }: { ref?: string }) => {
       throw new GitReleaseManagerError('Missing ref to get commit');
     }
 
-    return pluginApiClient.stats.getCommit({
+    return pluginApiClient.getCommit({
       owner: project.owner,
       repo: project.repo,
       ref,

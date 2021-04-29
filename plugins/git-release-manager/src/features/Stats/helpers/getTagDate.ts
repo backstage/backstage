@@ -28,7 +28,7 @@ export const getTagDate = async ({
   project,
   tagSha,
 }: GetTagDate) => {
-  const commitRes = await pluginApiClient.stats.getCommit({
+  const commitRes = await pluginApiClient.getCommit({
     owner: project.owner,
     repo: project.repo,
     ref: tagSha,

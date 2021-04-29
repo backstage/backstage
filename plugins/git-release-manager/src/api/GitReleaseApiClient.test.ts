@@ -39,8 +39,8 @@ describe('GitReleaseApiClient', () => {
         "createRef": [Function],
         "createTagObject": [Function],
         "getBranch": [Function],
+        "getCommit": [Function],
         "getHost": [Function],
-        "getLatestCommit": [Function],
         "getLatestRelease": [Function],
         "getOwners": [Function],
         "getRecentCommits": [Function],
@@ -66,7 +66,6 @@ describe('GitReleaseApiClient', () => {
         "stats": Object {
           "getAllReleases": [Function],
           "getAllTags": [Function],
-          "getCommit": [Function],
           "getSingleTag": [Function],
         },
       }

@@ -23,6 +23,9 @@ import { GetLatestReleaseResult } from '../../../api/GitReleaseApiClient';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
+import { useUserContext } from '../../../contexts/UserContext';
+import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
+import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 
 interface PromoteRc {
   rcRelease: NonNullable<GetLatestReleaseResult>;
@@ -36,6 +39,7 @@ export function usePromoteRc({
   successCb,
 }: PromoteRc): CardHook<void> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
+  const { user } = useUserContext();
   const { project } = useProjectContext();
   const {
     responseSteps,
@@ -45,9 +49,97 @@ export function usePromoteRc({
   } = useResponseSteps();
 
   /**
-   * (1) Promote Release Candidate to Release Version
+   * (1) Fetch most recent release branch commit
    */
-  const [promotedReleaseRes, run] = useAsyncFn(async () => {
+  const [latestReleaseBranchCommitSha, run] = useAsyncFn(async () => {
+    const latestCommit = await pluginApiClient
+      .getCommit({
+        owner: project.owner,
+        repo: project.repo,
+        ref: rcRelease.targetCommitish,
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
+      message: 'Fetched most recent commit from release branch',
+      secondaryMessage: `with sha "${latestCommit.sha}"`,
+    });
+
+    return {
+      ...latestCommit,
+    };
+  });
+
+  /**
+   * (2) Create tag object for our soon-to-be-created annotated tag
+   */
+  const tagObjectRes = useAsync(async () => {
+    abortIfError(latestReleaseBranchCommitSha.error);
+    if (!latestReleaseBranchCommitSha.value) return undefined;
+
+    const createdTagObject = await pluginApiClient
+      .createTagObject({
+        owner: project.owner,
+        repo: project.repo,
+        tag: releaseVersion,
+        objectSha: latestReleaseBranchCommitSha.value.sha,
+        taggerName: user.username,
+        taggerEmail: user.email,
+        message: TAG_OBJECT_MESSAGE,
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
+      message: 'Created Tag Object',
+      secondaryMessage: `with sha "${createdTagObject.tagSha}"`,
+    });
+
+    return {
+      ...createdTagObject,
+    };
+  }, [latestReleaseBranchCommitSha.value, latestReleaseBranchCommitSha.error]);
+
+  /**
+   * (3) Create reference for tag object
+   */
+  const createRcRes = useAsync(async () => {
+    abortIfError(tagObjectRes.error);
+    if (!tagObjectRes.value) return undefined;
+
+    const createdRef = await pluginApiClient
+      .createRef({
+        owner: project.owner,
+        repo: project.repo,
+        ref: `refs/tags/${releaseVersion}`,
+        sha: tagObjectRes.value.tagSha,
+      })
+      .catch(error => {
+        if (error?.body?.message === 'Reference already exists') {
+          throw new GitReleaseManagerError(
+            `Tag reference "${releaseVersion}" already exists`,
+          );
+        }
+        throw error;
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
+      message: 'Create Tag Reference',
+      secondaryMessage: `with ref "${createdRef.ref}"`,
+    });
+
+    return {
+      ...createdRef,
+    };
+  }, [tagObjectRes.value, tagObjectRes.error]);
+
+  /**
+   * (4) Promote Release Candidate to Release Version
+   */
+  const promotedReleaseRes = useAsync(async () => {
+    abortIfError(createRcRes.error);
+    if (!createRcRes.value) return undefined;
+
     const promotedRelease = await pluginApiClient.promoteRc
       .promoteRelease({
         owner: project.owner,
@@ -66,10 +158,10 @@ export function usePromoteRc({
     return {
       ...promotedRelease,
     };
-  });
+  }, [createRcRes.value, createRcRes.error]);
 
   /**
-   * (2) Run successCb if defined
+   * (5) Run successCb if defined
    */
   useAsync(async () => {
     if (successCb && !!promotedReleaseRes.value) {
@@ -95,7 +187,7 @@ export function usePromoteRc({
     }
   }, [promotedReleaseRes.value]);
 
-  const TOTAL_STEPS = 1 + (!!successCb ? 1 : 0);
+  const TOTAL_STEPS = 4 + (!!successCb ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);

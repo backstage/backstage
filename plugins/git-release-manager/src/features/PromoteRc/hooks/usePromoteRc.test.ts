@@ -21,6 +21,7 @@ import {
   mockApiClient,
   mockCalverProject,
   mockReleaseCandidateCalver,
+  mockUser,
 } from '../../../test-helpers/test-helpers';
 import { usePromoteRc } from './usePromoteRc';
 
@@ -32,6 +33,9 @@ jest.mock('../../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
     project: mockCalverProject,
   }),
+}));
+jest.mock('../../../contexts/UserContext', () => ({
+  useUserContext: () => ({ user: mockUser }),
 }));
 
 describe('usePromoteRc', () => {
@@ -50,7 +54,7 @@ describe('usePromoteRc', () => {
     });
 
     expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(1);
+    expect(result.current.responseSteps).toHaveLength(4);
   });
 
   it('should return the expected responseSteps and progress (with successCb)', async () => {
@@ -66,11 +70,23 @@ describe('usePromoteRc', () => {
       await waitFor(() => result.current.run());
     });
 
-    expect(result.current.responseSteps).toHaveLength(2);
+    expect(result.current.responseSteps).toHaveLength(5);
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "progress": 100,
         "responseSteps": Array [
+          Object {
+            "message": "Fetched most recent commit from release branch",
+            "secondaryMessage": "with sha \\"latestCommit.sha\\"",
+          },
+          Object {
+            "message": "Created Tag Object",
+            "secondaryMessage": "with sha \\"mock_tag_object_sha\\"",
+          },
+          Object {
+            "message": "Create Tag Reference",
+            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+          },
           Object {
             "link": "mock_release_html_url",
             "message": "Promoted \\"mock_release_name\\"",

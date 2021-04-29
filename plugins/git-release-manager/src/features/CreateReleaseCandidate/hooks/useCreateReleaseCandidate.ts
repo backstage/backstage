@@ -71,10 +71,10 @@ export function useCreateReleaseCandidate({
    */
   const [latestCommitRes, run] = useAsyncFn(async () => {
     const latestCommit = await pluginApiClient
-      .getLatestCommit({
+      .getCommit({
         owner: project.owner,
         repo: project.repo,
-        defaultBranch,
+        ref: defaultBranch,
       })
       .catch(asyncCatcher);
 

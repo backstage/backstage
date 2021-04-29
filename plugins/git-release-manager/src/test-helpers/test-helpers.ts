@@ -209,12 +209,13 @@ export const mockApiClient: GitReleaseApi = {
     name: mockRepo,
   })),
 
-  getLatestCommit: jest.fn(async () => ({
+  getCommit: jest.fn(async () => ({
     sha: 'latestCommit.sha',
     htmlUrl: 'latestCommit.html_url',
     commit: {
       message: 'latestCommit.commit.message',
     },
+    createdAt: '2021-01-01T10:11:12Z',
   })),
 
   getBranch: jest.fn(async () => createMockBranch()),
@@ -304,10 +305,6 @@ export const mockApiClient: GitReleaseApi = {
         htmlUrl: 'mock_release_html_url',
       },
     ]),
-
-    getCommit: jest.fn(async () => ({
-      createdAt: '2021-01-01T10:11:12Z',
-    })),
 
     getSingleTag: jest.fn(async () => ({
       date: '2021-04-29T12:48:30.120Z',
