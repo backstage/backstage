@@ -2,13 +2,6 @@
 
 set -Eeuo pipefail
 
-# Run nginx as root
-sed -i 's/user  nginx.*$//' /etc/nginx/nginx.conf
-
-# Write selected env vars to nginx config
-envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
-
-# Inject runtime config into the client
 function inject_config() {
   # Read runtime config from env in the same way as the @backstage/config-loader package
   local config
@@ -41,4 +34,3 @@ function inject_config() {
 
 inject_config
 
-exec nginx -g 'daemon off;'

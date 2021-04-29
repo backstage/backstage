@@ -13,27 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Entity,
-  EntityName,
   LocationSpec,
   Location,
   EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { Observable } from '@backstage/core'; // << nooo
-
-export interface LocationEntity {
-  apiVersion: 'backstage.io/v1alpha1';
-  kind: 'Location';
-  metadata: {
-    name: string; // type:target
-    namespace: 'default';
-  };
-  spec: {
-    location: { type: string; target: string };
-  };
-}
 
 export interface LocationService {
   createLocation(
@@ -45,20 +32,11 @@ export interface LocationService {
   deleteLocation(id: string): Promise<void>;
 }
 
-export type EntityMessage =
-  | { all: Entity[] }
-  | { added: Entity[]; removed: EntityName[] };
-
 export interface LocationStore {
-  // extends EntityProvider
   createLocation(spec: LocationSpec): Promise<Location>;
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
-
-  location$(): Observable<
-    { all: Location[] } | { added: Location[]; removed: Location[] }
-  >;
 }
 
 export interface CatalogProcessingEngine {
@@ -66,8 +44,17 @@ export interface CatalogProcessingEngine {
   stop(): Promise<void>;
 }
 
+export type EntityProviderMutation =
+  | { type: 'full'; entities: Entity[] }
+  | { type: 'delta'; added: Entity[]; removed: Entity[] };
+
+export interface EntityProviderConnection {
+  applyMutation(mutation: EntityProviderMutation): Promise<void>;
+}
+
 export interface EntityProvider {
-  entityChange$(): Observable<EntityMessage>;
+  getProviderName(): string;
+  connect(connection: EntityProviderConnection): Promise<void>;
 }
 
 export type EntityProcessingRequest = {
@@ -81,7 +68,7 @@ export type EntityProcessingResult =
       ok: true;
       state: Map<string, JsonObject>;
       completedEntity: Entity;
-      deferredEntites: Entity[];
+      deferredEntities: Entity[];
       relations: EntityRelationSpec[];
       errors: Error[];
     }
@@ -103,20 +90,27 @@ export type ProcessingItemResult = {
   deferredEntities: Entity[];
 };
 
-export type AddProcessingItemRequest = {
-  type: 'entity' | 'provider';
-  id: string;
-  entities: Entity[];
-};
-
-export type ProccessingItem = {
+export type ProcessingItem = {
   id: string;
   entity: Entity;
   state: Map<string, JsonObject>;
 };
 
+export type ReplaceProcessingItemsRequest =
+  | {
+      sourceKey: string;
+      items: Entity[];
+      type: 'full';
+    }
+  | {
+      sourceKey: string;
+      added: Entity[];
+      removed: Entity[];
+      type: 'delta';
+    };
+
 export interface ProcessingStateManager {
   setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
-  getNextProcessingItem(): Promise<ProccessingItem>;
-  addProcessingItems(request: AddProcessingItemRequest): Promise<void>;
+  getNextProcessingItem(): Promise<ProcessingItem>;
+  replaceProcessingItems(request: ReplaceProcessingItemsRequest): Promise<void>;
 }

@@ -1,5 +1,11 @@
 # @backstage/techdocs-common
 
+## 0.5.1
+
+### Patch Changes
+
+- f4af06ebe: Gracefully handle HTTP request failures in download method of AzureBlobStorage publisher.
+
 ## 0.5.0
 
 ### Minor Changes

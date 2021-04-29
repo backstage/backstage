@@ -44,7 +44,7 @@ metadata:
   name: artist-web
   description: The place to be, for great artists
   labels:
-    system: public-websites
+    example.com/custom: custom_label_value
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
@@ -58,6 +58,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations-team
+  system: public-websites
 ```
 
 This is the same entity as returned in JSON from the software catalog API:
@@ -76,7 +77,7 @@ This is the same entity as returned in JSON from the software catalog API:
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
     "generation": 1,
     "labels": {
-      "system": "public-websites"
+      "example.com/custom": "custom_label_value"
     },
     "links": [{
       "url": "https://admin.example-org.com",
@@ -90,7 +91,8 @@ This is the same entity as returned in JSON from the software catalog API:
   "spec": {
     "lifecycle": "production",
     "owner": "artist-relations-team",
-    "type": "website"
+    "type": "website",
+    "system": "public-websites"
   }
 }
 ```

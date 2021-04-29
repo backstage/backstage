@@ -1,5 +1,13 @@
 # @backstage/core
 
+## 0.7.7
+
+### Patch Changes
+
+- 9afcac5af: Allow passing NavLinkProps to SidebarItem component to use in NavLink
+- e0c9ed759: Add `if` prop to `EntityLayout.Route` to conditionally render tabs
+- 6eaecbd81: Improve owner example value in `MissingAnnotationEmptyState`.
+
 ## 0.7.6
 
 ### Patch Changes
