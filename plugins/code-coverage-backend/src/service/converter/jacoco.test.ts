@@ -15,6 +15,7 @@
  */
 import { parseString } from 'xml2js';
 import fs from 'fs';
+import path from 'path';
 import { Jacoco } from './jacoco';
 import { JacocoXML } from './types';
 import { getVoidLogger } from '@backstage/backend-common';
@@ -25,7 +26,9 @@ describe('convert jacoco', () => {
   const converter = new Jacoco(getVoidLogger());
   let fixture: JacocoXML;
   parseString(
-    fs.readFileSync(`${__dirname}/../__fixtures__/jacoco-testdata-1.xml`),
+    fs.readFileSync(
+      path.resolve(`${__dirname}/../__fixtures__/jacoco-testdata-1.xml`),
+    ),
     (_e, r) => {
       fixture = r;
     },
@@ -33,12 +36,16 @@ describe('convert jacoco', () => {
   const expected = JSON.parse(
     fs
       .readFileSync(
-        `${__dirname}/../__fixtures__/jacoco-jsoncoverage-files-1.json`,
+        path.resolve(
+          `${__dirname}/../__fixtures__/jacoco-jsoncoverage-files-1.json`,
+        ),
       )
       .toString(),
   );
   const scmFiles = fs
-    .readFileSync(`${__dirname}/../__fixtures__/jacoco-sourcefiles-1.txt`)
+    .readFileSync(
+      path.resolve(`${__dirname}/../__fixtures__/jacoco-sourcefiles-1.txt`),
+    )
     .toString()
     .split('\n');
 

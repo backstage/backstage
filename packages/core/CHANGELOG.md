@@ -1,5 +1,22 @@
 # @backstage/core
 
+## 0.7.6
+
+### Patch Changes
+
+- 94da20976: Sort the table filter options by name.
+- d8cc7e67a: Exposing Material UI extension point for tabs to be able to add additional information to them
+- 99fbef232: Adding Headings for Accessibility on the Scaffolder Plugin
+- ab07d77f6: Add support for discovering plugins through the app element tree, removing the need to register them explicitly.
+- 937ed39ce: Exported SignInProviderConfig to strongly type SignInPage providers
+- 9a9e7a42f: Adding close button on support menu
+- 50ce875a0: Fixed a potentially confusing error being thrown about misuse of routable extensions where the error was actually something different.
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [50ce875a0]
+  - @backstage/core-api@0.2.17
+  - @backstage/theme@0.2.6
+
 ## 0.7.5
 
 ### Patch Changes

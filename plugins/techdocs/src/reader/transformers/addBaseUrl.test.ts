@@ -16,14 +16,17 @@
 
 import { createTestShadowDom } from '../../test-utils';
 import { addBaseUrl } from '../transformers';
-import { TechDocsStorage } from '../../api';
+import { TechDocsStorageApi } from '../../api';
 
 const DOC_STORAGE_URL = 'https://example-host.storage.googleapis.com';
 
-const techdocsStorageApi: TechDocsStorage = {
+const techdocsStorageApi: TechDocsStorageApi = {
   getBaseUrl: jest.fn(() => Promise.resolve(DOC_STORAGE_URL)),
   getEntityDocs: () => new Promise(resolve => resolve('yes!')),
   syncEntityDocs: () => new Promise(resolve => resolve(true)),
+  getApiOrigin: jest.fn(),
+  getBuilder: jest.fn(),
+  getStorageUrl: jest.fn(),
 };
 
 const fixture = `

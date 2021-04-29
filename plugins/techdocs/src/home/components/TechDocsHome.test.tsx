@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,30 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { TechDocsHome } from './TechDocsHome';
+
+jest.mock('../hooks', () => ({
+  useOwnUser: () => {
+    return {
+      value: {
+        apiVersion: 'version',
+        kind: 'User',
+        metadata: {
+          name: 'owned',
+          namespace: 'default',
+        },
+        relations: [
+          {
+            target: {
+              kind: 'TestKind',
+              name: 'testName',
+            },
+            type: 'ownerOf',
+          },
+        ],
+      },
+    };
+  },
+}));
 
 describe('TechDocs Home', () => {
   const catalogApi: Partial<CatalogApi> = {

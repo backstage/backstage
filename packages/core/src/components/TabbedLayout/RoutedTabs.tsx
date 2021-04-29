@@ -48,7 +48,12 @@ export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
-    () => routes.map(t => ({ id: t.path, label: t.title })),
+    () =>
+      routes.map(t => ({
+        id: t.path,
+        label: t.title,
+        tabProps: t.tabProps,
+      })),
     [routes],
   );
 
