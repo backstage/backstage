@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Support anyOf schemas in the scaffolder template
+Support `anyOf`, `oneOf` and `allOf` schemas in the scaffolder template.

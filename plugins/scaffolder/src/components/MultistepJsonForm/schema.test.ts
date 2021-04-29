@@ -94,6 +94,28 @@ describe('transformSchemaToProps', () => {
           },
         },
       ],
+      oneOf: [
+        {
+          properties: {
+            field4: {
+              type: 'string',
+              default: 'Value 1',
+              'ui:readonly': true,
+            },
+          },
+        },
+      ],
+      allOf: [
+        {
+          properties: {
+            field5: {
+              type: 'string',
+              default: 'Value 1',
+              'ui:readonly': true,
+            },
+          },
+        },
+      ],
       properties: {
         field1: {
           type: 'object',
@@ -112,6 +134,28 @@ describe('transformSchemaToProps', () => {
                 field3: {
                   type: 'string',
                   default: 'Value 2',
+                  'ui:readonly': true,
+                },
+              },
+            },
+          ],
+          oneOf: [
+            {
+              properties: {
+                field4: {
+                  type: 'string',
+                  default: 'Value 1',
+                  'ui:readonly': true,
+                },
+              },
+            },
+          ],
+          allOf: [
+            {
+              properties: {
+                field5: {
+                  type: 'string',
+                  default: 'Value 1',
                   'ui:readonly': true,
                 },
               },
@@ -144,6 +188,26 @@ describe('transformSchemaToProps', () => {
           },
         },
       ],
+      oneOf: [
+        {
+          properties: {
+            field4: {
+              type: 'string',
+              default: 'Value 1',
+            },
+          },
+        },
+      ],
+      allOf: [
+        {
+          properties: {
+            field5: {
+              type: 'string',
+              default: 'Value 1',
+            },
+          },
+        },
+      ],
       properties: {
         field1: {
           type: 'object',
@@ -165,6 +229,26 @@ describe('transformSchemaToProps', () => {
               },
             },
           ],
+          oneOf: [
+            {
+              properties: {
+                field4: {
+                  type: 'string',
+                  default: 'Value 1',
+                },
+              },
+            },
+          ],
+          allOf: [
+            {
+              properties: {
+                field5: {
+                  type: 'string',
+                  default: 'Value 1',
+                },
+              },
+            },
+          ],
         },
         field2: {
           type: 'string',
@@ -175,8 +259,20 @@ describe('transformSchemaToProps', () => {
       field3: {
         'ui:readonly': true,
       },
+      field4: {
+        'ui:readonly': true,
+      },
+      field5: {
+        'ui:readonly': true,
+      },
       field1: {
         field3: {
+          'ui:readonly': true,
+        },
+        field4: {
+          'ui:readonly': true,
+        },
+        field5: {
           'ui:readonly': true,
         },
       },
