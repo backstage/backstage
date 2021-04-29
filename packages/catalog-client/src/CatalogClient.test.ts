@@ -76,7 +76,38 @@ describe('CatalogClient', () => {
       expect(response).toEqual(defaultResponse);
     });
 
-    it('builds entity search filters properly', async () => {
+    it('builds multiple entity search filters properly', async () => {
+      expect.assertions(2);
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
+          expect(req.url.search).toBe(
+            '?filter=a=1,b=2,b=3,%C3%B6=%3D&filter=a=2',
+          );
+          return res(ctx.json([]));
+        }),
+      );
+
+      const response = await client.getEntities(
+        {
+          filter: [
+            {
+              a: '1',
+              b: ['2', '3'],
+              ö: '=',
+            },
+            {
+              a: '2',
+            },
+          ],
+        },
+        { token },
+      );
+
+      expect(response.items).toEqual([]);
+    });
+
+    it('builds single entity search filter properly', async () => {
       expect.assertions(2);
 
       server.use(
