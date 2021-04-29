@@ -24,12 +24,16 @@ import {
   mockReleaseVersionCalver,
   mockSelectedPatchCommit,
   mockTagParts,
+  mockUser,
 } from '../../../test-helpers/test-helpers';
 import { usePatch } from './usePatch';
 
 jest.mock('@backstage/core', () => ({
   useApi: () => mockApiClient,
   createApiRef: jest.fn(),
+}));
+jest.mock('../../../contexts/UserContext', () => ({
+  useUserContext: () => ({ user: mockUser }),
 }));
 
 describe('patch', () => {

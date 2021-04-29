@@ -23,12 +23,16 @@ import {
   mockDefaultBranch,
   mockNextGitInfoCalver,
   mockReleaseVersionCalver,
+  mockUser,
 } from '../../../test-helpers/test-helpers';
 import { useCreateReleaseCandidate } from './useCreateReleaseCandidate';
 
 jest.mock('@backstage/core', () => ({
   useApi: () => mockApiClient,
   createApiRef: jest.fn(),
+}));
+jest.mock('../../../contexts/UserContext', () => ({
+  useUserContext: () => ({ user: mockUser }),
 }));
 
 describe('useCreateReleaseCandidate', () => {
@@ -49,7 +53,7 @@ describe('useCreateReleaseCandidate', () => {
     });
 
     expect(result.error).toEqual(undefined);
-    expect(result.current.responseSteps).toHaveLength(4);
+    expect(result.current.responseSteps).toHaveLength(6);
   });
 
   it('should return the expected responseSteps and progress (with successCb)', async () => {
@@ -67,7 +71,7 @@ describe('useCreateReleaseCandidate', () => {
       await waitFor(() => result.current.run());
     });
 
-    expect(result.current.responseSteps).toHaveLength(5);
+    expect(result.current.responseSteps).toHaveLength(7);
     expect(result.current).toMatchInlineSnapshot(`
       Object {
         "progress": 100,
@@ -78,7 +82,15 @@ describe('useCreateReleaseCandidate', () => {
             "secondaryMessage": "with message \\"latestCommit.commit.message\\"",
           },
           Object {
-            "message": "Cut Release Branch",
+            "message": "Created Release Branch",
+            "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
+          },
+          Object {
+            "message": "Created Tag Object",
+            "secondaryMessage": "with sha \\"mock_tag_object_sha\\"",
+          },
+          Object {
+            "message": "Cut Tag Reference",
             "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
           },
           Object {

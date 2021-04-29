@@ -40,6 +40,11 @@ const MOCK_RELEASE_BRANCH_NAME_SEMVER = `rc/${A_SEMVER_VERSION}`;
 const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER = `rc-${A_SEMVER_VERSION}`;
 const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER = `version-${A_SEMVER_VERSION}`;
 
+export const mockUser = {
+  username: mockOwner,
+  email: mockEmail,
+};
+
 export const mockSemverProject: Project = {
   owner: mockOwner,
   repo: mockRepo,
@@ -214,11 +219,12 @@ export const mockApiClient: GitReleaseApi = {
 
   getBranch: jest.fn(async () => createMockBranch()),
 
-  createRc: {
-    createRef: jest.fn(async () => ({
-      ref: 'mock_createRef_ref',
-    })),
+  createRef: jest.fn(async () => ({
+    ref: 'mock_createRef_ref',
+    objectSha: 'mock_createRef_objectSha',
+  })),
 
+  createRc: {
     createRelease: jest.fn(async () => ({
       name: 'mock_createRelease_name',
       htmlUrl: 'mock_createRelease_html_url',
@@ -231,6 +237,11 @@ export const mockApiClient: GitReleaseApi = {
     })),
   },
 
+  createTagObject: jest.fn(async () => ({
+    tagName: 'mock_tag_object_tag',
+    tagSha: 'mock_tag_object_sha',
+  })),
+
   patch: {
     createCherryPickCommit: jest.fn(async () => ({
       message: 'mock_cherrypick_message',
@@ -239,11 +250,6 @@ export const mockApiClient: GitReleaseApi = {
 
     createReference: jest.fn(async () => ({
       ref: 'mock_reference_ref',
-    })),
-
-    createTagObject: jest.fn(async () => ({
-      tag: 'mock_tag_object_tag',
-      sha: 'mock_tag_object_sha',
     })),
 
     createTempCommit: jest.fn(async () => ({

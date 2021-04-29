@@ -33,10 +33,11 @@ describe('GitReleaseApiClient', () => {
       GitReleaseApiClient {
         "baseUrl": "https://api.github.com",
         "createRc": Object {
-          "createRef": [Function],
           "createRelease": [Function],
           "getComparison": [Function],
         },
+        "createRef": [Function],
+        "createTagObject": [Function],
         "getBranch": [Function],
         "getHost": [Function],
         "getLatestCommit": [Function],
@@ -54,7 +55,6 @@ describe('GitReleaseApiClient', () => {
         "patch": Object {
           "createCherryPickCommit": [Function],
           "createReference": [Function],
-          "createTagObject": [Function],
           "createTempCommit": [Function],
           "forceBranchHeadToTempCommit": [Function],
           "merge": [Function],

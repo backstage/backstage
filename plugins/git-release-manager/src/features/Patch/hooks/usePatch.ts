@@ -28,6 +28,8 @@ import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
+import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
+import { useUserContext } from '../../../contexts/UserContext';
 
 interface Patch {
   bumpedTag: string;
@@ -46,6 +48,7 @@ export function usePatch({
   successCb,
 }: Patch): CardHook<GetRecentCommitsResultSingle> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
+  const { user } = useUserContext();
   const {
     responseSteps,
     addStepToResponseSteps,
@@ -234,18 +237,21 @@ export function usePatch({
     abortIfError(updatedRefRes.error);
     if (!updatedRefRes.value) return undefined;
 
-    const createdTagObject = await pluginApiClient.patch
+    const createdTagObject = await pluginApiClient
       .createTagObject({
         owner: project.owner,
         repo: project.repo,
         tag: bumpedTag,
         objectSha: updatedRefRes.value.object.sha,
+        message: TAG_OBJECT_MESSAGE,
+        taggerName: user.username,
+        taggerEmail: user.email,
       })
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
       message: 'Created new tag object',
-      secondaryMessage: `with name "${createdTagObject.tag}"`,
+      secondaryMessage: `with name "${createdTagObject.tagName}"`,
     });
 
     return {
@@ -272,7 +278,7 @@ export function usePatch({
 
     addStepToResponseSteps({
       message: `Created new reference "${reference.ref}"`,
-      secondaryMessage: `for tag object "${createdTagObjRes.value.tag}"`,
+      secondaryMessage: `for tag object "${createdTagObjRes.value.tagName}"`,
     });
 
     return {

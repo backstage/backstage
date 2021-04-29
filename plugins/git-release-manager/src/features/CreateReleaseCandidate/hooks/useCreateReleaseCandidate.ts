@@ -27,7 +27,9 @@ import { getReleaseCandidateGitInfo } from '../../../helpers/getReleaseCandidate
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
+import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
+import { useUserContext } from '../../../contexts/UserContext';
 
 interface UseCreateReleaseCandidate {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -45,6 +47,7 @@ export function useCreateReleaseCandidate({
   successCb,
 }: UseCreateReleaseCandidate): CardHook<void> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
+  const { user } = useUserContext();
 
   if (releaseCandidateGitInfo.error) {
     throw new GitReleaseManagerError(
@@ -87,18 +90,18 @@ export function useCreateReleaseCandidate({
   });
 
   /**
-   * (2) Create a new ref based on the default branch's most recent sha
+   * (2) Create release branch based on default branch's most recent sha
    */
-  const createRcRes = useAsync(async () => {
+  const releaseBranchRes = useAsync(async () => {
     abortIfError(latestCommitRes.error);
     if (!latestCommitRes.value) return undefined;
 
-    const createdRef = await pluginApiClient.createRc
+    const createdReleaseBranch = await pluginApiClient
       .createRef({
         owner: project.owner,
         repo: project.repo,
-        mostRecentSha: latestCommitRes.value.latestCommit.sha,
-        targetBranch: releaseCandidateGitInfo.rcBranch,
+        sha: latestCommitRes.value.latestCommit.sha,
+        ref: `refs/heads/${releaseCandidateGitInfo.rcBranch}`,
       })
       .catch(error => {
         if (error?.body?.message === 'Reference already exists') {
@@ -111,17 +114,80 @@ export function useCreateReleaseCandidate({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: 'Cut Release Branch',
+      message: 'Created Release Branch',
+      secondaryMessage: `with ref "${createdReleaseBranch.ref}"`,
+    });
+
+    return {
+      ...createdReleaseBranch,
+    };
+  }, [latestCommitRes.value, latestCommitRes.error]);
+
+  /**
+   * (3) Create tag object for our soon-to-be-created annotated tag
+   */
+  const tagObjectRes = useAsync(async () => {
+    abortIfError(releaseBranchRes.error);
+    if (!releaseBranchRes.value) return undefined;
+
+    const createdTagObject = await pluginApiClient
+      .createTagObject({
+        owner: project.owner,
+        repo: project.repo,
+        tag: releaseCandidateGitInfo.rcReleaseTag,
+        objectSha: releaseBranchRes.value.objectSha,
+        taggerName: user.username,
+        taggerEmail: user.email,
+        message: TAG_OBJECT_MESSAGE,
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
+      message: 'Created Tag Object',
+      secondaryMessage: `with sha "${createdTagObject.tagSha}"`,
+    });
+
+    return {
+      ...createdTagObject,
+    };
+  }, [releaseBranchRes.value, releaseBranchRes.error]);
+
+  /**
+   * (4) Create reference for tag object
+   */
+  const createRcRes = useAsync(async () => {
+    abortIfError(tagObjectRes.error);
+    if (!tagObjectRes.value) return undefined;
+
+    const createdRef = await pluginApiClient
+      .createRef({
+        owner: project.owner,
+        repo: project.repo,
+        ref: `refs/tags/${releaseCandidateGitInfo.rcReleaseTag}`,
+        sha: tagObjectRes.value.tagSha,
+      })
+      .catch(error => {
+        if (error?.body?.message === 'Reference already exists') {
+          throw new GitReleaseManagerError(
+            `Tag reference "${releaseCandidateGitInfo.rcReleaseTag}" already exists`,
+          );
+        }
+        throw error;
+      })
+      .catch(asyncCatcher);
+
+    addStepToResponseSteps({
+      message: 'Cut Tag Reference',
       secondaryMessage: `with ref "${createdRef.ref}"`,
     });
 
     return {
       ...createdRef,
     };
-  }, [latestCommitRes.value, latestCommitRes.error]);
+  }, [tagObjectRes.value, tagObjectRes.error]);
 
   /**
-   * (3) Compose a body for the release
+   * (5) Compose a body for the release
    */
   const getComparisonRes = useAsync(async () => {
     abortIfError(createRcRes.error);
@@ -163,7 +229,7 @@ export function useCreateReleaseCandidate({
   }, [createRcRes.value, createRcRes.error]);
 
   /**
-   * (4) Creates the Git Release itself
+   * (6) Creates the Git Release itself
    */
   const createReleaseRes = useAsync(async () => {
     abortIfError(getComparisonRes.error);
@@ -192,7 +258,7 @@ export function useCreateReleaseCandidate({
   }, [getComparisonRes.value, getComparisonRes.error]);
 
   /**
-   * (5) Run successCb if defined
+   * (7) Run successCb if defined
    */
   useAsync(async () => {
     if (successCb && !!createReleaseRes.value && !!getComparisonRes.value) {
@@ -217,7 +283,7 @@ export function useCreateReleaseCandidate({
     }
   }, [createReleaseRes.value]);
 
-  const TOTAL_STEPS = 4 + (!!successCb ? 1 : 0);
+  const TOTAL_STEPS = 6 + (!!successCb ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);
