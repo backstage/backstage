@@ -20,20 +20,22 @@ import { DateTime } from 'luxon';
 import { useApi } from '@backstage/core';
 
 import { getReleaseCommitPairs } from '../helpers/getReleaseCommitPairs';
-import { getTagDate } from '../../helpers/getTagDate';
 import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
 import { useProjectContext } from '../../../../contexts/ProjectContext';
 import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
+import { getTagDates } from '../../helpers/getTagDates';
 
 export type ReleaseCommitPairs = Array<{
   baseVersion: string;
   startCommit: {
     tagName: string;
-    sha: string;
+    tagSha: string;
+    tagType: 'tag' | 'commit';
   };
   endCommit: {
     tagName: string;
-    sha: string;
+    tagSha: string;
+    tagType: 'tag' | 'commit';
   };
 }>;
 
@@ -56,17 +58,17 @@ export function useGetReleaseTimes() {
   const [progress, setProgress] = useState(0);
   const { releaseCommitPairs } = getReleaseCommitPairs({ releaseStats });
 
-  const [fnRes, run] = useAsyncFn(() => {
+  const [releaseTimeResult, run] = useAsyncFn(() => {
     setProgress(0);
-    return getAndSetReleaseTime(0);
+    return getAndSetReleaseTime({ pairIndex: 0 });
   });
 
   useAsync(async () => {
     if (averageReleaseTime.length === 0) return;
     if (releaseCommitPairs.length === averageReleaseTime.length) return;
 
-    await getAndSetReleaseTime(averageReleaseTime.length);
-  }, [fnRes.value, averageReleaseTime]);
+    await getAndSetReleaseTime({ pairIndex: averageReleaseTime.length });
+  }, [releaseTimeResult.value, averageReleaseTime]);
 
   useEffect(() => {
     const unboundedProgress = Math.round(
@@ -77,16 +79,20 @@ export function useGetReleaseTimes() {
     setProgress(boundedProgress);
   }, [averageReleaseTime.length, releaseCommitPairs.length]);
 
-  async function getAndSetReleaseTime(index: number) {
-    const { baseVersion, startCommit, endCommit } = releaseCommitPairs[index];
+  async function getAndSetReleaseTime({ pairIndex }: { pairIndex: number }) {
+    const { baseVersion, startCommit, endCommit } = releaseCommitPairs[
+      pairIndex
+    ];
 
-    const [
-      { tagDate: startCommitCreatedAt },
-      { tagDate: endCommitCreatedAt },
-    ] = await Promise.all([
-      getTagDate({ pluginApiClient, project, tagSha: startCommit.sha }),
-      getTagDate({ pluginApiClient, project, tagSha: endCommit.sha }),
-    ]);
+    const {
+      startDate: startCommitCreatedAt,
+      endDate: endCommitCreatedAt,
+    } = await getTagDates({
+      pluginApiClient,
+      project,
+      startTag: startCommit,
+      endTag: endCommit,
+    });
 
     const releaseTime: ReleaseTime = {
       version: baseVersion,

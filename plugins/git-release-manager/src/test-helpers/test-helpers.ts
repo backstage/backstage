@@ -292,7 +292,8 @@ export const mockApiClient: GitReleaseApi = {
     getAllTags: jest.fn(async () => [
       {
         tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
-        sha: 'mock_sha',
+        tagSha: 'mock_sha',
+        tagType: 'tag' as const,
       },
     ]),
 
@@ -308,8 +309,9 @@ export const mockApiClient: GitReleaseApi = {
 
     getSingleTag: jest.fn(async () => ({
       date: '2021-04-29T12:48:30.120Z',
-      username: 'mock_usersingle_tag_name',
-      userEmail: 'mock_userEsingle_tag_mail',
+      username: 'mock_user_single_tag_name',
+      userEmail: 'mock_user_single_tag_email',
+      objectSha: 'mock_single_tag_object_sha',
     })),
   },
 };

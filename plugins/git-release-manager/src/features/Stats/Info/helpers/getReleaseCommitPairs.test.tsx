@@ -25,11 +25,13 @@ describe('getReleaseCommitPairs', () => {
       candidates: [
         {
           tagName: 'rc-1.0.0',
-          sha: 'sha-1.0.0',
+          tagSha: 'sha-1.0.0',
+          tagType: 'tag' as const,
         },
         {
           tagName: 'rc-1.0.1',
-          sha: 'sha-1.0.1',
+          tagSha: 'sha-1.0.1',
+          tagType: 'tag' as const,
         },
       ],
       versions: [],
@@ -42,13 +44,15 @@ describe('getReleaseCommitPairs', () => {
       candidates: [
         {
           tagName: 'rc-2.0.0',
-          sha: 'sha-2.0.0',
+          tagSha: 'sha-2.0.0',
+          tagType: 'tag' as const,
         },
       ],
       versions: [
         {
           tagName: 'version-2.0.0',
-          sha: 'sha-2.0.0',
+          tagSha: 'sha-2.0.0',
+          tagType: 'tag' as const,
         },
       ],
     };
@@ -60,17 +64,20 @@ describe('getReleaseCommitPairs', () => {
       candidates: [
         {
           tagName: 'rc-3.0.1',
-          sha: 'sha-3.0.1',
+          tagSha: 'sha-3.0.1',
+          tagType: 'tag' as const,
         },
         {
           tagName: 'rc-3.0.0',
-          sha: 'sha-3.0.0',
+          tagSha: 'sha-3.0.0',
+          tagType: 'tag' as const,
         },
       ],
       versions: [
         {
           tagName: 'version-3.0.1',
-          sha: 'sha-3.0.1',
+          tagSha: 'sha-3.0.1',
+          tagType: 'tag' as const,
         },
       ],
     };
@@ -92,14 +99,29 @@ describe('getReleaseCommitPairs', () => {
       Object {
         "releaseCommitPairs": Array [
           Object {
-            "baseVersion": "3.0",
+            "baseVersion": "2.0",
             "endCommit": Object {
-              "sha": "sha-3.0.1",
-              "tagName": "version-3.0.1",
+              "tagName": "version-2.0.0",
+              "tagSha": "sha-2.0.0",
+              "tagType": "tag",
             },
             "startCommit": Object {
-              "sha": "sha-3.0.0",
+              "tagName": "rc-2.0.0",
+              "tagSha": "sha-2.0.0",
+              "tagType": "tag",
+            },
+          },
+          Object {
+            "baseVersion": "3.0",
+            "endCommit": Object {
+              "tagName": "version-3.0.1",
+              "tagSha": "sha-3.0.1",
+              "tagType": "tag",
+            },
+            "startCommit": Object {
               "tagName": "rc-3.0.0",
+              "tagSha": "sha-3.0.0",
+              "tagType": "tag",
             },
           },
         ],

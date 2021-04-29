@@ -492,17 +492,21 @@ ${selectedPatchCommit.commit.message}`,
     getAllTags: async ({ owner, repo }) => {
       const { octokit } = await this.getOctokit();
 
-      const tags = await octokit.paginate(octokit.repos.listTags, {
+      const tags = await octokit.paginate(octokit.git.listMatchingRefs, {
         owner,
         repo,
+        ref: 'tags',
         per_page: 100,
         ...DISABLE_CACHE,
       });
 
-      return tags.map(tag => ({
-        tagName: tag.name,
-        sha: tag.commit.sha,
-      }));
+      return tags
+        .map(tag => ({
+          tagName: tag.ref.replace('refs/tags/', ''),
+          tagSha: tag.object.sha,
+          tagType: tag.object.type as 'tag' | 'commit',
+        }))
+        .reverse();
     },
 
     getAllReleases: async ({ owner, repo }) => {
@@ -536,6 +540,7 @@ ${selectedPatchCommit.commit.message}`,
         date: singleTag.data.tagger.date,
         username: singleTag.data.tagger.name,
         userEmail: singleTag.data.tagger.email,
+        objectSha: singleTag.data.object.sha,
       };
     },
   };
@@ -780,7 +785,8 @@ export interface GitReleaseApi {
     ) => Promise<
       Array<{
         tagName: string;
-        sha: string;
+        tagSha: string;
+        tagType: 'tag' | 'commit';
       }>
     >;
 
@@ -804,6 +810,7 @@ export interface GitReleaseApi {
       date: string;
       username: string;
       userEmail: string;
+      objectSha: string;
     }>;
   };
 }

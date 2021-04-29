@@ -27,21 +27,15 @@ export interface ReleaseStats {
       baseVersion: string;
       createdAt: string | null;
       htmlUrl: string;
-
-      /**
-       * Ordered from new to old
-       */
       candidates: {
         tagName: string;
-        sha: string;
+        tagSha: string;
+        tagType: 'tag' | 'commit';
       }[];
-
-      /**
-       * Ordered from new to old
-       */
       versions: {
         tagName: string;
-        sha: string;
+        tagSha: string;
+        tagType: 'tag' | 'commit';
       }[];
     };
   };

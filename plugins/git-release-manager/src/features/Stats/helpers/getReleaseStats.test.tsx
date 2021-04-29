@@ -44,14 +44,18 @@ describe('getReleaseStats', () => {
         unmatchedTags: [],
       },
       allTags: [
-        { sha: 'sha', tagName: 'rc-1.0.0' },
-        { sha: 'sha', tagName: 'rc-1.0.1' },
-        { sha: 'sha', tagName: 'rc-1.0.2' },
-        { sha: 'sha', tagName: 'version-1.0.2' },
-        { sha: 'sha', tagName: 'rc-1.1.1' },
+        { tagType: 'tag' as const, tagSha: 'sha', tagName: 'rc-1.0.0' },
+        { tagType: 'tag' as const, tagSha: 'sha', tagName: 'rc-1.0.1' },
+        { tagType: 'tag' as const, tagSha: 'sha', tagName: 'rc-1.0.2' },
+        { tagType: 'tag' as const, tagSha: 'sha', tagName: 'version-1.0.2' },
+        { tagType: 'tag' as const, tagSha: 'sha', tagName: 'rc-1.1.1' },
 
-        { sha: 'unmatchable', tagName: 'rc-1/2/3' },
-        { sha: 'unmappable', tagName: 'rc-123.123.123' },
+        { tagType: 'tag' as const, tagSha: 'unmatchable', tagName: 'rc-1/2/3' },
+        {
+          tagType: 'tag' as const,
+          tagSha: 'unmappable',
+          tagName: 'rc-123.123.123',
+        },
       ],
     });
 
@@ -63,24 +67,28 @@ describe('getReleaseStats', () => {
               "baseVersion": "1.0",
               "candidates": Array [
                 Object {
-                  "sha": "sha",
                   "tagName": "rc-1.0.0",
+                  "tagSha": "sha",
+                  "tagType": "tag",
                 },
                 Object {
-                  "sha": "sha",
                   "tagName": "rc-1.0.1",
+                  "tagSha": "sha",
+                  "tagType": "tag",
                 },
                 Object {
-                  "sha": "sha",
                   "tagName": "rc-1.0.2",
+                  "tagSha": "sha",
+                  "tagType": "tag",
                 },
               ],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
               "versions": Array [
                 Object {
-                  "sha": "sha",
                   "tagName": "version-1.0.2",
+                  "tagSha": "sha",
+                  "tagType": "tag",
                 },
               ],
             },
@@ -88,8 +96,9 @@ describe('getReleaseStats', () => {
               "baseVersion": "1.1",
               "candidates": Array [
                 Object {
-                  "sha": "sha",
                   "tagName": "rc-1.1.1",
+                  "tagSha": "sha",
+                  "tagType": "tag",
                 },
               ],
               "createdAt": "2021-01-01T10:11:12Z",

@@ -25,11 +25,13 @@ export const mockReleaseStats: ReleaseStats = {
       candidates: [
         {
           tagName: 'rc-1.0.1',
-          sha: 'sha-1.0.1',
+          tagSha: 'sha-1.0.1',
+          tagType: 'tag',
         },
         {
           tagName: 'rc-1.0.0',
-          sha: 'sha-1.0.0',
+          tagSha: 'sha-1.0.0',
+          tagType: 'tag',
         },
       ],
       versions: [],
@@ -41,25 +43,30 @@ export const mockReleaseStats: ReleaseStats = {
       candidates: [
         {
           tagName: 'rc-1.1.2',
-          sha: 'sha-1.1.2',
+          tagSha: 'sha-1.1.2',
+          tagType: 'tag',
         },
         {
           tagName: 'rc-1.1.1',
-          sha: 'sha-1.1.1',
+          tagSha: 'sha-1.1.1',
+          tagType: 'tag',
         },
         {
           tagName: 'rc-1.1.0',
-          sha: 'sha-1.1.0',
+          tagSha: 'sha-1.1.0',
+          tagType: 'tag',
         },
       ],
       versions: [
         {
           tagName: 'version-1.1.3',
-          sha: 'sha-1.1.3',
+          tagSha: 'sha-1.1.3',
+          tagType: 'tag',
         },
         {
           tagName: 'version-1.1.2',
-          sha: 'sha-1.1.2',
+          tagSha: 'sha-1.1.2',
+          tagType: 'tag',
         },
       ],
     },

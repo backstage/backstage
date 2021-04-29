@@ -21,22 +21,31 @@ import { Alert } from '@material-ui/lab';
 
 import { CenteredCircularProgress } from '../../../../components/CenteredCircularProgress';
 import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
-import { useGetCommit } from '../../hooks/useGetCommit';
+import { useAsync } from 'react-use';
+import { getTagDates } from '../../helpers/getTagDates';
+import { useProjectContext } from '../../../../contexts/ProjectContext';
+import { useApi } from '@backstage/core';
+import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
+import { getDecimalNumber } from '../../helpers/getDecimalNumber';
 
 interface ReleaseTimeProps {
   releaseStat: ReleaseStats['releases']['0'];
 }
 
 export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
-  const firstCandidateSha = [...releaseStat.candidates].reverse()[0]?.sha;
-  const { commit: releaseCut } = useGetCommit({ ref: firstCandidateSha });
+  const pluginApiClient = useApi(gitReleaseManagerApiRef);
+  const { project } = useProjectContext();
 
-  const mostRecentVersionSha = releaseStat.versions[0]?.sha;
-  const { commit: releaseComplete } = useGetCommit({
-    ref: mostRecentVersionSha,
-  });
+  const releaseTimes = useAsync(() =>
+    getTagDates({
+      pluginApiClient,
+      project,
+      startTag: [...releaseStat.candidates].reverse()[0],
+      endTag: releaseStat.versions[0],
+    }),
+  );
 
-  if (releaseCut.loading || releaseComplete.loading) {
+  if (releaseTimes.loading || releaseTimes.loading) {
     return (
       <Wrapper>
         <CenteredCircularProgress />
@@ -44,19 +53,22 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
     );
   }
 
-  if (releaseCut.error) {
+  if (releaseTimes.error) {
     return (
       <Alert severity="error">
         Failed to fetch the first Release Candidate commit (
-        {releaseCut.error.message})
+        {releaseTimes.error.message})
       </Alert>
     );
   }
 
-  const diff =
-    releaseCut.value?.createdAt && releaseComplete.value?.createdAt
-      ? DateTime.fromISO(releaseComplete.value.createdAt)
-          .diff(DateTime.fromISO(releaseCut.value.createdAt), ['days', 'hours'])
+  const { days = 0, hours = 0 } =
+    releaseTimes.value?.startDate && releaseTimes.value?.endDate
+      ? DateTime.fromISO(releaseTimes.value.endDate)
+          .diff(DateTime.fromISO(releaseTimes.value.startDate), [
+            'days',
+            'hours',
+          ])
           .toObject()
       : { days: -1 };
 
@@ -71,8 +83,8 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
       >
         <Typography variant="body1">
           {releaseStat.versions.length === 0 ? '-' : 'Release completed '}
-          {releaseComplete.value?.createdAt &&
-            DateTime.fromISO(releaseComplete.value.createdAt)
+          {releaseTimes.value?.endDate &&
+            DateTime.fromISO(releaseTimes.value.endDate)
               .setLocale('sv-SE')
               .toFormat('yyyy-MM-dd')}
         </Typography>
@@ -85,11 +97,13 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
           alignItems: 'center',
         }}
       >
-        <Typography variant="h5" color="secondary">
-          {diff.days === -1 ? (
-            <>Ongoing: {diff.days} days</>
+        <Typography variant="h6" color="secondary">
+          {days === -1 ? (
+            <>Ongoing</>
           ) : (
-            <>Completed in: {diff.days} days</>
+            <>
+              Completed in: {days} days {getDecimalNumber(hours, 1)} hours
+            </>
           )}
         </Typography>
       </Box>
@@ -103,8 +117,8 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
       >
         <Typography variant="body1">
           Release Candidate created{' '}
-          {releaseCut.value?.createdAt &&
-            DateTime.fromISO(releaseCut.value.createdAt)
+          {releaseTimes.value?.startDate &&
+            DateTime.fromISO(releaseTimes.value.startDate)
               .setLocale('sv-SE')
               .toFormat('yyyy-MM-dd')}
         </Typography>

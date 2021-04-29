@@ -28,32 +28,19 @@ export function getReleaseCommitPairs({
       const endTag = release.versions[0];
 
       // Missing Release Candidate for unknown reason
-      if (!startTag?.sha) {
+      if (!startTag) {
         return acc;
       }
 
       // Missing Release Version (likely prerelease)
-      if (!endTag?.sha) {
-        return acc;
-      }
-
-      // First RC tag is pointing towards the same commit as the most
-      // recent Version tag, meaning there haven't been any patches
-      // and we thus cannot determine and difference in time
-      if (startTag?.sha === endTag?.sha) {
+      if (!endTag) {
         return acc;
       }
 
       return acc.concat({
         baseVersion: release.baseVersion,
-        startCommit: {
-          tagName: startTag.tagName,
-          sha: startTag.sha,
-        },
-        endCommit: {
-          tagName: endTag.tagName,
-          sha: endTag.sha,
-        },
+        startCommit: { ...startTag },
+        endCommit: { ...endTag },
       });
     },
     [],
