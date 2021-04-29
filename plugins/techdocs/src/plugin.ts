@@ -24,10 +24,6 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
-import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
 import { techdocsApiRef, techdocsStorageApiRef } from './api';
 import { TechDocsClient, TechDocsStorageClient } from './client';
 
