@@ -469,23 +469,26 @@ ${selectedPatchCommit.commit.message}`,
     },
   };
 
-  promoteRc: GitReleaseApi['promoteRc'] = {
-    promoteRelease: async ({ owner, repo, releaseId, releaseVersion }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: promotedRelease } = await octokit.repos.updateRelease({
-        owner,
-        repo,
-        release_id: releaseId,
-        tag_name: releaseVersion,
-        prerelease: false,
-      });
+  promoteRelease: GitReleaseApi['promoteRelease'] = async ({
+    owner,
+    repo,
+    releaseId,
+    tagName,
+  }) => {
+    const { octokit } = await this.getOctokit();
+    const { data: promotedRelease } = await octokit.repos.updateRelease({
+      owner,
+      repo,
+      release_id: releaseId,
+      tag_name: tagName,
+      prerelease: false,
+    });
 
-      return {
-        name: promotedRelease.name,
-        tagName: promotedRelease.tag_name,
-        htmlUrl: promotedRelease.html_url,
-      };
-    },
+    return {
+      name: promotedRelease.name,
+      tagName: promotedRelease.tag_name,
+      htmlUrl: promotedRelease.html_url,
+    };
   };
 
   stats: GitReleaseApi['stats'] = {
@@ -767,18 +770,18 @@ export interface GitReleaseApi {
       htmlUrl: string;
     }>;
   };
-  promoteRc: {
-    promoteRelease: (
-      args: {
-        releaseId: NonNullable<GetLatestReleaseResult>['id'];
-        releaseVersion: string;
-      } & OwnerRepo,
-    ) => Promise<{
-      name: string | null;
+
+  promoteRelease: (
+    args: {
+      releaseId: number;
       tagName: string;
-      htmlUrl: string;
-    }>;
-  };
+    } & OwnerRepo,
+  ) => Promise<{
+    name: string | null;
+    tagName: string;
+    htmlUrl: string;
+  }>;
+
   stats: {
     getAllTags: (
       args: OwnerRepo,
@@ -861,7 +864,7 @@ export type UpdateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['patch']['updateRelease']
 >;
 export type PromoteReleaseResult = UnboxReturnedPromise<
-  GitReleaseApi['promoteRc']['promoteRelease']
+  GitReleaseApi['promoteRelease']
 >;
 export type GetAllTagsResult = UnboxReturnedPromise<
   GitReleaseApi['stats']['getAllTags']

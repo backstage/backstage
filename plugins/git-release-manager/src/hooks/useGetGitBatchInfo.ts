@@ -32,8 +32,14 @@ export const useGetGitBatchInfo = ({
 }: GetGitBatchInfo) => {
   const gitBatchInfo = useAsync(async () => {
     const [repository, latestRelease] = await Promise.all([
-      pluginApiClient.getRepository({ ...project }),
-      pluginApiClient.getLatestRelease({ ...project }),
+      pluginApiClient.getRepository({
+        owner: project.owner,
+        repo: project.repo,
+      }),
+      pluginApiClient.getLatestRelease({
+        owner: project.owner,
+        repo: project.repo,
+      }),
     ]);
 
     if (latestRelease === null) {
@@ -45,7 +51,8 @@ export const useGetGitBatchInfo = ({
     }
 
     const releaseBranch = await pluginApiClient.getBranch({
-      ...project,
+      owner: project.owner,
+      repo: project.repo,
       branchName: latestRelease.targetCommitish,
     });
 
