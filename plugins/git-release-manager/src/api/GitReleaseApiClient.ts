@@ -401,6 +401,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       selectedPatchCommit,
       mergeTree,
       releaseBranchSha,
+      messageSuffix,
     }) => {
       const { octokit } = await this.getOctokit();
       const { data: cherryPickCommit } = await octokit.git.createCommit({
@@ -408,7 +409,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
         repo,
         message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}
 
-${selectedPatchCommit.sha}`,
+${messageSuffix}`,
         tree: mergeTree,
         parents: [releaseBranchSha],
       });
@@ -757,6 +758,7 @@ export interface GitReleaseApi {
         >;
         mergeTree: string;
         releaseBranchSha: string;
+        messageSuffix: string;
       } & OwnerRepo,
     ) => Promise<{
       message: string;

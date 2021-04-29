@@ -24,11 +24,12 @@ import {
 } from '../../../api/GitReleaseApiClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch, CardHook } from '../../../types/types';
+import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
-import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
+import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
 
 interface Patch {
@@ -190,6 +191,9 @@ export function usePatch({
         mergeTree: mergeRes.value.commit.tree.sha,
         releaseBranchSha,
         selectedPatchCommit: releaseBranchRes.value.selectedPatchCommit,
+        messageSuffix: getPatchCommitSuffix({
+          commitSha: releaseBranchRes.value.selectedPatchCommit.sha,
+        }),
       })
       .catch(asyncCatcher);
 
