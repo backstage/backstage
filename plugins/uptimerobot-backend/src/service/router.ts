@@ -90,8 +90,10 @@ export async function createRouter({
 }: RouterOptions): Promise<express.Router> {
   logger.info('Initializing UptimeRobot backend.');
 
-  if (config.getConfigArray('uptimerobot.apiKeys').length === 0) {
-    logger.warn('No API keys configured.');
+  if (!config.getOptionalConfigArray('uptimerobot.apiKeys')?.length) {
+    logger.warn(
+      'The UptimeRobot plugin was initialized but there are no API keys configured.',
+    );
   }
 
   const router = Router();
@@ -100,8 +102,10 @@ export async function createRouter({
   router.get(
     '/monitors',
     async (_, res): Promise<any> => {
-      const existingApiKeys = config.getConfigArray('uptimerobot.apiKeys');
-      if (existingApiKeys.length === 0) {
+      const existingApiKeys = config.getOptionalConfigArray(
+        'uptimerobot.apiKeys',
+      );
+      if (!existingApiKeys?.length) {
         logger.warn(
           'The UptimeRobot plugin was initialized but there are no API keys configured.',
         );
@@ -130,8 +134,10 @@ export async function createRouter({
   router.get(
     '/monitors/:annotation',
     async (req, res): Promise<any> => {
-      const existingApiKeys = config.getConfigArray('uptimerobot.apiKeys');
-      if (existingApiKeys.length === 0) {
+      const existingApiKeys = config.getOptionalConfigArray(
+        'uptimerobot.apiKeys',
+      );
+      if (!existingApiKeys?.length) {
         logger.warn(
           'The UptimeRobot plugin was initialized but there are no API keys configured.',
         );
