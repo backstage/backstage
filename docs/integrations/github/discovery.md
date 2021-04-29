@@ -52,3 +52,13 @@ Backstage to use the [github-apps plugin](../../plugins/github-apps.md).
 
 This is true for any method of adding GitHub entities to the catalog, but
 especially easy to hit with automatic discovery.
+
+## Error handling
+
+Syntax errors or other types of errors present in `catalog-info.yaml` files will
+be logged for investigation and the importer will continue. Errors do not cause
+the process to fail.
+
+When multiple `catalog-info.yaml` files with the same `metadata.name` property
+are discovered, one will be skipped and the process will continue. This action
+will be logged for later investication.
