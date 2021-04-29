@@ -1,0 +1,11 @@
+---
+title: UptimeRobot
+author: '@simonknittel'
+authorUrl: https://github.com/simonknittel
+category: Monitoring
+description:
+documentation: https://github.com/backstage/backstage/tree/master/plugins/uptimerobot
+iconUrl: https://uptimerobot.com/assets/images/uptimerobot-logo.svg
+npmPackageName: '@backstage/plugin-uptimerobot'
+tags:
+  - monitoring
