@@ -225,33 +225,31 @@ export const mockApiClient: GitReleaseApi = {
     objectSha: 'mock_createRef_objectSha',
   })),
 
-  createRc: {
-    createRelease: jest.fn(async () => ({
-      name: 'mock_createRelease_name',
-      htmlUrl: 'mock_createRelease_html_url',
-      tagName: 'mock_createRelease_tag_name',
-    })),
+  createRelease: jest.fn(async () => ({
+    name: 'mock_createRelease_name',
+    htmlUrl: 'mock_createRelease_html_url',
+    tagName: 'mock_createRelease_tag_name',
+  })),
 
-    getComparison: jest.fn(async () => ({
-      htmlUrl: 'mock_compareCommits_html_url',
-      aheadBy: 1,
-    })),
-  },
+  getComparison: jest.fn(async () => ({
+    htmlUrl: 'mock_compareCommits_html_url',
+    aheadBy: 1,
+  })),
 
   createTagObject: jest.fn(async () => ({
     tagName: 'mock_tag_object_tag',
     tagSha: 'mock_tag_object_sha',
   })),
 
+  createCommit: jest.fn(async () => ({
+    message: 'mock_commit_message',
+    sha: 'mock_commit_sha',
+  })),
+
   patch: {
     createCherryPickCommit: jest.fn(async () => ({
       message: 'mock_cherrypick_message',
       sha: 'mock_cherrypick_sha',
-    })),
-
-    createTempCommit: jest.fn(async () => ({
-      message: 'mock_commit_message',
-      sha: 'mock_commit_sha',
     })),
 
     forceBranchHeadToTempCommit: jest.fn(async () => undefined),
@@ -286,30 +284,28 @@ export const mockApiClient: GitReleaseApi = {
     htmlUrl: 'mock_release_html_url',
   })),
 
-  stats: {
-    getAllTags: jest.fn(async () => [
-      {
-        tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
-        tagSha: 'mock_sha',
-        tagType: 'tag' as const,
-      },
-    ]),
+  getAllTags: jest.fn(async () => [
+    {
+      tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+      tagSha: 'mock_sha',
+      tagType: 'tag' as const,
+    },
+  ]),
 
-    getAllReleases: jest.fn(async () => [
-      {
-        id: 1,
-        name: 'mock_release_name',
-        tagName: 'mock_release_tag_name',
-        createdAt: 'mock_release_published_at',
-        htmlUrl: 'mock_release_html_url',
-      },
-    ]),
+  getAllReleases: jest.fn(async () => [
+    {
+      id: 1,
+      name: 'mock_release_name',
+      tagName: 'mock_release_tag_name',
+      createdAt: 'mock_release_published_at',
+      htmlUrl: 'mock_release_html_url',
+    },
+  ]),
 
-    getSingleTag: jest.fn(async () => ({
-      date: '2021-04-29T12:48:30.120Z',
-      username: 'mock_user_single_tag_name',
-      userEmail: 'mock_user_single_tag_email',
-      objectSha: 'mock_single_tag_object_sha',
-    })),
-  },
+  getSingleTag: jest.fn(async () => ({
+    date: '2021-04-29T12:48:30.120Z',
+    username: 'mock_user_single_tag_name',
+    userEmail: 'mock_user_single_tag_email',
+    objectSha: 'mock_single_tag_object_sha',
+  })),
 };

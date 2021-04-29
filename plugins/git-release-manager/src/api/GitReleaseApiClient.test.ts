@@ -32,14 +32,15 @@ describe('GitReleaseApiClient', () => {
     expect(gitReleaseApiClient).toMatchInlineSnapshot(`
       GitReleaseApiClient {
         "baseUrl": "https://api.github.com",
-        "createRc": Object {
-          "createRelease": [Function],
-          "getComparison": [Function],
-        },
+        "createCommit": [Function],
         "createRef": [Function],
+        "createRelease": [Function],
         "createTagObject": [Function],
+        "getAllReleases": [Function],
+        "getAllTags": [Function],
         "getBranch": [Function],
         "getCommit": [Function],
+        "getComparison": [Function],
         "getHost": [Function],
         "getLatestRelease": [Function],
         "getOwners": [Function],
@@ -47,6 +48,7 @@ describe('GitReleaseApiClient', () => {
         "getRepoPath": [Function],
         "getRepositories": [Function],
         "getRepository": [Function],
+        "getSingleTag": [Function],
         "getUser": [Function],
         "githubAuthApi": Object {
           "getAccessToken": [MockFunction],
@@ -54,18 +56,12 @@ describe('GitReleaseApiClient', () => {
         "host": "github.com",
         "patch": Object {
           "createCherryPickCommit": [Function],
-          "createTempCommit": [Function],
           "forceBranchHeadToTempCommit": [Function],
           "merge": [Function],
           "replaceTempCommit": [Function],
           "updateRelease": [Function],
         },
         "promoteRelease": [Function],
-        "stats": Object {
-          "getAllReleases": [Function],
-          "getAllTags": [Function],
-          "getSingleTag": [Function],
-        },
       }
     `);
   });

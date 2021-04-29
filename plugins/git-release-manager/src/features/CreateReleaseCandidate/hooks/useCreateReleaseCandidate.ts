@@ -197,7 +197,7 @@ export function useCreateReleaseCandidate({
       ? latestRelease.targetCommitish
       : defaultBranch;
     const nextReleaseBranch = releaseCandidateGitInfo.rcBranch;
-    const comparison = await pluginApiClient.createRc
+    const comparison = await pluginApiClient
       .getComparison({
         owner: project.owner,
         repo: project.repo,
@@ -235,14 +235,14 @@ export function useCreateReleaseCandidate({
     abortIfError(getComparisonRes.error);
     if (!getComparisonRes.value) return undefined;
 
-    const createReleaseResult = await pluginApiClient.createRc
+    const createReleaseResult = await pluginApiClient
       .createRelease({
         owner: project.owner,
         repo: project.repo,
-        rcReleaseTag: releaseCandidateGitInfo.rcReleaseTag,
-        releaseName: releaseCandidateGitInfo.releaseName,
-        rcBranch: releaseCandidateGitInfo.rcBranch,
-        releaseBody: getComparisonRes.value.releaseBody,
+        tagName: releaseCandidateGitInfo.rcReleaseTag,
+        name: releaseCandidateGitInfo.releaseName,
+        targetCommitish: releaseCandidateGitInfo.rcBranch,
+        body: getComparisonRes.value.releaseBody,
       })
       .catch(asyncCatcher);
 

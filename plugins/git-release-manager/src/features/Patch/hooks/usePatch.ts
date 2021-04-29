@@ -97,14 +97,15 @@ export function usePatch({
     abortIfError(releaseBranchRes.error);
     if (!releaseBranchRes.value) return undefined;
 
-    const tempCommit = await pluginApiClient.patch
-      .createTempCommit({
+    const tempCommit = await pluginApiClient
+      .createCommit({
         owner: project.owner,
         repo: project.repo,
-        releaseBranchTree:
-          releaseBranchRes.value.releaseBranch.commit.commit.tree.sha,
-        selectedPatchCommit: releaseBranchRes.value.selectedPatchCommit,
-        tagParts,
+        message: `Temporary commit for patch ${tagParts.patch}`,
+        parents: [
+          releaseBranchRes.value.selectedPatchCommit.firstParentSha ?? '',
+        ],
+        tree: releaseBranchRes.value.releaseBranch.commit.commit.tree.sha,
       })
       .catch(asyncCatcher);
 
@@ -130,8 +131,8 @@ export function usePatch({
       .forceBranchHeadToTempCommit({
         owner: project.owner,
         repo: project.repo,
-        tempCommit: tempCommitRes.value,
-        releaseBranchName,
+        sha: tempCommitRes.value.sha,
+        ref: `heads/${releaseBranchName}`,
       })
       .catch(asyncCatcher);
 
@@ -140,7 +141,7 @@ export function usePatch({
     });
 
     return {
-      great: 'success 🚀',
+      trigger: 'next step 🚀 ',
     };
   }, [tempCommitRes.value, tempCommitRes.error]);
 

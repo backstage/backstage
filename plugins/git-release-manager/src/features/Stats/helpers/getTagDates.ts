@@ -39,12 +39,12 @@ export const getTagDates = async ({
 }: GetTagDates) => {
   if (startTag.tagType === 'tag' && endTag.tagType === 'tag') {
     const [{ date: startDate }, { date: endDate }] = await Promise.all([
-      pluginApiClient.stats.getSingleTag({
+      pluginApiClient.getSingleTag({
         owner: project.owner,
         repo: project.repo,
         tagSha: startTag.tagSha,
       }),
-      pluginApiClient.stats.getSingleTag({
+      pluginApiClient.getSingleTag({
         owner: project.owner,
         repo: project.repo,
         tagSha: endTag.tagSha,
@@ -126,7 +126,7 @@ async function getCommitFromTag({
   project: GetTagDates['project'];
   tag: GetTagDates['startTag'] | GetTagDates['endTag'];
 }) {
-  const singleTag = await pluginApiClient.stats.getSingleTag({
+  const singleTag = await pluginApiClient.getSingleTag({
     owner: project.owner,
     repo: project.repo,
     tagSha: tag.tagSha,
