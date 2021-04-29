@@ -38,24 +38,14 @@ describe('getMappedReleases', () => {
           "releases": Object {
             "1.0": Object {
               "baseVersion": "1.0",
-              "candidates": Array [
-                Object {
-                  "sha": "",
-                  "tagName": "rc-1.0.0",
-                },
-              ],
+              "candidates": Array [],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
               "versions": Array [],
             },
             "1.1": Object {
               "baseVersion": "1.1",
-              "candidates": Array [
-                Object {
-                  "sha": "",
-                  "tagName": "rc-1.1.0",
-                },
-              ],
+              "candidates": Array [],
               "createdAt": "2021-01-01T10:11:12Z",
               "htmlUrl": "html_url",
               "versions": Array [],

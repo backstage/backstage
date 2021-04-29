@@ -27,24 +27,15 @@ describe('getReleaseStats', () => {
             baseVersion: '1.0',
             createdAt: '2021-01-01T10:11:12Z',
             htmlUrl: 'html_url',
-            candidates: [
-              {
-                tagName: 'rc-1.0.0',
-                sha: '',
-              },
-            ],
+            candidates: [],
             versions: [],
           },
           '1.1': {
             baseVersion: '1.1',
             createdAt: '2021-01-01T10:11:12Z',
             htmlUrl: 'html_url',
-            candidates: [
-              {
-                tagName: 'rc-1.1.0',
-                sha: '',
-              },
-            ],
+            candidates: [],
+
             versions: [],
           },
         },
@@ -96,10 +87,6 @@ describe('getReleaseStats', () => {
             "1.1": Object {
               "baseVersion": "1.1",
               "candidates": Array [
-                Object {
-                  "sha": "",
-                  "tagName": "rc-1.1.0",
-                },
                 Object {
                   "sha": "sha",
                   "tagName": "rc-1.1.1",

@@ -37,6 +37,16 @@ describe('GitReleaseApiClient', () => {
           "createRelease": [Function],
           "getComparison": [Function],
         },
+        "getBranch": [Function],
+        "getHost": [Function],
+        "getLatestCommit": [Function],
+        "getLatestRelease": [Function],
+        "getOwners": [Function],
+        "getRecentCommits": [Function],
+        "getRepoPath": [Function],
+        "getRepositories": [Function],
+        "getRepository": [Function],
+        "getUser": [Function],
         "githubAuthApi": Object {
           "getAccessToken": [MockFunction],
         },
@@ -58,6 +68,7 @@ describe('GitReleaseApiClient', () => {
           "getAllReleases": [Function],
           "getAllTags": [Function],
           "getCommit": [Function],
+          "getSingleTag": [Function],
         },
       }
     `);

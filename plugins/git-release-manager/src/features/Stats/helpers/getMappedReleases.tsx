@@ -40,24 +40,18 @@ export function getMappedReleases({
           return acc;
         }
 
-        const prefix = match[1] as 'rc' | 'version';
         const baseVersion =
           project.versioningStrategy === 'semver'
             ? `${match[2]}.${match[3]}`
             : match[2];
 
         if (!acc.releases[baseVersion]) {
-          const releaseEntry = {
-            tagName: release.tagName,
-            sha: '',
-          };
-
           acc.releases[baseVersion] = {
             baseVersion,
             createdAt: release.createdAt,
             htmlUrl: release.htmlUrl,
-            candidates: prefix === 'rc' ? [releaseEntry] : [],
-            versions: prefix === 'version' ? [releaseEntry] : [],
+            candidates: [],
+            versions: [],
           };
 
           return acc;

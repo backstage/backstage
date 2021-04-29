@@ -55,18 +55,7 @@ export function getReleaseStats({
       }
 
       const dest = release[prefix === 'rc' ? 'candidates' : 'versions'];
-      const releaseToEnrich = dest.find(
-        ({ tagName }) => tagName === tag.tagName,
-      );
-
-      if (releaseToEnrich) {
-        releaseToEnrich.sha = tag.sha;
-      } else {
-        dest.push({
-          tagName: tag.tagName,
-          sha: tag.sha,
-        });
-      }
+      dest.push(tag);
 
       return acc;
     },

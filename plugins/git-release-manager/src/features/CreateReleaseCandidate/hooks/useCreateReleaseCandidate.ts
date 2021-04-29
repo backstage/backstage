@@ -135,8 +135,8 @@ export function useCreateReleaseCandidate({
       .getComparison({
         owner: project.owner,
         repo: project.repo,
-        previousReleaseBranch,
-        nextReleaseBranch,
+        base: previousReleaseBranch,
+        head: nextReleaseBranch,
       })
       .catch(asyncCatcher);
 

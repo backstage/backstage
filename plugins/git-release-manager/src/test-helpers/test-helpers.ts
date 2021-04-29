@@ -306,5 +306,11 @@ export const mockApiClient: GitReleaseApi = {
     getCommit: jest.fn(async () => ({
       createdAt: '2021-01-01T10:11:12Z',
     })),
+
+    getSingleTag: jest.fn(async () => ({
+      date: '2021-04-29T12:48:30.120Z',
+      username: 'mock_usersingle_tag_name',
+      userEmail: 'mock_userEsingle_tag_mail',
+    })),
   },
 };

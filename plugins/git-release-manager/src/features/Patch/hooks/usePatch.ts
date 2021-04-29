@@ -238,8 +238,8 @@ export function usePatch({
       .createTagObject({
         owner: project.owner,
         repo: project.repo,
-        bumpedTag,
-        updatedReference: updatedRefRes.value,
+        tag: bumpedTag,
+        objectSha: updatedRefRes.value.object.sha,
       })
       .catch(asyncCatcher);
 
