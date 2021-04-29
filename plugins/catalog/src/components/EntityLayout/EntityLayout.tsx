@@ -20,6 +20,7 @@ import {
   RELATION_OWNED_BY,
 } from '@backstage/catalog-model';
 import {
+  attachComponentData,
   Content,
   Header,
   HeaderLabel,
@@ -34,12 +35,11 @@ import {
   getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
-import { attachComponentData } from '@backstage/core-api';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {
-  default as React,
   Children,
+  default as React,
   Fragment,
   isValidElement,
   useContext,
