@@ -294,10 +294,10 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
-          <EntityDependsOnComponentsCard />
+          <EntityDependsOnComponentsCard variant="gridItem" />
         </Grid>
         <Grid item md={6}>
-          <EntityDependsOnResourcesCard />
+          <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -353,10 +353,10 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
-          <EntityDependsOnComponentsCard />
+          <EntityDependsOnComponentsCard variant="gridItem" />
         </Grid>
         <Grid item md={6}>
-          <EntityDependsOnResourcesCard />
+          <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityLayout.Route>
