@@ -14,79 +14,30 @@
  * limitations under the License.
  */
 
-import { ComponentEntity, RELATION_DEPENDS_ON } from '@backstage/catalog-model';
-import {
-  CodeSnippet,
-  InfoCard,
-  Link,
-  Progress,
-  WarningPanel,
-} from '@backstage/core';
-import { Typography } from '@material-ui/core';
-import {
-  EntityTable,
-  useEntity,
-  useRelatedEntities,
-} from '@backstage/plugin-catalog-react';
+import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import React from 'react';
+import {
+  asResourceEntities,
+  componentHelpLink,
+  RelatedEntitiesCard,
+  resourceColumns,
+} from '../RelatedEntitiesCard';
 
 type Props = {
   variant?: 'gridItem';
 };
 
-const columns = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'resource' }),
-  EntityTable.columns.createOwnerColumn(),
-  EntityTable.columns.createSpecTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-];
-
 export const DependsOnResourcesCard = ({ variant = 'gridItem' }: Props) => {
-  const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_DEPENDS_ON,
-    kind: 'Resource',
-  });
-
-  if (loading) {
-    return (
-      <InfoCard variant={variant} title="Resources">
-        <Progress />
-      </InfoCard>
-    );
-  }
-
-  if (error || !entities) {
-    return (
-      <InfoCard variant={variant} title="Resources">
-        <WarningPanel
-          severity="error"
-          title="Could not load resources"
-          message={<CodeSnippet text={`${error}`} language="text" />}
-        />
-      </InfoCard>
-    );
-  }
-
   return (
-    <EntityTable
-      title="Resources"
+    <RelatedEntitiesCard
       variant={variant}
-      emptyContent={
-        <div style={{ textAlign: 'center' }}>
-          <Typography variant="body1">
-            No resource is a dependency of this component.
-          </Typography>
-          <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component">
-              Learn how to change this.
-            </Link>
-          </Typography>
-        </div>
-      }
-      columns={columns}
-      entities={entities as ComponentEntity[]}
+      title="Resources"
+      entityKind="Resource"
+      relationType={RELATION_DEPENDS_ON}
+      columns={resourceColumns}
+      emptyMessage="No resource is a dependency of this component"
+      emptyHelpLink={componentHelpLink}
+      asRenderableEntities={asResourceEntities}
     />
   );
 };

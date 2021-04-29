@@ -14,79 +14,30 @@
  * limitations under the License.
  */
 
-import { ResourceEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
-import {
-  CodeSnippet,
-  InfoCard,
-  Link,
-  Progress,
-  WarningPanel,
-} from '@backstage/core';
-import { Typography } from '@material-ui/core';
-import {
-  EntityTable,
-  useEntity,
-  useRelatedEntities,
-} from '@backstage/plugin-catalog-react';
+import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import React from 'react';
+import {
+  asResourceEntities,
+  RelatedEntitiesCard,
+  resourceColumns,
+  resourceHelpLink,
+} from '../RelatedEntitiesCard';
 
 type Props = {
   variant?: 'gridItem';
 };
 
-const columns = [
-  EntityTable.columns.createEntityRefColumn({ defaultKind: 'resource' }),
-  EntityTable.columns.createOwnerColumn(),
-  EntityTable.columns.createSpecTypeColumn(),
-  EntityTable.columns.createSpecLifecycleColumn(),
-  EntityTable.columns.createMetadataDescriptionColumn(),
-];
-
 export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
-  const { entity } = useEntity();
-  const { entities, loading, error } = useRelatedEntities(entity, {
-    type: RELATION_HAS_PART,
-    kind: 'Resource',
-  });
-
-  if (loading) {
-    return (
-      <InfoCard variant={variant} title="Resources">
-        <Progress />
-      </InfoCard>
-    );
-  }
-
-  if (error || !entities) {
-    return (
-      <InfoCard variant={variant} title="Resources">
-        <WarningPanel
-          severity="error"
-          title="Could not load resources"
-          message={<CodeSnippet text={`${error}`} language="text" />}
-        />
-      </InfoCard>
-    );
-  }
-
   return (
-    <EntityTable
-      title="Resources"
+    <RelatedEntitiesCard
       variant={variant}
-      emptyContent={
-        <div style={{ textAlign: 'center' }}>
-          <Typography variant="body1">
-            No resource is part of this system.
-          </Typography>
-          <Typography variant="body2">
-            <Link to="https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource">
-              Learn how to change this.
-            </Link>
-          </Typography>
-        </div>
-      }
-      columns={columns}
-      entities={entities as ResourceEntity[]}
+      title="Resources"
+      entityKind="Resource"
+      relationType={RELATION_HAS_PART}
+      columns={resourceColumns}
+      asRenderableEntities={asResourceEntities}
+      emptyMessage="No resource is part of this system"
+      emptyHelpLink={resourceHelpLink}
     />
   );
 };
