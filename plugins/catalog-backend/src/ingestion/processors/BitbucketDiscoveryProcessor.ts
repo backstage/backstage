@@ -90,7 +90,7 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
     for (const repository of result.matches) {
       for await (const entity of this.parser({
         integration: integration,
-        target: `${repository.links.self[0]}${catalogPath}`,
+        target: `${repository.links.self[0].href}${catalogPath}`,
         logger: this.logger,
       })) {
         emit(entity);
