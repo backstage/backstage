@@ -3,4 +3,4 @@
 '@backstage/plugin-kubernetes-backend': patch
 ---
 
-Adds @backstage/kubernetes-common library to share types between kubernetes frontend and backend.
+Adds @backstage/plugin-kubernetes-common library to share types between kubernetes frontend and backend.
