@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import { OAuthApi } from '@backstage/core';
+import { ConfigReader, OAuthApi } from '@backstage/core';
 
 import { PluginApiClient } from './PluginApiClient';
 
-jest.mock('@backstage/integration', () => ({
-  readGitHubIntegrationConfigs: jest.fn(() => []),
-}));
-
 describe('PluginApiClient', () => {
   it('should return the default plugin api client', () => {
-    const configApi = {
-      getOptionalConfigArray: jest.fn(),
-    } as any;
+    const configApi = new ConfigReader({});
     const githubAuthApi: OAuthApi = {
       getAccessToken: jest.fn(),
     };
