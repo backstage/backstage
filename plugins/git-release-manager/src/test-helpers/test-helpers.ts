@@ -253,23 +253,21 @@ export const mockApiClient: GitReleaseApi = {
     },
   })),
 
-  patch: {
-    merge: jest.fn(async () => ({
-      htmlUrl: 'mock_merge_html_url',
-      commit: {
-        message: 'mock_merge_commit_message',
-        tree: {
-          sha: 'mock_merge_commit_tree_sha',
-        },
+  merge: jest.fn(async () => ({
+    htmlUrl: 'mock_merge_html_url',
+    commit: {
+      message: 'mock_merge_commit_message',
+      tree: {
+        sha: 'mock_merge_commit_tree_sha',
       },
-    })),
+    },
+  })),
 
-    updateRelease: jest.fn(async () => ({
-      name: 'mock_update_release_name',
-      tagName: 'mock_update_release_tag_name',
-      htmlUrl: 'mock_update_release_html_url',
-    })),
-  },
+  updateRelease: jest.fn(async () => ({
+    name: 'mock_update_release_name',
+    tagName: 'mock_update_release_tag_name',
+    htmlUrl: 'mock_update_release_html_url',
+  })),
 
   promoteRelease: jest.fn(async () => ({
     name: 'mock_release_name',

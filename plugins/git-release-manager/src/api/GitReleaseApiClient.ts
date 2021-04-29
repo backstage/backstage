@@ -18,10 +18,8 @@ import { ConfigApi, OAuthApi } from '@backstage/core';
 import { Octokit } from '@octokit/rest';
 import { readGitHubIntegrationConfigs } from '@backstage/integration';
 
-import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
-import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
 import { UnboxArray, UnboxReturnedPromise } from '../types/helpers';
 
 export class GitReleaseApiClient implements GitReleaseApi {
@@ -377,54 +375,47 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   };
 
-  patch: GitReleaseApi['patch'] = {
-    merge: async ({ owner, repo, base, head }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: merge } = await octokit.repos.merge({
-        owner,
-        repo,
-        base,
-        head,
-      });
-
-      return {
-        htmlUrl: merge.html_url,
-        commit: {
-          message: merge.commit.message,
-          tree: {
-            sha: merge.commit.tree.sha,
-          },
-        },
-      };
-    },
-
-    updateRelease: async ({
+  merge: GitReleaseApi['merge'] = async ({ owner, repo, base, head }) => {
+    const { octokit } = await this.getOctokit();
+    const { data: merge } = await octokit.repos.merge({
       owner,
       repo,
-      bumpedTag,
-      latestRelease,
-      tagParts,
-      selectedPatchCommit,
-    }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: updatedRelease } = await octokit.repos.updateRelease({
-        owner,
-        repo,
-        release_id: latestRelease.id,
-        tag_name: bumpedTag,
-        body: `${latestRelease.body}
+      base,
+      head,
+    });
 
-#### [Patch ${tagParts.patch}](${selectedPatchCommit.htmlUrl})
-  
-${selectedPatchCommit.commit.message}`,
-      });
+    return {
+      htmlUrl: merge.html_url,
+      commit: {
+        message: merge.commit.message,
+        tree: {
+          sha: merge.commit.tree.sha,
+        },
+      },
+    };
+  };
 
-      return {
-        name: updatedRelease.name,
-        tagName: updatedRelease.tag_name,
-        htmlUrl: updatedRelease.html_url,
-      };
-    },
+  updateRelease: GitReleaseApi['updateRelease'] = async ({
+    owner,
+    repo,
+    releaseId,
+    body,
+    tagName,
+  }) => {
+    const { octokit } = await this.getOctokit();
+    const { data: updatedRelease } = await octokit.repos.updateRelease({
+      owner,
+      repo,
+      release_id: releaseId,
+      tag_name: tagName,
+      body,
+    });
+
+    return {
+      name: updatedRelease.name,
+      tagName: updatedRelease.tag_name,
+      htmlUrl: updatedRelease.html_url,
+    };
   };
 
   promoteRelease: GitReleaseApi['promoteRelease'] = async ({
@@ -674,35 +665,32 @@ export interface GitReleaseApi {
     };
   }>;
 
-  patch: {
-    merge: (
-      args: {
-        base: string;
-        head: string;
-      } & OwnerRepo,
-    ) => Promise<{
-      htmlUrl: string;
-      commit: {
-        message: string;
-        tree: {
-          sha: string;
-        };
+  merge: (
+    args: {
+      base: string;
+      head: string;
+    } & OwnerRepo,
+  ) => Promise<{
+    htmlUrl: string;
+    commit: {
+      message: string;
+      tree: {
+        sha: string;
       };
-    }>;
+    };
+  }>;
 
-    updateRelease: (
-      args: {
-        bumpedTag: string;
-        latestRelease: NonNullable<GetLatestReleaseResult>;
-        tagParts: SemverTagParts | CalverTagParts;
-        selectedPatchCommit: GetRecentCommitsResultSingle;
-      } & OwnerRepo,
-    ) => Promise<{
-      name: string | null;
+  updateRelease: (
+    args: {
+      releaseId: number;
+      body: string;
       tagName: string;
-      htmlUrl: string;
-    }>;
-  };
+    } & OwnerRepo,
+  ) => Promise<{
+    name: string | null;
+    tagName: string;
+    htmlUrl: string;
+  }>;
 
   promoteRelease: (
     args: {
@@ -784,12 +772,12 @@ export type GetComparisonResult = UnboxReturnedPromise<
 export type CreateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['createRelease']
 >;
-export type MergeResult = UnboxReturnedPromise<GitReleaseApi['patch']['merge']>;
+export type MergeResult = UnboxReturnedPromise<GitReleaseApi['merge']>;
 export type CreateTagObjectResult = UnboxReturnedPromise<
   GitReleaseApi['createTagObject']
 >;
 export type UpdateReleaseResult = UnboxReturnedPromise<
-  GitReleaseApi['patch']['updateRelease']
+  GitReleaseApi['updateRelease']
 >;
 export type PromoteReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['promoteRelease']

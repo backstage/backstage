@@ -54,12 +54,10 @@ describe('GitReleaseApiClient', () => {
           "getAccessToken": [MockFunction],
         },
         "host": "github.com",
-        "patch": Object {
-          "merge": [Function],
-          "updateRelease": [Function],
-        },
+        "merge": [Function],
         "promoteRelease": [Function],
         "updateRef": [Function],
+        "updateRelease": [Function],
       }
     `);
   });

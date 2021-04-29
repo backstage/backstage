@@ -154,7 +154,7 @@ export function usePatch({
     abortIfError(forceBranchRes.error);
     if (!forceBranchRes.value || !releaseBranchRes.value) return undefined;
 
-    const merge = await pluginApiClient.patch
+    const merge = await pluginApiClient
       .merge({
         owner: project.owner,
         repo: project.repo,
@@ -299,14 +299,19 @@ export function usePatch({
     abortIfError(createdReferenceRes.error);
     if (!createdReferenceRes.value || !releaseBranchRes.value) return undefined;
 
-    const updatedRelease = await pluginApiClient.patch
+    const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
+
+    const updatedRelease = await pluginApiClient
       .updateRelease({
         owner: project.owner,
         repo: project.repo,
-        bumpedTag,
-        latestRelease,
-        selectedPatchCommit: releaseBranchRes.value.selectedPatchCommit,
-        tagParts,
+        releaseId: latestRelease.id,
+        tagName: bumpedTag,
+        body: `${latestRelease.body}
+
+#### [Patch ${tagParts.patch}](${selectedPatchCommit.htmlUrl})
+
+${selectedPatchCommit.commit.message}`,
       })
       .catch(asyncCatcher);
 
