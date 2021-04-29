@@ -281,7 +281,9 @@ export const PatchBody = ({
     <Box data-testid={TEST_IDS.patch.body}>
       <Description />
 
-      <CommitList />
+      <Box style={{ maxHeight: 450, overflowY: 'auto' }}>
+        <CommitList />
+      </Box>
 
       <Button
         disabled={checkedCommitIndex === -1 || progress > 0}
