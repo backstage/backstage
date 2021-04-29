@@ -19,8 +19,8 @@ import React from 'react';
 import {
   asSystemEntities,
   RelatedEntitiesCard,
-  systemColumns,
-  systemHelpLink,
+  systemEntityColumns,
+  systemEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
 type Props = {
@@ -34,10 +34,10 @@ export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
       title="Systems"
       entityKind="System"
       relationType={RELATION_HAS_PART}
-      columns={systemColumns}
+      columns={systemEntityColumns}
       asRenderableEntities={asSystemEntities}
       emptyMessage="No system is part of this domain"
-      emptyHelpLink={systemHelpLink}
+      emptyHelpLink={systemEntityHelpLink}
     />
   );
 };

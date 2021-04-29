@@ -18,8 +18,8 @@ import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import React from 'react';
 import {
   asComponentEntities,
-  componentColumns,
-  componentHelpLink,
+  componentEntityColumns,
+  componentEntityHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
@@ -34,9 +34,9 @@ export const DependsOnComponentsCard = ({ variant = 'gridItem' }: Props) => {
       title="Components"
       entityKind="Component"
       relationType={RELATION_DEPENDS_ON}
-      columns={componentColumns}
+      columns={componentEntityColumns}
       emptyMessage="No component is a dependency of this component"
-      emptyHelpLink={componentHelpLink}
+      emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
     />
   );

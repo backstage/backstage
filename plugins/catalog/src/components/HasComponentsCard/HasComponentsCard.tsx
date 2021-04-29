@@ -18,8 +18,8 @@ import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import React from 'react';
 import {
   asComponentEntities,
-  componentColumns,
-  componentHelpLink,
+  componentEntityColumns,
+  componentEntityHelpLink,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
@@ -34,9 +34,9 @@ export const HasComponentsCard = ({ variant = 'gridItem' }: Props) => {
       title="Components"
       entityKind="Component"
       relationType={RELATION_HAS_PART}
-      columns={componentColumns}
+      columns={componentEntityColumns}
       emptyMessage="No component is part of this system"
-      emptyHelpLink={componentHelpLink}
+      emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
     />
   );

@@ -18,7 +18,7 @@ import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import React from 'react';
 import {
   asComponentEntities,
-  componentColumns,
+  componentEntityColumns,
   RelatedEntitiesCard,
 } from '../RelatedEntitiesCard';
 
@@ -33,7 +33,7 @@ export const HasSubcomponentsCard = ({ variant = 'gridItem' }: Props) => {
       title="Subcomponents"
       entityKind="Component"
       relationType={RELATION_HAS_PART}
-      columns={componentColumns}
+      columns={componentEntityColumns}
       asRenderableEntities={asComponentEntities}
       emptyMessage="No subcomponent is part of this component"
       emptyHelpLink="https://backstage.io/docs/features/software-catalog/descriptor-format#specsubcomponentof-optional"

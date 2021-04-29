@@ -18,9 +18,9 @@ import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import React from 'react';
 import {
   asResourceEntities,
-  componentHelpLink,
+  componentEntityHelpLink,
   RelatedEntitiesCard,
-  resourceColumns,
+  resourceEntityColumns,
 } from '../RelatedEntitiesCard';
 
 type Props = {
@@ -34,9 +34,9 @@ export const DependsOnResourcesCard = ({ variant = 'gridItem' }: Props) => {
       title="Resources"
       entityKind="Resource"
       relationType={RELATION_DEPENDS_ON}
-      columns={resourceColumns}
+      columns={resourceEntityColumns}
       emptyMessage="No resource is a dependency of this component"
-      emptyHelpLink={componentHelpLink}
+      emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asResourceEntities}
     />
   );

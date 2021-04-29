@@ -19,8 +19,8 @@ import React from 'react';
 import {
   asResourceEntities,
   RelatedEntitiesCard,
-  resourceColumns,
-  resourceHelpLink,
+  resourceEntityColumns,
+  resourceEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
 type Props = {
@@ -34,10 +34,10 @@ export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
       title="Resources"
       entityKind="Resource"
       relationType={RELATION_HAS_PART}
-      columns={resourceColumns}
+      columns={resourceEntityColumns}
       asRenderableEntities={asResourceEntities}
       emptyMessage="No resource is part of this system"
-      emptyHelpLink={resourceHelpLink}
+      emptyHelpLink={resourceEntityHelpLink}
     />
   );
 };

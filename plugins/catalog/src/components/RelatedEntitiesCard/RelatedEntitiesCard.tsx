@@ -31,18 +31,18 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 
-type Props = {
+type Props<T extends Entity> = {
   variant?: 'gridItem';
   title: string;
-  columns: TableColumn<Entity>[];
+  columns: TableColumn<T>[];
   entityKind: string;
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
-  asRenderableEntities: (entities: Entity[]) => Entity[];
+  asRenderableEntities: (entities: Entity[]) => T[];
 };
 
-export const RelatedEntitiesCard = ({
+export function RelatedEntitiesCard<T extends Entity>({
   variant = 'gridItem',
   title,
   columns,
@@ -51,7 +51,7 @@ export const RelatedEntitiesCard = ({
   emptyMessage,
   emptyHelpLink,
   asRenderableEntities,
-}: Props) => {
+}: Props<T>) {
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: relationType,
@@ -94,4 +94,4 @@ export const RelatedEntitiesCard = ({
       entities={asRenderableEntities(entities)}
     />
   );
-};
+}

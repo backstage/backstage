@@ -15,4 +15,4 @@
  */
 
 export { RelatedEntitiesCard } from './RelatedEntitiesCard';
-export * from './constants';
+export * from './presets';
