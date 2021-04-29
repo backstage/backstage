@@ -398,32 +398,6 @@ export class GitReleaseApiClient implements GitReleaseApi {
       };
     },
 
-    createCherryPickCommit: async ({
-      owner,
-      repo,
-      bumpedTag,
-      selectedPatchCommit,
-      mergeTree,
-      releaseBranchSha,
-      messageSuffix,
-    }) => {
-      const { octokit } = await this.getOctokit();
-      const { data: cherryPickCommit } = await octokit.git.createCommit({
-        owner,
-        repo,
-        message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}
-
-${messageSuffix}`,
-        tree: mergeTree,
-        parents: [releaseBranchSha],
-      });
-
-      return {
-        message: cherryPickCommit.message,
-        sha: cherryPickCommit.sha,
-      };
-    },
-
     updateRelease: async ({
       owner,
       repo,
@@ -716,21 +690,6 @@ export interface GitReleaseApi {
       };
     }>;
 
-    createCherryPickCommit: (
-      args: {
-        bumpedTag: string;
-        selectedPatchCommit: UnboxArray<
-          UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
-        >;
-        mergeTree: string;
-        releaseBranchSha: string;
-        messageSuffix: string;
-      } & OwnerRepo,
-    ) => Promise<{
-      message: string;
-      sha: string;
-    }>;
-
     updateRelease: (
       args: {
         bumpedTag: string;
@@ -826,9 +785,6 @@ export type CreateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['createRelease']
 >;
 export type MergeResult = UnboxReturnedPromise<GitReleaseApi['patch']['merge']>;
-export type CreateCherryPickCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['patch']['createCherryPickCommit']
->;
 export type CreateTagObjectResult = UnboxReturnedPromise<
   GitReleaseApi['createTagObject']
 >;

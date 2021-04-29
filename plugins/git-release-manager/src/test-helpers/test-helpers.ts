@@ -254,11 +254,6 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   patch: {
-    createCherryPickCommit: jest.fn(async () => ({
-      message: 'mock_cherrypick_message',
-      sha: 'mock_cherrypick_sha',
-    })),
-
     merge: jest.fn(async () => ({
       htmlUrl: 'mock_merge_html_url',
       commit: {

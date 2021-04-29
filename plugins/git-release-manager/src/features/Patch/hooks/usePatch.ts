@@ -184,20 +184,19 @@ export function usePatch({
     if (!mergeRes.value || !releaseBranchRes.value) return undefined;
 
     const releaseBranchSha = releaseBranchRes.value.releaseBranch.commit.sha;
+    const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
 
-    const cherryPickCommit = await pluginApiClient.patch
-      .createCherryPickCommit({
-        owner: project.owner,
-        repo: project.repo,
-        bumpedTag,
-        mergeTree: mergeRes.value.commit.tree.sha,
-        releaseBranchSha,
-        selectedPatchCommit: releaseBranchRes.value.selectedPatchCommit,
-        messageSuffix: getPatchCommitSuffix({
-          commitSha: releaseBranchRes.value.selectedPatchCommit.sha,
-        }),
-      })
-      .catch(asyncCatcher);
+    const cherryPickCommit = await pluginApiClient.createCommit({
+      owner: project.owner,
+      repo: project.repo,
+      message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}
+
+      ${getPatchCommitSuffix({
+        commitSha: selectedPatchCommit.sha,
+      })}`,
+      parents: [releaseBranchSha],
+      tree: mergeRes.value.commit.tree.sha,
+    });
 
     addStepToResponseSteps({
       message: `Cherry-picked patch commit to "${releaseBranchSha}"`,
