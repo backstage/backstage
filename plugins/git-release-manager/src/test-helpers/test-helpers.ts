@@ -24,6 +24,7 @@ import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { getReleaseCandidateGitInfo } from '../helpers/getReleaseCandidateGitInfo';
 
+const mockEmail = 'mock_email';
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';
 
@@ -185,8 +186,9 @@ export const mockApiClient: GitReleaseApi = {
     repositories: [mockRepo, `${mockRepo}2`],
   })),
 
-  getUsername: jest.fn(async () => ({
+  getUser: jest.fn(async () => ({
     username: mockOwner,
+    email: mockEmail,
   })),
 
   getRecentCommits: jest.fn(async () => [

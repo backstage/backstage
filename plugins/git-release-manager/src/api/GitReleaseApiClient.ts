@@ -22,6 +22,7 @@ import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
 import { SemverTagParts } from '../helpers/tagParts/getSemverTagParts';
+import { UnboxArray, UnboxReturnedPromise } from '../types/helpers';
 
 export class GitReleaseApiClient implements GitReleaseApi {
   private readonly githubAuthApi: OAuthApi;
@@ -71,15 +72,15 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   }
 
-  public getHost() {
+  public getHost: GitReleaseApi['getHost'] = () => {
     return this.host;
-  }
+  };
 
-  public getRepoPath({ owner, repo }: OwnerRepo) {
+  public getRepoPath: GitReleaseApi['getRepoPath'] = ({ owner, repo }) => {
     return `${owner}/${repo}`;
-  }
+  };
 
-  async getOwners() {
+  getOwners: GitReleaseApi['getOwners'] = async () => {
     const { octokit } = await this.getOctokit();
     const orgListResponse = await octokit.paginate(
       octokit.orgs.listForAuthenticatedUser,
@@ -89,9 +90,9 @@ export class GitReleaseApiClient implements GitReleaseApi {
     return {
       owners: orgListResponse.map(organization => organization.login),
     };
-  }
+  };
 
-  async getRepositories({ owner }: { owner: string }) {
+  getRepositories: GitReleaseApi['getRepositories'] = async ({ owner }) => {
     const { octokit } = await this.getOctokit();
 
     const repositoryResponse = await octokit
@@ -112,24 +113,23 @@ export class GitReleaseApiClient implements GitReleaseApi {
     return {
       repositories: repositoryResponse.map(repository => repository.name),
     };
-  }
+  };
 
-  async getUsername() {
+  getUser: GitReleaseApi['getUser'] = async () => {
     const { octokit } = await this.getOctokit();
     const userResponse = await octokit.users.getAuthenticated();
 
     return {
       username: userResponse.data.login,
+      email: userResponse.data.email ?? undefined,
     };
-  }
+  };
 
-  async getRecentCommits({
+  getRecentCommits: GitReleaseApi['getRecentCommits'] = async ({
     owner,
     repo,
     releaseBranchName,
-  }: {
-    releaseBranchName?: string;
-  } & OwnerRepo) {
+  }) => {
     const { octokit } = await this.getOctokit();
     const recentCommitsResponse = await octokit.repos.listCommits({
       owner,
@@ -150,9 +150,12 @@ export class GitReleaseApiClient implements GitReleaseApi {
       },
       firstParentSha: commit.parents?.[0]?.sha,
     }));
-  }
+  };
 
-  async getLatestRelease({ owner, repo }: OwnerRepo) {
+  getLatestRelease: GitReleaseApi['getLatestRelease'] = async ({
+    owner,
+    repo,
+  }) => {
     const { octokit } = await this.getOctokit();
     const { data: latestReleases } = await octokit.repos.listReleases({
       owner,
@@ -175,9 +178,9 @@ export class GitReleaseApiClient implements GitReleaseApi {
       htmlUrl: latestRelease.html_url,
       body: latestRelease.body,
     };
-  }
+  };
 
-  async getRepository({ owner, repo }: OwnerRepo) {
+  getRepository: GitReleaseApi['getRepository'] = async ({ owner, repo }) => {
     const { octokit } = await this.getOctokit();
     const { data: repository } = await octokit.repos.get({
       owner,
@@ -190,15 +193,13 @@ export class GitReleaseApiClient implements GitReleaseApi {
       defaultBranch: repository.default_branch,
       name: repository.name,
     };
-  }
+  };
 
-  async getLatestCommit({
+  getLatestCommit: GitReleaseApi['getLatestCommit'] = async ({
     owner,
     repo,
     defaultBranch,
-  }: {
-    defaultBranch: GetRepositoryResult['defaultBranch'];
-  } & OwnerRepo) {
+  }) => {
     const { octokit } = await this.getOctokit();
     const { data: latestCommit } = await octokit.repos.getCommit({
       owner,
@@ -214,15 +215,13 @@ export class GitReleaseApiClient implements GitReleaseApi {
         message: latestCommit.commit.message,
       },
     };
-  }
+  };
 
-  async getBranch({
+  getBranch: GitReleaseApi['getBranch'] = async ({
     owner,
     repo,
     branchName,
-  }: {
-    branchName: string;
-  } & OwnerRepo) {
+  }) => {
     const { octokit } = await this.getOctokit();
 
     const { data: branch } = await octokit.repos.getBranch({
@@ -246,18 +245,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
         },
       },
     };
-  }
+  };
 
-  createRc = {
-    createRef: async ({
-      owner,
-      repo,
-      mostRecentSha,
-      targetBranch,
-    }: {
-      mostRecentSha: string;
-      targetBranch: string;
-    } & OwnerRepo) => {
+  createRc: GitReleaseApi['createRc'] = {
+    createRef: async ({ owner, repo, mostRecentSha, targetBranch }) => {
       const { octokit } = await this.getOctokit();
       const createRefResponse = await octokit.git.createRef({
         owner,
@@ -276,10 +267,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       repo,
       previousReleaseBranch,
       nextReleaseBranch,
-    }: {
-      previousReleaseBranch: string;
-      nextReleaseBranch: string;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const compareCommitsResponse = await octokit.repos.compareCommits({
         owner,
@@ -301,12 +289,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       releaseName,
       rcBranch,
       releaseBody,
-    }: {
-      rcReleaseTag: string;
-      releaseName: string;
-      rcBranch: string;
-      releaseBody: string;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const createReleaseResponse = await octokit.repos.createRelease({
         owner,
@@ -326,18 +309,14 @@ export class GitReleaseApiClient implements GitReleaseApi {
     },
   };
 
-  patch = {
+  patch: GitReleaseApi['patch'] = {
     createTempCommit: async ({
       owner,
       repo,
       tagParts,
       releaseBranchTree,
       selectedPatchCommit,
-    }: {
-      tagParts: SemverTagParts | CalverTagParts;
-      releaseBranchTree: string;
-      selectedPatchCommit: GetRecentCommitsResultSingle;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const { data: tempCommit } = await octokit.git.createCommit({
         owner,
@@ -358,12 +337,8 @@ export class GitReleaseApiClient implements GitReleaseApi {
       repo,
       releaseBranchName,
       tempCommit,
-    }: {
-      releaseBranchName: string;
-      tempCommit: CreateTempCommitResult;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
-      // await octokit.request("PATCH reposrefs")
       await octokit.git.updateRef({
         owner,
         repo,
@@ -373,12 +348,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       });
     },
 
-    merge: async ({
-      owner,
-      repo,
-      base,
-      head,
-    }: { base: string; head: string } & OwnerRepo) => {
+    merge: async ({ owner, repo, base, head }) => {
       const { octokit } = await this.getOctokit();
       const { data: merge } = await octokit.repos.merge({
         owner,
@@ -405,12 +375,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
       selectedPatchCommit,
       mergeTree,
       releaseBranchSha,
-    }: {
-      bumpedTag: string;
-      selectedPatchCommit: GetRecentCommitsResultSingle;
-      mergeTree: string;
-      releaseBranchSha: string;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const { data: cherryPickCommit } = await octokit.git.createCommit({
         owner,
@@ -433,10 +398,7 @@ ${selectedPatchCommit.sha}`,
       repo,
       releaseBranchName,
       cherryPickCommit,
-    }: {
-      releaseBranchName: string;
-      cherryPickCommit: CreateCherryPickCommitResult;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const { data: updatedReference } = await octokit.git.updateRef({
         owner,
@@ -454,15 +416,7 @@ ${selectedPatchCommit.sha}`,
       };
     },
 
-    createTagObject: async ({
-      owner,
-      repo,
-      bumpedTag,
-      updatedReference,
-    }: {
-      bumpedTag: string;
-      updatedReference: ReplaceTempCommitResult;
-    } & OwnerRepo) => {
+    createTagObject: async ({ owner, repo, bumpedTag, updatedReference }) => {
       const { octokit } = await this.getOctokit();
       const { data: createdTagObject } = await octokit.git.createTag({
         owner,
@@ -480,15 +434,7 @@ ${selectedPatchCommit.sha}`,
       };
     },
 
-    createReference: async ({
-      owner,
-      repo,
-      bumpedTag,
-      createdTagObject,
-    }: {
-      bumpedTag: string;
-      createdTagObject: CreateTagObjectResult;
-    } & OwnerRepo) => {
+    createReference: async ({ owner, repo, bumpedTag, createdTagObject }) => {
       const { octokit } = await this.getOctokit();
       const { data: reference } = await octokit.git.createRef({
         owner,
@@ -509,12 +455,7 @@ ${selectedPatchCommit.sha}`,
       latestRelease,
       tagParts,
       selectedPatchCommit,
-    }: {
-      bumpedTag: string;
-      latestRelease: NonNullable<GetLatestReleaseResult>;
-      tagParts: SemverTagParts | CalverTagParts;
-      selectedPatchCommit: GetRecentCommitsResultSingle;
-    } & OwnerRepo) => {
+    }) => {
       const { octokit } = await this.getOctokit();
       const { data: updatedRelease } = await octokit.repos.updateRelease({
         owner,
@@ -536,16 +477,8 @@ ${selectedPatchCommit.commit.message}`,
     },
   };
 
-  promoteRc = {
-    promoteRelease: async ({
-      owner,
-      repo,
-      releaseId,
-      releaseVersion,
-    }: {
-      releaseId: NonNullable<GetLatestReleaseResult>['id'];
-      releaseVersion: string;
-    } & OwnerRepo) => {
+  promoteRc: GitReleaseApi['promoteRc'] = {
+    promoteRelease: async ({ owner, repo, releaseId, releaseVersion }) => {
       const { octokit } = await this.getOctokit();
       const { data: promotedRelease } = await octokit.repos.updateRelease({
         owner,
@@ -563,8 +496,8 @@ ${selectedPatchCommit.commit.message}`,
     },
   };
 
-  stats = {
-    getAllTags: async ({ owner, repo }: OwnerRepo) => {
+  stats: GitReleaseApi['stats'] = {
+    getAllTags: async ({ owner, repo }) => {
       const { octokit } = await this.getOctokit();
 
       const tags = await octokit.paginate(octokit.repos.listTags, {
@@ -580,7 +513,7 @@ ${selectedPatchCommit.commit.message}`,
       }));
     },
 
-    getAllReleases: async ({ owner, repo }: OwnerRepo) => {
+    getAllReleases: async ({ owner, repo }) => {
       const { octokit } = await this.getOctokit();
 
       const releases = await octokit.paginate(octokit.repos.listReleases, {
@@ -599,7 +532,7 @@ ${selectedPatchCommit.commit.message}`,
       }));
     },
 
-    getCommit: async ({ owner, repo, ref }: { ref: string } & OwnerRepo) => {
+    getCommit: async ({ owner, repo, ref }) => {
       const { octokit } = await this.getOctokit();
 
       const { data: commit } = await octokit.repos.getCommit({
@@ -615,347 +548,332 @@ ${selectedPatchCommit.commit.message}`,
   };
 }
 
-type UnboxPromise<T extends Promise<any>> = T extends Promise<infer U>
-  ? U
-  : never;
-
-type UnboxReturnedPromise<
-  T extends (...args: any) => Promise<any>
-> = UnboxPromise<ReturnType<T>>;
-
-type UnboxArray<T> = T extends (infer U)[] ? U : T;
-
 type OwnerRepo = {
   owner: Project['owner'];
   repo: Project['repo'];
 };
 
-type GetHost = () => string;
+export interface GitReleaseApi {
+  getHost: () => string;
 
-type GetRepoPath = (args: OwnerRepo) => string;
+  getRepoPath: (args: OwnerRepo) => string;
 
-type GetOwners = () => Promise<{
-  owners: string[];
-}>;
-export type GetOwnersResult = UnboxReturnedPromise<GetOwners>;
+  getOwners: () => Promise<{
+    owners: string[];
+  }>;
 
-type GetRepositories = (args: {
-  owner: OwnerRepo['owner'];
-}) => Promise<{
-  repositories: string[];
-}>;
-export type GetRepositoriesResult = UnboxReturnedPromise<GetRepositories>;
+  getRepositories: (args: {
+    owner: OwnerRepo['owner'];
+  }) => Promise<{
+    repositories: string[];
+  }>;
 
-type GetUsername = (
-  args: OwnerRepo,
-) => Promise<{
-  username: string;
-}>;
-export type GetUsernameResult = UnboxReturnedPromise<GetUsername>;
+  getUser: (
+    args: OwnerRepo,
+  ) => Promise<{
+    username: string;
+    email?: string;
+  }>;
 
-type GetRecentCommits = (
-  args: {
-    releaseBranchName?: string;
-  } & OwnerRepo,
-) => Promise<
-  {
+  getRecentCommits: (
+    args: {
+      releaseBranchName?: string;
+    } & OwnerRepo,
+  ) => Promise<
+    {
+      htmlUrl: string;
+      sha: string;
+      author: {
+        htmlUrl?: string;
+        login?: string;
+      };
+      commit: {
+        message: string;
+      };
+      firstParentSha?: string;
+    }[]
+  >;
+  getLatestRelease: (
+    args: OwnerRepo,
+  ) => Promise<{
+    targetCommitish: string;
+    tagName: string;
+    prerelease: boolean;
+    id: number;
     htmlUrl: string;
+    body?: string | null;
+  } | null>;
+  getRepository: (
+    args: OwnerRepo,
+  ) => Promise<{
+    pushPermissions: boolean | undefined;
+    defaultBranch: string;
+    name: string;
+  }>;
+
+  getLatestCommit: (
+    args: {
+      defaultBranch: string;
+    } & OwnerRepo,
+  ) => Promise<{
     sha: string;
-    author: {
-      htmlUrl?: string;
-      login?: string;
-    };
+    htmlUrl: string;
     commit: {
       message: string;
     };
-    firstParentSha?: string;
-  }[]
->;
-export type GetRecentCommitsResult = UnboxReturnedPromise<GetRecentCommits>;
-export type GetRecentCommitsResultSingle = UnboxArray<GetRecentCommitsResult>;
+  }>;
 
-type GetLatestRelease = (
-  args: OwnerRepo,
-) => Promise<{
-  targetCommitish: string;
-  tagName: string;
-  prerelease: boolean;
-  id: number;
-  htmlUrl: string;
-  body?: string | null;
-} | null>;
-export type GetLatestReleaseResult = UnboxReturnedPromise<GetLatestRelease>;
-
-type GetRepository = (
-  args: OwnerRepo,
-) => Promise<{
-  pushPermissions: boolean | undefined;
-  defaultBranch: string;
-  name: string;
-}>;
-export type GetRepositoryResult = UnboxReturnedPromise<GetRepository>;
-
-type GetLatestCommit = (
-  args: {
-    defaultBranch: string;
-  } & OwnerRepo,
-) => Promise<{
-  sha: string;
-  htmlUrl: string;
-  commit: {
-    message: string;
-  };
-}>;
-export type GetLatestCommitResult = UnboxReturnedPromise<GetLatestCommit>;
-
-type GetBranch = (
-  args: {
-    branchName: string;
-  } & OwnerRepo,
-) => Promise<{
-  name: string;
-  links: {
-    html: string;
-  };
-  commit: {
-    sha: string;
+  getBranch: (
+    args: {
+      branchName: string;
+    } & OwnerRepo,
+  ) => Promise<{
+    name: string;
+    links: {
+      html: string;
+    };
     commit: {
-      tree: {
-        sha: string;
+      sha: string;
+      commit: {
+        tree: {
+          sha: string;
+        };
       };
     };
-  };
-}>;
-export type GetBranchResult = UnboxReturnedPromise<GetBranch>;
+  }>;
 
-/**
- * CreateRc
- */
-type CreateRef = (
-  args: {
-    mostRecentSha: string;
-    targetBranch: string;
-  } & OwnerRepo,
-) => Promise<{
-  ref: string;
-}>;
-export type CreateRefResult = UnboxReturnedPromise<CreateRef>;
-
-type GetComparison = (
-  args: {
-    previousReleaseBranch: string;
-    nextReleaseBranch: string;
-  } & OwnerRepo,
-) => Promise<{
-  htmlUrl: string;
-  aheadBy: number;
-}>;
-export type GetComparisonResult = UnboxReturnedPromise<GetComparison>;
-
-type CreateRelease = (
-  args: {
-    rcReleaseTag: string;
-    releaseName: string;
-    rcBranch: string;
-    releaseBody: string;
-  } & OwnerRepo,
-) => Promise<{
-  name: string | null;
-  htmlUrl: string;
-  tagName: string;
-}>;
-export type CreateReleaseResult = UnboxReturnedPromise<CreateRelease>;
-
-/**
- * Patch
- */
-type CreateTempCommit = (
-  args: {
-    tagParts: SemverTagParts | CalverTagParts;
-    releaseBranchTree: string;
-    selectedPatchCommit: UnboxArray<
-      UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
-    >;
-  } & OwnerRepo,
-) => Promise<{
-  message: string;
-  sha: string;
-}>;
-export type CreateTempCommitResult = UnboxReturnedPromise<CreateTempCommit>;
-
-type ForceBranchHeadToTempCommit = (
-  args: {
-    releaseBranchName: string;
-    tempCommit: CreateTempCommitResult;
-  } & OwnerRepo,
-) => Promise<void>;
-export type ForceBranchHeadToTempCommitResult = UnboxReturnedPromise<ForceBranchHeadToTempCommit>;
-
-type Merge = ({
-  base,
-  head,
-}: {
-  base: string;
-  head: string;
-} & OwnerRepo) => Promise<{
-  htmlUrl: string;
-  commit: {
-    message: string;
-    tree: {
-      sha: string;
-    };
-  };
-}>;
-export type MergeResult = UnboxReturnedPromise<Merge>;
-
-type CreateCherryPickCommit = (
-  args: {
-    bumpedTag: string;
-    selectedPatchCommit: UnboxArray<
-      UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
-    >;
-    mergeTree: string;
-    releaseBranchSha: string;
-  } & OwnerRepo,
-) => Promise<{
-  message: string;
-  sha: string;
-}>;
-export type CreateCherryPickCommitResult = UnboxReturnedPromise<CreateCherryPickCommit>;
-
-type ReplaceTempCommit = (
-  args: {
-    releaseBranchName: string;
-    cherryPickCommit: UnboxReturnedPromise<
-      GitReleaseApi['patch']['createCherryPickCommit']
-    >;
-  } & OwnerRepo,
-) => Promise<{
-  ref: string;
-  object: {
-    sha: string;
-  };
-}>;
-export type ReplaceTempCommitResult = UnboxReturnedPromise<ReplaceTempCommit>;
-
-type CreateTagObject = ({
-  bumpedTag,
-  updatedReference,
-}: {
-  bumpedTag: string;
-  updatedReference: ReplaceTempCommitResult;
-} & OwnerRepo) => Promise<{
-  tag: string;
-  sha: string;
-}>;
-export type CreateTagObjectResult = UnboxReturnedPromise<CreateTagObject>;
-
-type CreateReference = (
-  args: {
-    bumpedTag: string;
-    createdTagObject: CreateTagObjectResult;
-  } & OwnerRepo,
-) => Promise<{
-  ref: string;
-}>;
-export type CreateReferenceResult = UnboxReturnedPromise<CreateReference>;
-
-type UpdateRelease = (
-  args: {
-    bumpedTag: string;
-    latestRelease: NonNullable<GetLatestReleaseResult>;
-    tagParts: SemverTagParts | CalverTagParts;
-    selectedPatchCommit: GetRecentCommitsResultSingle;
-  } & OwnerRepo,
-) => Promise<{
-  name: string | null;
-  tagName: string;
-  htmlUrl: string;
-}>;
-export type UpdateReleaseResult = UnboxReturnedPromise<UpdateRelease>;
-
-/**
- * PromoteRc
- */
-type PromoteRelease = (
-  args: {
-    releaseId: NonNullable<GetLatestReleaseResult>['id'];
-    releaseVersion: string;
-  } & OwnerRepo,
-) => Promise<{
-  name: string | null;
-  tagName: string;
-  htmlUrl: string;
-}>;
-export type PromoteReleaseResult = UnboxReturnedPromise<PromoteRelease>;
-
-/**
- * Stats
- */
-type GetAllTags = (
-  args: OwnerRepo,
-) => Promise<
-  Array<{
-    tagName: string;
-    sha: string;
-  }>
->;
-export type GetAllTagsResult = UnboxReturnedPromise<GetAllTags>;
-
-type GetAllReleases = (
-  args: OwnerRepo,
-) => Promise<
-  Array<{
-    id: number;
-    name: string | null;
-    tagName: string;
-    createdAt: string | null;
-    htmlUrl: string;
-  }>
->;
-export type GetAllReleasesResult = UnboxReturnedPromise<GetAllReleases>;
-
-type GetCommit = (
-  args: {
-    ref: string;
-  } & OwnerRepo,
-) => Promise<{
-  createdAt: string | undefined;
-}>;
-export type GetCommitResult = UnboxReturnedPromise<GetCommit>;
-
-export interface GitReleaseApi {
-  getHost: GetHost;
-  getRepoPath: GetRepoPath;
-  getOwners: GetOwners;
-  getRepositories: GetRepositories;
-  getUsername: GetUsername;
-  getRecentCommits: GetRecentCommits;
-  getLatestRelease: GetLatestRelease;
-  getRepository: GetRepository;
-  getLatestCommit: GetLatestCommit;
-  getBranch: GetBranch;
   createRc: {
-    createRef: CreateRef;
-    getComparison: GetComparison;
-    createRelease: CreateRelease;
+    createRef: (
+      args: {
+        mostRecentSha: string;
+        targetBranch: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      ref: string;
+    }>;
+
+    getComparison: (
+      args: {
+        previousReleaseBranch: string;
+        nextReleaseBranch: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      htmlUrl: string;
+      aheadBy: number;
+    }>;
+
+    createRelease: (
+      args: {
+        rcReleaseTag: string;
+        releaseName: string;
+        rcBranch: string;
+        releaseBody: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      name: string | null;
+      htmlUrl: string;
+      tagName: string;
+    }>;
   };
   patch: {
-    createTempCommit: CreateTempCommit;
-    forceBranchHeadToTempCommit: ForceBranchHeadToTempCommit;
-    merge: Merge;
-    createCherryPickCommit: CreateCherryPickCommit;
-    replaceTempCommit: ReplaceTempCommit;
-    createTagObject: CreateTagObject;
-    createReference: CreateReference;
-    updateRelease: UpdateRelease;
+    createTempCommit: (
+      args: {
+        tagParts: SemverTagParts | CalverTagParts;
+        releaseBranchTree: string;
+        selectedPatchCommit: UnboxArray<
+          UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
+        >;
+      } & OwnerRepo,
+    ) => Promise<{
+      message: string;
+      sha: string;
+    }>;
+
+    forceBranchHeadToTempCommit: (
+      args: {
+        releaseBranchName: string;
+        tempCommit: CreateTempCommitResult;
+      } & OwnerRepo,
+    ) => Promise<void>;
+    merge: ({
+      base,
+      head,
+    }: {
+      base: string;
+      head: string;
+    } & OwnerRepo) => Promise<{
+      htmlUrl: string;
+      commit: {
+        message: string;
+        tree: {
+          sha: string;
+        };
+      };
+    }>;
+
+    createCherryPickCommit: (
+      args: {
+        bumpedTag: string;
+        selectedPatchCommit: UnboxArray<
+          UnboxReturnedPromise<GitReleaseApi['getRecentCommits']>
+        >;
+        mergeTree: string;
+        releaseBranchSha: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      message: string;
+      sha: string;
+    }>;
+
+    replaceTempCommit: (
+      args: {
+        releaseBranchName: string;
+        cherryPickCommit: UnboxReturnedPromise<
+          GitReleaseApi['patch']['createCherryPickCommit']
+        >;
+      } & OwnerRepo,
+    ) => Promise<{
+      ref: string;
+      object: {
+        sha: string;
+      };
+    }>;
+
+    createTagObject: ({
+      bumpedTag,
+      updatedReference,
+    }: {
+      bumpedTag: string;
+      updatedReference: ReplaceTempCommitResult;
+    } & OwnerRepo) => Promise<{
+      tag: string;
+      sha: string;
+    }>;
+
+    createReference: (
+      args: {
+        bumpedTag: string;
+        createdTagObject: CreateTagObjectResult;
+      } & OwnerRepo,
+    ) => Promise<{
+      ref: string;
+    }>;
+
+    updateRelease: (
+      args: {
+        bumpedTag: string;
+        latestRelease: NonNullable<GetLatestReleaseResult>;
+        tagParts: SemverTagParts | CalverTagParts;
+        selectedPatchCommit: GetRecentCommitsResultSingle;
+      } & OwnerRepo,
+    ) => Promise<{
+      name: string | null;
+      tagName: string;
+      htmlUrl: string;
+    }>;
   };
   promoteRc: {
-    promoteRelease: PromoteRelease;
+    promoteRelease: (
+      args: {
+        releaseId: NonNullable<GetLatestReleaseResult>['id'];
+        releaseVersion: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      name: string | null;
+      tagName: string;
+      htmlUrl: string;
+    }>;
   };
   stats: {
-    getAllTags: GetAllTags;
-    getAllReleases: GetAllReleases;
-    getCommit: GetCommit;
+    getAllTags: (
+      args: OwnerRepo,
+    ) => Promise<
+      Array<{
+        tagName: string;
+        sha: string;
+      }>
+    >;
+    getAllReleases: (
+      args: OwnerRepo,
+    ) => Promise<
+      Array<{
+        id: number;
+        name: string | null;
+        tagName: string;
+        createdAt: string | null;
+        htmlUrl: string;
+      }>
+    >;
+
+    getCommit: (
+      args: {
+        ref: string;
+      } & OwnerRepo,
+    ) => Promise<{
+      createdAt: string | undefined;
+    }>;
   };
 }
+
+export type GetOwnersResult = UnboxReturnedPromise<GitReleaseApi['getOwners']>;
+export type GetRepositoriesResult = UnboxReturnedPromise<
+  GitReleaseApi['getRepositories']
+>;
+export type GetUserResult = UnboxReturnedPromise<GitReleaseApi['getUser']>;
+export type GetRecentCommitsResult = UnboxReturnedPromise<
+  GitReleaseApi['getRecentCommits']
+>;
+export type GetRecentCommitsResultSingle = UnboxArray<GetRecentCommitsResult>;
+export type GetLatestReleaseResult = UnboxReturnedPromise<
+  GitReleaseApi['getLatestRelease']
+>;
+export type GetRepositoryResult = UnboxReturnedPromise<
+  GitReleaseApi['getRepository']
+>;
+export type GetLatestCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['getLatestCommit']
+>;
+export type GetBranchResult = UnboxReturnedPromise<GitReleaseApi['getBranch']>;
+export type CreateRefResult = UnboxReturnedPromise<
+  GitReleaseApi['createRc']['createRef']
+>;
+export type GetComparisonResult = UnboxReturnedPromise<
+  GitReleaseApi['createRc']['getComparison']
+>;
+export type CreateReleaseResult = UnboxReturnedPromise<
+  GitReleaseApi['createRc']['createRelease']
+>;
+export type CreateTempCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['createTempCommit']
+>;
+export type ForceBranchHeadToTempCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['forceBranchHeadToTempCommit']
+>;
+export type MergeResult = UnboxReturnedPromise<GitReleaseApi['patch']['merge']>;
+export type CreateCherryPickCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['createCherryPickCommit']
+>;
+export type ReplaceTempCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['replaceTempCommit']
+>;
+export type CreateTagObjectResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['createTagObject']
+>;
+export type CreateReferenceResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['createReference']
+>;
+export type UpdateReleaseResult = UnboxReturnedPromise<
+  GitReleaseApi['patch']['updateRelease']
+>;
+export type PromoteReleaseResult = UnboxReturnedPromise<
+  GitReleaseApi['promoteRc']['promoteRelease']
+>;
+export type GetAllTagsResult = UnboxReturnedPromise<
+  GitReleaseApi['stats']['getAllTags']
+>;
+export type GetCommitResult = UnboxReturnedPromise<
+  GitReleaseApi['stats']['getCommit']
+>;
+export type GetAllReleasesResult = UnboxReturnedPromise<
+  GitReleaseApi['stats']['getAllReleases']
+>;
