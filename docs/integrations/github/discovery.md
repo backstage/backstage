@@ -61,4 +61,4 @@ the process to fail.
 
 When multiple `catalog-info.yaml` files with the same `metadata.name` property
 are discovered, one will be skipped and the process will continue. This action
-will be logged for later investication.
+will be logged for later investigation.
