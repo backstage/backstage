@@ -30,8 +30,9 @@ export type DbSearchRow = {
 // to index, or because they are special-case always inserted whether they are
 // null or not
 const SPECIAL_KEYS = [
-  'state',
+  'attachments',
   'relations',
+  'status',
   'metadata.name',
   'metadata.namespace',
   'metadata.uid',

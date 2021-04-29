@@ -16,7 +16,7 @@
 
 import { getVoidLogger, resolvePackagePath } from '@backstage/backend-common';
 import knexFactory, { Knex } from 'knex';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { CommonDatabase } from '../../database/CommonDatabase';
 import { Database } from '../../database/types';
@@ -79,7 +79,7 @@ export class DatabaseManager {
 
     let knex = knexFactory(config);
     if (typeof config.connection !== 'string') {
-      const tempDbName = `d${uuidv4().replace(/-/g, '')}`;
+      const tempDbName = `d${uuid().replace(/-/g, '')}`;
       await knex.raw(`CREATE DATABASE ${tempDbName};`);
       knex = knexFactory({
         ...config,

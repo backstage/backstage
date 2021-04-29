@@ -21,7 +21,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { locationSpecToLocationEntity } from './util';
 import { ConflictError } from '@backstage/errors';
 
@@ -50,7 +50,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
       // TODO: id should really be type and target combined and not a uuid.
       const location = await this.db.addLocation(tx, {
-        id: uuidv4(),
+        id: uuid(),
         type: spec.type,
         target: spec.target,
       });

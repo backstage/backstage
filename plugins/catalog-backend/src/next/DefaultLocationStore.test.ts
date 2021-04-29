@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { v4 as uuid } from 'uuid';
 import { DatabaseManager } from './database/DatabaseManager';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { v4 } from 'uuid';
 
 /* eslint-disable */
-xdescribe('Default Location Store', () => {
+xdescribe('DefaultLocationStore', () => {
   const createLocationStore = async () => {
     const db = await DatabaseManager.createTestDatabase();
     const connection = { applyMutation: jest.fn() };
@@ -111,7 +111,7 @@ xdescribe('Default Location Store', () => {
     it('throws if the location does not exist', async () => {
       const { store } = await createLocationStore();
 
-      const id = v4();
+      const id = uuid();
 
       await expect(() => store.deleteLocation(id)).rejects.toThrow(
         new RegExp(`Found no location with ID ${id}`),

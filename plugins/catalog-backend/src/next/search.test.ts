@@ -52,8 +52,9 @@ describe('search', () => {
 
     it('skips over special keys', () => {
       const input = {
-        state: { x: 1 },
-        relations: [{ y: 2 }],
+        status: { x: 1 },
+        attachments: [{ y: 2 }],
+        relations: [{ z: 3 }],
         a: 'a',
         metadata: {
           b: 'b',

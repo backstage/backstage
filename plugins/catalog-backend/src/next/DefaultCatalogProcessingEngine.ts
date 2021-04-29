@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { Logger } from 'winston';
+import { Stitcher } from './Stitcher';
 import {
   CatalogProcessingEngine,
+  CatalogProcessingOrchestrator,
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
   ProcessingStateManager,
-  CatalogProcessingOrchestrator,
 } from './types';
-
-import { Logger } from 'winston';
-import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Stitcher } from './Stitcher';
 
 class Connection implements EntityProviderConnection {
   constructor(
