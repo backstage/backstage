@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 
 import { ComponentConfigPromoteRc } from '../../types/types';
 import { GetLatestReleaseResult } from '../../api/GitReleaseApiClient';
@@ -24,7 +24,6 @@ import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
 import { PromoteRcBody } from './PromoteRcBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
-import { useStyles } from '../../styles/styles';
 
 interface PromoteRcProps {
   latestRelease: GetLatestReleaseResult;
@@ -32,8 +31,6 @@ interface PromoteRcProps {
 }
 
 export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
-  const classes = useStyles();
-
   function Body() {
     if (latestRelease === null) {
       return <NoLatestRelease />;
@@ -41,14 +38,17 @@ export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
 
     if (!latestRelease.prerelease) {
       return (
-        <Alert
-          data-testid={TEST_IDS.promoteRc.notRcWarning}
-          className={classes.paragraph}
-          severity="warning"
-        >
-          <AlertTitle>Latest Git release is not a Release Candidate</AlertTitle>
-          One can only promote Release Candidates to Release Versions
-        </Alert>
+        <Box marginBottom={2}>
+          <Alert
+            data-testid={TEST_IDS.promoteRc.notRcWarning}
+            severity="warning"
+          >
+            <AlertTitle>
+              Latest Git release is not a Release Candidate
+            </AlertTitle>
+            One can only promote Release Candidates to Release Versions
+          </Alert>
+        </Box>
       );
     }
 
@@ -57,9 +57,9 @@ export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
 
   return (
     <InfoCardPlus>
-      <Typography variant="h4" className={classes.paragraph}>
-        Promote Release Candidate
-      </Typography>
+      <Box marginBottom={2}>
+        <Typography variant="h4">Promote Release Candidate</Typography>
+      </Box>
 
       <Body />
     </InfoCardPlus>

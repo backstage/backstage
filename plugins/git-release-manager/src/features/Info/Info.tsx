@@ -27,7 +27,6 @@ import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { Stats } from '../Stats/Stats';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 import flowImage from './flow.png';
 
 interface InfoCardProps {
@@ -42,7 +41,6 @@ export const Info = ({
   statsEnabled,
 }: InfoCardProps) => {
   const { project } = useProjectContext();
-  const classes = useStyles();
   const [showStats, setShowStats] = useState(false);
 
   return (
@@ -75,15 +73,17 @@ export const Info = ({
       <Box marginBottom={1}>
         <Typography variant="h6">Flow</Typography>
 
-        <Typography className={classes.paragraph}>
-          Git Release Manager is built with a specific flow in mind. For
-          example, it assumes your project is configured to react to tags
-          prefixed with <b>rc</b> or <b>version</b>.
-        </Typography>
+        <Box marginBottom={2}>
+          <Typography>
+            Git Release Manager is built with a specific flow in mind. For
+            example, it assumes your project is configured to react to tags
+            prefixed with <b>rc</b> or <b>version</b>.
+          </Typography>
+        </Box>
 
-        <Typography className={classes.paragraph}>
-          Here's an overview of the flow:
-        </Typography>
+        <Box marginBottom={2}>
+          <Typography>Here's an overview of the flow:</Typography>
+        </Box>
 
         <img alt="flow" src={flowImage} style={{ width: '100%' }} />
       </Box>

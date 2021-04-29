@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Button, Typography } from '@material-ui/core';
+import { Button, Typography, Box } from '@material-ui/core';
 
 import { ComponentConfigPromoteRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
@@ -23,7 +23,6 @@ import { GetLatestReleaseResult } from '../../api/GitReleaseApiClient';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePromoteRc } from './hooks/usePromoteRc';
-import { useStyles } from '../../styles/styles';
 
 interface PromoteRcBodyProps {
   rcRelease: NonNullable<GetLatestReleaseResult>;
@@ -31,7 +30,6 @@ interface PromoteRcBodyProps {
 }
 
 export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
-  const classes = useStyles();
   const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
 
   const { progress, responseSteps, run, runInvoked } = usePromoteRc({
@@ -52,13 +50,21 @@ export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
 
   return (
     <>
-      <Typography className={classes.paragraph}>
-        Promotes the current Release Candidate to a <b>Release Version</b>.
-      </Typography>
+      <Box marginBottom={2}>
+        <Typography>
+          Promotes the current Release Candidate to a <b>Release Version</b>.
+        </Typography>
+      </Box>
 
-      <Typography className={classes.paragraph}>
-        <Differ icon="tag" current={rcRelease.tagName} next={releaseVersion} />
-      </Typography>
+      <Box marginBottom={2}>
+        <Typography>
+          <Differ
+            icon="tag"
+            current={rcRelease.tagName}
+            next={releaseVersion}
+          />
+        </Typography>
+      </Box>
 
       <Button
         data-testid={TEST_IDS.promoteRc.cta}

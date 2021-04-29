@@ -18,6 +18,7 @@ import React from 'react';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { useApi, ContentHeader } from '@backstage/core';
+import { Box } from '@material-ui/core';
 
 import {
   ComponentConfig,
@@ -34,7 +35,6 @@ import { ProjectContext, Project } from './contexts/ProjectContext';
 import { RepoDetailsForm } from './features/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
 import { UserContext } from './contexts/UserContext';
-import { useStyles } from './styles/styles';
 
 interface GitReleaseManagerProps {
   project?: Omit<Project, 'isProvidedViaProps'>;
@@ -49,7 +49,6 @@ interface GitReleaseManagerProps {
 
 export function GitReleaseManager(props: GitReleaseManagerProps) {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
-  const classes = useStyles();
 
   const { getParsedQuery } = useQueryHandler();
   const { parsedQuery } = getParsedQuery();
@@ -89,7 +88,7 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
   return (
     <ProjectContext.Provider value={{ project }}>
       <UserContext.Provider value={{ user }}>
-        <div className={classes.root}>
+        <Box maxWidth={999}>
           <ContentHeader title="Git Release Manager" />
 
           <InfoCardPlus>
@@ -97,7 +96,7 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
           </InfoCardPlus>
 
           {isProjectValid(project) && <Features features={props.features} />}
-        </div>
+        </Box>
       </UserContext.Provider>
     </ProjectContext.Provider>
   );

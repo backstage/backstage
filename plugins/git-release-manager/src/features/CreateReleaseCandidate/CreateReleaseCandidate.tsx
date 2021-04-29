@@ -17,6 +17,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {
+  Box,
   Button,
   FormControl,
   InputLabel,
@@ -39,7 +40,6 @@ import { SEMVER_PARTS } from '../../constants/constants';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useCreateReleaseCandidate } from './hooks/useCreateReleaseCandidate';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 
 interface CreateReleaseCandidateProps {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -49,12 +49,11 @@ interface CreateReleaseCandidateProps {
 }
 
 const InfoCardPlusWrapper = ({ children }: { children: React.ReactNode }) => {
-  const classes = useStyles();
   return (
     <InfoCardPlus>
-      <Typography variant="h4" className={classes.paragraph}>
-        Create Release Candidate
-      </Typography>
+      <Box marginBottom={2}>
+        <Typography variant="h4">Create Release Candidate</Typography>
+      </Box>
       {children}
     </InfoCardPlus>
   );
@@ -67,7 +66,6 @@ export const CreateReleaseCandidate = ({
   successCb,
 }: CreateReleaseCandidateProps) => {
   const { project } = useProjectContext();
-  const classes = useStyles();
 
   const [semverBumpLevel, setSemverBumpLevel] = useState<'major' | 'minor'>(
     SEMVER_PARTS.minor,
@@ -129,10 +127,7 @@ export const CreateReleaseCandidate = ({
       {project.versioningStrategy === 'semver' &&
         latestRelease &&
         !conflictingPreRelease && (
-          <div
-            className={classes.paragraph}
-            data-testid={TEST_IDS.createRc.semverSelect}
-          >
+          <Box marginBottom={2} data-testid={TEST_IDS.createRc.semverSelect}>
             <FormControl style={{ margin: 5, minWidth: 250 }}>
               <InputLabel>Select bump severity</InputLabel>
 
@@ -150,26 +145,30 @@ export const CreateReleaseCandidate = ({
                 </MenuItem>
               </Select>
             </FormControl>
-          </div>
+          </Box>
         )}
 
       {conflictingPreRelease || tagAlreadyExists ? (
         <>
           {conflictingPreRelease && (
-            <Alert className={classes.paragraph} severity="warning">
-              The most recent release is already a Release Candidate
-            </Alert>
+            <Box marginBottom={2}>
+              <Alert severity="warning">
+                The most recent release is already a Release Candidate
+              </Alert>
+            </Box>
           )}
 
           {tagAlreadyExists && (
-            <Alert className={classes.paragraph} severity="warning">
-              There's already a tag named{' '}
-              <strong>{releaseCandidateGitInfo.rcReleaseTag}</strong>
-            </Alert>
+            <Box marginBottom={2}>
+              <Alert severity="warning">
+                There's already a tag named{' '}
+                <strong>{releaseCandidateGitInfo.rcReleaseTag}</strong>
+              </Alert>
+            </Box>
           )}
         </>
       ) : (
-        <div className={classes.paragraph}>
+        <Box marginBottom={2}>
           <Typography>
             <Differ
               icon="branch"
@@ -185,7 +184,7 @@ export const CreateReleaseCandidate = ({
               next={releaseCandidateGitInfo.rcReleaseTag}
             />
           </Typography>
-        </div>
+        </Box>
       )}
 
       <Button

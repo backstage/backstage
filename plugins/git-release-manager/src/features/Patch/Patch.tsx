@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, Box } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 
 import {
@@ -28,7 +28,6 @@ import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { NoLatestRelease } from '../../components/NoLatestRelease';
 import { PatchBody } from './PatchBody';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 
 interface PatchProps {
   latestRelease: GetLatestReleaseResult;
@@ -41,13 +40,13 @@ export const Patch = ({
   releaseBranch,
   successCb,
 }: PatchProps) => {
-  const classes = useStyles();
-
   return (
     <InfoCardPlus>
-      <Typography variant="h4" className={classes.paragraph}>
-        Patch Release {latestRelease?.prerelease ? 'Candidate' : 'Version'}
-      </Typography>
+      <Box marginBottom={2}>
+        <Typography variant="h4">
+          Patch Release {latestRelease?.prerelease ? 'Candidate' : 'Version'}
+        </Typography>
+      </Box>
 
       <BodyWrapper
         latestRelease={latestRelease}

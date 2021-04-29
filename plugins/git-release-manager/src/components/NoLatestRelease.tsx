@@ -16,20 +16,19 @@
 
 import React from 'react';
 import { Alert } from '@material-ui/lab';
+import { Box } from '@material-ui/core';
 
-import { useStyles } from '../styles/styles';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 export const NoLatestRelease = () => {
-  const classes = useStyles();
-
   return (
-    <Alert
-      data-testid={TEST_IDS.components.noLatestRelease}
-      className={classes.paragraph}
-      severity="warning"
-    >
-      Unable to find any Release
-    </Alert>
+    <Box marginBottom={2}>
+      <Alert
+        data-testid={TEST_IDS.components.noLatestRelease}
+        severity="warning"
+      >
+        Unable to find any Release
+      </Alert>
+    </Box>
   );
 };

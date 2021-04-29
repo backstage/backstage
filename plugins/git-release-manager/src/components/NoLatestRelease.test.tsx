@@ -26,28 +26,32 @@ describe('NoLatestRelease', () => {
     expect(container).toMatchInlineSnapshot(`
       <div>
         <div
-          class="MuiPaper-root MuiAlert-root MuiAlert-standardWarning makeStyles-paragraph-2 MuiPaper-elevation0"
-          data-testid="grm--no-latest-release"
-          role="alert"
+          class="MuiBox-root MuiBox-root-1"
         >
           <div
-            class="MuiAlert-icon"
+            class="MuiPaper-root MuiAlert-root MuiAlert-standardWarning MuiPaper-elevation0"
+            data-testid="grm--no-latest-release"
+            role="alert"
           >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-              focusable="false"
-              viewBox="0 0 24 24"
+            <div
+              class="MuiAlert-icon"
             >
-              <path
-                d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
-              />
-            </svg>
-          </div>
-          <div
-            class="MuiAlert-message"
-          >
-            Unable to find any Release
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
+                />
+              </svg>
+            </div>
+            <div
+              class="MuiAlert-message"
+            >
+              Unable to find any Release
+            </div>
           </div>
         </div>
       </div>

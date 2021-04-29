@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import { useAsync } from 'react-use';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {
+  Box,
   Button,
   Checkbox,
   IconButton,
@@ -50,7 +51,6 @@ import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePatch } from './hooks/usePatch';
 import { useProjectContext } from '../../contexts/ProjectContext';
-import { useStyles } from '../../styles/styles';
 
 interface PatchBodyProps {
   bumpedTag: string;
@@ -88,8 +88,8 @@ export const PatchBody = ({
     ]);
 
     return {
-      recentCommitsOnReleaseBranch,
       recentCommitsOnDefaultBranch,
+      recentCommitsOnReleaseBranch,
     };
   });
 
@@ -100,6 +100,7 @@ export const PatchBody = ({
     tagParts,
     successCb,
   });
+
   if (responseSteps.length > 0) {
     return (
       <ResponseStepDialog
@@ -123,26 +124,28 @@ export const PatchBody = ({
   }
 
   function Description() {
-    const classes = useStyles();
-
     return (
       <>
         {!latestRelease.prerelease && (
-          <Alert
-            data-testid={TEST_IDS.patch.notPrerelease}
-            className={classes.paragraph}
-            severity="info"
-          >
-            <AlertTitle>
-              The current Git release is a <b>Release Version</b>
-            </AlertTitle>
-            It's still possible to patch it, but be extra mindful of changes
-          </Alert>
+          <Box marginBottom={2}>
+            <Alert data-testid={TEST_IDS.patch.notPrerelease} severity="info">
+              <AlertTitle>
+                The current Git release is a <b>Release Version</b>
+              </AlertTitle>
+              It's still possible to patch it, but be extra mindful of changes
+            </Alert>
+          </Box>
         )}
 
-        <Typography className={classes.paragraph}>
-          <Differ icon="tag" current={latestRelease.tagName} next={bumpedTag} />
-        </Typography>
+        <Box marginBottom={2}>
+          <Typography>
+            <Differ
+              icon="tag"
+              current={latestRelease.tagName}
+              next={bumpedTag}
+            />
+          </Typography>
+        </Box>
       </>
     );
   }
@@ -274,8 +277,12 @@ export const PatchBody = ({
     );
   }
 
-  function CTA() {
-    return (
+  return (
+    <Box data-testid={TEST_IDS.patch.body}>
+      <Description />
+
+      <CommitList />
+
       <Button
         disabled={checkedCommitIndex === -1 || progress > 0}
         variant="contained"
@@ -296,16 +303,6 @@ export const PatchBody = ({
       >
         Patch Release Candidate
       </Button>
-    );
-  }
-
-  return (
-    <div data-testid={TEST_IDS.patch.body}>
-      <Description />
-
-      <CommitList />
-
-      <CTA />
-    </div>
+    </Box>
   );
 };
