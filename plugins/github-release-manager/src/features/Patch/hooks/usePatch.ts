@@ -16,6 +16,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
+import { useApi } from '@backstage/core';
 
 import {
   GetLatestReleaseResult,
@@ -23,9 +24,9 @@ import {
 } from '../../../api/PluginApiClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch, CardHook } from '../../../types/types';
+import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { Project } from '../../../contexts/ProjectContext';
 import { SemverTagParts } from '../../../helpers/tagParts/getSemverTagParts';
-import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
 interface Patch {
@@ -44,7 +45,7 @@ export function usePatch({
   tagParts,
   successCb,
 }: Patch): CardHook<GetRecentCommitsResultSingle> {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const {
     responseSteps,
     addStepToResponseSteps,

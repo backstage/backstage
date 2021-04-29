@@ -33,7 +33,6 @@ import {
   graphQlBrowseApiRef,
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
-// import { githubReleaseManagerApiRef } from '@backstage/plugin-github-release-manager';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -41,16 +40,6 @@ export const apis: AnyApiFactory[] = [
     deps: { configApi: configApiRef },
     factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
   }),
-
-  // createApiFactory({
-  //   api: githubReleaseManagerApiRef,
-  //   deps: { githubAuthApi: githubAuthApiRef },
-  //   factory: ({ githubAuthApi }) => {
-  //     return {
-
-  //     }
-  //   },
-  // }),
 
   createApiFactory({
     api: graphQlBrowseApiRef,

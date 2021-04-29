@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 
-import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
+import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 
 export const useGetStats = () => {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
 
   const stats = useAsync(async () => {

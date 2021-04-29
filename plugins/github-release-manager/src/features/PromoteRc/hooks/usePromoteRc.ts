@@ -16,11 +16,12 @@
 
 import { useState, useEffect } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
+import { useApi } from '@backstage/core';
 
-import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
+import { GetLatestReleaseResult } from '../../../api/PluginApiClient';
+import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { useProjectContext } from '../../../contexts/ProjectContext';
-import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 
 interface PromoteRc {
@@ -34,7 +35,7 @@ export function usePromoteRc({
   releaseVersion,
   successCb,
 }: PromoteRc): CardHook<void> {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
   const {
     responseSteps,

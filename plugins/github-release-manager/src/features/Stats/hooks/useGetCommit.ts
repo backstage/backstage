@@ -15,13 +15,14 @@
  */
 
 import { useAsync } from 'react-use';
+import { useApi } from '@backstage/core';
 
+import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
-import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 
 export const useGetCommit = ({ ref }: { ref?: string }) => {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
 
   const commit = useAsync(async () => {

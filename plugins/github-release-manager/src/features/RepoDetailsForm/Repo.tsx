@@ -24,16 +24,17 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core';
+import { useApi } from '@backstage/core';
 
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
+import { githubReleaseManagerApiRef } from '../../api/serviceApiRef';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useFormClasses } from './styles';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
 
 export function Repo() {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
   const navigate = useNavigate();
   const formClasses = useFormClasses();

@@ -16,6 +16,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
+import { useApi } from '@backstage/core';
 
 import {
   GetLatestReleaseResult,
@@ -23,10 +24,10 @@ import {
 } from '../../../api/PluginApiClient';
 import { CardHook, ComponentConfigCreateRc } from '../../../types/types';
 import { getRcGitHubInfo } from '../../../helpers/getRcGitHubInfo';
+import { githubReleaseManagerApiRef } from '../../../api/serviceApiRef';
 import { GitHubReleaseManagerError } from '../../../errors/GitHubReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
-import { usePluginApiClientContext } from '../../../contexts/PluginApiClientContext';
 
 interface CreateRC {
   defaultBranch: GetRepositoryResult['defaultBranch'];
@@ -43,7 +44,7 @@ export function useCreateRc({
   project,
   successCb,
 }: CreateRC): CardHook<void> {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
 
   if (nextGitHubInfo.error) {
     throw new GitHubReleaseManagerError(

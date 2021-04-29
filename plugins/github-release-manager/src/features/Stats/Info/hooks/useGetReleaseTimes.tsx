@@ -17,9 +17,10 @@
 import { useEffect, useState } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
 import { DateTime } from 'luxon';
+import { useApi } from '@backstage/core';
 
 import { getReleaseCommitPairs } from '../helpers/getReleaseCommitPairs';
-import { usePluginApiClientContext } from '../../../../contexts/PluginApiClientContext';
+import { githubReleaseManagerApiRef } from '../../../../api/serviceApiRef';
 import { useProjectContext } from '../../../../contexts/ProjectContext';
 import { useReleaseStatsContext } from '../../contexts/ReleaseStatsContext';
 
@@ -45,7 +46,7 @@ type ReleaseTime = {
 };
 
 export function useGetReleaseTimes() {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
   const { releaseStats } = useReleaseStatsContext();
   const [averageReleaseTime, setAverageReleaseTime] = useState<ReleaseTime[]>(

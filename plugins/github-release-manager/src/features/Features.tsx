@@ -16,17 +16,17 @@
 
 import React, { useState } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { ErrorBoundary } from '@backstage/core';
+import { ErrorBoundary, useApi } from '@backstage/core';
 
 import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
 import { CreateRc } from './CreateRc/CreateRc';
+import { githubReleaseManagerApiRef } from '../api/serviceApiRef';
 import { GitHubReleaseManagerProps } from '../GitHubReleaseManager';
 import { Info } from './Info/Info';
 import { Patch } from './Patch/Patch';
 import { PromoteRc } from './PromoteRc/PromoteRc';
 import { RefetchContext } from '../contexts/RefetchContext';
 import { useGetGitHubBatchInfo } from '../hooks/useGetGitHubBatchInfo';
-import { usePluginApiClientContext } from '../contexts/PluginApiClientContext';
 import { useProjectContext } from '../contexts/ProjectContext';
 import { useVersioningStrategyMatchesRepoTags } from '../hooks/useVersioningStrategyMatchesRepoTags';
 import { validateTagName } from '../helpers/tagParts/validateTagName';
@@ -36,7 +36,7 @@ export function Features({
 }: {
   features: GitHubReleaseManagerProps['features'];
 }) {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const { gitHubBatchInfo } = useGetGitHubBatchInfo({

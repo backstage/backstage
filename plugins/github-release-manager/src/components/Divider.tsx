@@ -15,14 +15,18 @@
  */
 
 import React from 'react';
-import { Divider as MaterialDivider } from '@material-ui/core';
+import { Box, Divider as MaterialDivider } from '@material-ui/core';
 
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 export const Divider = () => {
   return (
-    <div style={{ margin: '20px 0' }} data-testid={TEST_IDS.components.divider}>
+    <Box
+      marginTop={2}
+      marginBottom={2}
+      data-testid={TEST_IDS.components.divider}
+    >
       <MaterialDivider />
-    </div>
+    </Box>
   );
 };

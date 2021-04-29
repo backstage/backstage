@@ -32,6 +32,7 @@ import {
 } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import { useApi } from '@backstage/core';
 
 import {
   GetBranchResult,
@@ -41,12 +42,12 @@ import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';
+import { githubReleaseManagerApiRef } from '../../api/serviceApiRef';
 import { GitHubReleaseManagerError } from '../../errors/GitHubReleaseManagerError';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { SemverTagParts } from '../../helpers/tagParts/getSemverTagParts';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePatch } from './hooks/usePatch';
-import { usePluginApiClientContext } from '../../contexts/PluginApiClientContext';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useStyles } from '../../styles/styles';
 
@@ -65,7 +66,7 @@ export const PatchBody = ({
   successCb,
   tagParts,
 }: PatchBodyProps) => {
-  const { pluginApiClient } = usePluginApiClientContext();
+  const pluginApiClient = useApi(githubReleaseManagerApiRef);
   const { project } = useProjectContext();
   const [checkedCommitIndex, setCheckedCommitIndex] = useState(-1);
 

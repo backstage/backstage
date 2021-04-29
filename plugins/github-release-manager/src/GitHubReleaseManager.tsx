@@ -30,7 +30,6 @@ import { CenteredCircularProgress } from './components/CenteredCircularProgress'
 import { githubReleaseManagerApiRef } from './api/serviceApiRef';
 import { InfoCardPlus } from './components/InfoCardPlus';
 import { isProjectValid } from './helpers/isProjectValid';
-import { PluginApiClientContext } from './contexts/PluginApiClientContext';
 import { ProjectContext, Project } from './contexts/ProjectContext';
 import { RepoDetailsForm } from './features/RepoDetailsForm/RepoDetailsForm';
 import { useQueryHandler } from './hooks/useQueryHandler';
@@ -82,18 +81,16 @@ export function GitHubReleaseManager(props: GitHubReleaseManagerProps) {
   }
 
   return (
-    <PluginApiClientContext.Provider value={{ pluginApiClient }}>
-      <ProjectContext.Provider value={{ project }}>
-        <div className={classes.root}>
-          <ContentHeader title="GitHub Release Manager" />
+    <ProjectContext.Provider value={{ project }}>
+      <div className={classes.root}>
+        <ContentHeader title="GitHub Release Manager" />
 
-          <InfoCardPlus>
-            <RepoDetailsForm username={usernameResponse.value.username} />
-          </InfoCardPlus>
+        <InfoCardPlus>
+          <RepoDetailsForm username={usernameResponse.value.username} />
+        </InfoCardPlus>
 
-          {isProjectValid(project) && <Features features={props.features} />}
-        </div>
-      </ProjectContext.Provider>
-    </PluginApiClientContext.Provider>
+        {isProjectValid(project) && <Features features={props.features} />}
+      </div>
+    </ProjectContext.Provider>
   );
 }

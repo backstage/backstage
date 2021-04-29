@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { Typography } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 
 import {
   gitHubReleaseManagerPlugin,
@@ -24,31 +24,27 @@ import {
 } from '../src/plugin';
 import { InfoCardPlus } from '../src/components/InfoCardPlus';
 
-function DevWrapper({ children }: { children: React.ReactNode }) {
-  return <div style={{ padding: 30 }}>{children}</div>;
-}
-
 createDevApp()
   .registerPlugin(gitHubReleaseManagerPlugin)
   .addPage({
     title: 'Dynamic',
     path: '/dynamic',
     element: (
-      <DevWrapper>
+      <Box padding={4}>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
           <Typography>Configure plugin via select inputs</Typography>
         </InfoCardPlus>
 
         <GitHubReleaseManagerPage />
-      </DevWrapper>
+      </Box>
     ),
   })
   .addPage({
     title: 'Static',
     path: '/static',
     element: (
-      <DevWrapper>
+      <Box padding={4}>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
           <Typography>
@@ -64,14 +60,14 @@ createDevApp()
             versioningStrategy: 'semver',
           }}
         />
-      </DevWrapper>
+      </Box>
     ),
   })
   .addPage({
     title: 'Omit',
     path: '/omit',
     element: (
-      <DevWrapper>
+      <Box padding={4}>
         <InfoCardPlus>
           <Typography variant="h4">Dev notes</Typography>
           <Typography>Each feature can be omitted</Typography>
@@ -112,7 +108,7 @@ createDevApp()
             },
           }}
         />
-      </DevWrapper>
+      </Box>
     ),
   })
   .render();
