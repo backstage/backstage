@@ -69,7 +69,7 @@ describe('LocalStoredShortcuts', () => {
     const shortcut: Shortcut = { id: 'someid', title: 'title', url: '/url' };
     const spy = jest.spyOn(storageApi, 'set');
 
-    await shortcutApi.remove(shortcut);
+    await shortcutApi.remove(shortcut.id);
     expect(spy).toHaveBeenCalledWith('items', []);
   });
 

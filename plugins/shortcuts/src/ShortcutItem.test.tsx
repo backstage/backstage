@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ShortcutItem } from './ShortcutItem';
 import { Shortcut } from './types';
 import { SidebarContext } from '@backstage/core';
