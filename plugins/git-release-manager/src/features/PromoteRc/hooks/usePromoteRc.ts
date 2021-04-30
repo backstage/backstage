@@ -77,7 +77,7 @@ export function usePromoteRc({
     abortIfError(latestReleaseBranchCommitSha.error);
     if (!latestReleaseBranchCommitSha.value) return undefined;
 
-    const createdTagObject = await pluginApiClient
+    const { tagObject } = await pluginApiClient
       .createTagObject({
         owner: project.owner,
         repo: project.repo,
@@ -91,11 +91,11 @@ export function usePromoteRc({
 
     addStepToResponseSteps({
       message: 'Created Tag Object',
-      secondaryMessage: `with sha "${createdTagObject.tagSha}"`,
+      secondaryMessage: `with sha "${tagObject.tagSha}"`,
     });
 
     return {
-      ...createdTagObject,
+      ...tagObject,
     };
   }, [latestReleaseBranchCommitSha.value, latestReleaseBranchCommitSha.error]);
 

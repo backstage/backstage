@@ -243,7 +243,7 @@ export function usePatch({
     abortIfError(updatedRefRes.error);
     if (!updatedRefRes.value) return undefined;
 
-    const createdTagObject = await pluginApiClient
+    const { tagObject } = await pluginApiClient
       .createTagObject({
         owner: project.owner,
         repo: project.repo,
@@ -257,11 +257,11 @@ export function usePatch({
 
     addStepToResponseSteps({
       message: 'Created new tag object',
-      secondaryMessage: `with name "${createdTagObject.tagName}"`,
+      secondaryMessage: `with name "${tagObject.tagName}"`,
     });
 
     return {
-      ...createdTagObject,
+      ...tagObject,
     };
   }, [updatedRefRes.value, updatedRefRes.error]);
 

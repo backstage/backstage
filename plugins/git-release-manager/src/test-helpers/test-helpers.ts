@@ -253,8 +253,10 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   createTagObject: jest.fn(async () => ({
-    tagName: 'mock_tag_object_tag',
-    tagSha: 'mock_tag_object_sha',
+    tagObject: {
+      tagName: 'mock_tag_object_tag',
+      tagSha: 'mock_tag_object_sha',
+    },
   })),
 
   createCommit: jest.fn(async () => ({

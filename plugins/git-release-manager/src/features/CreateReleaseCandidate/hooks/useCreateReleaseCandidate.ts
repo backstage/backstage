@@ -130,7 +130,7 @@ export function useCreateReleaseCandidate({
     abortIfError(releaseBranchRes.error);
     if (!releaseBranchRes.value) return undefined;
 
-    const createdTagObject = await pluginApiClient
+    const { tagObject } = await pluginApiClient
       .createTagObject({
         owner: project.owner,
         repo: project.repo,
@@ -144,11 +144,11 @@ export function useCreateReleaseCandidate({
 
     addStepToResponseSteps({
       message: 'Created Tag Object',
-      secondaryMessage: `with sha "${createdTagObject.tagSha}"`,
+      secondaryMessage: `with sha "${tagObject.tagSha}"`,
     });
 
     return {
-      ...createdTagObject,
+      ...tagObject,
     };
   }, [releaseBranchRes.value, releaseBranchRes.error]);
 

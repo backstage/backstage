@@ -342,8 +342,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      tagName: createdTagObject.tag,
-      tagSha: createdTagObject.sha,
+      tagObject: {
+        tagName: createdTagObject.tag,
+        tagSha: createdTagObject.sha,
+      },
     };
   };
 
@@ -651,8 +653,10 @@ export interface GitReleaseApi {
       taggerName: string;
     } & OwnerRepo,
   ) => Promise<{
-    tagName: string;
-    tagSha: string;
+    tagObject: {
+      tagName: string;
+      tagSha: string;
+    };
   }>;
 
   createCommit: (
