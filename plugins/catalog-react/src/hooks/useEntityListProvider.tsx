@@ -19,10 +19,11 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
-import { useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce } from 'react-use';
 import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
@@ -42,6 +43,11 @@ type EntityListContextProps = {
    * The resolved list of catalog entities, after all filters are applied.
    */
   entities: Entity[];
+
+  /**
+   * The resolved list of catalog entities, after _only catalog-backend_ filters are applied.
+   */
+  backendEntities: Entity[];
 
   /**
    * Add a filter for the entity list. Overwrites any existing filter with the same id.
@@ -84,10 +90,8 @@ export const EntityListProvider = ({
   );
   // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
 
-  // TODO(timbonicus): useAsync would clean this up, how to use with useDebounce?
   const [entities, setEntities] = useState<Entity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | undefined>(undefined);
+  const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
 
   const filterEnv: FilterEnvironment = useMemo(
     () => ({
@@ -97,30 +101,25 @@ export const EntityListProvider = ({
     [user, isStarredEntity],
   );
 
+  const [{ loading, error }, refresh] = useAsyncFn(async () => {
+    // TODO(timbonicus): should limit fields here, but would need filter fields + table columns
+    const items = await catalogApi
+      .getEntities({ filter: reduceCatalogFilters(filters) })
+      .then(response => response.items);
+    setBackendEntities(items);
+  }, [filters, catalogApi]);
+
   // Slight debounce on the catalog-backend call, to prevent eager refresh on multiple programmatic
   // filter changes.
-  useDebounce(
-    () => {
-      setError(undefined);
-      setLoading(true);
-      // TODO(timbonicus): should limit fields here, but would need filter fields + table columns
-      catalogApi
-        .getEntities({ filter: reduceCatalogFilters(filters) })
-        .then(response => {
-          const fetchedEntities = response.items;
-          const resolvedEntities = (fetchedEntities ?? []).filter(
-            reduceEntityFilters(filters, filterEnv),
-          );
-          setEntities(resolvedEntities);
-        })
-        .catch(e => setError(e))
-        .finally(() => {
-          setLoading(false);
-        });
-    },
-    10,
-    [filters, catalogApi],
-  );
+  useDebounce(refresh, 10, [filters]);
+
+  // Apply frontend filters
+  useEffect(() => {
+    const resolvedEntities = (backendEntities ?? []).filter(
+      reduceEntityFilters(filters, filterEnv),
+    );
+    setEntities(resolvedEntities);
+  }, [backendEntities, filterEnv, filters]);
 
   const addFilter = useCallback(
     (filter: EntityFilter) =>
@@ -142,6 +141,7 @@ export const EntityListProvider = ({
       value={{
         filters,
         entities,
+        backendEntities,
         addFilter: addFilter,
         removeFilter: removeFilter,
         loading,

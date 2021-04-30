@@ -103,15 +103,28 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
+type ValidIdType = 'owned' | 'starred' | 'all';
+
 export const UserListFilter = () => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const filterGroups = getFilterGroups(orgName);
 
-  const { filters, addFilter, removeFilter } = useEntityListProvider();
+  const {
+    filters,
+    addFilter,
+    removeFilter,
+    backendEntities,
+  } = useEntityListProvider();
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
+
+  const ownedFilter = useMemo(() => new UserOwnedEntityFilter(user), [user]);
+  const starredFilter = useMemo(
+    () => new UserStarredEntityFilter(isStarredEntity),
+    [isStarredEntity],
+  );
 
   const userListFilters = useMemo(
     () => filters.filter(filter => ['owned', 'starred'].includes(filter.id)),
@@ -120,19 +133,15 @@ export const UserListFilter = () => {
 
   const currentFilter = userListFilters.length ? userListFilters[0].id : 'all';
 
-  function setSelectedFilter({
-    id: selectedId,
-  }: {
-    id: 'owned' | 'starred' | 'all';
-  }) {
+  function setSelectedFilter({ id: selectedId }: { id: ValidIdType }) {
     switch (selectedId) {
       case 'owned':
         removeFilter('starred');
-        addFilter(new UserOwnedEntityFilter(user));
+        addFilter(ownedFilter);
         break;
       case 'starred':
         removeFilter('owned');
-        addFilter(new UserStarredEntityFilter(isStarredEntity));
+        addFilter(starredFilter);
         break;
       default:
         removeFilter('starred');
@@ -140,9 +149,19 @@ export const UserListFilter = () => {
     }
   }
 
-  function getFilterCount(id: string) {
-    // TODO(timbonicus): expose backend-resolved entities for this? (pre-frontend-filters)
-    return id === 'all' ? 2 : 1;
+  function getFilterCount(id: ValidIdType) {
+    switch (id) {
+      case 'owned':
+        return backendEntities.filter(entity =>
+          ownedFilter.filterEntity(entity),
+        ).length;
+      case 'starred':
+        return backendEntities.filter(entity =>
+          starredFilter.filterEntity(entity),
+        ).length;
+      default:
+        return backendEntities.length;
+    }
   }
 
   return (
