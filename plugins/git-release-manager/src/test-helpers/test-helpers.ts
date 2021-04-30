@@ -260,8 +260,10 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   createCommit: jest.fn(async () => ({
-    message: 'mock_commit_message',
-    sha: 'mock_commit_sha',
+    commit: {
+      message: 'mock_commit_message',
+      sha: 'mock_commit_sha',
+    },
   })),
 
   updateRef: jest.fn(async () => ({

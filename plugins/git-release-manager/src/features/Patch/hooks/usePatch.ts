@@ -97,7 +97,7 @@ export function usePatch({
     abortIfError(releaseBranchRes.error);
     if (!releaseBranchRes.value) return undefined;
 
-    const tempCommit = await pluginApiClient
+    const { commit: tempCommit } = await pluginApiClient
       .createCommit({
         owner: project.owner,
         repo: project.repo,
@@ -186,7 +186,7 @@ export function usePatch({
     const releaseBranchSha = releaseBranchRes.value.releaseBranch.commit.sha;
     const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
 
-    const cherryPickCommit = await pluginApiClient.createCommit({
+    const { commit: cherryPickCommit } = await pluginApiClient.createCommit({
       owner: project.owner,
       repo: project.repo,
       message: `[patch ${bumpedTag}] ${selectedPatchCommit.commit.message}

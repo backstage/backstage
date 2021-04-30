@@ -366,8 +366,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      message: commit.message,
-      sha: commit.sha,
+      commit: {
+        message: commit.message,
+        sha: commit.sha,
+      },
     };
   };
 
@@ -666,8 +668,10 @@ export interface GitReleaseApi {
       parents: string[];
     } & OwnerRepo,
   ) => Promise<{
-    message: string;
-    sha: string;
+    commit: {
+      message: string;
+      sha: string;
+    };
   }>;
 
   updateRef: (
