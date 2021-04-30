@@ -80,10 +80,17 @@ export class AwsS3Publish implements PublisherBase {
       'techdocs.publisher.awsS3.endpoint',
     );
 
+    // AWS forcePathStyle is an optional config. If missing, it defaults to false. Needs to be enabled for cases
+    // where endpoint url points to locally hosted S3 compatible storage like Localstack
+    const s3ForcePathStyle = config.getOptionalBoolean(
+      'techdocs.publisher.awsS3.s3ForcePathStyle',
+    );
+
     const storageClient = new aws.S3({
       credentials,
       ...(region && { region }),
       ...(endpoint && { endpoint }),
+      ...(s3ForcePathStyle && { s3ForcePathStyle }),
     });
 
     return new AwsS3Publish(storageClient, bucketName, logger);

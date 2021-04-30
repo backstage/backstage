@@ -56,18 +56,27 @@ export class CatalogClient implements CatalogApi {
     request?: CatalogEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<CatalogListResponse<Entity>> {
-    const { filter = {}, fields = [] } = request ?? {};
+    const { filter = [], fields = [] } = request ?? {};
+    const filterItems = [filter].flat();
     const params: string[] = [];
 
-    const filterParts: string[] = [];
-    for (const [key, value] of Object.entries(filter)) {
-      for (const v of [value].flat()) {
-        filterParts.push(`${encodeURIComponent(key)}=${encodeURIComponent(v)}`);
+    // filter param can occur multiple times, for example
+    // /api/catalog/entities?filter=metadata.name=wayback-search,kind=component&filter=metadata.name=www-artist,kind=component'
+    // the "outer array" defined by `filter` occurrences corresponds to "anyOf" filters
+    // the "inner array" defined within a `filter` param corresponds to "allOf" filters
+    for (const filterItem of filterItems) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          filterParts.push(
+            `${encodeURIComponent(key)}=${encodeURIComponent(v)}`,
+          );
+        }
       }
-    }
 
-    if (filterParts.length) {
-      params.push(`filter=${filterParts.join(',')}`);
+      if (filterParts.length) {
+        params.push(`filter=${filterParts.join(',')}`);
+      }
     }
 
     if (fields.length) {

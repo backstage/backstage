@@ -6295,9 +6295,9 @@
   integrity sha512-09sXZZVsB3Ib41U0fC+O1O+4UOZT1bl/e+/QubPxpqDWHNEchvx/DEb1KJMOwq6K3MTNzZFoNSzVdR++o1DVnw==
 
 "@types/luxon@^1.25.0":
-  version "1.26.0"
-  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-1.26.0.tgz#8e783986370ad3bb9f885d93eb1a91caeecaed36"
-  integrity sha512-zYmLYGczqBaOFaFjR1giG1QCbGMlXWOJcYgH9Mnk0MGcZHq1aer3ZwGXX8vd9NOfai6mAI/mVU6jD9hK0Wys7Q==
+  version "1.26.5"
+  resolved "https://registry.npmjs.org/@types/luxon/-/luxon-1.26.5.tgz#843fb705e16e4d2a90847a351b799ea9d879859e"
+  integrity sha512-XeQxxRMyJi1znfzHw4CGDLyup/raj84SnjjkI2fDootZPGlB0yqtvlvEIAmzHDa5wiEI5JJevZOWxpcofsaV+A==
 
 "@types/markdown-to-jsx@^6.11.0":
   version "6.11.2"
@@ -6453,9 +6453,9 @@
     "@types/passport-oauth2" "*"
 
 "@types/passport-google-oauth20@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/@types/passport-google-oauth20/-/passport-google-oauth20-2.0.3.tgz#f554ff6d39f395acff3f1d762e54462194dac8da"
-  integrity sha512-6EUEGzEg4acwowvgR/yVZIj8S2Kkwc6JmlY2/wnM1wJHNz20o7s1TIGrxnah8ymLgJasYDpy95P3TMMqlmetPw==
+  version "2.0.7"
+  resolved "https://registry.npmjs.org/@types/passport-google-oauth20/-/passport-google-oauth20-2.0.7.tgz#0d97b7a886a0c0d2158682145cd949b29f8efe86"
+  integrity sha512-0HPVSqDmOWk5fRLb+bqGal+6iWsERiEco/Mli77yy5NEy22IfkoRoqZTSZ8UtXDWY9DCZlpS1Jqq56iWx2torw==
   dependencies:
     "@types/express" "*"
     "@types/passport" "*"
@@ -16965,10 +16965,10 @@ json-schema@0.2.3:
   resolved "https://registry.npmjs.org/json-schema/-/json-schema-0.2.3.tgz#b480c892e59a2f05954ce727bd3f2a4e882f9e13"
   integrity sha1-tIDIkuWaLwWVTOcnvT8qTogvnhM=
 
-json-schema@^0.2.5:
-  version "0.2.5"
-  resolved "https://registry.npmjs.org/json-schema/-/json-schema-0.2.5.tgz#97997f50972dd0500214e208c407efa4b5d7063b"
-  integrity sha512-gWJOWYFrhQ8j7pVm0EM8Slr+EPVq1Phf6lvzvD/WCeqkrx/f2xBI0xOsRRS9xCn3I4vKtP519dvs3TP09r24wQ==
+json-schema@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/json-schema/-/json-schema-0.3.0.tgz#90a9c5054bd065422c00241851ce8d59475b701b"
+  integrity sha512-TYfxx36xfl52Rf1LU9HyWSLGPdYLL+SQ8/E/0yVyKG8wCCDaSrhPap0vEdlsZWRaS6tnKKLPGiEJGiREVC8kxQ==
 
 json-stable-stringify-without-jsonify@^1.0.1:
   version "1.0.1"
@@ -24297,9 +24297,9 @@ stacktrace-js@^2.0.0, stacktrace-js@^2.0.2:
     stacktrace-gps "^3.0.4"
 
 start-server-and-test@^1.10.11:
-  version "1.12.0"
-  resolved "https://registry.npmjs.org/start-server-and-test/-/start-server-and-test-1.12.0.tgz#e836553c928a13026f79c740757d378b92bee8d6"
-  integrity sha512-y3M/PLUPkPBsgKoengMIMQeceT8uOnOc4bkdor/RSCK9Ih/j8z4WthSCrAboXLjgtJJWOporAiEQsnYox+THXg==
+  version "1.12.1"
+  resolved "https://registry.npmjs.org/start-server-and-test/-/start-server-and-test-1.12.1.tgz#bf84eb5c5a4c8a98b93ed36519035b3f76179f0e"
+  integrity sha512-qGQ2HQiF2yDIfyaHsXkHfoE5UOl4zJUbJ/gx2xOkfX7iPMXW9qHmoFyaMfIDJVLNkxCK7RxSrvWEI9hNVKQluw==
   dependencies:
     bluebird "3.7.2"
     check-more-types "2.24.0"
@@ -24307,7 +24307,7 @@ start-server-and-test@^1.10.11:
     execa "3.4.0"
     lazy-ass "1.6.0"
     ps-tree "1.2.0"
-    wait-on "5.2.1"
+    wait-on "5.3.0"
 
 start-server-webpack-plugin@^2.2.5:
   version "2.2.5"
@@ -26420,14 +26420,14 @@ w3c-xmlserializer@^2.0.0:
   dependencies:
     xml-name-validator "^3.0.0"
 
-wait-on@5.2.1:
-  version "5.2.1"
-  resolved "https://registry.npmjs.org/wait-on/-/wait-on-5.2.1.tgz#05b66fcb4d7f5da01537f03e7cf96e8836422996"
-  integrity sha512-H2F986kNWMU9hKlI9l/ppO6tN8ZSJd35yBljMLa1/vjzWP++Qh6aXyt77/u7ySJFZQqBtQxnvm/xgG48AObXcw==
+wait-on@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/wait-on/-/wait-on-5.3.0.tgz#584e17d4b3fe7b46ac2b9f8e5e102c005c2776c7"
+  integrity sha512-DwrHrnTK+/0QFaB9a8Ol5Lna3k7WvUR4jzSKmz0YaPBpuN2sACyiPVKVfj6ejnjcajAcvn3wlbTyMIn9AZouOg==
   dependencies:
     axios "^0.21.1"
     joi "^17.3.0"
-    lodash "^4.17.20"
+    lodash "^4.17.21"
     minimist "^1.2.5"
     rxjs "^6.6.3"
 
