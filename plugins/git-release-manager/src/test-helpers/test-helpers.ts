@@ -303,15 +303,17 @@ export const mockApiClient: GitReleaseApi = {
     ],
   })),
 
-  getAllReleases: jest.fn(async () => [
-    {
-      id: 1,
-      name: 'mock_release_name',
-      tagName: 'mock_release_tag_name',
-      createdAt: 'mock_release_published_at',
-      htmlUrl: 'mock_release_html_url',
-    },
-  ]),
+  getAllReleases: jest.fn(async () => ({
+    releases: [
+      {
+        id: 1,
+        name: 'mock_release_name',
+        tagName: 'mock_release_tag_name',
+        createdAt: 'mock_release_published_at',
+        htmlUrl: 'mock_release_html_url',
+      },
+    ],
+  })),
 
   getSingleTag: jest.fn(async () => ({
     date: '2021-04-29T12:48:30.120Z',

@@ -24,7 +24,7 @@ export function getMappedReleases({
   allReleases,
   project,
 }: {
-  allReleases: GetAllReleasesResult;
+  allReleases: GetAllReleasesResult['releases'];
   project: Project;
 }) {
   return {

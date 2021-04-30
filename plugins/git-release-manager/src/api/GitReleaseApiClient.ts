@@ -478,13 +478,15 @@ export class GitReleaseApiClient implements GitReleaseApi {
       ...DISABLE_CACHE,
     });
 
-    return releases.map(release => ({
-      id: release.id,
-      name: release.name,
-      tagName: release.tag_name,
-      createdAt: release.published_at,
-      htmlUrl: release.html_url,
-    }));
+    return {
+      releases: releases.map(release => ({
+        id: release.id,
+        name: release.name,
+        tagName: release.tag_name,
+        createdAt: release.published_at,
+        htmlUrl: release.html_url,
+      })),
+    };
   };
 
   getSingleTag: GitReleaseApi['getSingleTag'] = async ({
@@ -740,15 +742,15 @@ export interface GitReleaseApi {
 
   getAllReleases: (
     args: OwnerRepo,
-  ) => Promise<
-    Array<{
+  ) => Promise<{
+    releases: Array<{
       id: number;
       name: string | null;
       tagName: string;
       createdAt: string | null;
       htmlUrl: string;
-    }>
-  >;
+    }>;
+  }>;
 
   getSingleTag: (
     args: {
