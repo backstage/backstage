@@ -198,10 +198,12 @@ export const mockApiClient: GitReleaseApi = {
     },
   })),
 
-  getRecentCommits: jest.fn(async () => [
-    createMockRecentCommit({ sha: 'mock_sha_recent_commits_1' }),
-    createMockRecentCommit({ sha: 'mock_sha_recent_commits_2' }),
-  ]),
+  getRecentCommits: jest.fn(async () => ({
+    recentCommits: [
+      createMockRecentCommit({ sha: 'mock_sha_recent_commits_1' }),
+      createMockRecentCommit({ sha: 'mock_sha_recent_commits_2' }),
+    ],
+  })),
 
   getLatestRelease: jest.fn(async () => createMockRelease()),
 

@@ -73,8 +73,8 @@ export const PatchBody = ({
 
   const gitDataResponse = useAsync(async () => {
     const [
-      recentCommitsOnDefaultBranch,
-      recentCommitsOnReleaseBranch,
+      { recentCommits: recentCommitsOnDefaultBranch },
+      { recentCommits: recentCommitsOnReleaseBranch },
     ] = await Promise.all([
       pluginApiClient.getRecentCommits({
         owner: project.owner,

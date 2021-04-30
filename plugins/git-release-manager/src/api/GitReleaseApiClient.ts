@@ -138,18 +138,20 @@ export class GitReleaseApiClient implements GitReleaseApi {
       ...DISABLE_CACHE,
     });
 
-    return recentCommitsResponse.data.map(commit => ({
-      htmlUrl: commit.html_url,
-      sha: commit.sha,
-      author: {
-        htmlUrl: commit.author?.html_url,
-        login: commit.author?.login,
-      },
-      commit: {
-        message: commit.commit.message,
-      },
-      firstParentSha: commit.parents?.[0]?.sha,
-    }));
+    return {
+      recentCommits: recentCommitsResponse.data.map(commit => ({
+        htmlUrl: commit.html_url,
+        sha: commit.sha,
+        author: {
+          htmlUrl: commit.author?.html_url,
+          login: commit.author?.login,
+        },
+        commit: {
+          message: commit.commit.message,
+        },
+        firstParentSha: commit.parents?.[0]?.sha,
+      })),
+    };
   };
 
   getLatestRelease: GitReleaseApi['getLatestRelease'] = async ({
@@ -515,8 +517,8 @@ export interface GitReleaseApi {
     args: {
       releaseBranchName?: string;
     } & OwnerRepo,
-  ) => Promise<
-    {
+  ) => Promise<{
+    recentCommits: {
       htmlUrl: string;
       sha: string;
       author: {
@@ -527,8 +529,8 @@ export interface GitReleaseApi {
         message: string;
       };
       firstParentSha?: string;
-    }[]
-  >;
+    }[];
+  }>;
 
   getLatestRelease: (
     args: OwnerRepo,
@@ -724,7 +726,9 @@ export type GetUserResult = UnboxReturnedPromise<GitReleaseApi['getUser']>;
 export type GetRecentCommitsResult = UnboxReturnedPromise<
   GitReleaseApi['getRecentCommits']
 >;
-export type GetRecentCommitsResultSingle = UnboxArray<GetRecentCommitsResult>;
+export type GetRecentCommitsResultSingle = UnboxArray<
+  GetRecentCommitsResult['recentCommits']
+>;
 export type GetLatestReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['getLatestRelease']
 >;
