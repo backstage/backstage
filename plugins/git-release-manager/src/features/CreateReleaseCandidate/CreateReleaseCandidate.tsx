@@ -42,8 +42,8 @@ import { useCreateReleaseCandidate } from './hooks/useCreateReleaseCandidate';
 import { useProjectContext } from '../../contexts/ProjectContext';
 
 interface CreateReleaseCandidateProps {
-  defaultBranch: GetRepositoryResult['defaultBranch'];
-  latestRelease: GetLatestReleaseResult;
+  defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
+  latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseBranch: GetBranchResult | null;
   successCb?: ComponentConfigCreateRc['successCb'];
 }

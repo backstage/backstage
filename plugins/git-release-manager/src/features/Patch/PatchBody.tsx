@@ -54,7 +54,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 
 interface PatchBodyProps {
   bumpedTag: string;
-  latestRelease: NonNullable<GetLatestReleaseResult>;
+  latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseBranch: GetBranchResult;
   successCb?: ComponentConfigPatch['successCb'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;

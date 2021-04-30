@@ -30,7 +30,7 @@ import { PatchBody } from './PatchBody';
 import { useProjectContext } from '../../contexts/ProjectContext';
 
 interface PatchProps {
-  latestRelease: GetLatestReleaseResult;
+  latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseBranch: GetBranchResult | null;
   successCb?: ComponentConfigPatch['successCb'];
 }

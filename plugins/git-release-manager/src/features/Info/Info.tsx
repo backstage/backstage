@@ -31,7 +31,7 @@ import flowImage from './flow.png';
 
 interface InfoCardProps {
   releaseBranch: GetBranchResult | null;
-  latestRelease: GetLatestReleaseResult;
+  latestRelease: GetLatestReleaseResult['latestRelease'];
   statsEnabled: boolean;
 }
 

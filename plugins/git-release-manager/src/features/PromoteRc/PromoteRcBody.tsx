@@ -25,7 +25,7 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePromoteRc } from './hooks/usePromoteRc';
 
 interface PromoteRcBodyProps {
-  rcRelease: NonNullable<GetLatestReleaseResult>;
+  rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 

@@ -26,7 +26,7 @@ import { PromoteRcBody } from './PromoteRcBody';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 
 interface PromoteRcProps {
-  latestRelease: GetLatestReleaseResult;
+  latestRelease: GetLatestReleaseResult['latestRelease'];
   successCb?: ComponentConfigPromoteRc['successCb'];
 }
 

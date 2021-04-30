@@ -32,8 +32,8 @@ import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
 
 interface UseCreateReleaseCandidate {
-  defaultBranch: GetRepositoryResult['defaultBranch'];
-  latestRelease: GetLatestReleaseResult;
+  defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
+  latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseCandidateGitInfo: ReturnType<typeof getReleaseCandidateGitInfo>;
   project: Project;
   successCb?: ComponentConfigCreateRc['successCb'];

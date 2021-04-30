@@ -31,10 +31,10 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-              Object {
-                "tagNameError": undefined,
-              }
-            `);
+        Object {
+          "tagNameError": undefined,
+        }
+      `);
     });
 
     it('should not return any error for semver project without any releases (i.e. no tagName)', () => {
@@ -74,13 +74,13 @@ describe('validateTagName', () => {
       });
 
       expect(result).toMatchInlineSnapshot(`
-              Object {
-                "tagNameError": Object {
-                  "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-1.2.3\\"",
-                  "title": "Invalid tag",
-                },
-              }
-          `);
+        Object {
+          "tagNameError": Object {
+            "subtitle": "Expected calver matching \\"/(rc|version)-([0-9]{4}\\\\.[0-9]{2}\\\\.[0-9]{2})_([0-9]+)/\\", found \\"rc-1.2.3\\"",
+            "title": "Invalid tag",
+          },
+        }
+      `);
     });
   });
 

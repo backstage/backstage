@@ -21,14 +21,14 @@ import { useApi } from '@backstage/core';
 import { CardHook, ComponentConfigPromoteRc } from '../../../types/types';
 import { GetLatestReleaseResult } from '../../../api/GitReleaseApiClient';
 import { gitReleaseManagerApiRef } from '../../../api/serviceApiRef';
+import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
+import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
 import { useProjectContext } from '../../../contexts/ProjectContext';
 import { useResponseSteps } from '../../../hooks/useResponseSteps';
 import { useUserContext } from '../../../contexts/UserContext';
-import { TAG_OBJECT_MESSAGE } from '../../../constants/constants';
-import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 
 interface PromoteRc {
-  rcRelease: NonNullable<GetLatestReleaseResult>;
+  rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseVersion: string;
   successCb?: ComponentConfigPromoteRc['successCb'];
 }

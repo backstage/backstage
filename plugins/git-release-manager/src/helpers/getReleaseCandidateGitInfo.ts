@@ -22,17 +22,19 @@ import { getSemverTagParts } from './tagParts/getSemverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { SEMVER_PARTS } from '../constants/constants';
 
+interface GetReleaseCandidateGitInfo {
+  project: Project;
+  latestRelease: GetLatestReleaseResult['latestRelease'];
+  semverBumpLevel: keyof typeof SEMVER_PARTS;
+  injectedDate?: string;
+}
+
 export const getReleaseCandidateGitInfo = ({
   project,
   latestRelease,
   semverBumpLevel,
   injectedDate = DateTime.now().toFormat('yyyy.MM.dd'),
-}: {
-  project: Project;
-  latestRelease: GetLatestReleaseResult;
-  semverBumpLevel: keyof typeof SEMVER_PARTS;
-  injectedDate?: string;
-}) => {
+}: GetReleaseCandidateGitInfo) => {
   if (project.versioningStrategy === 'calver') {
     return {
       rcBranch: `rc/${injectedDate}`,

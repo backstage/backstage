@@ -34,7 +34,7 @@ import { useUserContext } from '../../../contexts/UserContext';
 
 interface Patch {
   bumpedTag: string;
-  latestRelease: NonNullable<GetLatestReleaseResult>;
+  latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
   successCb?: ComponentConfigPatch['successCb'];

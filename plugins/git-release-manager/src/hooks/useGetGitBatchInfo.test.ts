@@ -86,16 +86,8 @@ describe('useGetHubBatchInfo', () => {
 
     expect(result.current.gitBatchInfo).toMatchInlineSnapshot(`
       Object {
+        "error": [TypeError: Cannot read property 'latestRelease' of null],
         "loading": false,
-        "value": Object {
-          "latestRelease": null,
-          "releaseBranch": null,
-          "repository": Object {
-            "defaultBranch": "mock_defaultBranch",
-            "name": "mock_repo",
-            "pushPermissions": true,
-          },
-        },
       }
     `);
   });
