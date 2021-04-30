@@ -106,7 +106,7 @@ export function usePromoteRc({
     abortIfError(tagObjectRes.error);
     if (!tagObjectRes.value) return undefined;
 
-    const createdRef = await pluginApiClient
+    const { reference: createdRef } = await pluginApiClient
       .createRef({
         owner: project.owner,
         repo: project.repo,

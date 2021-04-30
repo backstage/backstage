@@ -96,7 +96,7 @@ export function useCreateReleaseCandidate({
     abortIfError(latestCommitRes.error);
     if (!latestCommitRes.value) return undefined;
 
-    const createdReleaseBranch = await pluginApiClient
+    const { reference: createdReleaseBranch } = await pluginApiClient
       .createRef({
         owner: project.owner,
         repo: project.repo,
@@ -159,7 +159,7 @@ export function useCreateReleaseCandidate({
     abortIfError(tagObjectRes.error);
     if (!tagObjectRes.value) return undefined;
 
-    const createdRef = await pluginApiClient
+    const { reference: createdRef } = await pluginApiClient
       .createRef({
         owner: project.owner,
         repo: project.repo,

@@ -233,8 +233,10 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   createRef: jest.fn(async () => ({
-    ref: 'mock_createRef_ref',
-    objectSha: 'mock_createRef_objectSha',
+    reference: {
+      ref: 'mock_createRef_ref',
+      objectSha: 'mock_createRef_objectSha',
+    },
   })),
 
   createRelease: jest.fn(async () => ({

@@ -262,8 +262,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      ref: createRefResponse.data.ref,
-      objectSha: createRefResponse.data.object.sha,
+      reference: {
+        ref: createRefResponse.data.ref,
+        objectSha: createRefResponse.data.object.sha,
+      },
     };
   };
 
@@ -623,8 +625,10 @@ export interface GitReleaseApi {
       sha: string;
     } & OwnerRepo,
   ) => Promise<{
-    ref: string;
-    objectSha: string;
+    reference: {
+      ref: string;
+      objectSha: string;
+    };
   }>;
 
   getComparison: (
