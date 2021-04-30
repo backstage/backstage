@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEntity } from '@backstage/plugin-catalog-react';
-import { JENKINS_ANNOTATION } from '../constants';
 
-export const useProjectSlugFromEntity = () => {
-  const { entity } = useEntity();
-
-  return entity.metadata.annotations?.[JENKINS_ANNOTATION] ?? '';
-};
+export * from './service/router';
+export type {
+  JenkinsInfo,
+  JenkinsInfoProvider,
+} from './service/jenkinsInfoProvider';
+export { DummyJenkinsInfoProvider } from './service/jenkinsInfoProvider';

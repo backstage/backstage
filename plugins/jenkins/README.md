@@ -16,7 +16,11 @@ cd packages/app
 yarn add @backstage/plugin-jenkins
 ```
 
-2. Add the `EntityJenkinsContent` extension to the entity page in the app:
+2. Add and configure tha backend plugin according to it's instructions
+
+3. Add the `EntityJenkinsContent` extension to the cicd page and `EntityLatestJenkinsRunCard` to the entity page in the app:
+
+Note that if you configured a custom JenkinsInfoProvider in step 2, you may need a custom isJenkinsAvailable.
 
 ```tsx
 // In packages/app/src/components/catalog/EntityPage.tsx
@@ -32,29 +36,11 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 ```
 
-3. Add proxy configuration to `app-config.yaml`
+4. Run app with `yarn start`
+5. Add the Jenkins folder annotation to your `catalog-info.yaml`.
 
-```yaml
-proxy:
-  '/jenkins/api':
-    target: 'http://localhost:8080' # your Jenkins URL
-    changeOrigin: true
-    headers:
-      Authorization: Basic ${JENKINS_BASIC_AUTH_HEADER}
-```
-
-4. Add an environment variable which contains the Jenkins credentials (NOTE:
-   use an API token, not your password). Here `user` is the name of the user
-   created in Jenkins.
-
-```shell
-export JENKINS_BASIC_AUTH_HEADER=$(echo -n user:api-token | base64)
-```
-
-5. Run the app with `yarn start`
-
-6. Add the Jenkins folder annotation to your `catalog-info.yaml`, (NOTE:
-   currently this plugin only supports folders and Git SCM)
+Currently, this plugin only supports folders and Git SCM.
+Note that if you configured a custom JenkinsInfoProvider in step 2, you may need to use a different annotation scheme here
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -74,21 +60,6 @@ spec:
 
 8. Click the component in the catalog. You should now see Jenkins builds, and a
    last build result for your master build.
-
-Note: If you are not using environment variables, you can directly type the API
-token into `app-config.yaml`.
-
-```yaml
-proxy:
-  '/jenkins/api':
-    target: 'http://localhost:8080' # your Jenkins URL
-    changeOrigin: true
-    headers:
-      Authorization: Basic YWRtaW46MTFlYzI1NmU0Mzg1MDFjM2Y1Yzc2Yjc1MWE3ZTQ3YWY4Mw==
-```
-
-The string starting with `YWR...` is the base64 encoding of the user and their
-API token, e.g. `admin:11ec256e438501c3f5c76b751a7e47af83`.
 
 ## Features
 

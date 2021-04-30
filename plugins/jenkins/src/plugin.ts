@@ -22,7 +22,9 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { JenkinsApiImpl, jenkinsApiRef } from './api';
 
 export const rootRouteRef = createRouteRef({
   path: '',
@@ -30,9 +32,9 @@ export const rootRouteRef = createRouteRef({
 });
 
 export const buildRouteRef = createRouteRef({
-  path: 'run/:branch/:buildNumber',
-  params: ['branch', 'buildNumber'],
-  title: 'Jenkins run',
+  path: 'build/:jobName/:buildNumber',
+  params: ['jobName', 'buildNumber'],
+  title: 'Jenkins build',
 });
 
 export const jenkinsPlugin = createPlugin({
@@ -40,8 +42,9 @@ export const jenkinsPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: jenkinsApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => new JenkinsApi({ discoveryApi }),
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) =>
+        new JenkinsApiImpl({ discoveryApi, identityApi }),
     }),
   ],
   routes: {

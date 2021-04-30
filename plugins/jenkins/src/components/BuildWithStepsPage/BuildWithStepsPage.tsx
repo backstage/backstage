@@ -30,7 +30,6 @@ import React from 'react';
 import { buildRouteRef } from '../../plugin';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
 import { useBuildWithSteps } from '../useBuildWithSteps';
-import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 import { Breadcrumbs, Content, Link } from '@backstage/core-components';
 import { useRouteRefParams } from '@backstage/core-plugin-api';
@@ -49,17 +48,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const BuildWithStepsView = () => {
-  const projectName = useProjectSlugFromEntity();
-  const { branch, buildNumber } = useRouteRefParams(buildRouteRef);
+  const { jobName, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
-  const buildPath = `${projectName}/${encodeURIComponent(
-    branch,
-  )}/${buildNumber}`;
-  const [{ value }] = useBuildWithSteps(buildPath);
+
+  const [{ value }] = useBuildWithSteps(jobName, buildNumber);
 
   return (
     <div className={classes.root}>
       <Breadcrumbs aria-label="breadcrumb">
+        {/* TODO: don't hardcode this link */}
         <Link to="../../..">Projects</Link>
         <Typography>Run</Typography>
       </Breadcrumbs>
@@ -104,7 +101,7 @@ const BuildWithStepsView = () => {
                 <Typography noWrap>Jenkins</Typography>
               </TableCell>
               <TableCell>
-                <MaterialLink target="_blank" href={value?.buildUrl}>
+                <MaterialLink target="_blank" href={value?.url}>
                   View on Jenkins{' '}
                   <ExternalLinkIcon className={classes.externalLinkIcon} />
                 </MaterialLink>
@@ -112,10 +109,11 @@ const BuildWithStepsView = () => {
             </TableRow>
             <TableRow>
               <TableCell>
+                {/* TODO: be SCM agnostic */}
                 <Typography noWrap>GitHub</Typography>
               </TableCell>
               <TableCell>
-                <MaterialLink target="_blank" href={value?.source.url}>
+                <MaterialLink target="_blank" href={value?.source?.url}>
                   View on GitHub{' '}
                   <ExternalLinkIcon className={classes.externalLinkIcon} />
                 </MaterialLink>
