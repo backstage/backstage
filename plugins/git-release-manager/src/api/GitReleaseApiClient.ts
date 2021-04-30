@@ -489,11 +489,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
     };
   };
 
-  getSingleTag: GitReleaseApi['getSingleTag'] = async ({
-    owner,
-    repo,
-    tagSha,
-  }) => {
+  getTag: GitReleaseApi['getTag'] = async ({ owner, repo, tagSha }) => {
     const { octokit } = await this.getOctokit();
     const singleTag = await octokit.git.getTag({
       owner,
@@ -754,7 +750,7 @@ export interface GitReleaseApi {
     }>;
   }>;
 
-  getSingleTag: (
+  getTag: (
     args: {
       tagSha: string;
     } & OwnerRepo,
@@ -809,6 +805,4 @@ export type GetAllTagsResult = UnboxReturnedPromise<
 export type GetAllReleasesResult = UnboxReturnedPromise<
   GitReleaseApi['getAllReleases']
 >;
-export type GetSingleTagResult = UnboxReturnedPromise<
-  GitReleaseApi['getSingleTag']
->;
+export type GetTagResult = UnboxReturnedPromise<GitReleaseApi['getTag']>;

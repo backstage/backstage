@@ -42,12 +42,12 @@ export const getTagDates = async ({
       { tag: startTagResponse },
       { tag: endTagResponse },
     ] = await Promise.all([
-      pluginApiClient.getSingleTag({
+      pluginApiClient.getTag({
         owner: project.owner,
         repo: project.repo,
         tagSha: startTag.tagSha,
       }),
-      pluginApiClient.getSingleTag({
+      pluginApiClient.getTag({
         owner: project.owner,
         repo: project.repo,
         tagSha: endTag.tagSha,
@@ -126,7 +126,7 @@ async function getCommitFromTag({
   project: GetTagDates['project'];
   tag: GetTagDates['startTag'] | GetTagDates['endTag'];
 }) {
-  const { tag: tagResponse } = await pluginApiClient.getSingleTag({
+  const { tag: tagResponse } = await pluginApiClient.getTag({
     owner: project.owner,
     repo: project.repo,
     tagSha: tag.tagSha,
