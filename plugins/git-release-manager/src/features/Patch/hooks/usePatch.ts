@@ -154,7 +154,7 @@ export function usePatch({
     abortIfError(forceBranchRes.error);
     if (!forceBranchRes.value || !releaseBranchRes.value) return undefined;
 
-    const merge = await pluginApiClient
+    const { merge } = await pluginApiClient
       .merge({
         owner: project.owner,
         repo: project.repo,

@@ -274,11 +274,13 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   merge: jest.fn(async () => ({
-    htmlUrl: 'mock_merge_html_url',
-    commit: {
-      message: 'mock_merge_commit_message',
-      tree: {
-        sha: 'mock_merge_commit_tree_sha',
+    merge: {
+      htmlUrl: 'mock_merge_html_url',
+      commit: {
+        message: 'mock_merge_commit_message',
+        tree: {
+          sha: 'mock_merge_commit_tree_sha',
+        },
       },
     },
   })),

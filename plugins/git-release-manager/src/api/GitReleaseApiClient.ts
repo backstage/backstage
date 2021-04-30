@@ -407,11 +407,13 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      htmlUrl: merge.html_url,
-      commit: {
-        message: merge.commit.message,
-        tree: {
-          sha: merge.commit.tree.sha,
+      merge: {
+        htmlUrl: merge.html_url,
+        commit: {
+          message: merge.commit.message,
+          tree: {
+            sha: merge.commit.tree.sha,
+          },
         },
       },
     };
@@ -693,11 +695,13 @@ export interface GitReleaseApi {
       head: string;
     } & OwnerRepo,
   ) => Promise<{
-    htmlUrl: string;
-    commit: {
-      message: string;
-      tree: {
-        sha: string;
+    merge: {
+      htmlUrl: string;
+      commit: {
+        message: string;
+        tree: {
+          sha: string;
+        };
       };
     };
   }>;
