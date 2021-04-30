@@ -316,9 +316,11 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   getSingleTag: jest.fn(async () => ({
-    date: '2021-04-29T12:48:30.120Z',
-    username: 'mock_user_single_tag_name',
-    userEmail: 'mock_user_single_tag_email',
-    objectSha: 'mock_single_tag_object_sha',
+    tag: {
+      date: '2021-04-29T12:48:30.120Z',
+      username: 'mock_user_single_tag_name',
+      userEmail: 'mock_user_single_tag_email',
+      objectSha: 'mock_single_tag_object_sha',
+    },
   })),
 };

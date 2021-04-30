@@ -502,10 +502,12 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      date: singleTag.data.tagger.date,
-      username: singleTag.data.tagger.name,
-      userEmail: singleTag.data.tagger.email,
-      objectSha: singleTag.data.object.sha,
+      tag: {
+        date: singleTag.data.tagger.date,
+        username: singleTag.data.tagger.name,
+        userEmail: singleTag.data.tagger.email,
+        objectSha: singleTag.data.object.sha,
+      },
     };
   };
 }
@@ -757,10 +759,12 @@ export interface GitReleaseApi {
       tagSha: string;
     } & OwnerRepo,
   ) => Promise<{
-    date: string;
-    username: string;
-    userEmail: string;
-    objectSha: string;
+    tag: {
+      date: string;
+      username: string;
+      userEmail: string;
+      objectSha: string;
+    };
   }>;
 }
 
