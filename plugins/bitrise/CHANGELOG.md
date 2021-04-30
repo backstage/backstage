@@ -1,5 +1,15 @@
 # @backstage/plugin-bitrise
 
+## 0.1.2
+
+### Patch Changes
+
+- c614ede9a: Updated README to have up-to-date install instructions.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.1.1
 
 ### Patch Changes

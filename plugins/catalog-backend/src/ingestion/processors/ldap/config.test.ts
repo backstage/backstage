@@ -88,7 +88,7 @@ describe('readLdapConfig', () => {
               filter: 'f',
               paged: true,
             },
-            set: [{ path: 'p', value: 'v' }],
+            set: { p: 'v' },
             map: {
               rdn: 'u',
               name: 'v',
@@ -107,7 +107,7 @@ describe('readLdapConfig', () => {
               filter: 'f',
               paged: true,
             },
-            set: [{ path: 'p', value: 'v' }],
+            set: { p: 'v' },
             map: {
               rdn: 'u',
               name: 'v',
@@ -136,7 +136,7 @@ describe('readLdapConfig', () => {
             filter: 'f',
             paged: true,
           },
-          set: [{ path: 'p', value: 'v' }],
+          set: { p: 'v' },
           map: {
             rdn: 'u',
             name: 'v',
@@ -155,7 +155,7 @@ describe('readLdapConfig', () => {
             filter: 'f',
             paged: true,
           },
-          set: [{ path: 'p', value: 'v' }],
+          set: { p: 'v' },
           map: {
             rdn: 'u',
             name: 'v',
@@ -182,9 +182,9 @@ describe('readLdapConfig', () => {
             dn: 'udn',
             options: {
               filter: `
-              (| 
-                (cn=foo bar) 
-                (cn=bar) 
+              (|
+                (cn=foo bar)
+                (cn=bar)
               )
               `,
             },

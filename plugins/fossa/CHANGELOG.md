@@ -1,5 +1,32 @@
 # @backstage/plugin-fossa
 
+## 0.2.6
+
+### Patch Changes
+
+- c614ede9a: Updated README to have up-to-date install instructions.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
+## 0.2.5
+
+### Patch Changes
+
+- 40d1e11cf: Add a `FossaPage` that shows the license compliance status of all components in the catalog.
+  See the projects `Readme` on how to use it.
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
 ## 0.2.4
 
 ### Patch Changes

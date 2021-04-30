@@ -22,12 +22,6 @@ Install the plugin:
 yarn add @backstage/plugin-pagerduty
 ```
 
-Add it to the app in `plugins.ts`:
-
-```ts
-export { plugin as Pagerduty } from '@backstage/plugin-pagerduty';
-```
-
 Add it to the `EntityPage.tsx`:
 
 ```ts

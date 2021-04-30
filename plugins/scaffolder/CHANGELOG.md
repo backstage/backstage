@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.2
+
+### Patch Changes
+
+- f6efa71ee: Enable starred templates on Scaffolder frontend
+- 19a4dd710: Removed unused `swr` dependency.
+- 23769512a: Support `anyOf`, `oneOf` and `allOf` schemas in the scaffolder template.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
+## 0.9.1
+
+### Patch Changes
+
+- 99fbef232: Adding Headings for Accessibility on the Scaffolder Plugin
+- cb0206b2b: Respect top-level UI schema keys in scaffolder forms. Allows more advanced RJSF features such as explicit field ordering.
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
 ## 0.9.0
 
 ### Minor Changes

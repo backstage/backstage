@@ -44,7 +44,7 @@ metadata:
   name: artist-web
   description: The place to be, for great artists
   labels:
-    system: public-websites
+    example.com/custom: custom_label_value
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
@@ -58,6 +58,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations-team
+  system: public-websites
 ```
 
 This is the same entity as returned in JSON from the software catalog API:
@@ -76,7 +77,7 @@ This is the same entity as returned in JSON from the software catalog API:
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
     "generation": 1,
     "labels": {
-      "system": "public-websites"
+      "example.com/custom": "custom_label_value"
     },
     "links": [{
       "url": "https://admin.example-org.com",
@@ -90,7 +91,8 @@ This is the same entity as returned in JSON from the software catalog API:
   "spec": {
     "lifecycle": "production",
     "owner": "artist-relations-team",
-    "type": "website"
+    "type": "website",
+    "system": "public-websites"
   }
 }
 ```
@@ -639,22 +641,11 @@ A list of strings that can be associated with the template, e.g.
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
 
-### `spec.type` [optional]
+### `spec.type` [required]
 
-The type of component as a string, e.g. `website`. This field is optional but
-recommended.
-
-The software catalog accepts any type value, but an organization should take
-great care to establish a proper taxonomy for these. Tools including Backstage
-itself may read this field and behave differently depending on its value. For
-example, a website type component may present tooling in the Backstage interface
-that is specific to just websites.
-
-The current set of well-known and common values for this field is:
-
-- `service` - a backend service, typically exposing an API
-- `website` - a website
-- `library` - a software library, such as an npm module or a Java library
+The type of component created by the template, e.g. `website`. This is used for
+filtering templates, and should ideally match the Component
+[spec.type](#spectype-required) created by the template.
 
 ### `spec.parameters` [required]
 

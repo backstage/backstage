@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog",
-  "version": "0.5.4",
+  "version": "0.5.6",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -32,12 +32,12 @@
   "dependencies": {
     "@backstage/catalog-client": "^0.3.10",
     "@backstage/catalog-model": "^0.7.7",
-    "@backstage/core": "^0.7.5",
+    "@backstage/core": "^0.7.7",
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@backstage/integration-react": "^0.1.1",
     "@backstage/plugin-catalog-react": "^0.1.4",
-    "@backstage/theme": "^0.2.5",
+    "@backstage/theme": "^0.2.6",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
@@ -49,11 +49,10 @@
     "react-helmet": "6.1.0",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^15.3.3",
-    "swr": "^0.3.0"
+    "react-use": "^15.3.3"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.8",
+    "@backstage/cli": "^0.6.9",
     "@backstage/dev-utils": "^0.1.13",
     "@backstage/test-utils": "^0.1.10",
     "@microsoft/microsoft-graph-types": "^1.25.0",

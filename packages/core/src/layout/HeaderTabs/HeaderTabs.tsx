@@ -18,7 +18,7 @@
 // This is just a temporary solution to implementing tabs for now
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles, Tabs, Tab as TabUI } from '@material-ui/core';
+import { makeStyles, Tabs, Tab as TabUI, TabProps } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   tabsWrapper: {
@@ -41,6 +41,7 @@ const useStyles = makeStyles(theme => ({
 export type Tab = {
   id: string;
   label: string;
+  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
 type HeaderTabsProps = {
@@ -82,6 +83,7 @@ export const HeaderTabs = ({
       >
         {tabs.map((tab, index) => (
           <TabUI
+            {...tab.tabProps}
             label={tab.label}
             key={tab.id}
             value={index}

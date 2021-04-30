@@ -363,7 +363,7 @@ export function Table<T extends object = {}>({
         placeholder: 'All results',
         label: filter.column,
         multiple: filter.type === 'multiple-select',
-        items: [...extractDistinctValues(filter.column)].map(value => ({
+        items: [...extractDistinctValues(filter.column)].sort().map(value => ({
           label: value,
           value,
         })),

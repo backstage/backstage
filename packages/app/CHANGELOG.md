@@ -1,5 +1,78 @@
 # example-app
 
+## 0.2.26
+
+### Patch Changes
+
+- Updated dependencies [1ce80ff02]
+- Updated dependencies [b98de52ae]
+- Updated dependencies [4c42ecca2]
+- Updated dependencies [c614ede9a]
+- Updated dependencies [9afcac5af]
+- Updated dependencies [07a7806c3]
+- Updated dependencies [f6efa71ee]
+- Updated dependencies [19a4dd710]
+- Updated dependencies [dcd54c7cd]
+- Updated dependencies [da546ce00]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6fbd7beca]
+- Updated dependencies [15cbe6815]
+- Updated dependencies [39bdaa004]
+- Updated dependencies [cb8c848a3]
+- Updated dependencies [21fddf452]
+- Updated dependencies [17915e29b]
+- Updated dependencies [6eaecbd81]
+- Updated dependencies [23769512a]
+- Updated dependencies [1a142ae8a]
+  - @backstage/plugin-api-docs@0.4.12
+  - @backstage/plugin-cost-insights@0.8.5
+  - @backstage/plugin-github-actions@0.4.4
+  - @backstage/plugin-catalog-import@0.5.4
+  - @backstage/plugin-circleci@0.2.13
+  - @backstage/plugin-explore@0.3.4
+  - @backstage/plugin-graphiql@0.2.10
+  - @backstage/plugin-jenkins@0.4.2
+  - @backstage/plugin-lighthouse@0.2.15
+  - @backstage/plugin-pagerduty@0.3.3
+  - @backstage/plugin-rollbar@0.3.4
+  - @backstage/plugin-sentry@0.3.9
+  - @backstage/core@0.7.7
+  - @backstage/plugin-scaffolder@0.9.2
+  - @backstage/plugin-catalog@0.5.6
+  - @backstage/plugin-search@0.3.5
+  - @backstage/plugin-techdocs@0.9.0
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [4e5c94249]
+- Updated dependencies [99fbef232]
+- Updated dependencies [cb0206b2b]
+- Updated dependencies [1373f4f12]
+- Updated dependencies [29a7e4be8]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [96728a2af]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [87c4f59de]
+- Updated dependencies [55b2fc0c0]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+- Updated dependencies [ac6025f63]
+- Updated dependencies [e292e393f]
+- Updated dependencies [479b29124]
+  - @backstage/core@0.7.6
+  - @backstage/cli@0.6.9
+  - @backstage/plugin-scaffolder@0.9.1
+  - @backstage/plugin-catalog-import@0.5.3
+  - @backstage/plugin-catalog@0.5.5
+  - @backstage/theme@0.2.6
+  - @backstage/plugin-code-coverage@0.1.2
+  - @backstage/plugin-techdocs@0.8.0
+
 ## 0.2.24
 
 ### Patch Changes
