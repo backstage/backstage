@@ -58,10 +58,7 @@ export const getTagDates = async ({
   }
 
   if (startTag.tagType === 'commit' && endTag.tagType === 'commit') {
-    const [
-      { createdAt: startDate },
-      { createdAt: endDate },
-    ] = await Promise.all([
+    const [{ commit: startCommit }, { commit: endCommit }] = await Promise.all([
       pluginApiClient.getCommit({
         owner: project.owner,
         repo: project.repo,
@@ -75,13 +72,13 @@ export const getTagDates = async ({
     ]);
 
     return {
-      startDate,
-      endDate,
+      startDate: startCommit.createdAt,
+      endDate: endCommit.createdAt,
     };
   }
 
   if (startTag.tagType === 'tag' && endTag.tagType === 'commit') {
-    const [{ date: startDate }, { createdAt: endDate }] = await Promise.all([
+    const [{ date: startDate }, { commit: endCommit }] = await Promise.all([
       getCommitFromTag({ pluginApiClient, project, tag: startTag }),
       pluginApiClient.getCommit({
         owner: project.owner,
@@ -92,12 +89,12 @@ export const getTagDates = async ({
 
     return {
       startDate,
-      endDate,
+      endDate: endCommit.createdAt,
     };
   }
 
   if (startTag.tagType === 'commit' && endTag.tagType === 'tag') {
-    const [{ createdAt: startDate }, { date: endDate }] = await Promise.all([
+    const [{ commit: startCommit }, { date: endDate }] = await Promise.all([
       pluginApiClient.getCommit({
         owner: project.owner,
         repo: project.repo,
@@ -107,7 +104,7 @@ export const getTagDates = async ({
     ]);
 
     return {
-      startDate,
+      startDate: startCommit.createdAt,
       endDate,
     };
   }
@@ -131,7 +128,7 @@ async function getCommitFromTag({
     repo: project.repo,
     tagSha: tag.tagSha,
   });
-  const startCommit = await pluginApiClient.getCommit({
+  const { commit: startCommit } = await pluginApiClient.getCommit({
     owner: project.owner,
     repo: project.repo,
     ref: singleTag.objectSha,

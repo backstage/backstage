@@ -218,12 +218,14 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   getCommit: jest.fn(async () => ({
-    sha: 'latestCommit.sha',
-    htmlUrl: 'latestCommit.html_url',
     commit: {
-      message: 'latestCommit.commit.message',
+      sha: 'latestCommit.sha',
+      htmlUrl: 'latestCommit.html_url',
+      commit: {
+        message: 'latestCommit.commit.message',
+      },
+      createdAt: '2021-01-01T10:11:12Z',
     },
-    createdAt: '2021-01-01T10:11:12Z',
   })),
 
   getBranch: jest.fn(async () => ({

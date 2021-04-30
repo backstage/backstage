@@ -52,7 +52,7 @@ export function usePromoteRc({
    * (1) Fetch most recent release branch commit
    */
   const [latestReleaseBranchCommitSha, run] = useAsyncFn(async () => {
-    const latestCommit = await pluginApiClient
+    const { commit: latestCommit } = await pluginApiClient
       .getCommit({
         owner: project.owner,
         repo: project.repo,

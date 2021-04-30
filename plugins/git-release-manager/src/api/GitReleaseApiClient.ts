@@ -213,12 +213,14 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      sha: latestCommit.sha,
-      htmlUrl: latestCommit.html_url,
       commit: {
-        message: latestCommit.commit.message,
+        sha: latestCommit.sha,
+        htmlUrl: latestCommit.html_url,
+        commit: {
+          message: latestCommit.commit.message,
+        },
+        createdAt: latestCommit.commit.committer?.date,
       },
-      createdAt: latestCommit.commit.committer?.date,
     };
   };
 
@@ -568,12 +570,14 @@ export interface GitReleaseApi {
       ref: string;
     } & OwnerRepo,
   ) => Promise<{
-    sha: string;
-    htmlUrl: string;
     commit: {
-      message: string;
+      sha: string;
+      htmlUrl: string;
+      commit: {
+        message: string;
+      };
+      createdAt?: string;
     };
-    createdAt?: string;
   }>;
 
   getBranch: (
