@@ -244,8 +244,10 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   getComparison: jest.fn(async () => ({
-    htmlUrl: 'mock_compareCommits_html_url',
-    aheadBy: 1,
+    comparison: {
+      htmlUrl: 'mock_compareCommits_html_url',
+      aheadBy: 1,
+    },
   })),
 
   createTagObject: jest.fn(async () => ({

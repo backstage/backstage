@@ -197,7 +197,7 @@ export function useCreateReleaseCandidate({
       ? latestRelease.targetCommitish
       : defaultBranch;
     const nextReleaseBranch = releaseCandidateGitInfo.rcBranch;
-    const comparison = await pluginApiClient
+    const { comparison } = await pluginApiClient
       .getComparison({
         owner: project.owner,
         repo: project.repo,

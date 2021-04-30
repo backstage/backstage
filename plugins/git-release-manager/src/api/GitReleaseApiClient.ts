@@ -282,8 +282,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      htmlUrl: compareCommitsResponse.data.html_url,
-      aheadBy: compareCommitsResponse.data.ahead_by,
+      comparison: {
+        htmlUrl: compareCommitsResponse.data.html_url,
+        aheadBy: compareCommitsResponse.data.ahead_by,
+      },
     };
   };
 
@@ -617,8 +619,10 @@ export interface GitReleaseApi {
       head: string;
     } & OwnerRepo,
   ) => Promise<{
-    htmlUrl: string;
-    aheadBy: number;
+    comparison: {
+      htmlUrl: string;
+      aheadBy: number;
+    };
   }>;
 
   createRelease: (
