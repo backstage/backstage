@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { SidebarItem } from '@backstage/core';
 import { IconButton, makeStyles } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -24,6 +24,14 @@ import { ShortcutApi } from './api';
 import { Shortcut } from './types';
 
 const useStyles = makeStyles({
+  root: {
+    '&:hover #edit': {
+      visibility: 'visible',
+    },
+  },
+  button: {
+    visibility: 'hidden',
+  },
   icon: {
     color: 'white',
     fontSize: 16,
@@ -50,7 +58,6 @@ type Props = {
 
 export const ShortcutItem = ({ shortcut, api }: Props) => {
   const classes = useStyles();
-  const [displayEdit, setDisplayEdit] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<Element | undefined>();
 
   const handleClick = (event: React.MouseEvent<Element>) => {
@@ -60,32 +67,27 @@ export const ShortcutItem = ({ shortcut, api }: Props) => {
 
   const handleClose = () => {
     setAnchorEl(undefined);
-    setDisplayEdit(false);
-  };
-
-  const handleMouseEnter = () => {
-    setDisplayEdit(true);
-  };
-
-  const handleMouseLeave = () => {
-    setDisplayEdit(false);
   };
 
   const text = getIconText(shortcut.title);
   const color = api.getColor(shortcut.url);
 
   return (
-    <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <>
       <SidebarItem
+        className={classes.root}
         to={shortcut.url}
         text={shortcut.title}
         icon={() => <ShortcutIcon text={text} color={color} />}
       >
-        {displayEdit && (
-          <IconButton data-testid="edit" onClick={handleClick}>
-            <EditIcon className={classes.icon} />
-          </IconButton>
-        )}
+        <IconButton
+          id="edit"
+          data-testid="edit"
+          onClick={handleClick}
+          className={classes.button}
+        >
+          <EditIcon className={classes.icon} />
+        </IconButton>
       </SidebarItem>
       <EditShortcut
         onClose={handleClose}
@@ -93,6 +95,6 @@ export const ShortcutItem = ({ shortcut, api }: Props) => {
         api={api}
         shortcut={shortcut}
       />
-    </div>
+    </>
   );
 };

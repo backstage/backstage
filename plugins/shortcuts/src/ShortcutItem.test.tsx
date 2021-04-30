@@ -81,26 +81,6 @@ describe('ShortcutItem', () => {
     });
   });
 
-  it('displays the edit icon on hover', async () => {
-    render(
-      wrapInTestApp(
-        <SidebarContext.Provider value={{ isOpen: true }}>
-          <ShortcutItem api={api} shortcut={shortcut} />
-        </SidebarContext.Provider>,
-      ),
-    );
-
-    fireEvent.mouseOver(screen.getByText('ST'));
-    await waitFor(() => {
-      expect(screen.getByTestId('edit')).toBeInTheDocument();
-    });
-
-    fireEvent.mouseOut(screen.getByText('ST'));
-    await waitFor(() => {
-      expect(screen.queryByTestId('edit')).not.toBeInTheDocument();
-    });
-  });
-
   it('gets the color based on the theme', async () => {
     const { rerender } = render(
       wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut} />),
