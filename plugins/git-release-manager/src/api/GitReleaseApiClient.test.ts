@@ -48,7 +48,7 @@ describe('GitReleaseApiClient', () => {
         "getRepoPath": [Function],
         "getRepositories": [Function],
         "getRepository": [Function],
-        "getSingleTag": [Function],
+        "getTag": [Function],
         "getUser": [Function],
         "githubAuthApi": Object {
           "getAccessToken": [MockFunction],

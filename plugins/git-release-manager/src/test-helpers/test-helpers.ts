@@ -267,9 +267,11 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   updateRef: jest.fn(async () => ({
-    ref: 'mock_update_ref_ref',
-    object: {
-      sha: 'mock_update_ref_object_sha',
+    reference: {
+      ref: 'mock_update_ref_ref',
+      object: {
+        sha: 'mock_update_ref_object_sha',
+      },
     },
   })),
 

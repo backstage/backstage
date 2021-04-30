@@ -216,7 +216,7 @@ export function usePatch({
     abortIfError(cherryPickRes.error);
     if (!cherryPickRes.value) return undefined;
 
-    const updatedReference = await pluginApiClient
+    const { reference: updatedReference } = await pluginApiClient
       .updateRef({
         owner: project.owner,
         repo: project.repo,

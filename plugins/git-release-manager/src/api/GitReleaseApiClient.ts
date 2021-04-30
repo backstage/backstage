@@ -390,9 +390,11 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      ref: updatedRef.ref,
-      object: {
-        sha: updatedRef.object.sha,
+      reference: {
+        ref: updatedRef.ref,
+        object: {
+          sha: updatedRef.object.sha,
+        },
       },
     };
   };
@@ -687,9 +689,11 @@ export interface GitReleaseApi {
       force: boolean;
     } & OwnerRepo,
   ) => Promise<{
-    ref: string;
-    object: {
-      sha: string;
+    reference: {
+      ref: string;
+      object: {
+        sha: string;
+      };
     };
   }>;
 
