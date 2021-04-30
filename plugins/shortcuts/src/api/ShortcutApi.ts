@@ -36,7 +36,7 @@ export interface ShortcutApi {
   /**
    * Removes the shortcut.
    */
-  remove(shortcut: Shortcut): Promise<void>;
+  remove(id: string): Promise<void>;
 
   /**
    * Finds an existing shortcut that matches the ID of the

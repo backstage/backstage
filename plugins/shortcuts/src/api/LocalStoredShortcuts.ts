@@ -39,8 +39,8 @@ export class LocalStoredShortcuts implements ShortcutApi {
     this.notify();
   }
 
-  async remove(shortcut: Shortcut) {
-    const shortcuts = this.get().filter(s => s.id !== shortcut.id);
+  async remove(id: string) {
+    const shortcuts = this.get().filter(s => s.id !== id);
 
     await this.storageApi.set('items', shortcuts);
     this.notify();

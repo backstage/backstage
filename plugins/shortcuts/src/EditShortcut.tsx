@@ -78,7 +78,7 @@ export const EditShortcut = ({ shortcut, onClose, anchorEl, api }: Props) => {
 
   const handleRemove = async () => {
     try {
-      await api.remove(shortcut);
+      await api.remove(shortcut.id);
       alertApi.post({
         message: `Removed shortcut '${shortcut.title}' from your sidebar`,
         severity: 'success',

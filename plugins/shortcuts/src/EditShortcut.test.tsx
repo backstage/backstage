@@ -86,11 +86,7 @@ describe('EditShortcut', () => {
 
     fireEvent.click(screen.getByText('Remove'));
     await waitFor(() => {
-      expect(spy).toBeCalledWith({
-        id: 'id',
-        title: 'some title',
-        url: '/some-url',
-      });
+      expect(spy).toBeCalledWith('id');
     });
   });
 
