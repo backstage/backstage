@@ -301,7 +301,7 @@ export function usePatch({
 
     const selectedPatchCommit = releaseBranchRes.value.selectedPatchCommit;
 
-    const updatedRelease = await pluginApiClient
+    const { release } = await pluginApiClient
       .updateRelease({
         owner: project.owner,
         repo: project.repo,
@@ -316,13 +316,13 @@ ${selectedPatchCommit.commit.message}`,
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `Updated release "${updatedRelease.name}"`,
-      secondaryMessage: `with tag ${updatedRelease.tagName}`,
-      link: updatedRelease.htmlUrl,
+      message: `Updated release "${release.name}"`,
+      secondaryMessage: `with tag ${release.tagName}`,
+      link: release.htmlUrl,
     });
 
     return {
-      ...updatedRelease,
+      ...release,
     };
   }, [createdReferenceRes.value, createdReferenceRes.error]);
 

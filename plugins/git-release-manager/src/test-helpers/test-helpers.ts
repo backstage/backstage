@@ -286,9 +286,11 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   updateRelease: jest.fn(async () => ({
-    name: 'mock_update_release_name',
-    tagName: 'mock_update_release_tag_name',
-    htmlUrl: 'mock_update_release_html_url',
+    release: {
+      name: 'mock_update_release_name',
+      tagName: 'mock_update_release_tag_name',
+      htmlUrl: 'mock_update_release_html_url',
+    },
   })),
 
   getAllTags: jest.fn(async () => [

@@ -438,9 +438,11 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      name: updatedRelease.name,
-      tagName: updatedRelease.tag_name,
-      htmlUrl: updatedRelease.html_url,
+      release: {
+        name: updatedRelease.name,
+        tagName: updatedRelease.tag_name,
+        htmlUrl: updatedRelease.html_url,
+      },
     };
   };
 
@@ -714,9 +716,11 @@ export interface GitReleaseApi {
       prerelease?: boolean;
     } & OwnerRepo,
   ) => Promise<{
-    name: string | null;
-    tagName: string;
-    htmlUrl: string;
+    release: {
+      name: string | null;
+      tagName: string;
+      htmlUrl: string;
+    };
   }>;
 
   /**

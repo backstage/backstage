@@ -140,7 +140,7 @@ export function usePromoteRc({
     abortIfError(createRcRes.error);
     if (!createRcRes.value) return undefined;
 
-    const promotedRelease = await pluginApiClient
+    const { release } = await pluginApiClient
       .updateRelease({
         owner: project.owner,
         repo: project.repo,
@@ -151,13 +151,13 @@ export function usePromoteRc({
       .catch(asyncCatcher);
 
     addStepToResponseSteps({
-      message: `Promoted "${promotedRelease.name}"`,
-      secondaryMessage: `from "${rcRelease.tagName}" to "${promotedRelease.tagName}"`,
-      link: promotedRelease.htmlUrl,
+      message: `Promoted "${release.name}"`,
+      secondaryMessage: `from "${rcRelease.tagName}" to "${release.tagName}"`,
+      link: release.htmlUrl,
     });
 
     return {
-      ...promotedRelease,
+      ...release,
     };
   }, [createRcRes.value, createRcRes.error]);
 
