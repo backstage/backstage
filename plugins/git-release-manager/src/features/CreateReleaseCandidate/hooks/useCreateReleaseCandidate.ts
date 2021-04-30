@@ -235,7 +235,7 @@ export function useCreateReleaseCandidate({
     abortIfError(getComparisonRes.error);
     if (!getComparisonRes.value) return undefined;
 
-    const createReleaseResult = await pluginApiClient
+    const { release: createReleaseResult } = await pluginApiClient
       .createRelease({
         owner: project.owner,
         repo: project.repo,

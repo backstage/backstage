@@ -238,9 +238,11 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   createRelease: jest.fn(async () => ({
-    name: 'mock_createRelease_name',
-    htmlUrl: 'mock_createRelease_html_url',
-    tagName: 'mock_createRelease_tag_name',
+    release: {
+      name: 'mock_createRelease_name',
+      htmlUrl: 'mock_createRelease_html_url',
+      tagName: 'mock_createRelease_tag_name',
+    },
   })),
 
   getComparison: jest.fn(async () => ({

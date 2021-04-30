@@ -309,9 +309,11 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      name: createReleaseResponse.data.name,
-      htmlUrl: createReleaseResponse.data.html_url,
-      tagName: createReleaseResponse.data.tag_name,
+      release: {
+        name: createReleaseResponse.data.name,
+        htmlUrl: createReleaseResponse.data.html_url,
+        tagName: createReleaseResponse.data.tag_name,
+      },
     };
   };
 
@@ -633,9 +635,11 @@ export interface GitReleaseApi {
       body: string;
     } & OwnerRepo,
   ) => Promise<{
-    name: string | null;
-    htmlUrl: string;
-    tagName: string;
+    release: {
+      name: string | null;
+      htmlUrl: string;
+      tagName: string;
+    };
   }>;
 
   createTagObject: (
