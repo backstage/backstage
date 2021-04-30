@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-import { createComponentExtension, createPlugin } from '@backstage/core';
+import {
+  createApiFactory,
+  createComponentExtension,
+  createPlugin,
+  storageApiRef,
+} from '@backstage/core';
+import { LocalStoredShortcuts, shortcutsApiRef } from './api';
 
 export const shortcutsPlugin = createPlugin({
   id: 'shortcuts',
+  apis: [
+    createApiFactory({
+      api: shortcutsApiRef,
+      deps: { storageApi: storageApiRef },
+      factory: ({ storageApi }) =>
+        new LocalStoredShortcuts(storageApi.forBucket('shortcuts')),
+    }),
+  ],
 });
 
 export const Shortcuts = shortcutsPlugin.provide(

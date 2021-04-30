@@ -17,23 +17,20 @@ import { Shortcuts } from '@backstage/plugin-shortcuts';
 </Sidebar>;
 ```
 
-The plugin exports a `shortcutApiRef` and an implementation of the `ShortcutApi` that uses `localStorage` for storage, that you can use to get started quickly. To use it add it to your app's `apis.ts`:
+The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each users shortcuts.
+
+To overwrite the default implementation add it to the App's `apis.ts`:
 
 ```ts
-import {
-  LocalStoredShortcuts,
-  shortcutsApiRef,
-} from '@backstage/plugin-shortcuts';
+import { shortcutsApiRef } from '@backstage/plugin-shortcuts';
+import { CustomShortcutsImpl } from '...';
 
 export const apis = [
   // ...
   createApiFactory({
     api: shortcutsApiRef,
-    deps: { errorApi: errorApiRef },
-    factory: ({ errorApi }) =>
-      new LocalStoredShortcuts(
-        WebStorage.create({ namespace: '@backstage/shortcuts', errorApi }),
-      ),
+    deps: {},
+    factory: () => new CustomShortcutsImpl(),
   }),
 ];
 ```
