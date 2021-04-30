@@ -205,7 +205,7 @@ export class GitReleaseApiClient implements GitReleaseApi {
 
   getCommit: GitReleaseApi['getCommit'] = async ({ owner, repo, ref }) => {
     const { octokit } = await this.getOctokit();
-    const { data: latestCommit } = await octokit.repos.getCommit({
+    const { data: commit } = await octokit.repos.getCommit({
       owner,
       repo,
       ref,
@@ -214,12 +214,12 @@ export class GitReleaseApiClient implements GitReleaseApi {
 
     return {
       commit: {
-        sha: latestCommit.sha,
-        htmlUrl: latestCommit.html_url,
+        sha: commit.sha,
+        htmlUrl: commit.html_url,
         commit: {
-          message: latestCommit.commit.message,
+          message: commit.commit.message,
         },
-        createdAt: latestCommit.commit.committer?.date,
+        createdAt: commit.commit.committer?.date,
       },
     };
   };
@@ -789,9 +789,7 @@ export type GetLatestReleaseResult = UnboxReturnedPromise<
 export type GetRepositoryResult = UnboxReturnedPromise<
   GitReleaseApi['getRepository']
 >;
-export type GetLatestCommitResult = UnboxReturnedPromise<
-  GitReleaseApi['getCommit']
->;
+export type GetCommitResult = UnboxReturnedPromise<GitReleaseApi['getCommit']>;
 export type GetBranchResult = UnboxReturnedPromise<GitReleaseApi['getBranch']>;
 export type CreateRefResult = UnboxReturnedPromise<GitReleaseApi['createRef']>;
 export type GetComparisonResult = UnboxReturnedPromise<

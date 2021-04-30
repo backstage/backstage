@@ -18,12 +18,15 @@ import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
+  GetTagResult,
   GitReleaseApi,
+  GetCommitResult,
 } from '../api/GitReleaseApiClient';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { getReleaseCandidateGitInfo } from '../helpers/getReleaseCandidateGitInfo';
 
+const mockUsername = 'mock_username';
 const mockEmail = 'mock_email';
 const mockOwner = 'mock_owner';
 const mockRepo = 'mock_repo';
@@ -40,8 +43,34 @@ const MOCK_RELEASE_BRANCH_NAME_SEMVER = `rc/${A_SEMVER_VERSION}`;
 const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER = `rc-${A_SEMVER_VERSION}`;
 const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER = `version-${A_SEMVER_VERSION}`;
 
+export const createMockTag = (
+  overrides: Partial<GetTagResult['tag']>,
+): GetTagResult => ({
+  tag: {
+    date: '2000-01-01T10:00:00.000Z',
+    objectSha: 'mock_tag_object_sha',
+    userEmail: mockEmail,
+    username: mockUsername,
+    ...overrides,
+  },
+});
+
+export const createMockCommit = (
+  overrides: Partial<GetCommitResult['commit']>,
+): GetCommitResult => ({
+  commit: {
+    commit: {
+      message: 'mock_commit_commit_message',
+    },
+    htmlUrl: 'mock_commit_html_url',
+    sha: 'mock_commit_sha',
+    createdAt: '2000-01-01T10:00:00.000Z',
+    ...overrides,
+  },
+});
+
 export const mockUser = {
-  username: mockOwner,
+  username: mockUsername,
   email: mockEmail,
 };
 
