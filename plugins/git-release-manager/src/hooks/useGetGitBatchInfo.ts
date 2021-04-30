@@ -31,7 +31,7 @@ export const useGetGitBatchInfo = ({
   refetchTrigger,
 }: GetGitBatchInfo) => {
   const gitBatchInfo = useAsync(async () => {
-    const [repository, { latestRelease }] = await Promise.all([
+    const [{ repository }, { latestRelease }] = await Promise.all([
       pluginApiClient.getRepository({
         owner: project.owner,
         repo: project.repo,

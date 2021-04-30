@@ -195,9 +195,11 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      pushPermissions: repository.permissions?.push,
-      defaultBranch: repository.default_branch,
-      name: repository.name,
+      repository: {
+        pushPermissions: repository.permissions?.push,
+        defaultBranch: repository.default_branch,
+        name: repository.name,
+      },
     };
   };
 
@@ -552,9 +554,11 @@ export interface GitReleaseApi {
   getRepository: (
     args: OwnerRepo,
   ) => Promise<{
-    pushPermissions: boolean | undefined;
-    defaultBranch: string;
-    name: string;
+    repository: {
+      pushPermissions: boolean | undefined;
+      defaultBranch: string;
+      name: string;
+    };
   }>;
 
   getCommit: (

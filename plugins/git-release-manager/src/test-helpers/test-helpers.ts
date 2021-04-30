@@ -97,14 +97,16 @@ const createMockRelease = ({
   prerelease = false,
   ...rest
 }: Partial<
-  NonNullable<GetLatestReleaseResult>
+  NonNullable<GetLatestReleaseResult['latestRelease']>
 > = {}): NonNullable<GetLatestReleaseResult> => ({
-  id: 1,
-  htmlUrl: 'mock_release_html_url',
-  prerelease,
-  tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
-  targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
-  ...rest,
+  latestRelease: {
+    id,
+    htmlUrl: 'mock_release_html_url',
+    prerelease,
+    tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+    targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
+    ...rest,
+  },
 });
 
 export const mockReleaseCandidateCalver = createMockRelease({
@@ -208,9 +210,11 @@ export const mockApiClient: GitReleaseApi = {
   getLatestRelease: jest.fn(async () => createMockRelease()),
 
   getRepository: jest.fn(async () => ({
-    pushPermissions: true,
-    defaultBranch: mockDefaultBranch,
-    name: mockRepo,
+    repository: {
+      pushPermissions: true,
+      defaultBranch: mockDefaultBranch,
+      name: mockRepo,
+    },
   })),
 
   getCommit: jest.fn(async () => ({
