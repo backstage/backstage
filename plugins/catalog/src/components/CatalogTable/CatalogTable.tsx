@@ -135,7 +135,7 @@ type CatalogTableProps = {
   titlePreamble: string;
   loading: boolean;
   error?: any;
-  view?: string;
+  showTypeColumn?: boolean;
 };
 
 export const CatalogTable = ({
@@ -143,7 +143,7 @@ export const CatalogTable = ({
   loading,
   error,
   titlePreamble,
-  view,
+  showTypeColumn = false,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -226,7 +226,7 @@ export const CatalogTable = ({
 
   const typeColumn = columns.find(c => c.title === 'Type');
   if (typeColumn) {
-    typeColumn.hidden = view !== 'Other';
+    typeColumn.hidden = !showTypeColumn;
   }
 
   return (
