@@ -514,4 +514,48 @@ describe('Default Processing Database', () => {
       });
     });
   });
+
+  describe('getProcessableEntities', () => {
+    it('should return entities to process', async () => {
+      const entity = JSON.stringify({
+        apiVersion: '1.0.0',
+        metadata: {
+          name: 'xyz',
+        },
+        kind: 'Location',
+      } as Entity);
+      await db<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: '2',
+        entity_ref: 'location:default/new-root',
+        unprocessed_entity: entity,
+        errors: '',
+        next_update_at: '2019-01-01 23:00:00',
+        last_discovery_at: 'now()',
+      });
+      await db<DbRefreshStateRow>('refresh_state').insert({
+        entity_id: '1',
+        entity_ref: 'location:default/foobar',
+        unprocessed_entity: entity,
+        errors: '',
+        next_update_at: '2042-01-01 23:00:00',
+        last_discovery_at: 'now()',
+      });
+
+      await processingDatabase.transaction(async tx => {
+        // request two items but only one can be processed.
+        const result = await processingDatabase.getProcessableEntities(tx, {
+          processBatchSize: 2,
+        });
+        expect(result.items.length).toEqual(1);
+        expect(result.items[0].entityRef).toEqual('location:default/new-root');
+
+        // should not return the same item as there's nothing left to process.
+        await expect(
+          processingDatabase.getProcessableEntities(tx, {
+            processBatchSize: 2,
+          }),
+        ).resolves.toEqual({ items: [] });
+      });
+    });
+  });
 });
