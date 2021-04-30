@@ -31,7 +31,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 
 interface PatchProps {
   latestRelease: GetLatestReleaseResult['latestRelease'];
-  releaseBranch: GetBranchResult | null;
+  releaseBranch: GetBranchResult['branch'] | null;
   successCb?: ComponentConfigPatch['successCb'];
 }
 

@@ -67,7 +67,7 @@ export function usePatch({
    */
   const [releaseBranchRes, run] = useAsyncFn(
     async (selectedPatchCommit: GetRecentCommitsResultSingle) => {
-      const releaseBranch = await pluginApiClient
+      const { branch: releaseBranch } = await pluginApiClient
         .getBranch({
           owner: project.owner,
           repo: project.repo,

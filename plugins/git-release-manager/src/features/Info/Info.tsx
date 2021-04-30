@@ -30,7 +30,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 import flowImage from './flow.png';
 
 interface InfoCardProps {
-  releaseBranch: GetBranchResult | null;
+  releaseBranch: GetBranchResult['branch'] | null;
   latestRelease: GetLatestReleaseResult['latestRelease'];
   statsEnabled: boolean;
 }

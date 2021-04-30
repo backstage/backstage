@@ -135,7 +135,7 @@ export const mockReleaseVersionSemver = createMockRelease({
  */
 const createMockBranch = ({
   ...rest
-}: Partial<GetBranchResult> = {}): GetBranchResult => ({
+}: Partial<GetBranchResult> = {}): GetBranchResult['branch'] => ({
   name: MOCK_RELEASE_BRANCH_NAME_SEMVER,
   commit: {
     sha: 'mock_branch_commit_sha',
@@ -226,7 +226,9 @@ export const mockApiClient: GitReleaseApi = {
     createdAt: '2021-01-01T10:11:12Z',
   })),
 
-  getBranch: jest.fn(async () => createMockBranch()),
+  getBranch: jest.fn(async () => ({
+    branch: createMockBranch(),
+  })),
 
   createRef: jest.fn(async () => ({
     ref: 'mock_createRef_ref',

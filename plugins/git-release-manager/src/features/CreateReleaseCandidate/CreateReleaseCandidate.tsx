@@ -44,7 +44,7 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 interface CreateReleaseCandidateProps {
   defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
   latestRelease: GetLatestReleaseResult['latestRelease'];
-  releaseBranch: GetBranchResult | null;
+  releaseBranch: GetBranchResult['branch'] | null;
   successCb?: ComponentConfigCreateRc['successCb'];
 }
 

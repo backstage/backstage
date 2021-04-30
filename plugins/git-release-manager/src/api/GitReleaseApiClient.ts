@@ -233,15 +233,17 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     return {
-      name: branchData.name,
-      links: {
-        html: branchData._links.html,
-      },
-      commit: {
-        sha: branchData.commit.sha,
+      branch: {
+        name: branchData.name,
+        links: {
+          html: branchData._links.html,
+        },
         commit: {
-          tree: {
-            sha: branchData.commit.commit.tree.sha,
+          sha: branchData.commit.sha,
+          commit: {
+            tree: {
+              sha: branchData.commit.commit.tree.sha,
+            },
           },
         },
       },
@@ -579,15 +581,17 @@ export interface GitReleaseApi {
       branch: string;
     } & OwnerRepo,
   ) => Promise<{
-    name: string;
-    links: {
-      html: string;
-    };
-    commit: {
-      sha: string;
+    branch: {
+      name: string;
+      links: {
+        html: string;
+      };
       commit: {
-        tree: {
-          sha: string;
+        sha: string;
+        commit: {
+          tree: {
+            sha: string;
+          };
         };
       };
     };

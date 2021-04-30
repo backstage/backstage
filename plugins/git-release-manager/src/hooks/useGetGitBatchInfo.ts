@@ -50,7 +50,7 @@ export const useGetGitBatchInfo = ({
       };
     }
 
-    const releaseBranch = await pluginApiClient.getBranch({
+    const { branch: releaseBranch } = await pluginApiClient.getBranch({
       owner: project.owner,
       repo: project.repo,
       branch: latestRelease.targetCommitish,
