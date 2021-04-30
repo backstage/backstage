@@ -29,7 +29,7 @@ import { InputError, CustomErrorBase } from '@backstage/errors';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import globby from 'globby';
 
-class GithubResponseError extends CustomErrorBase { }
+class GithubResponseError extends CustomErrorBase {}
 
 type CreatePullRequestResponse = {
   data: { html_url: string };
