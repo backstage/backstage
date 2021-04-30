@@ -21,6 +21,7 @@ import { graphql } from '@octokit/graphql';
 
 export type QueryResponse = {
   organization: Organization;
+  user: User;
 };
 
 export type Organization = {
@@ -41,6 +42,7 @@ export type User = {
   avatarUrl?: string;
   email?: string;
   name?: string;
+  repositories?: Connection<Repository>;
 };
 
 export type Team = {
@@ -243,13 +245,27 @@ export async function getOrganizationRepositories(
         }
       }
     }
+    user(login: $org) {
+      name
+      repositories(first: 100, after: $cursor) {
+        nodes {
+          name
+          url
+          isArchived
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
   }
   `;
 
   const repositories = await queryWithPaging(
     client,
     query,
-    r => r.organization?.repositories,
+    r => r.organization?.repositories || r.user?.repositories,
     x => x,
     { org },
   );
@@ -327,10 +343,16 @@ export async function queryWithPaging<
 
   let cursor: string | undefined = undefined;
   for (let j = 0; j < 1000 /* just for sanity */; ++j) {
-    const response: Response = await client(query, {
-      ...variables,
-      cursor,
-    });
+    let response: Response;
+
+    try {
+      response = await client(query, {
+        ...variables,
+        cursor,
+      });
+    } catch (e) {
+      response = e.data;
+    }
 
     const conn = connection(response);
     if (!conn) {
