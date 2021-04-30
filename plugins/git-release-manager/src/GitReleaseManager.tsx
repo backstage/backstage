@@ -76,14 +76,11 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
     return <CenteredCircularProgress />;
   }
 
-  if (!userResponse.value?.username) {
+  if (!userResponse.value?.user.username) {
     return <Alert severity="error">Unable to retrieve username</Alert>;
   }
 
-  const user = {
-    username: userResponse.value.username,
-    email: userResponse.value.email,
-  };
+  const user = userResponse.value.user;
 
   return (
     <ProjectContext.Provider value={{ project }}>
@@ -92,7 +89,7 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
           <ContentHeader title="Git Release Manager" />
 
           <InfoCardPlus>
-            <RepoDetailsForm username={userResponse.value.username} />
+            <RepoDetailsForm />
           </InfoCardPlus>
 
           {isProjectValid(project) && <Features features={props.features} />}

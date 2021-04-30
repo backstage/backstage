@@ -20,12 +20,12 @@ import { Owner } from './Owner';
 import { Repo } from './Repo';
 import { VersioningStrategy } from './VersioningStrategy';
 
-export function RepoDetailsForm({ username }: { username: string }) {
+export function RepoDetailsForm() {
   return (
     <>
       <VersioningStrategy />
 
-      <Owner username={username} />
+      <Owner />
 
       <Repo />
     </>

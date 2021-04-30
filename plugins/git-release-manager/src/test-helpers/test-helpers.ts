@@ -192,8 +192,10 @@ export const mockApiClient: GitReleaseApi = {
   })),
 
   getUser: jest.fn(async () => ({
-    username: mockOwner,
-    email: mockEmail,
+    user: {
+      username: mockOwner,
+      email: mockEmail,
+    },
   })),
 
   getRecentCommits: jest.fn(async () => [

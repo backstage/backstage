@@ -21,6 +21,7 @@ import {
   mockApiClient,
   mockCalverProject,
   mockSearchCalver,
+  mockUser,
 } from '../../test-helpers/test-helpers';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
@@ -41,14 +42,17 @@ jest.mock('../../contexts/ProjectContext', () => ({
     project: mockCalverProject,
   })),
 }));
+jest.mock('../../contexts/UserContext', () => ({
+  useUserContext: jest.fn(() => ({
+    user: mockUser,
+  })),
+}));
 
 describe('Owner', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should render select', async () => {
-    const { getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
-    );
+    const { getByTestId } = render(<Owner />);
 
     expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
 
@@ -61,9 +65,7 @@ describe('Owner', () => {
       project: { ...mockCalverProject, owner: '' },
     });
 
-    const { getAllByTestId, getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
-    );
+    const { getAllByTestId, getByTestId } = render(<Owner />);
 
     expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
 
@@ -95,9 +97,7 @@ describe('Owner', () => {
       throw new Error('Kaboom');
     });
 
-    const { getByTestId } = render(
-      <Owner username={mockCalverProject.owner} />,
-    );
+    const { getByTestId } = render(<Owner />);
 
     expect(getByTestId(TEST_IDS.form.owner.loading)).toBeInTheDocument();
     await waitFor(() => screen.getByTestId(TEST_IDS.form.owner.error));

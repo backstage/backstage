@@ -118,8 +118,10 @@ export class GitReleaseApiClient implements GitReleaseApi {
     const userResponse = await octokit.users.getAuthenticated();
 
     return {
-      username: userResponse.data.login,
-      email: userResponse.data.email ?? undefined,
+      user: {
+        username: userResponse.data.login,
+        email: userResponse.data.email ?? undefined,
+      },
     };
   };
 
@@ -523,8 +525,10 @@ export interface GitReleaseApi {
   getUser: (
     args: OwnerRepo,
   ) => Promise<{
-    username: string;
-    email?: string;
+    user: {
+      username: string;
+      email?: string;
+    };
   }>;
 
   getRecentCommits: (

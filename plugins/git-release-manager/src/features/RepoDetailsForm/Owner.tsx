@@ -32,10 +32,12 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useFormClasses } from './styles';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useQueryHandler } from '../../hooks/useQueryHandler';
+import { useUserContext } from '../../contexts/UserContext';
 
-export function Owner({ username }: { username: string }) {
+export function Owner() {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
+  const { user } = useUserContext();
   const formClasses = useFormClasses();
   const navigate = useNavigate();
   const { getQueryParamsWithUpdates } = useQueryHandler();
@@ -43,7 +45,7 @@ export function Owner({ username }: { username: string }) {
   const { loading, error, value } = useAsync(() => pluginApiClient.getOwners());
   const owners = value?.owners ?? [];
   const customOwnerFromUrl = !owners
-    .concat(['', username])
+    .concat(['', user.username])
     .includes(project.owner);
 
   return (
@@ -80,8 +82,8 @@ export function Owner({ username }: { username: string }) {
               <em>None</em>
             </MenuItem>
 
-            <MenuItem value={username}>
-              <strong>{username}</strong>
+            <MenuItem value={user.username}>
+              <strong>{user.username}</strong>
             </MenuItem>
 
             {!error && customOwnerFromUrl && (
