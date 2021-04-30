@@ -271,12 +271,6 @@ export const mockApiClient: GitReleaseApi = {
     htmlUrl: 'mock_update_release_html_url',
   })),
 
-  promoteRelease: jest.fn(async () => ({
-    name: 'mock_release_name',
-    tagName: 'mock_release_tag_name',
-    htmlUrl: 'mock_release_html_url',
-  })),
-
   getAllTags: jest.fn(async () => [
     {
       tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,

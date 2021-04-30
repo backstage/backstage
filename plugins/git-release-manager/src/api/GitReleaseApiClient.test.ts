@@ -55,7 +55,6 @@ describe('GitReleaseApiClient', () => {
         },
         "host": "github.com",
         "merge": [Function],
-        "promoteRelease": [Function],
         "updateRef": [Function],
         "updateRelease": [Function],
       }

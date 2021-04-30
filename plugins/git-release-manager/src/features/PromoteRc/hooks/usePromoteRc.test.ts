@@ -88,9 +88,9 @@ describe('usePromoteRc', () => {
             "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
           },
           Object {
-            "link": "mock_release_html_url",
-            "message": "Promoted \\"mock_release_name\\"",
-            "secondaryMessage": "from \\"rc-2020.01.01_1\\" to \\"mock_release_tag_name\\"",
+            "link": "mock_update_release_html_url",
+            "message": "Promoted \\"mock_update_release_name\\"",
+            "secondaryMessage": "from \\"rc-2020.01.01_1\\" to \\"mock_update_release_tag_name\\"",
           },
           Object {
             "icon": "success",

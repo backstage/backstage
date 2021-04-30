@@ -141,11 +141,12 @@ export function usePromoteRc({
     if (!createRcRes.value) return undefined;
 
     const promotedRelease = await pluginApiClient
-      .promoteRelease({
+      .updateRelease({
         owner: project.owner,
         repo: project.repo,
         releaseId: rcRelease.id,
         tagName: releaseVersion,
+        prerelease: false,
       })
       .catch(asyncCatcher);
 

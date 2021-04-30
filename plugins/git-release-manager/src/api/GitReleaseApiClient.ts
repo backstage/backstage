@@ -401,8 +401,9 @@ export class GitReleaseApiClient implements GitReleaseApi {
     owner,
     repo,
     releaseId,
-    body,
     tagName,
+    body,
+    prerelease,
   }) => {
     const { octokit } = await this.getOctokit();
     const { data: updatedRelease } = await octokit.repos.updateRelease({
@@ -411,34 +412,13 @@ export class GitReleaseApiClient implements GitReleaseApi {
       release_id: releaseId,
       tag_name: tagName,
       body,
+      prerelease,
     });
 
     return {
       name: updatedRelease.name,
       tagName: updatedRelease.tag_name,
       htmlUrl: updatedRelease.html_url,
-    };
-  };
-
-  promoteRelease: GitReleaseApi['promoteRelease'] = async ({
-    owner,
-    repo,
-    releaseId,
-    tagName,
-  }) => {
-    const { octokit } = await this.getOctokit();
-    const { data: promotedRelease } = await octokit.repos.updateRelease({
-      owner,
-      repo,
-      release_id: releaseId,
-      tag_name: tagName,
-      prerelease: false,
-    });
-
-    return {
-      name: promotedRelease.name,
-      tagName: promotedRelease.tag_name,
-      htmlUrl: promotedRelease.html_url,
     };
   };
 
@@ -549,6 +529,7 @@ export interface GitReleaseApi {
       firstParentSha?: string;
     }[]
   >;
+
   getLatestRelease: (
     args: OwnerRepo,
   ) => Promise<{
@@ -559,6 +540,7 @@ export interface GitReleaseApi {
     htmlUrl: string;
     body?: string | null;
   } | null>;
+
   getRepository: (
     args: OwnerRepo,
   ) => Promise<{
@@ -687,19 +669,9 @@ export interface GitReleaseApi {
   updateRelease: (
     args: {
       releaseId: number;
-      body: string;
       tagName: string;
-    } & OwnerRepo,
-  ) => Promise<{
-    name: string | null;
-    tagName: string;
-    htmlUrl: string;
-  }>;
-
-  promoteRelease: (
-    args: {
-      releaseId: number;
-      tagName: string;
+      body?: string;
+      prerelease?: boolean;
     } & OwnerRepo,
   ) => Promise<{
     name: string | null;
@@ -708,7 +680,7 @@ export interface GitReleaseApi {
   }>;
 
   /**
-   * Used for the Stats feature
+   * Get all tags in descending order
    */
   getAllTags: (
     args: OwnerRepo,
@@ -720,9 +692,6 @@ export interface GitReleaseApi {
     }>
   >;
 
-  /**
-   * Used for the Stats feature
-   */
   getAllReleases: (
     args: OwnerRepo,
   ) => Promise<
@@ -735,9 +704,6 @@ export interface GitReleaseApi {
     }>
   >;
 
-  /**
-   * Used for the Stats feature
-   */
   getSingleTag: (
     args: {
       tagSha: string;
@@ -782,9 +748,6 @@ export type CreateTagObjectResult = UnboxReturnedPromise<
 >;
 export type UpdateReleaseResult = UnboxReturnedPromise<
   GitReleaseApi['updateRelease']
->;
-export type PromoteReleaseResult = UnboxReturnedPromise<
-  GitReleaseApi['promoteRelease']
 >;
 export type GetAllTagsResult = UnboxReturnedPromise<
   GitReleaseApi['getAllTags']
