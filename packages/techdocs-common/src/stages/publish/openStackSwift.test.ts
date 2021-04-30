@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
@@ -157,7 +158,6 @@ describe('OpenStackSwiftPublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      expect.assertions(3);
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
@@ -174,23 +174,22 @@ describe('OpenStackSwiftPublish', () => {
         }),
       ).rejects.toThrowError();
 
-      await publisher
-        .publish({
-          entity,
-          directory: wrongPathToGeneratedDirectory,
-        })
-        .catch(error => {
-          expect(error.message).toEqual(
-            // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-            // Issue reported https://github.com/tschaub/mock-fs/issues/118
-            expect.stringContaining(
-              `Unable to upload file(s) to OpenStack Swift. Error: Failed to read template directory: ENOENT, no such file or directory`,
-            ),
-          );
-          expect(error.message).toEqual(
-            expect.stringContaining(wrongPathToGeneratedDirectory),
-          );
-        });
+      const fails = publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      });
+
+      // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+      // Issue reported https://github.com/tschaub/mock-fs/issues/118
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          `Unable to upload file(s) to OpenStack Swift. Error: Failed to read template directory: ENOENT, no such file or directory`,
+        ),
+      });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
+
       mockFs.restore();
     });
   });
@@ -268,18 +267,14 @@ describe('OpenStackSwiftPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      await publisher
-        .fetchTechDocsMetadata(entityNameMock)
-        .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `TechDocs metadata fetch failed, The file ${path.join(
-                entityRootDir,
-                'techdocs_metadata.json',
-              )} does not exist !`,
-            ),
-          ),
-        );
+      const fails = publisher.fetchTechDocsMetadata(entityNameMock);
+
+      await expect(fails).rejects.toMatchObject({
+        message: `TechDocs metadata fetch failed, The file ${path.join(
+          entityRootDir,
+          'techdocs_metadata.json',
+        )} does not exist !`,
+      });
     });
   });
 });
