@@ -167,18 +167,22 @@ export class GitReleaseApiClient implements GitReleaseApi {
     });
 
     if (latestReleases.length === 0) {
-      return null;
+      return {
+        latestRelease: null,
+      };
     }
 
     const latestRelease = latestReleases[0];
 
     return {
-      targetCommitish: latestRelease.target_commitish,
-      tagName: latestRelease.tag_name,
-      prerelease: latestRelease.prerelease,
-      id: latestRelease.id,
-      htmlUrl: latestRelease.html_url,
-      body: latestRelease.body,
+      latestRelease: {
+        targetCommitish: latestRelease.target_commitish,
+        tagName: latestRelease.tag_name,
+        prerelease: latestRelease.prerelease,
+        id: latestRelease.id,
+        htmlUrl: latestRelease.html_url,
+        body: latestRelease.body,
+      },
     };
   };
 
@@ -535,13 +539,15 @@ export interface GitReleaseApi {
   getLatestRelease: (
     args: OwnerRepo,
   ) => Promise<{
-    targetCommitish: string;
-    tagName: string;
-    prerelease: boolean;
-    id: number;
-    htmlUrl: string;
-    body?: string | null;
-  } | null>;
+    latestRelease: {
+      targetCommitish: string;
+      tagName: string;
+      prerelease: boolean;
+      id: number;
+      htmlUrl: string;
+      body?: string | null;
+    } | null;
+  }>;
 
   getRepository: (
     args: OwnerRepo,
