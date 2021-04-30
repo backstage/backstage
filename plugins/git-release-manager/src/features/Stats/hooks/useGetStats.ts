@@ -25,7 +25,7 @@ export const useGetStats = () => {
   const { project } = useProjectContext();
 
   const stats = useAsync(async () => {
-    const [allReleases, allTags] = await Promise.all([
+    const [allReleases, { tags: allTags }] = await Promise.all([
       pluginApiClient.getAllReleases({
         owner: project.owner,
         repo: project.repo,

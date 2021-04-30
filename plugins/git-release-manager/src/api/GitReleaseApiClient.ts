@@ -457,13 +457,15 @@ export class GitReleaseApiClient implements GitReleaseApi {
       ...DISABLE_CACHE,
     });
 
-    return tags
-      .map(tag => ({
-        tagName: tag.ref.replace('refs/tags/', ''),
-        tagSha: tag.object.sha,
-        tagType: tag.object.type as 'tag' | 'commit',
-      }))
-      .reverse();
+    return {
+      tags: tags
+        .map(tag => ({
+          tagName: tag.ref.replace('refs/tags/', ''),
+          tagSha: tag.object.sha,
+          tagType: tag.object.type as 'tag' | 'commit',
+        }))
+        .reverse(),
+    };
   };
 
   getAllReleases: GitReleaseApi['getAllReleases'] = async ({ owner, repo }) => {
@@ -728,13 +730,13 @@ export interface GitReleaseApi {
    */
   getAllTags: (
     args: OwnerRepo,
-  ) => Promise<
-    Array<{
+  ) => Promise<{
+    tags: Array<{
       tagName: string;
       tagSha: string;
       tagType: 'tag' | 'commit';
-    }>
-  >;
+    }>;
+  }>;
 
   getAllReleases: (
     args: OwnerRepo,

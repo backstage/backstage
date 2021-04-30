@@ -293,13 +293,15 @@ export const mockApiClient: GitReleaseApi = {
     },
   })),
 
-  getAllTags: jest.fn(async () => [
-    {
-      tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
-      tagSha: 'mock_sha',
-      tagType: 'tag' as const,
-    },
-  ]),
+  getAllTags: jest.fn(async () => ({
+    tags: [
+      {
+        tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
+        tagSha: 'mock_sha',
+        tagType: 'tag' as const,
+      },
+    ],
+  })),
 
   getAllReleases: jest.fn(async () => [
     {

@@ -25,7 +25,7 @@ export function getReleaseStats({
   project,
   mappedReleases,
 }: {
-  allTags: GetAllTagsResult;
+  allTags: GetAllTagsResult['tags'];
   project: Project;
   mappedReleases: ReleaseStats;
 }) {
