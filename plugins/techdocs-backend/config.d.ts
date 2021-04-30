@@ -96,7 +96,7 @@ export interface Config {
              * This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
              * @visibility backend
              */
-            endpoint?: string;
+            s3ForcePathStyle?: boolean;
           };
         }
       | {
