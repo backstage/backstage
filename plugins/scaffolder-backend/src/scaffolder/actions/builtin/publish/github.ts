@@ -149,6 +149,7 @@ export function createPublishGithubAction(options: {
       const client = new Octokit({
         auth: token,
         baseUrl: integrationConfig.config.apiBaseUrl,
+        previews: ['nebula-preview'],
       });
 
       const user = await client.users.getByUsername({

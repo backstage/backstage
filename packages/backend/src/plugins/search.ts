@@ -35,11 +35,10 @@ export default async function createPlugin({
     collator: new DefaultCatalogCollator(discovery),
   });
 
-  // TODO: Move refresh loop logic into the builder.
-  const timerId = setInterval(() => {
-    indexBuilder.build();
-  }, 60000);
-  useHotCleanup(module, () => clearInterval(timerId));
+  const { scheduler } = await indexBuilder.build();
+
+  scheduler.start();
+  useHotCleanup(module, () => scheduler.stop());
 
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),

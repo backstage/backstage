@@ -33,17 +33,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 yarn add @backstage/plugin-api-docs
 ```
 
-2. Add the plugin to the app:
-
-```ts
-// packages/app/src/plugins.ts
-
-export { apiDocsPlugin } from '@backstage/plugin-api-docs';
-```
-
-<Route path="/api-docs" element={<ApiExplorerPage />} />
-
-3. Register the `ApiExplorerPage` at the `/api-docs` path:
+2. Add the `ApiExplorerPage` extension to the app:
 
 ```tsx
 // packages/app/src/App.tsx
@@ -53,7 +43,7 @@ import { ApiExplorerPage } from '@backstage/plugin-api-docs';
 <Route path="/api-docs" element={<ApiExplorerPage />} />;
 ```
 
-4. Add one of the provided widgets to the EntityPage:
+3. Add one of the provided widgets to the EntityPage:
 
 ```tsx
 // packages/app/src/components/catalog/EntityPage.tsx

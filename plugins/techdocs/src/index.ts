@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+export * from './api';
+export { techdocsApiRef, techdocsStorageApiRef } from './api';
+export type { TechDocsApi, TechDocsStorageApi } from './api';
+export { TechDocsClient, TechDocsStorageClient } from './client';
+export type { PanelType } from './home/components/TechDocsCustomHome';
 export {
-  techdocsPlugin,
-  techdocsPlugin as plugin,
-  TechdocsPage,
-  EntityTechdocsContent,
   DocsCardGrid,
   DocsTable,
+  EntityTechdocsContent,
   TechDocsCustomHome,
+  TechdocsPage,
+  techdocsPlugin as plugin,
+  techdocsPlugin,
   TechDocsReaderPage,
 } from './plugin';
-export { Router, EmbeddedDocsRouter } from './Router';
 export * from './reader';
-export * from './api';
-export type { PanelType } from './home/components/TechDocsCustomHome';
+export { EmbeddedDocsRouter, Router } from './Router';

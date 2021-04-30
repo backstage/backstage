@@ -76,7 +76,7 @@ export const DocsTable = ({
         <Tooltip title="Click to copy documentation link to clipboard">
           <IconButton
             onClick={() =>
-              copyToClipboard(`${window.location.origin}/${row.docsUrl}`)
+              copyToClipboard(`${window.location.href}/${row.docsUrl}`)
             }
           >
             <ShareIcon />

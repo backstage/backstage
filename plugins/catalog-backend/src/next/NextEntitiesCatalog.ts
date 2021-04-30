@@ -37,7 +37,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       'final_entities',
     ).select();
 
-    const entities = dbResponse.map(e => JSON.parse(e.finalized_entity));
+    const entities = dbResponse.map(e => JSON.parse(e.final_entity));
 
     return {
       entities,

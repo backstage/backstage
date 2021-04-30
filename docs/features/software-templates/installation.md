@@ -26,14 +26,8 @@ yarn add @backstage/plugin-scaffolder
 
 ### Adding the Plugin to your `packages/app`
 
-Add the following entry to the head of your `packages/app/src/plugins.ts`:
-
-```ts
-export { scaffolderPlugin } from '@backstage/plugin-scaffolder';
-```
-
-Next we need to install the root page that the Scaffolder plugin provides. You
-can choose any path for the route, but we recommend the following:
+Add the root page that the Scaffolder plugin provides to your app. You can
+choose any path for the route, but we recommend the following:
 
 ```tsx
 import { ScaffolderPage } from '@backstage/plugin-scaffolder';
@@ -265,7 +259,7 @@ the templates at [localhost:3000/create](http://localhost:3000/create) now!
 Software Templates use
 [Cookiecutter](https://github.com/cookiecutter/cookiecutter) as templating
 library. By default it will use the
-[spotify/backstage-cookiecutter](<[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)>)
+[spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)
 docker image.
 
 If you are running backstage from a Docker container and you want to avoid

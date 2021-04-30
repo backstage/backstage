@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { ProcessingDatabase, RefreshStateItem } from './database/types';
+import { ProcessingDatabase } from './database/types';
 import {
-  AddProcessingItemRequest,
-  ProccessingItem,
+  ProcessingItem,
   ProcessingItemResult,
   ProcessingStateManager,
+  ReplaceProcessingItemsRequest,
 } from './types';
 
 export class DefaultProcessingStateManager implements ProcessingStateManager {
   constructor(private readonly db: ProcessingDatabase) {}
+
+  replaceProcessingItems(
+    request: ReplaceProcessingItemsRequest,
+  ): Promise<void> {
+    return this.db.transaction(async tx => {
+      await this.db.replaceUnprocessedEntities(tx, request);
+    });
+  }
 
   async setProcessingItemResult(result: ProcessingItemResult) {
     return this.db.transaction(async tx => {
@@ -38,37 +46,24 @@ export class DefaultProcessingStateManager implements ProcessingStateManager {
     });
   }
 
-  async addProcessingItems(request: AddProcessingItemRequest) {
-    return this.db.transaction(async tx => {
-      await this.db.addUnprocessedEntities(tx, request);
-    });
-  }
-
-  async getNextProcessingItem(): Promise<ProccessingItem> {
-    const entities = await new Promise<RefreshStateItem[]>(resolve =>
-      this.popFromQueue(resolve),
-    );
-    const { id, state, unprocessedEntity } = entities[0];
-    return {
-      id,
-      entity: unprocessedEntity,
-      state,
-    };
-  }
-
-  async popFromQueue(resolve: (rows: RefreshStateItem[]) => void) {
-    const entities = await this.db.transaction(async tx => {
-      return this.db.getProcessableEntities(tx, {
-        processBatchSize: 1,
+  async getNextProcessingItem(): Promise<ProcessingItem> {
+    for (;;) {
+      const { items } = await this.db.transaction(async tx => {
+        return this.db.getProcessableEntities(tx, {
+          processBatchSize: 1,
+        });
       });
-    });
 
-    // No entities require refresh, wait and try again.
-    if (!entities.items.length) {
-      setTimeout(() => this.popFromQueue(resolve), 1000);
-      return;
+      if (items.length) {
+        const { id, state, unprocessedEntity } = items[0];
+        return {
+          id,
+          entity: unprocessedEntity,
+          state,
+        };
+      }
+
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
     }
-
-    resolve(entities.items);
   }
 }

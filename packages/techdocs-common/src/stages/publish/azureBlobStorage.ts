@@ -221,7 +221,8 @@ export class AzureBlobStoragePublish implements PublisherBase {
             .on('end', () => {
               resolve(Buffer.concat(fileStreamChunks));
             });
-        });
+        })
+        .catch(reject);
     });
   }
 

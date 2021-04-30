@@ -28,8 +28,13 @@ import {
 import React from 'react';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
 const useStyles = makeStyles({
+  cardHeader: {
+    position: 'relative',
+  },
   title: {
     backgroundImage: ({ backgroundImage }: any) => backgroundImage,
   },
@@ -43,6 +48,10 @@ const useStyles = makeStyles({
 });
 
 export type TemplateCardProps = {
+  template: TemplateEntityV1alpha1;
+};
+
+type TemplateProps = {
   description: string;
   tags: string[];
   title: string;
@@ -50,42 +59,55 @@ export type TemplateCardProps = {
   name: string;
 };
 
-export const TemplateCard = ({
-  description,
-  tags,
-  title,
-  type,
-  name,
-}: TemplateCardProps) => {
+const getTemplateCardProps = (
+  template: TemplateEntityV1alpha1,
+): TemplateProps & { key: string } => {
+  return {
+    key: template.metadata.uid!,
+    name: template.metadata.name,
+    title: `${(template.metadata.title || template.metadata.name) ?? ''}`,
+    type: template.spec.type ?? '',
+    description: template.metadata.description ?? '-',
+    tags: (template.metadata?.tags as string[]) ?? [],
+  };
+};
+
+export const TemplateCard = ({ template }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
+  const templateProps = getTemplateCardProps(template);
 
-  const themeId = pageTheme[type] ? type : 'other';
+  const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
   const href = generatePath(`${rootLink()}/templates/:templateName`, {
-    templateName: name,
+    templateName: templateProps.name,
   });
 
   return (
     <Card>
-      <CardMedia>
+      <CardMedia className={classes.cardHeader}>
+        <FavouriteTemplate entity={template} />
         <ItemCardHeader
-          title={title}
-          subtitle={type}
+          title={templateProps.title}
+          subtitle={templateProps.type}
           classes={{ root: classes.title }}
         />
       </CardMedia>
       <CardContent>
         <Box>
-          {tags?.map(tag => (
+          {templateProps.tags?.map(tag => (
             <Chip size="small" label={tag} key={tag} />
           ))}
         </Box>
-        <Box className={classes.description}>{description}</Box>
+        <Box className={classes.description}>{templateProps.description}</Box>
       </CardContent>
       <CardActions>
-        <Button color="primary" to={href} aria-label={`Choose ${title} `}>
+        <Button
+          color="primary"
+          to={href}
+          aria-label={`Choose ${templateProps.title} `}
+        >
           Choose
         </Button>
       </CardActions>
