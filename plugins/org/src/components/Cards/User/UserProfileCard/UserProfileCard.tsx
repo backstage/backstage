@@ -63,12 +63,15 @@ export const UserProfileCard = ({
   const { entity: user } = useEntity<UserEntity>();
   const catalogApi = useApi(catalogApiRef);
   const { value: picture, loading } = useAsync(async () => {
-    return user
-      ? await catalogApi.getAttachmentUrl(
-          getEntityName(user),
-          ATTACHMENT_PROFILE_PICTURE,
-        )
-      : undefined;
+    if (user) {
+      const attachment = await catalogApi.getAttachment(
+        getEntityName(user),
+        ATTACHMENT_PROFILE_PICTURE,
+      );
+      return attachment.url();
+    }
+
+    return undefined;
   }, [catalogApi, user]);
 
   if (!user) {

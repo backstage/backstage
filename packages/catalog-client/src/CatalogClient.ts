@@ -112,26 +112,63 @@ export class CatalogClient implements CatalogApi {
     key: string,
     options?: CatalogRequestOptions,
   ): Promise<CatalogAttachmentResponse> {
-    const url = await this.getAttachmentUrl(name, key);
-    const response = await fetch(url, {
-      headers: {
-        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+    const buildUrl = async () => {
+      const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
+      return `${baseUrl}/entities/by-name/${encodeURIComponent(
+        name.kind,
+      )}/${encodeURIComponent(name.namespace)}/${encodeURIComponent(
+        name.name,
+      )}/attachments/${encodeURIComponent(key)}`;
+    };
+
+    const fetchBlob = async () => {
+      const url = await buildUrl();
+      const response = await fetch(url, {
+        headers: {
+          ...(options?.token && {
+            Authorization: `Bearer ${options?.token}`,
+          }),
+        },
+      });
+
+      if (!response.ok) {
+        throw await ResponseError.fromResponse(response);
+      }
+
+      return await response.blob();
+    };
+
+    return {
+      blob: fetchBlob,
+      async text(): Promise<string> {
+        const blob = await fetchBlob();
+        return await blob.text();
       },
-    });
+      async url(): Promise<string> {
+        if (options?.token) {
+          // In case a token is used, we have to fallback to a workaround, as a
+          // simple URL won't work with tokens provided in headers. This is less
+          // efficient, but also only used in that case.
+          // Instead of returning an URL where the called can request the attachment
+          // from, we return the attachmend directly as a base64 URL. Returning blob
+          // URLs might be more efficient, but requires to release them afterwars.
+          const blob = await fetchBlob();
+          const reader = new FileReader();
 
-    if (!response.ok) {
-      throw await ResponseError.fromResponse(response);
-    }
+          return new Promise<string>((resolve, reject) => {
+            reader.onload = e => {
+              if (e.target && typeof e.target.result === 'string') {
+                resolve(e.target.result);
+              }
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        }
 
-    return { data: await response.blob() };
-  }
-
-  async getAttachmentUrl(name: EntityName, key: string): Promise<string> {
-    return `${await this.discoveryApi.getBaseUrl(
-      'catalog',
-    )}/entities/by-name/${encodeURIComponent(name.kind)}/${encodeURIComponent(
-      name.namespace,
-    )}/${encodeURIComponent(name.name)}/attachments/${encodeURIComponent(key)}`;
+        return await buildUrl();
+      },
+    };
   }
 
   async addLocation(

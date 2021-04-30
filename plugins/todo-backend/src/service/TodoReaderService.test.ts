@@ -51,7 +51,6 @@ function mockCatalogClient(entity?: Entity): jest.Mocked<CatalogApi> {
     removeLocationById: jest.fn(),
     removeEntityByUid: jest.fn(),
     getAttachment: jest.fn(),
-    getAttachmentUrl: jest.fn(),
   };
   if (entity) {
     mock.getEntityByName.mockReturnValue(entity);

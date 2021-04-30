@@ -43,7 +43,6 @@ const catalogApi: jest.Mocked<typeof catalogApiRef.T> = {
   removeEntityByUid: jest.fn(),
   getEntityByName: jest.fn(),
   getAttachment: jest.fn(),
-  getAttachmentUrl: jest.fn(),
 };
 
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (

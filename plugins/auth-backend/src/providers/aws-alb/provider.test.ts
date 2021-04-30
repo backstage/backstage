@@ -77,7 +77,6 @@ describe('AwsALBAuthProvider', () => {
     removeEntityByUid: jest.fn(),
     getEntityByName: jest.fn(),
     getAttachment: jest.fn(),
-    getAttachmentUrl: jest.fn(),
   };
 
   const mockRequest = ({

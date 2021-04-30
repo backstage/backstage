@@ -50,11 +50,11 @@ export const ApiDefinitionCard = (_: Props) => {
 
     // TODO: Move to catalog model
     const ATTACHMENT_API_DEFINITION = 'backstage.io/api-definition';
-    const response = await catalogClient.getAttachment(
+    const attachment = await catalogClient.getAttachment(
       getEntityName(entity),
       ATTACHMENT_API_DEFINITION,
     );
-    return await response.data.text();
+    return await attachment.text();
   }, [catalogClient, entity]);
 
   if (!entity) {

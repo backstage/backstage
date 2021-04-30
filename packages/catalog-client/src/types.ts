@@ -33,7 +33,9 @@ export type CatalogRequestOptions = {
 };
 
 export type CatalogAttachmentResponse = {
-  data: Blob;
+  blob(): Promise<Blob>;
+  text(): Promise<string>;
+  url(): Promise<string>;
 };
 
 export interface CatalogApi {
@@ -57,7 +59,6 @@ export interface CatalogApi {
     key: string,
     options?: CatalogRequestOptions,
   ): Promise<CatalogAttachmentResponse>;
-  getAttachmentUrl(name: EntityName, key: string): Promise<string>;
 
   // Locations
   getLocationById(

@@ -67,7 +67,6 @@ describe('createRouter', () => {
       removeLocationById: jest.fn(),
       removeEntityByUid: jest.fn(),
       getAttachment: jest.fn(),
-      getAttachmentUrl: jest.fn(),
     };
 
     config = new ConfigReader({

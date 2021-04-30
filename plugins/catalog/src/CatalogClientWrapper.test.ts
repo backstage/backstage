@@ -146,35 +146,4 @@ describe('CatalogClientWrapper', () => {
       expect(catalogClient.getAttachment).toHaveBeenCalledTimes(1);
     });
   });
-
-  describe('getAttachmentUrl', () => {
-    const name = {
-      kind: 'kind',
-      namespace: 'namespace',
-      name: 'name',
-    };
-    const key = 'backstage.io/attachment-key';
-
-    it('injects authorization token', async () => {
-      catalogClient.getAttachment.mockResolvedValue({
-        data: new Blob(['Test'], { type: 'text/plain' }),
-      });
-      const url = await client.getAttachmentUrl(name, key);
-
-      expect(url).toMatch(/^data\:text\/plain;base64,/);
-      expect(catalogClient.getAttachment).toHaveBeenCalledWith(name, key, {
-        token: 'fake-id-token',
-      });
-      expect(catalogClient.getAttachment).toHaveBeenCalledTimes(1);
-      expect(catalogClient.getAttachmentUrl).toHaveBeenCalledTimes(0);
-    });
-
-    it('fallback to default implementation', async () => {
-      identityApi.getIdToken.mockResolvedValue(undefined);
-      await client.getAttachmentUrl(name, key);
-
-      expect(catalogClient.getAttachmentUrl).toHaveBeenCalledWith(name, key);
-      expect(catalogClient.getAttachmentUrl).toHaveBeenCalledTimes(1);
-    });
-  });
 });
