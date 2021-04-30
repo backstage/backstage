@@ -23,14 +23,25 @@ import {
   DefaultProcessingDatabase,
 } from './DefaultProcessingDatabase';
 
-import { Entity, EntityRelationSpec } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import { getVoidLogger } from '@backstage/backend-common';
+import { JsonObject } from '@backstage/config';
 
 describe('Default Processing Database', () => {
   let db: Knex;
   let processingDatabase: DefaultProcessingDatabase;
   const logger = getVoidLogger();
+
+  const insertRefRow = async (ref: DbRefreshStateReferencesRow) => {
+    return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
+      ref,
+    );
+  };
+
+  const insertRefreshStateRow = async (ref: DbRefreshStateRow) => {
+    await db<DbRefreshStateRow>('refresh_state').insert(ref);
+  };
 
   beforeEach(async () => {
     db = await DatabaseManager.createTestDatabaseConnection();
@@ -39,17 +50,160 @@ describe('Default Processing Database', () => {
     processingDatabase = new DefaultProcessingDatabase(db, logger);
   });
 
-  describe('replaceUnprocessedEntities', () => {
-    const insertRefRow = async (ref: DbRefreshStateReferencesRow) => {
-      return db<DbRefreshStateReferencesRow>('refresh_state_references').insert(
-        ref,
+  describe('updateProcessedEntity', () => {
+    let id: string;
+    let processedEntity: Entity;
+
+    beforeEach(() => {
+      id = uuid.v4();
+      processedEntity = {
+        apiVersion: '1',
+        kind: 'Location',
+        metadata: {
+          name: 'fakelocation',
+        },
+        spec: {
+          type: 'url',
+          target: 'somethingelse',
+        },
+      };
+    });
+
+    it('fails when there is no processing state for the entity', async () => {
+      await processingDatabase.transaction(async tx => {
+        await expect(() =>
+          processingDatabase.updateProcessedEntity(tx, {
+            id,
+            processedEntity,
+            state: new Map<string, JsonObject>(),
+            relations: [],
+            deferredEntities: [],
+          }),
+        ).rejects.toThrow(`Processing state not found for ${id}`);
+      });
+    });
+
+    it('updates the refresh state entry with the cache, processed entity and errors', async () => {
+      await insertRefreshStateRow({
+        entity_id: id,
+        entity_ref: 'location:default/fakelocation',
+        unprocessed_entity: '{}',
+        processed_entity: '{}',
+        errors: '',
+        next_update_at: 'now()',
+        last_discovery_at: 'now()',
+      });
+
+      const state = new Map<string, JsonObject>();
+      state.set('hello', { t: 'something' });
+
+      await processingDatabase.transaction(tx =>
+        processingDatabase.updateProcessedEntity(tx, {
+          id,
+          processedEntity,
+          state,
+          relations: [],
+          deferredEntities: [],
+          errors: 'something broke',
+        }),
       );
-    };
 
-    const insertRefreshStateRow = async (ref: DbRefreshStateRow) => {
-      await db<DbRefreshStateRow>('refresh_state').insert(ref);
-    };
+      const [entity] = await db<DbRefreshStateRow>('refresh_state').select();
 
+      expect(entity.processed_entity).toEqual(JSON.stringify(processedEntity));
+      expect(entity.cache).toEqual(JSON.stringify(state));
+      expect(entity.errors).toEqual('something broke');
+    });
+
+    it('removes old relations and stores the new relationships', async () => {
+      await insertRefreshStateRow({
+        entity_id: id,
+        entity_ref: 'location:default/fakelocation',
+        unprocessed_entity: '{}',
+        processed_entity: '{}',
+        errors: '',
+        next_update_at: 'now()',
+        last_discovery_at: 'now()',
+      });
+
+      const relations = [
+        {
+          source: {
+            kind: 'Component',
+            namespace: 'Default',
+            name: 'foo',
+          },
+          target: {
+            kind: 'Component',
+            namespace: 'Default',
+            name: 'foo',
+          },
+          type: 'memberOf',
+        },
+      ];
+
+      await processingDatabase.transaction(tx =>
+        processingDatabase.updateProcessedEntity(tx, {
+          id,
+          processedEntity,
+          state: new Map<string, JsonObject>(),
+          relations: relations,
+          deferredEntities: [],
+        }),
+      );
+
+      const [savedRelations] = await db<DbRelationsRow>('relations')
+        .where({ originating_entity_id: id })
+        .select();
+
+      expect(savedRelations).toEqual({
+        originating_entity_id: id,
+        source_entity_ref: 'component:default/foo',
+        type: 'memberOf',
+        target_entity_ref: 'component:default/foo',
+      });
+    });
+
+    it('adds deferred entities to the the refresh_state table to be picked up later', async () => {
+      await insertRefreshStateRow({
+        entity_id: id,
+        entity_ref: 'location:default/fakelocation',
+        unprocessed_entity: '{}',
+        processed_entity: '{}',
+        errors: '',
+        next_update_at: 'now()',
+        last_discovery_at: 'now()',
+      });
+
+      const deferredEntities = [
+        {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: {
+            name: 'next',
+          },
+        },
+      ];
+
+      await processingDatabase.transaction(tx =>
+        processingDatabase.updateProcessedEntity(tx, {
+          id,
+          processedEntity,
+          state: new Map<string, JsonObject>(),
+          relations: [],
+          deferredEntities,
+        }),
+      );
+
+      const refreshStateEntries = await db<DbRefreshStateRow>('refresh_state')
+        .where({ entity_ref: stringifyEntityRef(deferredEntities[0]) })
+        .select();
+
+      expect(refreshStateEntries).toHaveLength(1);
+    });
+  });
+
+  describe('replaceUnprocessedEntities', () => {
     const createLocations = async (entityRefs: string[]) => {
       for (const ref of entityRefs) {
         await insertRefreshStateRow({
@@ -101,8 +255,8 @@ describe('Default Processing Database', () => {
         target_entity_ref: 'location:default/root-2',
       });
 
-      await processingDatabase.transaction(async tx => {
-        await processingDatabase.replaceUnprocessedEntities(tx, {
+      await processingDatabase.transaction(tx =>
+        processingDatabase.replaceUnprocessedEntities(tx, {
           type: 'full',
           sourceKey: 'config',
           items: [
@@ -114,8 +268,8 @@ describe('Default Processing Database', () => {
               kind: 'Location',
             } as Entity,
           ],
-        });
-      });
+        }),
+      );
 
       const currentRefreshState = await db<DbRefreshStateRow>(
         'refresh_state',
@@ -431,90 +585,6 @@ describe('Default Processing Database', () => {
     });
   });
 
-  describe('updateProcessedEntity', () => {
-    it('should throw if the entity does not exist', async () => {
-      await processingDatabase.transaction(async tx => {
-        await expect(
-          processingDatabase.updateProcessedEntity(tx, {
-            id: '9',
-            processedEntity: {
-              apiVersion: '1.0.0',
-              metadata: {
-                name: 'new-root',
-              },
-              kind: 'Location',
-            } as Entity,
-            deferredEntities: [],
-            relations: [],
-          }),
-        ).rejects.toThrow('Processing state not found for 9');
-      });
-    });
-
-    it('should update a processed entity', async () => {
-      await db<DbRefreshStateRow>('refresh_state').insert({
-        entity_id: '321',
-        entity_ref: 'location:default/new-root',
-        unprocessed_entity: '',
-        errors: '',
-        next_update_at: 'now()',
-        last_discovery_at: 'now()',
-      });
-
-      const deferredEntity = {
-        apiVersion: '1.0.0',
-        metadata: {
-          name: 'deferred',
-        },
-        kind: 'Location',
-      } as Entity;
-
-      const relation: EntityRelationSpec = {
-        source: {
-          kind: 'Component',
-          namespace: 'Default',
-          name: 'foo',
-        },
-        target: {
-          kind: 'Component',
-          namespace: 'Default',
-          name: 'foo',
-        },
-        type: 'url',
-      };
-
-      await processingDatabase.transaction(async tx => {
-        await processingDatabase.updateProcessedEntity(tx, {
-          id: '321',
-          processedEntity: {
-            apiVersion: '1.0.0',
-            metadata: {
-              name: 'new-root',
-            },
-            kind: 'Location',
-          } as Entity,
-          deferredEntities: [deferredEntity],
-          relations: [relation],
-        });
-      });
-
-      const deferredResult = await db<DbRefreshStateRow>('refresh_state')
-        .where({ entity_ref: 'location:default/deferred' })
-        .select();
-      expect(deferredResult.length).toBe(1);
-
-      const [relations] = await db<DbRelationsRow>('relations')
-        .where({ originating_entity_id: '321' })
-        .select();
-      expect(relations).toEqual({
-        originating_entity_id: '321',
-        source_entity_ref: 'component:default/foo',
-        type: 'url',
-        target_entity_ref: 'component:default/foo',
-      });
-    });
-  });
-
   describe('getProcessableEntities', () => {
     it('should return entities to process', async () => {
       const entity = JSON.stringify({
@@ -524,6 +594,7 @@ describe('Default Processing Database', () => {
         },
         kind: 'Location',
       } as Entity);
+
       await db<DbRefreshStateRow>('refresh_state').insert({
         entity_id: '2',
         entity_ref: 'location:default/new-root',
@@ -532,6 +603,7 @@ describe('Default Processing Database', () => {
         next_update_at: '2019-01-01 23:00:00',
         last_discovery_at: 'now()',
       });
+
       await db<DbRefreshStateRow>('refresh_state').insert({
         entity_id: '1',
         entity_ref: 'location:default/foobar',
