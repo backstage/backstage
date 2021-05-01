@@ -262,6 +262,6 @@ library. By default it will use the
 [spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)
 docker image.
 
-If you are running backstage from a Docker container and you want to avoid
+If you are running Backstage from a Docker container and you want to avoid
 calling a container inside a container, you can set up Cookiecutter in your own
 image, this will use the local installation instead.
