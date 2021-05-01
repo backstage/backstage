@@ -66,6 +66,14 @@ export type Connection<T> = {
   nodes: T[];
 };
 
+export type RepositoryOwnerType = {
+  __typename: 'Organization' | 'User';
+};
+
+export type RepositoryOwnerResponse = {
+  repositoryOwner: RepositoryOwnerType | null;
+};
+
 /**
  * Gets all the users out of a GitHub organization.
  *
@@ -229,38 +237,49 @@ export async function getOrganizationRepositories(
   client: typeof graphql,
   org: string,
 ): Promise<{ repositories: Repository[] }> {
-  const query = `
-  query repositories($org: String!, $cursor: String) {
-    organization(login: $org) {
-      name
-      repositories(first: 100, after: $cursor) {
-        nodes {
-          name
-          url
-          isArchived
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-    user(login: $org) {
-      name
-      repositories(first: 100, after: $cursor) {
-        nodes {
-          name
-          url
-          isArchived
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
+  let query = ``;
+
+  switch (await getLoginType(client, org)) {
+    case 'Organization':
+      query = `
+        query repositories($org: String!, $cursor: String) {
+          organization(login: $org) {
+            name
+            repositories(first: 100, after: $cursor) {
+              nodes {
+                name
+                url
+                isArchived
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }`;
+      break;
+
+    default:
+      query = `
+        query repositories($org: String!, $cursor: String) {
+          user(login: $org) {
+            name
+            repositories(first: 100, after: $cursor) {
+              nodes {
+                name
+                url
+                isArchived
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }`;
+      break;
   }
-  `;
 
   const repositories = await queryWithPaging(
     client,
@@ -371,4 +390,20 @@ export async function queryWithPaging<
   }
 
   return result;
+}
+
+export async function getLoginType(client: typeof graphql, login: string) {
+  const query = `
+    query repositoryOwner($login: String!) {
+      repositoryOwner(login: $login) {
+        __typename
+      }
+    }`;
+
+  const response: RepositoryOwnerResponse = await client(query, { login });
+  if (response.repositoryOwner === null) {
+    throw new Error(`Unknown repository owner for "${login}"`);
+  }
+
+  return response.repositoryOwner.__typename;
 }
