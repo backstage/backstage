@@ -68,6 +68,28 @@ export interface Config {
           connection: string | object;
         };
 
+    /** Cache connection configuration, select cache type using the `store` field */
+    cache?:
+      | {
+          store: 'memory';
+        }
+      | {
+          store: 'memcache';
+          connection: {
+            /**
+             * An array of memcache hosts, optionally including a port number.
+             * e.g. 127.0.0.1:11211
+             */
+            hosts: string[];
+
+            /**
+             * Number of milliseconds to wait before assuming there is a
+             * network timeout. Defaults to 500ms.
+             */
+            netTimeout?: number;
+          };
+        };
+
     cors?: {
       origin?: string | string[];
       methods?: string | string[];

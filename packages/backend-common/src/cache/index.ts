@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  CacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  UrlReader,
-} from '@backstage/backend-common';
-
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: CacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-};
+export * from './CacheManager';
