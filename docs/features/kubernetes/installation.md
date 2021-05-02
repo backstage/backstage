@@ -31,18 +31,16 @@ to the tab, and add the tab itself.
 `EntityPage.tsx`:
 
 ```tsx
-import { Router as KubernetesRouter } from '@backstage/plugin-kubernetes';
+import { EntityKubernetesContent} from '@backstage/plugin-kubernetes';
 
 // ...
 
-const ServiceEntityPage = ({ entity }: { entity: Entity }) => (
-  <EntityPageLayout>
+const serviceEntityPage = (
+  <EntityLayout>
     // ...
-    <EntityPageLayout.Content
-      path="/kubernetes/*"
-      title="Kubernetes"
-      element={<KubernetesRouter entity={entity} />}
-    />
+    <EntityLayout.Route path="/kubernetes" title="Kubernetes">
+      <EntityKubernetesContent />
+    </EntityLayout.Route>
     // ...
   </EntityPageLayout>
 );
