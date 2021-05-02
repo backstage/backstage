@@ -111,8 +111,7 @@ catalog:
 > deleting entities will not work in this mode.**
 
 A common use case for this configuration is when organizations have a remote
-source that should be mirrored into backstage. If we want backstage to be a
-mirror of this remote source we cannot allow users to also register entities
-with e.g.
+source that should be mirrored into Backstage. To make Backstage a mirror of
+this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
