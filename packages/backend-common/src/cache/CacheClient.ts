@@ -23,12 +23,33 @@ type CacheClientArgs = {
   pluginId: string;
 };
 
+/**
+ * A pre-configured, storage agnostic cache client suitable for use by
+ * Backstage plugins.
+ */
 export interface CacheClient {
+  /**
+   * Reads data from a cache store for the given key.
+   */
   get(key: string): Promise<JsonValue>;
+
+  /**
+   * Writes the given data to a cache store, associated with the given key. An
+   * optional TTL may also be provided, otherwise it defaults to the TTL that
+   * was provided when the client was instantiated.
+   */
   set(key: string, value: JsonValue, ttl?: number): Promise<void>;
+
+  /**
+   * Removes the given key from the cache store.
+   */
   delete(key: string): Promise<void>;
 }
 
+/**
+ * A simple, concrete implementation of the CacheClient, suitable for almost
+ * all uses in Backstage.
+ */
 export class ConcreteCacheClient implements CacheClient {
   private readonly client: cacheManager.Cache;
   private readonly pluginId: string;

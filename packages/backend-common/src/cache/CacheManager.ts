@@ -21,10 +21,7 @@ import Memcache from 'memcache-pp';
 // @ts-expect-error
 import memcachedStore from 'cache-manager-memcached-store';
 import { ConcreteCacheClient, CacheClient } from './CacheClient';
-
-export type PluginCacheManager = {
-  getClient: (ttl: number) => CacheClient;
-};
+import { PluginCacheManager } from './types';
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients

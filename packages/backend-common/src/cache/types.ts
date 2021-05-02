@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Spotify AB
+ * Copyright 2020 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-export type { CacheClient } from './CacheClient';
-export * from './CacheManager';
-export * from './types';
+import { CacheClient } from './CacheClient';
+
+/**
+ * The PluginCacheManager manages access to cache stores that Plugins get.
+ */
+export type PluginCacheManager = {
+  /**
+   * getClient provides backend plugins cache connections for itself.
+   *
+   * The purpose of this method is to allow plugins to get isolated data
+   * stores so that plugins are discouraged from cache-level integration
+   * and/or cache key collisions.
+   */
+  getClient: (ttl: number) => CacheClient;
+};
