@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import cacheManager from 'cache-manager';
 // @ts-expect-error
 import Memcache from 'memcache-pp';
 // @ts-expect-error
 import memcachedStore from 'cache-manager-memcached-store';
+import { ConcreteCacheClient, CacheClient } from './CacheClient';
+
+export type PluginCacheManager = {
+  getClient: (ttl: number) => CacheClient;
+};
 
 /**
- * A Cache Manager, which is able to retrieve a `node-cache-manager`-compliant
- * cache client, configured according to app configuration. If no cache is
- * configured, or an unknown store is provided, a no-op cache instance will be
- * returned.
+ * Implements a Cache Manager which will automatically create new cache clients
+ * for plugins when requested. All requested cacheclients are created with the
+ * credentials provided.
  */
 export class CacheManager {
+  /**
+   * Keys represented supported `backend.cache.store` values, mapped to getters
+   * that return cacheManager.Cache instances appropriate to the store.
+   */
   private readonly storeGetterMap = {
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
@@ -41,12 +49,33 @@ export class CacheManager {
    * @param config The loaded application configuration.
    */
   static fromConfig(config: Config): CacheManager {
-    return new CacheManager(config.getConfig('backend.cache'));
+    // If no `backend.cache` config is provided, instantiate the CacheManager
+    // with empty config; allowing a "none" cache client will be returned.
+    return new CacheManager(
+      config.getOptionalConfig('backend.cache') || new ConfigReader(undefined),
+    );
   }
 
   private constructor(private readonly config: Config) {}
 
-  getClientWithTtl(ttl: number): cacheManager.Cache {
+  /**
+   * Generates a CacheManagerInstance for consumption by plugins.
+   *
+   * @param pluginId The plugin that the cache manager should be created for. Plugin names should be unique.
+   */
+  forPlugin(pluginId: string): PluginCacheManager {
+    return {
+      getClient: (ttl: number): CacheClient => {
+        const concreteClient = this.getClientWithTtl(ttl);
+        return new ConcreteCacheClient({
+          client: concreteClient,
+          pluginId: pluginId,
+        });
+      },
+    };
+  }
+
+  private getClientWithTtl(ttl: number): cacheManager.Cache {
     const store = this.config.getOptionalString(
       'store',
     ) as keyof CacheManager['storeGetterMap'];

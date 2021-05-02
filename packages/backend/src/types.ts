@@ -17,7 +17,7 @@
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import {
-  CacheManager,
+  PluginCacheManager,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   UrlReader,
@@ -25,7 +25,7 @@ import {
 
 export type PluginEnvironment = {
   logger: Logger;
-  cache: CacheManager;
+  cache: PluginCacheManager;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
