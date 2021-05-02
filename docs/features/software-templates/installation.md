@@ -20,6 +20,7 @@ The scaffolder frontend plugin should be installed in your `app` package, which
 is created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-scaffolder
 ```
@@ -57,6 +58,7 @@ The scaffolder backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-scaffolder-backend
 ```

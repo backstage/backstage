@@ -19,6 +19,8 @@ This plugin provides:
 Install the plugin:
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-pagerduty
 ```
 
