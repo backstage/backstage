@@ -28,7 +28,7 @@ import { CacheManager } from '@backstage/backend-common';
 const cacheManager = CacheManager.fromConfig(config);
 const somePluginCache = cacheManager.forPlugin('somePlugin');
 const defaultTtl = 3600;
-const cacheClient = somePluginCache.getClient(defaultTtl);
+const cacheClient = somePluginCache.getClient({ defaultTtl });
 
 // Using the cache client:
 const cachedValue = await cacheClient.get('someKey');
@@ -39,6 +39,21 @@ if (cachedValue) {
   await cacheClient.set('someKey', someValue);
 }
 await cacheClient.delete('someKey');
+```
+
+For simplicity of use, cache clients will swallow client errors by default. Plugin developers may optionally pass an `onError` argument to the `CacheManager.getClient()` method if they wish to capture and handle those errors in a custom way.
+
+```typescript
+const cacheClient = somePluginCache.getClient({
+  defaultTtl: 3600,
+  onError: 'reject',
+});
+
+try {
+  await cacheClient.delete('someKey');
+} catch (e) {
+  // Attempt again, log, alert, etc.
+}
 ```
 
 Configuring a cache store is optional. Even when no cache store is configured, the cache manager will dutifully pass plugins a manager that resolves a cache client that does not actually write or read any data.
