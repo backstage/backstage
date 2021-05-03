@@ -15,6 +15,7 @@
  */
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
+import { chunk } from 'lodash';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../api';
 
@@ -44,10 +45,7 @@ export function useRelatedEntities(
 
     // Make requests in separate batches to limit query string size
     // (there is a `filter` param for each relation)
-    const relationBatches = [];
-    for (let i = 0; i < relations.length; i += BATCH_SIZE) {
-      relationBatches.push(relations.slice(i, i + BATCH_SIZE));
-    }
+    const relationBatches = chunk(relations, BATCH_SIZE);
 
     const results = await Promise.all(
       relationBatches.map(batch => {
