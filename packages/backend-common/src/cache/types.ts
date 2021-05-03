@@ -18,6 +18,7 @@ import { CacheClient } from './CacheClient';
 
 type ClientOptions = {
   defaultTtl: number;
+  onError?: 'reject' | 'returnEmpty';
 };
 
 /**

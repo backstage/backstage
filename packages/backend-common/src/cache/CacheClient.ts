@@ -22,6 +22,7 @@ type CacheClientArgs = {
   client: cacheManager.Cache;
   pluginId: string;
   defaultTtl: number;
+  onError: 'reject' | 'returnEmpty';
 };
 
 type CacheSetOptions = {
@@ -60,11 +61,13 @@ export class DefaultCacheClient implements CacheClient {
   private readonly client: cacheManager.Cache;
   private readonly defaultTtl: number;
   private readonly pluginId: string;
+  private readonly onError: 'reject' | 'returnEmpty';
 
-  constructor({ client, defaultTtl, pluginId }: CacheClientArgs) {
+  constructor({ client, defaultTtl, pluginId, onError }: CacheClientArgs) {
     this.client = client;
     this.defaultTtl = defaultTtl;
     this.pluginId = pluginId;
+    this.onError = onError;
   }
 
   async get(key: string): Promise<JsonValue | undefined> {
@@ -72,7 +75,10 @@ export class DefaultCacheClient implements CacheClient {
     try {
       const data = (await this.client.get(k)) as string | undefined;
       return this.deserializeData(data);
-    } catch {
+    } catch (e) {
+      if (this.onError === 'reject') {
+        throw e;
+      }
       return undefined;
     }
   }
@@ -88,8 +94,10 @@ export class DefaultCacheClient implements CacheClient {
       await this.client.set(k, data, {
         ttl: opts.ttl || this.defaultTtl,
       });
-    } catch {
-      return;
+    } catch (e) {
+      if (this.onError === 'reject') {
+        throw e;
+      }
     }
   }
 
@@ -97,8 +105,10 @@ export class DefaultCacheClient implements CacheClient {
     const k = this.getNormalizedKey(key);
     try {
       await this.client.del(k);
-    } catch {
-      return;
+    } catch (e) {
+      if (this.onError === 'reject') {
+        throw e;
+      }
     }
   }
 

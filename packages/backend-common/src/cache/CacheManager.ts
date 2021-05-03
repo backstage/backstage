@@ -75,12 +75,13 @@ export class CacheManager {
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {
-      getClient: ({ defaultTtl }): CacheClient => {
+      getClient: ({ defaultTtl, onError }): CacheClient => {
         const concreteClient = this.getClientWithTtl(defaultTtl);
         return new DefaultCacheClient({
           client: concreteClient,
           defaultTtl,
           pluginId: pluginId,
+          onError: onError || 'returnEmpty',
         });
       },
     };

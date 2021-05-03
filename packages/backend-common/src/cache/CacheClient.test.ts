@@ -20,6 +20,7 @@ import cacheManager from 'cache-manager';
 describe('CacheClient', () => {
   const pluginId = 'test';
   const defaultTtl = 60;
+  const onError = 'returnEmpty';
   let client: cacheManager.Cache;
   const b64 = (k: string) => Buffer.from(k).toString('base64');
 
@@ -34,7 +35,12 @@ describe('CacheClient', () => {
 
   describe('CacheClient.get', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const keyPartial = 'somekey';
 
       await sut.get(keyPartial);
@@ -43,7 +49,12 @@ describe('CacheClient', () => {
     });
 
     it('calls client with normalized key (very long key)', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const keyPartial = 'x'.repeat(251);
 
       await sut.get(keyPartial);
@@ -56,7 +67,12 @@ describe('CacheClient', () => {
 
     it('performs deserialization on returned data', async () => {
       const expectedValue = { some: 'value' };
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       client.get = jest.fn().mockResolvedValue(JSON.stringify(expectedValue));
 
       const actualValue = await sut.get('someKey');
@@ -65,18 +81,41 @@ describe('CacheClient', () => {
     });
 
     it('returns undefined on any underlying error', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       client.get = jest.fn().mockRejectedValue(undefined);
 
       const actualValue = await sut.get('someKey');
 
       expect(actualValue).toStrictEqual(undefined);
     });
+
+    it('rejects on underlying error if configured', async () => {
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError: 'reject',
+      });
+      const expectedError = new Error('Some runtime error');
+      client.get = jest.fn().mockRejectedValue(expectedError);
+
+      return expect(sut.get('someKey')).rejects.toEqual(expectedError);
+    });
   });
 
   describe('CacheClient.set', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const keyPartial = 'somekey';
 
       await sut.set(keyPartial, {});
@@ -87,7 +126,12 @@ describe('CacheClient', () => {
     });
 
     it('performs serialization on given data', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const expectedData = { some: 'value' };
 
       await sut.set('someKey', expectedData);
@@ -98,7 +142,12 @@ describe('CacheClient', () => {
     });
 
     it('passes ttl to client when given', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const expectedTtl = 3600;
 
       await sut.set('someKey', {}, { ttl: expectedTtl });
@@ -109,7 +158,12 @@ describe('CacheClient', () => {
     });
 
     it('passes defaultTtl to client when not', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
 
       await sut.set('someKey', {});
 
@@ -118,19 +172,40 @@ describe('CacheClient', () => {
       expect(actualOptions.ttl).toEqual(defaultTtl);
     });
 
-    it('does not throw errors on any client error', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+    it('does not reject on any client error by default', async () => {
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       client.set = jest.fn().mockRejectedValue(undefined);
 
-      expect(async () => {
-        await sut.set('someKey', {});
-      }).not.toThrow();
+      return expect(sut.set('someKey', {})).resolves.toBeUndefined();
+    });
+
+    it('rejects on underlying error if configured', async () => {
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError: 'reject',
+      });
+      const expectedError = new Error('Some runtime error');
+      client.set = jest.fn().mockRejectedValue(expectedError);
+
+      return expect(sut.set('someKey', {})).rejects.toEqual(expectedError);
     });
   });
 
   describe('CacheClient.delete', () => {
     it('calls client with normalized key', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       const keyPartial = 'somekey';
 
       await sut.delete(keyPartial);
@@ -140,13 +215,29 @@ describe('CacheClient', () => {
       expect(actualKey).toEqual(b64(`${pluginId}:${keyPartial}`));
     });
 
-    it('does not throw errors on any client error', async () => {
-      const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
+    it('does not reject on any client error by default', async () => {
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError,
+      });
       client.del = jest.fn().mockRejectedValue(undefined);
 
-      expect(async () => {
-        await sut.delete('someKey');
-      }).not.toThrow();
+      return expect(sut.delete('someKey')).resolves.toBeUndefined();
+    });
+
+    it('rejects on underlying error if configured', async () => {
+      const sut = new DefaultCacheClient({
+        client,
+        defaultTtl,
+        pluginId,
+        onError: 'reject',
+      });
+      const expectedError = new Error('Some runtime error');
+      client.del = jest.fn().mockRejectedValue(expectedError);
+
+      return expect(sut.delete('someKey')).rejects.toEqual(expectedError);
     });
   });
 });
