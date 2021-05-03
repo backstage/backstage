@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityRelation } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
-import { chunk } from 'lodash';
+import { chunk, groupBy } from 'lodash';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../api';
 
@@ -43,25 +43,50 @@ export function useRelatedEntities(
       return [];
     }
 
-    // Make requests in separate batches to limit query string size
-    // (there is a `filter` param for each relation)
-    const relationBatches = chunk(relations, BATCH_SIZE);
+    // Group the relations by kind and namespace to reduce the size of the request query string.
+    // Without this grouping, the kind and namespace would need to be specified for each relation, e.g.
+    // `filter=kind=component,namespace=default,name=example1&filter=kind=component,namespace=default,name=example2`
+    // with grouping, we can generate a query a string like
+    // `filter=kind=component,namespace=default,name=example1,example2`
+    const relationsByKindAndNamespace: EntityRelation[][] = Object.values(
+      groupBy(relations, ({ target }) => {
+        return `${target.kind}:${target.namespace}`.toLowerCase();
+      }),
+    );
+
+    // Split the names within each group into batches to further reduce the query string length.
+    const batchedRelationsByKindAndNamespace: {
+      kind: string;
+      namespace: string;
+      nameBatches: string[][];
+    }[] = [];
+    for (const rs of relationsByKindAndNamespace) {
+      batchedRelationsByKindAndNamespace.push({
+        // All relations in a group have the same kind and namespace, so its arbitrary which we pick
+        kind: rs[0].target.kind,
+        namespace: rs[0].target.namespace,
+        nameBatches: chunk(
+          rs.map(r => r.target.name),
+          BATCH_SIZE,
+        ),
+      });
+    }
 
     const results = await Promise.all(
-      relationBatches.map(batch => {
-        return catalogApi.getEntities({
-          filter: batch.map(({ target }) => {
-            return {
-              kind: target.kind,
-              'metadata.name': target.name,
-              'metadata.namespace': target.namespace,
-            };
-          }),
+      batchedRelationsByKindAndNamespace.flatMap(rs => {
+        return rs.nameBatches.map(names => {
+          return catalogApi.getEntities({
+            filter: {
+              kind: rs.kind,
+              'metadata.namespace': rs.namespace,
+              'metadata.name': names,
+            },
+          });
         });
       }),
     );
 
-    return results.map(r => r.items).flat();
+    return results.flatMap(r => r.items);
   }, [entity, type]);
 
   return {
