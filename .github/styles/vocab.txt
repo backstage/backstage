@@ -262,7 +262,6 @@ unregister
 unregistration
 untracked
 UptimeRobot
-uptimerobot
 upvote
 url
 utils
