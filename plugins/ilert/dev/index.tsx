@@ -16,12 +16,12 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { ilertPlugin } from '../src/plugin';
-import { IlertPage } from '../src';
+import { ILertPage } from '../src';
 
 createDevApp()
   .registerPlugin(ilertPlugin)
   .addPage({
-    element: <IlertPage />,
+    element: <ILertPage />,
     title: 'Root Page',
   })
   .render();
