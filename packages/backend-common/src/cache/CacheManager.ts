@@ -67,6 +67,7 @@ export class CacheManager {
         const concreteClient = this.getClientWithTtl(defaultTtl);
         return new DefaultCacheClient({
           client: concreteClient,
+          defaultTtl,
           pluginId: pluginId,
         });
       },

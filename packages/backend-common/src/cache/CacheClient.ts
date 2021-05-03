@@ -21,6 +21,7 @@ import { createHash } from 'crypto';
 type CacheClientArgs = {
   client: cacheManager.Cache;
   pluginId: string;
+  defaultTtl: number;
 };
 
 type CacheSetOptions = {
@@ -56,10 +57,12 @@ export interface CacheClient {
  */
 export class DefaultCacheClient implements CacheClient {
   private readonly client: cacheManager.Cache;
+  private readonly defaultTtl: number;
   private readonly pluginId: string;
 
-  constructor({ client, pluginId }: CacheClientArgs) {
+  constructor({ client, defaultTtl, pluginId }: CacheClientArgs) {
     this.client = client;
+    this.defaultTtl = defaultTtl;
     this.pluginId = pluginId;
   }
 
@@ -81,7 +84,9 @@ export class DefaultCacheClient implements CacheClient {
     const k = this.getNormalizedKey(key);
     try {
       const data = this.serializeData(value);
-      await this.client.set(k, data, opts.ttl ? { ttl: opts.ttl } : undefined);
+      await this.client.set(k, data, {
+        ttl: opts.ttl || this.defaultTtl,
+      });
     } catch {
       return;
     }
