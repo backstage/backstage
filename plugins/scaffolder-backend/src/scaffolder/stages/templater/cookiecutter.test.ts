@@ -145,14 +145,8 @@ describe('CookieCutter Templater', () => {
 
     expect(containerRunner.runContainer).toHaveBeenCalledWith({
       imageName: 'spotify/backstage-cookiecutter',
-      args: [
-        'cookiecutter',
-        '--no-input',
-        '-o',
-        '/output',
-        '/input',
-        '--verbose',
-      ],
+      command: 'cookiecutter',
+      args: ['--no-input', '-o', '/output', '/input', '--verbose'],
       envVars: { HOME: '/tmp' },
       mountDirs: {
         [path.join('tempdir', 'template')]: '/input',
@@ -208,14 +202,8 @@ describe('CookieCutter Templater', () => {
 
     expect(containerRunner.runContainer).toHaveBeenCalledWith({
       imageName: 'spotify/backstage-cookiecutter',
-      args: [
-        'cookiecutter',
-        '--no-input',
-        '-o',
-        '/output',
-        '/input',
-        '--verbose',
-      ],
+      command: 'cookiecutter',
+      args: ['--no-input', '-o', '/output', '/input', '--verbose'],
       envVars: { HOME: '/tmp' },
       mountDirs: {
         [path.join('tempdir', 'template')]: '/input',
