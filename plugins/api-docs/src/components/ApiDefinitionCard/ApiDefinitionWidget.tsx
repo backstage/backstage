@@ -16,7 +16,6 @@
 import React from 'react';
 import { AsyncApiDefinitionWidget } from '../AsyncApiDefinitionWidget';
 import { GraphQlDefinitionWidget } from '../GraphQlDefinitionWidget';
-import { JsonSchemaDefinitionWidget } from '../JsonSchemaDefinitionWidget';
 import { OpenApiDefinitionWidget } from '../OpenApiDefinitionWidget';
 
 export type ApiDefinitionWidget = {
@@ -50,14 +49,6 @@ export function defaultDefinitionWidgets(): ApiDefinitionWidget[] {
       rawLanguage: 'graphql',
       component: definition => (
         <GraphQlDefinitionWidget definition={definition} />
-      ),
-    },
-    {
-      type: 'jsonschema',
-      title: 'JSON Schema',
-      rawLanguage: 'json',
-      component: definition => (
-        <JsonSchemaDefinitionWidget definition={definition} />
       ),
     },
   ];
