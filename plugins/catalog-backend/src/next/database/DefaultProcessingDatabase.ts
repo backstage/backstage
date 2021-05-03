@@ -87,7 +87,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         processed_entity: JSON.stringify(processedEntity),
         cache: JSON.stringify(state),
-        // TODO: should this also be JSON stringfy?
         errors,
       })
       .where('entity_id', id);
