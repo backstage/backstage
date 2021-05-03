@@ -89,9 +89,9 @@ describe('Default Processing Database', () => {
         entity_ref: 'location:default/fakelocation',
         unprocessed_entity: '{}',
         processed_entity: '{}',
-        errors: '',
-        next_update_at: 'now()',
-        last_discovery_at: 'now()',
+        errors: '[]',
+        next_update_at: '2021-04-01 13:37:00',
+        last_discovery_at: '2021-04-01 13:37:00',
       });
 
       const state = new Map<string, JsonObject>();
@@ -104,15 +104,17 @@ describe('Default Processing Database', () => {
           state,
           relations: [],
           deferredEntities: [],
-          errors: 'something broke',
+          errors: "['something broke']",
         }),
       );
 
-      const [entity] = await db<DbRefreshStateRow>('refresh_state').select();
-
-      expect(entity.processed_entity).toEqual(JSON.stringify(processedEntity));
-      expect(entity.cache).toEqual(JSON.stringify(state));
-      expect(entity.errors).toEqual('something broke');
+      const entities = await db<DbRefreshStateRow>('refresh_state').select();
+      expect(entities.length).toBe(1);
+      expect(entities[0].processed_entity).toEqual(
+        JSON.stringify(processedEntity),
+      );
+      expect(entities[0].cache).toEqual(JSON.stringify(state));
+      expect(entities[0].errors).toEqual("['something broke']");
     });
 
     it('removes old relations and stores the new relationships', async () => {
@@ -121,9 +123,9 @@ describe('Default Processing Database', () => {
         entity_ref: 'location:default/fakelocation',
         unprocessed_entity: '{}',
         processed_entity: '{}',
-        errors: '',
-        next_update_at: 'now()',
-        last_discovery_at: 'now()',
+        errors: '[]',
+        next_update_at: '2021-04-01 13:37:00',
+        last_discovery_at: '2021-04-01 13:37:00',
       });
 
       const relations = [
@@ -152,11 +154,11 @@ describe('Default Processing Database', () => {
         }),
       );
 
-      const [savedRelations] = await db<DbRelationsRow>('relations')
+      const savedRelations = await db<DbRelationsRow>('relations')
         .where({ originating_entity_id: id })
         .select();
-
-      expect(savedRelations).toEqual({
+      expect(savedRelations.length).toBe(1);
+      expect(savedRelations[0]).toEqual({
         originating_entity_id: id,
         source_entity_ref: 'component:default/foo',
         type: 'memberOf',
@@ -170,9 +172,9 @@ describe('Default Processing Database', () => {
         entity_ref: 'location:default/fakelocation',
         unprocessed_entity: '{}',
         processed_entity: '{}',
-        errors: '',
-        next_update_at: 'now()',
-        last_discovery_at: 'now()',
+        errors: '[]',
+        next_update_at: '2021-04-01 13:37:00',
+        last_discovery_at: '2021-04-01 13:37:00',
       });
 
       const deferredEntities = [
@@ -211,9 +213,9 @@ describe('Default Processing Database', () => {
           entity_ref: ref,
           unprocessed_entity: '{}',
           processed_entity: '{}',
-          errors: '',
-          next_update_at: 'now()',
-          last_discovery_at: 'now()',
+          errors: '[]',
+          next_update_at: '2021-04-01 13:37:00',
+          last_discovery_at: '2021-04-01 13:37:00',
         });
       }
     };
@@ -588,29 +590,29 @@ describe('Default Processing Database', () => {
   describe('getProcessableEntities', () => {
     it('should return entities to process', async () => {
       const entity = JSON.stringify({
+        kind: 'Location',
         apiVersion: '1.0.0',
         metadata: {
           name: 'xyz',
         },
-        kind: 'Location',
       } as Entity);
 
       await db<DbRefreshStateRow>('refresh_state').insert({
         entity_id: '2',
         entity_ref: 'location:default/new-root',
         unprocessed_entity: entity,
-        errors: '',
+        errors: '[]',
         next_update_at: '2019-01-01 23:00:00',
-        last_discovery_at: 'now()',
+        last_discovery_at: '2021-04-01 13:37:00',
       });
 
       await db<DbRefreshStateRow>('refresh_state').insert({
         entity_id: '1',
         entity_ref: 'location:default/foobar',
         unprocessed_entity: entity,
-        errors: '',
+        errors: '[]',
         next_update_at: '2042-01-01 23:00:00',
-        last_discovery_at: 'now()',
+        last_discovery_at: '2021-04-01 13:37:00',
       });
 
       await processingDatabase.transaction(async tx => {
