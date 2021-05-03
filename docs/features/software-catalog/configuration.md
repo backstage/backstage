@@ -37,6 +37,13 @@ The locations added through static configuration cannot be removed through the
 catalog locations API. To remove these locations, you must remove them from the
 configuration.
 
+Syntax errors or other types of errors present in `catalog-info.yaml` files will
+be logged for investigation. Errors do not cause processing to abort.
+
+When multiple `catalog-info.yaml` files with the same `metadata.name` property
+are discovered, one will be processed and all others will be skipped. This
+action is logged for further investigation.
+
 ### Integration Processors
 
 Integrations may simply provide a mechanism to handle `url` location type for an
