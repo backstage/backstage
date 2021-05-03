@@ -18,7 +18,7 @@ import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../api';
 
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 20;
 
 export function useRelatedEntities(
   entity: Entity,
