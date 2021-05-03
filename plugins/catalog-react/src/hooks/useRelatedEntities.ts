@@ -18,6 +18,8 @@ import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
 import { catalogApiRef } from '../api';
 
+const BATCH_SIZE = 100;
+
 export function useRelatedEntities(
   entity: Entity,
   { type, kind }: { type?: string; kind?: string },
@@ -40,16 +42,28 @@ export function useRelatedEntities(
       return [];
     }
 
-    // TODO: This code could be more efficient if there was an endpoint in the
-    // backend that either returns the relations of entity (filtered by type)
-    // or if there is a way to perform a batch request by entity name. However,
-    // such an implementation would probably be better placed in the graphql API.
+    // Make requests in separate batches to limit query string size
+    // (there is a `filter` param for each relation)
+    const relationBatches = [];
+    for (let i = 0; i < relations.length; i += BATCH_SIZE) {
+      relationBatches.push(relations.slice(i, i + BATCH_SIZE));
+    }
+
     const results = await Promise.all(
-      relations?.map(r => catalogApi.getEntityByName(r.target)),
+      relationBatches.map(batch => {
+        return catalogApi.getEntities({
+          filter: batch.map(({ target }) => {
+            return {
+              kind: target.kind,
+              'metadata.name': target.name,
+              'metadata.namespace': target.namespace,
+            };
+          }),
+        });
+      }),
     );
-    // Skip entities that where not found, for example if a relation references
-    // an entity that doesn't exist.
-    return results.filter(e => e) as Entity[];
+
+    return results.map(r => r.items).flat();
   }, [entity, type]);
 
   return {
