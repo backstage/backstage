@@ -12,7 +12,6 @@ import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
-import { Format } from 'logform';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
@@ -64,7 +63,7 @@ export class BitbucketUrlReader implements UrlReader {
 }
 
 // @public (undocumented)
-export const coloredFormat: Format;
+export const coloredFormat: winston.Logform.Format;
 
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
