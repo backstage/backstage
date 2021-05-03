@@ -34,9 +34,10 @@ type CacheSetOptions = {
  */
 export interface CacheClient {
   /**
-   * Reads data from a cache store for the given key.
+   * Reads data from a cache store for the given key. If no data was found,
+   * returns undefined.
    */
-  get(key: string): Promise<JsonValue>;
+  get(key: string): Promise<JsonValue | undefined>;
 
   /**
    * Writes the given data to a cache store, associated with the given key. An
@@ -66,13 +67,13 @@ export class DefaultCacheClient implements CacheClient {
     this.pluginId = pluginId;
   }
 
-  async get(key: string): Promise<JsonValue> {
+  async get(key: string): Promise<JsonValue | undefined> {
     const k = this.getNormalizedKey(key);
     try {
       const data = (await this.client.get(k)) as string | undefined;
       return this.deserializeData(data);
     } catch {
-      return null;
+      return undefined;
     }
   }
 
@@ -122,7 +123,7 @@ export class DefaultCacheClient implements CacheClient {
     return JSON.stringify(data);
   }
 
-  private deserializeData(data: string | undefined): JsonValue {
-    return data ? JSON.parse(data) : null;
+  private deserializeData(data: string | undefined): JsonValue | undefined {
+    return data ? JSON.parse(data) : undefined;
   }
 }

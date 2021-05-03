@@ -64,13 +64,13 @@ describe('CacheClient', () => {
       expect(actualValue).toMatchObject(expectedValue);
     });
 
-    it('returns null on any underlying error', async () => {
+    it('returns undefined on any underlying error', async () => {
       const sut = new DefaultCacheClient({ client, defaultTtl, pluginId });
       client.get = jest.fn().mockRejectedValue(undefined);
 
       const actualValue = await sut.get('someKey');
 
-      expect(actualValue).toStrictEqual(null);
+      expect(actualValue).toStrictEqual(undefined);
     });
   });
 
