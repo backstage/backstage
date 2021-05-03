@@ -1608,10 +1608,10 @@
     core-js "^2.6.5"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.13.10":
-  version "7.13.10"
-  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.13.10.tgz#14c3f4c85de22ba88e8e86685d13e8861a82fe86"
-  integrity sha512-x/XYVQ1h684pp1mJwOV4CyvqZXqbc8CMsMGUnAbuc82ZCdv1U63w5RSUzgDSXQHG5Rps/kiksH6g2D5BuaKyXg==
+"@babel/runtime-corejs3@^7.10.2", "@babel/runtime-corejs3@^7.11.2", "@babel/runtime-corejs3@^7.13.17":
+  version "7.14.0"
+  resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.14.0.tgz#6bf5fbc0b961f8e3202888cb2cd0fb7a0a9a3f66"
+  integrity sha512-0R0HTZWHLk6G8jIk0FtoX+AatCtKnswS98VhXwGImFc759PJRp4Tru0PQYZofyijTFUr+gT8Mu7sgXVJLQ0ceg==
   dependencies:
     core-js-pure "^3.0.0"
     regenerator-runtime "^0.13.4"
@@ -9677,10 +9677,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.5, classnames@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.npmjs.org/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
-  integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
+classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.npmjs.org/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
+  integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
 
 clean-css@^4.2.3:
   version "4.2.3"
@@ -11832,10 +11832,10 @@ domhandler@^4.0.0:
   dependencies:
     domelementtype "^2.1.0"
 
-dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.7:
-  version "2.2.7"
-  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.7.tgz#a5f055a2a471638680e779bd08fc334962d11fd8"
-  integrity sha512-jdtDffdGNY+C76jvodNTu9jt5yYj59vuTUyx+wXdzcSwAGTYZDAQkQ7Iwx9zcGrA4ixC1syU4H3RZROqRxokxg==
+dompurify@^2.0.12, dompurify@^2.1.1, dompurify@^2.2.8:
+  version "2.2.8"
+  resolved "https://registry.npmjs.org/dompurify/-/dompurify-2.2.8.tgz#ce88e395f6d00b6dc53f80d6b2a6fdf5446873c6"
+  integrity sha512-9H0UL59EkDLgY3dUFjLV6IEUaHm5qp3mxSqWw7Yyx4Zhk2Jn2cmLe+CNPP3xy13zl8Bqg+0NehQzkdMoVhGRww==
 
 domutils@1.5.1:
   version "1.5.1"
@@ -23583,12 +23583,7 @@ sentence-case@^3.0.4:
     tslib "^2.0.3"
     upper-case-first "^2.0.2"
 
-serialize-error@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.npmjs.org/serialize-error/-/serialize-error-2.1.0.tgz#50b679d5635cdf84667bdc8e59af4e5b81d5f60a"
-  integrity sha1-ULZ51WNc34Rme9yOWa9OW4HV9go=
-
-serialize-error@^8.0.1:
+serialize-error@^8.0.1, serialize-error@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npmjs.org/serialize-error/-/serialize-error-8.1.0.tgz#3a069970c712f78634942ddd50fbbc0eaebe2f67"
   integrity sha512-3NnuWfM6vBYoy5gZFvHiYsVbafvI9vZv/+jlIigFn4oP4zjNPK3LhcY0xSCgeb1a5L8jO71Mit9LlNoi2UfDDQ==
@@ -24859,10 +24854,10 @@ svgo@^1.0.0, svgo@^1.2.2:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-swagger-client@^3.13.1:
-  version "3.13.1"
-  resolved "https://registry.npmjs.org/swagger-client/-/swagger-client-3.13.1.tgz#d2531ede4a498911aa084384e387e5008e7b6a70"
-  integrity sha512-Hmy4+wVVa3kveWzC7PIeUwiAY5qcYbm4XlC4uZ7e5kAePfB2cprXImiqrZHIzL+ndU0YTN7I+9w/ZayTisn3Jg==
+swagger-client@^3.13.2:
+  version "3.13.2"
+  resolved "https://registry.npmjs.org/swagger-client/-/swagger-client-3.13.2.tgz#df1a1fe92e6db87ab5f76cee6381dcb7da1ad117"
+  integrity sha512-kamtyXtmbZiA2C5YTVqJYgoPJgzqtM5RbeP23Rt/YPYjMArTKZ2fjx1UTsI0aSbws0GluU5pVHiGp8YMciSUfw==
   dependencies:
     "@babel/runtime-corejs3" "^7.11.2"
     btoa "^1.2.1"
@@ -24880,19 +24875,19 @@ swagger-client@^3.13.1:
     url "~0.11.0"
 
 swagger-ui-react@^3.37.2:
-  version "3.45.1"
-  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.45.1.tgz#6c8e551c5c1d443e7195acd9614f2f6bc4557daf"
-  integrity sha512-ATXMVIb5YaxxmHJdvPq1nnXxsJ1FCo02fQI2gExEtZCQkouMThZh50DRxdKYNae53Ovz3w8glxxwmsMuWtmKaQ==
+  version "3.48.0"
+  resolved "https://registry.npmjs.org/swagger-ui-react/-/swagger-ui-react-3.48.0.tgz#f53e1b7de5bc2628635a2d832e254043badb3a91"
+  integrity sha512-39cibLdJYeujP5CAzBg+LiNFyIuHomi4Blru/1hyFyiTkFx9yYGvcFpZrKFKq1Me4GSUCQJ1DzUyUMblo+VFcA==
   dependencies:
-    "@babel/runtime-corejs3" "^7.13.10"
+    "@babel/runtime-corejs3" "^7.13.17"
     "@braintree/sanitize-url" "^5.0.0"
     "@kyleshockey/object-assign-deep" "^0.4.2"
     "@kyleshockey/xml" "^1.0.2"
     base64-js "^1.5.1"
-    classnames "^2.2.6"
+    classnames "^2.3.1"
     css.escape "1.5.1"
     deep-extend "0.6.0"
-    dompurify "^2.2.7"
+    dompurify "^2.2.8"
     ieee754 "^1.2.1"
     immutable "^3.x.x"
     js-file-download "^0.4.12"
@@ -24913,9 +24908,9 @@ swagger-ui-react@^3.37.2:
     redux-immutable "3.1.0"
     remarkable "^2.0.1"
     reselect "^4.0.0"
-    serialize-error "^2.1.0"
+    serialize-error "^8.1.0"
     sha.js "^2.4.11"
-    swagger-client "^3.13.1"
+    swagger-client "^3.13.2"
     url-parse "^1.5.1"
     xml-but-prettier "^1.0.1"
     zenscroll "^4.0.2"
