@@ -15,7 +15,6 @@ Right now, the following API formats are supported:
 - [OpenAPI](https://swagger.io/specification/) 2 & 3
 - [AsyncAPI](https://www.asyncapi.com/docs/specifications/latest/)
 - [GraphQL](https://graphql.org/learn/schema/)
-- [JSON Schema](https://json-schema.org/)
 
 Other formats are displayed as plain text, but this can easily be extended.
 
