@@ -16,6 +16,10 @@
 
 import { CacheClient } from './CacheClient';
 
+type ClientOptions = {
+  defaultTtl: number;
+};
+
 /**
  * The PluginCacheManager manages access to cache stores that Plugins get.
  */
@@ -27,5 +31,5 @@ export type PluginCacheManager = {
    * stores so that plugins are discouraged from cache-level integration
    * and/or cache key collisions.
    */
-  getClient: (ttl: number) => CacheClient;
+  getClient: (options: ClientOptions) => CacheClient;
 };

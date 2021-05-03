@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ConcreteCacheClient } from './CacheClient';
+import { DefaultCacheClient } from './CacheClient';
 import cacheManager from 'cache-manager';
 
 describe('CacheClient', () => {
@@ -33,7 +33,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.get', () => {
     it('calls client with normalized key', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const keyPartial = 'somekey';
 
       await sut.get(keyPartial);
@@ -42,7 +42,7 @@ describe('CacheClient', () => {
     });
 
     it('calls client with normalized key (very long key)', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const keyPartial = 'x'.repeat(251);
 
       await sut.get(keyPartial);
@@ -55,7 +55,7 @@ describe('CacheClient', () => {
 
     it('performs deserialization on returned data', async () => {
       const expectedValue = { some: 'value' };
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       client.get = jest.fn().mockResolvedValue(JSON.stringify(expectedValue));
 
       const actualValue = await sut.get('someKey');
@@ -64,7 +64,7 @@ describe('CacheClient', () => {
     });
 
     it('returns null on any underlying error', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       client.get = jest.fn().mockRejectedValue(undefined);
 
       const actualValue = await sut.get('someKey');
@@ -75,7 +75,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.set', () => {
     it('calls client with normalized key', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const keyPartial = 'somekey';
 
       await sut.set(keyPartial, {});
@@ -86,7 +86,7 @@ describe('CacheClient', () => {
     });
 
     it('performs serialization on given data', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const expectedData = { some: 'value' };
 
       await sut.set('someKey', expectedData);
@@ -97,10 +97,10 @@ describe('CacheClient', () => {
     });
 
     it('passes ttl to client when given', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const expectedTtl = 3600;
 
-      await sut.set('someKey', {}, expectedTtl);
+      await sut.set('someKey', {}, { ttl: expectedTtl });
 
       const spy = client.set as jest.Mock;
       const actualOptions = spy.mock.calls[0][2];
@@ -108,7 +108,7 @@ describe('CacheClient', () => {
     });
 
     it('does not throw errors on any client error', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       client.set = jest.fn().mockRejectedValue(undefined);
 
       expect(async () => {
@@ -119,7 +119,7 @@ describe('CacheClient', () => {
 
   describe('CacheClient.delete', () => {
     it('calls client with normalized key', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       const keyPartial = 'somekey';
 
       await sut.delete(keyPartial);
@@ -130,7 +130,7 @@ describe('CacheClient', () => {
     });
 
     it('does not throw errors on any client error', async () => {
-      const sut = new ConcreteCacheClient({ client, pluginId });
+      const sut = new DefaultCacheClient({ client, pluginId });
       client.del = jest.fn().mockRejectedValue(undefined);
 
       expect(async () => {

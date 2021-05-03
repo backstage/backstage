@@ -23,6 +23,10 @@ type CacheClientArgs = {
   pluginId: string;
 };
 
+type CacheSetOptions = {
+  ttl?: number;
+};
+
 /**
  * A pre-configured, storage agnostic cache client suitable for use by
  * Backstage plugins.
@@ -38,7 +42,7 @@ export interface CacheClient {
    * optional TTL may also be provided, otherwise it defaults to the TTL that
    * was provided when the client was instantiated.
    */
-  set(key: string, value: JsonValue, ttl?: number): Promise<void>;
+  set(key: string, value: JsonValue, options: CacheSetOptions): Promise<void>;
 
   /**
    * Removes the given key from the cache store.
@@ -50,7 +54,7 @@ export interface CacheClient {
  * A simple, concrete implementation of the CacheClient, suitable for almost
  * all uses in Backstage.
  */
-export class ConcreteCacheClient implements CacheClient {
+export class DefaultCacheClient implements CacheClient {
   private readonly client: cacheManager.Cache;
   private readonly pluginId: string;
 
@@ -63,18 +67,22 @@ export class ConcreteCacheClient implements CacheClient {
     const k = this.getNormalizedKey(key);
     try {
       const data = (await this.client.get(k)) as string | undefined;
-      return this.unserializeData(data);
-    } catch (_e) {
+      return this.deserializeData(data);
+    } catch {
       return null;
     }
   }
 
-  async set(key: string, value: JsonValue, ttl?: number): Promise<void> {
+  async set(
+    key: string,
+    value: JsonValue,
+    opts: CacheSetOptions = {},
+  ): Promise<void> {
     const k = this.getNormalizedKey(key);
     try {
       const data = this.serializeData(value);
-      await this.client.set(k, data, ttl ? { ttl } : undefined);
-    } catch (_e) {
+      await this.client.set(k, data, opts.ttl ? { ttl: opts.ttl } : undefined);
+    } catch {
       return;
     }
   }
@@ -83,7 +91,7 @@ export class ConcreteCacheClient implements CacheClient {
     const k = this.getNormalizedKey(key);
     try {
       await this.client.del(k);
-    } catch (_e) {
+    } catch {
       return;
     }
   }
@@ -102,14 +110,14 @@ export class ConcreteCacheClient implements CacheClient {
       return wellFormedKey;
     }
 
-    return createHash('md5').update(candidateKey).digest('hex');
+    return createHash('md5').update(candidateKey).digest('base64');
   }
 
   private serializeData(data: JsonValue): string {
     return JSON.stringify(data);
   }
 
-  private unserializeData(data: string | undefined): JsonValue {
+  private deserializeData(data: string | undefined): JsonValue {
     return data ? JSON.parse(data) : null;
   }
 }

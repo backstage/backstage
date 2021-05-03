@@ -16,13 +16,13 @@
 
 import { ConfigReader } from '@backstage/config';
 import cacheManager from 'cache-manager';
-import { ConcreteCacheClient } from './CacheClient';
+import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
 
 cacheManager.caching = jest.fn() as jest.Mock;
 jest.mock('./CacheClient', () => {
   return {
-    ConcreteCacheClient: jest.fn(),
+    DefaultCacheClient: jest.fn(),
   };
 });
 
@@ -63,9 +63,9 @@ describe('CacheManager', () => {
     it('connects to a cache store scoped to the plugin', async () => {
       const pluginId = 'test1';
       const expectedTtl = 3600;
-      manager.forPlugin(pluginId).getClient(expectedTtl);
+      manager.forPlugin(pluginId).getClient({ defaultTtl: expectedTtl });
 
-      const client = ConcreteCacheClient as jest.Mock;
+      const client = DefaultCacheClient as jest.Mock;
       expect(client).toHaveBeenCalledTimes(1);
     });
 
@@ -73,11 +73,11 @@ describe('CacheManager', () => {
       const plugin1Id = 'test1';
       const plugin2Id = 'test2';
       const expectedTtl = 3600;
-      manager.forPlugin(plugin1Id).getClient(expectedTtl);
-      manager.forPlugin(plugin2Id).getClient(expectedTtl);
+      manager.forPlugin(plugin1Id).getClient({ defaultTtl: expectedTtl });
+      manager.forPlugin(plugin2Id).getClient({ defaultTtl: expectedTtl });
 
       const cache = cacheManager.caching as jest.Mock;
-      const client = ConcreteCacheClient as jest.Mock;
+      const client = DefaultCacheClient as jest.Mock;
       expect(cache).toHaveBeenCalledTimes(2);
       expect(client).toHaveBeenCalledTimes(2);
 
@@ -95,7 +95,7 @@ describe('CacheManager', () => {
         new ConfigReader({ backend: {} }),
       );
       const expectedTtl = 3600;
-      manager.forPlugin('test').getClient(expectedTtl);
+      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
       const cache = cacheManager.caching as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
@@ -109,7 +109,7 @@ describe('CacheManager', () => {
     it('returns memory client when configured', () => {
       const manager = CacheManager.fromConfig(defaultConfig());
       const expectedTtl = 3600;
-      manager.forPlugin('test').getClient(expectedTtl);
+      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
       const cache = cacheManager.caching as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
@@ -137,7 +137,7 @@ describe('CacheManager', () => {
         }),
       );
       const expectedTtl = 3600;
-      manager.forPlugin('test').getClient(expectedTtl);
+      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
       const cache = cacheManager.caching as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);

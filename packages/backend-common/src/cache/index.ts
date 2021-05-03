@@ -15,5 +15,5 @@
  */
 
 export type { CacheClient } from './CacheClient';
-export * from './CacheManager';
-export * from './types';
+export { CacheManager } from './CacheManager';
+export type { PluginCacheManager } from './types';

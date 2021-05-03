@@ -20,7 +20,7 @@ import cacheManager from 'cache-manager';
 import Memcache from 'memcache-pp';
 // @ts-expect-error
 import memcachedStore from 'cache-manager-memcached-store';
-import { ConcreteCacheClient, CacheClient } from './CacheClient';
+import { DefaultCacheClient, CacheClient } from './CacheClient';
 import { PluginCacheManager } from './types';
 
 /**
@@ -30,10 +30,11 @@ import { PluginCacheManager } from './types';
  */
 export class CacheManager {
   /**
-   * Keys represented supported `backend.cache.store` values, mapped to getters
-   * that return cacheManager.Cache instances appropriate to the store.
+   * Keys represented supported `backend.cache.store` values, mapped to
+   * factories that return cacheManager.Cache instances appropriate to the
+   * store.
    */
-  private readonly storeGetterMap = {
+  private readonly storeFactories = {
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
     none: this.getNoneClient,
@@ -62,9 +63,9 @@ export class CacheManager {
    */
   forPlugin(pluginId: string): PluginCacheManager {
     return {
-      getClient: (ttl: number): CacheClient => {
-        const concreteClient = this.getClientWithTtl(ttl);
-        return new ConcreteCacheClient({
+      getClient: ({ defaultTtl }): CacheClient => {
+        const concreteClient = this.getClientWithTtl(defaultTtl);
+        return new DefaultCacheClient({
           client: concreteClient,
           pluginId: pluginId,
         });
@@ -75,15 +76,15 @@ export class CacheManager {
   private getClientWithTtl(ttl: number): cacheManager.Cache {
     const store = this.config.getOptionalString(
       'store',
-    ) as keyof CacheManager['storeGetterMap'];
+    ) as keyof CacheManager['storeFactories'];
 
-    if (this.storeGetterMap.hasOwnProperty(store)) {
-      return this.storeGetterMap[store].call(this, ttl);
+    if (this.storeFactories.hasOwnProperty(store)) {
+      return this.storeFactories[store].call(this, ttl);
     }
-    return this.storeGetterMap.none.call(this, ttl);
+    return this.storeFactories.none.call(this, ttl);
   }
 
-  private getMemcacheClient(ttl: number): cacheManager.Cache {
+  private getMemcacheClient(defaultTtl: number): cacheManager.Cache {
     const hosts = this.config.getStringArray('connection.hosts');
     const netTimeout = this.config.getOptionalNumber('connection.netTimeout');
     return cacheManager.caching({
@@ -93,21 +94,21 @@ export class CacheManager {
         hosts,
         ...(netTimeout && { netTimeout }),
       },
-      ttl,
+      ttl: defaultTtl,
     });
   }
 
-  private getMemoryClient(ttl: number): cacheManager.Cache {
+  private getMemoryClient(defaultTtl: number): cacheManager.Cache {
     return cacheManager.caching({
       store: 'memory',
-      ttl,
+      ttl: defaultTtl,
     });
   }
 
-  private getNoneClient(ttl: number): cacheManager.Cache {
+  private getNoneClient(defaultTtl: number): cacheManager.Cache {
     return cacheManager.caching({
       store: 'none',
-      ttl,
+      ttl: defaultTtl,
     });
   }
 }
