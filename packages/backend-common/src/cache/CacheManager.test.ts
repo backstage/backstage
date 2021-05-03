@@ -41,12 +41,17 @@ describe('CacheManager', () => {
   describe('CacheManager.fromConfig', () => {
     it('accesses the backend.cache key', () => {
       const getOptionalConfig = jest.fn();
+      const getOptionalString = jest.fn();
       const config = defaultConfig();
       config.getOptionalConfig = getOptionalConfig;
+      config.getOptionalString = getOptionalString;
 
       CacheManager.fromConfig(config);
 
-      expect(getOptionalConfig.mock.calls[0][0]).toEqual('backend.cache');
+      expect(getOptionalString.mock.calls[0][0]).toEqual('backend.cache.store');
+      expect(getOptionalConfig.mock.calls[0][0]).toEqual(
+        'backend.cache.connection',
+      );
     });
 
     it('does not require the backend.cache key', () => {
@@ -54,6 +59,15 @@ describe('CacheManager', () => {
       expect(() => {
         CacheManager.fromConfig(config);
       }).not.toThrowError();
+    });
+
+    it('throws on unknown cache store', () => {
+      const config = new ConfigReader({
+        backend: { cache: { store: 'notreal' } },
+      });
+      expect(() => {
+        CacheManager.fromConfig(config);
+      }).toThrowError();
     });
   });
 

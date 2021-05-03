@@ -30,7 +30,7 @@ import { PluginCacheManager } from './types';
  */
 export class CacheManager {
   /**
-   * Keys represented supported `backend.cache.store` values, mapped to
+   * Keys represents supported `backend.cache.store` values, mapped to
    * factories that return cacheManager.Cache instances appropriate to the
    * store.
    */
@@ -39,6 +39,9 @@ export class CacheManager {
     memory: this.getMemoryClient,
     none: this.getNoneClient,
   };
+
+  private readonly store: keyof CacheManager['storeFactories'];
+  private readonly connection: Config;
 
   /**
    * Creates a new CacheManager instance by reading from the `backend` config
@@ -49,12 +52,21 @@ export class CacheManager {
   static fromConfig(config: Config): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with empty config; allowing a "none" cache client will be returned.
-    return new CacheManager(
-      config.getOptionalConfig('backend.cache') || new ConfigReader(undefined),
-    );
+    const store = config.getOptionalString('backend.cache.store') || 'none';
+    const connectionConfig =
+      config.getOptionalConfig('backend.cache.connection') ||
+      new ConfigReader(undefined);
+
+    return new CacheManager(store, connectionConfig);
   }
 
-  private constructor(private readonly config: Config) {}
+  private constructor(store: string, connectionConfig: Config) {
+    if (!this.storeFactories.hasOwnProperty(store)) {
+      throw new Error(`Unknown cache store: ${store}`);
+    }
+    this.store = store as keyof CacheManager['storeFactories'];
+    this.connection = connectionConfig;
+  }
 
   /**
    * Generates a CacheManagerInstance for consumption by plugins.
@@ -75,19 +87,12 @@ export class CacheManager {
   }
 
   private getClientWithTtl(ttl: number): cacheManager.Cache {
-    const store = this.config.getOptionalString(
-      'store',
-    ) as keyof CacheManager['storeFactories'];
-
-    if (this.storeFactories.hasOwnProperty(store)) {
-      return this.storeFactories[store].call(this, ttl);
-    }
-    return this.storeFactories.none.call(this, ttl);
+    return this.storeFactories[this.store].call(this, ttl);
   }
 
   private getMemcacheClient(defaultTtl: number): cacheManager.Cache {
-    const hosts = this.config.getStringArray('connection.hosts');
-    const netTimeout = this.config.getOptionalNumber('connection.netTimeout');
+    const hosts = this.connection.getStringArray('hosts');
+    const netTimeout = this.connection.getOptionalNumber('netTimeout');
     return cacheManager.caching({
       store: memcachedStore,
       driver: Memcache,
