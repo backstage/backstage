@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
@@ -146,8 +147,6 @@ describe('GoogleGCSPublish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      expect.assertions(3);
-
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
@@ -165,23 +164,21 @@ describe('GoogleGCSPublish', () => {
         }),
       ).rejects.toThrowError();
 
-      await publisher
-        .publish({
-          entity,
-          directory: wrongPathToGeneratedDirectory,
-        })
-        .catch(error => {
-          expect(error.message).toEqual(
-            // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-            // Issue reported https://github.com/tschaub/mock-fs/issues/118
-            expect.stringContaining(
-              `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-            ),
-          );
-          expect(error.message).toEqual(
-            expect.stringContaining(wrongPathToGeneratedDirectory),
-          );
-        });
+      const fails = publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      });
+
+      // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+      // Issue reported https://github.com/tschaub/mock-fs/issues/118
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          `Unable to upload file(s) to Google Cloud Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+        ),
+      });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
 
       mockFs.restore();
     });
@@ -264,16 +261,14 @@ describe('GoogleGCSPublish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      await publisher
-        .fetchTechDocsMetadata(entityNameMock)
-        .catch(errorMessage =>
-          expect(errorMessage).toEqual(
-            `The file ${path.join(
-              entityRootDir,
-              'techdocs_metadata.json',
-            )} does not exist !`,
-          ),
-        );
+      const fails = publisher.fetchTechDocsMetadata(entityNameMock);
+
+      await expect(fails).rejects.toMatchObject({
+        message: `The file ${path.join(
+          entityRootDir,
+          'techdocs_metadata.json',
+        )} does not exist !`,
+      });
     });
   });
 });

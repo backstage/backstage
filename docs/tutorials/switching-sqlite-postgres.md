@@ -17,11 +17,11 @@ switch between database backends.
 
 ## Install PostgreSQL
 
-First, swap out SQLite for PostgreSQL in your `backend` package:
+First, add PostgreSQL to your `backend` package:
 
 ```shell
+# From your Backstage root directory
 cd packages/backend
-yarn remove sqlite3
 yarn add pg
 ```
 
@@ -46,7 +46,6 @@ backend:
 +      #ssl: require # see https://www.postgresql.org/docs/current/libpq-ssl.html Table 33.1. SSL Mode Descriptions (e.g. require)
 +        #ca: # if you have a CA file and want to verify it you can uncomment this section
 +        #$file: <file-path>/ca/server.crt
-
 ```
 
 If you have an `app-config.local.yaml` for local development, a similar update

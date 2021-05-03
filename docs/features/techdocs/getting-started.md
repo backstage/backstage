@@ -22,21 +22,15 @@ Navigate to your new Backstage application directory. And then to your
 `packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
 
 Once the package has been installed, you need to import the plugin in your app.
 
-Add the following to `packages/app/src/plugins.ts`:
-
-```typescript
-export { plugin as TechDocs } from '@backstage/plugin-techdocs';
-```
-
-Now we can add a route for the TechDocs page. In `packages/app/src/App.tsx`,
-import TechDocsPage and add the following to `FlatRoutes`:
+In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
+`FlatRoutes`:
 
 ```tsx
 import { TechDocsPage } from '@backstage/plugin-techdocs';
@@ -60,7 +54,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-techdocs-backend
 ```

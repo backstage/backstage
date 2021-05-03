@@ -20,3 +20,4 @@ export * from './AsyncApiDefinitionWidget';
 export * from './ComponentsCards';
 export * from './OpenApiDefinitionWidget';
 export * from './PlainApiDefinitionWidget';
+export * from './JsonSchemaDefinitionWidget';

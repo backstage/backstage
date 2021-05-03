@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import mockFs from 'mock-fs';
@@ -157,7 +158,6 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      expect.assertions(1);
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
@@ -168,22 +168,20 @@ describe('publishing with valid credentials', () => {
 
       const entity = createMockEntity();
 
-      await publisher
-        .publish({
-          entity,
-          directory: wrongPathToGeneratedDirectory,
-        })
-        .catch(error => {
-          // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-          // Issue reported https://github.com/tschaub/mock-fs/issues/118
-          expect.stringContaining(
-            `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-          );
+      const fails = publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      });
 
-          expect(error.message).toEqual(
-            expect.stringContaining(wrongPathToGeneratedDirectory),
-          );
-        });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+        ),
+      });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
+
       mockFs.restore();
     });
 

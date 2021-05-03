@@ -41,8 +41,10 @@ Kaewkasi
 Knex
 Leasot
 Lerna
+LocalStack
 Luxon
 Minikube
+Minio
 Mkdocs
 Monorepo
 Namespaces
