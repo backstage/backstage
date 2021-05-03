@@ -37,7 +37,7 @@ class Connection implements EntityProviderConnection {
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.processingDatabase;
     if (mutation.type === 'full') {
-      db.transaction(async tx => {
+      await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
           type: 'full',
@@ -46,7 +46,7 @@ class Connection implements EntityProviderConnection {
       });
       return;
     }
-    db.transaction(async tx => {
+    await db.transaction(async tx => {
       await db.replaceUnprocessedEntities(tx, {
         sourceKey: this.config.id,
         type: 'delta',
