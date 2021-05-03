@@ -20,6 +20,7 @@ import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase'
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { Stitcher } from './Stitcher';
 import { CatalogProcessingOrchestrator } from './types';
+import waitForExpect from 'wait-for-expect';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = ({
@@ -83,13 +84,17 @@ describe('DefaultCatalogProcessingEngine', () => {
       });
 
     await engine.start();
-    await new Promise<void>(resolve => setTimeout(resolve, 1));
-    expect(orchestrator.process).toBeCalledTimes(1);
-    expect(orchestrator.process).toBeCalledWith({
-      entity: { apiVersion: '1', kind: 'Location', metadata: { name: 'test' } },
-      state: expect.anything(),
+    await waitForExpect(() => {
+      expect(orchestrator.process).toBeCalledTimes(1);
+      expect(orchestrator.process).toBeCalledWith({
+        entity: {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'test' },
+        },
+        state: expect.anything(),
+      });
     });
-
     await engine.stop();
   });
 });
