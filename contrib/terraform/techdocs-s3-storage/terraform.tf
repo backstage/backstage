@@ -2,15 +2,15 @@
 # Variables
 #==========================
 
-variable "backstage-bucket" {
+variable "backstage_bucket" {
   default = "backstage_bucket_for_my_corp"
 }
 
-variable "backstage-iam" {
+variable "backstage_iam" {
   default = "backstage"
 }
 
-variable "shared-managed-tag-value" {
+variable "shared_managed_tag" {
   default = "terraform_for_my_corp"
 }
 
@@ -19,7 +19,7 @@ variable "shared-managed-tag-value" {
 #==========================
 
 resource "aws_s3_bucket" "backstage" {
-  bucket = var.backstage-bucket
+  bucket = var.backstage_bucket
   acl    = "private"
   provider = aws
 
@@ -36,8 +36,8 @@ resource "aws_s3_bucket" "backstage" {
   }
 
   tags = {
-    Name                   = var.backstage-bucket
-    "Managed By Terraform" = var.shared-managed-tag-value
+    Name                   = var.backstage_bucket
+    "Managed By Terraform" = var.shared_managed_tag
   }
 }
 
@@ -56,16 +56,16 @@ resource "aws_s3_bucket_public_access_block" "backstage" {
 #==========================
 
 resource "aws_iam_user" "backstage" {
-  name = var.backstage-iam
+  name = var.backstage_iam
 }
 
 resource "aws_iam_user_policy" "backstage" {
-  name = var.backstage-iam
+  name = var.backstage_iam
   user = aws_iam_user.backstage.name
-  policy = data.aws_iam_policy_document.backstage-policy.json
+  policy = data.aws_iam_policy_document.backstage_policy.json
 }
 
-data "aws_iam_policy_document" "backstage-policy" {
+data "aws_iam_policy_document" "backstage_policy" {
   statement {
     actions = [
       "s3:PutObject",

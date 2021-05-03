@@ -13,8 +13,8 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 1. Install the GitHub Deployments Plugin.
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-github-deployments
 ```
 

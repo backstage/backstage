@@ -32,9 +32,9 @@
   "dependencies": {
     "@backstage/catalog-model": "^0.7.4",
     "@backstage/config": "^0.1.4",
-    "@backstage/core": "^0.7.6",
+    "@backstage/core": "^0.7.7",
+    "@backstage/plugin-catalog-react": "^0.1.3",
     "@backstage/plugin-kubernetes-common": "^0.1.0",
-    "@backstage/plugin-catalog-react": "^0.1.3",    
     "@backstage/theme": "^0.2.6",
     "@kubernetes/client-node": "^0.14.0",
     "@material-ui/core": "^4.11.0",

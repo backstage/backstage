@@ -1,7 +1,7 @@
 {
   "name": "@backstage/techdocs-common",
   "description": "Common functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "private": false,

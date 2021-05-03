@@ -27,6 +27,7 @@ import {
 } from '../src';
 import asyncapiApiEntity from './asyncapi-example-api.yaml';
 import graphqlApiEntity from './graphql-example-api.yaml';
+import jsonschemaApiEntity from './jsonschema-example-api.yaml';
 import openapiApiEntity from './openapi-example-api.yaml';
 import otherApiEntity from './other-example-api.yaml';
 
@@ -41,6 +42,7 @@ createDevApp()
             items: [
               openapiApiEntity,
               asyncapiApiEntity,
+              jsonschemaApiEntity,
               graphqlApiEntity,
               otherApiEntity,
             ],
@@ -81,6 +83,19 @@ createDevApp()
         <Header title="AsyncAPI" />
         <Content>
           <EntityProvider entity={(asyncapiApiEntity as any) as Entity}>
+            <EntityApiDefinitionCard />
+          </EntityProvider>
+        </Content>
+      </Page>
+    ),
+  })
+  .addPage({
+    title: 'JSON Schema',
+    element: (
+      <Page themeId="home">
+        <Header title="JSON Schema" />
+        <Content>
+          <EntityProvider entity={(jsonschemaApiEntity as any) as Entity}>
             <EntityApiDefinitionCard />
           </EntityProvider>
         </Content>
