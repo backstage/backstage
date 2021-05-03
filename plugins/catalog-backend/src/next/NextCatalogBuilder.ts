@@ -69,7 +69,6 @@ import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase'
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
 
@@ -252,7 +251,7 @@ export class NextCatalogBuilder {
     const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
-    const stateManager = new DefaultProcessingStateManager(processingDatabase);
+    // const stateManager = new DefaultProcessingStateManager(processingDatabase);
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
@@ -269,7 +268,7 @@ export class NextCatalogBuilder {
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
       [locationStore, configLocationProvider],
-      stateManager,
+      processingDatabase,
       orchestrator,
       stitcher,
     );
