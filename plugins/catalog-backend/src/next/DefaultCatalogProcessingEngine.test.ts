@@ -97,4 +97,65 @@ describe('DefaultCatalogProcessingEngine', () => {
     });
     await engine.stop();
   });
+
+  it('should process stuff even if the first attempt fail', async () => {
+    orchestrator.process.mockResolvedValue({
+      ok: true,
+      completedEntity: {
+        apiVersion: '1',
+        kind: 'Location',
+        metadata: { name: 'test' },
+      },
+      relations: [],
+      errors: [],
+      deferredEntities: [],
+      state: new Map(),
+    });
+    const engine = new DefaultCatalogProcessingEngine(
+      getVoidLogger(),
+      [],
+      db,
+      orchestrator,
+      stitcher,
+    );
+
+    db.transaction.mockImplementation(cb => cb((() => {}) as any));
+
+    db.getProcessableEntities
+      .mockImplementation(async () => {
+        await engine.stop();
+        return { items: [] };
+      })
+      .mockRejectedValueOnce(new Error('I FAILED'))
+      .mockResolvedValueOnce({
+        items: [
+          {
+            entityRef: 'foo',
+            id: '1',
+            unprocessedEntity: {
+              apiVersion: '1',
+              kind: 'Location',
+              metadata: { name: 'test' },
+            },
+            state: new Map(),
+            nextUpdateAt: '',
+            lastDiscoveryAt: '',
+          },
+        ],
+      });
+
+    await engine.start();
+    await waitForExpect(() => {
+      expect(orchestrator.process).toBeCalledTimes(1);
+      expect(orchestrator.process).toBeCalledWith({
+        entity: {
+          apiVersion: '1',
+          kind: 'Location',
+          metadata: { name: 'test' },
+        },
+        state: expect.anything(),
+      });
+    });
+    await engine.stop();
+  });
 });

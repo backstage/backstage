@@ -83,50 +83,67 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
 
   private async run() {
     while (this.running) {
-      const { items } = await this.processingDatabase.transaction(async tx => {
-        return this.processingDatabase.getProcessableEntities(tx, {
-          processBatchSize: 1,
+      try {
+        // TODO: We want to disconnect the queue popping and message processing
+        // so that if the queue popping fails we exponentially back off in order to give the DB room to sort itself out.
+        await this.process();
+      } catch (e) {
+        this.logger.warn('Processing failed with:', e);
+        // TODO: this can be a little smarter as mentioned in the above comment.
+        // But for now, if something fails, wait a brief time to pick up the next message.
+        await this.wait();
+      }
+    }
+  }
+
+  private async process() {
+    const { items } = await this.processingDatabase.transaction(async tx => {
+      return this.processingDatabase.getProcessableEntities(tx, {
+        processBatchSize: 1,
+      });
+    });
+
+    if (items.length) {
+      const { id, state, unprocessedEntity } = items[0];
+
+      const result = await this.orchestrator.process({
+        entity: unprocessedEntity,
+        state,
+      });
+      for (const error of result.errors) {
+        this.logger.warn(error.message);
+      }
+      if (!result.ok) {
+        return;
+      }
+
+      result.completedEntity.metadata.uid = id;
+      await this.processingDatabase.transaction(async tx => {
+        await this.processingDatabase.updateProcessedEntity(tx, {
+          id,
+          processedEntity: result.completedEntity,
+          state: result.state,
+          errors: JSON.stringify(result.errors),
+          relations: result.relations,
+          deferredEntities: result.deferredEntities,
         });
       });
 
-      if (items.length) {
-        const { id, state, unprocessedEntity } = items[0];
-
-        const result = await this.orchestrator.process({
-          entity: unprocessedEntity,
-          state,
-        });
-        for (const error of result.errors) {
-          this.logger.warn(error.message);
-        }
-        if (!result.ok) {
-          return;
-        }
-
-        result.completedEntity.metadata.uid = id;
-        await this.processingDatabase.transaction(async tx => {
-          await this.processingDatabase.updateProcessedEntity(tx, {
-            id,
-            processedEntity: result.completedEntity,
-            state: result.state,
-            errors: JSON.stringify(result.errors),
-            relations: result.relations,
-            deferredEntities: result.deferredEntities,
-          });
-        });
-
-        const setOfThingsToStitch = new Set<string>([
-          stringifyEntityRef(result.completedEntity),
-          ...result.relations.map(relation =>
-            stringifyEntityRef(relation.source),
-          ),
-        ]);
-        await this.stitcher.stitch(setOfThingsToStitch);
-      } else {
-        // Wait one second before fetching next item.
-        await new Promise<void>(resolve => setTimeout(resolve, 1000));
-      }
+      const setOfThingsToStitch = new Set<string>([
+        stringifyEntityRef(result.completedEntity),
+        ...result.relations.map(relation =>
+          stringifyEntityRef(relation.source),
+        ),
+      ]);
+      await this.stitcher.stitch(setOfThingsToStitch);
+    } else {
+      // No items to process, wait and try again.
+      await this.wait();
     }
+  }
+
+  private async wait() {
+    await new Promise<void>(resolve => setTimeout(resolve, 1000));
   }
 
   async stop() {
