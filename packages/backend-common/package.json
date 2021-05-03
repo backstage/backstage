@@ -35,7 +35,7 @@
     "@backstage/errors": "^0.1.1",
     "@backstage/integration": "^0.5.1",
     "@google-cloud/storage": "^5.8.0",
-    "@octokit/rest": "^18.0.12",
+    "@octokit/rest": "^18.5.3",
     "@types/cors": "^2.8.6",
     "@types/dockerode": "^3.2.1",
     "@types/express": "^4.17.6",

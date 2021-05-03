@@ -39,7 +39,7 @@
     "@backstage/theme": "^0.2.6",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@octokit/rest": "^18.0.12",
+    "@octokit/rest": "^18.5.3",
     "@roadiehq/backstage-plugin-buildkite": "^1.0.0",
     "@roadiehq/backstage-plugin-github-insights": "^1.0.0",
     "@roadiehq/backstage-plugin-github-pull-requests": "^1.0.0",
