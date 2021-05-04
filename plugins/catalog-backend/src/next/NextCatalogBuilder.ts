@@ -261,7 +261,7 @@ export class NextCatalogBuilder {
     });
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
-    const locationStore = new DefaultLocationStore(db);
+    const locationStore = new DefaultLocationStore(dbClient);
     const stitcher = new Stitcher(dbClient, logger);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(

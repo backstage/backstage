@@ -23,7 +23,6 @@ import {
 import { v4 as uuid } from 'uuid';
 import { locationSpecToLocationEntity } from './util';
 import { ConflictError, NotFoundError } from '@backstage/errors';
-import { BackgroundContext, Context, TransactionValue } from './Context';
 import { Knex } from 'knex';
 
 type DbLocationsRow = {
@@ -41,27 +40,31 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return 'DefaultLocationStore';
   }
 
-  async createLocation(ctx: Context, spec: LocationSpec): Promise<Location> {
-    const tx = TransactionValue.from(ctx);
-
-    // Attempt to find a previous location matching the spec
-    const previousLocations = await this.listLocations(ctx);
-    const previousLocation = previousLocations.some(
-      l => spec.type === l.type && spec.target === l.target,
-    );
-
-    if (previousLocation) {
-      throw new ConflictError(
-        `Location ${spec.type}:${spec.target} already exists`,
+  async createLocation(spec: LocationSpec): Promise<Location> {
+    const location = await this.db.transaction(async tx => {
+      // Attempt to find a previous location matching the spec
+      const previousLocations = await this.locations(tx);
+      // TODO: when location id's are a compilation of spec target we can remove this full
+      // lookup of locations first and just grab the by that instead.
+      const previousLocation = previousLocations.some(
+        l => spec.type === l.type && spec.target === l.target,
       );
-    }
+      if (previousLocation) {
+        throw new ConflictError(
+          `Location ${spec.type}:${spec.target} already exists`,
+        );
+      }
 
-    const location: DbLocationsRow = {
-      id: uuid(),
-      type: spec.type,
-      target: spec.target,
-    };
-    await tx<DbLocationsRow>('locations').insert(location);
+      const inner: DbLocationsRow = {
+        id: uuid(),
+        type: spec.type,
+        target: spec.target,
+      };
+
+      await tx<DbLocationsRow>('locations').insert(inner);
+
+      return inner;
+    });
 
     await this.connection.applyMutation({
       type: 'delta',
@@ -72,9 +75,12 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return location;
   }
 
-  async listLocations(ctx: Context): Promise<Location[]> {
-    const tx = TransactionValue.from(ctx);
-    const locations = await tx<DbLocationsRow>('locations').select();
+  async listLocations(): Promise<Location[]> {
+    return await this.locations(this.db);
+  }
+
+  private async locations(dbOrTx: Knex | Knex.Transaction) {
+    const locations = await dbOrTx<DbLocationsRow>('locations').select();
     return (
       locations
         // TODO(blam): We should create a mutation to remove this location for everyone
@@ -88,9 +94,10 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     );
   }
 
-  async getLocation(ctx: Context, id: string): Promise<Location> {
-    const tx = TransactionValue.from(ctx);
-    const items = await tx<DbLocationsRow>('locations').where({ id }).select();
+  async getLocation(id: string): Promise<Location> {
+    const items = await this.db<DbLocationsRow>('locations')
+      .where({ id })
+      .select();
 
     if (!items.length) {
       throw new NotFoundError(`Found no location with ID ${id}`);
@@ -98,28 +105,28 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
     return items[0];
   }
 
-  async deleteLocation(ctx: Context, id: string): Promise<void> {
+  async deleteLocation(id: string): Promise<void> {
     if (!this.connection) {
       throw new Error('location store is not initialized');
     }
 
-    const tx = TransactionValue.from(ctx);
-    const location = await this.getLocation(ctx, id);
+    const deleted = await this.db.transaction(async tx => {
+      const [location] = await tx<DbLocationsRow>('locations')
+        .where({ id })
+        .select();
 
-    const locations = await tx<DbLocationsRow>('locations')
-      .where({ id })
-      .select();
+      if (!location) {
+        throw new NotFoundError(`Found no location with ID ${id}`);
+      }
 
-    if (!locations.length) {
-      throw new NotFoundError(`Found no location with ID ${id}`);
-    }
-
-    await tx<DbLocationsRow>('locations').where({ id }).del();
+      await tx<DbLocationsRow>('locations').where({ id }).del();
+      return location;
+    });
 
     await this.connection.applyMutation({
       type: 'delta',
       added: [],
-      removed: [locationSpecToLocationEntity(location)],
+      removed: [locationSpecToLocationEntity(deleted)],
     });
   }
 
@@ -134,12 +141,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   async connect(connection: EntityProviderConnection): Promise<void> {
     this._connection = connection;
 
-    // TODO: this feels a little weird creating the ctx in multiple places
-    // Let's work out a better way, maybe.
-    const locations = await this.db.transaction(tx => {
-      const ctx = TransactionValue.in(new BackgroundContext(), tx);
-      return this.listLocations(ctx);
-    });
+    const locations = await this.locations(this.db);
 
     const entities = locations.map(location => {
       return locationSpecToLocationEntity(location);

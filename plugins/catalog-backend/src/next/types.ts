@@ -21,7 +21,6 @@ import {
   EntityRelationSpec,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-import { Context } from './Context';
 
 export interface LocationService {
   createLocation(
@@ -34,10 +33,10 @@ export interface LocationService {
 }
 
 export interface LocationStore {
-  createLocation(ctx: Context, spec: LocationSpec): Promise<Location>;
-  listLocations(ctx: Context): Promise<Location[]>;
-  getLocation(ctx: Context, id: string): Promise<Location>;
-  deleteLocation(ctx: Context, id: string): Promise<void>;
+  createLocation(spec: LocationSpec): Promise<Location>;
+  listLocations(): Promise<Location[]>;
+  getLocation(id: string): Promise<Location>;
+  deleteLocation(id: string): Promise<void>;
 }
 
 export interface CatalogProcessingEngine {
