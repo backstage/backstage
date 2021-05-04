@@ -80,37 +80,3 @@ export type EntityProcessingResult =
 export interface CatalogProcessingOrchestrator {
   process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }
-
-export type ProcessingItemResult = {
-  id: string;
-  entity: Entity;
-  state: Map<string, JsonObject>;
-  errors: Error[];
-  relations: EntityRelationSpec[];
-  deferredEntities: Entity[];
-};
-
-export type ProcessingItem = {
-  id: string;
-  entity: Entity;
-  state: Map<string, JsonObject>;
-};
-
-export type ReplaceProcessingItemsRequest =
-  | {
-      sourceKey: string;
-      items: Entity[];
-      type: 'full';
-    }
-  | {
-      sourceKey: string;
-      added: Entity[];
-      removed: Entity[];
-      type: 'delta';
-    };
-
-export interface ProcessingStateManager {
-  setProcessingItemResult(result: ProcessingItemResult): Promise<void>;
-  getNextProcessingItem(): Promise<ProcessingItem>;
-  replaceProcessingItems(request: ReplaceProcessingItemsRequest): Promise<void>;
-}
