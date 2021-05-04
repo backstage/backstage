@@ -87,10 +87,7 @@ describe('DefaultLocationStore', () => {
     });
 
     it('calls apply mutation when adding a new location', async () => {
-      expect.assertions(1);
-
       const { store, connection } = await createLocationStore();
-
       await store.createLocation({
         target:
           'https://github.com/backstage/demo/blob/master/catalog-info.yml',
