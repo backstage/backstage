@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 import { v4 as uuid } from 'uuid';
-import { BackgroundContext, Context, TransactionValue } from './Context';
 import { DatabaseManager } from './database/DatabaseManager';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
 const createLocationStore = async () => {
   const knex = await DatabaseManager.createTestDatabaseConnection();
-  const db = await DatabaseManager.createDatabase(knex);
+  await DatabaseManager.createDatabase(knex);
   const connection = { applyMutation: jest.fn() };
   const store = new DefaultLocationStore(knex);
   await store.connect(connection);
 
-  const withContext = async (handler: (ctx: Context) => Promise<any>) => {
-    return await db.transaction(async tx => {
-      const ctx = TransactionValue.in(new BackgroundContext(), tx as any);
-      return await handler(ctx);
-    });
-  };
-  return { store, connection, db, withContext };
+  return { store, connection };
 };
 
 describe('DefaultLocationStore', () => {

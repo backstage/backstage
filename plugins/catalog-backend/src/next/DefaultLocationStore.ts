@@ -76,22 +76,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   }
 
   async listLocations(): Promise<Location[]> {
-    return await this.locations(this.db);
-  }
-
-  private async locations(dbOrTx: Knex | Knex.Transaction) {
-    const locations = await dbOrTx<DbLocationsRow>('locations').select();
-    return (
-      locations
-        // TODO(blam): We should create a mutation to remove this location for everyone
-        // eventually when it's all done and dusted
-        .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
-    );
+    return await this.locations();
   }
 
   async getLocation(id: string): Promise<Location> {
@@ -141,7 +126,7 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   async connect(connection: EntityProviderConnection): Promise<void> {
     this._connection = connection;
 
-    const locations = await this.locations(this.db);
+    const locations = await this.locations();
 
     const entities = locations.map(location => {
       return locationSpecToLocationEntity(location);
@@ -151,5 +136,20 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       type: 'full',
       entities,
     });
+  }
+
+  private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
+    const locations = await dbOrTx<DbLocationsRow>('locations').select();
+    return (
+      locations
+        // TODO(blam): We should create a mutation to remove this location for everyone
+        // eventually when it's all done and dusted
+        .filter(({ type }) => type !== 'bootstrap')
+        .map(item => ({
+          id: item.id,
+          target: item.target,
+          type: item.type,
+        }))
+    );
   }
 }
