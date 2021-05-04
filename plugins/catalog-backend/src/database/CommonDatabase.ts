@@ -140,7 +140,7 @@ export class CommonDatabase implements Database {
       entityRows.push(this.toEntityRow(locationId, newEntity));
       relationRows.push(...this.toRelationRows(uid, relations));
       searchRows.push(...buildEntitySearch(uid, newEntity));
-      attachmentRows.push(...this.toAttachmendRows(uid, attachments));
+      attachmentRows.push(...this.toAttachmentRows(uid, attachments));
     }
 
     await tx.batchInsert('entities', entityRows, BATCH_SIZE);
@@ -211,7 +211,7 @@ export class CommonDatabase implements Database {
       .where({ originating_entity_id: uid })
       .whereNotIn('key', attachmentKeys)
       .del();
-    const attachmentRows = this.toAttachmendRows(
+    const attachmentRows = this.toAttachmentRows(
       uid,
       request.attachments.filter(({ content }) => content),
     );
@@ -573,7 +573,7 @@ export class CommonDatabase implements Database {
     return deduplicateRelations(rows);
   }
 
-  private toAttachmendRows(
+  private toAttachmentRows(
     originatingEntityId: string,
     attachments: DbAttachmentRequest[],
   ): DbAttachmentRow[] {

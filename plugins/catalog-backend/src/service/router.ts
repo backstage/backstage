@@ -15,11 +15,13 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import type { Entity } from '@backstage/catalog-model';
 import {
+  Entity,
+  stringifyEntityRef,
   analyzeLocationSchema,
   locationSpecSchema,
 } from '@backstage/catalog-model';
+
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import express from 'express';
@@ -138,7 +140,11 @@ export async function createRouter(
         });
         if (!entities.length) {
           throw new NotFoundError(
-            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+            `No entity named '${stringifyEntityRef({
+              kind,
+              namespace,
+              name,
+            })}' found`,
           );
         }
         res.status(200).json(entities[0]);
@@ -180,7 +186,11 @@ export async function createRouter(
           });
           if (!entities.length) {
             throw new NotFoundError(
-              `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
+              `No entity named '${stringifyEntityRef({
+                kind,
+                namespace,
+                name,
+              })}' found`,
             );
           }
 
@@ -194,7 +204,9 @@ export async function createRouter(
 
           if (!attachment) {
             throw new NotFoundError(
-              `No attachment with key '${key}' found for entity named '${name}', with kind '${kind}' in namespace '${namespace}'`,
+              `No attachment with key '${key}' found for entity named '${stringifyEntityRef(
+                { kind, namespace, name },
+              )}'`,
             );
           }
 

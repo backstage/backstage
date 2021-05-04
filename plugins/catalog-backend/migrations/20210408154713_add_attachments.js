@@ -45,9 +45,7 @@ exports.up = async function up(knex) {
     table
       .string('etag')
       .notNullable()
-      .comment(
-        'A hash of the attachment and its metadata.',
-      );
+      .comment('A hash of the attachment and its metadata.');
     table.primary(['originating_entity_id', 'key']);
   });
 };
@@ -56,5 +54,9 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
+  await knex.schema.alterTable('entities_attachments', table => {
+    table.dropIndex(['originating_entity_id', 'key']);
+    table.dropIndex([], 'originating_entity_id_idx');
+  });
   await knex.schema.dropTable('entities_attachments');
 };
