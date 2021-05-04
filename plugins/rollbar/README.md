@@ -9,25 +9,23 @@ Website: [https://rollbar.com/](https://rollbar.com/)
 2. If you have standalone app (you didn't clone this repo), then do
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-rollbar
 ```
 
 3. Add to the app `EntityPage` component:
 
 ```tsx
-// packages/app/src/components/catalog/EntityPage.tsx
+// In packages/app/src/components/catalog/EntityPage.tsx
 import { EntityRollbarContent } from '@backstage/plugin-rollbar';
 
-// ...
 const serviceEntityPage = (
-  <EntityPageLayout>
-    ...
+  <EntityLayout>
+    {/* other tabs... */}
     <EntityLayout.Route path="/rollbar" title="Rollbar">
       <EntityRollbarContent />
     </EntityLayout.Route>
-    ...
-  </EntityPageLayout>
-);
 ```
 
 4. Setup the `app-config.yaml` and account token environment variable

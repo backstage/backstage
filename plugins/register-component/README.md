@@ -19,6 +19,7 @@ When installed it is accessible on [localhost:3000/register-component](localhost
 1. Install plugin and its dependency `plugin-catalog`
 
 ```bash
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-register-component
 ```

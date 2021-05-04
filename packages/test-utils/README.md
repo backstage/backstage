@@ -7,13 +7,13 @@ This package provides utilities that can be used to test plugins and apps for Ba
 Install the package via npm or Yarn:
 
 ```sh
-$ npm install --save-dev @backstage/test-utils
+npm install --save-dev @backstage/test-utils
 ```
 
 or
 
 ```sh
-$ yarn add -D @backstage/test-utils
+yarn add -D @backstage/test-utils
 ```
 
 ## Documentation
