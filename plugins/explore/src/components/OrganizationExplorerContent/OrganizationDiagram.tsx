@@ -15,16 +15,15 @@
  */
 
 import {
-  Entity,
   RELATION_CHILD_OF,
   stringifyEntityRef,
-  ENTITY_DEFAULT_NAMESPACE,
   parseEntityRef,
 } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   entityRouteRef,
   getEntityRelations,
+  formatEntityRefTitle,
 } from '@backstage/plugin-catalog-react';
 import {
   DependencyGraph,
@@ -52,22 +51,6 @@ const useStyles = makeStyles((theme: BackstageTheme) => ({
     stroke: theme.palette.border,
   },
 }));
-
-// Simplifies the diagram output by hiding the default namespace and kind
-function readableEntityName(
-  ref:
-    | Entity
-    | {
-        kind: string;
-        namespace?: string;
-        name: string;
-      },
-): string {
-  return stringifyEntityRef(ref)
-    .toLocaleLowerCase('en-US')
-    .replace(`:${ENTITY_DEFAULT_NAMESPACE}/`, ':')
-    .split(':')[1];
-}
 
 function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const classes = useStyles();
@@ -159,7 +142,7 @@ export function OrganizationDiagram() {
     nodes.push({
       id: stringifyEntityRef(catalogItem),
       kind: catalogItem.kind,
-      name: readableEntityName(catalogItem),
+      name: formatEntityRefTitle(catalogItem, { defaultKind: 'Group' }),
     });
 
     // Edge to parent
