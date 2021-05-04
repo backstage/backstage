@@ -26,7 +26,7 @@ import { waitFor } from '@testing-library/react';
 import React from 'react';
 import { HasResourcesCard } from './HasResourcesCard';
 
-describe('<HasComponentsCard />', () => {
+describe('<HasResourcesCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
     getEntityByName: jest.fn(),
