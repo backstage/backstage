@@ -414,7 +414,7 @@ export class CommonDatabase implements Database {
       entityUid: result.originating_entity_id,
       contentType: result.content_type,
       // knex returns null, make sure we use undefined instead
-      data: result.dataOrNull ? result.dataOrNull : undefined,
+      data: result.dataOrNull ?? undefined,
       etag: result.etag,
     };
   }

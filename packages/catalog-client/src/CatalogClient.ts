@@ -149,9 +149,9 @@ export class CatalogClient implements CatalogApi {
           // In case a token is used, we have to fallback to a workaround, as a
           // simple URL won't work with tokens provided in headers. This is less
           // efficient, but also only used in that case.
-          // Instead of returning an URL where the called can request the attachment
-          // from, we return the attachmend directly as a base64 URL. Returning blob
-          // URLs might be more efficient, but requires to release them afterwars.
+          // Instead of returning a URL where the caller can request the attachment
+          // from, we return the attachment directly as a base64 URL. Returning blob
+          // URLs might be more efficient, but requires to release them afterwards.
           const blob = await fetchBlob();
           const reader = new FileReader();
 

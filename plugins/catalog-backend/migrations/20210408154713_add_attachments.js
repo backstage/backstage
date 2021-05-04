@@ -46,7 +46,7 @@ exports.up = async function up(knex) {
       .string('etag')
       .notNullable()
       .comment(
-        'An opaque string that changes for each update operation to the content of the attachment.',
+        'A hash of the attachment and its metadata.',
       );
     table.primary(['originating_entity_id', 'key']);
   });
