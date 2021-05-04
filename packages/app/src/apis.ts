@@ -25,10 +25,8 @@ import {
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
 
-import {
-  costInsightsApiRef,
-  ExampleCostInsightsClient,
-} from '@backstage/plugin-cost-insights';
+import { costInsightsApiRef } from '@backstage/plugin-cost-insights';
+import CostInsightsClient from './components/costInsights';
 
 export const apis = [
   createApiFactory({
@@ -49,6 +47,9 @@ export const apis = [
         }),
       ]),
   }),
-
-  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+  createApiFactory({
+    api: costInsightsApiRef,
+    deps: {},
+    factory: () => new CostInsightsClient(),
+  }),
 ];
