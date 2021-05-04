@@ -34,20 +34,12 @@ export const addGitFeedbackLink = (
     if (!sourceAnchor || !sourceAnchor.href) {
       return dom;
     }
-    let gitHost = '';
 
     const sourceURL = new URL(sourceAnchor.href);
     const integration = scmIntegrationsApi.byUrl(sourceURL);
 
     // don't show if can't identify edit link hostname as a gitlab/github hosting
-    if (integration?.type === 'github' || sourceURL.origin.includes('github')) {
-      gitHost = 'github';
-    } else if (
-      integration?.type === 'gitlab' ||
-      sourceURL.origin.includes('gitlab')
-    ) {
-      gitHost = 'gitlab';
-    } else {
+    if (integration?.type !== 'github' && integration?.type !== 'gitlab') {
       return dom;
     }
 
@@ -61,7 +53,7 @@ export const addGitFeedbackLink = (
     const repoPath = sourceURL.pathname.split('/').slice(0, 3).join('/');
 
     const feedbackLink = sourceAnchor.cloneNode() as HTMLAnchorElement;
-    switch (gitHost) {
+    switch (integration?.type) {
       case 'gitlab':
         feedbackLink.href = `${sourceURL.origin}${repoPath}/issues/new?issue[title]=${issueTitle}&issue[description]=${issueDesc}`;
         break;
