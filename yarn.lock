@@ -17100,9 +17100,9 @@ jsonpointer@^4.0.1:
   integrity sha1-T9kss04OnbPInIYi7PUfm5eMbLk=
 
 jsonschema@^1.2.6:
-  version "1.2.7"
-  resolved "https://registry.npmjs.org/jsonschema/-/jsonschema-1.2.7.tgz#4e6d6dc4d83dc80707055ba22c00ec6152c0e6e9"
-  integrity sha512-3dFMg9hmI9LdHag/BRIhMefCfbq1hicvYMy8YhZQorAdzOzWz7NjniSpn39yjpzUAMIWtGyyZuH2KNBloH7ZLw==
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/jsonschema/-/jsonschema-1.4.0.tgz#1afa34c4bc22190d8e42271ec17ac8b3404f87b2"
+  integrity sha512-/YgW6pRMr6M7C+4o8kS+B/2myEpHCrxO4PEWnqJNBFMjn7EWXqlQ4tGwL6xTHeRplwuZmcAncdvfOad1nT2yMw==
 
 jsonwebtoken@^8.5.1:
   version "8.5.1"
