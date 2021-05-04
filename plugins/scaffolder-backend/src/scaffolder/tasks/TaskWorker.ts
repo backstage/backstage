@@ -143,9 +143,10 @@ export class TaskWorker {
             });
 
           if (action.schema?.input) {
-            const validateResult = validateJsonSchema(input, action.schema, {
-              propertyName: 'input',
-            });
+            const validateResult = validateJsonSchema(
+              input,
+              action.schema.input,
+            );
             if (!validateResult.valid) {
               const errors = validateResult.errors.join(', ');
               throw new InputError(
