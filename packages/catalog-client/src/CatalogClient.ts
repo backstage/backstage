@@ -20,6 +20,7 @@ import {
   Location,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
+  stringifyEntityRef,
   stringifyLocationReference,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
@@ -112,39 +113,16 @@ export class CatalogClient implements CatalogApi {
     key: string,
     options?: CatalogRequestOptions,
   ): Promise<CatalogAttachmentResponse> {
-    const buildUrl = async () => {
-      const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
-      return `${baseUrl}/entities/by-name/${encodeURIComponent(
-        name.kind,
-      )}/${encodeURIComponent(name.namespace)}/${encodeURIComponent(
-        name.name,
-      )}/attachments/${encodeURIComponent(key)}`;
-    };
-
-    const fetchBlob = async () => {
-      const url = await buildUrl();
-      const response = await fetch(url, {
-        headers: {
-          ...(options?.token && {
-            Authorization: `Bearer ${options?.token}`,
-          }),
-        },
-      });
-
-      if (!response.ok) {
-        throw await ResponseError.fromResponse(response);
-      }
-
-      return await response.blob();
-    };
-
     return {
-      blob: fetchBlob,
-      async text(): Promise<string> {
-        const blob = await fetchBlob();
-        return await blob.text();
+      blob: async () => {
+        return await this.getAttachmentBlob(name, key, options);
       },
-      async url(): Promise<string> {
+      text: async () => {
+        const blob = await this.getAttachmentBlob(name, key, options);
+
+        return blob ? await blob.text() : undefined;
+      },
+      url: async () => {
         if (options?.token) {
           // In case a token is used, we have to fallback to a workaround, as a
           // simple URL won't work with tokens provided in headers. This is less
@@ -152,21 +130,36 @@ export class CatalogClient implements CatalogApi {
           // Instead of returning a URL where the caller can request the attachment
           // from, we return the attachment directly as a base64 URL. Returning blob
           // URLs might be more efficient, but requires to release them afterwards.
-          const blob = await fetchBlob();
+          const blob = await this.getAttachmentBlob(name, key, options);
           const reader = new FileReader();
+
+          if (!blob) {
+            throw new Error(
+              `Error while requesting attachment URL, attachment with key ${key} on entity named ${stringifyEntityRef(
+                name,
+              )} not found`,
+            );
+          }
 
           return new Promise<string>((resolve, reject) => {
             reader.onload = e => {
               if (e.target && typeof e.target.result === 'string') {
                 resolve(e.target.result);
               }
+              reject(
+                new Error(
+                  `Unknown onload result while requesting attachment URL with key ${key} on entity named ${stringifyEntityRef(
+                    name,
+                  )}`,
+                ),
+              );
             };
             reader.onerror = reject;
             reader.readAsDataURL(blob);
           });
         }
 
-        return await buildUrl();
+        return await this.getAttachmentUrl(name, key);
       },
     };
   }
@@ -272,6 +265,43 @@ export class CatalogClient implements CatalogApi {
   //
   // Private methods
   //
+
+  private async getAttachmentUrl(
+    name: EntityName,
+    key: string,
+  ): Promise<string> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('catalog');
+    return `${baseUrl}/entities/by-name/${encodeURIComponent(
+      name.kind,
+    )}/${encodeURIComponent(name.namespace)}/${encodeURIComponent(
+      name.name,
+    )}/attachments/${encodeURIComponent(key)}`;
+  }
+
+  private async getAttachmentBlob(
+    name: EntityName,
+    key: string,
+    options?: CatalogRequestOptions,
+  ): Promise<Blob | undefined> {
+    const url = await this.getAttachmentUrl(name, key);
+    const response = await fetch(url, {
+      headers: {
+        ...(options?.token && {
+          Authorization: `Bearer ${options?.token}`,
+        }),
+      },
+    });
+
+    if (response.status === 404) {
+      return undefined;
+    }
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.blob();
+  }
 
   private async requestIgnored(
     method: string,

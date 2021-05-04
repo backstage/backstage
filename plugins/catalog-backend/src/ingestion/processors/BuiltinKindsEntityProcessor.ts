@@ -288,6 +288,8 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       // TODO: Property name could be better... like pictureLocation...
 
       if (user.spec.profile?.picture) {
+        // TODO: This should use UrlReader instead, but UrlReader provides no
+        // access to the content type of the response.
         const response = await fetch(user.spec.profile?.picture);
         const buffer = await response.arrayBuffer();
         const data = Buffer.from(buffer);

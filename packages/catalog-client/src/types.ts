@@ -33,8 +33,8 @@ export type CatalogRequestOptions = {
 };
 
 export type CatalogAttachmentResponse = {
-  blob(): Promise<Blob>;
-  text(): Promise<string>;
+  blob(): Promise<Blob | undefined>;
+  text(): Promise<string | undefined>;
   url(): Promise<string>;
 };
 

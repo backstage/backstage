@@ -218,8 +218,9 @@ describe('CatalogClient', () => {
       );
       const blob = await attachment.blob();
 
-      expect(blob.type).toBe('text/plain');
-      expect(await blob.text()).toBe('Hello World');
+      expect(blob).toBeDefined();
+      expect(blob!.type).toBe('text/plain');
+      expect(await blob!.text()).toBe('Hello World');
     });
 
     it('should load attachment as blob, without token', async () => {
@@ -239,8 +240,28 @@ describe('CatalogClient', () => {
       );
       const blob = await attachment.blob();
 
-      expect(blob.type).toBe('text/plain');
-      expect(await blob.text()).toBe('Hello World');
+      expect(blob).toBeDefined();
+      expect(blob!.type).toBe('text/plain');
+      expect(await blob!.text()).toBe('Hello World');
+    });
+
+    it('should load attachment as blob, return undefined if attachment does not exist', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/my-kind/my-namespace/my-name/attachments/backstage.io%2Fattachment-key`,
+          (_, res, ctx) => {
+            return res(ctx.status(404));
+          },
+        ),
+      );
+
+      const attachment = await client.getAttachment(
+        { kind: 'my-kind', name: 'my-name', namespace: 'my-namespace' },
+        'backstage.io/attachment-key',
+      );
+      const blob = await attachment.blob();
+
+      expect(blob).toBeUndefined();
     });
 
     it('should load attachment as text', async () => {
@@ -259,6 +280,24 @@ describe('CatalogClient', () => {
       const text = await attachment.text();
 
       expect(text).toBe('Hello World');
+    });
+
+    it('should load attachment as text, return undefined if attachment does not exist', async () => {
+      server.use(
+        rest.get(
+          `${mockBaseUrl}/entities/by-name/my-kind/my-namespace/my-name/attachments/backstage.io%2Fattachment-key`,
+          (_, res, ctx) => res(ctx.status(404)),
+        ),
+      );
+
+      const attachment = await client.getAttachment(
+        { kind: 'my-kind', name: 'my-name', namespace: 'my-namespace' },
+        'backstage.io/attachment-key',
+        { token },
+      );
+      const text = await attachment.text();
+
+      expect(text).toBeUndefined();
     });
 
     // TODO: This test doesn't work as the Blob return from fetch doesn't seem
