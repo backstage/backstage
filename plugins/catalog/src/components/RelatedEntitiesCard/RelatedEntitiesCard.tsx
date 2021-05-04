@@ -71,7 +71,7 @@ export function RelatedEntitiesCard<T extends Entity>({
       <InfoCard variant={variant} title={title}>
         <WarningPanel
           severity="error"
-          title={`Could not load ${title}`}
+          title={`Could not load ${title.toLocaleLowerCase('en-US')}`}
           message={<CodeSnippet text={`${error}`} language="text" />}
         />
       </InfoCard>
