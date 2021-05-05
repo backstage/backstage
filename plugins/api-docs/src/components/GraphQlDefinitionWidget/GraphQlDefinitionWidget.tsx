@@ -17,6 +17,7 @@
 import { Progress } from '@backstage/core';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
 import 'graphiql/graphiql.css';
 import { buildSchema } from 'graphql';
 import React, { Suspense } from 'react';
@@ -50,6 +51,15 @@ type Props = {
 export const GraphQlDefinitionWidget = ({ definition, graphqlLink }: Props) => {
   const classes = useStyles();
   const schema = buildSchema(definition);
+  const readOnly = graphqlLink ? false : true;
+
+  const warningMessage = graphqlLink ? null : (
+    <Alert severity="warning">
+      Read-Only Mode. Please add the annotation for the graphql endpoint with
+      the key "graphql/endpoint"
+    </Alert>
+  );
+
   const fetcher = graphqlLink
     ? async graphQLParams => {
         const data = await fetch(graphqlLink, {
@@ -63,17 +73,22 @@ export const GraphQlDefinitionWidget = ({ definition, graphqlLink }: Props) => {
         });
         return data.json().catch(() => data.text());
       }
-    : () => Promise.resolve(null) as any;
+    : () =>
+        Promise.resolve(
+          'Read-Only Mode. Please add the annotation for the graphql endpoint.',
+        ) as any;
 
   return (
     <Suspense fallback={<Progress />}>
       <div className={classes.root}>
         <div className={classes.graphiQlWrapper}>
+          {warningMessage}
           <GraphiQL
             fetcher={fetcher}
             schema={schema}
             docExplorerOpen
             defaultSecondaryEditorOpen={false}
+            readOnly={readOnly}
           />
         </div>
       </div>
