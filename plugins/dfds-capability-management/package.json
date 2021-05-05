@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-capability-discoverability",
+  "name": "@backstage/plugin-dfds-capability-management",
   "version": "0.1.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -22,12 +22,16 @@
   "dependencies": {
     "@backstage/core": "^0.7.0",
     "@backstage/theme": "^0.2.3",
+    "@emotion/css": "^11.1.3",
+    "@emotion/styled": "^11.3.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.45",
+    "emotion": "^11.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3"
+    "react-use": "^17.2.4",
+    "recharts": "^2.0.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.3",
@@ -38,8 +42,8 @@
     "@testing-library/user-event": "^12.0.7",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
-    "msw": "^0.21.2",
-    "cross-fetch": "^3.0.6"
+    "cross-fetch": "^3.0.6",
+    "msw": "^0.21.2"
   },
   "files": [
     "dist"

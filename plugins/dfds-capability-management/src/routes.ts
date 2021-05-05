@@ -13,4 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { ExampleComponent } from './ExampleComponent';
+import { createRouteRef } from '@backstage/core';
+
+export const rootRouteRef = createRouteRef({
+  title: 'dfds-capability-management',
+});

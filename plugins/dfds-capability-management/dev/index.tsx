@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createPlugin, createRoutableExtension } from '@backstage/core';
+import React from 'react';
+import { createDevApp } from '@backstage/dev-utils';
+import {
+  dfdsCapabilityManagementPlugin,
+  DfdsCapabilityManagementPage,
+} from '../src/plugin';
 
-import { rootRouteRef } from './routes';
-
-export const capabilityDiscoverabilityPlugin = createPlugin({
-  id: 'capability-discoverability',
-  routes: {
-    root: rootRouteRef,
-  },
-});
-
-export const CapabilityDiscoverabilityPage = capabilityDiscoverabilityPlugin.provide(
-  createRoutableExtension({
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
-    mountPoint: rootRouteRef,
-  }),
-);
+createDevApp()
+  .registerPlugin(dfdsCapabilityManagementPlugin)
+  .addPage({
+    element: <DfdsCapabilityManagementPage />,
+    title: 'Root Page',
+  })
+  .render();

@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { capabilityDiscoverabilityPlugin } from './plugin';
+import { createPlugin, createRoutableExtension } from '@backstage/core';
 
-describe('capability-discoverability', () => {
-  it('should export plugin', () => {
-    expect(capabilityDiscoverabilityPlugin).toBeDefined();
-  });
+import { rootRouteRef } from './routes';
+
+export const dfdsCapabilityManagementPlugin = createPlugin({
+  id: 'dfds-capability-management',
+  routes: {
+    root: rootRouteRef,
+  },
 });
+
+export const DfdsCapabilityManagementPage = dfdsCapabilityManagementPlugin.provide(
+  createRoutableExtension({
+    component: () => import('./components/App/App').then(m => m.App),
+    mountPoint: rootRouteRef,
+  }),
+);

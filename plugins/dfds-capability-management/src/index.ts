@@ -13,17 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { createDevApp } from '@backstage/dev-utils';
-import {
-  capabilityDiscoverabilityPlugin,
-  CapabilityDiscoverabilityPage,
-} from '../src/plugin';
-
-createDevApp()
-  .registerPlugin(capabilityDiscoverabilityPlugin)
-  .addPage({
-    element: <CapabilityDiscoverabilityPage />,
-    title: 'Root Page',
-  })
-  .render();
+export {
+  dfdsCapabilityManagementPlugin,
+  DfdsCapabilityManagementPage,
+} from './plugin';

@@ -54,6 +54,7 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 import { DfdsCapabilityPluginPage } from '@backstage/plugin-dfds-capability-plugin';
 import { DfdsCapabilityOverviewPage } from '@backstage/plugin-dfds-capability-overview';
+import { DfdsCapabilityManagementPage } from '@backstage/plugin-dfds-capability-management';
 
 const app = createApp({
   apis,
@@ -135,6 +136,10 @@ const routes = (
     <Route
       path="/dfds-capability-overview"
       element={<DfdsCapabilityOverviewPage />}
+    />
+    <Route
+      path="/dfds-capability-management"
+      element={<DfdsCapabilityManagementPage />}
     />
   </FlatRoutes>
 );

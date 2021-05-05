@@ -45,3 +45,4 @@ export { plugin as Org } from '@backstage/plugin-org';
 export { plugin as Kafka } from '@backstage/plugin-kafka';
 export { dfdsCapabilityPluginPlugin } from '@backstage/plugin-dfds-capability-plugin';
 export { dfdsCapabilityOverviewPlugin } from '@backstage/plugin-dfds-capability-overview';
+export { dfdsCapabilityManagementPlugin } from '@backstage/plugin-dfds-capability-management';

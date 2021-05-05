@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  capabilityDiscoverabilityPlugin,
-  CapabilityDiscoverabilityPage,
-} from './plugin';
+import { dfdsCapabilityManagementPlugin } from './plugin';
+
+describe('dfds-capability-management', () => {
+  it('should export plugin', () => {
+    expect(dfdsCapabilityManagementPlugin).toBeDefined();
+  });
+});
