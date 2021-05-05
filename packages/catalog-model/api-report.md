@@ -486,7 +486,7 @@ interface TemplateEntityV1alpha1 extends Entity {
         templater: string;
         path?: string;
         schema: JSONSchema;
-        owner: string;
+        owner?: string;
     };
 }
 
@@ -520,6 +520,7 @@ export interface TemplateEntityV1beta2 extends Entity {
         output?: {
             [name: string]: string;
         };
+        owner?: string;
     };
 }
 
