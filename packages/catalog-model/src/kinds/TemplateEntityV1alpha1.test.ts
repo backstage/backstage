@@ -48,6 +48,7 @@ describe('templateEntityV1alpha1Validator', () => {
             },
           },
         },
+        owner: 'example@email.com',
       },
     };
   });
