@@ -105,9 +105,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
 }
 
 /**
- * Dynamically generates a diagram of an organization.
+ * Dynamically generates a diagram of groups registered in the catalog.
  */
-export function OrganizationDiagram() {
+export function GroupsDiagram() {
   const nodes = new Array<{ id: string; kind: string; name: string }>();
   const edges = new Array<{ from: string; to: string; label: string }>();
 

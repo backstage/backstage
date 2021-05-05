@@ -13,4 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { OrganizationExplorerContent } from './OrganizationExplorerContent';
+import { Content, ContentHeader, SupportButton } from '@backstage/core';
+import React from 'react';
+import { GroupsDiagram } from './GroupsDiagram';
+
+export const GroupsExplorerContent = () => {
+  return (
+    <Content noPadding>
+      <ContentHeader title="Groups">
+        <SupportButton>Explore your groups.</SupportButton>
+      </ContentHeader>
+
+      <GroupsDiagram />
+    </Content>
+  );
+};

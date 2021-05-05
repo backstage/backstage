@@ -16,7 +16,7 @@
 import { TabbedLayout } from '@backstage/core';
 import React from 'react';
 import { DomainExplorerContent } from '../DomainExplorerContent';
-import { OrganizationExplorerContent } from '../OrganizationExplorerContent';
+import { GroupsExplorerContent } from '../GroupsExplorerContent';
 import { ToolExplorerContent } from '../ToolExplorerContent';
 
 export const ExploreTabs = () => (
@@ -24,8 +24,8 @@ export const ExploreTabs = () => (
     <TabbedLayout.Route path="domains" title="Domains">
       <DomainExplorerContent />
     </TabbedLayout.Route>
-    <TabbedLayout.Route path="organization" title="Organization">
-      <OrganizationExplorerContent />
+    <TabbedLayout.Route path="groups" title="Groups">
+      <GroupsExplorerContent />
     </TabbedLayout.Route>
     <TabbedLayout.Route path="tools" title="Tools">
       <ToolExplorerContent />
