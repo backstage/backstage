@@ -17,7 +17,7 @@
 import React from 'react';
 import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
-import { useApi, ContentHeader } from '@backstage/core';
+import { useApi, ContentHeader, Progress } from '@backstage/core';
 import { Box } from '@material-ui/core';
 
 import {
@@ -26,7 +26,6 @@ import {
   ComponentConfigPatch,
   ComponentConfigPromoteRc,
 } from './types/types';
-import { CenteredCircularProgress } from './components/CenteredCircularProgress';
 import { Features } from './features/Features';
 import { gitReleaseManagerApiRef } from './api/serviceApiRef';
 import { InfoCardPlus } from './components/InfoCardPlus';
@@ -73,7 +72,7 @@ export function GitReleaseManager(props: GitReleaseManagerProps) {
   }
 
   if (userResponse.loading) {
-    return <CenteredCircularProgress />;
+    return <Progress />;
   }
 
   if (!userResponse.value?.user.username) {

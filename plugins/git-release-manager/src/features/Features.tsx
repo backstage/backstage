@@ -16,9 +16,8 @@
 
 import React, { useState, ComponentProps } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { ErrorBoundary, useApi } from '@backstage/core';
+import { ErrorBoundary, Progress, useApi } from '@backstage/core';
 
-import { CenteredCircularProgress } from '../components/CenteredCircularProgress';
 import { CreateReleaseCandidate } from './CreateReleaseCandidate/CreateReleaseCandidate';
 import { GitReleaseManager } from '../GitReleaseManager';
 import { gitReleaseManagerApiRef } from '../api/serviceApiRef';
@@ -61,7 +60,7 @@ export function Features({
   }
 
   if (gitBatchInfo.loading) {
-    return <CenteredCircularProgress />;
+    return <Progress />;
   }
 
   if (gitBatchInfo.value === undefined) {

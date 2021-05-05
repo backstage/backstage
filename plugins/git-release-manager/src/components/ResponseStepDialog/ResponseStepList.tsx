@@ -16,8 +16,8 @@
 
 import React, { PropsWithChildren } from 'react';
 import { DialogContent, List } from '@material-ui/core';
+import { Progress } from '@backstage/core';
 
-import { CenteredCircularProgress } from '../CenteredCircularProgress';
 import { ResponseStep } from '../../types/types';
 import { ResponseStepListItem } from './ResponseStepListItem';
 import { TEST_IDS } from '../../test-helpers/test-ids';
@@ -40,10 +40,16 @@ export const ResponseStepList = ({
   return (
     <>
       {loading || responseSteps.length === 0 ? (
-        <div style={{ margin: 10, textAlign: 'center' }}>
-          <CenteredCircularProgress
-            data-testid={TEST_IDS.components.circularProgress}
-          />
+        <div
+          data-testid={TEST_IDS.components.circularProgress}
+          style={{
+            textAlign: 'center',
+            margin: 10,
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Progress />
         </div>
       ) : (
         <>

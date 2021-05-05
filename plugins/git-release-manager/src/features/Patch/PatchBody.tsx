@@ -33,14 +33,13 @@ import {
 } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { useApi } from '@backstage/core';
+import { Progress, useApi } from '@backstage/core';
 
 import {
   GetBranchResult,
   GetLatestReleaseResult,
 } from '../../api/GitReleaseApiClient';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
-import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { getPatchCommitSuffix } from './helpers/getPatchCommitSuffix';
@@ -120,7 +119,11 @@ export const PatchBody = ({
   }
 
   if (gitDataResponse.loading) {
-    return <CenteredCircularProgress data-testid={TEST_IDS.patch.loading} />;
+    return (
+      <Box data-testid={TEST_IDS.patch.loading}>
+        <Progress />
+      </Box>
+    );
   }
 
   function Description() {

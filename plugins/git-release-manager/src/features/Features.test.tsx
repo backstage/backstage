@@ -28,6 +28,7 @@ jest.mock('@backstage/core', () => ({
     <>{children}</>
   ),
   InfoCard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  Progress: (props: Record<string, any>) => <div {...props} />,
 }));
 jest.mock('../contexts/ProjectContext', () => ({
   useProjectContext: () => ({

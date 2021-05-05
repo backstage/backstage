@@ -23,10 +23,10 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Box,
 } from '@material-ui/core';
-import { useApi } from '@backstage/core';
+import { Progress, useApi } from '@backstage/core';
 
-import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { gitReleaseManagerApiRef } from '../../api/serviceApiRef';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useFormClasses } from './styles';
@@ -60,7 +60,9 @@ export function Repo() {
       error={!!error}
     >
       {loading ? (
-        <CenteredCircularProgress data-testid={TEST_IDS.form.repo.loading} />
+        <Box data-testid={TEST_IDS.form.repo.loading}>
+          <Progress />
+        </Box>
       ) : (
         <>
           <InputLabel id="repo-select-label">Repositories</InputLabel>

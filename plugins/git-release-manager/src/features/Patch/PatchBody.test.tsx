@@ -32,6 +32,7 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 jest.mock('@backstage/core', () => ({
   useApi: () => mockApiClient,
   createApiRef: jest.fn(),
+  Progress: (props: Record<string, any>) => <div {...props} />,
 }));
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({

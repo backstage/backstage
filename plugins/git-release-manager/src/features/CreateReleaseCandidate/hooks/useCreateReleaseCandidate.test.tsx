@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
@@ -30,6 +30,7 @@ import { useCreateReleaseCandidate } from './useCreateReleaseCandidate';
 jest.mock('@backstage/core', () => ({
   useApi: () => mockApiClient,
   createApiRef: jest.fn(),
+  Progress: (props: Record<string, any>) => <div {...props} />,
 }));
 jest.mock('../../../contexts/UserContext', () => ({
   useUserContext: () => ({ user: mockUser }),

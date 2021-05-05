@@ -15,18 +15,17 @@
  */
 
 import React from 'react';
+import { useAsync } from 'react-use';
 import { DateTime } from 'luxon';
 import { Box, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
+import { Progress, useApi } from '@backstage/core';
 
-import { CenteredCircularProgress } from '../../../../components/CenteredCircularProgress';
-import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
-import { useAsync } from 'react-use';
-import { getTagDates } from '../../helpers/getTagDates';
-import { useProjectContext } from '../../../../contexts/ProjectContext';
-import { useApi } from '@backstage/core';
-import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
 import { getDecimalNumber } from '../../helpers/getDecimalNumber';
+import { getTagDates } from '../../helpers/getTagDates';
+import { gitReleaseManagerApiRef } from '../../../../api/serviceApiRef';
+import { ReleaseStats } from '../../contexts/ReleaseStatsContext';
+import { useProjectContext } from '../../../../contexts/ProjectContext';
 
 interface ReleaseTimeProps {
   releaseStat: ReleaseStats['releases']['0'];
@@ -48,7 +47,7 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
   if (releaseTimes.loading || releaseTimes.loading) {
     return (
       <Wrapper>
-        <CenteredCircularProgress />
+        <Progress />
       </Wrapper>
     );
   }

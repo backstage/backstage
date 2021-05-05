@@ -26,8 +26,8 @@ import {
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import { Progress } from '@backstage/core';
 
-import { CenteredCircularProgress } from '../../components/CenteredCircularProgress';
 import { getMappedReleases } from './helpers/getMappedReleases';
 import { getReleaseStats } from './helpers/getReleaseStats';
 import { Info } from './Info/Info';
@@ -55,7 +55,7 @@ export function DialogBody() {
   }
 
   if (stats.loading) {
-    return <CenteredCircularProgress />;
+    return <Progress />;
   }
 
   if (!stats.value) {
