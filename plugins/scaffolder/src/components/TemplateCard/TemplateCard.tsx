@@ -23,6 +23,7 @@ import {
   CardMedia,
   Chip,
   makeStyles,
+  Typography,
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
@@ -31,21 +32,32 @@ import { rootRouteRef } from '../../routes';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   cardHeader: {
     position: 'relative',
   },
   title: {
     backgroundImage: ({ backgroundImage }: any) => backgroundImage,
   },
-  description: {
+  box: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
+    paddingBottom: '0.8em',
   },
-});
+  label: {
+    color: theme.palette.text.secondary,
+    textTransform: 'uppercase',
+    fontSize: '10px',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    paddingBottom: '0.2rem',
+  },
+}));
 
 export type TemplateCardProps = {
   template: TemplateEntityV1alpha1;
@@ -57,6 +69,7 @@ type TemplateProps = {
   title: string;
   type: string;
   name: string;
+  owner: string;
 };
 
 const getTemplateCardProps = (
@@ -68,6 +81,7 @@ const getTemplateCardProps = (
     title: `${(template.metadata.title || template.metadata.name) ?? ''}`,
     type: template.spec.type ?? '',
     description: template.metadata.description ?? '-',
+    owner: template.spec.owner ?? '-',
     tags: (template.metadata?.tags as string[]) ?? [],
   };
 };
@@ -94,13 +108,27 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           classes={{ root: classes.title }}
         />
       </CardMedia>
-      <CardContent>
+      <CardContent style={{ display: 'grid' }}>
+        <Box className={classes.box}>
+          <Typography variant="body2" className={classes.label}>
+            Description
+          </Typography>
+          {templateProps.description}
+        </Box>
+        <Box className={classes.box}>
+          <Typography variant="body2" className={classes.label}>
+            Owner
+          </Typography>
+          <Typography variant="inherit">{templateProps.owner}</Typography>
+        </Box>
         <Box>
+          <Typography variant="body2" className={classes.label}>
+            Tags
+          </Typography>
           {templateProps.tags?.map(tag => (
             <Chip size="small" label={tag} key={tag} />
           ))}
         </Box>
-        <Box className={classes.description}>{templateProps.description}</Box>
       </CardContent>
       <CardActions>
         <Button
