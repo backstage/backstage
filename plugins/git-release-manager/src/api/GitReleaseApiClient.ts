@@ -336,11 +336,15 @@ export class GitReleaseApiClient implements GitReleaseApi {
       tag,
       object,
       type: 'commit',
-      tagger: {
-        date: new Date().toISOString(),
-        email: taggerEmail,
-        name: taggerName,
-      },
+      ...(taggerEmail
+        ? {
+            tagger: {
+              date: new Date().toISOString(),
+              email: taggerEmail,
+              name: taggerName,
+            },
+          }
+        : {}),
     });
 
     return {
