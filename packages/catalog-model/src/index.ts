@@ -18,5 +18,5 @@ export * from './entity';
 export { EntityPolicies } from './EntityPolicies';
 export * from './kinds';
 export * from './location';
-export type { EntityName, EntityRef, JSONSchema, EntityRow } from './types';
+export type { EntityName, EntityRef, JSONSchema } from './types';
 export * from './validation';
