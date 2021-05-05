@@ -13,4 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const ILERT_INTEGRATION_KEY = 'ilert.com/integration-key';
+export const ILERT_INTEGRATION_KEY_ANNOTATION = 'ilert.com/integration-key';
