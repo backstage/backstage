@@ -657,6 +657,25 @@ You can find out more about the `parameters` key
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
 
+### `spec.owner` [optional]
+
+An [entity reference](#string-references) to the owner of the component, e.g.
+`artist-relations-team`. This field is required.
+
+In Backstage, the owner of an Template is the singular entity (commonly a team)
+that bears ultimate responsibility for the Template, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this Template belongs. It is
+not to be used by automated processes to for example assign authorization in
+runtime systems. There may be others that also develop or otherwise touch the
+Template, but there will always be one ultimate owner.
+
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+
 ## Kind: API
 
 Describes the following entity kind:

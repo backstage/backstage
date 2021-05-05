@@ -41,6 +41,7 @@ export interface TemplateEntityV1beta2 extends Entity {
       parameters?: JsonObject;
     }>;
     output?: { [name: string]: string };
+    owner?: string;
   };
 }
 

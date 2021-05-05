@@ -29,8 +29,16 @@ import {
 import React from 'react';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1alpha1,
+  Entity,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
+import {
+  getEntityRelations,
+  EntityRefLinks,
+} from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -69,7 +77,6 @@ type TemplateProps = {
   title: string;
   type: string;
   name: string;
-  owner: string;
 };
 
 const getTemplateCardProps = (
@@ -81,7 +88,6 @@ const getTemplateCardProps = (
     title: `${(template.metadata.title || template.metadata.name) ?? ''}`,
     type: template.spec.type ?? '',
     description: template.metadata.description ?? '-',
-    owner: template.spec.owner ?? '-',
     tags: (template.metadata?.tags as string[]) ?? [],
   };
 };
@@ -90,7 +96,10 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
   const templateProps = getTemplateCardProps(template);
-
+  const ownedByRelations = getEntityRelations(
+    template as Entity,
+    RELATION_OWNED_BY,
+  );
   const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
@@ -119,7 +128,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
           <Typography variant="body2" className={classes.label}>
             Owner
           </Typography>
-          <Typography variant="inherit">{templateProps.owner}</Typography>
+          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
         </Box>
         <Box>
           <Typography variant="body2" className={classes.label}>

@@ -168,6 +168,10 @@
               "additionalProperties": {
                 "type": "string"
               }
+            },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the template"
             }
           }
         }

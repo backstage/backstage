@@ -91,4 +91,8 @@ describe('templateEntityV1alpha1Validator', () => {
     (entity as any).spec.templater = '';
     await expect(validator.check(entity)).rejects.toThrow(/templater/);
   });
+  it('accepts missing owner', async () => {
+    delete (entity as any).spec.owner;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
 });

@@ -59,6 +59,7 @@ describe('templateEntityV1beta2Validator', () => {
         output: {
           fetchUrl: '{{ steps.fetch.output.targetUrl }}',
         },
+        owner: 'example@email.com',
       },
     };
   });
@@ -120,5 +121,9 @@ describe('templateEntityV1beta2Validator', () => {
   it('rejects step with missing action', async () => {
     delete (entity as any).spec.steps[0].action;
     await expect(validator.check(entity)).rejects.toThrow(/action/);
+  });
+  it('accepts missing owner', async () => {
+    delete (entity as any).spec.owner;
+    await expect(validator.check(entity)).resolves.toBe(true);
   });
 });

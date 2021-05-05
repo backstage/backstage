@@ -85,6 +85,10 @@
             "schema": {
               "type": "object",
               "description": "The JSONSchema describing the inputs for the template."
+            },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the template"
             }
           }
         }
