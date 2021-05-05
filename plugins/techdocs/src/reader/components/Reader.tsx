@@ -264,10 +264,14 @@ export const Reader = ({ entityId, onReady }: Props) => {
     );
     shadowRoot.appendChild(transformedElement);
 
+    // Scroll to top after render
+    window.scroll({ top: 0 });
+
     // Post-render
     transformer(shadowRoot.children[0], [
       dom => {
         setTimeout(() => {
+          // Scoll to the desired anchor on initial navigation
           if (window.location.hash) {
             const hash = window.location.hash.slice(1);
             shadowRoot?.getElementById(hash)?.scrollIntoView();
@@ -278,14 +282,19 @@ export const Reader = ({ entityId, onReady }: Props) => {
       addLinkClickListener({
         baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
-          window.scroll({ top: 0 });
           const parsedUrl = new URL(url);
           if (newerDocsExist && isSynced) {
             // link navigation will load newer docs
             setNewerDocsExist(false);
           }
+
           if (parsedUrl.hash) {
             navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+
+            // Scroll to hash if it's on the current page
+            shadowRoot
+              ?.getElementById(parsedUrl.hash.slice(1))
+              ?.scrollIntoView();
           } else {
             navigate(parsedUrl.pathname);
           }
