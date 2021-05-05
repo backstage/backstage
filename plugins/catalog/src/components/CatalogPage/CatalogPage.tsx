@@ -24,7 +24,6 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core';
-import { EntityRow } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   isOwnerOf,
@@ -44,6 +43,7 @@ import {
   CatalogFilterType,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+import { EntityRow } from '../CatalogTable/types';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { useOwnUser } from '../useOwnUser';
 import CatalogLayout from './CatalogLayout';
