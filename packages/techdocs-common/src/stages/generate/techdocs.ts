@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { runDockerContainer } from '@backstage/backend-common';
+import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { PassThrough } from 'stream';
@@ -48,20 +48,29 @@ const createStream = (): [string[], PassThrough] => {
 
 export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
+  private readonly containerRunner: ContainerRunner;
   private readonly options: TechdocsGeneratorOptions;
 
-  constructor(logger: Logger, config: Config) {
+  constructor({
+    logger,
+    containerRunner,
+    config,
+  }: {
+    logger: Logger;
+    containerRunner: ContainerRunner;
+    config: Config;
+  }) {
     this.logger = logger;
     this.options = {
       runGeneratorIn:
         config.getOptionalString('techdocs.generators.techdocs') ?? 'docker',
     };
+    this.containerRunner = containerRunner;
   }
 
   public async run({
     inputDir,
     outputDir,
-    dockerClient,
     parsedLocationAnnotation,
     etag,
   }: GeneratorRunOptions): Promise<void> {
@@ -100,7 +109,7 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker':
-          await runDockerContainer({
+          await this.containerRunner.runContainer({
             imageName: 'spotify/techdocs',
             args: ['build', '-d', '/output'],
             logStream,
@@ -109,7 +118,6 @@ export class TechdocsGenerator implements GeneratorBase {
             // Set the home directory inside the container as something that applications can
             // write to, otherwise they will just fail trying to write to /
             envVars: { HOME: '/tmp' },
-            dockerClient,
           });
           this.logger.info(
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,

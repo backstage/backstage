@@ -14,5 +14,18 @@
  * limitations under the License.
  */
 
-export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
-export { DockerContainerRunner } from './DockerContainerRunner';
+import { Writable } from 'stream';
+
+export type RunContainerOptions = {
+  imageName: string;
+  command?: string | string[];
+  args: string[];
+  logStream?: Writable;
+  mountDirs?: Record<string, string>;
+  workingDir?: string;
+  envVars?: Record<string, string>;
+};
+
+export interface ContainerRunner {
+  runContainer(opts: RunContainerOptions): Promise<void>;
+}
