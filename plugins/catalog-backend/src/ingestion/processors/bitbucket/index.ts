@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export { BitbucketClient, paginated } from './client';
-export type { PagedResponse } from './client';
-export * from './types';
-export type { BitbucketRepositoryParser } from './BitbucketRepositoryParser';
 export { defaultRepositoryParser } from './BitbucketRepositoryParser';
+export type { PagedResponse } from './client';
+export type { BitbucketRepository } from './types';
+export type { BitbucketRepositoryParser } from './BitbucketRepositoryParser';

@@ -16,6 +16,11 @@
 import React from 'react';
 import { TechDocsPage } from './TechDocsPage';
 import { render, act } from '@testing-library/react';
+import { ConfigReader } from '@backstage/config';
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { ApiRegistry, ApiProvider } from '@backstage/core';
 import {
@@ -50,6 +55,11 @@ describe('<TechDocsPage />', () => {
       entityId: 'Component::backstage',
     });
 
+    const scmIntegrationsApi: ScmIntegrationsApi = ScmIntegrationsApi.fromConfig(
+      new ConfigReader({
+        integrations: {},
+      }),
+    );
     const techdocsApi: Partial<TechDocsApi> = {
       getEntityMetadata: () =>
         Promise.resolve({
@@ -72,6 +82,7 @@ describe('<TechDocsPage />', () => {
     };
 
     const apiRegistry = ApiRegistry.from([
+      [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
     ]);

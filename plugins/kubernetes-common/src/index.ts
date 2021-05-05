@@ -14,29 +14,4 @@
  * limitations under the License.
  */
 
-import {
-  ClusterLocatorMethod,
-  CustomResource,
-} from '@backstage/plugin-kubernetes-backend';
-
-export interface Config {
-  kubernetes?: {
-    /**
-     * @visibility frontend
-     */
-    serviceLocatorMethod: {
-      /**
-       * @visibility frontend
-       */
-      type: 'multiTenant';
-    };
-    /**
-     * @visibility frontend
-     */
-    clusterLocatorMethods: ClusterLocatorMethod[];
-    /**
-     * @visibility frontend
-     */
-    customResources?: CustomResource[];
-  };
-}
+export * from './types';
