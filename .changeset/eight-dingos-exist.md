@@ -48,7 +48,7 @@ To keep the `dockerode` based runtime, use the `DockerContainerRunner` implement
 + } from '@backstage/backend-common';
 - import { runDockerContainer } from '@backstage/backend-common';
 
-+ const containerRunner: ContainerRUnner = new DockerContainerRunner({dockerClient});
++ const containerRunner: ContainerRunner = new DockerContainerRunner({dockerClient});
 + await containerRunner.runContainer({
 - await runDockerContainer({
     image: 'docker',
