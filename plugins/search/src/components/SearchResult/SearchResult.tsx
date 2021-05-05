@@ -21,7 +21,16 @@ import {
   TableColumn,
   useApi,
 } from '@backstage/core';
-import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import {
+  Divider,
+  Grid,
+  makeStyles,
+  Typography,
+  Menu,
+  MenuItem,
+  Button,
+  Fade,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
@@ -43,6 +52,15 @@ const useStyles = makeStyles(theme => ({
     width: '1px',
     margin: theme.spacing(0, 2),
     padding: theme.spacing(2, 0),
+  },
+  exportMenu: {
+    position: 'absolute',
+    top: '25px',
+    right: '25px',
+    zIndex: 1,
+  },
+  tableContainer: {
+    position: 'relative',
   },
 }));
 
@@ -116,6 +134,7 @@ const TableHeader = ({
 };
 
 export const SearchResult = ({ searchQuery }: SearchResultProps) => {
+  const classes = useStyles();
   const searchApi = useApi(searchApiRef);
 
   const [showFilters, toggleFilters] = useState(false);
@@ -123,6 +142,17 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
     selected: '',
     checked: [],
   });
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openExportMenu = Boolean(anchorEl);
+
+  const handleExportClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleExportMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
@@ -242,7 +272,27 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
             />
           </Grid>
         )}
-        <Grid item xs={showFilters ? 9 : 12}>
+        <Grid item xs={showFilters ? 9 : 12} className={classes.tableContainer}>
+          <div className={classes.exportMenu}>
+            <Button
+              aria-controls="fade-menu"
+              aria-haspopup="true"
+              onClick={handleExportClick}
+            >
+              Export
+            </Button>
+            <Menu
+              id="fade-menu"
+              anchorEl={anchorEl}
+              keepMounted
+              open={openExportMenu}
+              onClose={handleExportMenuClose}
+              TransitionComponent={Fade}
+            >
+              <MenuItem onClick={handleExportMenuClose}>.csv</MenuItem>
+              <MenuItem onClick={handleExportMenuClose}>.xls</MenuItem>
+            </Menu>
+          </div>
           <Table
             options={{ paging: true, pageSize: 20, search: false }}
             data={filteredResults}
