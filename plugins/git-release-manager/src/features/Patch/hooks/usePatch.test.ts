@@ -57,14 +57,14 @@ describe('patch', () => {
     expect(result.current.responseSteps).toHaveLength(9);
   });
 
-  it('should return the expected responseSteps and progress (with successCb)', async () => {
+  it('should return the expected responseSteps and progress (with onSuccess)', async () => {
     const { result } = renderHook(() =>
       usePatch({
         bumpedTag: mockBumpedTag,
         latestRelease: mockReleaseVersionCalver,
         project: mockCalverProject,
         tagParts: mockTagParts,
-        successCb: jest.fn(),
+        onSuccess: jest.fn(),
       }),
     );
 

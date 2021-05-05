@@ -57,12 +57,12 @@ describe('usePromoteRc', () => {
     expect(result.current.responseSteps).toHaveLength(4);
   });
 
-  it('should return the expected responseSteps and progress (with successCb)', async () => {
+  it('should return the expected responseSteps and progress (with onSuccess)', async () => {
     const { result } = renderHook(() =>
       usePromoteRc({
         rcRelease: mockReleaseCandidateCalver,
         releaseVersion: 'version-1.2.3',
-        successCb: jest.fn(),
+        onSuccess: jest.fn(),
       }),
     );
 

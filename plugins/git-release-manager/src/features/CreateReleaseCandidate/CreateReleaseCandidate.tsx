@@ -45,7 +45,7 @@ interface CreateReleaseCandidateProps {
   defaultBranch: GetRepositoryResult['repository']['defaultBranch'];
   latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseBranch: GetBranchResult['branch'] | null;
-  successCb?: ComponentConfigCreateRc['successCb'];
+  onSuccess?: ComponentConfigCreateRc['onSuccess'];
 }
 
 const InfoCardPlusWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -63,7 +63,7 @@ export const CreateReleaseCandidate = ({
   defaultBranch,
   latestRelease,
   releaseBranch,
-  successCb,
+  onSuccess,
 }: CreateReleaseCandidateProps) => {
   const { project } = useProjectContext();
 
@@ -90,7 +90,7 @@ export const CreateReleaseCandidate = ({
     latestRelease,
     releaseCandidateGitInfo,
     project,
-    successCb,
+    onSuccess,
   });
   if (responseSteps.length > 0) {
     return (

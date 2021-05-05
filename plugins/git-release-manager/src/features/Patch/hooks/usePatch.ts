@@ -37,7 +37,7 @@ interface Patch {
   latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   project: Project;
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
-  successCb?: ComponentConfigPatch['successCb'];
+  onSuccess?: ComponentConfigPatch['onSuccess'];
 }
 
 // Inspiration: https://stackoverflow.com/questions/53859199/how-to-cherry-pick-through-githubs-api
@@ -46,7 +46,7 @@ export function usePatch({
   latestRelease,
   project,
   tagParts,
-  successCb,
+  onSuccess,
 }: Patch): CardHook<GetRecentCommitsResultSingle> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
@@ -327,16 +327,16 @@ ${selectedPatchCommit.commit.message}`,
   }, [createdReferenceRes.value, createdReferenceRes.error]);
 
   /**
-   * (10) Run successCb if defined
+   * (10) Run onSuccess if defined
    */
   useAsync(async () => {
-    if (!successCb) return;
+    if (!onSuccess) return;
     abortIfError(updatedReleaseRes.error);
 
     if (!updatedReleaseRes.value || !releaseBranchRes.value) return;
 
     try {
-      await successCb?.({
+      await onSuccess?.({
         updatedReleaseUrl: updatedReleaseRes.value.htmlUrl,
         updatedReleaseName: updatedReleaseRes.value.name,
         previousTag: latestRelease.tagName,
@@ -355,7 +355,7 @@ ${selectedPatchCommit.commit.message}`,
     });
   }, [updatedReleaseRes.value]);
 
-  const TOTAL_STEPS = 9 + (!!successCb ? 1 : 0);
+  const TOTAL_STEPS = 9 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);

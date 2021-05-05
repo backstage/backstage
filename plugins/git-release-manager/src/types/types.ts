@@ -16,19 +16,19 @@
 
 export type ComponentConfig<Args> = {
   omit?: boolean;
-  successCb?: (args: Args) => Promise<void> | void;
+  onSuccess?: (args: Args) => Promise<void> | void;
 };
 
-interface CreateRcSuccessCbArgs {
+interface CreateRcOnSuccessArgs {
   gitReleaseUrl: string;
   gitReleaseName: string | null;
   comparisonUrl: string;
   previousTag?: string;
   createdTag: string;
 }
-export type ComponentConfigCreateRc = ComponentConfig<CreateRcSuccessCbArgs>;
+export type ComponentConfigCreateRc = ComponentConfig<CreateRcOnSuccessArgs>;
 
-interface PromoteRcSuccessCbArgs {
+interface PromoteRcOnSuccessArgs {
   gitReleaseUrl: string;
   gitReleaseName: string | null;
   previousTagUrl: string;
@@ -36,9 +36,9 @@ interface PromoteRcSuccessCbArgs {
   updatedTagUrl: string;
   updatedTag: string;
 }
-export type ComponentConfigPromoteRc = ComponentConfig<PromoteRcSuccessCbArgs>;
+export type ComponentConfigPromoteRc = ComponentConfig<PromoteRcOnSuccessArgs>;
 
-interface PatchSuccessCbArgs {
+interface PatchOnSuccessArgs {
   updatedReleaseUrl: string;
   updatedReleaseName: string | null;
   previousTag: string;
@@ -46,7 +46,7 @@ interface PatchSuccessCbArgs {
   patchCommitUrl: string;
   patchCommitMessage: string;
 }
-export type ComponentConfigPatch = ComponentConfig<PatchSuccessCbArgs>;
+export type ComponentConfigPatch = ComponentConfig<PatchOnSuccessArgs>;
 
 export interface ResponseStep {
   message: string | React.ReactNode;

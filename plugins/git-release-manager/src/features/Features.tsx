@@ -125,14 +125,14 @@ export function Features({
             latestRelease={gitBatchInfo.value.latestRelease}
             releaseBranch={gitBatchInfo.value.releaseBranch}
             defaultBranch={gitBatchInfo.value.repository.defaultBranch}
-            successCb={features?.createRc?.successCb}
+            onSuccess={features?.createRc?.onSuccess}
           />
         )}
 
         {!features?.promoteRc?.omit && (
           <PromoteRc
             latestRelease={gitBatchInfo.value.latestRelease}
-            successCb={features?.promoteRc?.successCb}
+            onSuccess={features?.promoteRc?.onSuccess}
           />
         )}
 
@@ -140,7 +140,7 @@ export function Features({
           <Patch
             latestRelease={gitBatchInfo.value.latestRelease}
             releaseBranch={gitBatchInfo.value.releaseBranch}
-            successCb={features?.patch?.successCb}
+            onSuccess={features?.patch?.onSuccess}
           />
         )}
       </ErrorBoundary>

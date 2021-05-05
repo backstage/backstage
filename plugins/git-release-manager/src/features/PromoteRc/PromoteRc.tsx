@@ -27,10 +27,10 @@ import { TEST_IDS } from '../../test-helpers/test-ids';
 
 interface PromoteRcProps {
   latestRelease: GetLatestReleaseResult['latestRelease'];
-  successCb?: ComponentConfigPromoteRc['successCb'];
+  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
 }
 
-export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
+export const PromoteRc = ({ latestRelease, onSuccess }: PromoteRcProps) => {
   function Body() {
     if (latestRelease === null) {
       return <NoLatestRelease />;
@@ -52,7 +52,7 @@ export const PromoteRc = ({ latestRelease, successCb }: PromoteRcProps) => {
       );
     }
 
-    return <PromoteRcBody rcRelease={latestRelease} successCb={successCb} />;
+    return <PromoteRcBody rcRelease={latestRelease} onSuccess={onSuccess} />;
   }
 
   return (

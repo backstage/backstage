@@ -30,13 +30,13 @@ import { useUserContext } from '../../../contexts/UserContext';
 interface PromoteRc {
   rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseVersion: string;
-  successCb?: ComponentConfigPromoteRc['successCb'];
+  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
 }
 
 export function usePromoteRc({
   rcRelease,
   releaseVersion,
-  successCb,
+  onSuccess,
 }: PromoteRc): CardHook<void> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
@@ -162,14 +162,14 @@ export function usePromoteRc({
   }, [createRcRes.value, createRcRes.error]);
 
   /**
-   * (5) Run successCb if defined
+   * (5) Run onSuccess if defined
    */
   useAsync(async () => {
-    if (successCb && !!promotedReleaseRes.value) {
+    if (onSuccess && !!promotedReleaseRes.value) {
       abortIfError(promotedReleaseRes.error);
 
       try {
-        await successCb?.({
+        await onSuccess?.({
           gitReleaseUrl: promotedReleaseRes.value.htmlUrl,
           gitReleaseName: promotedReleaseRes.value.name,
           previousTagUrl: rcRelease.htmlUrl,
@@ -188,7 +188,7 @@ export function usePromoteRc({
     }
   }, [promotedReleaseRes.value]);
 
-  const TOTAL_STEPS = 4 + (!!successCb ? 1 : 0);
+  const TOTAL_STEPS = 4 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);

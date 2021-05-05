@@ -26,16 +26,16 @@ import { usePromoteRc } from './hooks/usePromoteRc';
 
 interface PromoteRcBodyProps {
   rcRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
-  successCb?: ComponentConfigPromoteRc['successCb'];
+  onSuccess?: ComponentConfigPromoteRc['onSuccess'];
 }
 
-export const PromoteRcBody = ({ rcRelease, successCb }: PromoteRcBodyProps) => {
+export const PromoteRcBody = ({ rcRelease, onSuccess }: PromoteRcBodyProps) => {
   const releaseVersion = rcRelease.tagName.replace('rc-', 'version-');
 
   const { progress, responseSteps, run, runInvoked } = usePromoteRc({
     rcRelease,
     releaseVersion,
-    successCb,
+    onSuccess,
   });
 
   if (responseSteps.length > 0) {

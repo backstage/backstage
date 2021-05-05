@@ -36,7 +36,7 @@ interface UseCreateReleaseCandidate {
   latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseCandidateGitInfo: ReturnType<typeof getReleaseCandidateGitInfo>;
   project: Project;
-  successCb?: ComponentConfigCreateRc['successCb'];
+  onSuccess?: ComponentConfigCreateRc['onSuccess'];
 }
 
 export function useCreateReleaseCandidate({
@@ -44,7 +44,7 @@ export function useCreateReleaseCandidate({
   latestRelease,
   releaseCandidateGitInfo,
   project,
-  successCb,
+  onSuccess,
 }: UseCreateReleaseCandidate): CardHook<void> {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { user } = useUserContext();
@@ -258,14 +258,14 @@ export function useCreateReleaseCandidate({
   }, [getComparisonRes.value, getComparisonRes.error]);
 
   /**
-   * (7) Run successCb if defined
+   * (7) Run onSuccess if defined
    */
   useAsync(async () => {
-    if (successCb && !!createReleaseRes.value && !!getComparisonRes.value) {
+    if (onSuccess && !!createReleaseRes.value && !!getComparisonRes.value) {
       abortIfError(createReleaseRes.error);
 
       try {
-        await successCb({
+        await onSuccess({
           comparisonUrl: getComparisonRes.value.htmlUrl,
           createdTag: createReleaseRes.value.tagName,
           gitReleaseName: createReleaseRes.value.name,
@@ -283,7 +283,7 @@ export function useCreateReleaseCandidate({
     }
   }, [createReleaseRes.value]);
 
-  const TOTAL_STEPS = 6 + (!!successCb ? 1 : 0);
+  const TOTAL_STEPS = 6 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     setProgress((responseSteps.length / TOTAL_STEPS) * 100);

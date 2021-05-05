@@ -56,7 +56,7 @@ interface PatchBodyProps {
   bumpedTag: string;
   latestRelease: NonNullable<GetLatestReleaseResult['latestRelease']>;
   releaseBranch: GetBranchResult['branch'];
-  successCb?: ComponentConfigPatch['successCb'];
+  onSuccess?: ComponentConfigPatch['onSuccess'];
   tagParts: NonNullable<CalverTagParts | SemverTagParts>;
 }
 
@@ -64,7 +64,7 @@ export const PatchBody = ({
   bumpedTag,
   latestRelease,
   releaseBranch,
-  successCb,
+  onSuccess,
   tagParts,
 }: PatchBodyProps) => {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
@@ -98,7 +98,7 @@ export const PatchBody = ({
     latestRelease,
     project,
     tagParts,
-    successCb,
+    onSuccess,
   });
 
   if (responseSteps.length > 0) {

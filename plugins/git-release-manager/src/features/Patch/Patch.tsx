@@ -32,13 +32,13 @@ import { useProjectContext } from '../../contexts/ProjectContext';
 interface PatchProps {
   latestRelease: GetLatestReleaseResult['latestRelease'];
   releaseBranch: GetBranchResult['branch'] | null;
-  successCb?: ComponentConfigPatch['successCb'];
+  onSuccess?: ComponentConfigPatch['onSuccess'];
 }
 
 export const Patch = ({
   latestRelease,
   releaseBranch,
-  successCb,
+  onSuccess,
 }: PatchProps) => {
   return (
     <InfoCardPlus>
@@ -51,13 +51,13 @@ export const Patch = ({
       <BodyWrapper
         latestRelease={latestRelease}
         releaseBranch={releaseBranch}
-        successCb={successCb}
+        onSuccess={onSuccess}
       />
     </InfoCardPlus>
   );
 };
 
-function BodyWrapper({ latestRelease, releaseBranch, successCb }: PatchProps) {
+function BodyWrapper({ latestRelease, releaseBranch, onSuccess }: PatchProps) {
   const { project } = useProjectContext();
 
   if (latestRelease === null) {
@@ -91,7 +91,7 @@ function BodyWrapper({ latestRelease, releaseBranch, successCb }: PatchProps) {
       bumpedTag={bumpedTag.bumpedTag}
       latestRelease={latestRelease}
       releaseBranch={releaseBranch}
-      successCb={successCb}
+      onSuccess={onSuccess}
       tagParts={bumpedTag.tagParts}
     />
   );

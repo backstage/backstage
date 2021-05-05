@@ -79,7 +79,7 @@ createDevApp()
           }}
           features={{
             createRc: {
-              successCb: ({
+              onSuccess: ({
                 comparisonUrl,
                 createdTag,
                 gitReleaseName,

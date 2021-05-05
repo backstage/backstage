@@ -56,14 +56,14 @@ describe('useCreateReleaseCandidate', () => {
     expect(result.current.responseSteps).toHaveLength(6);
   });
 
-  it('should return the expected responseSteps and progress (with successCb)', async () => {
+  it('should return the expected responseSteps and progress (with onSuccess)', async () => {
     const { result } = renderHook(() =>
       useCreateReleaseCandidate({
         defaultBranch: mockDefaultBranch,
         latestRelease: mockReleaseVersionCalver,
         releaseCandidateGitInfo: mockNextGitInfoCalver,
         project: mockCalverProject,
-        successCb: jest.fn(),
+        onSuccess: jest.fn(),
       }),
     );
 
