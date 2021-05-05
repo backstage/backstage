@@ -56,7 +56,7 @@ export const GraphQlDefinitionWidget = ({ definition, graphqlLink }: Props) => {
   const warningMessage = graphqlLink ? null : (
     <Alert severity="warning">
       Read-Only Mode. Please add the annotation for the graphql endpoint with
-      the key "graphql/endpoint"
+      the key "graphql/endpoint".
     </Alert>
   );
 
