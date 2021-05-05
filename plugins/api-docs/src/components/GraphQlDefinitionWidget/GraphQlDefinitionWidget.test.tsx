@@ -53,7 +53,7 @@ type Film {
     };
 
     const { getByText } = await renderInTestApp(
-      <GraphQlDefinitionWidget definition={definition} />,
+      <GraphQlDefinitionWidget definition={definition} graphqlLink={null} />,
     );
 
     expect(getByText(/Film/i)).toBeInTheDocument();

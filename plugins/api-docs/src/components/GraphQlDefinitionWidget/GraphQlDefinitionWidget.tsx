@@ -44,18 +44,33 @@ const useStyles = makeStyles<BackstageTheme>(() => ({
 
 type Props = {
   definition: any;
+  graphqlLink: any;
 };
 
-export const GraphQlDefinitionWidget = ({ definition }: Props) => {
+export const GraphQlDefinitionWidget = ({ definition, graphqlLink }: Props) => {
   const classes = useStyles();
   const schema = buildSchema(definition);
+  const fetcher = graphqlLink
+    ? async graphQLParams => {
+        const data = await fetch(graphqlLink, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(graphQLParams),
+          credentials: 'same-origin',
+        });
+        return data.json().catch(() => data.text());
+      }
+    : () => Promise.resolve(null) as any;
 
   return (
     <Suspense fallback={<Progress />}>
       <div className={classes.root}>
         <div className={classes.graphiQlWrapper}>
           <GraphiQL
-            fetcher={() => Promise.resolve(null) as any}
+            fetcher={fetcher}
             schema={schema}
             docExplorerOpen
             defaultSecondaryEditorOpen={false}
