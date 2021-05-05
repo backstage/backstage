@@ -20,6 +20,7 @@ import {
   FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
+  TableColumn,
 } from '@backstage/core';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -56,6 +57,8 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { EntityRow } from '../../catalog-model/src';
+import { EntityRefLink } from '@backstage/plugin-catalog-react';
 
 const app = createApp({
   apis,
@@ -94,6 +97,17 @@ const app = createApp({
 
 const AppProvider = app.getProvider();
 const AppRouter = app.getRouter();
+
+const columns: TableColumn<EntityRow>[] = [
+  {
+    title: 'Name',
+    field: 'resolved.name',
+    highlight: true,
+    render: ({ entity }) => (
+      <EntityRefLink entityRef={entity} defaultKind="Component" />
+    ),
+  },
+];
 
 const routes = (
   <FlatRoutes>

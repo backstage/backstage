@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Entity, EntityName } from '@backstage/catalog-model';
 
-export * from './entity';
-export { EntityPolicies } from './EntityPolicies';
-export * from './kinds';
-export * from './location';
-export type { EntityName, EntityRef, JSONSchema, EntityRow } from './types';
-export * from './validation';
+export type EntityRow = {
+  entity: Entity;
+  resolved: {
+    name: string;
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};

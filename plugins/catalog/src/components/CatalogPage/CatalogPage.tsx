@@ -20,9 +20,11 @@ import {
   ContentHeader,
   errorApiRef,
   SupportButton,
+  TableColumn,
   useApi,
   useRouteRef,
 } from '@backstage/core';
+import { EntityRow } from '@backstage/catalog-model';
 import {
   catalogApiRef,
   isOwnerOf,
@@ -61,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: string;
+  columns?: TableColumn<EntityRow>[];
 };
 
 const CatalogPageContents = (props: CatalogPageProps) => {
@@ -210,6 +213,7 @@ const CatalogPageContents = (props: CatalogPageProps) => {
           <CatalogTable
             titlePreamble={selectedSidebarItem?.label ?? ''}
             view={selectedTab}
+            columns={props.columns}
             entities={matchingEntities}
             loading={loading}
             error={error}

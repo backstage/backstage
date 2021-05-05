@@ -16,6 +16,7 @@
 
 import { JsonValue } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
+import { Entity } from './entity';
 
 export type JSONSchema = JSONSchema7 & { [key in string]?: JsonValue };
 
@@ -44,3 +45,14 @@ export type EntityRef =
       namespace?: string;
       name: string;
     };
+
+export type EntityRow = {
+  entity: Entity;
+  resolved: {
+    name: string;
+    partOfSystemRelationTitle?: string;
+    partOfSystemRelations: EntityName[];
+    ownedByRelationsTitle?: string;
+    ownedByRelations: EntityName[];
+  };
+};

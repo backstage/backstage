@@ -15,26 +15,21 @@
  */
 import {
   Entity,
-  EntityName,
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  OverflowTooltip,
   Table,
   TableColumn,
   TableProps,
   WarningPanel,
 } from '@backstage/core';
 import {
-  EntityRefLink,
-  EntityRefLinks,
   formatEntityRefTitle,
   getEntityRelations,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import React from 'react';
@@ -46,88 +41,17 @@ import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
 } from '../FavouriteEntity/FavouriteEntity';
+import * as columnFactories from './columns';
+import { EntityRow } from './types';
 
-type EntityRow = {
-  entity: Entity;
-  resolved: {
-    name: string;
-    partOfSystemRelationTitle?: string;
-    partOfSystemRelations: EntityName[];
-    ownedByRelationsTitle?: string;
-    ownedByRelations: EntityName[];
-  };
-};
-
-const columns: TableColumn<EntityRow>[] = [
-  {
-    title: 'Name',
-    field: 'resolved.name',
-    highlight: true,
-    render: ({ entity }) => (
-      <EntityRefLink entityRef={entity} defaultKind="Component" />
-    ),
-  },
-  {
-    title: 'System',
-    field: 'resolved.partOfSystemRelationTitle',
-    render: ({ resolved }) => (
-      <EntityRefLinks
-        entityRefs={resolved.partOfSystemRelations}
-        defaultKind="system"
-      />
-    ),
-  },
-  {
-    title: 'Owner',
-    field: 'resolved.ownedByRelationsTitle',
-    render: ({ resolved }) => (
-      <EntityRefLinks
-        entityRefs={resolved.ownedByRelations}
-        defaultKind="group"
-      />
-    ),
-  },
-  {
-    title: 'Type',
-    field: 'entity.spec.type',
-    hidden: true,
-  },
-  {
-    title: 'Lifecycle',
-    field: 'entity.spec.lifecycle',
-  },
-  {
-    title: 'Description',
-    field: 'entity.metadata.description',
-    render: ({ entity }) => (
-      <OverflowTooltip
-        text={entity.metadata.description}
-        placement="bottom-start"
-      />
-    ),
-    width: 'auto',
-  },
-  {
-    title: 'Tags',
-    field: 'entity.metadata.tags',
-    cellStyle: {
-      padding: '0px 16px 0px 20px',
-    },
-    render: ({ entity }) => (
-      <>
-        {entity.metadata.tags &&
-          entity.metadata.tags.map(t => (
-            <Chip
-              key={t}
-              label={t}
-              size="small"
-              variant="outlined"
-              style={{ marginBottom: '0px' }}
-            />
-          ))}
-      </>
-    ),
-  },
+const defaultColumns: TableColumn<EntityRow>[] = [
+  columnFactories.createNameColumn(),
+  columnFactories.createSystemColumn(),
+  columnFactories.createOwnerColumn(),
+  columnFactories.createSpecTypeColumn(),
+  columnFactories.createSpecLifecycleColumn(),
+  columnFactories.createMetadataDescriptionColumn(),
+  columnFactories.createTagsColumn(),
 ];
 
 type CatalogTableProps = {
@@ -136,6 +60,7 @@ type CatalogTableProps = {
   loading: boolean;
   error?: any;
   view?: string;
+  columns?: TableColumn<EntityRow>[];
 };
 
 export const CatalogTable = ({
@@ -144,6 +69,7 @@ export const CatalogTable = ({
   error,
   titlePreamble,
   view,
+  columns,
 }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
@@ -224,7 +150,7 @@ export const CatalogTable = ({
     };
   });
 
-  const typeColumn = columns.find(c => c.title === 'Type');
+  const typeColumn = defaultColumns.find(c => c.title === 'Type');
   if (typeColumn) {
     typeColumn.hidden = view !== 'Other';
   }
@@ -232,7 +158,7 @@ export const CatalogTable = ({
   return (
     <Table<EntityRow>
       isLoading={loading}
-      columns={columns}
+      columns={columns || defaultColumns}
       options={{
         paging: true,
         pageSize: 20,
@@ -248,3 +174,5 @@ export const CatalogTable = ({
     />
   );
 };
+
+CatalogTable.columns = columnFactories;
