@@ -6,7 +6,7 @@
 
 import { AzureIntegrationConfig } from '@backstage/integration';
 import { Config } from '@backstage/config';
-import Docker from 'dockerode';
+import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import express from 'express';
@@ -50,8 +50,9 @@ export type GeneratorBuilder = {
 // @public (undocumented)
 export class Generators implements GeneratorBuilder {
     // (undocumented)
-    static fromConfig(config: Config, { logger }: {
+    static fromConfig(config: Config, { logger, containerRunner, }: {
         logger: Logger;
+        containerRunner: ContainerRunner;
     }): Promise<GeneratorBuilder>;
     // (undocumented)
     get(entity: Entity): GeneratorBase;
@@ -151,9 +152,13 @@ export type RemoteProtocol = 'url' | 'dir' | 'github' | 'gitlab' | 'file' | 'azu
 
 // @public (undocumented)
 export class TechdocsGenerator implements GeneratorBase {
-    constructor(logger: Logger, config: Config);
+    constructor({ logger, containerRunner, config, }: {
+        logger: Logger;
+        containerRunner: ContainerRunner;
+        config: Config;
+    });
     // (undocumented)
-    run({ inputDir, outputDir, dockerClient, parsedLocationAnnotation, etag, }: GeneratorRunOptions): Promise<void>;
+    run({ inputDir, outputDir, parsedLocationAnnotation, etag, }: GeneratorRunOptions): Promise<void>;
 }
 
 // @public

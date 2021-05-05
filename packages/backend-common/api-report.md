@@ -65,6 +65,12 @@ export class BitbucketUrlReader implements UrlReader {
 // @public (undocumented)
 export const coloredFormat: winston.Logform.Format;
 
+// @public (undocumented)
+export interface ContainerRunner {
+    // (undocumented)
+    runContainer(opts: RunContainerOptions): Promise<void>;
+}
+
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
 
@@ -79,6 +85,15 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
 
 // @public (undocumented)
 export function createStatusCheckRouter(options: StatusCheckRouterOptions): Promise<express.Router>;
+
+// @public (undocumented)
+export class DockerContainerRunner implements ContainerRunner {
+    constructor({ dockerClient }: {
+        dockerClient: Docker;
+    });
+    // (undocumented)
+    runContainer({ imageName, command, args, logStream, mountDirs, workingDir, envVars, }: RunContainerOptions): Promise<void>;
+}
 
 // @public
 export function ensureDatabaseExists(dbConfig: Config, ...databases: Array<string>): Promise<void>;
@@ -255,10 +270,15 @@ export function requestLoggingHandler(logger?: Logger): RequestHandler;
 export function resolvePackagePath(name: string, ...paths: string[]): string;
 
 // @public (undocumented)
-export const runDockerContainer: ({ imageName, args, logStream, dockerClient, mountDirs, workingDir, envVars, createOptions, }: RunDockerContainerOptions) => Promise<{
-    error: any;
-    statusCode: any;
-}>;
+export type RunContainerOptions = {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+};
 
 // @public
 export type SearchResponse = {
