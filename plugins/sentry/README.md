@@ -9,8 +9,8 @@ The Sentry Plugin displays issues from [Sentry](https://sentry.io).
 1. Install the Sentry Plugin:
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-sentry
 ```
 

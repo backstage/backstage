@@ -20,6 +20,7 @@ The scaffolder frontend plugin should be installed in your `app` package, which
 is created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-scaffolder
 ```
@@ -57,6 +58,7 @@ The scaffolder backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-scaffolder-backend
 ```
@@ -262,6 +264,6 @@ library. By default it will use the
 [spotify/backstage-cookiecutter](https://github.com/backstage/backstage/blob/37e35b910afc7d1270855aed0ec4718aba366c91/plugins/scaffolder-backend/scripts/Cookiecutter.dockerfile)
 docker image.
 
-If you are running backstage from a Docker container and you want to avoid
+If you are running Backstage from a Docker container and you want to avoid
 calling a container inside a container, you can set up Cookiecutter in your own
 image, this will use the local installation instead.

@@ -28,15 +28,15 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 1. Install the API docs plugin
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-api-docs
 ```
 
 2. Add the `ApiExplorerPage` extension to the app:
 
 ```tsx
-// packages/app/src/App.tsx
+// In packages/app/src/App.tsx
 
 import { ApiExplorerPage } from '@backstage/plugin-api-docs';
 
@@ -56,7 +56,7 @@ import {
 } from '@backstage/plugin-api-docs';
 
 const apiPage = (
-  <EntityLayoutWrapper>
+  <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       <Grid container spacing={3}>
         <Grid item md={6}>
@@ -80,7 +80,7 @@ const apiPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
-  </EntityLayoutWrapper>
+  </EntityLayout>
 );
 
 // ...

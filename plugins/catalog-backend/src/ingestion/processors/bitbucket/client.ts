@@ -41,15 +41,6 @@ export class BitbucketClient {
     );
   }
 
-  async getRaw(
-    projectKey: string,
-    repo: string,
-    path: string,
-  ): Promise<Response> {
-    const request = `${this.config.apiBaseUrl}/projects/${projectKey}/repos/${repo}/raw/${path}`;
-    return fetch(request, getBitbucketRequestOptions(this.config));
-  }
-
   private async pagedRequest(
     endpoint: string,
     options?: ListOptions,

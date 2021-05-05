@@ -42,7 +42,7 @@ export default async function createPlugin(
     } = await builder.build();
 
     // TODO(jhaals): run and manage in background.
-    processingEngine.start();
+    await processingEngine.start();
 
     return await createRouter({
       entitiesCatalog,

@@ -22,7 +22,7 @@ Navigate to your new Backstage application directory. And then to your
 `packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
@@ -54,7 +54,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-techdocs-backend
 ```

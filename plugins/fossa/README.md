@@ -9,8 +9,8 @@ The FOSSA Plugin displays code statistics from [FOSSA](https://fossa.com/).
 1. Install the FOSSA Plugin:
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-fossa
 ```
 

@@ -111,6 +111,7 @@ Usage: backstage-cli app:build
 
 Options:
   --stats          Write bundle stats to output directory
+  --lax            Do not require environment variables to be set
   --config &lt;path&gt;  Config files to load instead of app-config.yaml (default: [])
   -h, --help       display help for command
 ```
@@ -486,6 +487,7 @@ Usage: backstage-cli config:print [options]
 
 Options:
   --package &lt;name&gt;   Only load config schema that applies to the given package
+  --lax              Do not require environment variables to be set
   --frontend         Print only the frontend configuration
   --with-secrets     Include secrets in the printed configuration
   --format &lt;format&gt;  Format to print the configuration in, either json or yaml [yaml]
@@ -506,6 +508,7 @@ Usage: backstage-cli config:check [options]
 
 Options:
   --package &lt;name&gt;  Only load config schema that applies to the given package
+  --lax                   Do not require environment variables to be set
   --config &lt;path&gt;   Config files to load instead of app-config.yaml (default: [])
   -h, --help        display help for command
 ```
