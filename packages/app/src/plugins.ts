@@ -43,6 +43,5 @@ export { plugin as Buildkite } from '@roadiehq/backstage-plugin-buildkite';
 export { plugin as Search } from '@backstage/plugin-search';
 export { plugin as Org } from '@backstage/plugin-org';
 export { plugin as Kafka } from '@backstage/plugin-kafka';
-export { dfdsCapabilityPluginPlugin } from '@backstage/plugin-dfds-capability-plugin';
 export { dfdsCapabilityOverviewPlugin } from '@backstage/plugin-dfds-capability-overview';
 export { dfdsCapabilityManagementPlugin } from '@backstage/plugin-dfds-capability-management';

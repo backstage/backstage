@@ -52,7 +52,6 @@ import { EntityPage } from './components/catalog/EntityPage';
 import Root from './components/Root';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
-import { DfdsCapabilityPluginPage } from '@backstage/plugin-dfds-capability-plugin';
 import { DfdsCapabilityOverviewPage } from '@backstage/plugin-dfds-capability-overview';
 import { DfdsCapabilityManagementPage } from '@backstage/plugin-dfds-capability-management';
 
@@ -125,14 +124,6 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
-    {/* <Route
-      path="/dfds-capability-plugin-v2"
-      element={<DfdsCapabilityPluginV2Page />}
-    /> */}
-    <Route
-      path="/dfds-capability-plugin"
-      element={<DfdsCapabilityPluginPage />}
-    />
     <Route
       path="/dfds-capability-overview"
       element={<DfdsCapabilityOverviewPage />}

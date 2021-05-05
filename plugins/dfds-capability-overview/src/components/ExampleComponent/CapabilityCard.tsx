@@ -53,7 +53,9 @@ export const CapabilityCard = ({ name, description, ...rest }: any) => {
           >
             <Box>
               <Typography variant="h5" color="textPrimary">
-                <Link href={`/dfds-capability-plugin?id=${name}`}>{name}</Link>
+                <Link href={`/dfds-capability-management?id=${name}`}>
+                  {name}
+                </Link>
               </Typography>
               <Typography variant="caption" color="textPrimary">
                 {description}
