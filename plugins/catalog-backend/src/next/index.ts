@@ -15,3 +15,4 @@
  */
 
 export { NextCatalogBuilder } from './NextCatalogBuilder';
+export { createNextRouter } from './NextRouter';
