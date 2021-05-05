@@ -17,7 +17,7 @@
 import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useDebounce } from 'react-use';
 
 function stringify(queryParams: any): string {
@@ -58,9 +58,7 @@ type SetQueryParams<T> = (params: T) => void;
 
 export function useQueryParamState<T>(
   stateName: string,
-  debounceTime: number = 100,
 ): [T | undefined, SetQueryParams<T>] {
-  const navigate = useNavigate();
   const location = useLocation();
   const [queryParamState, setQueryParamState] = useState<T>(
     extractState(location.search, stateName),
@@ -83,10 +81,16 @@ export function useQueryParamState<T>(
       );
 
       if (location.search !== queryString) {
-        navigate({ ...location, search: `?${queryString}` }, { replace: true });
+        // We fallback to the history API, as navigate from react-router causes
+        // input elements to loose focus.
+        history.replaceState(
+          undefined,
+          document.title,
+          `${location.pathname}?${queryString}`,
+        );
       }
     },
-    debounceTime,
+    100,
     [queryParamState],
   );
 
