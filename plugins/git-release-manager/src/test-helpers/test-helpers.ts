@@ -21,7 +21,7 @@ import {
   GetTagResult,
   GitReleaseApi,
   GetCommitResult,
-} from '../api/GitReleaseApiClient';
+} from '../api/GitReleaseClient';
 import { CalverTagParts } from '../helpers/tagParts/getCalverTagParts';
 import { Project } from '../contexts/ProjectContext';
 import { getReleaseCandidateGitInfo } from '../helpers/getReleaseCandidateGitInfo';

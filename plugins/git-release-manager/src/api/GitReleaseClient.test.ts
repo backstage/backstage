@@ -16,21 +16,21 @@
 
 import { ConfigReader, OAuthApi } from '@backstage/core';
 
-import { GitReleaseApiClient } from './GitReleaseApiClient';
+import { GitReleaseClient } from './GitReleaseClient';
 
-describe('GitReleaseApiClient', () => {
+describe('GitReleaseClient', () => {
   it('should return the default plugin api client', () => {
     const configApi = new ConfigReader({});
     const githubAuthApi: OAuthApi = {
       getAccessToken: jest.fn(),
     };
-    const gitReleaseApiClient = new GitReleaseApiClient({
+    const gitReleaseClient = new GitReleaseClient({
       configApi,
       githubAuthApi,
     });
 
-    expect(gitReleaseApiClient).toMatchInlineSnapshot(`
-      GitReleaseApiClient {
+    expect(gitReleaseClient).toMatchInlineSnapshot(`
+      GitReleaseClient {
         "baseUrl": "https://api.github.com",
         "createCommit": [Function],
         "createRef": [Function],

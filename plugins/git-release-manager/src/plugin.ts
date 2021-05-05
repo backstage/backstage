@@ -23,7 +23,7 @@ import {
 } from '@backstage/core';
 
 import { gitReleaseManagerApiRef } from './api/serviceApiRef';
-import { GitReleaseApiClient } from './api/GitReleaseApiClient';
+import { GitReleaseClient } from './api/GitReleaseClient';
 import { rootRouteRef } from './routes';
 
 export { gitReleaseManagerApiRef };
@@ -41,7 +41,7 @@ export const gitReleaseManagerPlugin = createPlugin({
         githubAuthApi: githubAuthApiRef,
       },
       factory: ({ configApi, githubAuthApi }) => {
-        return new GitReleaseApiClient({
+        return new GitReleaseClient({
           configApi,
           githubAuthApi,
         });

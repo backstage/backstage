@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GitReleaseApi } from '../../../api/GitReleaseApiClient';
+import { GitReleaseApi } from '../../../api/GitReleaseClient';
 import { GitReleaseManagerError } from '../../../errors/GitReleaseManagerError';
 import { Project } from '../../../contexts/ProjectContext';
 

@@ -16,7 +16,7 @@
 
 import { useAsync } from 'react-use';
 
-import { GitReleaseApi } from '../api/GitReleaseApiClient';
+import { GitReleaseApi } from '../api/GitReleaseClient';
 import { Project } from '../contexts/ProjectContext';
 
 interface GetGitBatchInfo {

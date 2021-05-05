@@ -22,7 +22,7 @@ import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
 import { UnboxArray, UnboxReturnedPromise } from '../types/helpers';
 
-export class GitReleaseApiClient implements GitReleaseApi {
+export class GitReleaseClient implements GitReleaseApi {
   private readonly githubAuthApi: OAuthApi;
   private readonly baseUrl: string;
   readonly host: string;

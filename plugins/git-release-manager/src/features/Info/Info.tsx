@@ -21,7 +21,7 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
-} from '../../api/GitReleaseApiClient';
+} from '../../api/GitReleaseClient';
 import { Differ } from '../../components/Differ';
 import { InfoCardPlus } from '../../components/InfoCardPlus';
 import { Stats } from '../Stats/Stats';

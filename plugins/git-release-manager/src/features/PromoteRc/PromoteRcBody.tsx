@@ -19,7 +19,7 @@ import { Button, Typography, Box } from '@material-ui/core';
 
 import { ComponentConfigPromoteRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
-import { GetLatestReleaseResult } from '../../api/GitReleaseApiClient';
+import { GetLatestReleaseResult } from '../../api/GitReleaseClient';
 import { ResponseStepDialog } from '../../components/ResponseStepDialog/ResponseStepDialog';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { usePromoteRc } from './hooks/usePromoteRc';

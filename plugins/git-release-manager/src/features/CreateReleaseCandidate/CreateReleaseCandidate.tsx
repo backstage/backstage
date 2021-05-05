@@ -30,7 +30,7 @@ import {
   GetBranchResult,
   GetLatestReleaseResult,
   GetRepositoryResult,
-} from '../../api/GitReleaseApiClient';
+} from '../../api/GitReleaseClient';
 import { ComponentConfigCreateRc } from '../../types/types';
 import { Differ } from '../../components/Differ';
 import { getReleaseCandidateGitInfo } from '../../helpers/getReleaseCandidateGitInfo';

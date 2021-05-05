@@ -38,7 +38,7 @@ import { Progress, useApi } from '@backstage/core';
 import {
   GetBranchResult,
   GetLatestReleaseResult,
-} from '../../api/GitReleaseApiClient';
+} from '../../api/GitReleaseClient';
 import { CalverTagParts } from '../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch } from '../../types/types';
 import { Differ } from '../../components/Differ';

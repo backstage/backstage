@@ -21,7 +21,7 @@ import { useApi } from '@backstage/core';
 import {
   GetLatestReleaseResult,
   GetRecentCommitsResultSingle,
-} from '../../../api/GitReleaseApiClient';
+} from '../../../api/GitReleaseClient';
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';
 import { ComponentConfigPatch, CardHook } from '../../../types/types';
 import { getPatchCommitSuffix } from '../helpers/getPatchCommitSuffix';
