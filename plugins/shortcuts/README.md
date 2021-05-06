@@ -1,12 +1,26 @@
 # shortcuts
 
-`shortcuts-plugin` allows a user to have easy access to pages within a Backstage app by storing them as "shortcuts" in the Sidebar.
+The shortcuts plugin allows a user to have easy access to pages within a Backstage app by storing them as "shortcuts" in the Sidebar.
 
 ## Usage
+
+Install the package:
+
+```bash
+yarn add @backstage/plugin-shortcuts
+```
+
+Add it to your App's `plugins.ts` file:
+
+```ts
+// ...
+export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
+```
 
 Add the `<Shortcuts />` component within your `<Sidebar>`:
 
 ```ts
+import { Sidebar, SidebarDivider, SidebarSpace } from '@backstage/core';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 
 <Sidebar>
@@ -17,7 +31,7 @@ import { Shortcuts } from '@backstage/plugin-shortcuts';
 </Sidebar>;
 ```
 
-The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each users shortcuts.
+The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each user's shortcuts.
 
 To overwrite the default implementation add it to the App's `apis.ts`:
 
