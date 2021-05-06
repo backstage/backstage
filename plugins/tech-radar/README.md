@@ -26,6 +26,7 @@ The Tech Radar can be used in two ways:
 For either simple or advanced installations, you'll need to add the dependency using Yarn:
 
 ```sh
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-tech-radar
 ```
@@ -35,12 +36,12 @@ yarn add @backstage/plugin-tech-radar
 Modify your app routes to include the Router component exported from the tech radar, for example:
 
 ```tsx
-// in packages/app/src/App.tsx
+// In packages/app/src/App.tsx
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 
 const routes = (
   <FlatRoutes>
-    {/* ... */}
+    {/* ...other routes */}
     <Route
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}

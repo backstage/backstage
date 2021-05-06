@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Docker from 'dockerode';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
 import Stream, { PassThrough } from 'stream';
-import { runDockerContainer, UserOptions } from './docker';
+import { ContainerRunner } from './ContainerRunner';
+import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
 
 const mockDocker = new Docker() as jest.Mocked<Docker>;
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
 
-describe('runDockerContainer', () => {
+describe('DockerContainerRunner', () => {
+  let containerTaskApi: ContainerRunner;
+
   beforeEach(() => {
     mockFs({
       [rootDir]: {
@@ -49,6 +53,8 @@ describe('runDockerContainer', () => {
     jest
       .spyOn(mockDocker, 'ping')
       .mockResolvedValue(Buffer.from('OK', 'utf-8'));
+
+    containerTaskApi = new DockerContainerRunner({ dockerClient: mockDocker });
   });
 
   afterEach(() => {
@@ -66,10 +72,9 @@ describe('runDockerContainer', () => {
   const envVarsArray = ['HOME=/tmp', 'LOG_LEVEL=debug'];
 
   it('should pull the docker container', async () => {
-    await runDockerContainer({
+    await containerTaskApi.runContainer({
       imageName,
       args,
-      dockerClient: mockDocker,
     });
 
     expect(mockDocker.pull).toHaveBeenCalledWith(
@@ -82,13 +87,12 @@ describe('runDockerContainer', () => {
   });
 
   it('should call the dockerClient run command with the correct arguments passed through', async () => {
-    await runDockerContainer({
+    await containerTaskApi.runContainer({
       imageName,
       args,
       mountDirs,
       envVars,
       workingDir,
-      dockerClient: mockDocker,
     });
 
     expect(mockDocker.run).toHaveBeenCalledWith(
@@ -113,20 +117,18 @@ describe('runDockerContainer', () => {
   });
 
   it('should ping docker to test availability', async () => {
-    await runDockerContainer({
+    await containerTaskApi.runContainer({
       imageName,
       args,
-      dockerClient: mockDocker,
     });
 
     expect(mockDocker.ping).toHaveBeenCalled();
   });
 
   it('should pass through the user and group id from the host machine and set the home dir', async () => {
-    await runDockerContainer({
+    await containerTaskApi.runContainer({
       imageName,
       args,
-      dockerClient: mockDocker,
     });
 
     const userOptions: UserOptions = {};
@@ -153,10 +155,9 @@ describe('runDockerContainer', () => {
     ]);
 
     await expect(
-      runDockerContainer({
+      containerTaskApi.runContainer({
         imageName,
         args,
-        dockerClient: mockDocker,
       }),
     ).rejects.toThrow(/Something went wrong with docker/);
   });
@@ -172,10 +173,9 @@ describe('runDockerContainer', () => {
 
     it('should throw with a descriptive error message including the docker error message', async () => {
       await expect(
-        runDockerContainer({
+        containerTaskApi.runContainer({
           imageName,
           args,
-          dockerClient: mockDocker,
         }),
       ).rejects.toThrow(new RegExp(`.+: ${dockerError}`));
     });
@@ -183,11 +183,10 @@ describe('runDockerContainer', () => {
 
   it('should pass through the log stream to the docker client', async () => {
     const logStream = new PassThrough();
-    await runDockerContainer({
+    await containerTaskApi.runContainer({
       imageName,
       args,
       logStream,
-      dockerClient: mockDocker,
     });
 
     expect(mockDocker.run).toHaveBeenCalledWith(

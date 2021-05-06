@@ -214,6 +214,7 @@ export class ScaffolderClient implements ScaffolderApi {
                 subscriber.error(ex);
               }
             }
+            eventSource.close();
             subscriber.complete();
           });
           eventSource.addEventListener('error', event => {

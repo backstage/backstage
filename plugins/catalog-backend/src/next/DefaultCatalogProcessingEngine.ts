@@ -16,6 +16,7 @@
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Logger } from 'winston';
+import { ProcessingDatabase } from './database/types';
 import { Stitcher } from './Stitcher';
 import {
   CatalogProcessingEngine,
@@ -23,44 +24,46 @@ import {
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
-  ProcessingStateManager,
 } from './types';
 
 class Connection implements EntityProviderConnection {
   constructor(
     private readonly config: {
-      stateManager: ProcessingStateManager;
+      processingDatabase: ProcessingDatabase;
       id: string;
     },
   ) {}
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
+    const db = this.config.processingDatabase;
     if (mutation.type === 'full') {
-      await this.config.stateManager.replaceProcessingItems({
-        sourceKey: this.config.id,
-        type: 'full',
-        items: mutation.entities,
+      await db.transaction(async tx => {
+        await db.replaceUnprocessedEntities(tx, {
+          sourceKey: this.config.id,
+          type: 'full',
+          items: mutation.entities,
+        });
       });
-
       return;
     }
-
-    await this.config.stateManager.replaceProcessingItems({
-      sourceKey: this.config.id,
-      type: 'delta',
-      added: mutation.added,
-      removed: mutation.removed,
+    await db.transaction(async tx => {
+      await db.replaceUnprocessedEntities(tx, {
+        sourceKey: this.config.id,
+        type: 'delta',
+        added: mutation.added,
+        removed: mutation.removed,
+      });
     });
   }
 }
 
 export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
-  private running: boolean = false;
+  private running = false;
 
   constructor(
     private readonly logger: Logger,
     private readonly entityProviders: EntityProvider[],
-    private readonly stateManager: ProcessingStateManager,
+    private readonly processingDatabase: ProcessingDatabase,
     private readonly orchestrator: CatalogProcessingOrchestrator,
     private readonly stitcher: Stitcher,
   ) {}
@@ -69,52 +72,77 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     for (const provider of this.entityProviders) {
       await provider.connect(
         new Connection({
-          stateManager: this.stateManager,
+          processingDatabase: this.processingDatabase,
           id: provider.getProviderName(),
         }),
       );
     }
-
     this.running = true;
+    this.run();
+  }
 
+  private async run() {
     while (this.running) {
-      const {
-        id,
-        entity,
-        state: initialState,
-      } = await this.stateManager.getNextProcessingItem();
+      try {
+        // TODO: We want to disconnect the queue popping and message processing
+        // so that if the queue popping fails we exponentially back off in order to give the DB room to sort itself out.
+        await this.process();
+      } catch (e) {
+        this.logger.warn('Processing failed with:', e);
+        // TODO: this can be a little smarter as mentioned in the above comment.
+        // But for now, if something fails, wait a brief time to pick up the next message.
+        await this.wait();
+      }
+    }
+  }
 
-      const result = await this.orchestrator.process({
-        entity,
-        state: initialState,
+  private async process() {
+    const { items } = await this.processingDatabase.transaction(async tx => {
+      return this.processingDatabase.getProcessableEntities(tx, {
+        processBatchSize: 1,
       });
+    });
 
-      for (const error of result.errors) {
-        this.logger.warn(error.message);
-      }
+    if (!items.length) {
+      // No items to process, wait and try again.
+      await this.wait();
+      return;
+    }
 
-      if (!result.ok) {
-        return;
-      }
+    const { id, state, unprocessedEntity } = items[0];
 
-      result.completedEntity.metadata.uid = id;
-      await this.stateManager.setProcessingItemResult({
+    const result = await this.orchestrator.process({
+      entity: unprocessedEntity,
+      state,
+    });
+    for (const error of result.errors) {
+      this.logger.warn(error.message);
+    }
+    if (!result.ok) {
+      return;
+    }
+
+    result.completedEntity.metadata.uid = id;
+    await this.processingDatabase.transaction(async tx => {
+      await this.processingDatabase.updateProcessedEntity(tx, {
         id,
-        entity: result.completedEntity,
+        processedEntity: result.completedEntity,
         state: result.state,
-        errors: result.errors,
+        errors: JSON.stringify(result.errors),
         relations: result.relations,
         deferredEntities: result.deferredEntities,
       });
+    });
 
-      const setOfThingsToStitch = new Set<string>([
-        stringifyEntityRef(result.completedEntity),
-        ...result.relations.map(relation =>
-          stringifyEntityRef(relation.source),
-        ),
-      ]);
-      await this.stitcher.stitch(setOfThingsToStitch);
-    }
+    const setOfThingsToStitch = new Set<string>([
+      stringifyEntityRef(result.completedEntity),
+      ...result.relations.map(relation => stringifyEntityRef(relation.source)),
+    ]);
+    await this.stitcher.stitch(setOfThingsToStitch);
+  }
+
+  private async wait() {
+    await new Promise<void>(resolve => setTimeout(resolve, 1000));
   }
 
   async stop() {

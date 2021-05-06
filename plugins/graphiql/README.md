@@ -12,6 +12,7 @@ By exposing GraphiQL as a plugin instead of a standalone app, it's possible to p
 Start out by installing the plugin in your Backstage app:
 
 ```bash
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-graphiql
 ```

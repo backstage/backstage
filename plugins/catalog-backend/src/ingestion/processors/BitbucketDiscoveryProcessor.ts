@@ -22,11 +22,11 @@ import {
 } from '@backstage/integration';
 import { LocationSpec } from '@backstage/catalog-model';
 import {
-  Repository,
   BitbucketRepositoryParser,
   BitbucketClient,
   defaultRepositoryParser,
   paginated,
+  BitbucketRepository,
 } from './bitbucket';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 
@@ -66,20 +66,19 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
       return false;
     }
 
-    const bitbucketConfig = this.integrations.bitbucket.byUrl(location.target)
-      ?.config;
-    if (!bitbucketConfig) {
+    const integration = this.integrations.bitbucket.byUrl(location.target);
+    if (!integration) {
       throw new Error(
         `There is no Bitbucket integration that matches ${location.target}. Please add a configuration entry for it under integrations.bitbucket`,
       );
-    } else if (bitbucketConfig.host === 'bitbucket.org') {
+    } else if (integration.config.host === 'bitbucket.org') {
       throw new Error(
         `Component discovery for Bitbucket Cloud is not yet supported`,
       );
     }
 
     const client = new BitbucketClient({
-      config: bitbucketConfig,
+      config: integration.config,
     });
     const startTimestamp = Date.now();
     this.logger.info(`Reading Bitbucket repositories from ${location.target}`);
@@ -90,9 +89,9 @@ export class BitbucketDiscoveryProcessor implements CatalogProcessor {
 
     for (const repository of result.matches) {
       for await (const entity of this.parser({
-        client: client,
-        repository: repository,
-        path: catalogPath,
+        integration: integration,
+        target: `${repository.links.self[0].href}${catalogPath}`,
+        logger: this.logger,
       })) {
         emit(entity);
       }
@@ -159,5 +158,5 @@ function escapeRegExp(str: string): RegExp {
 
 type Result = {
   scanned: number;
-  matches: Repository[];
+  matches: BitbucketRepository[];
 };

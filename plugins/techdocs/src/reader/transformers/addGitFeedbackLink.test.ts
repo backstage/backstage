@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import { createTestShadowDom } from '../../test-utils';
 import { addGitFeedbackLink } from './addGitFeedbackLink';
 
-const configApi = {
-  getConfigArray: function getConfigArray(key: string) {
-    return key === 'integrations.github'
-      ? [{ data: { host: 'self-hosted-git-hub-provider.com' } }]
-      : [];
-  },
-};
+const integrations = ScmIntegrations.fromConfig(
+  new ConfigReader({
+    integrations: {
+      github: [{ host: 'self-hosted-git-hub-provider.com' }],
+    },
+  }),
+);
 
 describe('addGitFeedbackLink', () => {
   it('adds a feedback link when a Gitlab source edit link is available', () => {
@@ -38,7 +40,7 @@ describe('addGitFeedbackLink', () => {
       </html>
     `,
       {
-        preTransformers: [addGitFeedbackLink(configApi)],
+        preTransformers: [addGitFeedbackLink(integrations)],
         postTransformers: [],
       },
     );
@@ -63,7 +65,7 @@ describe('addGitFeedbackLink', () => {
       </html>
     `,
       {
-        preTransformers: [addGitFeedbackLink(configApi)],
+        preTransformers: [addGitFeedbackLink(integrations)],
         postTransformers: [],
       },
     );
@@ -87,7 +89,7 @@ describe('addGitFeedbackLink', () => {
       </html>
     `,
       {
-        preTransformers: [addGitFeedbackLink(configApi)],
+        preTransformers: [addGitFeedbackLink(integrations)],
         postTransformers: [],
       },
     );
@@ -107,7 +109,7 @@ describe('addGitFeedbackLink', () => {
       </html>
     `,
       {
-        preTransformers: [addGitFeedbackLink(configApi)],
+        preTransformers: [addGitFeedbackLink(integrations)],
         postTransformers: [],
       },
     );
@@ -127,7 +129,7 @@ describe('addGitFeedbackLink', () => {
       </html>
     `,
       {
-        preTransformers: [addGitFeedbackLink(configApi)],
+        preTransformers: [addGitFeedbackLink(integrations)],
         postTransformers: [],
       },
     );
