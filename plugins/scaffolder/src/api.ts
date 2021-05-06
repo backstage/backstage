@@ -129,9 +129,7 @@ export class ScaffolderClient implements ScaffolderApi {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to fetch template parameter schema, ${await response.text()}`,
-      );
+      throw ResponseError.fromResponse(response);
     }
 
     const schema: TemplateParameterSchema = await response.json();
@@ -161,9 +159,7 @@ export class ScaffolderClient implements ScaffolderApi {
     });
 
     if (response.status !== 201) {
-      const status = `${response.status} ${response.statusText}`;
-      const body = await response.text();
-      throw new Error(`Backend request failed, ${status} ${body.trim()}`);
+      throw ResponseError.fromResponse(response);
     }
 
     const { id } = (await response.json()) as { id: string };
@@ -241,6 +237,11 @@ export class ScaffolderClient implements ScaffolderApi {
   async listActions(): Promise<ListActionsResponse> {
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const response = await fetch(`${baseUrl}/v2/actions`);
+
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+
     return await response.json();
   }
 }
