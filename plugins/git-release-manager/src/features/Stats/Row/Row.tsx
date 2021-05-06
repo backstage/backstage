@@ -69,9 +69,7 @@ export function Row({ baseVersion, releaseStat }: RowProps) {
 
         <TableCell>
           {releaseStat.createdAt
-            ? DateTime.fromISO(releaseStat.createdAt)
-                .setLocale('sv-SE')
-                .toFormat('yyyy-MM-dd')
+            ? DateTime.fromISO(releaseStat.createdAt).toFormat('yyyy-MM-dd')
             : '-'}
         </TableCell>
 

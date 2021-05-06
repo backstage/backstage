@@ -83,9 +83,7 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
         <Typography variant="body1">
           {releaseStat.versions.length === 0 ? '-' : 'Release completed '}
           {releaseTimes.value?.endDate &&
-            DateTime.fromISO(releaseTimes.value.endDate)
-              .setLocale('sv-SE')
-              .toFormat('yyyy-MM-dd')}
+            DateTime.fromISO(releaseTimes.value.endDate).toFormat('yyyy-MM-dd')}
         </Typography>
       </Box>
 
@@ -117,9 +115,9 @@ export function ReleaseTime({ releaseStat }: ReleaseTimeProps) {
         <Typography variant="body1">
           Release Candidate created{' '}
           {releaseTimes.value?.startDate &&
-            DateTime.fromISO(releaseTimes.value.startDate)
-              .setLocale('sv-SE')
-              .toFormat('yyyy-MM-dd')}
+            DateTime.fromISO(releaseTimes.value.startDate).toFormat(
+              'yyyy-MM-dd',
+            )}
         </Typography>
       </Box>
     </Wrapper>
