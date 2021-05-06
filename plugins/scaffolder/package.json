@@ -33,6 +33,7 @@
     "@backstage/catalog-client": "^0.3.11",
     "@backstage/catalog-model": "^0.7.8",
     "@backstage/config": "^0.1.5",
+    "@backstage/errors": "^0.1.1",
     "@backstage/core": "^0.7.8",
     "@backstage/integration": "^0.5.2",
     "@backstage/integration-react": "^0.1.1",

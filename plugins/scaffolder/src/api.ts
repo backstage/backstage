@@ -22,6 +22,7 @@ import {
   IdentityApi,
   Observable,
 } from '@backstage/core';
+import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import ObservableImpl from 'zen-observable';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
@@ -173,9 +174,15 @@ export class ScaffolderClient implements ScaffolderApi {
     const token = await this.identityApi.getIdToken();
     const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
     const url = `${baseUrl}/v2/tasks/${encodeURIComponent(taskId)}`;
-    return fetch(url, {
+    const response = await fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
-    }).then(x => x.json());
+    });
+
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
   }
 
   streamLogs({
