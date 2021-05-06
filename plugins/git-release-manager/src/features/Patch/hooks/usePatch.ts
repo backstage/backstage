@@ -353,7 +353,7 @@ ${selectedPatchCommit.commit.message}`,
       message: 'Success callback successfully called 🚀',
       icon: 'success',
     });
-  }, [updatedReleaseRes.value]);
+  }, [updatedReleaseRes.value, updatedReleaseRes.error]);
 
   const TOTAL_STEPS = 9 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);

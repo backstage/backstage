@@ -186,7 +186,7 @@ export function usePromoteRc({
         icon: 'success',
       });
     }
-  }, [promotedReleaseRes.value]);
+  }, [promotedReleaseRes.value, promotedReleaseRes.error]);
 
   const TOTAL_STEPS = 4 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);

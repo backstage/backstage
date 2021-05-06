@@ -281,7 +281,7 @@ export function useCreateReleaseCandidate({
         icon: 'success',
       });
     }
-  }, [createReleaseRes.value]);
+  }, [createReleaseRes.value, createReleaseRes.error]);
 
   const TOTAL_STEPS = 6 + (!!onSuccess ? 1 : 0);
   const [progress, setProgress] = useState(0);
