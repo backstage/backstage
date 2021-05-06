@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { ShortcutForm } from './ShortcutForm';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('ShortcutForm', () => {
   const props = {
@@ -25,7 +25,7 @@ describe('ShortcutForm', () => {
   };
 
   it('displays validation messages', async () => {
-    render(wrapInTestApp(<ShortcutForm {...props} />));
+    await renderInTestApp(<ShortcutForm {...props} />);
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -44,13 +44,11 @@ describe('ShortcutForm', () => {
   });
 
   it('calls the save handler', async () => {
-    render(
-      wrapInTestApp(
-        <ShortcutForm
-          {...props}
-          formValues={{ url: '/some-url', title: 'some title' }}
-        />,
-      ),
+    await renderInTestApp(
+      <ShortcutForm
+        {...props}
+        formValues={{ url: '/some-url', title: 'some title' }}
+      />,
     );
 
     fireEvent.click(screen.getByText('Save'));
@@ -63,7 +61,7 @@ describe('ShortcutForm', () => {
   });
 
   it('calls the close handler', async () => {
-    render(wrapInTestApp(<ShortcutForm {...props} />));
+    await renderInTestApp(<ShortcutForm {...props} />);
 
     fireEvent.click(screen.getByText('Cancel'));
     await waitFor(() => {

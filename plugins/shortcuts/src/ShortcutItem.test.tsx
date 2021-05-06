@@ -15,12 +15,16 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { ShortcutItem } from './ShortcutItem';
 import { Shortcut } from './types';
 import { SidebarContext } from '@backstage/core';
 import { LocalStoredShortcuts } from './api';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import {
+  MockStorageApi,
+  renderInTestApp,
+  wrapInTestApp,
+} from '@backstage/test-utils';
 import { pageTheme } from '@backstage/theme';
 
 describe('ShortcutItem', () => {
@@ -32,17 +36,13 @@ describe('ShortcutItem', () => {
   const api = new LocalStoredShortcuts(MockStorageApi.create());
 
   it('displays the shortcut', async () => {
-    render(
-      wrapInTestApp(
-        <SidebarContext.Provider value={{ isOpen: true }}>
-          <ShortcutItem api={api} shortcut={shortcut} />
-        </SidebarContext.Provider>,
-      ),
+    await renderInTestApp(
+      <SidebarContext.Provider value={{ isOpen: true }}>
+        <ShortcutItem api={api} shortcut={shortcut} />
+      </SidebarContext.Provider>,
     );
-    await waitFor(() => {
-      expect(screen.getByText('ST')).toBeInTheDocument();
-      expect(screen.getByText('some title')).toBeInTheDocument();
-    });
+    expect(screen.getByText('ST')).toBeInTheDocument();
+    expect(screen.getByText('some title')).toBeInTheDocument();
   });
 
   it('calculates the shortcut text correctly', async () => {
@@ -62,13 +62,10 @@ describe('ShortcutItem', () => {
       title: 'more | title words',
     };
 
-    const { rerender } = render(
-      wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut1} />),
+    const { rerender } = await renderInTestApp(
+      <ShortcutItem api={api} shortcut={shortcut1} />,
     );
-
-    await waitFor(() => {
-      expect(screen.getByText('On')).toBeInTheDocument();
-    });
+    expect(screen.getByText('On')).toBeInTheDocument();
 
     rerender(wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut2} />));
     await waitFor(() => {
@@ -82,15 +79,13 @@ describe('ShortcutItem', () => {
   });
 
   it('gets the color based on the theme', async () => {
-    const { rerender } = render(
-      wrapInTestApp(<ShortcutItem api={api} shortcut={shortcut} />),
+    const { rerender } = await renderInTestApp(
+      <ShortcutItem api={api} shortcut={shortcut} />,
     );
 
-    await waitFor(() => {
-      expect(document.querySelector('circle')?.getAttribute('fill')).toEqual(
-        pageTheme.tool.colors[0],
-      );
-    });
+    expect(document.querySelector('circle')?.getAttribute('fill')).toEqual(
+      pageTheme.tool.colors[0],
+    );
 
     const newShortcut: Shortcut = {
       id: 'id',

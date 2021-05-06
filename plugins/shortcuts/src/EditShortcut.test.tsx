@@ -15,11 +15,11 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { EditShortcut } from './EditShortcut';
 import { Shortcut } from './types';
 import { LocalStoredShortcuts } from './api';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core';
 
 describe('EditShortcut', () => {
@@ -42,26 +42,22 @@ describe('EditShortcut', () => {
   });
 
   it('displays the title', async () => {
-    render(wrapInTestApp(<EditShortcut {...props} />));
+    await renderInTestApp(<EditShortcut {...props} />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Edit Shortcut')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Edit Shortcut')).toBeInTheDocument();
   });
 
   it('closes the popup', async () => {
-    render(wrapInTestApp(<EditShortcut {...props} />));
+    await renderInTestApp(<EditShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Cancel'));
-    await waitFor(() => {
-      expect(props.onClose).toHaveBeenCalledTimes(1);
-    });
+    expect(props.onClose).toHaveBeenCalledTimes(1);
   });
 
   it('updates the shortcut', async () => {
     const spy = jest.spyOn(api, 'update');
 
-    render(wrapInTestApp(<EditShortcut {...props} />));
+    await renderInTestApp(<EditShortcut {...props} />);
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -82,12 +78,10 @@ describe('EditShortcut', () => {
   it('removes the shortcut', async () => {
     const spy = jest.spyOn(api, 'remove');
 
-    render(wrapInTestApp(<EditShortcut {...props} />));
+    await renderInTestApp(<EditShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Remove'));
-    await waitFor(() => {
-      expect(spy).toBeCalledWith('id');
-    });
+    expect(spy).toBeCalledWith('id');
   });
 
   it('displays errors', async () => {
@@ -99,13 +93,11 @@ describe('EditShortcut', () => {
       .spyOn(api, 'remove')
       .mockRejectedValueOnce(new Error('some remove error'));
 
-    render(
-      wrapInTestApp(
-        <>
-          <AlertDisplay />
-          <EditShortcut {...props} />
-        </>,
-      ),
+    await renderInTestApp(
+      <>
+        <AlertDisplay />
+        <EditShortcut {...props} />
+      </>,
     );
 
     fireEvent.click(screen.getByText('Save'));

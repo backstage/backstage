@@ -16,8 +16,8 @@
 
 import React from 'react';
 import { SidebarContext, ApiProvider, ApiRegistry } from '@backstage/core';
-import { wrapInTestApp, MockStorageApi } from '@backstage/test-utils';
-import { render, screen, waitFor } from '@testing-library/react';
+import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
+import { screen, waitFor } from '@testing-library/react';
 import { Shortcuts } from './Shortcuts';
 import { LocalStoredShortcuts, shortcutsApiRef } from './api';
 
@@ -27,14 +27,12 @@ const apis = ApiRegistry.from([
 
 describe('Shortcuts', () => {
   it('displays an add button', async () => {
-    render(
-      wrapInTestApp(
-        <SidebarContext.Provider value={{ isOpen: true }}>
-          <ApiProvider apis={apis}>
-            <Shortcuts />
-          </ApiProvider>
-        </SidebarContext.Provider>,
-      ),
+    await renderInTestApp(
+      <SidebarContext.Provider value={{ isOpen: true }}>
+        <ApiProvider apis={apis}>
+          <Shortcuts />
+        </ApiProvider>
+      </SidebarContext.Provider>,
     );
     await waitFor(() => !screen.queryByTestId('progress'));
     expect(screen.getByText('Add Shortcuts')).toBeInTheDocument();

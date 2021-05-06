@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { AddShortcut } from './AddShortcut';
 import { LocalStoredShortcuts } from './api';
-import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
+import { MockStorageApi, renderInTestApp } from '@backstage/test-utils';
 import { AlertDisplay } from '@backstage/core';
 
 describe('AddShortcut', () => {
@@ -36,26 +36,22 @@ describe('AddShortcut', () => {
   });
 
   it('displays the title', async () => {
-    render(wrapInTestApp(<AddShortcut {...props} />));
+    await renderInTestApp(<AddShortcut {...props} />);
 
-    await waitFor(() => {
-      expect(screen.getByText('Add Shortcut')).toBeInTheDocument();
-    });
+    expect(screen.getByText('Add Shortcut')).toBeInTheDocument();
   });
 
   it('closes the popup', async () => {
-    render(wrapInTestApp(<AddShortcut {...props} />));
+    await renderInTestApp(<AddShortcut {...props} />);
 
     fireEvent.click(screen.getByText('Cancel'));
-    await waitFor(() => {
-      expect(props.onClose).toHaveBeenCalledTimes(1);
-    });
+    expect(props.onClose).toHaveBeenCalledTimes(1);
   });
 
   it('saves the input', async () => {
     const spy = jest.spyOn(api, 'add');
 
-    render(wrapInTestApp(<AddShortcut {...props} />));
+    await renderInTestApp(<AddShortcut {...props} />);
 
     const urlInput = screen.getByPlaceholderText('Enter a URL');
     const titleInput = screen.getByPlaceholderText('Enter a display name');
@@ -74,11 +70,9 @@ describe('AddShortcut', () => {
   it('pastes the values', async () => {
     const spy = jest.spyOn(api, 'add');
 
-    render(
-      wrapInTestApp(<AddShortcut {...props} />, {
-        routeEntries: ['/some-initial-url'],
-      }),
-    );
+    await renderInTestApp(<AddShortcut {...props} />, {
+      routeEntries: ['/some-initial-url'],
+    });
 
     fireEvent.click(screen.getByText('Use current page'));
     fireEvent.click(screen.getByText('Save'));
@@ -93,13 +87,11 @@ describe('AddShortcut', () => {
   it('displays errors', async () => {
     jest.spyOn(api, 'add').mockRejectedValueOnce(new Error('some add error'));
 
-    render(
-      wrapInTestApp(
-        <>
-          <AlertDisplay />
-          <AddShortcut {...props} />
-        </>,
-      ),
+    await renderInTestApp(
+      <>
+        <AlertDisplay />
+        <AddShortcut {...props} />
+      </>,
     );
 
     fireEvent.click(screen.getByText('Use current page'));
