@@ -150,7 +150,7 @@ export const CatalogTable = ({
     };
   });
 
-  const typeColumn = defaultColumns.find(c => c.title === 'Type');
+  const typeColumn = (columns || defaultColumns).find(c => c.title === 'Type');
   if (typeColumn) {
     typeColumn.hidden = view !== 'Other';
   }
