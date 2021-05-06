@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useAsync } from 'react-use';
+import { useEffect } from 'react';
+import { useAsyncFn } from 'react-use';
 
 import { GitReleaseApi } from '../api/GitReleaseClient';
 import { Project } from '../contexts/ProjectContext';
@@ -22,15 +23,13 @@ import { Project } from '../contexts/ProjectContext';
 interface GetGitBatchInfo {
   project: Project;
   pluginApiClient: GitReleaseApi;
-  refetchTrigger: number;
 }
 
 export const useGetGitBatchInfo = ({
   project,
   pluginApiClient,
-  refetchTrigger,
 }: GetGitBatchInfo) => {
-  const gitBatchInfo = useAsync(async () => {
+  const [gitBatchInfo, fetchGitBatchInfo] = useAsyncFn(async () => {
     const [{ repository }, { latestRelease }] = await Promise.all([
       pluginApiClient.getRepository({
         owner: project.owner,
@@ -61,9 +60,14 @@ export const useGetGitBatchInfo = ({
       releaseBranch,
       repository,
     };
-  }, [project, refetchTrigger]);
+  });
+
+  useEffect(() => {
+    fetchGitBatchInfo();
+  }, [fetchGitBatchInfo, project]);
 
   return {
     gitBatchInfo,
+    fetchGitBatchInfo,
   };
 };

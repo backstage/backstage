@@ -40,7 +40,7 @@ export const ResponseStepDialog = ({
   responseSteps,
   title,
 }: DialogProps) => {
-  const { setRefetchTrigger } = useRefetchContext();
+  const { fetchGitBatchInfo } = useRefetchContext();
 
   return (
     <MaterialDialog
@@ -60,7 +60,7 @@ export const ResponseStepDialog = ({
 
       <DialogActions style={{ padding: 20 }}>
         <Button
-          onClick={() => setRefetchTrigger(Date.now())}
+          onClick={() => fetchGitBatchInfo()}
           disabled={progress < 100}
           variant="contained"
           size="large"

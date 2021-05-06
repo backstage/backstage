@@ -37,11 +37,9 @@ export function Features({
 }) {
   const pluginApiClient = useApi(gitReleaseManagerApiRef);
   const { project } = useProjectContext();
-  const [refetchTrigger, setRefetchTrigger] = useState(0);
-  const { gitBatchInfo } = useGetGitBatchInfo({
+  const { gitBatchInfo, fetchGitBatchInfo } = useGetGitBatchInfo({
     pluginApiClient,
     project,
-    refetchTrigger,
   });
 
   const { versioningStrategyMatches } = useVersioningStrategyMatchesRepoTags({
@@ -90,7 +88,7 @@ export function Features({
   }
 
   return (
-    <RefetchContext.Provider value={{ refetchTrigger, setRefetchTrigger }}>
+    <RefetchContext.Provider value={{ fetchGitBatchInfo }}>
       <ErrorBoundary>
         {gitBatchInfo.value.latestRelease && !versioningStrategyMatches && (
           <Alert severity="warning" style={{ marginBottom: 20 }}>

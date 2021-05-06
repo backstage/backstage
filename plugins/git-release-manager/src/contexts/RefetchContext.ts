@@ -19,11 +19,7 @@ import { createContext, useContext } from 'react';
 import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 
 export const RefetchContext = createContext<
-  | {
-      refetchTrigger: number;
-      setRefetchTrigger: React.Dispatch<React.SetStateAction<number>>;
-    }
-  | undefined
+  { fetchGitBatchInfo: () => any } | undefined
 >(undefined);
 
 export const useRefetchContext = () => {
@@ -34,6 +30,6 @@ export const useRefetchContext = () => {
   }
 
   return {
-    setRefetchTrigger: refetch.setRefetchTrigger,
+    fetchGitBatchInfo: refetch.fetchGitBatchInfo,
   };
 };
