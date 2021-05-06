@@ -63,11 +63,12 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngine } from '../next/types';
+import { CatalogProcessingEngine, LocationService } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
+import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
@@ -233,6 +234,7 @@ export class NextCatalogBuilder {
     locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
+    locationService: LocationService;
   }> {
     const { config, database, logger } = this.env;
 
@@ -274,12 +276,16 @@ export class NextCatalogBuilder {
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer = new RepoLocationAnalyzer(logger);
-
+    const locationService = new DefaultLocationService(
+      locationStore,
+      orchestrator,
+    );
     return {
       entitiesCatalog,
       locationsCatalog,
       locationAnalyzer,
       processingEngine,
+      locationService,
     };
   }
 
