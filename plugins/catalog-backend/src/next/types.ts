@@ -59,7 +59,6 @@ export interface EntityProvider {
 
 export type EntityProcessingRequest = {
   entity: Entity;
-  eager?: boolean;
   state: Map<string, JsonObject>; // Versions for multiple deployments etc
 };
 
