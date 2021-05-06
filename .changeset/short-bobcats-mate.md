@@ -3,4 +3,5 @@
 '@backstage/plugin-api-docs': patch
 ---
 
-Fix setting the state with `useQueryParamState` makes inputs lose their focus.
+Fix state persisted in the URL make search input in the table toolbar lose their
+focus.
