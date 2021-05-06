@@ -17,7 +17,6 @@
 import React from 'react';
 import { Alert } from '@material-ui/lab';
 import {
-  Box,
   makeStyles,
   Table,
   TableBody,
@@ -70,20 +69,6 @@ export function DialogBody() {
     project,
   });
 
-  const shouldWarn =
-    releaseStats.unmappableTags.length > 0 ||
-    releaseStats.unmatchedTags.length > 0 ||
-    releaseStats.unmatchedReleases.length > 0;
-
-  if (shouldWarn) {
-    // eslint-disable-next-line no-console
-    console.log("⚠️ Here's a summary of unmapped/unmatched tags/releases", {
-      unmatchedReleases: releaseStats.unmatchedReleases,
-      unmatchedTags: releaseStats.unmatchedTags,
-      unmappableTags: releaseStats.unmappableTags,
-    });
-  }
-
   return (
     <ReleaseStatsContext.Provider value={{ releaseStats }}>
       <Info />
@@ -115,7 +100,9 @@ export function DialogBody() {
           </TableBody>
         </Table>
 
-        <Box marginTop={2}>{shouldWarn && <Warn />}</Box>
+        {(releaseStats.unmappableTags.length > 0 ||
+          releaseStats.unmatchedTags.length > 0 ||
+          releaseStats.unmatchedReleases.length > 0) && <Warn />}
       </TableContainer>
     </ReleaseStatsContext.Provider>
   );

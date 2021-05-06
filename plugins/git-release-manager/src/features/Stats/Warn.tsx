@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Alert } from '@material-ui/lab';
+import { Box, Button } from '@material-ui/core';
 
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useReleaseStatsContext } from './contexts/ReleaseStatsContext';
@@ -25,30 +26,48 @@ export const Warn = () => {
   const { project } = useProjectContext();
 
   return (
-    <Alert severity="warning" style={{ marginBottom: 10 }}>
-      {releaseStats.unmappableTags.length > 0 && (
-        <div>
-          Failed to map <strong>{releaseStats.unmappableTags.length}</strong>{' '}
-          tags to releases
-        </div>
-      )}
+    <Box marginTop={2}>
+      <Alert severity="warning" style={{ marginBottom: 10 }}>
+        {releaseStats.unmappableTags.length > 0 && (
+          <div>
+            Failed to map <strong>{releaseStats.unmappableTags.length}</strong>{' '}
+            tags to releases
+          </div>
+        )}
 
-      {releaseStats.unmatchedTags.length > 0 && (
-        <div>
-          Failed to match <strong>{releaseStats.unmatchedTags.length}</strong>{' '}
-          tags to {project.versioningStrategy}
-        </div>
-      )}
+        {releaseStats.unmatchedTags.length > 0 && (
+          <div>
+            Failed to match <strong>{releaseStats.unmatchedTags.length}</strong>{' '}
+            tags to {project.versioningStrategy}
+          </div>
+        )}
 
-      {releaseStats.unmatchedReleases.length > 0 && (
-        <div>
-          Failed to match{' '}
-          <strong>{releaseStats.unmatchedReleases.length}</strong> releases to{' '}
-          {project.versioningStrategy}
-        </div>
-      )}
+        {releaseStats.unmatchedReleases.length > 0 && (
+          <div>
+            Failed to match{' '}
+            <strong>{releaseStats.unmatchedReleases.length}</strong> releases to{' '}
+            {project.versioningStrategy}
+          </div>
+        )}
 
-      <div>See full output in the console</div>
-    </Alert>
+        <Box marginTop={1} marginBottom={1}>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={() => {
+              // eslint-disable-next-line no-console
+              console.log("Here's all unmapped/unmatched tags/releases", {
+                unmatchedReleases: releaseStats.unmatchedReleases,
+                unmatchedTags: releaseStats.unmatchedTags,
+                unmappableTags: releaseStats.unmappableTags,
+              });
+            }}
+          >
+            Log all unmapped/unmatched tags/releases to the console
+          </Button>
+        </Box>
+      </Alert>
+    </Box>
   );
 };
