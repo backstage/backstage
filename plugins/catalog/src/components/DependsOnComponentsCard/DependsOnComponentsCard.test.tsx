@@ -91,14 +91,18 @@ describe('<DependsOnComponentsCard />', () => {
         },
       ],
     };
-    catalogApi.getEntityByName.mockResolvedValue({
-      apiVersion: 'v1',
-      kind: 'Component',
-      metadata: {
-        namespace: 'my-namespace',
-        name: 'target-name',
-      },
-      spec: {},
+    catalogApi.getEntities.mockResolvedValue({
+      items: [
+        {
+          apiVersion: 'v1',
+          kind: 'Component',
+          metadata: {
+            namespace: 'my-namespace',
+            name: 'target-name',
+          },
+          spec: {},
+        },
+      ],
     });
 
     const { getByText } = await renderInTestApp(
