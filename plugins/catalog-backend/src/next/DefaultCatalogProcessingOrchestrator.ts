@@ -97,11 +97,8 @@ export class DefaultCatalogProcessingOrchestrator
   async process(
     request: EntityProcessingRequest,
   ): Promise<EntityProcessingResult> {
-    const { entity } = request;
-
-    const result = await this.processSingleEntity(entity);
-
-    return result;
+    // TODO: implement dryRun/eager
+    return this.processSingleEntity(request.entity);
   }
 
   private async processSingleEntity(

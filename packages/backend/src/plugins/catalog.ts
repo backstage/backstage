@@ -20,6 +20,7 @@ import {
   createRouter,
   NextCatalogBuilder,
   runPeriodically,
+  createNextRouter,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -36,18 +37,18 @@ export default async function createPlugin(
     const builder = new NextCatalogBuilder(env);
     const {
       entitiesCatalog,
-      locationsCatalog,
       locationAnalyzer,
       processingEngine,
+      locationService,
     } = await builder.build();
 
     // TODO(jhaals): run and manage in background.
     await processingEngine.start();
 
-    return await createRouter({
+    return await createNextRouter({
       entitiesCatalog,
-      locationsCatalog,
       locationAnalyzer,
+      locationService,
       logger: env.logger,
       config: env.config,
     });

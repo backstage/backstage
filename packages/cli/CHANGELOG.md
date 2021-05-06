@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.6.10
+
+### Patch Changes
+
+- f65adcde7: Fix some transitive dependency warnings in yarn
+- fc79a6dd3: Added lax option to backstage-cli app:build command
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config-loader@0.6.1
+  - @backstage/config@0.1.5
+
 ## 0.6.9
 
 ### Patch Changes
