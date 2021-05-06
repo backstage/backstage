@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.5
+
+### Patch Changes
+
+- 81c54d1f2: Fetch relations in batches in `useRelatedEntities`
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/core@0.7.8
+  - @backstage/catalog-model@0.7.8
+  - @backstage/catalog-client@0.3.11
+
 ## 0.1.4
 
 ### Patch Changes
