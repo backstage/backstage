@@ -13,9 +13,10 @@ Backstage entity by a user. The ideas here were originally proposed in the RFC
 
 When a user signs in to Backstage, inside the `claims` field of their Backstage
 ID Token (which are standard JWT tokens) a special `ent` field is set. `ent`
-contains a list of [entity references](../features/software-catalog/references),
-each of which denotes an identity or a membership that is relevant to the user.
-There is no guarantee that these correspond to actual existing catalog entities.
+contains a list of
+[entity references](../features/software-catalog/references.md), each of which
+denotes an identity or a membership that is relevant to the user. There is no
+guarantee that these correspond to actual existing catalog entities.
 
 Let's take an example sign-in resolver for the Google auth provider and explore
 how the `ent` field inside `claims` can be set.
