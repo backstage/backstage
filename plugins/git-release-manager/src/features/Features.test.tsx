@@ -22,13 +22,8 @@ import { mockApiClient, mockCalverProject } from '../test-helpers/test-helpers';
 import { TEST_IDS } from '../test-helpers/test-ids';
 
 jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
   useApi: () => mockApiClient,
-  createApiRef: jest.fn(),
-  ErrorBoundary: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  InfoCard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  Progress: (props: Record<string, any>) => <div {...props} />,
 }));
 jest.mock('../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
@@ -55,7 +50,7 @@ describe('Features', () => {
 
     expect(getByTestId(TEST_IDS.info.info)).toMatchInlineSnapshot(`
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root MuiBox-root-9"
         data-testid="grm--info"
       >
         <h6
@@ -75,6 +70,7 @@ describe('Features', () => {
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
             href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
+            to="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
           >
             Git releases
           </a>

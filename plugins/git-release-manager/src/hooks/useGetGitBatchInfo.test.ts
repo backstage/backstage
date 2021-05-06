@@ -26,7 +26,6 @@ describe('useGetHubBatchInfo', () => {
       useGetGitBatchInfo({
         pluginApiClient: mockApiClient,
         project: mockSemverProject,
-        refetchTrigger: 1337,
       }),
     );
 
@@ -39,7 +38,7 @@ describe('useGetHubBatchInfo', () => {
         "loading": false,
         "value": Object {
           "latestRelease": Object {
-            "htmlUrl": "mock_release_html_url",
+            "htmlUrl": "https://mock_release_html_url",
             "id": 1,
             "prerelease": false,
             "tagName": "rc-2020.01.01_1",
@@ -55,7 +54,7 @@ describe('useGetHubBatchInfo', () => {
               "sha": "mock_branch_commit_sha",
             },
             "links": Object {
-              "html": "mock_branch_links_html",
+              "html": "https://mock_branch_links_html",
             },
             "name": "rc/1.2.3",
           },
@@ -76,7 +75,6 @@ describe('useGetHubBatchInfo', () => {
       useGetGitBatchInfo({
         pluginApiClient: mockApiClient,
         project: mockSemverProject,
-        refetchTrigger: 1337,
       }),
     );
 

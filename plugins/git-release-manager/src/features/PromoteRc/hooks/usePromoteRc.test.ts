@@ -26,8 +26,8 @@ import {
 import { usePromoteRc } from './usePromoteRc';
 
 jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
   useApi: () => mockApiClient,
-  createApiRef: jest.fn(),
 }));
 jest.mock('../../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
@@ -88,7 +88,7 @@ describe('usePromoteRc', () => {
             "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
           },
           Object {
-            "link": "mock_update_release_html_url",
+            "link": "https://mock_update_release_html_url",
             "message": "Promoted \\"mock_update_release_name\\"",
             "secondaryMessage": "from \\"rc-2020.01.01_1\\" to \\"mock_update_release_tag_name\\"",
           },

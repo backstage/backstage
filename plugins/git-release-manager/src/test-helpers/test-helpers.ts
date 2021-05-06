@@ -62,7 +62,7 @@ export const createMockCommit = (
     commit: {
       message: 'mock_commit_commit_message',
     },
-    htmlUrl: 'mock_commit_html_url',
+    htmlUrl: 'https://mock_commit_html_url',
     sha: 'mock_commit_sha',
     createdAt: '2000-01-01T10:00:00.000Z',
     ...overrides,
@@ -129,7 +129,7 @@ const createMockRelease = ({
   NonNullable<GetLatestReleaseResult['latestRelease']>
 > = {}): NonNullable<GetLatestReleaseResult['latestRelease']> => ({
   id,
-  htmlUrl: 'mock_release_html_url',
+  htmlUrl: 'https://mock_release_html_url',
   prerelease,
   tagName: MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER,
   targetCommitish: MOCK_RELEASE_BRANCH_NAME_CALVER,
@@ -175,7 +175,7 @@ const createMockBranch = ({
     },
   },
   links: {
-    html: 'mock_branch_links_html',
+    html: 'https://mock_branch_links_html',
   },
   ...rest,
 });
@@ -188,7 +188,7 @@ const createMockRecentCommit = ({
   ...rest
 }: Partial<GetRecentCommitsResultSingle>): GetRecentCommitsResultSingle => ({
   author: {
-    htmlUrl: 'author_html_url',
+    htmlUrl: 'https://author_html_url',
     login: 'author_login',
   },
   commit: {
@@ -196,7 +196,7 @@ const createMockRecentCommit = ({
   },
   sha: 'mock_sha',
   firstParentSha: 'mock_first_parent_sha',
-  htmlUrl: 'mock_htmlUrl',
+  htmlUrl: 'https://mock_htmlUrl',
   ...rest,
 });
 
@@ -249,7 +249,7 @@ export const mockApiClient: GitReleaseApi = {
   getCommit: jest.fn(async () => ({
     commit: {
       sha: 'latestCommit.sha',
-      htmlUrl: 'latestCommit.html_url',
+      htmlUrl: 'https://latestCommit.html_url',
       commit: {
         message: 'latestCommit.commit.message',
       },
@@ -271,14 +271,14 @@ export const mockApiClient: GitReleaseApi = {
   createRelease: jest.fn(async () => ({
     release: {
       name: 'mock_createRelease_name',
-      htmlUrl: 'mock_createRelease_html_url',
+      htmlUrl: 'https://mock_createRelease_html_url',
       tagName: 'mock_createRelease_tag_name',
     },
   })),
 
   getComparison: jest.fn(async () => ({
     comparison: {
-      htmlUrl: 'mock_compareCommits_html_url',
+      htmlUrl: 'https://mock_compareCommits_html_url',
       aheadBy: 1,
     },
   })),
@@ -308,7 +308,7 @@ export const mockApiClient: GitReleaseApi = {
 
   merge: jest.fn(async () => ({
     merge: {
-      htmlUrl: 'mock_merge_html_url',
+      htmlUrl: 'https://mock_merge_html_url',
       commit: {
         message: 'mock_merge_commit_message',
         tree: {
@@ -322,7 +322,7 @@ export const mockApiClient: GitReleaseApi = {
     release: {
       name: 'mock_update_release_name',
       tagName: 'mock_update_release_tag_name',
-      htmlUrl: 'mock_update_release_html_url',
+      htmlUrl: 'https://mock_update_release_html_url',
     },
   })),
 
@@ -343,7 +343,7 @@ export const mockApiClient: GitReleaseApi = {
         name: 'mock_release_name',
         tagName: 'mock_release_tag_name',
         createdAt: 'mock_release_published_at',
-        htmlUrl: 'mock_release_html_url',
+        htmlUrl: 'https://mock_release_html_url',
       },
     ],
   })),

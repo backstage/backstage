@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import { Link, Typography, Button, Box } from '@material-ui/core';
+import { Typography, Button, Box } from '@material-ui/core';
 import BarChartIcon from '@material-ui/icons/BarChart';
 
 import {
@@ -28,6 +28,7 @@ import { Stats } from '../Stats/Stats';
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';
 import flowImage from './flow.png';
+import { Link } from '@backstage/core';
 
 interface InfoCardProps {
   releaseBranch: GetBranchResult['branch'] | null;
@@ -52,7 +53,7 @@ export const Info = ({
           <strong>Git</strong>: The source control system where releases reside
           in a practical sense. Read more about{' '}
           <Link
-            href="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
+            to="https://docs.github.com/en/github/administering-a-repository/managing-releases-in-a-repository"
             target="_blank"
           >
             Git releases

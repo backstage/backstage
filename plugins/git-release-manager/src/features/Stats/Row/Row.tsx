@@ -19,13 +19,13 @@ import { DateTime } from 'luxon';
 import {
   Collapse,
   IconButton,
-  Link,
   makeStyles,
   TableCell,
   TableRow,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { Link } from '@backstage/core';
 
 import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 import { RowCollapsed } from './RowCollapsed/RowCollapsed';
@@ -61,7 +61,7 @@ export function Row({ baseVersion, releaseStat }: RowProps) {
         </TableCell>
 
         <TableCell component="th" scope="row">
-          <Link href={releaseStat.htmlUrl} target="_blank">
+          <Link to={releaseStat.htmlUrl} target="_blank">
             {baseVersion}
             {releaseStat.versions.length === 0 ? ' (prerelease)' : ''}
           </Link>

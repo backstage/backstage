@@ -22,7 +22,6 @@ import {
   Button,
   Checkbox,
   IconButton,
-  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -33,7 +32,7 @@ import {
 } from '@material-ui/core';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { Progress, useApi } from '@backstage/core';
+import { Link, Progress, useApi } from '@backstage/core';
 
 import {
   GetBranchResult,
@@ -230,18 +229,20 @@ export const PatchBody = ({
                       <>
                         <Link
                           color="primary"
-                          href={commit.htmlUrl}
+                          to={commit.htmlUrl}
                           target="_blank"
                         >
                           {commit.sha}
                         </Link>{' '}
-                        <Link
-                          color="primary"
-                          href={commit.author.htmlUrl}
-                          target="_blank"
-                        >
-                          @{commit.author.login}
-                        </Link>
+                        {commit.author.htmlUrl && (
+                          <Link
+                            color="primary"
+                            to={commit.author.htmlUrl}
+                            target="_blank"
+                          >
+                            @{commit.author.login}
+                          </Link>
+                        )}
                       </>
                     }
                   />

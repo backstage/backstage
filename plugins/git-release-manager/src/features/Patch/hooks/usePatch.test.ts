@@ -29,8 +29,8 @@ import {
 import { usePatch } from './usePatch';
 
 jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
   useApi: () => mockApiClient,
-  createApiRef: jest.fn(),
 }));
 jest.mock('../../../contexts/UserContext', () => ({
   useUserContext: () => ({ user: mockUser }),
@@ -79,7 +79,7 @@ describe('patch', () => {
         "progress": 100,
         "responseSteps": Array [
           Object {
-            "link": "mock_branch_links_html",
+            "link": "https://mock_branch_links_html",
             "message": "Fetched release branch \\"rc/1.2.3\\"",
           },
           Object {
@@ -90,7 +90,7 @@ describe('patch', () => {
             "message": "Forced branch \\"rc/2020.01.01_1\\" to temporary commit \\"mock_commit_sha\\"",
           },
           Object {
-            "link": "mock_merge_html_url",
+            "link": "https://mock_merge_html_url",
             "message": "Merged temporary commit into \\"rc/2020.01.01_1\\"",
             "secondaryMessage": "with message \\"mock_merge_commit_message\\"",
           },
@@ -110,7 +110,7 @@ describe('patch', () => {
             "secondaryMessage": "for tag object \\"mock_tag_object_tag\\"",
           },
           Object {
-            "link": "mock_update_release_html_url",
+            "link": "https://mock_update_release_html_url",
             "message": "Updated release \\"mock_update_release_name\\"",
             "secondaryMessage": "with tag mock_update_release_tag_name",
           },

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { waitFor } from '@testing-library/react';
 
@@ -28,9 +27,8 @@ import {
 import { useCreateReleaseCandidate } from './useCreateReleaseCandidate';
 
 jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
   useApi: () => mockApiClient,
-  createApiRef: jest.fn(),
-  Progress: (props: Record<string, any>) => <div {...props} />,
 }));
 jest.mock('../../../contexts/UserContext', () => ({
   useUserContext: () => ({ user: mockUser }),
@@ -78,7 +76,7 @@ describe('useCreateReleaseCandidate', () => {
         "progress": 100,
         "responseSteps": Array [
           Object {
-            "link": "latestCommit.html_url",
+            "link": "https://latestCommit.html_url",
             "message": "Fetched latest commit from \\"mock_defaultBranch\\"",
             "secondaryMessage": "with message \\"latestCommit.commit.message\\"",
           },
@@ -95,12 +93,12 @@ describe('useCreateReleaseCandidate', () => {
             "secondaryMessage": "with ref \\"mock_createRef_ref\\"",
           },
           Object {
-            "link": "mock_compareCommits_html_url",
+            "link": "https://mock_compareCommits_html_url",
             "message": "Fetched commit comparison",
             "secondaryMessage": "rc/2020.01.01_1...rc/2020.01.01_1",
           },
           Object {
-            "link": "mock_createRelease_html_url",
+            "link": "https://mock_createRelease_html_url",
             "message": "Created Release Candidate \\"mock_createRelease_name\\"",
             "secondaryMessage": "with tag \\"rc-2020.01.01_1\\"",
           },
