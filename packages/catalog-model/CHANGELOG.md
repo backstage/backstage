@@ -1,5 +1,13 @@
 # @backstage/catalog-model
 
+## 0.7.8
+
+### Patch Changes
+
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config@0.1.5
+
 ## 0.7.7
 
 ### Patch Changes
