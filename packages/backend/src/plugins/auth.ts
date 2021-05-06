@@ -17,7 +17,6 @@
 import {
   createGoogleProvider,
   createRouter,
-  defaultAuthProviderFactories,
 } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -34,7 +33,6 @@ export default async function createPlugin({
     database,
     discovery,
     providerFactories: {
-      ...defaultAuthProviderFactories,
       google: createGoogleProvider({
         signIn: {
           // resolver: 'email',
