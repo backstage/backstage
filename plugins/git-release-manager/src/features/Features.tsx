@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, ComponentProps } from 'react';
+import React, { ComponentProps } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { ErrorBoundary, Progress, useApi } from '@backstage/core';
 
