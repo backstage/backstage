@@ -15,7 +15,7 @@
  */
 
 import { Entity, UserEntity } from '@backstage/catalog-model';
-import { isOwnerOf } from './utils';
+import { FieldValues } from 'react-hook-form';
 
 export type FilterEnvironment = {
   user: UserEntity | undefined;
@@ -24,12 +24,6 @@ export type FilterEnvironment = {
 };
 
 export type EntityFilter = {
-  /**
-   * A unique identifier for this filter; used to manage filter registration and lookup in the
-   * useEntityListProvider hook.
-   */
-  id: string;
-
   /**
    * Get filters to add to the catalog-backend request. These are a dot-delimited field with
    * value(s) to accept, extracted on the backend by parseEntityFilterParams. For example:
@@ -44,58 +38,17 @@ export type EntityFilter = {
    * filtering, such as a user's starred entities.
    *
    * @param entity
-   * @param env
    */
-  filterEntity?: (entity: Entity, env: FilterEnvironment) => boolean;
+  filterEntity?: (entity: Entity) => boolean;
 };
 
-export class EntityKindFilter implements EntityFilter {
-  id = 'kind';
-  private readonly kind: string;
+export type MapFormToFilters<T extends FieldValues> = (
+  values: T,
+  env: FilterEnvironment,
+) => EntityFilter | undefined;
 
-  constructor(kind: string) {
-    this.kind = kind;
-  }
-
-  getCatalogFilters(): Record<string, string | string[]> {
-    return { kind: this.kind };
-  }
-}
-
-export class EntityTypeFilter implements EntityFilter {
-  id = 'type';
-  private readonly type: string;
-
-  constructor(type: string) {
-    this.type = type;
-  }
-  getCatalogFilters(): Record<string, string | string[]> {
-    return { 'spec.type': this.type };
-  }
-}
-
-export class UserOwnedEntityFilter implements EntityFilter {
-  id = 'owned';
-  private readonly user: UserEntity | undefined;
-
-  constructor(user: UserEntity | undefined) {
-    this.user = user;
-  }
-
-  filterEntity(entity: Entity) {
-    return this.user !== undefined && isOwnerOf(this.user, entity);
-  }
-}
-
-export class UserStarredEntityFilter implements EntityFilter {
-  id = 'starred';
-  private readonly isStarredEntity: (entity: Entity) => boolean;
-
-  constructor(isStarredEntity: (entity: Entity) => boolean) {
-    this.isStarredEntity = isStarredEntity;
-  }
-
-  filterEntity(entity: Entity) {
-    return this.isStarredEntity(entity);
-  }
-}
+export type FilterOptions<T extends FieldValues> = {
+  mapFormToFilters: MapFormToFilters<T>;
+  defaultValues?: (valuesFromContext: T) => T;
+  reset?: () => void;
+};

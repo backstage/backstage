@@ -14,32 +14,52 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { capitalize } from 'lodash';
 import { Box } from '@material-ui/core';
+import { useController } from 'react-hook-form';
 import { Select, useApi } from '@backstage/core';
 import {
   catalogApiRef,
-  EntityTypeFilter,
+  EntityFilter,
+  reduceCatalogFilters,
   useEntityListProvider,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 
+type EntityTypeFormFields = {
+  type: string;
+};
+
+function mapFormToFilters(
+  values: EntityTypeFormFields,
+): EntityFilter | undefined {
+  if (values.type) {
+    return {
+      getCatalogFilters: () => ({ 'spec.type': values.type }),
+    };
+  }
+  return undefined;
+}
+
 export const EntityTypePicker = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { filters, removeFilter, addFilter } = useEntityListProvider();
   const [types, setTypes] = useState<string[]>([]);
 
-  const kindFilter = filters.find(f => f.id === 'kind');
+  const { filters, registerFilter } = useEntityListProvider();
+  const { control } = registerFilter<EntityTypeFormFields>({
+    mapFormToFilters: mapFormToFilters,
+  });
+
+  const kindFilter = reduceCatalogFilters(filters).kind;
 
   // Load all valid spec.type values straight from the catalogApi - we want the full set for the
   // selected kinds, not an otherwise filtered set.
   useEffect(() => {
     async function loadTypesForKinds() {
-      removeFilter('type');
       if (kindFilter) {
         const response = await catalogApi.getEntities({
-          filter: kindFilter.getCatalogFilters!(),
+          filter: { kind: kindFilter },
           fields: ['spec.type'],
         });
         const entities: Entity[] = response.items ?? [];
@@ -53,19 +73,18 @@ export const EntityTypePicker = () => {
       }
     }
     loadTypesForKinds();
-  }, [catalogApi, kindFilter, removeFilter]);
+  }, [catalogApi, kindFilter]);
 
-  const all = 'all';
-  const onChange = useCallback(
-    (value: any) =>
-      value === all
-        ? removeFilter('type')
-        : addFilter(new EntityTypeFilter(value)),
-    [removeFilter, addFilter],
-  );
+  const {
+    field: { ref, ...inputProps },
+  } = useController<EntityTypeFormFields>({
+    name: 'type',
+    control,
+  });
 
   if (!kindFilter) return null;
 
+  const all = 'all';
   const items = [
     { value: all, label: 'All' },
     ...types.map(type => ({
@@ -76,7 +95,7 @@ export const EntityTypePicker = () => {
 
   return (
     <Box pb={1} pt={1}>
-      <Select label="Type" items={items} selected={all} onChange={onChange} />
+      <Select label="Type" items={items} {...inputProps} />
     </Box>
   );
 };

@@ -17,28 +17,33 @@
 import React, {
   createContext,
   PropsWithChildren,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
+import {
+  Control,
+  FieldValues,
+  useForm,
+  UseFormMethods,
+  useWatch,
+} from 'react-hook-form';
 import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
 import { catalogApiRef } from '../api';
-import { EntityFilter, FilterEnvironment } from '../types';
+import {
+  EntityFilter,
+  FilterEnvironment,
+  FilterOptions,
+  MapFormToFilters,
+} from '../types';
 import { useOwnUser } from './useOwnUser';
 import { useStarredEntities } from './useStarredEntities';
 
 type EntityListContextProps = {
-  /**
-   * The list of currently registered filters. This includes filters passed in as defaults, plus
-   * any added with `setFilter`.
-   */
-  filters: EntityFilter[];
-
   /**
    * The resolved list of catalog entities, after all filters are applied.
    */
@@ -49,15 +54,11 @@ type EntityListContextProps = {
    */
   backendEntities: Entity[];
 
-  /**
-   * Add a filter for the entity list. Overwrites any existing filter with the same id.
-   */
-  addFilter: (filter: EntityFilter) => void;
+  filters: EntityFilter[];
 
-  /**
-   * Remove a filter by id. Does nothing if the filter has not been added.
-   */
-  removeFilter: (id: string) => void;
+  registerFilter: <T extends FieldValues>(
+    options: FilterOptions<T>,
+  ) => Pick<UseFormMethods<T>, 'register' | 'control'>;
 
   loading: boolean;
   error?: Error;
@@ -68,30 +69,18 @@ const EntityListContext = createContext<EntityListContextProps | undefined>(
 );
 
 export type EntityListProviderProps = {
-  initialFilter?: EntityFilter;
-  initialFilters?: EntityFilter[];
+  staticFilters?: EntityFilter[];
+  defaultValues?: FieldValues;
 };
 
 export const EntityListProvider = ({
-  initialFilter,
-  initialFilters,
+  defaultValues,
+  staticFilters,
   children,
 }: PropsWithChildren<EntityListProviderProps>) => {
   const catalogApi = useApi(catalogApiRef);
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
-
-  // Join initial filters from either prop and filter out undefined
-  const resolvedInitialFilters = [initialFilter, initialFilters]
-    .flat()
-    .filter(Boolean) as EntityFilter[];
-  const [filters, setFilters] = useState<EntityFilter[]>(
-    resolvedInitialFilters,
-  );
-  // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
-
-  const [entities, setEntities] = useState<Entity[]>([]);
-  const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
 
   const filterEnv: FilterEnvironment = useMemo(
     () => ({
@@ -100,6 +89,23 @@ export const EntityListProvider = ({
     }),
     [user, isStarredEntity],
   );
+
+  const { register, control, setValue } = useForm({ defaultValues });
+  const values = useWatch({ control });
+
+  const [mappers, setMappers] = useState<MapFormToFilters<any>[]>([]);
+  const filters: EntityFilter[] = useMemo(
+    () =>
+      // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
+      mappers
+        .map(mapper => mapper(values, filterEnv))
+        .concat(staticFilters ?? [])
+        .filter(Boolean) as EntityFilter[],
+    [mappers, staticFilters, values, filterEnv],
+  );
+
+  const [entities, setEntities] = useState<Entity[]>([]);
+  const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
 
   const [{ loading, error }, refresh] = useAsyncFn(async () => {
     // TODO(timbonicus): should limit fields here, but would need filter fields + table columns
@@ -116,34 +122,31 @@ export const EntityListProvider = ({
   // Apply frontend filters
   useEffect(() => {
     const resolvedEntities = (backendEntities ?? []).filter(
-      reduceEntityFilters(filters, filterEnv),
+      reduceEntityFilters(filters),
     );
     setEntities(resolvedEntities);
   }, [backendEntities, filterEnv, filters]);
 
-  const addFilter = useCallback(
-    (filter: EntityFilter) =>
-      setFilters(prevFilters => [
-        ...prevFilters.filter(f => f.id !== filter.id),
-        filter,
-      ]),
-    [],
-  );
-
-  const removeFilter = useCallback(
-    (id: string) =>
-      setFilters(prevFilters => prevFilters.filter(f => f.id !== id)),
-    [],
-  );
+  function registerFilter<T extends FieldValues>(
+    options: FilterOptions<T>,
+  ): Pick<UseFormMethods<T>, 'register' | 'control'> {
+    setMappers(prevMappers => [...prevMappers, options.mapFormToFilters]);
+    if (options.defaultValues) {
+      const filterDefaults = options.defaultValues(defaultValues as T);
+      for (const [key, value] of Object.entries(filterDefaults)) {
+        setValue(key, value);
+      }
+    }
+    return { register, control: control as Control<T> };
+  }
 
   return (
     <EntityListContext.Provider
       value={{
-        filters,
         entities,
+        filters,
         backendEntities,
-        addFilter: addFilter,
-        removeFilter: removeFilter,
+        registerFilter,
         loading,
         error,
       }}

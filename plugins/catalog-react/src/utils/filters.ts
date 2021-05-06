@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter, FilterEnvironment } from '../types';
+import { EntityFilter } from '../types';
 
 export function reduceCatalogFilters(
   filters: EntityFilter[],
@@ -30,10 +30,9 @@ export function reduceCatalogFilters(
 
 export function reduceEntityFilters(
   filters: EntityFilter[],
-  env: FilterEnvironment,
 ): (entity: Entity) => boolean {
   return (entity: Entity) =>
     filters.every(
-      filter => !filter.filterEntity || filter.filterEntity(entity, env),
+      filter => !filter.filterEntity || filter.filterEntity(entity),
     );
 }

@@ -15,3 +15,4 @@
  */
 
 export { UserListFilter } from './UserListFilter';
+export type { UserListFilterFields } from './UserListFilter';

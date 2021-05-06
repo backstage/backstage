@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment } from 'react';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import {
   EntityFilter,
+  FilterEnvironment,
+  isOwnerOf,
   useEntityListProvider,
-  useOwnUser,
-  useStarredEntities,
-  UserOwnedEntityFilter,
-  UserStarredEntityFilter,
 } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -37,6 +35,8 @@ import {
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
+import { Entity } from '@backstage/catalog-model';
+import { useController } from 'react-hook-form';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -103,7 +103,30 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type ValidIdType = 'owned' | 'starred' | 'all';
+type UserListTypes = 'owned' | 'starred' | 'all';
+
+export type UserListFilterFields = {
+  userList: UserListTypes;
+};
+
+function mapFormToFilters(
+  values: UserListFilterFields,
+  env: FilterEnvironment,
+): EntityFilter | undefined {
+  switch (values.userList) {
+    case 'owned':
+      return {
+        filterEntity: (entity: Entity) =>
+          env.user !== undefined && isOwnerOf(env.user, entity),
+      };
+    case 'starred':
+      return {
+        filterEntity: (entity: Entity) => env.isStarredEntity(entity),
+      };
+    default:
+      return undefined;
+  }
+}
 
 export const UserListFilter = () => {
   const classes = useStyles();
@@ -111,57 +134,21 @@ export const UserListFilter = () => {
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const filterGroups = getFilterGroups(orgName);
 
+  const { registerFilter } = useEntityListProvider();
+  const { control } = registerFilter<UserListFilterFields>({
+    mapFormToFilters: mapFormToFilters,
+  });
+
   const {
-    filters,
-    addFilter,
-    removeFilter,
-    backendEntities,
-  } = useEntityListProvider();
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
+    field: { onChange, value },
+  } = useController<UserListFilterFields>({
+    name: 'userList',
+    control,
+  });
 
-  const ownedFilter = useMemo(() => new UserOwnedEntityFilter(user), [user]);
-  const starredFilter = useMemo(
-    () => new UserStarredEntityFilter(isStarredEntity),
-    [isStarredEntity],
-  );
-
-  const userListFilters = useMemo(
-    () => filters.filter(filter => ['owned', 'starred'].includes(filter.id)),
-    [filters],
-  );
-
-  const currentFilter = userListFilters.length ? userListFilters[0].id : 'all';
-
-  function setSelectedFilter({ id: selectedId }: { id: ValidIdType }) {
-    switch (selectedId) {
-      case 'owned':
-        removeFilter('starred');
-        addFilter(ownedFilter);
-        break;
-      case 'starred':
-        removeFilter('owned');
-        addFilter(starredFilter);
-        break;
-      default:
-        removeFilter('starred');
-        removeFilter('owned');
-    }
-  }
-
-  function getFilterCount(id: ValidIdType) {
-    switch (id) {
-      case 'owned':
-        return backendEntities.filter(entity =>
-          ownedFilter.filterEntity(entity),
-        ).length;
-      case 'starred':
-        return backendEntities.filter(entity =>
-          starredFilter.filterEntity(entity),
-        ).length;
-      default:
-        return backendEntities.length;
-    }
+  function getFilterCount(type: UserListTypes) {
+    // TODO(timbonicus)
+    return type === 'all' ? 2 : 1;
   }
 
   return (
@@ -178,8 +165,8 @@ export const UserListFilter = () => {
                   key={item.id}
                   button
                   divider
-                  onClick={() => setSelectedFilter(item)}
-                  selected={item.id === currentFilter}
+                  onClick={() => onChange(item)}
+                  selected={item.id === value}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -204,10 +191,3 @@ export const UserListFilter = () => {
     </Card>
   );
 };
-
-const current = (filters: EntityFilter[]): string => {
-  const userFilters = filters.filter(f => ['owned', 'starred'].includes(f.id));
-  return userFilters.length ? userFilters[0].id : 'all';
-};
-
-UserListFilter.current = current;

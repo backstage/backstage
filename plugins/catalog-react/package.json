@@ -35,6 +35,7 @@
     "@types/react": "^16.9",
     "lodash": "^4.17.21",
     "react": "^16.13.1",
+    "react-hook-form": "^6.15.4",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^15.3.3"

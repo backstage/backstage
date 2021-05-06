@@ -17,7 +17,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, makeStyles } from '@material-ui/core';
-import { capitalize } from 'lodash';
 import {
   Content,
   ContentHeader,
@@ -26,20 +25,15 @@ import {
 } from '@backstage/core';
 import {
   EntityFilter,
-  EntityKindFilter,
   EntityListProvider,
-  useStarredEntities,
   useEntityListProvider,
-  useOwnUser,
-  UserOwnedEntityFilter,
-  UserStarredEntityFilter,
 } from '@backstage/plugin-catalog-react';
 
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { EntityTypePicker } from '../EntityTypePicker';
-import { UserListFilter } from '../UserListFilter';
+import { UserListFilter, UserListFilterFields } from '../UserListFilter';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -55,9 +49,8 @@ const useStyles = makeStyles(theme => ({
 
 const CatalogPageContents = () => {
   const styles = useStyles();
-  const { loading, error, entities, filters } = useEntityListProvider();
+  const { loading, error, entities } = useEntityListProvider();
   const createComponentLink = useRouteRef(createComponentRouteRef);
-  const isTypeFiltered = filters.find(f => f.id === 'type') !== undefined;
 
   return (
     <CatalogLayout>
@@ -81,11 +74,11 @@ const CatalogPageContents = () => {
             <UserListFilter />
           </div>
           <CatalogTable
-            titlePreamble={capitalize(UserListFilter.current(filters))}
+            titlePreamble="TODO"
             entities={entities}
             loading={loading}
             error={error}
-            showTypeColumn={!isTypeFiltered}
+            showTypeColumn
           />
         </div>
       </Content>
@@ -97,19 +90,22 @@ export type CatalogPageProps = {
   initiallySelectedFilter?: 'owned' | 'starred';
 };
 
-export const CatalogPage = (props: CatalogPageProps) => {
-  const initialFilters: EntityFilter[] = [new EntityKindFilter('component')];
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
+export const CatalogPage = ({ initiallySelectedFilter }: CatalogPageProps) => {
+  const staticFilters: EntityFilter[] = [
+    {
+      getCatalogFilters: () => ({ kind: 'component' }),
+    },
+  ];
 
-  if (props.initiallySelectedFilter === 'owned') {
-    initialFilters.push(new UserOwnedEntityFilter(user));
-  } else if (props.initiallySelectedFilter === 'starred') {
-    initialFilters.push(new UserStarredEntityFilter(isStarredEntity));
-  }
+  const defaultValues: UserListFilterFields = {
+    userList: initiallySelectedFilter ?? 'all',
+  };
 
   return (
-    <EntityListProvider initialFilters={initialFilters}>
+    <EntityListProvider
+      staticFilters={staticFilters}
+      defaultValues={defaultValues}
+    >
       <CatalogPageContents />
     </EntityListProvider>
   );
