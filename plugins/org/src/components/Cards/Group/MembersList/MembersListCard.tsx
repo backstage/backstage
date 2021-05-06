@@ -154,9 +154,11 @@ export const MembersListCard = (_props: {
       >
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
-            members.map(member => (
-              <MemberComponent member={member} key={member.metadata.uid} />
-            ))
+            members
+              .slice(0, 49)
+              .map(member => (
+                <MemberComponent member={member} key={member.metadata.uid} />
+              ))
           ) : (
             <Box p={2}>
               <Typography>This group has no members.</Typography>
