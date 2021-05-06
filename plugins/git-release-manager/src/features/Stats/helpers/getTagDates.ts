@@ -25,7 +25,7 @@ interface GetTagDates {
     tagSha: string;
     tagType: 'tag' | 'commit';
   };
-  endTag: {
+  endTag?: {
     tagSha: string;
     tagType: 'tag' | 'commit';
   };
@@ -37,6 +37,33 @@ export const getTagDates = async ({
   startTag,
   endTag,
 }: GetTagDates) => {
+  if (!endTag) {
+    if (startTag.tagType === 'tag') {
+      const { tag: startTagResponse } = await pluginApiClient.getTag({
+        owner: project.owner,
+        repo: project.repo,
+        tagSha: startTag.tagSha,
+      });
+
+      return {
+        startDate: startTagResponse.date,
+        endDate: undefined,
+      };
+    }
+
+    // If tagType is not a 'tag', it has to be a commit
+    const { commit: startCommit } = await pluginApiClient.getCommit({
+      owner: project.owner,
+      repo: project.repo,
+      ref: startTag.tagSha,
+    });
+
+    return {
+      startDate: startCommit.createdAt,
+      endDate: undefined,
+    };
+  }
+
   if (startTag.tagType === 'tag' && endTag.tagType === 'tag') {
     const [
       { tag: startTagResponse },
@@ -124,7 +151,7 @@ async function getCommitFromTag({
 }: {
   pluginApiClient: GetTagDates['pluginApiClient'];
   project: GetTagDates['project'];
-  tag: GetTagDates['startTag'] | GetTagDates['endTag'];
+  tag: GetTagDates['startTag'] | NonNullable<GetTagDates['endTag']>;
 }) {
   const { tag: tagResponse } = await pluginApiClient.getTag({
     owner: project.owner,

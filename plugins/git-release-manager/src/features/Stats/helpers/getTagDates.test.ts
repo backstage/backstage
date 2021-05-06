@@ -23,7 +23,54 @@ import {
 import { getTagDates } from './getTagDates';
 
 describe('getTagDates', () => {
-  beforeEach(jest.clearAllMocks);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+  });
+
+  it('should get tag dates for startTag when is tag and endTag is undefined', async () => {
+    (mockApiClient.getTag as jest.Mock).mockResolvedValueOnce(
+      createMockTag({ date: 'TAG-START' }),
+    );
+
+    const result = await getTagDates({
+      pluginApiClient: mockApiClient,
+      project: mockSemverProject,
+      startTag: {
+        tagSha: 'sha-start',
+        tagType: 'tag',
+      },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "endDate": undefined,
+        "startDate": "TAG-START",
+      }
+    `);
+  });
+
+  it('should get tag dates for startTag when startTag is commit and endTag is undefined', async () => {
+    (mockApiClient.getCommit as jest.Mock).mockResolvedValueOnce(
+      createMockCommit({ createdAt: 'COMMIT_START' }),
+    );
+
+    const result = await getTagDates({
+      pluginApiClient: mockApiClient,
+      project: mockSemverProject,
+      startTag: {
+        tagSha: 'sha-start',
+        tagType: 'commit',
+      },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      Object {
+        "endDate": undefined,
+        "startDate": "COMMIT_START",
+      }
+    `);
+  });
 
   it('should get tag dates when startTag & endTag both are of type tag', async () => {
     (mockApiClient.getTag as jest.Mock)
