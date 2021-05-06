@@ -15,4 +15,4 @@
  */
 export { shortcutsPlugin, Shortcuts } from './plugin';
 export * from './api';
-export * from './types';
+export type { Shortcut } from './types';
