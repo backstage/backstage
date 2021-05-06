@@ -205,7 +205,7 @@ export type GoogleProviderOptions = {
      * Maps an auth result to a Backstage identity for the user.
      *
      * Set to `'email'` to use the default email-based sign in resolver, which will search
-     * for the catalog for a single user entity that has a matching `google.com/email` annotation.
+     * the catalog for a single user entity that has a matching `google.com/email` annotation.
      */
     resolver?: 'email' | SignInResolver<OAuthResult>;
   };
