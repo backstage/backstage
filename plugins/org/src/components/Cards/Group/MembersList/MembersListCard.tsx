@@ -40,6 +40,7 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
+import Pagination from '@material-ui/lab/Pagination';
 import React from 'react';
 import { generatePath, Link as RouterLink } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -120,6 +121,12 @@ export const MembersListCard = (_props: {
 
   const groupNamespace = grpNamespace || ENTITY_DEFAULT_NAMESPACE;
 
+  const [page, setPage] = React.useState(1);
+  const pageChange = (_: React.ChangeEvent<unknown>, pageIndex: number) => {
+    setPage(pageIndex);
+  };
+  const pageSize = 50;
+
   const { loading, error, value: members } = useAsync(async () => {
     const membersList = await catalogApi.getEntities({
       filter: { kind: 'User' },
@@ -148,14 +155,18 @@ export const MembersListCard = (_props: {
     <Grid item>
       <InfoCard
         title={`Members (${members?.length || 0}) ${
-          members && members.length > 50 ? ' (only first 50 displayed)' : ''
+          members && members.length > pageSize
+            ? ` (page ${page} of ${Math.ceil(
+                (members?.length || 0) / pageSize,
+              )})`
+            : ''
         }`}
         subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
           {members && members.length > 0 ? (
             members
-              .slice(0, 49)
+              .slice(pageSize * (page - 1), pageSize * page)
               .map(member => (
                 <MemberComponent member={member} key={member.metadata.uid} />
               ))
@@ -165,6 +176,13 @@ export const MembersListCard = (_props: {
             </Box>
           )}
         </Grid>
+        <Pagination
+          count={Math.ceil((members?.length || 0) / pageSize)}
+          page={page}
+          onChange={pageChange}
+          showFirstButton
+          showLastButton
+        />
       </InfoCard>
     </Grid>
   );
