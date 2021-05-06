@@ -71,14 +71,5 @@ export function readGithubConfig(config: Config): ProviderConfig[] {
     providers.push({ target, apiBaseUrl, token });
   }
 
-  // If no explicit github.com provider was added, put one in the list as
-  // a convenience
-  if (!providers.some(p => p.target === 'https://github.com')) {
-    providers.push({
-      target: 'https://github.com',
-      apiBaseUrl: 'https://api.github.com',
-    });
-  }
-
   return providers;
 }

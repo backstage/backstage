@@ -114,6 +114,8 @@ export interface Config {
     processors?: {
       /**
        * GithubOrgReaderProcessor configuration
+       *
+       * @deprecated Configure an GitHub integration instead.
        */
       githubOrg?: {
         /**
