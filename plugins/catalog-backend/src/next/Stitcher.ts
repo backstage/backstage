@@ -84,14 +84,14 @@ export class Stitcher {
             relationTarget: 'relations.target_entity_ref',
           })
           .from('refresh_state')
-          .leftJoin('incoming_references', {})
+          .where({ 'refresh_state.entity_ref': entityRef })
+          .crossJoin(tx.raw('incoming_references'))
           .leftOuterJoin('final_entities', {
             'final_entities.entity_id': 'refresh_state.entity_id',
           })
           .leftOuterJoin('relations', {
             'relations.source_entity_ref': 'refresh_state.entity_ref',
           })
-          .where({ 'refresh_state.entity_ref': entityRef })
           .orderBy('relationType', 'asc')
           .orderBy('relationTarget', 'asc');
 
