@@ -25,7 +25,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 import { ReleaseStats } from '../contexts/ReleaseStatsContext';
 import { RowCollapsed } from './RowCollapsed/RowCollapsed';
@@ -56,7 +56,7 @@ export function Row({ baseVersion, releaseStat }: RowProps) {
             size="small"
             onClick={() => setOpen(!open)}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            {open ? <KeyboardArrowDownIcon /> : <ChevronRightIcon />}
           </IconButton>
         </TableCell>
 
