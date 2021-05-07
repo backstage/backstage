@@ -20,7 +20,6 @@ import { isOwnerOf } from './utils';
 export type FilterEnvironment = {
   user: UserEntity | undefined;
   isStarredEntity: (entity: Entity) => boolean;
-  // kind? types?
 };
 
 export type EntityFilter = {
@@ -45,7 +44,6 @@ export type EntityFilter = {
 
 export class EntityKindFilter implements EntityFilter {
   private readonly _value: string;
-
   constructor(kind: string) {
     this._value = kind;
   }
@@ -61,42 +59,43 @@ export class EntityKindFilter implements EntityFilter {
 
 export class EntityTypeFilter implements EntityFilter {
   private _value: string;
-
-  constructor(type?: string) {
-    this._value = type ?? 'all';
-  }
-
-  set type(type: string) {
+  constructor(type: string) {
     this._value = type;
-  }
-
-  get type() {
-    return this._value;
-  }
-
-  getCatalogFilters(): Record<string, string | string[]> {
-    return this._value === 'all' ? {} : { 'spec.type': this._value };
-  }
-}
-
-export type UserListFilterKind = 'owned' | 'starred' | 'all';
-export class UserListFilter implements EntityFilter {
-  private _value: UserListFilterKind;
-
-  constructor(value?: UserListFilterKind) {
-    this._value = value ?? 'all';
-  }
-
-  set value(value: UserListFilterKind) {
-    this._value = value;
   }
 
   get value() {
     return this._value;
   }
 
+  getCatalogFilters(): Record<string, string | string[]> {
+    return { 'spec.type': this.value };
+  }
+}
+
+export class EntityTagFilter implements EntityFilter {
+  private _values: string[];
+  constructor(values: string[]) {
+    this._values = values;
+  }
+
+  get values() {
+    return this._values;
+  }
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
+  }
+}
+
+export type UserListFilterKind = 'owned' | 'starred' | 'all';
+export class UserListFilter implements EntityFilter {
+  readonly value: UserListFilterKind;
+  constructor(value: UserListFilterKind) {
+    this.value = value;
+  }
+
   filterEntity(entity: Entity, env: FilterEnvironment): boolean {
-    switch (this._value) {
+    switch (this.value) {
       case 'owned':
         return env.user !== undefined && isOwnerOf(env.user, entity);
       case 'starred':

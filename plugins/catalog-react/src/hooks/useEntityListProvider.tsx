@@ -31,6 +31,7 @@ import { catalogApiRef } from '../api';
 import {
   EntityFilter,
   EntityKindFilter,
+  EntityTagFilter,
   EntityTypeFilter,
   FilterEnvironment,
   UserListFilter,
@@ -43,6 +44,7 @@ export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
   user?: UserListFilter;
+  tags?: EntityTagFilter;
 };
 
 type EntityListContextProps<

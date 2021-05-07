@@ -35,6 +35,7 @@ import { CatalogTable } from '../CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { EntityTypePicker } from '../EntityTypePicker';
 import { UserListPicker } from '../UserListPicker';
+import { EntityTagPicker } from '../EntityTagPicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -52,7 +53,9 @@ export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
 };
 
-export const CatalogPage = ({ initiallySelectedFilter }: CatalogPageProps) => {
+export const CatalogPage = ({
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   const styles = useStyles();
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const initialFilters = {
@@ -81,6 +84,7 @@ export const CatalogPage = ({ initiallySelectedFilter }: CatalogPageProps) => {
             <div>
               <EntityTypePicker />
               <UserListPicker />
+              <EntityTagPicker />
             </div>
             <CatalogTable />
           </EntityListProvider>

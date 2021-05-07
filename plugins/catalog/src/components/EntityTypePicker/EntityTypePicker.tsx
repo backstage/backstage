@@ -49,7 +49,7 @@ export const EntityTypePicker = () => {
         ].sort();
         setTypes(newTypes);
 
-        if (filters.type && !newTypes.includes(filters.type.type)) {
+        if (filters.type && !newTypes.includes(filters.type.value)) {
           updateFilters({ type: undefined });
         }
       }
@@ -76,7 +76,7 @@ export const EntityTypePicker = () => {
       <Select
         label="Type"
         items={items}
-        selected={filters.type?.type ?? 'all'}
+        selected={filters.type?.value ?? 'all'}
         onChange={onChange}
       />
     </Box>

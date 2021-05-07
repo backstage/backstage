@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment } from 'react';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import {
+  FilterEnvironment,
   useEntityListProvider,
   useOwnUser,
-  useStarredEntities,
-  FilterEnvironment,
   UserListFilter,
   UserListFilterKind,
+  useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import {
   Card,
