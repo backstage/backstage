@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, useApi } from '@backstage/core';
+import { alertApiRef, useApi, Link } from '@backstage/core';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import { ilertApiRef } from '../../api';
@@ -117,13 +116,15 @@ export const UptimeMonitorActionsMenu = ({
 
         <MenuItem key="report" onClick={handleCloseMenu}>
           <Typography variant="inherit" noWrap>
-            <Link onClick={handleOpenReport}>View Report</Link>
+            <Link to="#" onClick={handleOpenReport}>
+              View Report
+            </Link>
           </Typography>
         </MenuItem>
 
         <MenuItem key="details" onClick={handleCloseMenu}>
           <Typography variant="inherit" noWrap>
-            <Link href={ilertApi.getUptimeMonitorDetailsURL(uptimeMonitor)}>
+            <Link to={ilertApi.getUptimeMonitorDetailsURL(uptimeMonitor)}>
               View in iLert
             </Link>
           </Typography>

@@ -98,17 +98,15 @@ export const IncidentNewModal = ({
     setIsLoading(true);
     setTimeout(async () => {
       try {
-        const success = await ilertApi.createIncident({
+        await ilertApi.createIncident({
           integrationKey,
           summary,
           details,
           userName,
           source,
         });
-        if (success) {
-          alertApi.post({ message: 'Incident created.' });
-          refetchIncidents();
-        }
+        alertApi.post({ message: 'Incident created.' });
+        refetchIncidents();
       } catch (err) {
         alertApi.post({ message: err, severity: 'error' });
       }

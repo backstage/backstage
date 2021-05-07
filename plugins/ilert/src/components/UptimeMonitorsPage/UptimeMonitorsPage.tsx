@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Content, ContentHeader, SupportButton } from '@backstage/core';
-import { UnauthorizedError } from '../../api';
-import Alert from '@material-ui/lab/Alert';
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  ResponseErrorPanel,
+} from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import { UptimeMonitorsTable } from './UptimeMonitorsTable';
 import { MissingAuthorizationHeaderError } from '../Errors';
 import { useUptimeMonitors } from '../../hooks/useUptimeMonitors';
@@ -28,14 +32,18 @@ export const UptimeMonitorsPage = () => {
   ] = useUptimeMonitors();
 
   if (error) {
-    if (error instanceof UnauthorizedError) {
-      return <MissingAuthorizationHeaderError />;
+    if (error instanceof AuthenticationError) {
+      return (
+        <Content>
+          <MissingAuthorizationHeaderError />
+        </Content>
+      );
     }
 
     return (
-      <Alert data-testid="error-message" severity="error">
-        {error.message}
-      </Alert>
+      <Content>
+        <ResponseErrorPanel error={error} />
+      </Content>
     );
   }
 

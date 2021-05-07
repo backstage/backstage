@@ -16,13 +16,16 @@
 
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-import { ILERT_INTEGRATION_KEY } from '../constants';
+import { ILERT_INTEGRATION_KEY_ANNOTATION } from '../constants';
 
 export function useILertEntity() {
   const { entity } = useEntity();
   const integrationKey =
-    entity.metadata.annotations?.[ILERT_INTEGRATION_KEY] || '';
+    entity.metadata.annotations?.[ILERT_INTEGRATION_KEY_ANNOTATION] || '';
   const name = entity.metadata.name;
+  const identifier = `${entity.kind}:${
+    entity.metadata.namespace || 'default'
+  }/${entity.metadata.name}`;
 
-  return { integrationKey, name };
+  return { integrationKey, name, identifier };
 }

@@ -20,7 +20,8 @@ import { TableState } from '../../api';
 import { UptimeMonitor } from '../../types';
 import { StatusChip } from './StatusChip';
 import Typography from '@material-ui/core/Typography';
-import moment from 'moment';
+import { DateTime as dt, Interval } from 'luxon';
+import humanizeDuration from 'humanize-duration';
 import { EscalationPolicyLink } from '../EscalationPolicy/EscalationPolicyLink';
 import { UptimeMonitorCheckType } from './UptimeMonitorCheckType';
 import { UptimeMonitorActionsMenu } from '../UptimeMonitor/UptimeMonitorActionsMenu';
@@ -99,13 +100,15 @@ export const UptimeMonitorsTable = ({
       headerStyle: mdColumnStyle,
       render: rowData => (
         <Typography noWrap>
-          {moment
-            .duration(
-              moment((rowData as UptimeMonitor).lastStatusChange).diff(
-                moment(),
-              ),
+          {humanizeDuration(
+            Interval.fromDateTimes(
+              dt.fromISO((rowData as UptimeMonitor).lastStatusChange),
+              dt.now(),
             )
-            .humanize()}
+              .toDuration()
+              .valueOf(),
+            { units: ['h', 'm', 's'], largest: 2, round: true },
+          )}
         </Typography>
       ),
     },

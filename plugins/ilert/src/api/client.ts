@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core';
+import { AuthenticationError, ResponseError } from '@backstage/errors';
 import {
   AlertSource,
   EscalationPolicy,
@@ -32,8 +33,7 @@ import {
   Options,
   EventRequest,
 } from './types';
-import moment from 'moment';
-import momentTimezone from 'moment-timezone';
+import { DateTime as dt } from 'luxon';
 
 export const ilertApiRef = createApiRef<ILertApi>({
   id: 'plugin.ilert.service',
@@ -41,7 +41,10 @@ export const ilertApiRef = createApiRef<ILertApi>({
 });
 
 const DEFAULT_PROXY_PATH = '/ilert';
-export class UnauthorizedError extends Error {}
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+};
 
 export class ILertClient implements ILertApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -55,14 +58,15 @@ export class ILertClient implements ILertApi {
     return new ILertClient({
       discoveryApi: discoveryApi,
       baseUrl,
-      proxyPath: configApi.getOptionalString('ilert.proxyPath'),
+      proxyPath:
+        configApi.getOptionalString('ilert.proxyPath') ?? DEFAULT_PROXY_PATH,
     });
   }
 
   constructor(opts: Options) {
     this.discoveryApi = opts.discoveryApi;
     this.baseUrl = opts.baseUrl;
-    this.proxyPath = opts.proxyPath ?? DEFAULT_PROXY_PATH;
+    this.proxyPath = opts.proxyPath;
   }
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
@@ -70,12 +74,12 @@ export class ILertClient implements ILertApi {
 
     const response = await fetch(`${apiUrl}${input}`, init);
     if (response.status === 401) {
-      throw new UnauthorizedError('');
-    }
-    if (!response.ok) {
-      throw new Error(
-        `Request failed with ${response.status} ${response.statusText}`,
+      throw new AuthenticationError(
+        'This request requires HTTP authentication.',
       );
+    }
+    if (!response.ok || response.status >= 400) {
+      throw await ResponseError.fromResponse(response);
     }
 
     return await response.json();
@@ -83,27 +87,24 @@ export class ILertClient implements ILertApi {
 
   async fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
     const query = new URLSearchParams();
-    if (opts && opts.maxResults) {
-      query.append('max-results', `${opts.maxResults}`);
+    if (opts?.maxResults !== undefined) {
+      query.append('max-results', String(opts.maxResults));
     }
-    if (opts && opts.startIndex) {
-      query.append('start-index', `${opts.startIndex}`);
+    if (opts?.startIndex !== undefined) {
+      query.append('start-index', String(opts.startIndex));
     }
-    if (opts && opts.alertSources) {
+    if (opts?.alertSources !== undefined && Array.isArray(opts.alertSources)) {
       opts.alertSources.forEach((a: number) => {
         if (a) {
-          query.append('alert-source', `${a}`);
+          query.append('alert-source', String(a));
         }
       });
     }
 
-    if (opts && opts.states && Array.isArray(opts.states)) {
+    if (opts?.states !== undefined && Array.isArray(opts.states)) {
       opts.states.forEach(state => {
         query.append('state', state);
       });
@@ -118,10 +119,7 @@ export class ILertClient implements ILertApi {
 
   async fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
     const query = new URLSearchParams();
     if (opts && opts.states && Array.isArray(opts.states)) {
@@ -137,14 +135,21 @@ export class ILertClient implements ILertApi {
     return response && response.count ? response.count : 0;
   }
 
+  async fetchIncident(id: number): Promise<Incident> {
+    const init = {
+      headers: JSON_HEADERS,
+    };
+
+    const response = await this.fetch(`/api/v1/incidents/${id}`, init);
+
+    return response;
+  }
+
   async fetchIncidentResponders(
     incident: Incident,
   ): Promise<IncidentResponder[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
@@ -157,10 +162,7 @@ export class ILertClient implements ILertApi {
 
   async fetchIncidentActions(incident: Incident): Promise<IncidentAction[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
@@ -171,40 +173,42 @@ export class ILertClient implements ILertApi {
     return response;
   }
 
-  async acceptIncident(incident: Incident): Promise<Incident> {
+  async acceptIncident(
+    incident: Incident,
+    userName: string,
+  ): Promise<Incident> {
     const init = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ summary: 'Backstage — iLert plugin' }),
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        apiKey: incident.alertSource?.integrationKey || '',
+        incidentKey: incident.incidentKey,
+        summary: `from ${userName} via Backstage plugin`,
+        eventType: 'ACCEPT',
+      }),
     };
 
-    const response = await this.fetch(
-      `/api/v1/incidents/${incident.id}/accept`,
-      init,
-    );
-
-    return response;
+    await this.fetch('/api/v1/events', init);
+    return this.fetchIncident(incident.id);
   }
 
-  async resolveIncident(incident: Incident): Promise<Incident> {
+  async resolveIncident(
+    incident: Incident,
+    userName: string,
+  ): Promise<Incident> {
     const init = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ summary: 'Backstage — iLert plugin' }),
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify({
+        apiKey: incident.alertSource?.integrationKey || '',
+        incidentKey: incident.incidentKey,
+        summary: `from ${userName} via Backstage plugin`,
+        eventType: 'RESOLVE',
+      }),
     };
 
-    const response = await this.fetch(
-      `/api/v1/incidents/${incident.id}/resolve`,
-      init,
-    );
-
-    return response;
+    await this.fetch('/api/v1/events', init);
+    return this.fetchIncident(incident.id);
   }
 
   async assignIncident(
@@ -213,22 +217,19 @@ export class ILertClient implements ILertApi {
   ): Promise<Incident> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const query = new URLSearchParams();
     switch (responder.group) {
       case 'ESCALATION_POLICY':
-        query.append('policy-id', `${responder.id}`);
+        query.append('policy-id', String(responder.id));
         break;
       case 'ON_CALL_SCHEDULE':
-        query.append('schedule-id', `${responder.id}`);
+        query.append('schedule-id', String(responder.id));
         break;
       default:
-        query.append('user-id', `${responder.id}`);
+        query.append('user-id', String(responder.id));
         break;
     }
 
@@ -246,10 +247,7 @@ export class ILertClient implements ILertApi {
   ): Promise<void> {
     const init = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({
         webhookId: action.webhookId,
         extensionId: action.extensionId,
@@ -264,10 +262,7 @@ export class ILertClient implements ILertApi {
   async createIncident(eventRequest: EventRequest): Promise<boolean> {
     const init = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({
         apiKey: eventRequest.integrationKey,
         summary: eventRequest.summary,
@@ -286,15 +281,12 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch('/api/v1/events', init);
-    return response.responseCode === 'NEW_INCIDENT_CREATED';
+    return response;
   }
 
   async fetchUptimeMonitors(): Promise<UptimeMonitor[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch('/api/v1/uptime-monitors', init);
@@ -304,10 +296,7 @@ export class ILertClient implements ILertApi {
 
   async fetchUptimeMonitor(id: number): Promise<UptimeMonitor> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response: UptimeMonitor = await this.fetch(
@@ -323,10 +312,7 @@ export class ILertClient implements ILertApi {
   ): Promise<UptimeMonitor> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({ ...uptimeMonitor, paused: true }),
     };
 
@@ -343,10 +329,7 @@ export class ILertClient implements ILertApi {
   ): Promise<UptimeMonitor> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({ ...uptimeMonitor, paused: false }),
     };
 
@@ -360,10 +343,7 @@ export class ILertClient implements ILertApi {
 
   async fetchAlertSources(): Promise<AlertSource[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch('/api/v1/alert-sources', init);
@@ -375,10 +355,7 @@ export class ILertClient implements ILertApi {
     idOrIntegrationKey: number | string,
   ): Promise<AlertSource> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
@@ -391,16 +368,13 @@ export class ILertClient implements ILertApi {
 
   async fetchAlertSourceOnCalls(alertSource: AlertSource): Promise<OnCall[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch(
       `/api/v1/on-calls?policies=${
         alertSource.escalationPolicy.id
-      }&expand=user&expand=escalationPolicy&timezone=${momentTimezone.tz.guess()}`,
+      }&expand=user&expand=escalationPolicy&timezone=${dt.local().zoneName}`,
       init,
     );
 
@@ -410,10 +384,7 @@ export class ILertClient implements ILertApi {
   async enableAlertSource(alertSource: AlertSource): Promise<AlertSource> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({ ...alertSource, active: true }),
     };
 
@@ -428,10 +399,7 @@ export class ILertClient implements ILertApi {
   async disableAlertSource(alertSource: AlertSource): Promise<AlertSource> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({ ...alertSource, active: false }),
     };
 
@@ -449,16 +417,13 @@ export class ILertClient implements ILertApi {
   ): Promise<void> {
     const init = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({
-        start: moment().utc().toISOString(),
-        end: moment().add(minutes, 'minutes').utc().toISOString(),
+        start: dt.utc().toISO(),
+        end: dt.utc().plus({ minutes }).toISO(),
         description: `Immediate maintenance window for ${minutes} minutes. Backstage — iLert plugin.`,
         createdBy: 'Backstage',
-        timezone: momentTimezone.tz.guess(),
+        timezone: dt.local().zoneName,
         alertSources: [{ id: alertSourceId }],
       }),
     };
@@ -470,10 +435,7 @@ export class ILertClient implements ILertApi {
 
   async fetchOnCallSchedules(): Promise<Schedule[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch('/api/v1/schedules', init);
@@ -483,10 +445,7 @@ export class ILertClient implements ILertApi {
 
   async fetchUsers(): Promise<User[]> {
     const init = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
     };
 
     const response = await this.fetch('/api/v1/users', init);
@@ -502,10 +461,7 @@ export class ILertClient implements ILertApi {
   ): Promise<Schedule> {
     const init = {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
+      headers: JSON_HEADERS,
       body: JSON.stringify({ user: { id: userId }, start, end }),
     };
 
@@ -541,17 +497,7 @@ export class ILertClient implements ILertApi {
   }
 
   getUserPhoneNumber(user: User | null) {
-    if (!user) {
-      return '';
-    }
-    if (user.mobile) {
-      return user.mobile.number;
-    }
-
-    if (user.landline) {
-      return user.landline.number;
-    }
-    return '';
+    return user?.mobile?.number || user?.landline?.number || '';
   }
 
   getUserInitials(user: User | null) {

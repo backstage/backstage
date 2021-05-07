@@ -19,7 +19,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import RepeatIcon from '@material-ui/icons/Repeat';
 import { Shift } from '../../types';
-import moment from 'moment';
+import { DateTime as dt } from 'luxon';
 import { makeStyles } from '@material-ui/core/styles';
 import { ShiftOverrideModal } from '../Shift/ShiftOverrideModal';
 
@@ -77,9 +77,9 @@ export const OnCallShiftItem = ({
       ) : null}
       <Grid item sm={12}>
         <Typography variant="subtitle2" color="textSecondary">
-          {`${moment(shift.start).format('D MMM, HH:mm')} - ${moment(
-            shift.end,
-          ).format('D MMM, HH:mm')}`}
+          {`${dt.fromISO(shift.start).toFormat('D MMM, HH:mm')} - ${dt
+            .fromISO(shift.end)
+            .toFormat('D MMM, HH:mm')}`}
         </Typography>
       </Grid>
       <Grid item sm={12}>

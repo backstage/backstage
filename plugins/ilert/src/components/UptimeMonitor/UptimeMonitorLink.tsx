@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useApi } from '@backstage/core';
-import Link from '@material-ui/core/Link';
+import { useApi, Link } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { UptimeMonitor } from '../../types';
 import { ilertApiRef } from '../../api';
@@ -41,7 +40,7 @@ export const UptimeMonitorLink = ({
   return (
     <Link
       className={classes.link}
-      href={ilertApi.getUptimeMonitorDetailsURL(uptimeMonitor)}
+      to={ilertApi.getUptimeMonitorDetailsURL(uptimeMonitor)}
     >
       #{uptimeMonitor.id}
     </Link>

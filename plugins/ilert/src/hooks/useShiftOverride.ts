@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ilertApiRef, UnauthorizedError } from '../api';
+import { ilertApiRef } from '../api';
 import { useApi, errorApiRef } from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import { User, Shift } from '../types';
 
@@ -38,7 +39,7 @@ export const useShiftOverride = (s: Shift, isModalOpened: boolean) => {
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;

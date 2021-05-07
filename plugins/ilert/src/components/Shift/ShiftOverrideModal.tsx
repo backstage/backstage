@@ -28,7 +28,7 @@ import { ilertApiRef } from '../../api';
 import { useShiftOverride } from '../../hooks/useShiftOverride';
 import { Shift } from '../../types';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
+import LuxonUtils from '@date-io/luxon';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -120,7 +120,7 @@ export const ShiftOverrideModal = ({
     >
       <DialogTitle id="override-shift-form-title">Shift override</DialogTitle>
       <DialogContent>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
           <Autocomplete
             disabled={isLoading}
             options={users}
@@ -161,7 +161,7 @@ export const ShiftOverrideModal = ({
             value={start}
             className={classes.formControl}
             onChange={date => {
-              setStart(date ? date.toISOString() : '');
+              setStart(date ? date.toISO() : '');
             }}
           />
           <DateTimePicker
@@ -173,7 +173,7 @@ export const ShiftOverrideModal = ({
             value={end}
             className={classes.formControl}
             onChange={date => {
-              setEnd(date ? date.toISOString() : '');
+              setEnd(date ? date.toISO() : '');
             }}
           />
         </MuiPickersUtilsProvider>

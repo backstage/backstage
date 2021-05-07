@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useApi, ItemCardGrid, Progress } from '@backstage/core';
+import { useApi, ItemCardGrid, Progress, Link } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import { Schedule } from '../../types';
 import { ilertApiRef } from '../../api';
 import { OnCallShiftItem } from './OnCallShiftItem';
@@ -132,7 +131,7 @@ export const OnCallSchedulesGrid = ({
                 classes={{ content: classes.cardHeader }}
                 title={
                   <Link
-                    href={ilertApi.getScheduleDetailsURL(schedule)}
+                    to={ilertApi.getScheduleDetailsURL(schedule)}
                     className={classes.link}
                   >
                     {schedule.name}

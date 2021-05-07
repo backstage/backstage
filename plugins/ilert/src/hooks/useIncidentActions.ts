@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ilertApiRef, UnauthorizedError } from '../api';
+import { ilertApiRef } from '../api';
 import { useApi, errorApiRef } from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import { Incident, IncidentAction } from '../types';
 
@@ -39,7 +40,7 @@ export const useIncidentActions = (
       const data = await ilertApi.fetchIncidentActions(incident);
       setIncidentActionsList(data);
     } catch (e) {
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;

@@ -15,14 +15,14 @@
  */
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { UnauthorizedError } from '../../api';
-import Alert from '@material-ui/lab/Alert';
+import { AuthenticationError } from '@backstage/errors';
+import { ResponseErrorPanel } from '@backstage/core';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
-import { ILERT_INTEGRATION_KEY } from '../../constants';
+import { ILERT_INTEGRATION_KEY_ANNOTATION } from '../../constants';
 import { MissingAuthorizationHeaderError } from '../Errors';
 import { useIncidents } from '../../hooks/useIncidents';
 import { IncidentsTable } from '../IncidentsPage';
@@ -36,7 +36,7 @@ import { ILertCardEmptyState } from './ILertCardEmptyState';
 import { ILertCardOnCall } from './ILertCardOnCall';
 
 export const isPluginApplicableToEntity = (entity: Entity) =>
-  Boolean(entity.metadata.annotations?.[ILERT_INTEGRATION_KEY]);
+  Boolean(entity.metadata.annotations?.[ILERT_INTEGRATION_KEY_ANNOTATION]);
 
 const useStyles = makeStyles({
   content: {
@@ -79,15 +79,11 @@ export const ILertCard = () => {
   ] = React.useState(false);
 
   if (error) {
-    if (error instanceof UnauthorizedError) {
+    if (error instanceof AuthenticationError) {
       return <MissingAuthorizationHeaderError />;
     }
 
-    return (
-      <Alert data-testid="error-message" severity="error">
-        {error.message}
-      </Alert>
-    );
+    return <ResponseErrorPanel error={error} />;
   }
 
   if (!integrationKey) {

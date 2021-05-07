@@ -29,7 +29,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { OnCall } from '../../types';
 import { useApi } from '@backstage/core';
 import { ilertApiRef } from '../../api';
-import moment from 'moment';
+import { DateTime as dt } from 'luxon';
 
 const useStyles = makeStyles({
   listItemPrimary: {
@@ -123,8 +123,8 @@ export const ILertCardOnCallItem = ({
         <Tooltip
           title={
             'On call shift ' +
-            `${moment(onCall.start).format('D MMM, HH:mm')} - ` +
-            `${moment(onCall.end).format('D MMM, HH:mm')}`
+            `${dt.fromISO(onCall.start).toFormat('D MMM, HH:mm')} - ` +
+            `${dt.fromISO(onCall.end).toFormat('D MMM, HH:mm')}`
           }
           placement="top-start"
         >

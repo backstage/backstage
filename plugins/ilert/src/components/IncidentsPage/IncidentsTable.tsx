@@ -22,7 +22,8 @@ import { StatusChip } from './StatusChip';
 import { AlertSourceLink } from '../AlertSource/AlertSourceLink';
 import { TableTitle } from './TableTitle';
 import Typography from '@material-ui/core/Typography';
-import moment from 'moment';
+import { DateTime as dt, Interval } from 'luxon';
+import humanizeDuration from 'humanize-duration';
 import { IncidentActionsMenu } from '../Incident/IncidentActionsMenu';
 import { IncidentLink } from '../Incident/IncidentLink';
 
@@ -116,16 +117,24 @@ export const IncidentsTable = ({
     render: rowData => (
       <Typography noWrap>
         {(rowData as Incident).status !== 'RESOLVED'
-          ? moment
-              .duration(moment((rowData as Incident).reportTime).diff(moment()))
-              .humanize()
-          : moment
-              .duration(
-                moment((rowData as Incident).reportTime).diff(
-                  moment((rowData as Incident).resolvedOn),
-                ),
+          ? humanizeDuration(
+              Interval.fromDateTimes(
+                dt.fromISO((rowData as Incident).reportTime),
+                dt.now(),
               )
-              .humanize()}
+                .toDuration()
+                .valueOf(),
+              { units: ['h', 'm', 's'], largest: 2, round: true },
+            )
+          : humanizeDuration(
+              Interval.fromDateTimes(
+                dt.fromISO((rowData as Incident).reportTime),
+                dt.fromISO((rowData as Incident).resolvedOn),
+              )
+                .toDuration()
+                .valueOf(),
+              { units: ['h', 'm', 's'], largest: 2, round: true },
+            )}
       </Typography>
     ),
   };

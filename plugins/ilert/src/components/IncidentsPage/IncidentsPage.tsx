@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Content, ContentHeader, SupportButton } from '@backstage/core';
+import {
+  Content,
+  ContentHeader,
+  SupportButton,
+  ResponseErrorPanel,
+} from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
-import { UnauthorizedError } from '../../api';
-import Alert from '@material-ui/lab/Alert';
 import { IncidentsTable } from './IncidentsTable';
 import { MissingAuthorizationHeaderError } from '../Errors';
 import { useIncidents } from '../../hooks/useIncidents';
@@ -44,14 +48,18 @@ export const IncidentsPage = () => {
   };
 
   if (error) {
-    if (error instanceof UnauthorizedError) {
-      return <MissingAuthorizationHeaderError />;
+    if (error instanceof AuthenticationError) {
+      return (
+        <Content>
+          <MissingAuthorizationHeaderError />
+        </Content>
+      );
     }
 
     return (
-      <Alert data-testid="error-message" severity="error">
-        {error.message}
-      </Alert>
+      <Content>
+        <ResponseErrorPanel error={error} />
+      </Content>
     );
   }
 

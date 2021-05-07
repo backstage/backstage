@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 import React from 'react';
-import { alertApiRef, Progress, useApi } from '@backstage/core';
+import {
+  alertApiRef,
+  Progress,
+  useApi,
+  identityApiRef,
+  Link,
+} from '@backstage/core';
 import { IconButton, Menu, MenuItem, Typography } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ilertApiRef } from '../../api';
 import { Incident, IncidentAction } from '../../types';
@@ -34,6 +39,8 @@ export const IncidentActionsMenu = ({
 }) => {
   const ilertApi = useApi(ilertApiRef);
   const alertApi = useApi(alertApiRef);
+  const identityApi = useApi(identityApiRef);
+  const userName = identityApi.getUserId();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const callback = onIncidentChanged || ((_: Incident): void => {});
   const setProcessing = setIsLoading || ((_: boolean): void => {});
@@ -59,7 +66,7 @@ export const IncidentActionsMenu = ({
     try {
       handleCloseMenu();
       setProcessing(true);
-      const newIncident = await ilertApi.acceptIncident(incident);
+      const newIncident = await ilertApi.acceptIncident(incident, userName);
       alertApi.post({ message: 'Incident accepted.' });
 
       callback(newIncident);
@@ -74,7 +81,7 @@ export const IncidentActionsMenu = ({
     try {
       handleCloseMenu();
       setProcessing(true);
-      const newIncident = await ilertApi.resolveIncident(incident);
+      const newIncident = await ilertApi.resolveIncident(incident, userName);
       alertApi.post({ message: 'Incident resolved.' });
 
       callback(newIncident);
@@ -179,7 +186,7 @@ export const IncidentActionsMenu = ({
 
         <MenuItem key="details" onClick={handleCloseMenu}>
           <Typography variant="inherit" noWrap>
-            <Link href={ilertApi.getIncidentDetailsURL(incident)}>
+            <Link to={ilertApi.getIncidentDetailsURL(incident)}>
               View in iLert
             </Link>
           </Typography>

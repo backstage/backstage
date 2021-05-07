@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export interface Config {
+  ilert: {
+    /**
+     * Domain used by users to access iLert web UI.
+     * Example: https://my-app.ilert.com/
+     * @visibility frontend
+     */
+    baseUrl: string;
 
-export { ILertClient, ilertApiRef } from './client';
-export type {
-  ILertApi,
-  GetIncidentsCountOpts,
-  GetIncidentsOpts,
-  TableState,
-} from './types';
+    /**
+     * Path to use for requests via the proxy, defaults to /ilert/api
+     * @visibility frontend
+     */
+    proxyPath?: string;
+  };
+}

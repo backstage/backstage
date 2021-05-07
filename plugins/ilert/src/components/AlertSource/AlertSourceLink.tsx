@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useApi } from '@backstage/core';
-import Link from '@material-ui/core/Link';
+import { useApi, Link } from '@backstage/core';
 import Grid from '@material-ui/core/Grid';
 import { AlertSource } from '../../types';
 import { ilertApiRef } from '../../api';
@@ -61,7 +60,7 @@ export const AlertSourceLink = ({
       <Grid item xs={10}>
         <Link
           className={classes.link}
-          href={ilertApi.getAlertSourceDetailsURL(alertSource)}
+          to={ilertApi.getAlertSourceDetailsURL(alertSource)}
         >
           {alertSource.name}
         </Link>

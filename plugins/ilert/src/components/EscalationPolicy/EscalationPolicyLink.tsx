@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { useApi } from '@backstage/core';
-import Link from '@material-ui/core/Link';
+import { useApi, Link } from '@backstage/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { EscalationPolicy } from '../../types';
 import { ilertApiRef } from '../../api';
@@ -41,7 +40,7 @@ export const EscalationPolicyLink = ({
   return (
     <Link
       className={classes.link}
-      href={ilertApi.getEscalationPolicyDetailsURL(escalationPolicy)}
+      to={ilertApi.getEscalationPolicyDetailsURL(escalationPolicy)}
     >
       {escalationPolicy.name}
     </Link>

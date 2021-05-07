@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  GetIncidentsOpts,
-  ilertApiRef,
-  TableState,
-  UnauthorizedError,
-} from '../api';
+import { GetIncidentsOpts, ilertApiRef, TableState } from '../api';
 import { useApi, errorApiRef } from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import {
   ACCEPTED,
@@ -68,7 +64,7 @@ export const useIncidents = (
       setIncidentsList(data || []);
       setIsLoading(false);
     } catch (e) {
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       setIsLoading(false);
@@ -81,7 +77,7 @@ export const useIncidents = (
       const count = await ilertApi.fetchIncidentsCount({ states });
       setIncidentsCount(count || 0);
     } catch (e) {
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;

@@ -54,10 +54,11 @@ export type EventRequest = {
 export interface ILertApi {
   fetchIncidents(opts?: GetIncidentsOpts): Promise<Incident[]>;
   fetchIncidentsCount(opts?: GetIncidentsCountOpts): Promise<number>;
+  fetchIncident(id: number): Promise<Incident>;
   fetchIncidentResponders(incident: Incident): Promise<IncidentResponder[]>;
   fetchIncidentActions(incident: Incident): Promise<IncidentAction[]>;
-  acceptIncident(incident: Incident): Promise<Incident>;
-  resolveIncident(incident: Incident): Promise<Incident>;
+  acceptIncident(incident: Incident, userName: string): Promise<Incident>;
+  resolveIncident(incident: Incident, userName: string): Promise<Incident>;
   assignIncident(
     incident: Incident,
     responder: IncidentResponder,
@@ -115,5 +116,5 @@ export type Options = {
   /**
    * Path to use for requests via the proxy, defaults to /ilert/api
    */
-  proxyPath?: string;
+  proxyPath: string;
 };

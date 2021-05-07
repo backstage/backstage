@@ -31,12 +31,6 @@ cd packages/app
 yarn add @backstage/plugin-ilert
 ```
 
-Then make sure to export the plugin in your app's [`plugins.ts`](https://github.com/backstage/backstage/blob/master/packages/app/src/plugins.ts) to enable the plugin:
-
-```js
-export { plugin as ILert } from '@backstage/plugin-ilert';
-```
-
 Add it to the `EntityPage.tsx`:
 
 ```ts
@@ -44,13 +38,16 @@ import {
   isPluginApplicableToEntity as isILertAvailable,
   EntityILertCard,
 } from '@backstage/plugin-ilert';
-{
-  isILertAvailable(entity) && (
-    <Grid item md={6}>
+
+// ...
+<EntitySwitch>
+  <EntitySwitch.Case if={isILertAvailable}>
+    <Grid item sm={6}>
       <EntityILertCard />
     </Grid>
-  );
-}
+  </EntitySwitch.Case>
+</EntitySwitch>;
+// ...
 ```
 
 > To force an iLert card for each entity just add the `<EntityILertCard />` component. An instruction card will appear if no integration key is set.
@@ -61,11 +58,11 @@ Modify your app routes in [`App.tsx`](https://github.com/backstage/backstage/blo
 
 ```tsx
 import { ILertPage } from '@backstage/plugin-ilert';
-<Routes>
+<FlatRoutes>
   // ...
   <Route path="/ilert" element={<ILertPage />} />
   // ...
-</Routes>;
+</FlatRoutes>;
 ```
 
 Modify your sidebar in [`Root.tsx`](https://github.com/backstage/backstage/blob/master/packages/app/src/components/Root/Root.tsx) to include the icon component exported by the plugin - for example:
@@ -104,14 +101,13 @@ proxy:
     allowedMethods: ['GET', 'POST', 'PUT']
     allowedHeaders: ['Authorization']
     headers:
-      Authorization:
-        $env: ILERT_AUTH_HEADER
+      Authorization: ${ILERT_AUTH_HEADER}
 ```
 
-Then start the backend, passing the token as environment variable:
+Then start the backend, passing the authorization header (bearer token or basic auth) as environment variable:
 
 ```bash
-$ ILERT_AUTH_HEADER='Basic <TOKEN>' yarn start
+$ ILERT_AUTH_HEADER='<ILERT_AUTH>' yarn start
 ```
 
 ## Integration Key
@@ -123,6 +119,10 @@ The information displayed for each entity is based on the alert source integrati
 If you want to use this plugin for an entity, you need to label it with the below annotation:
 
 ```yml
-annotations:
-  ilert.com/integration-key: [INTEGRATION_KEY]
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example
+  annotations:
+    ilert.com/integration-key: [INTEGRATION_KEY]
 ```

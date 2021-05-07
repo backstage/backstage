@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { ilertApiRef, UnauthorizedError } from '../api';
+import { ilertApiRef } from '../api';
 import { useApi, errorApiRef } from '@backstage/core';
+import { AuthenticationError } from '@backstage/errors';
 import { useAsyncRetry } from 'react-use';
 import { AlertSource, UptimeMonitor } from '../types';
 
@@ -46,7 +47,7 @@ export const useAlertSource = (integrationKey: string) => {
       setIsAlertSourceLoading(false);
     } catch (e) {
       setIsAlertSourceLoading(false);
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
@@ -69,7 +70,7 @@ export const useAlertSource = (integrationKey: string) => {
       setIsUptimeMonitorLoading(false);
     } catch (e) {
       setIsUptimeMonitorLoading(false);
-      if (!(e instanceof UnauthorizedError)) {
+      if (!(e instanceof AuthenticationError)) {
         errorApi.post(e);
       }
       throw e;
