@@ -16,15 +16,16 @@
 
 import { ConfigApi, OAuthApi } from '@backstage/core';
 import { Octokit } from '@octokit/rest';
-import { readGitHubIntegrationConfigs } from '@backstage/integration';
+import { ScmIntegrations } from '@backstage/integration';
 
 import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
 import { UnboxArray, UnboxReturnedPromise } from '../types/helpers';
+import { GitReleaseManagerError } from '../errors/GitReleaseManagerError';
 
 export class GitReleaseClient implements GitReleaseApi {
   private readonly githubAuthApi: OAuthApi;
-  private readonly baseUrl: string;
+  private readonly apiBaseUrl: string;
   readonly host: string;
 
   constructor({
@@ -36,27 +37,45 @@ export class GitReleaseClient implements GitReleaseApi {
   }) {
     this.githubAuthApi = githubAuthApi;
 
-    const githubIntegrationConfig = this.getGithubIntegrationConfig({
-      configApi,
-    });
+    const { host, apiBaseUrl } = this.getGithubIntegrationConfig({ configApi });
 
-    this.host = githubIntegrationConfig?.host ?? 'github.com';
-    this.baseUrl =
-      githubIntegrationConfig?.apiBaseUrl ?? 'https://api.github.com';
+    this.host = host;
+    this.apiBaseUrl = apiBaseUrl;
   }
 
   private getGithubIntegrationConfig({ configApi }: { configApi: ConfigApi }) {
-    const configs = readGitHubIntegrationConfigs(
-      configApi.getOptionalConfigArray('integrations.github') ?? [],
+    const integrations = ScmIntegrations.fromConfig(configApi);
+    const githubIntegrations = integrations.github.list();
+
+    const defaultIntegration = githubIntegrations.find(
+      ({ config: { host } }) => host === 'github.com',
+    );
+    const enterpriseIntegration = githubIntegrations.find(
+      ({ config: { host } }) => host !== 'github.com',
     );
 
-    const githubIntegrationEnterpriseConfig = configs.find(v =>
-      v.host.startsWith('ghe.'),
-    );
-    const githubIntegrationConfig = configs.find(v => v.host === 'github.com');
+    const host =
+      enterpriseIntegration?.config.host ?? defaultIntegration?.config.host;
+    const apiBaseUrl =
+      enterpriseIntegration?.config.apiBaseUrl ??
+      defaultIntegration?.config.apiBaseUrl;
 
-    // Prioritize enterprise configs if available
-    return githubIntegrationEnterpriseConfig ?? githubIntegrationConfig;
+    if (!host) {
+      throw new GitReleaseManagerError(
+        'Invalid API configuration: missing host',
+      );
+    }
+
+    if (!apiBaseUrl) {
+      throw new GitReleaseManagerError(
+        'Invalid API configuration: missing apiBaseUrl',
+      );
+    }
+
+    return {
+      host,
+      apiBaseUrl,
+    };
   }
 
   private async getOctokit() {
@@ -65,7 +84,7 @@ export class GitReleaseClient implements GitReleaseApi {
     return {
       octokit: new Octokit({
         auth: token,
-        baseUrl: this.baseUrl,
+        baseUrl: this.apiBaseUrl,
       }),
     };
   }

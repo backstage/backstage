@@ -31,7 +31,7 @@ describe('GitReleaseClient', () => {
 
     expect(gitReleaseClient).toMatchInlineSnapshot(`
       GitReleaseClient {
-        "baseUrl": "https://api.github.com",
+        "apiBaseUrl": "https://api.github.com",
         "createCommit": [Function],
         "createRef": [Function],
         "createRelease": [Function],
