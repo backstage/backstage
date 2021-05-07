@@ -39,6 +39,7 @@ import { NavLink } from 'react-router-dom';
 import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 import { SidebarSearch } from '@backstage/plugin-search';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -81,6 +82,11 @@ const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       {/* Global nav, not org-specific */}
       <SidebarItem icon={HomeIcon} to="/catalog" text="Home" />
+      <SidebarItem
+        icon={VisibilityIcon}
+        to="/dfds-capability-overview"
+        text="Capability Overview"
+      />
       <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
       <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
       <SidebarItem icon={LayersIcon} to="explore" text="Explore" />
