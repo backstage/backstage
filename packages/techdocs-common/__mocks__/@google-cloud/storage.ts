@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventEmitter } from 'events';
+import { Readable, Writable } from 'stream';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -58,19 +58,21 @@ class GCSFile {
   }
 
   createReadStream() {
-    const emitter = new EventEmitter();
+    const readable = new Readable();
+    readable._read = () => {};
+
     process.nextTick(() => {
       if (fs.existsSync(this.localFilePath)) {
-        emitter.emit('data', Buffer.from(fs.readFileSync(this.localFilePath)));
-        emitter.emit('end');
+        readable.emit('data', fs.readFileSync(this.localFilePath));
+        readable.emit('end');
       } else {
-        emitter.emit(
+        readable.emit(
           'error',
           new Error(`The file ${this.localFilePath} does not exist !`),
         );
       }
     });
-    return emitter;
+    return readable;
   }
 }
 

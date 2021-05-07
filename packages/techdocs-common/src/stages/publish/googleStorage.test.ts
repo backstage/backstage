@@ -21,6 +21,8 @@ import {
   EntityName,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
+import request from 'supertest';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
@@ -269,6 +271,45 @@ describe('GoogleGCSPublish', () => {
           'techdocs_metadata.json',
         )} does not exist !`,
       });
+    });
+  });
+
+  describe('docsRouter', () => {
+    let app: express.Express;
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
+
+    beforeEach(() => {
+      app = express().use(publisher.docsRouter());
+
+      mockFs.restore();
+      mockFs({
+        [entityRootDir]: {
+          img: {
+            'with spaces.png': 'found it',
+          },
+          'some folder': {
+            'also with spaces.js': 'found it too',
+          },
+        },
+      });
+    });
+
+    it('should pass expected object path to bucket', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      // Ensures leading slash is trimmed and encoded path is decoded.
+      const pngResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/with%20spaces.png`,
+      );
+      expect(pngResponse.text).toEqual('found it');
+      const jsResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
     });
   });
 });
