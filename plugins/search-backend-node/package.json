@@ -25,8 +25,8 @@
     "@types/lunr": "^2.3.3"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.6.3",
-    "@backstage/cli": "^0.6.9"
+    "@backstage/backend-common": "^0.7.0",
+    "@backstage/cli": "^0.6.10"
   },
   "files": [
     "dist"

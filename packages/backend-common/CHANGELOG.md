@@ -1,5 +1,73 @@
 # @backstage/backend-common
 
+## 0.7.0
+
+### Minor Changes
+
+- e0bfd3d44: Refactor the `runDockerContainer(…)` function to an interface-based api.
+  This gives the option to replace the docker runtime in the future.
+
+  Packages and plugins that previously used the `dockerode` as argument should be migrated to use the new `ContainerRunner` interface instead.
+
+  ```diff
+    import {
+  -   runDockerContainer,
+  +   ContainerRunner,
+      PluginEndpointDiscovery,
+    } from '@backstage/backend-common';
+  - import Docker from 'dockerode';
+
+    type RouterOptions = {
+      // ...
+  -   dockerClient: Docker,
+  +   containerRunner: ContainerRunner;
+    };
+
+    export async function createRouter({
+      // ...
+  -   dockerClient,
+  +   containerRunner,
+    }: RouterOptions): Promise<express.Router> {
+      // ...
+
+  +   await containerRunner.runContainer({
+  -   await runDockerContainer({
+        image: 'docker',
+        // ...
+  -     dockerClient,
+      });
+
+      // ...
+    }
+  ```
+
+  To keep the `dockerode` based runtime, use the `DockerContainerRunner` implementation:
+
+  ```diff
+  + import {
+  +   ContainerRunner,
+  +   DockerContainerRunner
+  + } from '@backstage/backend-common';
+  - import { runDockerContainer } from '@backstage/backend-common';
+
+  + const containerRunner: ContainerRunner = new DockerContainerRunner({dockerClient});
+  + await containerRunner.runContainer({
+  - await runDockerContainer({
+      image: 'docker',
+      // ...
+  -   dockerClient,
+    });
+  ```
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/integration@0.5.2
+  - @backstage/config-loader@0.6.1
+  - @backstage/config@0.1.5
+
 ## 0.6.3
 
 ### Patch Changes

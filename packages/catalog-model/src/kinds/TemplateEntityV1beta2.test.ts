@@ -51,7 +51,7 @@ describe('templateEntityV1beta2Validator', () => {
             id: 'fetch',
             name: 'Fetch',
             action: 'fetch:plan',
-            parameters: {
+            input: {
               url: './template',
             },
           },
