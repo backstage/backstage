@@ -38,7 +38,7 @@ import {
 } from '../types';
 import { useOwnUser } from './useOwnUser';
 import { useStarredEntities } from './useStarredEntities';
-import { compact } from 'lodash';
+import { compact, isEqual } from 'lodash';
 
 export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
@@ -51,8 +51,8 @@ type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
 > = {
   /**
-   * The list of currently registered filters. This includes filters passed in as defaults, plus
-   * any added with `setFilter`.
+   * The currently registered filters, adhering to the shape of DefaultEntityFilters or an extension
+   * of that default (to add custom filter types).
    */
   filters: EntityFilters;
 
@@ -67,7 +67,8 @@ type EntityListContextProps<
   backendEntities: Entity[];
 
   /**
-   * TODO(timbonicush) fix docs
+   * Update one or more of the registered filters. Optional filters can be set to `undefined` to
+   * reset the filter.
    */
   updateFilters: (filters: Partial<EntityFilters>) => void;
 
@@ -96,7 +97,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   const [filters, setFilters] = useState<EntityFilters>(
     initialFilters ?? ({} as EntityFilters),
   );
-  // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
 
   const [entities, setEntities] = useState<Entity[]>([]);
   const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
@@ -109,19 +109,34 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     [user, isStarredEntity],
   );
 
+  // Store resolved catalog-backend filters and deep compare on filter updates, to avoid refetching
+  // when only frontend filters change
+  const [backendFilters, setBackendFilters] = useState<
+    Record<string, string | string[]>
+  >(reduceCatalogFilters(compact(Object.values(filters))));
+
+  useEffect(() => {
+    const newBackendFilters = reduceCatalogFilters(
+      compact(Object.values(filters)),
+    );
+    if (!isEqual(newBackendFilters, backendFilters)) {
+      setBackendFilters(newBackendFilters);
+    }
+  }, [backendFilters, filters]);
+
   const [{ loading, error }, refresh] = useAsyncFn(async () => {
     // TODO(timbonicus): should limit fields here, but would need filter fields + table columns
     const items = await catalogApi
       .getEntities({
-        filter: reduceCatalogFilters(compact(Object.values(filters))),
+        filter: backendFilters,
       })
       .then(response => response.items);
     setBackendEntities(items);
-  }, [filters, catalogApi]);
+  }, [backendFilters, catalogApi]);
 
   // Slight debounce on the catalog-backend call, to prevent eager refresh on multiple programmatic
   // filter changes.
-  useDebounce(refresh, 10, [filters]);
+  useDebounce(refresh, 10, [backendFilters]);
 
   // Apply frontend filters
   useEffect(() => {
