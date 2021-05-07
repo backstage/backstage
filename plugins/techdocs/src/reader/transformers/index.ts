@@ -15,6 +15,7 @@
  */
 
 export * from './addBaseUrl';
+export * from './addGitFeedbackLink';
 export * from './rewriteDocLinks';
 export * from './addLinkClickListener';
 export * from './removeMkdocsHeader';

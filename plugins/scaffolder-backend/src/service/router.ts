@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
@@ -62,7 +61,6 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReader;
-  dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
@@ -96,7 +94,6 @@ export async function createRouter(
     logger: parentLogger,
     config,
     reader,
-    dockerClient,
     database,
     catalogClient,
     actions,
@@ -124,13 +121,11 @@ export async function createRouter(
     ? actions
     : [
         ...createLegacyActions({
-          dockerClient,
           preparers,
           publishers,
           templaters,
         }),
         ...createBuiltinActions({
-          dockerClient,
           integrations,
           catalogClient,
           templaters,
@@ -243,7 +238,6 @@ export async function createRouter(
               const templater = templaters.get(ctx.entity.spec.templater);
               await templater.run({
                 workspacePath: ctx.workspacePath,
-                dockerClient,
                 logStream: ctx.logStream,
                 values: ctx.values,
               });
@@ -358,8 +352,9 @@ export async function createRouter(
     .post('/v2/tasks', async (req, res) => {
       const templateName: string = req.body.templateName;
       const values: TemplaterValues = req.body.values;
+      const token = getBearerToken(req.headers.authorization);
       const template = await entityClient.findTemplate(templateName, {
-        token: getBearerToken(req.headers.authorization),
+        token,
       });
 
       let taskSpec;
@@ -402,7 +397,9 @@ export async function createRouter(
         );
       }
 
-      const result = await taskBroker.dispatch(taskSpec);
+      const result = await taskBroker.dispatch(taskSpec, {
+        token: token,
+      });
 
       res.status(201).json({ id: result.taskId });
     })
@@ -412,6 +409,8 @@ export async function createRouter(
       if (!task) {
         throw new NotFoundError(`Task with id ${taskId} does not exist`);
       }
+      // Do not disclose secrets
+      delete task.secrets;
       res.status(200).json(task);
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {

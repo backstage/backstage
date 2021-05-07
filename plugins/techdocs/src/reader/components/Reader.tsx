@@ -15,6 +15,7 @@
  */
 import { EntityName } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { BackstageTheme } from '@backstage/theme';
 import { useTheme } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -24,6 +25,7 @@ import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
 import transformer, {
   addBaseUrl,
+  addGitFeedbackLink,
   addLinkClickListener,
   injectCss,
   onCssReady,
@@ -34,6 +36,7 @@ import transformer, {
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';
+import { useRawPage } from './useRawPage';
 
 type Props = {
   entityId: EntityName;
@@ -52,6 +55,7 @@ export const Reader = ({ entityId, onReady }: Props) => {
   const [loadedPath, setLoadedPath] = useState('');
   const [atInitialLoad, setAtInitialLoad] = useState(true);
   const [newerDocsExist, setNewerDocsExist] = useState(false);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
 
   const {
     value: isSynced,
@@ -67,20 +71,20 @@ export const Reader = ({ entityId, onReady }: Props) => {
       });
     }
     return techdocsStorageApi.syncEntityDocs({ kind, namespace, name });
-  });
+  }, [techdocsStorageApi, kind, namespace, name]);
 
   const {
     value: rawPage,
     loading: docLoading,
     error: docLoadError,
-  } = useAsync(async () => {
-    // do not automatically load same page again if URL has not changed,
-    // happens when generating new docs finishes
-    if (newerDocsExist && path === loadedPath) {
-      return null;
+    retry,
+  } = useRawPage(path, kind, namespace, name);
+
+  useEffect(() => {
+    if (isSynced && newerDocsExist && path !== loadedPath) {
+      retry();
     }
-    return techdocsStorageApi.getEntityDocs({ kind, namespace, name }, path);
-  }, [techdocsStorageApi, kind, namespace, name, path, isSynced]);
+  });
 
   useEffect(() => {
     const updateSidebarPosition = () => {
@@ -132,16 +136,17 @@ export const Reader = ({ entityId, onReady }: Props) => {
       onReady();
     }
     // Pre-render
-    const transformedElement = transformer(rawPage as string, [
+    const transformedElement = transformer(rawPage.content, [
       sanitizeDOM(),
       addBaseUrl({
         techdocsStorageApi,
-        entityId: entityId,
-        path,
+        entityId: rawPage.entityId,
+        path: rawPage.path,
       }),
       rewriteDocLinks(),
       removeMkdocsHeader(),
       simplifyMkdocsFooter(),
+      addGitFeedbackLink(scmIntegrationsApi),
       injectCss({
         css: `
         body {
@@ -194,9 +199,20 @@ export const Reader = ({ entityId, onReady }: Props) => {
           }
           .md-nav--primary > .md-nav__title [for="none"] {
             padding-top: 0;
-          } 
+          }
         }
       `,
+      }),
+      injectCss({
+        // Disable CSS animations on link colors as they lead to issues in dark
+        // mode. The dark mode color theme is applied later and theirfore there
+        // is always an animation from light to dark mode when navigation
+        // between pages.
+        css: `
+        .md-nav__link, .md-typeset a, .md-typeset a::before, .md-typeset .headerlink {
+          transition: none;
+        }
+        `,
       }),
       injectCss({
         // Admonitions and others are using SVG masks to define icons. These
@@ -248,10 +264,14 @@ export const Reader = ({ entityId, onReady }: Props) => {
     );
     shadowRoot.appendChild(transformedElement);
 
+    // Scroll to top after render
+    window.scroll({ top: 0 });
+
     // Post-render
     transformer(shadowRoot.children[0], [
       dom => {
         setTimeout(() => {
+          // Scoll to the desired anchor on initial navigation
           if (window.location.hash) {
             const hash = window.location.hash.slice(1);
             shadowRoot?.getElementById(hash)?.scrollIntoView();
@@ -262,14 +282,19 @@ export const Reader = ({ entityId, onReady }: Props) => {
       addLinkClickListener({
         baseUrl: window.location.origin,
         onClick: (_: MouseEvent, url: string) => {
-          window.scroll({ top: 0 });
           const parsedUrl = new URL(url);
           if (newerDocsExist && isSynced) {
             // link navigation will load newer docs
             setNewerDocsExist(false);
           }
+
           if (parsedUrl.hash) {
             navigate(`${parsedUrl.pathname}${parsedUrl.hash}`);
+
+            // Scroll to hash if it's on the current page
+            shadowRoot
+              ?.getElementById(parsedUrl.hash.slice(1))
+              ?.scrollIntoView();
           } else {
             navigate(parsedUrl.pathname);
           }
@@ -301,18 +326,18 @@ export const Reader = ({ entityId, onReady }: Props) => {
     ]);
   }, [
     rawPage,
-    entityId,
     navigate,
     onReady,
     shadowDomRef,
-    path,
     techdocsStorageApi,
-    theme,
-    kind,
-    namespace,
-    name,
+    theme.typography.fontFamily,
+    theme.palette.text.primary,
+    theme.palette.primary.main,
+    theme.palette.background.paper,
+    theme.palette.background.default,
     newerDocsExist,
     isSynced,
+    scmIntegrationsApi,
   ]);
 
   // docLoadError not considered an error state if sync request is still ongoing

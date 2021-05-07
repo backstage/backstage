@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.3.6
+
+### Patch Changes
+
+- f53fba29f: Adds @backstage/plugin-kubernetes-common library to share types between kubernetes frontend and backend.
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.3.5
+
+### Patch Changes
+
+- c42cd1daa: Kubernetes client TLS verification is now configurable and defaults to true
+- Updated dependencies [d367f63b5]
+- Updated dependencies [b42531cfe]
+  - @backstage/backend-common@0.6.3
+
 ## 0.3.4
 
 ### Patch Changes

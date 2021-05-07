@@ -184,13 +184,13 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
           },
           repoVisibility: {
-            title: 'Repository Visiblity',
+            title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public'],
           },
           sourcePath: {
             title:
-              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the respository.',
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
         },

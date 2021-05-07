@@ -57,7 +57,7 @@ export type UserConfig = {
   // default is scope "one" and attributes "*" and "+".
   options: SearchOptions;
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
-  set?: { path: string; value: JsonValue }[];
+  set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
   map: {
     // The name of the attribute that holds the relative distinguished name of
@@ -94,7 +94,7 @@ export type GroupConfig = {
   // Only the scope, filter, attributes, and paged fields are supported.
   options: SearchOptions;
   // JSON paths (on a.b.c form) and hard coded values to set on those paths
-  set?: { path: string; value: JsonValue }[];
+  set?: { [path: string]: JsonValue };
   // Mappings from well known entity fields, to LDAP attribute names
   map: {
     // The name of the attribute that holds the relative distinguished name of
@@ -189,15 +189,12 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
   }
 
   function readSetConfig(
-    c: Config[] | undefined,
-  ): { path: string; value: JsonValue }[] | undefined {
+    c: Config | undefined,
+  ): { [path: string]: JsonValue } | undefined {
     if (!c) {
       return undefined;
     }
-    return c.map(entry => ({
-      path: entry.getString('path'),
-      value: entry.get('value'),
-    }));
+    return Object.fromEntries(c.keys().map(path => [path, c.get(path)]));
   }
 
   function readUserMapConfig(
@@ -244,7 +241,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     return {
       dn: c.getString('dn'),
       options: readOptionsConfig(c.getOptionalConfig('options')),
-      set: readSetConfig(c.getOptionalConfigArray('set')),
+      set: readSetConfig(c.getOptionalConfig('set')),
       map: readUserMapConfig(c.getOptionalConfig('map')),
     };
   }
@@ -255,7 +252,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     return {
       dn: c.getString('dn'),
       options: readOptionsConfig(c.getOptionalConfig('options')),
-      set: readSetConfig(c.getOptionalConfigArray('set')),
+      set: readSetConfig(c.getOptionalConfig('set')),
       map: readGroupMapConfig(c.getOptionalConfig('map')),
     };
   }

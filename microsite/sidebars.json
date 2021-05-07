@@ -111,6 +111,11 @@
       },
       {
         "type": "subcategory",
+        "label": "Datadog",
+        "ids": ["integrations/datadog-rum/installation"]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",
@@ -130,13 +135,13 @@
       },
       {
         "type": "subcategory",
-        "label": "LDAP",
-        "ids": ["integrations/ldap/org"]
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       },
       {
         "type": "subcategory",
-        "label": "Google GCS",
-        "ids": ["integrations/google-cloud-storage/locations"]
+        "label": "LDAP",
+        "ids": ["integrations/ldap/org"]
       }
     ],
     "Plugins": [
@@ -203,6 +208,7 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/docker",
       "deployment/k8s",
       "deployment/helm",
       "deployment/heroku"

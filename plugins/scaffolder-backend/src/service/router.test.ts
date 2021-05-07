@@ -29,20 +29,17 @@ jest.doMock('fs-extra', () => ({
 }));
 
 import {
-  SingleConnectionDatabaseManager,
-  PluginDatabaseManager,
   getVoidLogger,
+  PluginDatabaseManager,
+  SingleConnectionDatabaseManager,
   UrlReaders,
 } from '@backstage/backend-common';
+import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
+import { Preparers, Publishers, Templaters } from '../scaffolder';
 import { createRouter } from './router';
-import { Templaters, Preparers, Publishers } from '../scaffolder';
-import Docker from 'dockerode';
-import { CatalogApi } from '@backstage/catalog-client';
-
-jest.mock('dockerode');
 
 const createCatalogClient = (templates: any[] = []) =>
   ({
@@ -115,7 +112,6 @@ describe('createRouter - working directory', () => {
         templaters: new Templaters(),
         publishers: new Publishers(),
         config: new ConfigReader(workDirConfig('/path')),
-        dockerClient: new Docker(),
         database: createDatabase(),
         catalogClient: createCatalogClient([template]),
         reader: mockUrlReader,
@@ -130,7 +126,6 @@ describe('createRouter - working directory', () => {
       templaters: new Templaters(),
       publishers: new Publishers(),
       config: new ConfigReader(workDirConfig('/path')),
-      dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
       reader: mockUrlReader,
@@ -160,7 +155,6 @@ describe('createRouter - working directory', () => {
       templaters: new Templaters(),
       publishers: new Publishers(),
       config: new ConfigReader({}),
-      dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
       reader: mockUrlReader,
@@ -234,7 +228,6 @@ describe('createRouter', () => {
       templaters: new Templaters(),
       publishers: new Publishers(),
       config: new ConfigReader({}),
-      dockerClient: new Docker(),
       database: createDatabase(),
       catalogClient: createCatalogClient([template]),
       reader: mockUrlReader,
@@ -299,6 +292,29 @@ describe('createRouter', () => {
 
       expect(response.body.id).toBeDefined();
       expect(response.status).toEqual(201);
+    });
+  });
+
+  describe('GET /v2/tasks/:taskId', () => {
+    it('does not divulge secrets', async () => {
+      const postResponse = await request(app)
+        .post('/v2/tasks')
+        .set('Authorization', 'Bearer secret')
+        .send({
+          templateName: 'create-react-app-template',
+          values: {
+            storePath: 'https://github.com/backstage/backstage',
+            component_id: '123',
+            name: 'test',
+            use_typescript: false,
+          },
+        });
+
+      const response = await request(app)
+        .get(`/v2/tasks/${postResponse.body.id}`)
+        .send();
+      expect(response.status).toEqual(200);
+      expect(response.body.secrets).toBeUndefined();
     });
   });
 });

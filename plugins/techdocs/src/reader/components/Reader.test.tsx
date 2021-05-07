@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
+import { ConfigReader } from '@backstage/config';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { act, render } from '@testing-library/react';
 import React from 'react';
@@ -39,9 +44,15 @@ describe('<Reader />', () => {
       entityId: 'Component::backstage',
     });
 
+    const scmIntegrationsApi: ScmIntegrationsApi = ScmIntegrationsApi.fromConfig(
+      new ConfigReader({
+        integrations: {},
+      }),
+    );
     const techdocsStorageApi: Partial<TechDocsStorageApi> = {};
 
     const apiRegistry = ApiRegistry.from([
+      [scmIntegrationsApiRef, scmIntegrationsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
     ]);
 

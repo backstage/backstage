@@ -17,7 +17,10 @@
 import { Entity, EntityName, Location } from '@backstage/catalog-model';
 
 export type CatalogEntitiesRequest = {
-  filter?: Record<string, string | string[]> | undefined;
+  filter?:
+    | Record<string, string | string[]>[]
+    | Record<string, string | string[]>
+    | undefined;
   fields?: string[] | undefined;
 };
 

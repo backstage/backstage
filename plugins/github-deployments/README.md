@@ -13,20 +13,12 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 1. Install the GitHub Deployments Plugin.
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-github-deployments
 ```
 
-2. Add the plugin to the app
-
-```typescript
-// packages/app/src/plugins.ts
-
-export { githubDeploymentsPlugin as GithubDeploymentsPlugin } from '@backstage/plugin-github-deployments';
-```
-
-3. Add the `EntityGithubDeploymentsCard` to the EntityPage:
+2. Add the `EntityGithubDeploymentsCard` to the EntityPage:
 
 ```typescript
 // packages/app/src/components/catalog/EntityPage.tsx
@@ -44,7 +36,7 @@ const OverviewContent = () => (
 );
 ```
 
-4. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
+3. Add the `github.com/project-slug` annotation to your `catalog-info.yaml` file:
 
 ```yaml
 apiVersion: backstage.io/v1alpha1

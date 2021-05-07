@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend
 
+## 0.8.2
+
+### Patch Changes
+
+- b219821a0: Expose `BitbucketRepositoryParser` introduced in [#5295](https://github.com/backstage/backstage/pull/5295)
+- 227439a72: Add support for non-organization accounts in GitHub Discovery
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.8.1
+
+### Patch Changes
+
+- a99e0bc42: Entity lifecycle and owner are now indexed by the `DefaultCatalogCollator`. A `locationTemplate` may now optionally be provided to its constructor to reflect a custom catalog entity path in the Backstage frontend.
+- Updated dependencies [e1e757569]
+  - @backstage/plugin-search-backend-node@0.1.4
+
+## 0.8.0
+
+### Minor Changes
+
+- 5fe62f124: Fix the schema / code mismatch in LDAP `set` config
+
+### Patch Changes
+
+- 09b5fcf2e: GithubDiscoveryProcessor now excludes archived repositories so they won't be added to Backstage.
+- c2306f898: Externalize repository processing for BitbucketDiscoveryProcessor.
+
+  Add an extension point where you can customize how a matched Bitbucket repository should
+  be processed. This can for example be used if you want to generate the catalog-info.yaml
+  automatically based on other files in a repository, while taking advantage of the
+  build-in repository crawling functionality.
+
+  `BitbucketDiscoveryProcessor.fromConfig` now takes an optional parameter `options.parser` where
+  you can customize the logic for each repository found. The default parser has the same
+  behaviour as before, where it emits an optional location for the matched repository
+  and lets the other processors take care of further processing.
+
+  ```typescript
+  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
+    client,
+    repository,
+  }) {
+    // Custom logic for interpret the matching repository.
+    // See defaultRepositoryParser for an example
+  };
+
+  const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
+    parser: customRepositoryParser,
+    logger: env.logger,
+  });
+  ```
+
+- Updated dependencies [94da20976]
+- Updated dependencies [b9b2b4b76]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [d367f63b5]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [b42531cfe]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/plugin-search-backend-node@0.1.3
+  - @backstage/backend-common@0.6.3
+
 ## 0.7.1
 
 ### Patch Changes

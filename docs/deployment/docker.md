@@ -232,7 +232,7 @@ package, which is done as follows:
 Once the `app-backend` is removed from the backend, you can use your favorite
 static file serving method for serving the frontend. An example of how to set up
 an NGINX image is available in the
-[contrib folder in the main repo](https://github.com/backstage/backstage/blob/master/contrib/docker/frontend-with-nginx/Dockerfile)
+[contrib folder in the main repo](https://github.com/backstage/backstage/blob/master/contrib/docker/frontend-with-nginx)
 
 Note that if you're building a separate docker build of the frontend you
 probably need to adjust `.dockerignore` appropriately. Most likely by making

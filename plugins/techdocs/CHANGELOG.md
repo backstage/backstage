@@ -1,5 +1,72 @@
 # @backstage/plugin-techdocs
 
+## 0.9.1
+
+### Patch Changes
+
+- 2e05277e0: Fix navigation in a page using the table of contents.
+- 4075c6367: Make git config optional for techdocs feedback links
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [81c54d1f2]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [d8b81fd28]
+  - @backstage/integration@0.5.2
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-react@0.1.5
+  - @backstage/theme@0.2.7
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.9.0
+
+### Minor Changes
+
+- 21fddf452: Make `techdocsStorageApiRef` and `techdocsApiRef` use interfaces instead of the
+  actual implementation classes.
+
+  This renames the classes `TechDocsApi` to `TechDocsClient` and `TechDocsStorageApi`
+  to `TechDocsStorageClient` and renames the interfaces `TechDocs` to `TechDocsApi`
+  and `TechDocsStorage` to `TechDocsStorageApi` to comply the pattern elsewhere in
+  the project. This also fixes the types returned by some methods on those
+  interfaces.
+
+### Patch Changes
+
+- 6fbd7beca: Use `EntityRefLink` in header and use relations to reference the owner of the
+  document.
+- 15cbe6815: Fix TechDocs landing page table wrong copied link
+- 39bdaa004: Add customization and exportable components for TechDocs landing page
+- cb8c848a3: Disable color transitions on links to avoid issues in dark mode.
+- 17915e29b: Rework state management to avoid rendering multiple while navigating between pages.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
+## 0.8.0
+
+### Minor Changes
+
+- ac6025f63: Add feedback link icon in Techdocs Reader that directs to GitLab or GitHub repo issue page with pre-filled title and source link.
+  For link to appear, requires `repo_url` and `edit_uri` to be filled in mkdocs.yml, as per https://www.mkdocs.org/user-guide/configuration. An `edit_uri` will need to be specified for self-hosted GitLab/GitHub instances with a different host name.
+  To identify issue URL format as GitHub or GitLab, the host name of source in `repo_url` is checked if it contains `gitlab` or `github`. Alternately this is determined by matching to `host` values from `integrations` in app-config.yaml.
+
+### Patch Changes
+
+- e292e393f: Add a test id to the shadow root element of the Reader to access it easily in e2e tests
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
 ## 0.7.2
 
 ### Patch Changes

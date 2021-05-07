@@ -1,5 +1,41 @@
 # @backstage/core
 
+## 0.7.8
+
+### Patch Changes
+
+- f65adcde7: Fix some transitive dependency warnings in yarn
+- 80888659b: Bump react-hook-form version to be the same for the entire project.
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [d8b81fd28]
+  - @backstage/theme@0.2.7
+  - @backstage/config@0.1.5
+
+## 0.7.7
+
+### Patch Changes
+
+- 9afcac5af: Allow passing NavLinkProps to SidebarItem component to use in NavLink
+- e0c9ed759: Add `if` prop to `EntityLayout.Route` to conditionally render tabs
+- 6eaecbd81: Improve owner example value in `MissingAnnotationEmptyState`.
+
+## 0.7.6
+
+### Patch Changes
+
+- 94da20976: Sort the table filter options by name.
+- d8cc7e67a: Exposing Material UI extension point for tabs to be able to add additional information to them
+- 99fbef232: Adding Headings for Accessibility on the Scaffolder Plugin
+- ab07d77f6: Add support for discovering plugins through the app element tree, removing the need to register them explicitly.
+- 937ed39ce: Exported SignInProviderConfig to strongly type SignInPage providers
+- 9a9e7a42f: Adding close button on support menu
+- 50ce875a0: Fixed a potentially confusing error being thrown about misuse of routable extensions where the error was actually something different.
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [50ce875a0]
+  - @backstage/core-api@0.2.17
+  - @backstage/theme@0.2.6
+
 ## 0.7.5
 
 ### Patch Changes
