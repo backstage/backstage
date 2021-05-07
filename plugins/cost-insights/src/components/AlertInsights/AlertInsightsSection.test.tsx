@@ -41,8 +41,8 @@ describe('<AlertInsightsSection/>', () => {
         onAccept={jest.fn()}
       />,
     );
-    expect(getByText(mockAlert.title)).toBeInTheDocument();
-    expect(getByText(mockAlert.subtitle)).toBeInTheDocument();
+    expect(getByText(mockAlert.title as string)).toBeInTheDocument();
+    expect(getByText(mockAlert.subtitle as string)).toBeInTheDocument();
     expect(getByText('View Instructions')).toBeInTheDocument();
     expect(queryByText('Snooze')).not.toBeInTheDocument();
     expect(queryByText('Accept')).not.toBeInTheDocument();
