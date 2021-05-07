@@ -138,7 +138,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     this.logger.warn(
-      'GithubOrgReaderProcessor uses provider defined in catalog.processors.githubOrg.providers, migrate to integrations instead.',
+      'GithubOrgReaderProcessor uses provider defined in catalog.processors.githubOrg.providers, migrate to integrations instead. See https://backstage.io/docs/integrations/github/locations',
     );
 
     return !provider.token
