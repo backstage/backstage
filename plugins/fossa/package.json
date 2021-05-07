@@ -44,7 +44,7 @@
     "p-limit": "^3.0.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3"
+    "react-use": "^17.2.4"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.10",
