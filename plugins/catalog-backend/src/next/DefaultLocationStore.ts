@@ -15,88 +15,103 @@
  */
 
 import { LocationSpec, Location } from '@backstage/catalog-model';
-import { Database } from '../database';
 import {
   LocationStore,
   EntityProvider,
   EntityProviderConnection,
 } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { locationSpecToLocationEntity } from './util';
-import { ConflictError } from '@backstage/errors';
+import { ConflictError, NotFoundError } from '@backstage/errors';
+import { Knex } from 'knex';
+
+type DbLocationsRow = {
+  id: string;
+  type: string;
+  target: string;
+};
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
 
-  constructor(private readonly db: Database) {}
+  constructor(private readonly db: Knex) {}
 
   getProviderName(): string {
     return 'DefaultLocationStore';
   }
 
   async createLocation(spec: LocationSpec): Promise<Location> {
-    return this.db.transaction(async tx => {
+    const location = await this.db.transaction(async tx => {
       // Attempt to find a previous location matching the spec
-      const previousLocations = await this.listLocations();
+      const previousLocations = await this.locations(tx);
+      // TODO: when location id's are a compilation of spec target we can remove this full
+      // lookup of locations first and just grab the by that instead.
       const previousLocation = previousLocations.some(
         l => spec.type === l.type && spec.target === l.target,
       );
-
       if (previousLocation) {
         throw new ConflictError(
           `Location ${spec.type}:${spec.target} already exists`,
         );
       }
 
-      // TODO: id should really be type and target combined and not a uuid.
-      const location = await this.db.addLocation(tx, {
-        id: uuidv4(),
+      const inner: DbLocationsRow = {
+        id: uuid(),
         type: spec.type,
         target: spec.target,
-      });
+      };
 
-      await this.connection.applyMutation({
-        type: 'delta',
-        added: [locationSpecToLocationEntity(location)],
-        removed: [],
-      });
+      await tx<DbLocationsRow>('locations').insert(inner);
 
-      return location;
+      return inner;
     });
+
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [locationSpecToLocationEntity(location)],
+      removed: [],
+    });
+
+    return location;
   }
 
   async listLocations(): Promise<Location[]> {
-    const dbLocations = await this.db.locations();
-    return (
-      dbLocations
-        // TODO(blam): We should create a mutation to remove this location for everyone
-        // eventually when it's all done and dusted
-        .filter(({ type }) => type !== 'bootstrap')
-        .map(item => ({
-          id: item.id,
-          target: item.target,
-          type: item.type,
-        }))
-    );
+    return await this.locations();
   }
 
-  getLocation(id: string): Promise<Location> {
-    return this.db.location(id);
+  async getLocation(id: string): Promise<Location> {
+    const items = await this.db<DbLocationsRow>('locations')
+      .where({ id })
+      .select();
+
+    if (!items.length) {
+      throw new NotFoundError(`Found no location with ID ${id}`);
+    }
+    return items[0];
   }
 
-  deleteLocation(id: string): Promise<void> {
+  async deleteLocation(id: string): Promise<void> {
     if (!this.connection) {
       throw new Error('location store is not initialized');
     }
 
-    return this.db.transaction(async tx => {
-      const location = await this.db.location(id);
-      await this.db.removeLocation(tx, id);
-      await this.connection.applyMutation({
-        type: 'delta',
-        added: [],
-        removed: [locationSpecToLocationEntity(location)],
-      });
+    const deleted = await this.db.transaction(async tx => {
+      const [location] = await tx<DbLocationsRow>('locations')
+        .where({ id })
+        .select();
+
+      if (!location) {
+        throw new NotFoundError(`Found no location with ID ${id}`);
+      }
+
+      await tx<DbLocationsRow>('locations').where({ id }).del();
+      return location;
+    });
+
+    await this.connection.applyMutation({
+      type: 'delta',
+      added: [],
+      removed: [locationSpecToLocationEntity(deleted)],
     });
   }
 
@@ -110,13 +125,31 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
 
   async connect(connection: EntityProviderConnection): Promise<void> {
     this._connection = connection;
-    const locations = await this.listLocations();
+
+    const locations = await this.locations();
+
     const entities = locations.map(location => {
       return locationSpecToLocationEntity(location);
     });
+
     await this.connection.applyMutation({
       type: 'full',
       entities,
     });
+  }
+
+  private async locations(dbOrTx: Knex.Transaction | Knex = this.db) {
+    const locations = await dbOrTx<DbLocationsRow>('locations').select();
+    return (
+      locations
+        // TODO(blam): We should create a mutation to remove this location for everyone
+        // eventually when it's all done and dusted
+        .filter(({ type }) => type !== 'bootstrap')
+        .map(item => ({
+          id: item.id,
+          target: item.target,
+          type: item.type,
+        }))
+    );
   }
 }

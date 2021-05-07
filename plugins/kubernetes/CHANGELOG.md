@@ -1,5 +1,21 @@
 # @backstage/plugin-kubernetes
 
+## 0.4.3
+
+### Patch Changes
+
+- f53fba29f: Adds @backstage/plugin-kubernetes-common library to share types between kubernetes frontend and backend.
+- Updated dependencies [f65adcde7]
+- Updated dependencies [81c54d1f2]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [d8b81fd28]
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-react@0.1.5
+  - @backstage/theme@0.2.7
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
 ## 0.4.2
 
 ### Patch Changes

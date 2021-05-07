@@ -32,7 +32,7 @@ export default async function createPlugin({
   indexBuilder.addCollator({
     type: 'software-catalog',
     defaultRefreshIntervalSeconds: 600,
-    collator: new DefaultCatalogCollator(discovery),
+    collator: new DefaultCatalogCollator({ discovery }),
   });
 
   const { scheduler } = await indexBuilder.build();

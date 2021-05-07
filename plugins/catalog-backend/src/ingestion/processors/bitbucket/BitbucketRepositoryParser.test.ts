@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import { defaultRepositoryParser } from './BitbucketRepositoryParser';
-import { Project, Repository } from './types';
-import { BitbucketClient } from './client';
 import { results } from '../index';
+import { getVoidLogger } from '@backstage/backend-common';
+import { BitbucketIntegration } from '@backstage/integration';
 
 describe('BitbucketRepositoryParser', () => {
   describe('defaultRepositoryParser', () => {
@@ -34,15 +34,9 @@ describe('BitbucketRepositoryParser', () => {
         ),
       ];
       const actual = await defaultRepositoryParser({
-        client: {} as BitbucketClient,
-        repository: {
-          project: {} as Project,
-          slug: 'repo-slug',
-          links: {
-            self: [{ href: browseUrl }],
-          },
-        } as Repository,
-        path: path,
+        integration: {} as BitbucketIntegration,
+        target: `${browseUrl}${path}`,
+        logger: getVoidLogger(),
       });
 
       let i = 0;

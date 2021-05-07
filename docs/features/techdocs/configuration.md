@@ -78,6 +78,11 @@ techdocs:
       # https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
       endpoint: ${AWS_ENDPOINT}
 
+      # (Optional) Whether to use path style URLs when communicating with S3.
+      # Defaults to false.
+      # This allows providers like LocalStack, Minio and Wasabi (and possibly others) to be used to host tech docs.
+      s3ForcePathStyle: false
+
     # Required when techdocs.publisher.type is set to 'azureBlobStorage'. Skip otherwise.
 
     azureBlobStorage:

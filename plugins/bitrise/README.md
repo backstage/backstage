@@ -8,9 +8,9 @@ Welcome to the Bitrise plugin!
 ## Installation
 
 ```sh
-# The plugin must be added in the app package
-$ cd packages/app
-$ yarn add @backstage/plugin-bitrise
+# From your Backstage root directory
+cd packages/app
+yarn add @backstage/plugin-bitrise
 ```
 
 Bitrise Plugin exposes an entity tab component named `EntityBitriseContent`. You can include it in the
@@ -22,7 +22,7 @@ import { EntityBitriseContent } from '@backstage/plugin-bitrise';
 
 // Farther down at the website declaration
 const websiteEntityPage = (
-  <EntityLayoutWrapper>
+  <EntityLayout>
     {/* Place the following section where you want the tab to appear */}
     <EntityLayout.Route path="/bitrise" title="Bitrise">
       <EntityBitriseContent />

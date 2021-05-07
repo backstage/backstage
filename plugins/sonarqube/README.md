@@ -9,7 +9,8 @@ The SonarQube Plugin displays code statistics from [SonarCloud](https://sonarclo
 1. Install the SonarQube Plugin:
 
 ```bash
-# packages/app
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-sonarqube
 ```
 

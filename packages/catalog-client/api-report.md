@@ -67,7 +67,7 @@ export class CatalogClient implements CatalogApi {
 
 // @public (undocumented)
 export type CatalogEntitiesRequest = {
-    filter?: Record<string, string | string[]> | undefined;
+    filter?: Record<string, string | string[]>[] | Record<string, string | string[]> | undefined;
     fields?: string[] | undefined;
 };
 

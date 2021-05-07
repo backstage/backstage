@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 0.3.11
+
+### Patch Changes
+
+- d1b1306d9: Allow `filter` parameter to be specified multiple times
+- Updated dependencies [d8b81fd28]
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
 ## 0.3.10
 
 ### Patch Changes

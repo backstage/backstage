@@ -46,7 +46,8 @@ with the environment variable \`LAS_CORS\` set to \`true\`._
 When you have an instance running that Backstage can hook into, first install the plugin into your app:
 
 \`\`\`sh
-$ yarn add @backstage/plugin-lighthouse
+cd packages/app
+yarn add @backstage/plugin-lighthouse
 \`\`\`
 
 Modify your app routes in \`App.tsx\` to include the \`LighthousePage\` component exported from the plugin, for example:

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { EntityProviderConnection, EntityProvider } from './types';
-import path from 'path';
 import { Config } from '@backstage/config';
+import path from 'path';
+import { EntityProvider, EntityProviderConnection } from './types';
 import { locationSpecToLocationEntity } from './util';
 
-export class ConfigLocationProvider implements EntityProvider {
+export class ConfigLocationEntityProvider implements EntityProvider {
   private connection: EntityProviderConnection | undefined;
 
   constructor(private readonly config: Config) {}

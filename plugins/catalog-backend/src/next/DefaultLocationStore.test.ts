@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { v4 as uuid } from 'uuid';
 import { DatabaseManager } from './database/DatabaseManager';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { v4 } from 'uuid';
 
-/* eslint-disable */
-xdescribe('Default Location Store', () => {
-  const createLocationStore = async () => {
-    const db = await DatabaseManager.createTestDatabase();
-    const connection = { applyMutation: jest.fn() };
-    const store = new DefaultLocationStore(db);
-    await store.connect(connection);
-    return { store, connection };
-  };
+const createLocationStore = async () => {
+  const knex = await DatabaseManager.createTestDatabaseConnection();
+  await DatabaseManager.createDatabase(knex);
+  const connection = { applyMutation: jest.fn() };
+  const store = new DefaultLocationStore(knex);
+  await store.connect(connection);
 
+  return { store, connection };
+};
+
+describe('DefaultLocationStore', () => {
   it('should do a full sync with the locations on connect', async () => {
     const { connection } = await createLocationStore();
 
@@ -39,13 +40,11 @@ xdescribe('Default Location Store', () => {
   describe('listLocations', () => {
     it('lists empty locations when there is no locations', async () => {
       const { store } = await createLocationStore();
-
       expect(await store.listLocations()).toEqual([]);
     });
 
     it('lists locations that are added to the db', async () => {
       const { store } = await createLocationStore();
-
       await store.createLocation({
         target:
           'https://github.com/backstage/demo/blob/master/catalog-info.yml',
@@ -53,7 +52,6 @@ xdescribe('Default Location Store', () => {
       });
 
       const listLocations = await store.listLocations();
-
       expect(listLocations).toHaveLength(1);
       expect(listLocations).toEqual(
         expect.arrayContaining([
@@ -76,7 +74,6 @@ xdescribe('Default Location Store', () => {
         type: 'url',
       };
       await store.createLocation(spec);
-
       await expect(() => store.createLocation(spec)).rejects.toThrow(
         new RegExp(`Location ${spec.type}:${spec.target} already exists`),
       );
@@ -84,7 +81,6 @@ xdescribe('Default Location Store', () => {
 
     it('calls apply mutation when adding a new location', async () => {
       const { store, connection } = await createLocationStore();
-
       await store.createLocation({
         target:
           'https://github.com/backstage/demo/blob/master/catalog-info.yml',
@@ -110,9 +106,7 @@ xdescribe('Default Location Store', () => {
   describe('deleteLocation', () => {
     it('throws if the location does not exist', async () => {
       const { store } = await createLocationStore();
-
-      const id = v4();
-
+      const id = uuid();
       await expect(() => store.deleteLocation(id)).rejects.toThrow(
         new RegExp(`Found no location with ID ${id}`),
       );

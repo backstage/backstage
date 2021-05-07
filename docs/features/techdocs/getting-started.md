@@ -22,7 +22,7 @@ Navigate to your new Backstage application directory. And then to your
 `packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
@@ -54,7 +54,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-techdocs-backend
 ```
@@ -63,6 +63,7 @@ Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and
 add the following
 
 ```typescript
+import { DockerContainerRunner } from '@backstage/backend-common';
 import {
   createRouter,
   Generators,
@@ -84,9 +85,14 @@ export default async function createPlugin({
     reader,
   });
 
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  const dockerClient = new Docker();
+  const containerRunner = new DockerContainerRunner({ dockerClient });
+
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(config, {
     logger,
+    containerRunner,
   });
 
   // Publisher is used for
@@ -97,14 +103,13 @@ export default async function createPlugin({
     discovery,
   });
 
-  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
+  // checks if the publisher is working and logs the result
+  await publisher.getReadiness();
 
   return await createRouter({
     preparers,
     generators,
     publisher,
-    dockerClient,
     logger,
     config,
     discovery,

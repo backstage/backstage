@@ -1,5 +1,51 @@
 # @backstage/techdocs-common
 
+## 0.6.0
+
+### Minor Changes
+
+- e0bfd3d44: Migrate the package to use the `ContainerRunner` interface instead of `runDockerContainer(…)`.
+  It also no longer provides the `ContainerRunner` as an input to the `GeneratorBase#run(…)` function, but expects it as a constructor parameter instead.
+
+  If you use the `TechdocsGenerator` you need to update the usage:
+
+  ```diff
+  + const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  - const generator = new TechdocsGenerator(logger, config);
+  + const techdocsGenerator = new TechdocsGenerator({
+  +   logger,
+  +   containerRunner,
+  +   config,
+  + });
+
+    await this.generator.run({
+      inputDir: preparedDir,
+      outputDir,
+  -   dockerClient: this.dockerClient,
+      parsedLocationAnnotation,
+      etag: newEtag,
+    });
+  ```
+
+### Patch Changes
+
+- e9e56b01a: Adding optional config to enable S3-like API for tech-docs using s3ForcePathStyle option.
+  This allows providers like LocalStack, Minio and Wasabi (+possibly others) to be used to host tech docs.
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.5.1
+
+### Patch Changes
+
+- f4af06ebe: Gracefully handle HTTP request failures in download method of AzureBlobStorage publisher.
+
 ## 0.5.0
 
 ### Minor Changes

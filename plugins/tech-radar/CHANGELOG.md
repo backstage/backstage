@@ -1,5 +1,16 @@
 # @backstage/plugin-tech-radar
 
+## 0.3.10
+
+### Patch Changes
+
+- b2e2ec753: Update README for composability
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+  - @backstage/core@0.7.8
+  - @backstage/theme@0.2.7
+
 ## 0.3.9
 
 ### Patch Changes
