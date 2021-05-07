@@ -27,8 +27,9 @@ import {
 
 import {
   costInsightsApiRef,
-  ExampleCostInsightsClient,
 } from '@backstage/plugin-cost-insights';
+import CostInsightsClient from './components/costInsights';
+
 
 export const apis = [
   createApiFactory({
@@ -50,5 +51,9 @@ export const apis = [
       ]),
   }),
 
-  createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
+  createApiFactory({
+    api: costInsightsApiRef,
+    deps: {},
+    factory: () => new CostInsightsClient(),
+  }),
 ];
