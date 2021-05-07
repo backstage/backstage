@@ -58,7 +58,7 @@ type SetQueryParams<T> = (params: T) => void;
 
 export function useQueryParamState<T>(
   stateName: string,
-  /** @depracated Don't configure a custom debouceTime */
+  /** @deprecated Don't configure a custom debouceTime */
   debounceTime: number = 250,
 ): [T | undefined, SetQueryParams<T>] {
   const [searchParams, setSearchParams] = useSearchParams();
