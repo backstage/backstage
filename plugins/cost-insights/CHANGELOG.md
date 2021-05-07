@@ -1,5 +1,21 @@
 # @backstage/plugin-cost-insights
 
+## 0.9.0
+
+### Minor Changes
+
+- 6f1b82b14: make change ratio optional
+
+### Patch Changes
+
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [d8b81fd28]
+  - @backstage/core@0.7.8
+  - @backstage/theme@0.2.7
+  - @backstage/config@0.1.5
+
 ## 0.8.5
 
 ### Patch Changes
