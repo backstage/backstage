@@ -140,7 +140,10 @@ export class ILertClient implements ILertApi {
       headers: JSON_HEADERS,
     };
 
-    const response = await this.fetch(`/api/v1/incidents/${id}`, init);
+    const response = await this.fetch(
+      `/api/v1/incidents/${encodeURIComponent(id)}`,
+      init,
+    );
 
     return response;
   }
@@ -153,7 +156,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/incidents/${incident.id}/responders`,
+      `/api/v1/incidents/${encodeURIComponent(incident.id)}/responders`,
       init,
     );
 
@@ -166,7 +169,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/incidents/${incident.id}/actions`,
+      `/api/v1/incidents/${encodeURIComponent(incident.id)}/actions`,
       init,
     );
 
@@ -234,7 +237,9 @@ export class ILertClient implements ILertApi {
     }
 
     const response = await this.fetch(
-      `/api/v1/incidents/${incident.id}/assign?${query.toString()}`,
+      `/api/v1/incidents/${encodeURIComponent(
+        incident.id,
+      )}/assign?${query.toString()}`,
       init,
     );
 
@@ -256,7 +261,10 @@ export class ILertClient implements ILertApi {
       }),
     };
 
-    await this.fetch(`/api/v1/incidents/${incident.id}/actions`, init);
+    await this.fetch(
+      `/api/v1/incidents/${encodeURIComponent(incident.id)}/actions`,
+      init,
+    );
   }
 
   async createIncident(eventRequest: EventRequest): Promise<boolean> {
@@ -300,7 +308,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response: UptimeMonitor = await this.fetch(
-      `/api/v1/uptime-monitors/${id}`,
+      `/api/v1/uptime-monitors/${encodeURIComponent(id)}`,
       init,
     );
 
@@ -317,7 +325,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/uptime-monitors/${uptimeMonitor.id}`,
+      `/api/v1/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
       init,
     );
 
@@ -334,7 +342,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/uptime-monitors/${uptimeMonitor.id}`,
+      `/api/v1/uptime-monitors/${encodeURIComponent(uptimeMonitor.id)}`,
       init,
     );
 
@@ -359,7 +367,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${idOrIntegrationKey}`,
+      `/api/v1/alert-sources/${encodeURIComponent(idOrIntegrationKey)}`,
       init,
     );
 
@@ -372,9 +380,9 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/on-calls?policies=${
-        alertSource.escalationPolicy.id
-      }&expand=user&expand=escalationPolicy&timezone=${dt.local().zoneName}`,
+      `/api/v1/on-calls?policies=${encodeURIComponent(
+        alertSource.escalationPolicy.id,
+      )}&expand=user&expand=escalationPolicy&timezone=${dt.local().zoneName}`,
       init,
     );
 
@@ -389,7 +397,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${alertSource.id}`,
+      `/api/v1/alert-sources/${encodeURIComponent(alertSource.id)}`,
       init,
     );
 
@@ -404,7 +412,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/alert-sources/${alertSource.id}`,
+      `/api/v1/alert-sources/${encodeURIComponent(alertSource.id)}`,
       init,
     );
 
@@ -466,7 +474,7 @@ export class ILertClient implements ILertApi {
     };
 
     const response = await this.fetch(
-      `/api/v1/schedules/${scheduleId}/overrides`,
+      `/api/v1/schedules/${encodeURIComponent(scheduleId)}/overrides`,
       init,
     );
 
@@ -474,26 +482,36 @@ export class ILertClient implements ILertApi {
   }
 
   getIncidentDetailsURL(incident: Incident): string {
-    return `${this.baseUrl}/incident/view.jsf?id=${incident.id}`;
+    return `${this.baseUrl}/incident/view.jsf?id=${encodeURIComponent(
+      incident.id,
+    )}`;
   }
 
   getAlertSourceDetailsURL(alertSource: AlertSource | null): string {
     if (!alertSource) {
       return '';
     }
-    return `${this.baseUrl}/source/view.jsf?id=${alertSource.id}`;
+    return `${this.baseUrl}/source/view.jsf?id=${encodeURIComponent(
+      alertSource.id,
+    )}`;
   }
 
   getEscalationPolicyDetailsURL(escalationPolicy: EscalationPolicy): string {
-    return `${this.baseUrl}/policy/view.jsf?id=${escalationPolicy.id}`;
+    return `${this.baseUrl}/policy/view.jsf?id=${encodeURIComponent(
+      escalationPolicy.id,
+    )}`;
   }
 
   getUptimeMonitorDetailsURL(uptimeMonitor: UptimeMonitor): string {
-    return `${this.baseUrl}/uptime/view.jsf?id=${uptimeMonitor.id}`;
+    return `${this.baseUrl}/uptime/view.jsf?id=${encodeURIComponent(
+      uptimeMonitor.id,
+    )}`;
   }
 
   getScheduleDetailsURL(schedule: Schedule): string {
-    return `${this.baseUrl}/schedule/view.jsf?id=${schedule.id}`;
+    return `${this.baseUrl}/schedule/view.jsf?id=${encodeURIComponent(
+      schedule.id,
+    )}`;
   }
 
   getUserPhoneNumber(user: User | null) {
