@@ -54,11 +54,7 @@ type EntityListContextProps = {
    */
   addFilter: (filter: EntityFilter) => void;
 
-  /**
-   * Remove a filter by id. Does nothing if the filter has not been added.
-   */
-  removeFilter: (id: string) => void;
-
+  refresh: () => Promise<void>;
   loading: boolean;
   error?: Error;
 };
@@ -68,26 +64,24 @@ const EntityListContext = createContext<EntityListContextProps | undefined>(
 );
 
 export type EntityListProviderProps = {
-  initialFilter?: EntityFilter;
-  initialFilters?: EntityFilter[];
+  staticFilter?: EntityFilter;
+  staticFilters?: EntityFilter[];
 };
 
 export const EntityListProvider = ({
-  initialFilter,
-  initialFilters,
+  staticFilter,
+  staticFilters,
   children,
 }: PropsWithChildren<EntityListProviderProps>) => {
   const catalogApi = useApi(catalogApiRef);
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
 
-  // Join initial filters from either prop and filter out undefined
-  const resolvedInitialFilters = [initialFilter, initialFilters]
+  // Join static filters from either prop and filter out undefined
+  const resolvedStaticFilters = [staticFilter, staticFilters]
     .flat()
     .filter(Boolean) as EntityFilter[];
-  const [filters, setFilters] = useState<EntityFilter[]>(
-    resolvedInitialFilters,
-  );
+  const [filters, setFilters] = useState<EntityFilter[]>(resolvedStaticFilters);
   // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
 
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -123,16 +117,7 @@ export const EntityListProvider = ({
 
   const addFilter = useCallback(
     (filter: EntityFilter) =>
-      setFilters(prevFilters => [
-        ...prevFilters.filter(f => f.id !== filter.id),
-        filter,
-      ]),
-    [],
-  );
-
-  const removeFilter = useCallback(
-    (id: string) =>
-      setFilters(prevFilters => prevFilters.filter(f => f.id !== id)),
+      setFilters(prevFilters => [...prevFilters, filter]),
     [],
   );
 
@@ -142,10 +127,10 @@ export const EntityListProvider = ({
         filters,
         entities,
         backendEntities,
-        addFilter: addFilter,
-        removeFilter: removeFilter,
+        addFilter,
         loading,
         error,
+        refresh,
       }}
     >
       {children}

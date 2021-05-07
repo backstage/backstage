@@ -25,21 +25,18 @@ import {
   useRouteRef,
 } from '@backstage/core';
 import {
-  EntityFilter,
   EntityKindFilter,
   EntityListProvider,
-  useStarredEntities,
+  reduceCatalogFilters,
   useEntityListProvider,
-  useOwnUser,
-  UserOwnedEntityFilter,
-  UserStarredEntityFilter,
+  UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { EntityTypePicker } from '../EntityTypePicker';
-import { UserListFilter } from '../UserListFilter';
+import { UserListPicker } from '../UserListPicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -53,11 +50,18 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const CatalogPageContents = () => {
+export type CatalogPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+};
+
+const CatalogPageContents = ({
+  initiallySelectedFilter = 'owned',
+}: CatalogPageProps) => {
   const styles = useStyles();
   const { loading, error, entities, filters } = useEntityListProvider();
   const createComponentLink = useRouteRef(createComponentRouteRef);
-  const isTypeFiltered = filters.find(f => f.id === 'type') !== undefined;
+  const isTypeFiltered =
+    reduceCatalogFilters(filters)['spec.type'] !== undefined;
 
   return (
     <CatalogLayout>
@@ -78,10 +82,10 @@ const CatalogPageContents = () => {
         <div className={styles.contentWrapper}>
           <div>
             <EntityTypePicker />
-            <UserListFilter />
+            <UserListPicker initialValue={initiallySelectedFilter} />
           </div>
           <CatalogTable
-            titlePreamble={capitalize(UserListFilter.current(filters))}
+            titlePreamble={capitalize(UserListPicker.current())}
             entities={entities}
             loading={loading}
             error={error}
@@ -93,23 +97,12 @@ const CatalogPageContents = () => {
   );
 };
 
-export type CatalogPageProps = {
-  initiallySelectedFilter?: 'owned' | 'starred';
-};
-
 export const CatalogPage = (props: CatalogPageProps) => {
-  const initialFilters: EntityFilter[] = [new EntityKindFilter('component')];
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
-
-  if (props.initiallySelectedFilter === 'owned') {
-    initialFilters.push(new UserOwnedEntityFilter(user));
-  } else if (props.initiallySelectedFilter === 'starred') {
-    initialFilters.push(new UserStarredEntityFilter(isStarredEntity));
-  }
-
   return (
-    <EntityListProvider initialFilters={initialFilters}>
+    <EntityListProvider
+      staticFilter={new EntityKindFilter('component')}
+      {...props}
+    >
       <CatalogPageContents />
     </EntityListProvider>
   );

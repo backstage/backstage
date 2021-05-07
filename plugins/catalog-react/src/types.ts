@@ -25,12 +25,6 @@ export type FilterEnvironment = {
 
 export type EntityFilter = {
   /**
-   * A unique identifier for this filter; used to manage filter registration and lookup in the
-   * useEntityListProvider hook.
-   */
-  id: string;
-
-  /**
    * Get filters to add to the catalog-backend request. These are a dot-delimited field with
    * value(s) to accept, extracted on the backend by parseEntityFilterParams. For example:
    *   { field: 'kind', values: ['component'] }
@@ -50,7 +44,6 @@ export type EntityFilter = {
 };
 
 export class EntityKindFilter implements EntityFilter {
-  id = 'kind';
   private readonly kind: string;
 
   constructor(kind: string) {
@@ -63,39 +56,49 @@ export class EntityKindFilter implements EntityFilter {
 }
 
 export class EntityTypeFilter implements EntityFilter {
-  id = 'type';
-  private readonly type: string;
+  private _type: string;
 
-  constructor(type: string) {
-    this.type = type;
+  constructor(type?: string) {
+    this._type = type ?? 'all';
   }
+
+  set type(type: string) {
+    this._type = type;
+  }
+
+  get type() {
+    return this._type;
+  }
+
   getCatalogFilters(): Record<string, string | string[]> {
-    return { 'spec.type': this.type };
+    return this._type === 'all' ? {} : { 'spec.type': this._type };
   }
 }
 
-export class UserOwnedEntityFilter implements EntityFilter {
-  id = 'owned';
-  private readonly user: UserEntity | undefined;
+export type UserListFilterKind = 'owned' | 'starred' | 'all';
+export class UserListFilter implements EntityFilter {
+  private _value: UserListFilterKind;
 
-  constructor(user: UserEntity | undefined) {
-    this.user = user;
+  constructor(value?: UserListFilterKind) {
+    this._value = value ?? 'all';
   }
 
-  filterEntity(entity: Entity) {
-    return this.user !== undefined && isOwnerOf(this.user, entity);
-  }
-}
-
-export class UserStarredEntityFilter implements EntityFilter {
-  id = 'starred';
-  private readonly isStarredEntity: (entity: Entity) => boolean;
-
-  constructor(isStarredEntity: (entity: Entity) => boolean) {
-    this.isStarredEntity = isStarredEntity;
+  set value(value: UserListFilterKind) {
+    this._value = value;
   }
 
-  filterEntity(entity: Entity) {
-    return this.isStarredEntity(entity);
+  get value() {
+    return this._value;
+  }
+
+  filterEntity(entity: Entity, env: FilterEnvironment): boolean {
+    switch (this._value) {
+      case 'owned':
+        return env.user !== undefined && isOwnerOf(env.user, entity);
+      case 'starred':
+        return env.isStarredEntity(entity);
+      default:
+        return true;
+    }
   }
 }

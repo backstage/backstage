@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { UserListFilter } from './UserListFilter';
+export { UserListPicker } from './UserListPicker';

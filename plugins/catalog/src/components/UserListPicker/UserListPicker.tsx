@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useMemo } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import {
-  EntityFilter,
   useEntityListProvider,
   useOwnUser,
   useStarredEntities,
-  UserOwnedEntityFilter,
-  UserStarredEntityFilter,
+  FilterEnvironment,
+  UserListFilter,
+  UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -103,61 +103,52 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-type ValidIdType = 'owned' | 'starred' | 'all';
+// The actual filter added to the useEntityListProvider context
+const pickerFilter = new UserListFilter();
 
-export const UserListFilter = () => {
+// Static filters; only used for generating counts of potentially unselected kinds
+const ownedFilter = new UserListFilter('owned');
+const starredFilter = new UserListFilter('starred');
+
+type UserListPickerProps = {
+  initialValue?: UserListFilterKind;
+};
+
+export const UserListPicker = ({ initialValue }: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const filterGroups = getFilterGroups(orgName);
 
-  const {
-    filters,
-    addFilter,
-    removeFilter,
-    backendEntities,
-  } = useEntityListProvider();
+  // Unfortunate FilterEnvironment duplication for static filters used for counts
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
+  const filterEnv: FilterEnvironment = {
+    user: user,
+    isStarredEntity: isStarredEntity,
+  };
 
-  const ownedFilter = useMemo(() => new UserOwnedEntityFilter(user), [user]);
-  const starredFilter = useMemo(
-    () => new UserStarredEntityFilter(isStarredEntity),
-    [isStarredEntity],
-  );
+  const { addFilter, backendEntities, refresh } = useEntityListProvider();
 
-  const userListFilters = useMemo(
-    () => filters.filter(filter => ['owned', 'starred'].includes(filter.id)),
-    [filters],
-  );
+  useEffect(() => {
+    if (initialValue) pickerFilter.value = initialValue;
+    addFilter(pickerFilter);
+  }, [addFilter, initialValue]);
 
-  const currentFilter = userListFilters.length ? userListFilters[0].id : 'all';
-
-  function setSelectedFilter({ id: selectedId }: { id: ValidIdType }) {
-    switch (selectedId) {
-      case 'owned':
-        removeFilter('starred');
-        addFilter(ownedFilter);
-        break;
-      case 'starred':
-        removeFilter('owned');
-        addFilter(starredFilter);
-        break;
-      default:
-        removeFilter('starred');
-        removeFilter('owned');
-    }
+  function setSelectedFilter({ id }: { id: UserListFilterKind }) {
+    pickerFilter.value = id;
+    refresh();
   }
 
-  function getFilterCount(id: ValidIdType) {
+  function getFilterCount(id: UserListFilterKind) {
     switch (id) {
       case 'owned':
         return backendEntities.filter(entity =>
-          ownedFilter.filterEntity(entity),
+          ownedFilter.filterEntity(entity, filterEnv),
         ).length;
       case 'starred':
         return backendEntities.filter(entity =>
-          starredFilter.filterEntity(entity),
+          starredFilter.filterEntity(entity, filterEnv),
         ).length;
       default:
         return backendEntities.length;
@@ -179,7 +170,7 @@ export const UserListFilter = () => {
                   button
                   divider
                   onClick={() => setSelectedFilter(item)}
-                  selected={item.id === currentFilter}
+                  selected={item.id === pickerFilter.value}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -205,9 +196,5 @@ export const UserListFilter = () => {
   );
 };
 
-const current = (filters: EntityFilter[]): string => {
-  const userFilters = filters.filter(f => ['owned', 'starred'].includes(f.id));
-  return userFilters.length ? userFilters[0].id : 'all';
-};
-
-UserListFilter.current = current;
+const current = (): string => pickerFilter.value;
+UserListPicker.current = current;
