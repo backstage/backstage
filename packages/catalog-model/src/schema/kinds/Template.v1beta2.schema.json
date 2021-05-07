@@ -125,7 +125,7 @@
                     "type": "string",
                     "description": "The name of the action to execute."
                   },
-                  "parameters": {
+                  "input": {
                     "type": "object",
                     "description": "A templated object describing the inputs to the action."
                   }
