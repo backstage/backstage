@@ -185,7 +185,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         ),
         -- All the nodes that can be reached upwards from the descendants
         ancestors(root_id, via_entity_ref, to_entity_ref) AS (
-          SELECT NULL, entity_ref, entity_ref
+          SELECT CAST(NULL as INT), entity_ref, entity_ref
           FROM descendants
           UNION
           SELECT
@@ -235,7 +235,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               .withRecursive('ancestors', function ancestors(outer) {
                 return outer
                   .select({
-                    root_id: tx.raw('NULL', []),
+                    root_id: tx.raw('CAST(NULL as INT)', []),
                     via_entity_ref: 'entity_ref',
                     to_entity_ref: 'entity_ref',
                   })
