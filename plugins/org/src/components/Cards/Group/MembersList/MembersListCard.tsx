@@ -151,16 +151,13 @@ export const MembersListCard = (_props: {
     return <ResponseErrorPanel error={error} />;
   }
 
+  const nbPages = Math.ceil((members?.length || 0) / pageSize);
+  const paginationLabel = nbPages < 2 ? '' : `, page ${page} of ${nbPages}`;
+
   return (
     <Grid item>
       <InfoCard
-        title={`Members (${members?.length || 0}) ${
-          members && members.length > pageSize
-            ? ` (page ${page} of ${Math.ceil(
-                (members?.length || 0) / pageSize,
-              )})`
-            : ''
-        }`}
+        title={`Members (${members?.length || 0}${paginationLabel})`}
         subheader={`of ${displayName}`}
       >
         <Grid container spacing={3}>
@@ -177,7 +174,7 @@ export const MembersListCard = (_props: {
           )}
         </Grid>
         <Pagination
-          count={Math.ceil((members?.length || 0) / pageSize)}
+          count={nbPages}
           page={page}
           onChange={pageChange}
           showFirstButton

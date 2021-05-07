@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Display only first 50 group members
+Paginate group members to only display 50 members maximum.
