@@ -27,10 +27,14 @@ export interface LocationService {
     spec: LocationSpec,
     dryRun: boolean,
   ): Promise<{ location: Location; entities: Entity[] }>;
-  listLocations(): Promise<Location[]>;
+  listLocations(): Promise<LocationResponse[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
 }
+
+export type LocationResponse = {
+  data: Location;
+};
 
 export interface LocationStore {
   createLocation(spec: LocationSpec): Promise<Location>;
