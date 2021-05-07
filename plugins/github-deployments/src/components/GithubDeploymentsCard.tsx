@@ -37,18 +37,18 @@ const GithubDeploymentsComponent = ({
   projectSlug,
   last,
   columns,
-  locations,
+  host,
 }: {
   projectSlug: string;
   last: number;
-  locations: string[];
   columns: TableColumn<GithubDeployment>[];
+  host: string | undefined;
 }) => {
   const api = useApi(githubDeploymentsApiRef);
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ owner, repo, last }, { locations }),
+    async () => await api.listDeployments({ host, owner, repo, last }),
   );
 
   if (error) {
@@ -73,10 +73,10 @@ export const GithubDeploymentsCard = ({
   columns?: TableColumn<GithubDeployment>[];
 }) => {
   const { entity } = useEntity();
-  const locations = [
+  const host: string | undefined = [
     entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
     entity?.metadata.annotations?.[LOCATION_ANNOTATION],
-  ].filter(location => location !== undefined) as string[];
+  ].filter(Boolean)[0];
 
   return !isGithubDeploymentsAvailable(entity) ? (
     <MissingAnnotationEmptyState annotation={GITHUB_PROJECT_SLUG_ANNOTATION} />
@@ -86,7 +86,7 @@ export const GithubDeploymentsCard = ({
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
       last={last || 10}
-      locations={locations}
+      host={host}
       columns={columns || GithubDeploymentsTable.defaultDeploymentColumns}
     />
   );

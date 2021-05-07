@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-github-deployments': minor
+'@backstage/plugin-github-deployments': patch
 ---
 
 Support for GitHub Enterprise with GithubDeploymentsPlugin

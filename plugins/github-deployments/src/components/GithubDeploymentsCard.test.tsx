@@ -250,8 +250,7 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/source-location':
-            'url:https://my-github-1.com/org/repo',
+          'backstage.io/source-location': 'github:my-github-1.com',
         };
       });
 
@@ -272,8 +271,7 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/managed-by-location':
-            'url:https://my-github-2.com/org/repo',
+          'backstage.io/managed-by-location': 'github:my-github-2.com',
         };
       });
 
@@ -294,8 +292,7 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/managed-by-location':
-            'url:https://my-github-3.com/org/repo',
+          'backstage.io/managed-by-location': 'github:my-github-3.com',
         };
       });
 
@@ -308,7 +305,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No apiBaseUrl available for location https://my-github-3.com/org/repo, please check your integrations config',
+            'Warning: No apiBaseUrl available for host github:my-github-3.com, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
@@ -320,7 +317,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/managed-by-location':
-            'url:https://my-github-unknown.com/org/repo',
+            'github:my-github-unknown.com/org/repo',
         };
       });
 
@@ -333,7 +330,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No matching GitHub integration configuration for location https://my-github-unknown.com/org/repo, please check your integrations config',
+            'Warning: No matching GitHub integration configuration for host github:my-github-unknown.com/org/repo, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
