@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, makeStyles } from '@material-ui/core';
-import { capitalize } from 'lodash';
 import {
   Content,
   ContentHeader,
@@ -27,8 +26,7 @@ import {
 import {
   EntityKindFilter,
   EntityListProvider,
-  reduceCatalogFilters,
-  useEntityListProvider,
+  UserListFilter,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 
@@ -54,17 +52,13 @@ export type CatalogPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
 };
 
-const CatalogPageContents = ({
-  initiallySelectedFilter = 'owned',
-}: CatalogPageProps) => {
+export const CatalogPage = ({ initiallySelectedFilter }: CatalogPageProps) => {
   const styles = useStyles();
-  const [selectedUserFilter, setSelectedUserFilter] = useState(
-    initiallySelectedFilter,
-  );
-  const { loading, error, entities, filters } = useEntityListProvider();
   const createComponentLink = useRouteRef(createComponentRouteRef);
-  const isTypeFiltered =
-    reduceCatalogFilters(filters)['spec.type'] !== undefined;
+  const initialFilters = {
+    kind: new EntityKindFilter('component'),
+    user: new UserListFilter(initiallySelectedFilter),
+  };
 
   return (
     <CatalogLayout>
@@ -83,33 +77,15 @@ const CatalogPageContents = ({
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
-          <div>
-            <EntityTypePicker />
-            <UserListPicker
-              initialValue={initiallySelectedFilter}
-              onChange={setSelectedUserFilter}
-            />
-          </div>
-          <CatalogTable
-            titlePreamble={capitalize(selectedUserFilter)}
-            entities={entities}
-            loading={loading}
-            error={error}
-            showTypeColumn={!isTypeFiltered}
-          />
+          <EntityListProvider initialFilters={initialFilters}>
+            <div>
+              <EntityTypePicker />
+              <UserListPicker />
+            </div>
+            <CatalogTable />
+          </EntityListProvider>
         </div>
       </Content>
     </CatalogLayout>
-  );
-};
-
-export const CatalogPage = (props: CatalogPageProps) => {
-  return (
-    <EntityListProvider
-      staticFilter={new EntityKindFilter('component')}
-      {...props}
-    >
-      <CatalogPageContents />
-    </EntityListProvider>
   );
 };

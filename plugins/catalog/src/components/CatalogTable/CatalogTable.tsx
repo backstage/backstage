@@ -32,11 +32,13 @@ import {
   EntityRefLinks,
   formatEntityRefTitle,
   getEntityRelations,
+  useEntityListProvider,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { capitalize } from 'lodash';
 import React from 'react';
 import {
   getEntityMetadataEditUrl,
@@ -130,22 +132,12 @@ const columns: TableColumn<EntityRow>[] = [
   },
 ];
 
-type CatalogTableProps = {
-  entities: Entity[];
-  titlePreamble: string;
-  loading: boolean;
-  error?: any;
-  showTypeColumn?: boolean;
-};
-
-export const CatalogTable = ({
-  entities,
-  loading,
-  error,
-  titlePreamble,
-  showTypeColumn = false,
-}: CatalogTableProps) => {
+export const CatalogTable = () => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const { loading, error, entities, filters } = useEntityListProvider();
+
+  const showTypeColumn = filters.type !== undefined;
+  const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
   if (error) {
     return (

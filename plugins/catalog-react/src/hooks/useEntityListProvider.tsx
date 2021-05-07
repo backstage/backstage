@@ -28,16 +28,31 @@ import { useApi } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils';
 import { catalogApiRef } from '../api';
-import { EntityFilter, FilterEnvironment } from '../types';
+import {
+  EntityFilter,
+  EntityKindFilter,
+  EntityTypeFilter,
+  FilterEnvironment,
+  UserListFilter,
+} from '../types';
 import { useOwnUser } from './useOwnUser';
 import { useStarredEntities } from './useStarredEntities';
+import { compact } from 'lodash';
 
-type EntityListContextProps = {
+export type DefaultEntityFilters = {
+  kind?: EntityKindFilter;
+  type?: EntityTypeFilter;
+  user?: UserListFilter;
+};
+
+type EntityListContextProps<
+  EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
+> = {
   /**
    * The list of currently registered filters. This includes filters passed in as defaults, plus
    * any added with `setFilter`.
    */
-  filters: EntityFilter[];
+  filters: EntityFilters;
 
   /**
    * The resolved list of catalog entities, after all filters are applied.
@@ -50,38 +65,35 @@ type EntityListContextProps = {
   backendEntities: Entity[];
 
   /**
-   * Add a filter for the entity list. Overwrites any existing filter with the same id.
+   * TODO(timbonicush) fix docs
    */
-  addFilter: (filter: EntityFilter) => void;
+  updateFilters: (filters: Partial<EntityFilters>) => void;
 
-  refresh: () => Promise<void>;
   loading: boolean;
   error?: Error;
 };
 
-const EntityListContext = createContext<EntityListContextProps | undefined>(
-  undefined,
-);
+const EntityListContext = createContext<
+  EntityListContextProps<any> | undefined
+>(undefined);
 
-export type EntityListProviderProps = {
-  staticFilter?: EntityFilter;
-  staticFilters?: EntityFilter[];
+export type EntityListProviderProps<
+  EntityFilters extends DefaultEntityFilters
+> = {
+  initialFilters?: EntityFilters;
 };
 
-export const EntityListProvider = ({
-  staticFilter,
-  staticFilters,
+export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
+  initialFilters,
   children,
-}: PropsWithChildren<EntityListProviderProps>) => {
+}: PropsWithChildren<EntityListProviderProps<EntityFilters>>) => {
   const catalogApi = useApi(catalogApiRef);
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
 
-  // Join static filters from either prop and filter out undefined
-  const resolvedStaticFilters = [staticFilter, staticFilters]
-    .flat()
-    .filter(Boolean) as EntityFilter[];
-  const [filters, setFilters] = useState<EntityFilter[]>(resolvedStaticFilters);
+  const [filters, setFilters] = useState<EntityFilters>(
+    initialFilters ?? ({} as EntityFilters),
+  );
   // TODO(timbonicus): store reduced backend filters and deep-compare to avoid re-fetching on frontend filter changes
 
   const [entities, setEntities] = useState<Entity[]>([]);
@@ -98,7 +110,9 @@ export const EntityListProvider = ({
   const [{ loading, error }, refresh] = useAsyncFn(async () => {
     // TODO(timbonicus): should limit fields here, but would need filter fields + table columns
     const items = await catalogApi
-      .getEntities({ filter: reduceCatalogFilters(filters) })
+      .getEntities({
+        filter: reduceCatalogFilters(compact(Object.values(filters))),
+      })
       .then(response => response.items);
     setBackendEntities(items);
   }, [filters, catalogApi]);
@@ -110,14 +124,14 @@ export const EntityListProvider = ({
   // Apply frontend filters
   useEffect(() => {
     const resolvedEntities = (backendEntities ?? []).filter(
-      reduceEntityFilters(filters, filterEnv),
+      reduceEntityFilters(compact(Object.values(filters)), filterEnv),
     );
     setEntities(resolvedEntities);
   }, [backendEntities, filterEnv, filters]);
 
-  const addFilter = useCallback(
-    (filter: EntityFilter) =>
-      setFilters(prevFilters => [...prevFilters, filter]),
+  const updateFilters = useCallback(
+    (patch: Partial<EntityFilter>) =>
+      setFilters(prevFilters => ({ ...prevFilters, ...patch })),
     [],
   );
 
@@ -127,10 +141,9 @@ export const EntityListProvider = ({
         filters,
         entities,
         backendEntities,
-        addFilter,
+        updateFilters,
         loading,
         error,
-        refresh,
       }}
     >
       {children}
@@ -138,7 +151,9 @@ export const EntityListProvider = ({
   );
 };
 
-export function useEntityListProvider(): EntityListContextProps {
+export function useEntityListProvider<
+  EntityFilters extends DefaultEntityFilters
+>(): EntityListContextProps<EntityFilters> {
   const context = useContext(EntityListContext);
   if (!context)
     throw new Error(

@@ -107,15 +107,7 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
 const ownedFilter = new UserListFilter('owned');
 const starredFilter = new UserListFilter('starred');
 
-type UserListPickerProps = {
-  initialValue?: UserListFilterKind;
-  onChange: (value: UserListFilterKind) => void;
-};
-
-export const UserListPicker = ({
-  initialValue,
-  onChange,
-}: UserListPickerProps) => {
+export const UserListPicker = () => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -129,18 +121,9 @@ export const UserListPicker = ({
     isStarredEntity: isStarredEntity,
   };
 
-  const [pickerFilter] = useState(new UserListFilter());
-  const { addFilter, backendEntities, refresh } = useEntityListProvider();
-
-  useEffect(() => {
-    if (initialValue) pickerFilter.value = initialValue;
-    addFilter(pickerFilter);
-  }, [addFilter, initialValue, pickerFilter]);
-
+  const { filters, updateFilters, backendEntities } = useEntityListProvider();
   function setSelectedFilter({ id }: { id: UserListFilterKind }) {
-    pickerFilter.value = id;
-    onChange?.(id);
-    refresh();
+    updateFilters({ user: new UserListFilter(id) });
   }
 
   function getFilterCount(id: UserListFilterKind) {
@@ -173,7 +156,7 @@ export const UserListPicker = ({
                   button
                   divider
                   onClick={() => setSelectedFilter(item)}
-                  selected={item.id === pickerFilter.value}
+                  selected={item.id === filters.user?.value}
                   className={classes.menuItem}
                 >
                   {item.icon && (

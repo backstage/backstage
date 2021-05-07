@@ -21,53 +21,44 @@ import { Select, useApi } from '@backstage/core';
 import {
   catalogApiRef,
   EntityTypeFilter,
-  reduceCatalogFilters,
   useEntityListProvider,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 
-type EntityTypePickerProps = {
-  initialValue?: string;
-};
-export const EntityTypePicker = ({ initialValue }: EntityTypePickerProps) => {
+export const EntityTypePicker = () => {
   const catalogApi = useApi(catalogApiRef);
-  const [typeFilter] = useState(new EntityTypeFilter());
-  const { filters, addFilter, refresh } = useEntityListProvider();
+  const { filters, updateFilters } = useEntityListProvider();
   const [types, setTypes] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (initialValue) typeFilter.type = initialValue;
-    addFilter(typeFilter);
-  }, [addFilter, initialValue, typeFilter]);
-
-  const kindFilter = reduceCatalogFilters(filters).kind;
+  const kindFilter = filters.kind?.value;
 
   // Load all valid spec.type values straight from the catalogApi - we want the full set for the
   // selected kinds, not an otherwise filtered set.
   useEffect(() => {
     async function loadTypesForKinds() {
-      typeFilter.type = 'all';
       if (kindFilter) {
         const response = await catalogApi.getEntities({
           filter: { kind: kindFilter },
           fields: ['spec.type'],
         });
         const entities: Entity[] = response.items ?? [];
-        setTypes(
-          [
-            ...new Set(
-              entities.map(e => e.spec?.type).filter(Boolean) as string[],
-            ),
-          ].sort(),
-        );
+        const newTypes = [
+          ...new Set(
+            entities.map(e => e.spec?.type).filter(Boolean) as string[],
+          ),
+        ].sort();
+        setTypes(newTypes);
+
+        if (filters.type && !newTypes.includes(filters.type.type)) {
+          updateFilters({ type: undefined });
+        }
       }
     }
     loadTypesForKinds();
-  }, [catalogApi, kindFilter, typeFilter]);
+  }, [filters.type, catalogApi, kindFilter, updateFilters]);
 
   const onChange = (value: any) => {
-    typeFilter.type = value;
-    refresh();
+    updateFilters({ type: new EntityTypeFilter(value) });
   };
 
   if (!kindFilter) return null;
@@ -85,7 +76,7 @@ export const EntityTypePicker = ({ initialValue }: EntityTypePickerProps) => {
       <Select
         label="Type"
         items={items}
-        selected={typeFilter.type}
+        selected={filters.type?.type ?? 'all'}
         onChange={onChange}
       />
     </Box>

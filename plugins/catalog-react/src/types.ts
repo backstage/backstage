@@ -44,34 +44,38 @@ export type EntityFilter = {
 };
 
 export class EntityKindFilter implements EntityFilter {
-  private readonly kind: string;
+  private readonly _value: string;
 
   constructor(kind: string) {
-    this.kind = kind;
+    this._value = kind;
+  }
+
+  get value() {
+    return this._value;
   }
 
   getCatalogFilters(): Record<string, string | string[]> {
-    return { kind: this.kind };
+    return { kind: this._value };
   }
 }
 
 export class EntityTypeFilter implements EntityFilter {
-  private _type: string;
+  private _value: string;
 
   constructor(type?: string) {
-    this._type = type ?? 'all';
+    this._value = type ?? 'all';
   }
 
   set type(type: string) {
-    this._type = type;
+    this._value = type;
   }
 
   get type() {
-    return this._type;
+    return this._value;
   }
 
   getCatalogFilters(): Record<string, string | string[]> {
-    return this._type === 'all' ? {} : { 'spec.type': this._type };
+    return this._value === 'all' ? {} : { 'spec.type': this._value };
   }
 }
 
