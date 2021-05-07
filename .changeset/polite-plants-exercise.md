@@ -10,7 +10,7 @@ tokens and GitHub apps.
 
 This deprecates the `catalog.processors.githubOrg.providers` configuration. If
 you still have a configuration for providers the processor keeps working, but
-consider moving the [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
+consider moving to the [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
 as the providers will be removed in the future. You might need to allow
 additional scopes for the credentials.
 
