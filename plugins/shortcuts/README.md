@@ -19,16 +19,18 @@ export { shortcutsPlugin } from '@backstage/plugin-shortcuts';
 
 Add the `<Shortcuts />` component within your `<Sidebar>`:
 
-```ts
+```tsx
 import { Sidebar, SidebarDivider, SidebarSpace } from '@backstage/core';
 import { Shortcuts } from '@backstage/plugin-shortcuts';
 
-<Sidebar>
-  {/* ... */}
-  <SidebarDivider />
-  <Shortcuts />
-  <SidebarSpace />
-</Sidebar>;
+export const SidebarComponent = () => (
+  <Sidebar>
+    {/* ... */}
+    <SidebarDivider />
+    <Shortcuts />
+    <SidebarSpace />
+  </Sidebar>
+);
 ```
 
 The plugin exports a `shortcutApiRef` but the plugin includes a default implementation of the `ShortcutApi` that uses `localStorage` to store each user's shortcuts.
