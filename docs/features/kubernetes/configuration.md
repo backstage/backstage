@@ -33,6 +33,7 @@ kubernetes:
     - type: 'gke'
       projectId: 'gke-clusters'
       region: 'europe-west1'
+      skipTLSVerify: true
 ```
 
 ### `serviceLocatorMethod`
@@ -128,6 +129,11 @@ The Google Cloud project to look for Kubernetes clusters in.
 
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
+
+##### `skipTLSVerify`
+
+This determines whether or not the Kubernetes client verifies the TLS
+certificate presented by the API server. Defaults to `false`.
 
 ### `customResources` (optional)
 
