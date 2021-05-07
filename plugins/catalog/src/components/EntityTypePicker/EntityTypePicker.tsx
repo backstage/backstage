@@ -26,20 +26,19 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 
-const typeFilter = new EntityTypeFilter();
-
 type EntityTypePickerProps = {
   initialValue?: string;
 };
 export const EntityTypePicker = ({ initialValue }: EntityTypePickerProps) => {
   const catalogApi = useApi(catalogApiRef);
+  const [typeFilter] = useState(new EntityTypeFilter());
   const { filters, addFilter, refresh } = useEntityListProvider();
   const [types, setTypes] = useState<string[]>([]);
 
   useEffect(() => {
     if (initialValue) typeFilter.type = initialValue;
     addFilter(typeFilter);
-  }, [addFilter, initialValue]);
+  }, [addFilter, initialValue, typeFilter]);
 
   const kindFilter = reduceCatalogFilters(filters).kind;
 
@@ -64,7 +63,7 @@ export const EntityTypePicker = ({ initialValue }: EntityTypePickerProps) => {
       }
     }
     loadTypesForKinds();
-  }, [catalogApi, kindFilter]);
+  }, [catalogApi, kindFilter, typeFilter]);
 
   const onChange = (value: any) => {
     typeFilter.type = value;

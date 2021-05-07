@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import {
   useEntityListProvider,
@@ -103,18 +103,19 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-// The actual filter added to the useEntityListProvider context
-const pickerFilter = new UserListFilter();
-
 // Static filters; only used for generating counts of potentially unselected kinds
 const ownedFilter = new UserListFilter('owned');
 const starredFilter = new UserListFilter('starred');
 
 type UserListPickerProps = {
   initialValue?: UserListFilterKind;
+  onChange: (value: UserListFilterKind) => void;
 };
 
-export const UserListPicker = ({ initialValue }: UserListPickerProps) => {
+export const UserListPicker = ({
+  initialValue,
+  onChange,
+}: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -128,15 +129,17 @@ export const UserListPicker = ({ initialValue }: UserListPickerProps) => {
     isStarredEntity: isStarredEntity,
   };
 
+  const [pickerFilter] = useState(new UserListFilter());
   const { addFilter, backendEntities, refresh } = useEntityListProvider();
 
   useEffect(() => {
     if (initialValue) pickerFilter.value = initialValue;
     addFilter(pickerFilter);
-  }, [addFilter, initialValue]);
+  }, [addFilter, initialValue, pickerFilter]);
 
   function setSelectedFilter({ id }: { id: UserListFilterKind }) {
     pickerFilter.value = id;
+    onChange?.(id);
     refresh();
   }
 
@@ -195,6 +198,3 @@ export const UserListPicker = ({ initialValue }: UserListPickerProps) => {
     </Card>
   );
 };
-
-const current = (): string => pickerFilter.value;
-UserListPicker.current = current;

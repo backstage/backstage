@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Button, makeStyles } from '@material-ui/core';
 import { capitalize } from 'lodash';
@@ -58,6 +58,9 @@ const CatalogPageContents = ({
   initiallySelectedFilter = 'owned',
 }: CatalogPageProps) => {
   const styles = useStyles();
+  const [selectedUserFilter, setSelectedUserFilter] = useState(
+    initiallySelectedFilter,
+  );
   const { loading, error, entities, filters } = useEntityListProvider();
   const createComponentLink = useRouteRef(createComponentRouteRef);
   const isTypeFiltered =
@@ -82,10 +85,13 @@ const CatalogPageContents = ({
         <div className={styles.contentWrapper}>
           <div>
             <EntityTypePicker />
-            <UserListPicker initialValue={initiallySelectedFilter} />
+            <UserListPicker
+              initialValue={initiallySelectedFilter}
+              onChange={setSelectedUserFilter}
+            />
           </div>
           <CatalogTable
-            titlePreamble={capitalize(UserListPicker.current())}
+            titlePreamble={capitalize(selectedUserFilter)}
             entities={entities}
             loading={loading}
             error={error}
