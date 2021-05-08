@@ -26,16 +26,17 @@ import { rootRouteRef } from '../../routes';
 import { uptimerobotApiRef } from '../../api';
 import { useAutoUpdatingRequest } from '../../hooks';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 export const OverviewCard = () => {
   const uptimerobotApi = useApi(uptimerobotApiRef);
   const link = useRouteRef(rootRouteRef)();
   const { entity } = useEntity();
 
-  const { value, loading, error } = useAutoUpdatingRequest(() =>
-    uptimerobotApi.getSingleMonitor(entity),
-  );
+  const memoizedApiMethod = useCallback(() => {
+    return uptimerobotApi.getSingleMonitor(entity);
+  }, [uptimerobotApi, entity]);
+  const { value, loading, error } = useAutoUpdatingRequest(memoizedApiMethod);
 
   return (
     <InfoCard

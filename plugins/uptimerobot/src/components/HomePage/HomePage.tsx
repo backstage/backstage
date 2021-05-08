@@ -31,7 +31,7 @@ import { MonitorTable } from '../MonitorTable';
 import { uptimerobotApiRef } from '../../api';
 import { useAutoUpdatingRequest } from '../../hooks';
 import LaunchIcon from '@material-ui/icons/Launch';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
@@ -41,11 +41,12 @@ const useStyles = makeStyles<BackstageTheme>(theme => ({
 
 export const HomePage = () => {
   const classes = useStyles();
-
   const uptimerobotApi = useApi(uptimerobotApiRef);
-  const { value, loading, error } = useAutoUpdatingRequest(() =>
-    uptimerobotApi.getAllMonitors(),
-  );
+
+  const memoizedApiMethod = useCallback(() => {
+    return uptimerobotApi.getAllMonitors();
+  }, [uptimerobotApi]);
+  const { value, loading, error } = useAutoUpdatingRequest(memoizedApiMethod);
 
   return (
     <Page themeId="tool">

@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-import { ApiResponse } from '../types';
 import { uptimerobotApiRef } from '../api';
 import { useApi } from '@backstage/core';
-import { useAsync, useInterval } from 'react-use';
-import { useState } from 'react';
+import { useAsyncFn, useInterval } from 'react-use';
+import { useEffect } from 'react';
 
 export function useAutoUpdatingRequest(apiMethod: Function) {
   const uptimerobotApi = useApi(uptimerobotApiRef);
-  const [rand, setRand] = useState(0);
 
-  const { value, loading, error } = useAsync(async (): Promise<ApiResponse> => {
+  const [{ value, loading, error }, doApiMethod] = useAsyncFn(async () => {
     return await apiMethod();
-  }, [rand]);
+  }, [apiMethod]);
 
   useInterval(() => {
-    setRand(Math.random());
+    doApiMethod();
   }, uptimerobotApi.getUpdateInterval() * 1000);
+
+  useEffect(() => {
+    doApiMethod();
+  }, [doApiMethod]);
 
   return {
     value,
