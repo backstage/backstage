@@ -1,6 +1,6 @@
 # Backstage plugin for integrating UptimeRobot
 
-[UptimeRobot](https://uptimerobot.com) let's you track the availability of your services. This plugin provides the integration for Backstage so you can see the status of your monitors from within Backstage.
+[UptimeRobot](https://uptimerobot.com) lets you track the availability of your services. This plugin provides the integration for Backstage so you can see the status of your monitors from within Backstage.
 
 ## Screenshots
 
@@ -12,7 +12,7 @@ The table on the overview page lists all monitors which are accessible with your
 
 ### EntityPage
 
-The table in the card on the EntityPage only lists monitors which you've added to you component's annotations.
+You can add a card to your entity's overview page. That card then contains a table which only lists monitors which you've added to yours component's annotations.
 
 ![Card](docs/card.jpg)
 
@@ -20,8 +20,11 @@ The table in the card on the EntityPage only lists monitors which you've added t
 
 ### 1. Install the dependencies
 
+Run this from the root of your Backstage directory.
+
 ```sh
-yarn add @backstage/plugin-uptimerobot @backstage/plugin-uptimerobot-backend
+yarn --cwd packages/app add @backstage/plugin-uptimerobot
+yarn --cwd packages/backend add @backstage/plugin-uptimerobot-backend
 ```
 
 ### 2. Create a file called `uptimerobot.ts` in your `backend/src/plugins` directory
@@ -52,7 +55,7 @@ const uptimerobotEnv = useHotMemoize(module, () => createEnv('uptimerobot'));
 apiRouter.use('/uptimerobot', await uptimerobot(uptimerobotEnv));
 ```
 
-### 4. Import and add the card to your `EntityPage.tsx`
+### 4. (Optional) Import and add the card to your `EntityPage.tsx`
 
 ```tsx
 import {
@@ -77,7 +80,7 @@ import { UptimerobotPage } from '@backstage/plugin-uptimerobot';
 <Route path="/uptimerobot" element={<UptimerobotPage />} />;
 ```
 
-### 6. Add the link to the overview page to your sidebar (`Root.tsx`)
+### 6. (Optional) Add the link to the overview page to your sidebar (`Root.tsx`)
 
 ```tsx
 import TimelineIcon from '@material-ui/icons/Timeline';

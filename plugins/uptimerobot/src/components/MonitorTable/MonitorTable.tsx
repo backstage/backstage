@@ -72,10 +72,17 @@ const columns = [
 
 export const MonitorTable = ({
   monitors,
-  allowedColumns = 'name, currentStatus, uptimeHistory, otherRanges, id, actions',
+  allowedColumns = [
+    'name',
+    'currentStatus',
+    'uptimeHistory',
+    'otherRanges',
+    'id',
+    'actions',
+  ],
 }: {
   monitors: NormalizedMonitor[];
-  allowedColumns?: string;
+  allowedColumns?: string[];
 }) => {
   const data = monitors.map(dataMapper);
 

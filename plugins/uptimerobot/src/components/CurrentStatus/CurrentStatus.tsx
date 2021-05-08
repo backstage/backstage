@@ -32,5 +32,5 @@ const statusMap = {
 };
 
 export const CurrentStatus = ({ data }: { data: StatusNumber }) => {
-  return statusMap[data];
+  return statusMap[data] || <StatusAborted>Unknown status</StatusAborted>;
 };

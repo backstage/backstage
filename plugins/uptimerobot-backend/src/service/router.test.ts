@@ -42,17 +42,15 @@ describe('monitorMapper', () => {
     const apiKey = 'teamA';
 
     const result = monitorMapper(rawApiResponse, apiKey);
-
-    expect(result).toHaveProperty(['id'], rawApiResponse.id);
-    expect(result).toHaveProperty(['apiKey'], apiKey);
-    expect(result).toHaveProperty(
-      ['friendlyName'],
-      rawApiResponse.friendly_name,
-    );
-    expect(result).toHaveProperty(['url'], rawApiResponse.url);
-    expect(result).toHaveProperty(['status'], rawApiResponse.status);
-    expect(result).toHaveProperty(['customUptimeRatio']); // TODO: Check for array of floats
-    expect(result).toHaveProperty(['customUptimeRanges']); // TODO: Check for array of floats
+    expect(result).toMatchObject({
+      id: rawApiResponse.id,
+      apiKey: apiKey,
+      friendlyName: rawApiResponse.friendly_name,
+      url: rawApiResponse.url,
+      status: rawApiResponse.status,
+      customUptimeRatio: expect.arrayContaining([expect.any(Number)]),
+      customUptimeRanges: expect.arrayContaining([expect.any(Number)]),
+    });
   });
 });
 

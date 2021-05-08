@@ -23,10 +23,10 @@ import {
   Page,
   SupportButton,
   useApi,
+  ResponseErrorPanel,
 } from '@backstage/core';
-import { Alert } from '@material-ui/lab';
 import { BackstageTheme } from '@backstage/theme';
-import { Button, Grid, makeStyles } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import { MonitorTable } from '../MonitorTable';
 import { uptimerobotApiRef } from '../../api';
 import { useAutoUpdatingRequest } from '../../hooks';
@@ -35,7 +35,7 @@ import React from 'react';
 
 const useStyles = makeStyles<BackstageTheme>(theme => ({
   button: {
-    marginTop: `${theme.spacing(2)}px`,
+    marginTop: theme.spacing(2),
   },
 }));
 
@@ -53,7 +53,6 @@ export const HomePage = () => {
         title="UptimeRobot"
         subtitle="UptimeRobots monitors if your site is available."
       >
-        <HeaderLabel label="Owner" value="@simonknittel" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
 
@@ -68,15 +67,9 @@ export const HomePage = () => {
         </ContentHeader>
 
         {loading && <Progress />}
-        {error && <Alert severity="error">{error.message}</Alert>}
+        {error && <ResponseErrorPanel error={error} />}
 
-        {value && (
-          <Grid container spacing={3} direction="column">
-            <Grid item>
-              <MonitorTable monitors={value.monitors} />
-            </Grid>
-          </Grid>
-        )}
+        {value && <MonitorTable monitors={value.monitors} />}
 
         <Button
           href="https://uptimerobot.com/dashboard.php#mainDashboard"

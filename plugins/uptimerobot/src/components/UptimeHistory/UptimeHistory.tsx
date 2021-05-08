@@ -34,17 +34,16 @@ export const UptimeHistory = ({
   data: number[];
   percentage: number;
 }) => {
-  const reversedData = data.reverse();
-  const uptimeRanges = getUptimeRanges().reverse();
+  const uptimeRanges = getUptimeRanges();
   const classes = useStyles();
 
   const bars = [];
 
-  for (let i = 0; i < reversedData.length; i++) {
+  for (let i = data.length - 1; i >= 0; i--) {
     bars.push(
       <Bar
         key={uptimeRanges[i]}
-        percentage={reversedData[i]}
+        percentage={data[i]}
         range={uptimeRanges[i]}
       />,
     );

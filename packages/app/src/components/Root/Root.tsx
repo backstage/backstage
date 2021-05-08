@@ -21,7 +21,6 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import RuleIcon from '@material-ui/icons/AssignmentTurnedIn';
 import MapIcon from '@material-ui/icons/MyLocation';
 import LayersIcon from '@material-ui/icons/Layers';
-import TimelineIcon from '@material-ui/icons/Timeline';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import MoneyIcon from '@material-ui/icons/MonetizationOn';
@@ -92,7 +91,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
       <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
       <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
-      <SidebarItem icon={TimelineIcon} to="uptimerobot" text="UptimeRobot" />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarSettings />

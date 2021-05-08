@@ -15,28 +15,15 @@
  */
 
 import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core';
+import { ResponseError } from '@backstage/errors';
 import { UptimerobotApi } from './types';
-
-export class FetchError extends Error {
-  get name(): string {
-    return this.constructor.name;
-  }
-
-  static async forResponse(resp: Response): Promise<FetchError> {
-    return new FetchError(
-      `Request failed with status code ${
-        resp.status
-      }.\nReason: ${await resp.text()}`,
-    );
-  }
-}
 
 export const uptimerobotApiRef = createApiRef<UptimerobotApi>({
   id: 'plugin.uptimerobot.service',
   description: 'Used by the UptimeRobot plugin to make requests',
 });
 
-export class UptimerobotRestApi implements UptimerobotApi {
+export class UptimerobotClient implements UptimerobotApi {
   public configApi: ConfigApi;
   public discoveryApi: DiscoveryApi;
 
@@ -54,9 +41,9 @@ export class UptimerobotRestApi implements UptimerobotApi {
   private async fetch<T = any>(path: string): Promise<T> {
     const baseUrl = await this.discoveryApi.getBaseUrl('uptimerobot');
 
-    const resp = await fetch(`${baseUrl}/${path}`);
-    if (!resp.ok) throw await FetchError.forResponse(resp);
-    return await resp.json();
+    const response = await fetch(`${baseUrl}/${path}`);
+    if (!response.ok) throw await ResponseError.fromResponse(response);
+    return await response.json();
   }
 
   getUpdateInterval(): number {

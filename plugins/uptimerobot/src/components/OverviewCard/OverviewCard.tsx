@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { Alert } from '@material-ui/lab';
-import { InfoCard, Progress, useApi, useRouteRef } from '@backstage/core';
+import {
+  InfoCard,
+  Progress,
+  ResponseErrorPanel,
+  useApi,
+  useRouteRef,
+} from '@backstage/core';
 import { MonitorTable } from '../MonitorTable';
 import { rootRouteRef } from '../../routes';
 import { UPTIMEROBOT_MONITORS_ANNOTATION } from '../../../constants';
@@ -43,12 +48,18 @@ export const OverviewCard = () => {
       noPadding
     >
       {loading && <Progress />}
-      {error && <Alert severity="error">{error.message}</Alert>}
+      {error && <ResponseErrorPanel error={error} />}
 
       {value && (
         <MonitorTable
           monitors={value.monitors}
-          allowedColumns="name, currentStatus, uptimeHistory, otherRanges, id"
+          allowedColumns={[
+            'name',
+            'currentStatus',
+            'uptimeHistory',
+            'otherRanges',
+            'id',
+          ]}
         />
       )}
     </InfoCard>
