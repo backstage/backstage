@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Groups } from '../types';
+
 export function getUptimeRanges() {
   const days = 30;
 
@@ -43,4 +45,15 @@ export function getUptimeRanges() {
   }
 
   return ranges.join('-');
+}
+
+export function parseAnnotation(rawAnnotation: string): Groups {
+  const splittedAnnotation = rawAnnotation.split(';');
+  return splittedAnnotation.map(part => {
+    const a = part.split(',');
+    return {
+      apiKey: a[0].replace('apiKey=', ''),
+      monitors: a[1].replace('monitors=', '').split('+'),
+    };
+  });
 }

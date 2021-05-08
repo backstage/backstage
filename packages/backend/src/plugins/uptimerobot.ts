@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
+import { CatalogClient } from '@backstage/catalog-client';
 import { createRouter } from '@backstage/plugin-uptimerobot-backend';
 import { PluginEnvironment } from '../types';
 import { Router } from 'express';
 
 export default async function createPlugin({
   config,
+  discovery,
   logger,
 }: PluginEnvironment): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
   return await createRouter({
+    catalogClient,
     config,
     logger,
   });

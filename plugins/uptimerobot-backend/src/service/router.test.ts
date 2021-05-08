@@ -15,7 +15,7 @@
  */
 
 import { Monitor } from '../../types';
-import { monitorMapper, parseAnnotation } from './router';
+import { monitorMapper } from './router';
 
 describe('monitorMapper', () => {
   it('should normalize the monitor returned from the API', () => {
@@ -51,24 +51,5 @@ describe('monitorMapper', () => {
       customUptimeRatio: expect.arrayContaining([expect.any(Number)]),
       customUptimeRanges: expect.arrayContaining([expect.any(Number)]),
     });
-  });
-});
-
-describe('parseAnnotation', () => {
-  it('should return an array with parse API keys and monitor IDs', () => {
-    const annotation =
-      'apiKey=teamA,monitors=123456789+192837465;apiKey=teamB,monitors=987654321+918273645';
-    const desiredResult = [
-      {
-        apiKey: 'teamA',
-        monitors: ['123456789', '192837465'],
-      },
-      {
-        apiKey: 'teamB',
-        monitors: ['987654321', '918273645'],
-      },
-    ];
-
-    expect(parseAnnotation(annotation)).toEqual(desiredResult);
   });
 });

@@ -14,10 +14,29 @@
  * limitations under the License.
  */
 
-import { getUptimeRanges } from './utils';
+import { getUptimeRanges, parseAnnotation } from './utils';
 
 describe('getUptimeRanges', () => {
   it('should export string with 30 unix timestamps separated by a dash', () => {
     expect(getUptimeRanges()).toMatch(/^(?:\d+_{1}\d+-){29}(\d+_\d+)$/i);
+  });
+});
+
+describe('parseAnnotation', () => {
+  it('should return an array with parse API keys and monitor IDs', () => {
+    const annotation =
+      'apiKey=teamA,monitors=123456789+192837465;apiKey=teamB,monitors=987654321+918273645';
+    const desiredResult = [
+      {
+        apiKey: 'teamA',
+        monitors: ['123456789', '192837465'],
+      },
+      {
+        apiKey: 'teamB',
+        monitors: ['987654321', '918273645'],
+      },
+    ];
+
+    expect(parseAnnotation(annotation)).toEqual(desiredResult);
   });
 });

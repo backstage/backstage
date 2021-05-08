@@ -24,7 +24,7 @@ import {
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
 import { rootRouteRef } from './routes';
-import { UPTIMEROBOT_MONITORS_ANNOTATION } from './../constants';
+import { UPTIMEROBOT_MONITORS_ANNOTATION } from '../constants';
 import { uptimerobotApiRef, UptimerobotClient } from './api';
 
 export const uptimerobotPlugin = createPlugin({

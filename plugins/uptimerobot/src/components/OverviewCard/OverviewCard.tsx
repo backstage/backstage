@@ -23,7 +23,6 @@ import {
 } from '@backstage/core';
 import { MonitorTable } from '../MonitorTable';
 import { rootRouteRef } from '../../routes';
-import { UPTIMEROBOT_MONITORS_ANNOTATION } from '../../../constants';
 import { uptimerobotApiRef } from '../../api';
 import { useAutoUpdatingRequest } from '../../hooks';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -34,10 +33,8 @@ export const OverviewCard = () => {
   const link = useRouteRef(rootRouteRef)();
   const { entity } = useEntity();
 
-  const annotation =
-    entity?.metadata?.annotations?.[UPTIMEROBOT_MONITORS_ANNOTATION];
   const { value, loading, error } = useAutoUpdatingRequest(() =>
-    uptimerobotApi.getSingleMonitor(annotation),
+    uptimerobotApi.getSingleMonitor(entity),
   );
 
   return (

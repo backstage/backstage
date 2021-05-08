@@ -14,26 +14,4 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-
-export type StatusNumber = 0 | 1 | 2 | 8 | 9;
-
-export interface NormalizedMonitor {
-  id: string;
-  apiKey: string;
-  friendlyName: string;
-  url: string;
-  status: StatusNumber;
-  customUptimeRanges: number[];
-  customUptimeRatio: number[];
-}
-
-export interface ApiResponse {
-  monitors: NormalizedMonitor[];
-}
-
-export interface UptimerobotApi {
-  getUpdateInterval: () => number;
-  getAllMonitors: () => Promise<ApiResponse>;
-  getSingleMonitor: (entity?: Entity) => Promise<ApiResponse>;
-}
+export const UPTIMEROBOT_MONITORS_ANNOTATION = 'uptimerobot.com/monitors';

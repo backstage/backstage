@@ -30,15 +30,20 @@ yarn --cwd packages/backend add @backstage/plugin-uptimerobot-backend
 ### 2. Create a file called `uptimerobot.ts` in your `backend/src/plugins` directory
 
 ```ts
+import { CatalogClient } from '@backstage/catalog-client';
 import { createRouter } from '@backstage/plugin-uptimerobot-backend';
 import { PluginEnvironment } from '../types';
 import { Router } from 'express';
 
 export default async function createPlugin({
   config,
+  discovery,
   logger,
 }: PluginEnvironment): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
   return await createRouter({
+    catalogClient,
     config,
     logger,
   });

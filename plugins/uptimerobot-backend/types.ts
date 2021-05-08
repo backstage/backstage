@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
 
@@ -40,6 +41,14 @@ export interface NormalizedMonitor {
 }
 
 export interface RouterOptions {
+  catalogClient: CatalogClient;
   config: Config;
   logger: Logger;
 }
+
+export interface Group {
+  apiKey: string;
+  monitors?: string[];
+}
+
+export type Groups = Group[];

@@ -15,28 +15,22 @@
  */
 
 import { Config } from '@backstage/config';
-import { getUptimeRanges } from '../utils';
-import { Monitor, NormalizedMonitor, RouterOptions } from '../../types';
+import { getUptimeRanges, parseAnnotation } from '../utils';
+import {
+  Group,
+  Groups,
+  Monitor,
+  NormalizedMonitor,
+  RouterOptions,
+} from '../../types';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { UPTIMEROBOT_MONITORS_ANNOTATION } from './../../constants';
 import express from 'express';
 import fetch from 'cross-fetch';
 import Router from 'express-promise-router';
 
-export function parseAnnotation(rawAnnotation: string) {
-  const splittedAnnotation = rawAnnotation.split(';');
-  return splittedAnnotation.map(part => {
-    const a = part.split(',');
-    return {
-      apiKey: a[0].replace('apiKey=', ''),
-      monitors: a[1].replace('monitors=', '').split('+'),
-    };
-  });
-}
-
 function createFetch(
-  {
-    apiKey: wantedApiKeyName,
-    monitors = [],
-  }: { apiKey: string; monitors?: string[] },
+  { apiKey: wantedApiKeyName, monitors = [] }: Group,
   existingApiKeys: Config[],
 ) {
   const apiKey = existingApiKeys
@@ -84,7 +78,20 @@ export function monitorMapper(
   };
 }
 
+export async function getMonitors(keys: Groups, fetches: Promise<Response>[]) {
+  const monitors = [];
+  const responses = await Promise.all(fetches);
+  for (let i = 0; i < responses.length; i++) {
+    const json = await responses[i].json();
+    monitors.push(
+      ...json.monitors.map((m: Monitor) => monitorMapper(m, keys[i].apiKey)),
+    );
+  }
+  return monitors;
+}
+
 export async function createRouter({
+  catalogClient,
   config,
   logger,
 }: RouterOptions): Promise<express.Router> {
@@ -101,38 +108,6 @@ export async function createRouter({
 
   router.get(
     '/monitors',
-    async (_, res): Promise<any> => {
-      const existingApiKeys = config.getOptionalConfigArray(
-        'uptimerobot.apiKeys',
-      );
-      if (!existingApiKeys?.length) {
-        logger.warn(
-          'The UptimeRobot plugin was initialized but there are no API keys configured.',
-        );
-        return res.send({ monitors: [] });
-      }
-
-      const fetches = existingApiKeys.map(apiKey =>
-        createFetch({ apiKey: apiKey.getString('name') }, existingApiKeys),
-      );
-
-      const monitors = [];
-      const responses = await Promise.all(fetches);
-      for (let i = 0; i < responses.length; i++) {
-        const json = await responses[i].json();
-        monitors.push(
-          ...json.monitors.map((m: Monitor) =>
-            monitorMapper(m, existingApiKeys[i].getString('name')),
-          ),
-        );
-      }
-
-      return res.send({ monitors });
-    },
-  );
-
-  router.get(
-    '/monitors/:annotation',
     async (req, res): Promise<any> => {
       const existingApiKeys = config.getOptionalConfigArray(
         'uptimerobot.apiKeys',
@@ -144,19 +119,30 @@ export async function createRouter({
         return res.send({ monitors: [] });
       }
 
-      const annotation = parseAnnotation(req.params.annotation);
-      const fetches = annotation.map(a => createFetch(a, existingApiKeys));
+      let groups: Groups;
 
-      const monitors = [];
-      const responses = await Promise.all(fetches);
-      for (let i = 0; i < responses.length; i++) {
-        const json = await responses[i].json();
-        monitors.push(
-          ...json.monitors.map((m: Monitor) =>
-            monitorMapper(m, annotation[i].apiKey),
-          ),
-        );
+      if (req.query.entity) {
+        const entityName = parseEntityRef(req.query.entity.toString());
+        const entity = await catalogClient.getEntityByName(entityName);
+
+        const annotation =
+          entity?.metadata?.annotations?.[UPTIMEROBOT_MONITORS_ANNOTATION];
+        if (!annotation) {
+          logger.warn(
+            `Requested entity not found (requested: ${req.query.entity.toString()}).`,
+          );
+          return res.send({ monitors: [] });
+        }
+
+        groups = parseAnnotation(annotation);
+      } else {
+        groups = existingApiKeys.map(apiKey => ({
+          apiKey: apiKey.getString('name'),
+        }));
       }
+
+      const fetches = groups.map(group => createFetch(group, existingApiKeys));
+      const monitors = await getMonitors(groups, fetches);
 
       return res.send({ monitors });
     },

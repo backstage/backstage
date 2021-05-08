@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { ApiResponse, UptimerobotApi } from './types';
@@ -56,8 +57,10 @@ export class UptimerobotClient implements UptimerobotApi {
     return await this.fetch<ApiResponse>('monitors');
   }
 
-  async getSingleMonitor(annotation?: string) {
-    if (!annotation) return Promise.reject({ message: 'Missing annotation' });
-    return await this.fetch<ApiResponse>(`monitors/${annotation}`);
+  async getSingleMonitor(entity?: Entity) {
+    if (!entity) return Promise.reject({ message: 'Missing entity' });
+    return await this.fetch<ApiResponse>(
+      `monitors?entity=${stringifyEntityRef(entity)}`,
+    );
   }
 }
