@@ -46,9 +46,4 @@ export interface RouterOptions {
   logger: Logger;
 }
 
-export interface Group {
-  apiKey: string;
-  monitors?: string[];
-}
-
-export type Groups = Group[];
+export type Groups = Map<string, string[]>;

@@ -23,18 +23,12 @@ describe('getUptimeRanges', () => {
 });
 
 describe('parseAnnotation', () => {
-  it('should return an array with parse API keys and monitor IDs', () => {
+  it('should return an map with parsed API keys and monitor IDs', () => {
     const annotation = 'teamA/123456789,192837465 teamB/987654321,918273645';
-    const desiredResult = [
-      {
-        apiKey: 'teamA',
-        monitors: ['123456789', '192837465'],
-      },
-      {
-        apiKey: 'teamB',
-        monitors: ['987654321', '918273645'],
-      },
-    ];
+
+    const desiredResult = new Map();
+    desiredResult.set('teamA', ['123456789', '192837465']);
+    desiredResult.set('teamB', ['987654321', '918273645']);
 
     expect(parseAnnotation(annotation)).toEqual(desiredResult);
   });

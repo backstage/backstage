@@ -48,12 +48,13 @@ export function getUptimeRanges() {
 }
 
 export function parseAnnotation(rawAnnotation: string): Groups {
+  const map = new Map();
+
   const splittedAnnotation = rawAnnotation.trim().split(' ');
-  return splittedAnnotation.map(part => {
+  splittedAnnotation.map(part => {
     const a = part.split('/');
-    return {
-      apiKey: a[0],
-      monitors: a[1].split(','),
-    };
+    map.set(a[0], a[1].split(','));
   });
+
+  return map;
 }

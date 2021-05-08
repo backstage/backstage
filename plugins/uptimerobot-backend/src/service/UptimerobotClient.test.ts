@@ -15,7 +15,7 @@
  */
 
 import { Monitor } from '../../types';
-import { monitorMapper } from './router';
+import { UptimerobotClient } from './UptimerobotClient';
 
 describe('monitorMapper', () => {
   it('should normalize the monitor returned from the API', () => {
@@ -41,7 +41,7 @@ describe('monitorMapper', () => {
 
     const apiKey = 'teamA';
 
-    const result = monitorMapper(rawApiResponse, apiKey);
+    const result = UptimerobotClient.monitorMapper(rawApiResponse, apiKey);
     expect(result).toMatchObject({
       id: rawApiResponse.id,
       apiKey: apiKey,
