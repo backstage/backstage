@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Repository } from './types';
 import { CatalogProcessorResult } from '../types';
 import { results } from '../index';
-import { BitbucketClient } from './client';
+import { Logger } from 'winston';
+import { BitbucketIntegration } from '@backstage/integration';
 
 export type BitbucketRepositoryParser = (options: {
-  client: BitbucketClient;
-  repository: Repository;
-  path: string;
+  integration: BitbucketIntegration;
+  target: string;
+  logger: Logger;
 }) => AsyncIterable<CatalogProcessorResult>;
 
 export const defaultRepositoryParser: BitbucketRepositoryParser = async function* defaultRepositoryParser({
-  repository,
-  path,
+  target,
 }) {
   yield results.location(
     {
       type: 'url',
-      target: `${repository.links.self[0].href}${path}`,
+      target: target,
     },
     // Not all locations may actually exist, since the user defined them as a wildcard pattern.
     // Thus, we emit them as optional and let the downstream processor find them while not outputting

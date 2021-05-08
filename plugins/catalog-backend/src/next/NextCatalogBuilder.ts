@@ -63,13 +63,13 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
-import { CatalogProcessingEngine } from '../next/types';
+import { CatalogProcessingEngine, LocationService } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
+import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
 
@@ -234,6 +234,7 @@ export class NextCatalogBuilder {
     locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
+    locationService: LocationService;
   }> {
     const { config, database, logger } = this.env;
 
@@ -252,7 +253,6 @@ export class NextCatalogBuilder {
     const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
-    const stateManager = new DefaultProcessingStateManager(processingDatabase);
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
@@ -263,25 +263,29 @@ export class NextCatalogBuilder {
     });
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
-    const locationStore = new DefaultLocationStore(db);
+    const locationStore = new DefaultLocationStore(dbClient);
     const stitcher = new Stitcher(dbClient, logger);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
       [locationStore, configLocationProvider],
-      stateManager,
+      processingDatabase,
       orchestrator,
       stitcher,
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer = new RepoLocationAnalyzer(logger);
-
+    const locationService = new DefaultLocationService(
+      locationStore,
+      orchestrator,
+    );
     return {
       entitiesCatalog,
       locationsCatalog,
       locationAnalyzer,
       processingEngine,
+      locationService,
     };
   }
 

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { JsonSchemaDefinitionWidget } from './JsonSchemaDefinitionWidget';
+export * from './types';

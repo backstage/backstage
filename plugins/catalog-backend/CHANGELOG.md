@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 0.8.2
+
+### Patch Changes
+
+- b219821a0: Expose `BitbucketRepositoryParser` introduced in [#5295](https://github.com/backstage/backstage/pull/5295)
+- 227439a72: Add support for non-organization accounts in GitHub Discovery
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
 ## 0.8.1
 
 ### Patch Changes

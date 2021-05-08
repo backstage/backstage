@@ -1,5 +1,162 @@
 # @backstage/create-app
 
+## 0.3.21
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- e0bfd3d44: The `scaffolder-backend` and `techdocs-backend` plugins have been updated.
+  In order to update, you need to apply the following changes to your existing backend application:
+
+  `@backstage/plugin-techdocs-backend`:
+
+  ```diff
+  // packages/backend/src/plugin/techdocs.ts
+
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+
+    // ...
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // Preparers are responsible for fetching source files for documentation.
+      const preparers = await Preparers.fromConfig(config, {
+        logger,
+        reader,
+      });
+
+  +   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+      // Generators are used for generating documentation sites.
+      const generators = await Generators.fromConfig(config, {
+        logger,
+  +     containerRunner,
+      });
+
+      // Publisher is used for
+      // 1. Publishing generated files to storage
+      // 2. Fetching files from storage and passing them to TechDocs frontend.
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      });
+
+      // checks if the publisher is working and logs the result
+      await publisher.getReadiness();
+
+  -   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  -   const dockerClient = new Docker();
+
+      return await createRouter({
+        preparers,
+        generators,
+        publisher,
+  -     dockerClient,
+        logger,
+        config,
+        discovery,
+      });
+    }
+  ```
+
+  `@backstage/plugin-scaffolder-backend`:
+
+  ```diff
+  // packages/backend/src/plugin/scaffolder.ts
+
+  - import { SingleHostDiscovery } from '@backstage/backend-common';
+  + import {
+  +   DockerContainerRunner,
+  +   SingleHostDiscovery,
+  + } from '@backstage/backend-common';
+
+
+    export default async function createPlugin({
+      logger,
+      config,
+      database,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  +   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const cookiecutterTemplater = new CookieCutter();
+  +   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater();
+      const templaters = new Templaters();
+
+      templaters.register('cookiecutter', cookiecutterTemplater);
+      templaters.register('cra', craTemplater);
+
+      const preparers = await Preparers.fromConfig(config, { logger });
+      const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const dockerClient = new Docker();
+
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+        preparers,
+        templaters,
+        publishers,
+        logger,
+        config,
+  -     dockerClient,
+        database,
+        catalogClient,
+        reader,
+      });
+    }
+  ```
+
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [b219821a0]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [8aedbb4af]
+- Updated dependencies [fc79a6dd3]
+- Updated dependencies [69eefb5ae]
+- Updated dependencies [75c8cec39]
+- Updated dependencies [b2e2ec753]
+- Updated dependencies [227439a72]
+- Updated dependencies [9314a8592]
+- Updated dependencies [2e05277e0]
+- Updated dependencies [4075c6367]
+- Updated dependencies [cdb3426e5]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/plugin-scaffolder-backend@0.11.0
+  - @backstage/backend-common@0.7.0
+  - @backstage/plugin-techdocs-backend@0.8.0
+  - @backstage/plugin-catalog-import@0.5.5
+  - @backstage/plugin-github-actions@0.4.5
+  - @backstage/cli@0.6.10
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-backend@0.8.2
+  - @backstage/theme@0.2.7
+  - @backstage/plugin-tech-radar@0.3.10
+  - @backstage/plugin-scaffolder@0.9.3
+  - @backstage/plugin-techdocs@0.9.1
+  - @backstage/plugin-proxy-backend@0.2.7
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+  - @backstage/catalog-client@0.3.11
+  - @backstage/plugin-app-backend@0.3.12
+  - @backstage/plugin-auth-backend@0.3.9
+  - @backstage/plugin-rollbar-backend@0.1.10
+
 ## 0.3.20
 
 ### Patch Changes

@@ -1,5 +1,36 @@
 # example-app
 
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies [6f1b82b14]
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [81c54d1f2]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [8aedbb4af]
+- Updated dependencies [fc79a6dd3]
+- Updated dependencies [f53fba29f]
+- Updated dependencies [b2e2ec753]
+- Updated dependencies [9314a8592]
+- Updated dependencies [2e05277e0]
+- Updated dependencies [4075c6367]
+- Updated dependencies [d8b81fd28]
+  - @backstage/plugin-cost-insights@0.9.0
+  - @backstage/plugin-catalog-import@0.5.5
+  - @backstage/plugin-github-actions@0.4.5
+  - @backstage/cli@0.6.10
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-react@0.1.5
+  - @backstage/theme@0.2.7
+  - @backstage/plugin-kubernetes@0.4.3
+  - @backstage/plugin-tech-radar@0.3.10
+  - @backstage/plugin-scaffolder@0.9.3
+  - @backstage/plugin-techdocs@0.9.1
+  - @backstage/catalog-model@0.7.8
+
 ## 0.2.26
 
 ### Patch Changes
