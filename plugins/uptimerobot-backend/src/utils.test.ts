@@ -24,8 +24,7 @@ describe('getUptimeRanges', () => {
 
 describe('parseAnnotation', () => {
   it('should return an array with parse API keys and monitor IDs', () => {
-    const annotation =
-      'apiKey=teamA,monitors=123456789+192837465;apiKey=teamB,monitors=987654321+918273645';
+    const annotation = 'teamA/123456789,192837465 teamB/987654321,918273645';
     const desiredResult = [
       {
         apiKey: 'teamA',

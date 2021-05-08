@@ -115,24 +115,24 @@ uptimerobot:
 
 ## Usage
 
-Add annotations to your components. You can add multiple monitors by separating their IDs with a plus symbol. You can use multiple API keys by separating them with a semicolon symbol.
+Add annotations to your components. You can add multiple monitors by separating their IDs with a comma. You can use multiple API keys by separating them with a space.
 
-Syntax: `apiKey=<NAME>,monitors=<ID>`
+Syntax: `<NAME>/<ID>`
 
 Examples:
 
 ```yaml
 # Single key and single monitor
-uptimerobot.com/monitors: 'apiKey=teamA,monitors=123456789'
+uptimerobot.com/monitors: 'teamA/123456789'
 
 # Single key and multiple monitors
-uptimerobot.com/monitors: 'apiKey=teamA,monitors=123456789+987654321'
+uptimerobot.com/monitors: 'teamA/123456789,987654321'
 
 # Multiple keys and a single monitor each
-uptimerobot.com/monitors: 'apiKey=teamA,monitors=123456789;apiKey=teamB,monitors=987654321'
+uptimerobot.com/monitors: 'teamA/123456789 teamB/987654321'
 
 # Multiple keys and multiple monitors
-uptimerobot.com/monitors: 'apiKey=teamA,monitors=123456789+192837465;apiKey=teamB,monitors=987654321+918273645'
+uptimerobot.com/monitors: 'teamA/123456789,192837465 teamB/987654321,918273645'
 ```
 
 Full example:
@@ -144,7 +144,7 @@ metadata:
   name: backstage
   description: backstage.io
   annotations:
-    uptimerobot.com/monitors: 'apiKey=teamA,monitors=123456789'
+    uptimerobot.com/monitors: 'teamA/123456789'
 spec:
   type: website
   lifecycle: production
