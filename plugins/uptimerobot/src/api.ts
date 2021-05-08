@@ -16,7 +16,7 @@
 
 import { ConfigApi, createApiRef, DiscoveryApi } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
-import { UptimerobotApi } from './types';
+import { ApiResponse, UptimerobotApi } from './types';
 
 export const uptimerobotApiRef = createApiRef<UptimerobotApi>({
   id: 'plugin.uptimerobot.service',
@@ -46,18 +46,18 @@ export class UptimerobotClient implements UptimerobotApi {
     return await response.json();
   }
 
-  getUpdateInterval(): number {
+  getUpdateInterval() {
     return (
       this.configApi.getOptionalNumber('uptimerobot.updateInterval') || 120
     );
   }
 
-  async getAllMonitors(): Promise<Response> {
-    return await this.fetch<Response>('monitors');
+  async getAllMonitors() {
+    return await this.fetch<ApiResponse>('monitors');
   }
 
-  async getSingleMonitor(annotation?: string): Promise<Response> {
+  async getSingleMonitor(annotation?: string) {
     if (!annotation) return Promise.reject({ message: 'Missing annotation' });
-    return await this.fetch<Response>(`monitors/${annotation}`);
+    return await this.fetch<ApiResponse>(`monitors/${annotation}`);
   }
 }

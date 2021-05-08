@@ -32,6 +32,6 @@ export interface ApiResponse {
 
 export interface UptimerobotApi {
   getUpdateInterval: () => number;
-  getAllMonitors: () => Promise<Response>;
-  getSingleMonitor: (annotation?: string) => Promise<Response>;
+  getAllMonitors: () => Promise<ApiResponse>;
+  getSingleMonitor: (annotation?: string) => Promise<ApiResponse>;
 }
