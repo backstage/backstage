@@ -6,8 +6,8 @@ Introducing: a standard API for App Integrators to configure cache stores and Pl
 
 Two cache stores are currently supported.
 
-- `memory`, which is a very simple in-memory LRU cache, intended for local development.
-- `memcache`, which can be used to connect to one or more memcache hosts.
+- `memory`, which is a very simple in-memory key/value store, intended for local development.
+- `memcache`, which can be used to connect to a memcache host.
 
 Configuring and working with cache stores is very similar to the process for database connections.
 
@@ -15,10 +15,7 @@ Configuring and working with cache stores is very similar to the process for dat
 backend:
   cache:
     store: memcache
-    connection:
-      hosts:
-        - cache-a.example.com:11211
-        - cache-b.example.com:11211
+    connection: user:pass@cache.example.com:11211
 ```
 
 ```typescript
@@ -27,8 +24,7 @@ import { CacheManager } from '@backstage/backend-common';
 // Instantiating a cache client for a plugin.
 const cacheManager = CacheManager.fromConfig(config);
 const somePluginCache = cacheManager.forPlugin('somePlugin');
-const defaultTtl = 3600;
-const cacheClient = somePluginCache.getClient({ defaultTtl });
+const cacheClient = somePluginCache.getClient();
 
 // Using the cache client:
 const cachedValue = await cacheClient.get('someKey');
@@ -41,19 +37,16 @@ if (cachedValue) {
 await cacheClient.delete('someKey');
 ```
 
-For simplicity of use, cache clients will swallow client errors by default. Plugin developers may optionally pass an `onError` argument to the `CacheManager.getClient()` method if they wish to capture and handle those errors in a custom way.
+Cache clients deal with TTLs in milliseconds. A TTL can be provided as a defaultTtl when getting a client, or may be passed when setting specific objects. If no TTL is provided, data will be persisted indefinitely.
 
 ```typescript
+// Getting a client with a default TTL
 const cacheClient = somePluginCache.getClient({
-  defaultTtl: 3600,
-  onError: 'reject',
+  defaultTtl: 3600000,
 });
 
-try {
-  await cacheClient.delete('someKey');
-} catch (e) {
-  // Attempt again, log, alert, etc.
-}
+// Setting a TTL on a per-object basis.
+cacheClient.set('someKey', data, { ttl: 3600000 });
 ```
 
 Configuring a cache store is optional. Even when no cache store is configured, the cache manager will dutifully pass plugins a manager that resolves a cache client that does not actually write or read any data.
