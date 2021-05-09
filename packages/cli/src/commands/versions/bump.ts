@@ -195,9 +195,9 @@ export default async () => {
       );
       console.log();
 
-      for (const [name, { from, to }] of [
-        ...breakingUpdates.entries(),
-      ].sort()) {
+      for (const [name, { from, to }] of Array.from(
+        breakingUpdates.entries(),
+      ).sort()) {
         console.log(
           `  ${chalk.yellow(name)} : ${chalk.yellow(from)} ~> ${chalk.yellow(
             to,
