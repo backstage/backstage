@@ -75,19 +75,11 @@ export interface Config {
         }
       | {
           store: 'memcache';
-          connection: {
-            /**
-             * An array of memcache hosts, optionally including a port number.
-             * e.g. 127.0.0.1:11211
-             */
-            hosts: string[];
-
-            /**
-             * Number of milliseconds to wait before assuming there is a
-             * network timeout. Defaults to 500ms.
-             */
-            netTimeout?: number;
-          };
+          /**
+           * A memcache connection string in the form `user:pass@host:port`.
+           * @secret
+           */
+          connection: string;
         };
 
     cors?: {

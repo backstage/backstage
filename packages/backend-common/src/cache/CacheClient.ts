@@ -15,17 +15,18 @@
  */
 
 import { JsonValue } from '@backstage/config';
-import cacheManager from 'cache-manager';
 import { createHash } from 'crypto';
+import Keyv from 'keyv';
 
 type CacheClientArgs = {
-  client: cacheManager.Cache;
-  pluginId: string;
-  defaultTtl: number;
-  onError: 'reject' | 'returnEmpty';
+  client: Keyv;
 };
 
 type CacheSetOptions = {
+  /**
+   * Optional TTL in milliseconds. Defaults to the TTL provided when the client
+   * was set up (or no TTL if none are provided).
+   */
   ttl?: number;
 };
 
@@ -45,80 +46,50 @@ export interface CacheClient {
    * optional TTL may also be provided, otherwise it defaults to the TTL that
    * was provided when the client was instantiated.
    */
-  set(key: string, value: JsonValue, options: CacheSetOptions): Promise<void>;
+  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<boolean>;
 
   /**
-   * Removes the given key from the cache store.
+   * Removes the given key from the cache store. Resolves true if the key
+   * existed, or false if not.
    */
-  delete(key: string): Promise<void>;
+  delete(key: string): Promise<boolean>;
 }
 
 /**
- * A simple, concrete implementation of the CacheClient, suitable for almost
+ * A basic, concrete implementation of the CacheClient, suitable for almost
  * all uses in Backstage.
  */
 export class DefaultCacheClient implements CacheClient {
-  private readonly client: cacheManager.Cache;
-  private readonly defaultTtl: number;
-  private readonly pluginId: string;
-  private readonly onError: 'reject' | 'returnEmpty';
+  private readonly client: Keyv;
 
-  constructor({ client, defaultTtl, pluginId, onError }: CacheClientArgs) {
+  constructor({ client }: CacheClientArgs) {
     this.client = client;
-    this.defaultTtl = defaultTtl;
-    this.pluginId = pluginId;
-    this.onError = onError;
   }
 
   async get(key: string): Promise<JsonValue | undefined> {
     const k = this.getNormalizedKey(key);
-    try {
-      const data = (await this.client.get(k)) as string | undefined;
-      return this.deserializeData(data);
-    } catch (e) {
-      if (this.onError === 'reject') {
-        throw e;
-      }
-      return undefined;
-    }
+    return await this.client.get(k);
   }
 
   async set(
     key: string,
     value: JsonValue,
     opts: CacheSetOptions = {},
-  ): Promise<void> {
+  ): Promise<boolean> {
     const k = this.getNormalizedKey(key);
-    try {
-      const data = this.serializeData(value);
-      await this.client.set(k, data, {
-        ttl: opts.ttl || this.defaultTtl,
-      });
-    } catch (e) {
-      if (this.onError === 'reject') {
-        throw e;
-      }
-    }
+    return await this.client.set(k, value, opts.ttl)
   }
 
-  async delete(key: string): Promise<void> {
+  async delete(key: string): Promise<boolean> {
     const k = this.getNormalizedKey(key);
-    try {
-      await this.client.del(k);
-    } catch (e) {
-      if (this.onError === 'reject') {
-        throw e;
-      }
-    }
+    return await this.client.delete(k);
   }
 
   /**
-   * Namespaces key by plugin to discourage cross-plugin integration via the
-   * cache store.
+   * Ensures keys are well-formed for any/all cache stores.
    */
-  private getNormalizedKey(key: string): string {
-    // Namespace key by plugin ID and remove potentially invalid characters.
-    const candidateKey = `${this.pluginId}:${key}`;
+  private getNormalizedKey(candidateKey: string): string {
+    // Remove potentially invalid characters.
     const wellFormedKey = Buffer.from(candidateKey).toString('base64');
 
     // Memcache in particular doesn't do well with keys > 250 bytes.
@@ -129,11 +100,4 @@ export class DefaultCacheClient implements CacheClient {
     return createHash('md5').update(candidateKey).digest('base64');
   }
 
-  private serializeData(data: JsonValue): string {
-    return JSON.stringify(data);
-  }
-
-  private deserializeData(data: string | undefined): JsonValue | undefined {
-    return data ? JSON.parse(data) : undefined;
-  }
 }

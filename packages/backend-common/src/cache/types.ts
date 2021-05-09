@@ -17,8 +17,12 @@
 import { CacheClient } from './CacheClient';
 
 type ClientOptions = {
-  defaultTtl: number;
-  onError?: 'reject' | 'returnEmpty';
+  /**
+   * An optional default TTL (in milliseconds) to be set when getting a client
+   * instance. If not provided, data will persist indefinitely by default (or
+   * can be configured per entry at set-time).
+   */
+  defaultTtl?: number;
 };
 
 /**
@@ -32,5 +36,5 @@ export type PluginCacheManager = {
    * stores so that plugins are discouraged from cache-level integration
    * and/or cache key collisions.
    */
-  getClient: (options: ClientOptions) => CacheClient;
+  getClient: (options?: ClientOptions) => CacheClient;
 };

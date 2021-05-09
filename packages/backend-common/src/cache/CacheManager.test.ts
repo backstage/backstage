@@ -15,11 +15,16 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import cacheManager from 'cache-manager';
+import Keyv from 'keyv';
+/* @ts-expect-error */
+import KeyvMemcache from 'keyv-memcache';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
 
-cacheManager.caching = jest.fn() as jest.Mock;
+jest.createMockFromModule('keyv');
+jest.mock('keyv');
+jest.createMockFromModule('keyv-memcache');
+jest.mock('keyv-memcache');
 jest.mock('./CacheClient', () => {
   return {
     DefaultCacheClient: jest.fn(),
@@ -40,18 +45,14 @@ describe('CacheManager', () => {
 
   describe('CacheManager.fromConfig', () => {
     it('accesses the backend.cache key', () => {
-      const getOptionalConfig = jest.fn();
       const getOptionalString = jest.fn();
       const config = defaultConfig();
-      config.getOptionalConfig = getOptionalConfig;
       config.getOptionalString = getOptionalString;
 
       CacheManager.fromConfig(config);
 
       expect(getOptionalString.mock.calls[0][0]).toEqual('backend.cache.store');
-      expect(getOptionalConfig.mock.calls[0][0]).toEqual(
-        'backend.cache.connection',
-      );
+      expect(getOptionalString.mock.calls[1][0]).toEqual('backend.cache.connection');
     });
 
     it('does not require the backend.cache key', () => {
@@ -76,8 +77,7 @@ describe('CacheManager', () => {
 
     it('connects to a cache store scoped to the plugin', async () => {
       const pluginId = 'test1';
-      const expectedTtl = 3600;
-      manager.forPlugin(pluginId).getClient({ defaultTtl: expectedTtl });
+      manager.forPlugin(pluginId).getClient();
 
       const client = DefaultCacheClient as jest.Mock;
       expect(client).toHaveBeenCalledTimes(1);
@@ -90,62 +90,60 @@ describe('CacheManager', () => {
       manager.forPlugin(plugin1Id).getClient({ defaultTtl: expectedTtl });
       manager.forPlugin(plugin2Id).getClient({ defaultTtl: expectedTtl });
 
-      const cache = cacheManager.caching as jest.Mock;
       const client = DefaultCacheClient as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       expect(cache).toHaveBeenCalledTimes(2);
       expect(client).toHaveBeenCalledTimes(2);
 
-      const plugin1CallArgs = client.mock.calls[0];
-      const plugin2CallArgs = client.mock.calls[1];
-      expect(plugin1CallArgs[0].pluginId).not.toEqual(
-        plugin2CallArgs[0].pluginId,
+      const plugin1CallArgs = cache.mock.calls[0];
+      const plugin2CallArgs = cache.mock.calls[1];
+      expect(plugin1CallArgs[0].namespace).not.toEqual(
+        plugin2CallArgs[0].namespace,
       );
     });
   });
 
   describe('CacheManager.forPlugin stores', () => {
-    it('returns none client when no cache is configured', () => {
+    it('returns memory client when no cache is configured', () => {
       const manager = CacheManager.fromConfig(
         new ConfigReader({ backend: {} }),
       );
       const expectedTtl = 3600;
-      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+      const expectedNamespace = 'test-plugin';
+      manager.forPlugin(expectedNamespace).getClient({ defaultTtl: expectedTtl });
 
-      const cache = cacheManager.caching as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0]).toMatchObject({
-        store: 'none',
         ttl: expectedTtl,
+        namespace: expectedNamespace,
       });
     });
 
-    it('returns memory client when configured', () => {
+    it('returns memory client when explicitly configured', () => {
       const manager = CacheManager.fromConfig(defaultConfig());
       const expectedTtl = 3600;
-      manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
+      const expectedNamespace = 'test-plugin';
+      manager.forPlugin(expectedNamespace).getClient({ defaultTtl: expectedTtl });
 
-      const cache = cacheManager.caching as jest.Mock;
+      const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
       expect(callArgs[0]).toMatchObject({
-        store: 'memory',
         ttl: expectedTtl,
+        namespace: expectedNamespace,
       });
     });
 
     it('returns a memcache client when configured', () => {
       const expectedHost = '127.0.0.1:11211';
-      const expectedTimeout = 1000;
       const manager = CacheManager.fromConfig(
         new ConfigReader({
           backend: {
             cache: {
               store: 'memcache',
-              connection: {
-                hosts: [expectedHost],
-                netTimeout: expectedTimeout,
-              },
+              connection: expectedHost,
             },
           },
         }),
@@ -153,16 +151,14 @@ describe('CacheManager', () => {
       const expectedTtl = 3600;
       manager.forPlugin('test').getClient({ defaultTtl: expectedTtl });
 
-      const cache = cacheManager.caching as jest.Mock;
-      const mockCalls = cache.mock.calls.splice(-1);
-      const callArgs = mockCalls[0];
-      expect(callArgs[0]).toMatchObject({
-        options: {
-          hosts: [expectedHost],
-          netTimeout: expectedTimeout,
-        },
+      const cache = Keyv as unknown as jest.Mock;
+      const mockCacheCalls = cache.mock.calls.splice(-1);
+      expect(mockCacheCalls[0][0]).toMatchObject({
         ttl: expectedTtl,
       });
+      const memcache = KeyvMemcache as jest.Mock;
+      const mockMemcacheCalls = memcache.mock.calls.splice(-1);
+      expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
     });
   });
 });
