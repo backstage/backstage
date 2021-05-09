@@ -177,6 +177,7 @@ mkdocs
 monorepo
 monorepos
 msw
+mysql
 namespace
 namespaced
 namespaces
