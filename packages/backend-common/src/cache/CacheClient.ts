@@ -46,7 +46,11 @@ export interface CacheClient {
    * optional TTL may also be provided, otherwise it defaults to the TTL that
    * was provided when the client was instantiated.
    */
-  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<boolean>;
+  set(
+    key: string,
+    value: JsonValue,
+    options?: CacheSetOptions,
+  ): Promise<boolean>;
 
   /**
    * Removes the given key from the cache store. Resolves true if the key
@@ -77,7 +81,7 @@ export class DefaultCacheClient implements CacheClient {
     opts: CacheSetOptions = {},
   ): Promise<boolean> {
     const k = this.getNormalizedKey(key);
-    return await this.client.set(k, value, opts.ttl)
+    return await this.client.set(k, value, opts.ttl);
   }
 
   async delete(key: string): Promise<boolean> {
@@ -99,5 +103,4 @@ export class DefaultCacheClient implements CacheClient {
 
     return createHash('md5').update(candidateKey).digest('base64');
   }
-
 }

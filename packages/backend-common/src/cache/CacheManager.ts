@@ -51,7 +51,8 @@ export class CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with a "NoStore" cache client.
     const store = config.getOptionalString('backend.cache.store') || 'none';
-    const connectionString = config.getOptionalString('backend.cache.connection') || '';
+    const connectionString =
+      config.getOptionalString('backend.cache.connection') || '';
     return new CacheManager(store, connectionString);
   }
 
@@ -83,7 +84,10 @@ export class CacheManager {
     return this.storeFactories[this.store].call(this, pluginId, ttl);
   }
 
-  private getMemcacheClient(pluginId: string, defaultTtl: number | undefined): Keyv {
+  private getMemcacheClient(
+    pluginId: string,
+    defaultTtl: number | undefined,
+  ): Keyv {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
@@ -91,7 +95,10 @@ export class CacheManager {
     });
   }
 
-  private getMemoryClient(pluginId: string, defaultTtl: number | undefined): Keyv {
+  private getMemoryClient(
+    pluginId: string,
+    defaultTtl: number | undefined,
+  ): Keyv {
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
@@ -102,6 +109,6 @@ export class CacheManager {
     return new Keyv({
       namespace: pluginId,
       store: new NoStore(),
-    })
+    });
   }
 }

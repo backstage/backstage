@@ -19,7 +19,6 @@
  * used when no cache store is configured in a Backstage backend instance.
  */
 export class NoStore extends Map<string, any> {
-
   clear(): void {
     return;
   }
@@ -39,5 +38,4 @@ export class NoStore extends Map<string, any> {
   set(_key: string, _value: any): this {
     return this;
   }
-
 }
