@@ -19,11 +19,12 @@ import Keyv from 'keyv';
 // @ts-expect-error
 import KeyvMemcache from 'keyv-memcache';
 import { DefaultCacheClient, CacheClient } from './CacheClient';
+import { NoStore } from './NoStore';
 import { PluginCacheManager } from './types';
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients
- * for plugins when requested. All requested cacheclients are created with the
+ * for plugins when requested. All requested cache clients are created with the
  * connection details provided.
  */
 export class CacheManager {
@@ -34,6 +35,7 @@ export class CacheManager {
   private readonly storeFactories = {
     memcache: this.getMemcacheClient,
     memory: this.getMemoryClient,
+    none: this.getNoneClient,
   };
 
   private readonly store: keyof CacheManager['storeFactories'];
@@ -47,8 +49,8 @@ export class CacheManager {
    */
   static fromConfig(config: Config): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
-    // with a "memory" cache client.
-    const store = config.getOptionalString('backend.cache.store') || 'memory';
+    // with a "NoStore" cache client.
+    const store = config.getOptionalString('backend.cache.store') || 'none';
     const connectionString = config.getOptionalString('backend.cache.connection') || '';
     return new CacheManager(store, connectionString);
   }
@@ -82,11 +84,10 @@ export class CacheManager {
   }
 
   private getMemcacheClient(pluginId: string, defaultTtl: number | undefined): Keyv {
-    const memcache = new KeyvMemcache(this.connection);
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
-      store: memcache,
+      store: new KeyvMemcache(this.connection),
     });
   }
 
@@ -97,4 +98,10 @@ export class CacheManager {
     });
   }
 
+  private getNoneClient(pluginId: string): Keyv {
+    return new Keyv({
+      namespace: pluginId,
+      store: new NoStore(),
+    })
+  }
 }

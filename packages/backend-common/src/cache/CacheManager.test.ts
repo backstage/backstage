@@ -20,6 +20,7 @@ import Keyv from 'keyv';
 import KeyvMemcache from 'keyv-memcache';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManager } from './CacheManager';
+import { NoStore } from './NoStore';
 
 jest.createMockFromModule('keyv');
 jest.mock('keyv');
@@ -104,21 +105,17 @@ describe('CacheManager', () => {
   });
 
   describe('CacheManager.forPlugin stores', () => {
-    it('returns memory client when no cache is configured', () => {
+    it('returns none client when no cache is configured', () => {
       const manager = CacheManager.fromConfig(
         new ConfigReader({ backend: {} }),
       );
-      const expectedTtl = 3600;
       const expectedNamespace = 'test-plugin';
-      manager.forPlugin(expectedNamespace).getClient({ defaultTtl: expectedTtl });
+      manager.forPlugin(expectedNamespace).getClient();
 
       const cache = Keyv as unknown as jest.Mock;
       const mockCalls = cache.mock.calls.splice(-1);
       const callArgs = mockCalls[0];
-      expect(callArgs[0]).toMatchObject({
-        ttl: expectedTtl,
-        namespace: expectedNamespace,
-      });
+      expect(callArgs[0].store).toBeInstanceOf(NoStore);
     });
 
     it('returns memory client when explicitly configured', () => {
@@ -156,6 +153,7 @@ describe('CacheManager', () => {
       expect(mockCacheCalls[0][0]).toMatchObject({
         ttl: expectedTtl,
       });
+      expect(mockCacheCalls[0][0].store).toBeInstanceOf(KeyvMemcache);
       const memcache = KeyvMemcache as jest.Mock;
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);

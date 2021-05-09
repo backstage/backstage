@@ -26,8 +26,6 @@ backend:
   baseUrl: http://localhost:7000
   listen:
     port: 7000
-  cache:
-    store: memory
   database:
     client: sqlite3
     connection: ':memory:'
