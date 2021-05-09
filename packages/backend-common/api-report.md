@@ -65,9 +65,9 @@ export class BitbucketUrlReader implements UrlReader {
 
 // @public
 export interface CacheClient {
-    delete(key: string): Promise<void>;
+    delete(key: string): Promise<boolean>;
     get(key: string): Promise<JsonValue | undefined>;
-    set(key: string, value: JsonValue, options: CacheSetOptions): Promise<void>;
+    set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<boolean>;
 }
 
 // @public
@@ -254,7 +254,7 @@ export function notFoundHandler(): RequestHandler;
 
 // @public
 export type PluginCacheManager = {
-    getClient: (options: ClientOptions) => CacheClient;
+    getClient: (options?: ClientOptions) => CacheClient;
 };
 
 // @public
