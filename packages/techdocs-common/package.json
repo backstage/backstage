@@ -67,7 +67,9 @@
     "@types/mime-types": "^2.1.0",
     "@types/mock-fs": "^4.13.0",
     "@types/pkgcloud": "^1.7.4",
-    "@types/recursive-readdir": "^2.2.0"
+    "@types/recursive-readdir": "^2.2.0",
+    "@types/supertest": "^2.0.8",
+    "supertest": "^6.1.3"
   },
   "jest": {
     "roots": [
