@@ -16,7 +16,7 @@
 
 import { ConfigApi, OAuthApi } from '@backstage/core';
 import { Octokit } from '@octokit/rest';
-import { ScmIntegrations } from '@backstage/integration';
+import { GitHubIntegration, ScmIntegrations } from '@backstage/integration';
 
 import { DISABLE_CACHE } from '../constants/constants';
 import { Project } from '../contexts/ProjectContext';
@@ -37,20 +37,26 @@ export class GitReleaseClient implements GitReleaseApi {
   }) {
     this.githubAuthApi = githubAuthApi;
 
-    const { host, apiBaseUrl } = this.getGithubIntegrationConfig({ configApi });
+    const gitHubIntegrations = ScmIntegrations.fromConfig(
+      configApi,
+    ).github.list();
+    const { host, apiBaseUrl } = this.getGithubIntegrationConfig({
+      gitHubIntegrations,
+    });
 
     this.host = host;
     this.apiBaseUrl = apiBaseUrl;
   }
 
-  private getGithubIntegrationConfig({ configApi }: { configApi: ConfigApi }) {
-    const integrations = ScmIntegrations.fromConfig(configApi);
-    const githubIntegrations = integrations.github.list();
-
-    const defaultIntegration = githubIntegrations.find(
+  private getGithubIntegrationConfig({
+    gitHubIntegrations,
+  }: {
+    gitHubIntegrations: GitHubIntegration[];
+  }) {
+    const defaultIntegration = gitHubIntegrations.find(
       ({ config: { host } }) => host === 'github.com',
     );
-    const enterpriseIntegration = githubIntegrations.find(
+    const enterpriseIntegration = gitHubIntegrations.find(
       ({ config: { host } }) => host !== 'github.com',
     );
 
