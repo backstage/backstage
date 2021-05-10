@@ -47,7 +47,7 @@ export type DefaultEntityFilters = {
   tags?: EntityTagFilter;
 };
 
-type EntityListContextProps<
+export type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters
 > = {
   /**
@@ -76,7 +76,7 @@ type EntityListContextProps<
   error?: Error;
 };
 
-const EntityListContext = createContext<
+export const EntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
 
@@ -94,6 +94,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
 
+  // TODO(timbonicus): should query params be registered as initialFilters when present?
   const [filters, setFilters] = useState<EntityFilters>(
     initialFilters ?? ({} as EntityFilters),
   );

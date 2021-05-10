@@ -25,10 +25,8 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Entity } from '@backstage/catalog-model';
-import {
-  EntityTagFilter,
-  useEntityListProvider,
-} from '@backstage/plugin-catalog-react';
+import { EntityTagFilter } from '../../types';
+import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 
 const useStyles = makeStyles<Theme>(theme => ({
   title: {

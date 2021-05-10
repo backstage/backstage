@@ -26,6 +26,7 @@ import {
 import {
   EntityKindFilter,
   EntityListProvider,
+  EntityTagPicker,
   UserListFilter,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
@@ -35,7 +36,6 @@ import { CatalogTable } from '../CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { EntityTypePicker } from '../EntityTypePicker';
 import { UserListPicker } from '../UserListPicker';
-import { EntityTagPicker } from '../EntityTagPicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
