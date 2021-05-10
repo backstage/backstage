@@ -20,9 +20,13 @@ import {
   EDIT_URL_ANNOTATION,
 } from '@backstage/catalog-model';
 import { act, fireEvent } from '@testing-library/react';
-import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
+import { renderInTestApp } from '@backstage/test-utils';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
+import {
+  EntityListContext,
+  UserListFilter,
+} from '@backstage/plugin-catalog-react';
 
 const entities: Entity[] = [
   {
@@ -42,6 +46,14 @@ const entities: Entity[] = [
   },
 ];
 
+const emptyEntityListContext = {
+  entities: [],
+  backendEntities: [],
+  filters: [],
+  loading: false,
+  updateFilters: () => {},
+};
+
 describe('CatalogTable component', () => {
   beforeEach(() => {
     window.open = jest.fn();
@@ -51,16 +63,13 @@ describe('CatalogTable component', () => {
     jest.resetAllMocks();
   });
 
-  it('should render error message when error is passed in props', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <CatalogTable
-          titlePreamble="Owned"
-          entities={[]}
-          loading={false}
-          error={{ code: 'error' }}
-        />,
-      ),
+  it('should render error message', async () => {
+    const rendered = await renderInTestApp(
+      <EntityListContext.Provider
+        value={{ ...emptyEntityListContext, error: new Error('error') }}
+      >
+        <CatalogTable />
+      </EntityListContext.Provider>,
     );
     const errorMessage = await rendered.findByText(
       /Could not fetch catalog entities./,
@@ -69,14 +78,16 @@ describe('CatalogTable component', () => {
   });
 
   it('should display entity names when loading has finished and no error occurred', async () => {
-    const rendered = await renderWithEffects(
-      wrapInTestApp(
-        <CatalogTable
-          titlePreamble="Owned"
-          entities={entities}
-          loading={false}
-        />,
-      ),
+    const rendered = await renderInTestApp(
+      <EntityListContext.Provider
+        value={{
+          ...emptyEntityListContext,
+          entities,
+          filters: { user: new UserListFilter('owned') },
+        }}
+      >
+        <CatalogTable />
+      </EntityListContext.Provider>,
     );
     expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
     expect(rendered.getByText(/component1/)).toBeInTheDocument();
@@ -94,14 +105,12 @@ describe('CatalogTable component', () => {
       },
     };
 
-    const { getByTitle } = await renderWithEffects(
-      wrapInTestApp(
-        <CatalogTable
-          titlePreamble="Owned"
-          entities={[entity]}
-          loading={false}
-        />,
-      ),
+    const { getByTitle } = await renderInTestApp(
+      <EntityListContext.Provider
+        value={{ ...emptyEntityListContext, entities: [entity] }}
+      >
+        <CatalogTable />
+      </EntityListContext.Provider>,
     );
 
     const editButton = getByTitle('Edit');
@@ -123,14 +132,12 @@ describe('CatalogTable component', () => {
       },
     };
 
-    const { getByTitle } = await renderWithEffects(
-      wrapInTestApp(
-        <CatalogTable
-          titlePreamble="Owned"
-          entities={[entity]}
-          loading={false}
-        />,
-      ),
+    const { getByTitle } = await renderInTestApp(
+      <EntityListContext.Provider
+        value={{ ...emptyEntityListContext, entities: [entity] }}
+      >
+        <CatalogTable />
+      </EntityListContext.Provider>,
     );
 
     const viewButton = getByTitle('View');
