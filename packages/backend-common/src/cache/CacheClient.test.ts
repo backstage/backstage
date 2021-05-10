@@ -101,16 +101,6 @@ describe('CacheClient', () => {
 
       return expect(sut.set('someKey', {})).rejects.toEqual(expectedError);
     });
-
-    it('resolves what underlying client resolves', async () => {
-      const sut = new DefaultCacheClient({ client });
-      const expectedResponse = true;
-      client.set = jest.fn().mockReturnValue(expectedResponse);
-
-      const actualResponse = await sut.set('someKey', {});
-
-      return expect(actualResponse).toEqual(expectedResponse);
-    });
   });
 
   describe('CacheClient.delete', () => {
@@ -131,16 +121,6 @@ describe('CacheClient', () => {
       client.delete = jest.fn().mockRejectedValue(expectedError);
 
       return expect(sut.delete('someKey')).rejects.toEqual(expectedError);
-    });
-
-    it('resolves what underlying client resolves', async () => {
-      const sut = new DefaultCacheClient({ client });
-      const expectedResponse = false;
-      client.delete = jest.fn().mockResolvedValue(expectedResponse);
-
-      const actualResponse = await sut.delete('someKey');
-
-      return expect(actualResponse).toEqual(expectedResponse);
     });
   });
 });

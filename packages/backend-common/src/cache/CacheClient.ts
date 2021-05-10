@@ -46,17 +46,12 @@ export interface CacheClient {
    * optional TTL may also be provided, otherwise it defaults to the TTL that
    * was provided when the client was instantiated.
    */
-  set(
-    key: string,
-    value: JsonValue,
-    options?: CacheSetOptions,
-  ): Promise<boolean>;
+  set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<void>;
 
   /**
-   * Removes the given key from the cache store. Resolves true if the key
-   * existed, or false if not.
+   * Removes the given key from the cache store.
    */
-  delete(key: string): Promise<boolean>;
+  delete(key: string): Promise<void>;
 }
 
 /**
@@ -79,14 +74,14 @@ export class DefaultCacheClient implements CacheClient {
     key: string,
     value: JsonValue,
     opts: CacheSetOptions = {},
-  ): Promise<boolean> {
+  ): Promise<void> {
     const k = this.getNormalizedKey(key);
-    return await this.client.set(k, value, opts.ttl);
+    await this.client.set(k, value, opts.ttl);
   }
 
-  async delete(key: string): Promise<boolean> {
+  async delete(key: string): Promise<void> {
     const k = this.getNormalizedKey(key);
-    return await this.client.delete(k);
+    await this.client.delete(k);
   }
 
   /**
