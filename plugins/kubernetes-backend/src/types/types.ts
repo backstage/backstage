@@ -19,50 +19,6 @@ import type {
   KubernetesFetchError,
 } from '@backstage/plugin-kubernetes-common';
 
-export type ClusterLocatorMethod =
-  | ConfigClusterLocatorMethod
-  | GKEClusterLocatorMethod;
-
-export interface ConfigClusterLocatorMethod {
-  /**
-   * @visibility frontend
-   */
-  type: 'config';
-  clusters: {
-    /**
-     * @visibility frontend
-     */
-    url: string;
-    /**
-     * @visibility frontend
-     */
-    name: string;
-    /**
-     * @visibility secret
-     */
-    serviceAccountToken: string | undefined;
-    /**
-     * @visibility frontend
-     */
-    authProvider: 'aws' | 'google' | 'serviceAccount';
-  }[];
-}
-
-export interface GKEClusterLocatorMethod {
-  /**
-   * @visibility frontend
-   */
-  type: 'gke';
-  /**
-   * @visibility frontend
-   */
-  projectId: string;
-  /**
-   * @visibility frontend
-   */
-  region?: string;
-}
-
 export interface CustomResource {
   group: string;
   apiVersion: string;

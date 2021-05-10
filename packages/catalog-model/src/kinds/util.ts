@@ -66,7 +66,13 @@ export function ajvCompiledJsonSchemaValidator(
       }
 
       throw new TypeError(
-        `Malformed ${kind}, ${error.dataPath || '<root>'} ${error.message}`,
+        `Malformed ${kind}, ${error.dataPath || '<root>'} ${error.message}${
+          error.params
+            ? ` - ${Object.entries(error.params)
+                .map(([key, val]) => `${key}: ${val}`)
+                .join(', ')}`
+            : ''
+        }`,
       );
     },
   };
