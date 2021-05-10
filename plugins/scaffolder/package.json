@@ -33,6 +33,7 @@
     "@backstage/catalog-client": "^0.3.11",
     "@backstage/catalog-model": "^0.7.8",
     "@backstage/config": "^0.1.5",
+    "@backstage/errors": "^0.1.1",
     "@backstage/core": "^0.7.8",
     "@backstage/integration": "^0.5.2",
     "@backstage/integration-react": "^0.1.1",
@@ -54,7 +55,7 @@
     "react-lazylog": "^4.5.2",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^15.3.3",
+    "react-use": "^17.2.4",
     "use-immer": "^0.5.1",
     "zen-observable": "^0.8.15"
   },

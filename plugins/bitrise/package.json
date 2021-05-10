@@ -33,7 +33,7 @@
     "qs": "^6.9.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-use": "^15.3.3",
+    "react-use": "^17.2.4",
     "recharts": "^1.8.5"
   },
   "devDependencies": {
