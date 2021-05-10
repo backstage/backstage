@@ -933,26 +933,25 @@
 
   Update imports and remove the usage of the deprecated `app.getRoutes()`.
 
-  ```diff
-  -import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-  +import { TechdocsPage } from '@backstage/plugin-techdocs';
-   import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-  -import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
-  -import { SearchPage as SearchRouter } from '@backstage/plugin-search';
-  -import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-  +import { TechRadarPage } from '@backstage/plugin-tech-radar';
-  +import { SearchPage } from '@backstage/plugin-search';
-  +import { UserSettingsPage } from '@backstage/plugin-user-settings';
-  +import { ApiExplorerPage } from '@backstage/plugin-api-docs';
-   import { EntityPage } from './components/catalog/EntityPage';
-   import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
-  ```
+```diff
+- import { Router as DocsRouter } from '@backstage/plugin-techdocs';
++ import { TechdocsPage } from '@backstage/plugin-techdocs';
+  import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+- import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+- import { SearchPage as SearchRouter } from '@backstage/plugin-search';
+- import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
++ import { TechRadarPage } from '@backstage/plugin-tech-radar';
++ import { SearchPage } from '@backstage/plugin-search';
++ import { UserSettingsPage } from '@backstage/plugin-user-settings';
++ import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+  import { EntityPage } from './components/catalog/EntityPage';
+  import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
 
-const AppProvider = app.getProvider();
-const AppRouter = app.getRouter();
--const deprecatedAppRoutes = app.getRoutes();
 
-````
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+- const deprecatedAppRoutes = app.getRoutes();
+```
 
 As well as update or add the following routes:
 
@@ -975,7 +974,7 @@ As well as update or add the following routes:
 -  {deprecatedAppRoutes}
 +  <Route path="/search" element={<SearchPage />} />
 +  <Route path="/settings" element={<UserSettingsPage />} />
-````
+```
 
 If you have added additional plugins with registered routes or are using `Router` components from other plugins, these should be migrated to use the `*Page` components as well. See [this commit](https://github.com/backstage/backstage/commit/abd655e42d4ed416b70848ffdb1c4b99d189f13b) for more examples of how to migrate.
 
