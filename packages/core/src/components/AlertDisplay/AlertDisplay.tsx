@@ -46,11 +46,7 @@ export const AlertDisplay = () => {
   };
 
   return (
-    <Snackbar
-      open
-      message={firstMessage.message.toString()}
-      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-    >
+    <Snackbar open anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
       <Alert
         action={
           <IconButton
