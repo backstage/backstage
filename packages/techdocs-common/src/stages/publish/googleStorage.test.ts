@@ -295,6 +295,10 @@ describe('GoogleGCSPublish', () => {
       });
     });
 
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     it('should pass expected object path to bucket', async () => {
       const {
         kind,

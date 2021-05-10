@@ -353,6 +353,10 @@ describe('publishing with valid credentials', () => {
       });
     });
 
+    afterEach(() => {
+      mockFs.restore();
+    });
+
     it('should pass expected object path to bucket', async () => {
       const {
         kind,

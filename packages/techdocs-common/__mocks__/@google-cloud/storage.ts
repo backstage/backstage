@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Readable, Writable } from 'stream';
+import { Readable } from 'stream';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
