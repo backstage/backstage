@@ -24,7 +24,6 @@ import {
   LocationService,
   LocationStore,
   CatalogProcessingOrchestrator,
-  LocationResponse,
 } from './types';
 import { locationSpecToMetadataName } from './util';
 
@@ -88,11 +87,9 @@ export class DefaultLocationService implements LocationService {
     return { location, entities: [] };
   }
 
-  async listLocations(): Promise<LocationResponse[]> {
-    const locations = await this.store.listLocations();
-    return locations.map(location => ({ data: location }));
+  listLocations(): Promise<Location[]> {
+    return this.store.listLocations();
   }
-
   getLocation(id: string): Promise<Location> {
     return this.store.getLocation(id);
   }

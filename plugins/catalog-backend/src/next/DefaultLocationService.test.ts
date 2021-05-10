@@ -137,23 +137,8 @@ describe('DefaultLocationServiceTest', () => {
     });
   });
   describe('listLocations', () => {
-    it('should call locationStore.listLocations', async () => {
-      store.listLocations.mockResolvedValue([
-        {
-          id: '123',
-          target: 'https://backstage.io/catalog-info.yaml',
-          type: 'url',
-        },
-      ]);
-      await expect(locationService.listLocations()).resolves.toEqual([
-        {
-          data: {
-            id: '123',
-            target: 'https://backstage.io/catalog-info.yaml',
-            type: 'url',
-          },
-        },
-      ]);
+    it('should call locationStore.deleteLocation', async () => {
+      await locationService.listLocations();
       expect(store.listLocations).toBeCalled();
     });
   });
