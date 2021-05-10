@@ -52,6 +52,7 @@
     "immer": "^9.0.1",
     "lodash": "^4.17.15",
     "material-table": "^1.69.1",
+    "pluralize": "^8.0.0",
     "prop-types": "^15.7.2",
     "qs": "^6.9.4",
     "rc-progress": "^3.0.0",
