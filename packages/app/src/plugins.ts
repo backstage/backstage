@@ -17,3 +17,4 @@
 // TODO(Rugvip): This plugin is currently not part of the app element tree,
 //               ideally we have an API for the context menu that permits that.
 export { badgesPlugin } from '@backstage/plugin-badges';
+export { shortcutsPlugin } from '@backstage/plugin-shortcuts';

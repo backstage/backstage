@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  storageApiRef,
-  errorApiRef,
-  createApiFactory,
-  AlertApiForwarder,
-  alertApiRef,
-} from '@backstage/core-api';
-import { MockErrorApi, MockStorageApi } from './apis';
-
-export const mockApis = [
-  createApiFactory(errorApiRef, new MockErrorApi()),
-  createApiFactory(storageApiRef, MockStorageApi.create()),
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
-];
+export { shortcutsPlugin, Shortcuts } from './plugin';
+export * from './api';
+export type { Shortcut } from './types';
