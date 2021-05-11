@@ -19,5 +19,4 @@ export {
   EntityKubernetesContent,
 } from './plugin';
 export { Router } from './Router';
-export { kubernetesAuthProvidersApiRef } from './kubernetes-auth-provider/types';
-export { KubernetesAuthProviders } from './kubernetes-auth-provider/KubernetesAuthProviders';
+export * from './kubernetes-auth-provider';
