@@ -2219,10 +2219,10 @@
     through2 "^3.0.0"
     xdg-basedir "^3.0.0"
 
-"@google-cloud/storage@^5.6.0":
-  version "5.8.1"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.8.1.tgz#00e627723614bcf97e6e29f9a59ec39339171847"
-  integrity sha512-qP8gCJ2myyMN3JMJN12d82Oo8VBSDO8vO4/x56dtQZX9+WISqcagurntnJVyFX885tIOtS97bsyv8qR1xv6HMg==
+"@google-cloud/storage@^5.6.0", "@google-cloud/storage@^5.8.0":
+  version "5.8.5"
+  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.8.5.tgz#2cf1e2e0ef8ca552abc4450301fef3fea4900ef6"
+  integrity sha512-i0gB9CRwQeOBYP7xuvn14M40LhHCwMjceBjxE4CTvsqL519sVY5yVKxLiAedHWGwUZHJNRa7Q2CmNfkdRwVNPg==
   dependencies:
     "@google-cloud/common" "^3.6.0"
     "@google-cloud/paginator" "^3.0.0"
@@ -2230,38 +2230,11 @@
     arrify "^2.0.0"
     async-retry "^1.3.1"
     compressible "^2.0.12"
-    date-and-time "^0.14.2"
+    date-and-time "^1.0.0"
     duplexify "^4.0.0"
     extend "^3.0.2"
     gaxios "^4.0.0"
-    gcs-resumable-upload "^3.1.3"
-    get-stream "^6.0.0"
-    hash-stream-validation "^0.2.2"
-    mime "^2.2.0"
-    mime-types "^2.0.8"
-    onetime "^5.1.0"
-    p-limit "^3.0.1"
-    pumpify "^2.0.0"
-    snakeize "^0.1.0"
-    stream-events "^1.0.1"
-    xdg-basedir "^4.0.0"
-
-"@google-cloud/storage@^5.8.0":
-  version "5.8.0"
-  resolved "https://registry.npmjs.org/@google-cloud/storage/-/storage-5.8.0.tgz#1f580e276f1d453790b382156421d1bcc4bd3f4b"
-  integrity sha512-WOShvBPOfkDXUzXMO+3j8Bzus+PFI9r1Ey9dLG2Zf458/PVuFTtaRWntd9ZiDG8g90zl2LmnA1JkDCreGUKr5g==
-  dependencies:
-    "@google-cloud/common" "^3.6.0"
-    "@google-cloud/paginator" "^3.0.0"
-    "@google-cloud/promisify" "^2.0.0"
-    arrify "^2.0.0"
-    async-retry "^1.3.1"
-    compressible "^2.0.12"
-    date-and-time "^0.14.2"
-    duplexify "^4.0.0"
-    extend "^3.0.2"
-    gaxios "^4.0.0"
-    gcs-resumable-upload "^3.1.3"
+    gcs-resumable-upload "^3.1.4"
     get-stream "^6.0.0"
     hash-stream-validation "^0.2.2"
     mime "^2.2.0"
@@ -7056,7 +7029,7 @@
   resolved "https://registry.npmjs.org/@types/yup/-/yup-0.29.11.tgz#d654a112973f5e004bf8438122bd7e56a8e5cd7e"
   integrity sha512-9cwk3c87qQKZrT251EDoibiYRILjCmxBvvcb4meofCmx1vdnNcR9gyildy5vOHASpOKMsn42CugxUvcwK5eu1g==
 
-"@types/zen-observable@^0.8.0":
+"@types/zen-observable@^0.8.0", "@types/zen-observable@^0.8.2":
   version "0.8.2"
   resolved "https://registry.npmjs.org/@types/zen-observable/-/zen-observable-0.8.2.tgz#808c9fa7e4517274ed555fa158f2de4b4f468e71"
   integrity sha512-HrCIVMLjE1MOozVoD86622S7aunluLb2PJdPfb3nYiEtohm8mIB/vyv0Fd37AdeMFrTUQXEunw78YloMA3Qilg==
@@ -11262,15 +11235,15 @@ dataloader@2.0.0:
   resolved "https://registry.npmjs.org/dataloader/-/dataloader-2.0.0.tgz#41eaf123db115987e21ca93c005cd7753c55fe6f"
   integrity sha512-YzhyDAwA4TaQIhM5go+vCLmU0UikghC/t9DTQYZR2M/UvZ1MdOhPezSDZcjj9uqQJOMqjLcpWtyW2iNINdlatQ==
 
-date-and-time@^0.14.2:
-  version "0.14.2"
-  resolved "https://registry.npmjs.org/date-and-time/-/date-and-time-0.14.2.tgz#a4266c3dead460f6c231fe9674e585908dac354e"
-  integrity sha512-EFTCh9zRSEpGPmJaexg7HTuzZHh6cnJj1ui7IGCFNXzd2QdpsNh05Db5TF3xzJm30YN+A8/6xHSuRcQqoc3kFA==
-
 date-and-time@^0.6.3:
   version "0.6.3"
   resolved "https://registry.npmjs.org/date-and-time/-/date-and-time-0.6.3.tgz#2daee52df67c28bd93bce862756ac86b68cf4237"
   integrity sha512-lcWy3AXDRJOD7MplwZMmNSRM//kZtJaLz4n6D1P5z9wEmZGBKhJRBIr1Xs9KNQJmdXPblvgffynYji4iylUTcA==
+
+date-and-time@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/date-and-time/-/date-and-time-1.0.0.tgz#0062394bdf6f44e961f0db00511cb19cdf3cc0a5"
+  integrity sha512-477D7ypIiqlXBkxhU7YtG9wWZJEQ+RUpujt2quTfgf4+E8g5fNUkB0QIL0bVyP5/TKBg8y55Hfa1R/c4bt3dEw==
 
 date-fns@^1.27.2:
   version "1.30.1"
@@ -13836,10 +13809,10 @@ gcs-resumable-upload@^1.0.0:
     pumpify "^1.5.1"
     stream-events "^1.0.4"
 
-gcs-resumable-upload@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-3.1.3.tgz#1e38e1339600b85812e6430a5ab455453c64cce3"
-  integrity sha512-LjVrv6YVH0XqBr/iBW0JgRA1ndxhK6zfEFFJR4im51QVTj/4sInOXimY2evDZuSZ75D3bHxTaQAdXRukMc1y+w==
+gcs-resumable-upload@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.npmjs.org/gcs-resumable-upload/-/gcs-resumable-upload-3.1.4.tgz#2e591889efb02247af26868de300b398346b17b5"
+  integrity sha512-5dyDfHrrVcIskiw/cPssVD4HRiwoHjhk1Nd6h5W3pQ/qffDvhfy4oNCr1f3ZXFPwTnxkCbibsB+73oOM+NvmJQ==
   dependencies:
     abort-controller "^3.0.0"
     configstore "^5.0.0"
@@ -18695,6 +18668,7 @@ minipass-fetch@^1.3.0, minipass-fetch@^1.3.2:
   resolved "https://registry.npmjs.org/minipass-fetch/-/minipass-fetch-1.3.3.tgz#34c7cea038c817a8658461bf35174551dce17a0a"
   integrity sha512-akCrLDWfbdAWkMLBxJEeWTdNsjML+dt5YgOI4gJ53vuO0vrmYQkUPxa6j6V65s9CcePIr2SSWqjT2EcrNseryQ==
   dependencies:
+    encoding "^0.1.12"
     minipass "^3.1.0"
     minipass-sized "^1.0.3"
     minizlib "^2.0.0"
@@ -21689,7 +21663,7 @@ qs@6.7.0:
   resolved "https://registry.npmjs.org/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.5.1:
+qs@^6.10.1, qs@^6.5.1:
   version "6.10.1"
   resolved "https://registry.npmjs.org/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
   integrity sha512-M528Hph6wsSVOBiYUnGf+K/7w0hNshs/duGsNXPUCLH5XAqjEtiPGwNONLV0tBH8NoGb0mvD5JubnUTrujKDTg==
@@ -22053,6 +22027,11 @@ react-hook-form@^6.15.4:
   version "6.15.4"
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-6.15.4.tgz#328003e1ccc096cd158899ffe7e3b33735a9b024"
   integrity sha512-K+Sw33DtTMengs8OdqFJI3glzNl1wBzSefD/ksQw/hJf9CnOHQAU6qy82eOrh0IRNt2G53sjr7qnnw1JDjvx1w==
+
+react-hook-form@^7.1.1:
+  version "7.2.1"
+  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.2.1.tgz#99b3540dd2314499df12e9a53c70587ad63a806c"
+  integrity sha512-QopAubhVofqQrwlWLr9aK0DF8tNU8fnU8sJIlw1Tb3tGkEvP9yeaA+cx1hlxYni8xBswtHruL1WcDEa6CYQDow==
 
 react-hot-loader@^4.12.21:
   version "4.13.0"
@@ -23385,9 +23364,9 @@ sane@^4.0.3:
     walker "~1.0.5"
 
 sanitize-html@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.3.2.tgz#a1954aea877a096c408aca7b0c260bef6e4fc402"
-  integrity sha512-p7neuskvC8pSurUjdVmbWPXmc9A4+QpOXIL+4gwFC+av5h+lYCXFT8uEneqsFQg/wEA1IH+cKQA60AaQI6p3cg==
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/sanitize-html/-/sanitize-html-2.3.3.tgz#3db382c9a621cce4c46d90f10c64f1e9da9e8353"
+  integrity sha512-DCFXPt7Di0c6JUnlT90eIgrjs6TsJl/8HYU3KLdmrVclFN4O0heTcVbJiMa23OKVr6aR051XYtsgd8EWwEBwUA==
   dependencies:
     deepmerge "^4.2.2"
     escape-string-regexp "^4.0.0"
@@ -24313,9 +24292,9 @@ store2@^2.7.1:
   integrity sha512-tWEpK0snS2RPUq1i3R6OahfJNjWCQYNxq0+by1amCSuw0mXtymJpzmZIeYpA1UAa+7B0grCpNYIbDcd7AgTbFg==
 
 storybook-dark-mode@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/storybook-dark-mode/-/storybook-dark-mode-1.0.3.tgz#8d58a874b6107ff1a7f29ebb0e6726b8036eee08"
-  integrity sha512-mjHLrv/dwtqKmbOoQ2CMtGKDttWSnUybutujsIPxLcEC77EujjWiRBFv46LtXAZEyZLm8sGFUz0s6HJJfJ3tSw==
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/storybook-dark-mode/-/storybook-dark-mode-1.0.8.tgz#bbd64b382fd62d38685fdd769e2cac4e32ec293d"
+  integrity sha512-uY6yTSd1vYE0YwlON50u+iIoNF/fmMj59ww1cpd/naUcmOmCjwawViKFG5YjichwdR/yJ5ybWRUF0tnRQfaSiw==
   dependencies:
     fast-deep-equal "^3.0.0"
     memoizerific "^1.11.3"
@@ -25727,9 +25706,9 @@ typescript@^4.0.3, typescript@^4.1.3, typescript@~4.1.3:
   integrity sha512-qOcYwxaByStAWrBf4x0fibwZvMRG+r4cQoTjbPtUlrWjBHbmCAww1i448U0GJ+3cNNEtebDteo/cHOR3xJ4wEw==
 
 ua-parser-js@^0.7.18:
-  version "0.7.21"
-  resolved "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.21.tgz#853cf9ce93f642f67174273cc34565ae6f308777"
-  integrity sha512-+O8/qh/Qj8CgC6eYBVBykMrNtp5Gebn4dlGD/kKXVkJNDwyrAwSIqwz8CDf+tsAIWVycKcku6gIXJ0qwx/ZXaQ==
+  version "0.7.28"
+  resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.28.tgz#8ba04e653f35ce210239c64661685bf9121dec31"
+  integrity sha512-6Gurc1n//gjp9eQNXjD9O3M/sMwVtN5S8Lv9bvOYBfKfDNiIIhqiyi01vMBO45u4zkDE420w/e0se7Vs+sIg+g==
 
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
