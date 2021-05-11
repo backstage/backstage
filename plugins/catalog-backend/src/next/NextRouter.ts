@@ -133,8 +133,8 @@ export async function createNextRouter(
         res.status(201).json(output);
       })
       .get('/locations', async (_req, res) => {
-        const output = await locationService.listLocations();
-        res.status(200).json(output);
+        const locations = await locationService.listLocations();
+        res.status(200).json(locations.map(l => ({ data: l })));
       })
 
       .get('/locations/:id', async (req, res) => {
