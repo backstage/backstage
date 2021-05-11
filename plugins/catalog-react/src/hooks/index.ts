@@ -15,11 +15,5 @@
  */
 export { EntityContext, useEntity, useEntityFromUrl } from './useEntity';
 export { useEntityCompoundName } from './useEntityCompoundName';
-export {
-  EntityListContext,
-  EntityListProvider,
-  useEntityListProvider,
-} from './useEntityListProvider';
-export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';

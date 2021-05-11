@@ -32,13 +32,11 @@ import {
   EntityRefLinks,
   formatEntityRefTitle,
   getEntityRelations,
-  useEntityListProvider,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import { Chip } from '@material-ui/core';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
-import { capitalize } from 'lodash';
 import React from 'react';
 import {
   getEntityMetadataEditUrl,
@@ -132,14 +130,22 @@ const columns: TableColumn<EntityRow>[] = [
   },
 ];
 
-export const CatalogTable = () => {
-  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  // TODO(timbonicus): should the component loading entities register which fields it's interested in?
-  const { loading, error, entities, filters } = useEntityListProvider();
+type CatalogTableProps = {
+  entities: Entity[];
+  titlePreamble: string;
+  loading: boolean;
+  error?: any;
+  view?: string;
+};
 
-  const showTypeColumn = filters.type !== undefined;
-  // TODO(timbonicus): this makes less sense with more complex filters, should we show filter chips instead?
-  const titlePreamble = capitalize(filters.user?.value ?? 'all');
+export const CatalogTable = ({
+  entities,
+  loading,
+  error,
+  titlePreamble,
+  view,
+}: CatalogTableProps) => {
+  const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
 
   if (error) {
     return (
@@ -220,7 +226,7 @@ export const CatalogTable = () => {
 
   const typeColumn = columns.find(c => c.title === 'Type');
   if (typeColumn) {
-    typeColumn.hidden = !showTypeColumn;
+    typeColumn.hidden = view !== 'Other';
   }
 
   return (
