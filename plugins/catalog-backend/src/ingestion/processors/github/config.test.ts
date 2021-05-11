@@ -27,6 +27,16 @@ describe('config', () => {
       });
     }
 
+    it('adds a default GitHub entry when missing', () => {
+      const output = readGithubConfig(config([]));
+      expect(output).toEqual([
+        {
+          target: 'https://github.com',
+          apiBaseUrl: 'https://api.github.com',
+        },
+      ]);
+    });
+
     it('injects the correct GitHub API base URL when missing', () => {
       const output = readGithubConfig(
         config([{ target: 'https://github.com' }]),

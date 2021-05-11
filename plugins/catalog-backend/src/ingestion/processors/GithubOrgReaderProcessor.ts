@@ -113,10 +113,10 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   }
 
   private async createClient(orgUrl: string): Promise<GraphQL> {
-    let client = this.createClientFromProvider(orgUrl);
+    let client = await this.createClientFromIntegrations(orgUrl);
 
     if (!client) {
-      client = await this.createClientFromIntegrations(orgUrl);
+      client = await this.createClientFromProvider(orgUrl);
     }
 
     if (!client) {
@@ -128,7 +128,9 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     return client;
   }
 
-  private createClientFromProvider(orgUrl: string): GraphQL | undefined {
+  private async createClientFromProvider(
+    orgUrl: string,
+  ): Promise<GraphQL | undefined> {
     const provider = this.providers.find(p =>
       orgUrl.startsWith(`${p.target}/`),
     );
