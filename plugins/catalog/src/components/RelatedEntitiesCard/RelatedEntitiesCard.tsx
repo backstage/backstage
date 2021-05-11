@@ -16,12 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
-  CodeSnippet,
   InfoCard,
   Link,
   Progress,
+  ResponseErrorPanel,
   TableColumn,
-  WarningPanel,
 } from '@backstage/core';
 import { Typography } from '@material-ui/core';
 import {
@@ -39,7 +38,7 @@ type Props<T extends Entity> = {
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
-  asRenderableEntities: (entities: Entity[]) => T[];
+  asRenderableEntities: (entities: Entity[] | undefined) => T[];
 };
 
 export function RelatedEntitiesCard<T extends Entity>({
@@ -66,14 +65,10 @@ export function RelatedEntitiesCard<T extends Entity>({
     );
   }
 
-  if (error || !entities) {
+  if (error) {
     return (
       <InfoCard variant={variant} title={title}>
-        <WarningPanel
-          severity="error"
-          title={`Could not load ${title}`}
-          message={<CodeSnippet text={`${error}`} language="text" />}
-        />
+        <ResponseErrorPanel error={error} />
       </InfoCard>
     );
   }
