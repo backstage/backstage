@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { AppConfig } from '@backstage/config';
 import { ComponentType } from 'react';
+import { AppTheme, ProfileInfo } from '../apis/definitions';
+import { AnyApiFactory } from '../apis/system';
+import type { ErrorBoundaryFallbackProps } from '../extensions/PluginErrorBoundary';
 import { IconComponent, IconComponentMap, IconKey } from '../icons/types';
 import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
 import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing/types';
-import { AnyApiFactory } from '../apis/system';
-import { AppTheme, ProfileInfo } from '../apis/definitions';
-import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
@@ -58,6 +59,11 @@ export type AppComponents = {
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
+  ErrorBoundaryFallback: ComponentType<
+    ErrorBoundaryFallbackProps & {
+      plugin: BackstagePlugin;
+    }
+  >;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.

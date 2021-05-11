@@ -96,6 +96,7 @@ export function wrapInTestApp(
       Router: ({ children }) => (
         <MemoryRouter initialEntries={routeEntries} children={children} />
       ),
+      ErrorBoundaryFallback: () => null,
     },
     icons: defaultSystemIcons,
     plugins: [],

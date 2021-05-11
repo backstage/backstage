@@ -20,6 +20,7 @@ import {
   FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
+  ErrorBoundaryFallback,
 } from '@backstage/core';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
@@ -66,6 +67,9 @@ const app = createApp({
     alert: AlarmIcon,
   },
   components: {
+    ErrorBoundaryFallback: props => {
+      return <ErrorBoundaryFallback {...props} />;
+    },
     SignInPage: props => {
       return (
         <SignInPage
