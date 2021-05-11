@@ -89,12 +89,17 @@ export const Reader = ({ entityId, onReady }: Props) => {
   useEffect(() => {
     const updateSidebarPosition = () => {
       if (!!shadowDomRef.current && !!sidebars) {
+        const mdTabs = shadowDomRef.current!.querySelector(
+          '.md-container > .md-tabs',
+        );
         sidebars!.forEach(sidebar => {
           const newTop = Math.max(
             shadowDomRef.current!.getBoundingClientRect().top,
             0,
           );
-          sidebar.style.top = `${newTop}px`;
+          sidebar.style.top = mdTabs
+            ? `${newTop + mdTabs.getBoundingClientRect().height}px`
+            : `${newTop}px`;
         });
       }
     };
@@ -318,8 +323,11 @@ export const Reader = ({ entityId, onReady }: Props) => {
           // set sidebar height so they don't initially render in wrong position
           const docTopPosition = (dom as HTMLElement).getBoundingClientRect()
             .top;
+          const mdTabs = dom.querySelector('.md-container > .md-tabs');
           sideDivs!.forEach(sidebar => {
-            sidebar.style.top = `${docTopPosition}px`;
+            sidebar.style.top = mdTabs
+              ? `${docTopPosition + mdTabs.getBoundingClientRect().height}px`
+              : `${docTopPosition}px`;
           });
         },
       }),
