@@ -13,22 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { AboutCard } from './components/AboutCard';
-export { EntityLayout } from './components/EntityLayout';
-export { EntityPageLayout } from './components/EntityPageLayout';
-export { CatalogTable } from './components/CatalogTable';
-export * from './components/EntitySwitch';
-export { Router } from './components/Router';
-export {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  catalogPlugin,
-  catalogPlugin as plugin,
-  EntityAboutCard,
-  EntityHasComponentsCard,
-  EntityHasSubcomponentsCard,
-  EntityHasSystemsCard,
-  EntityLinksCard,
-  EntitySystemDiagramCard,
-} from './plugin';
+export { CatalogTable } from './CatalogTable';
