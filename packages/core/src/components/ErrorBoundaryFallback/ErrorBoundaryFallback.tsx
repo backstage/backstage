@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-// TODO align this design with the backend errors
-
 import React from 'react';
 import { AppComponents } from '../..';
-import { ResponseErrorPanel } from '../ResponseErrorPanel';
+import { ErrorPanel } from '../ErrorPanel';
 import { Button } from '@material-ui/core';
 
 export const ErrorBoundaryFallback: AppComponents['ErrorBoundaryFallback'] = ({
@@ -27,15 +25,14 @@ export const ErrorBoundaryFallback: AppComponents['ErrorBoundaryFallback'] = ({
   plugin,
 }) => {
   return (
-    <ResponseErrorPanel
+    <ErrorPanel
       title={`Error in ${plugin?.getId()}`}
       defaultExpanded
       error={error}
-      actions={
-        <Button variant="outlined" onClick={resetError}>
-          Retry
-        </Button>
-      }
-    />
+    >
+      <Button variant="outlined" onClick={resetError}>
+        Retry
+      </Button>
+    </ErrorPanel>
   );
 };
