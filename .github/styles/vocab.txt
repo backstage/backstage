@@ -167,6 +167,7 @@ mailto
 maintainership
 makefile
 md
+memcache
 microsite
 middleware
 minikube

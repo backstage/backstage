@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Config } from '@backstage/config';
-import {
-  PluginCacheManager,
-  PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  UrlReader,
-} from '@backstage/backend-common';
+/**
+ * Storage class compatible with Keyv which always results in a no-op. This is
+ * used when no cache store is configured in a Backstage backend instance.
+ */
+export class NoStore extends Map<string, any> {
+  clear(): void {
+    return;
+  }
 
-export type PluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: PluginDatabaseManager;
-  config: Config;
-  reader: UrlReader;
-  discovery: PluginEndpointDiscovery;
-};
+  delete(_key: string): boolean {
+    return false;
+  }
+
+  get(_key: string) {
+    return;
+  }
+
+  has(_key: string): boolean {
+    return false;
+  }
+
+  set(_key: string, _value: any): this {
+    return this;
+  }
+}
