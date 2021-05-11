@@ -29,13 +29,13 @@ import {
   EntityTagPicker,
   UserListFilter,
   UserListFilterKind,
+  UserListPicker,
 } from '@backstage/plugin-catalog-react';
 
 import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import CatalogLayout from './CatalogLayout';
 import { EntityTypePicker } from '../EntityTypePicker';
-import { UserListPicker } from '../UserListPicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

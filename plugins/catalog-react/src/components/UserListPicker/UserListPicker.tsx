@@ -18,12 +18,14 @@ import React, { Fragment } from 'react';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import {
   FilterEnvironment,
-  useEntityListProvider,
-  useOwnUser,
   UserListFilter,
   UserListFilterKind,
+} from '../../types';
+import {
+  useEntityListProvider,
+  useOwnUser,
   useStarredEntities,
-} from '@backstage/plugin-catalog-react';
+} from '../../hooks';
 import {
   Card,
   List,
