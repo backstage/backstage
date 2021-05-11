@@ -38,7 +38,7 @@ type Props<T extends Entity> = {
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
-  asRenderableEntities: (entities: Entity[] | undefined) => T[];
+  asRenderableEntities: (entities?: Entity[]) => T[];
 };
 
 export function RelatedEntitiesCard<T extends Entity>({
