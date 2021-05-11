@@ -18,11 +18,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTagPicker } from './EntityTagPicker';
-import {
-  EntityListContext,
-  EntityListContextProps,
-} from '../../hooks/useEntityListProvider';
 import { EntityTagFilter } from '../../types';
+import { MockEntityListContextProvider } from '../../testUtils/providers';
 
 const taggedEntities: Entity[] = [
   {
@@ -43,20 +40,14 @@ const taggedEntities: Entity[] = [
   },
 ];
 
-const baseEntityListContext: EntityListContextProps = {
-  entities: taggedEntities,
-  backendEntities: taggedEntities,
-  filters: {},
-  loading: false,
-  updateFilters: () => {},
-};
-
 describe('<EntityTagPicker/>', () => {
   it('renders all tags', () => {
     const rendered = render(
-      <EntityListContext.Provider value={baseEntityListContext}>
+      <MockEntityListContextProvider
+        value={{ entities: taggedEntities, backendEntities: taggedEntities }}
+      >
         <EntityTagPicker />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
     expect(rendered.getByText('Tags')).toBeInTheDocument();
     taggedEntities
@@ -69,11 +60,15 @@ describe('<EntityTagPicker/>', () => {
   it('adds tags to filters', () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <EntityListContext.Provider
-        value={{ ...baseEntityListContext, updateFilters }}
+      <MockEntityListContextProvider
+        value={{
+          entities: taggedEntities,
+          backendEntities: taggedEntities,
+          updateFilters,
+        }}
       >
         <EntityTagPicker />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
     expect(updateFilters).not.toHaveBeenCalled();
 
@@ -86,15 +81,16 @@ describe('<EntityTagPicker/>', () => {
   it('removes tags from filters', () => {
     const updateFilters = jest.fn();
     const rendered = render(
-      <EntityListContext.Provider
+      <MockEntityListContextProvider
         value={{
-          ...baseEntityListContext,
+          entities: taggedEntities,
+          backendEntities: taggedEntities,
           updateFilters,
           filters: { tags: new EntityTagFilter(['tag1']) },
         }}
       >
         <EntityTagPicker />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
     expect(updateFilters).not.toHaveBeenCalled();
     expect(rendered.getByLabelText('tag1')).toBeChecked();
