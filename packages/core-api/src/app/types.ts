@@ -61,7 +61,7 @@ export type AppComponents = {
   Router: ComponentType<{}>;
   ErrorBoundaryFallback: ComponentType<
     ErrorBoundaryFallbackProps & {
-      plugin: BackstagePlugin;
+      plugin?: BackstagePlugin;
     }
   >;
 

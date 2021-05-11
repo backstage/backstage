@@ -99,7 +99,7 @@ describe('extensions', () => {
     const apis = ApiRegistry.from([[errorApiRef, errorApi]]);
 
     const MockFallback: AppComponents['ErrorBoundaryFallback'] = props => (
-      <>Error in {props.plugin.getId()}</>
+      <>Error in {props.plugin?.getId()}</>
     );
 
     const { error: errors } = await withLogCollector(['error'], async () => {

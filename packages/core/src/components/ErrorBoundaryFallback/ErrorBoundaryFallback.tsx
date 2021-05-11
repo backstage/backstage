@@ -28,7 +28,7 @@ export const ErrorBoundaryFallback: AppComponents['ErrorBoundaryFallback'] = ({
 }) => {
   return (
     <ResponseErrorPanel
-      title={`Error in ${plugin.getId()}`}
+      title={`Error in ${plugin?.getId()}`}
       defaultExpanded
       error={error}
       actions={
