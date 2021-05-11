@@ -37,6 +37,7 @@ nav:
           - Entity References: 'features/software-catalog/references.md'
           - Well-known Annotations: 'features/software-catalog/well-known-annotations.md'
           - Well-known Relations: 'features/software-catalog/well-known-relations.md'
+          - Well-known Statuses: 'features/software-catalog/well-known-statuses.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
           - API: 'features/software-catalog/api.md'

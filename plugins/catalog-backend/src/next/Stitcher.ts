@@ -41,6 +41,11 @@ function generateStableHash(entity: Entity) {
     .digest('hex');
 }
 
+/**
+ * Performs the act of stitching - to take all of the various outputs from the
+ * ingestion process, and stitching them together into the final entity JSON
+ * shape.
+ */
 export class Stitcher {
   constructor(
     private readonly database: Knex,
@@ -109,7 +114,7 @@ export class Stitcher {
         const {
           entityId,
           processedEntity,
-          // errors,
+          errors,
           incomingReferenceCount,
           previousHash,
         } = result[0];
@@ -137,7 +142,15 @@ export class Stitcher {
             ['backstage.io/orphan']: 'true',
           };
         }
-
+        if (errors !== '') {
+          const parsedErrors = JSON.parse(errors);
+          entity.status = {
+            ...entity.status,
+            'backstage.io/processing-status': {
+              errors: parsedErrors,
+            },
+          };
+        }
         // TODO: entityRef is lower case and should be uppercase in the final
         // result
         entity.relations = result

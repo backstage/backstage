@@ -1,6 +1,7 @@
 ---
 id: extending-the-model
 title: Extending the model
+# prettier-ignore
 description: Documentation on extending the catalog model
 ---
 
@@ -301,9 +302,9 @@ Example intents:
 > "We have this concept of service maintainership, separate from ownership, that
 > we would like to make relations to individual users for."
 
-> We feel that we want to explicitly model the team-to-global-department mapping
-> as a relation, because it is core to our org setup and we frequently query for
-> it.
+> "We feel that we want to explicitly model the team-to-global-department
+> mapping as a relation, because it is core to our org setup and we frequently
+> query for it."
 
 Any processor can emit relations for entities as they are being processed, and
 new processors can be added when building the backend catalog using the
@@ -349,3 +350,21 @@ If you want to extend the use of an established relation type in a way that has
 an effect outside of your organization, reach out to the Backstage maintainers
 or a support partner to discuss risk/impact. It may even be that one end of the
 relation could be considered for addition to the core.
+
+## Adding a New Status field
+
+Example intents:
+
+> "We would like to convey entity statuses through the catalog in a generic way,
+> as an integration layer. Our monitoring and alerting system has a plugin with
+> Backstage, and it would be useful if the entity's status field contained the
+> current alert state close to the actual entity data for anyone to consume.
+
+While we are considering a mechanism for contributing generic statuses to
+entities, no such mechanism has yet been built. If you are interested in that
+topic, [this issue](https://github.com/backstage/backstage/issues/2292) contains
+more context.
+
+But in general, errors emitted (and exceptions thrown) by any processor
+including custom ones, end up in the [well known key](well-known-statuses.md)
+for ingestion status.
