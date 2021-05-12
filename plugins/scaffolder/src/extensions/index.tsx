@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Extension, ComponentLoader } from '@backstage/core';
 
-export { attachComponentData, getComponentData } from './componentData';
-export {
-  createReactExtension,
-  createRoutableExtension,
-  createComponentExtension,
-} from './extensions';
-export type { ComponentLoader } from './extensions';
+export type FormExtensionOptions<T> = {
+  name: string;
+  component: ComponentLoader<T>;
+};
+
+export function createScaffolderFormExtension<
+  T extends (props: any) => JSX.Element | null
+>(options: FormExtensionOptions<T>): Extension<T> {}
