@@ -359,7 +359,7 @@ describe('github-deployments', () => {
         expect.assertions(7);
       });
     });
-      
+
     describe('entity with other location types', () => {
       beforeEach(() => {
         entity = entityStub;

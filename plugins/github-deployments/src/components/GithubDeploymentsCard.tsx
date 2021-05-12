@@ -73,8 +73,10 @@ export const GithubDeploymentsCard = ({
   columns?: TableColumn<GithubDeployment>[];
 }) => {
   const { entity } = useEntity();
-  const [host] = [entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
-    entity?.metadata.annotations?.[LOCATION_ANNOTATION]].filter(Boolean);
+  const [host] = [
+    entity?.metadata.annotations?.[SOURCE_LOCATION_ANNOTATION],
+    entity?.metadata.annotations?.[LOCATION_ANNOTATION],
+  ].filter(Boolean);
 
   return !isGithubDeploymentsAvailable(entity) ? (
     <MissingAnnotationEmptyState annotation={GITHUB_PROJECT_SLUG_ANNOTATION} />
