@@ -15,8 +15,6 @@
 
   + import { DockerContainerRunner } from '@backstage/backend-common';
 
-    // ...
-
     export default async function createPlugin({
       logger,
       config,
@@ -75,7 +73,6 @@
   +   DockerContainerRunner,
   +   SingleHostDiscovery,
   + } from '@backstage/backend-common';
-
 
     export default async function createPlugin({
       logger,
