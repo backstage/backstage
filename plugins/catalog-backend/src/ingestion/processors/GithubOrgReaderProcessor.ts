@@ -16,6 +16,10 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
 import {
@@ -28,22 +32,33 @@ import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { buildOrgHierarchy } from './util/org';
 
+type GraphQL = typeof graphql;
+
 /**
  * Extracts teams and users out of a GitHub org.
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: ProviderConfig[];
+  private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
 
   static fromConfig(config: Config, options: { logger: Logger }) {
+    const integrations = ScmIntegrations.fromConfig(config);
+
     return new GithubOrgReaderProcessor({
       ...options,
       providers: readGithubConfig(config),
+      integrations,
     });
   }
 
-  constructor(options: { providers: ProviderConfig[]; logger: Logger }) {
+  constructor(options: {
+    providers: ProviderConfig[];
+    integrations: ScmIntegrations;
+    logger: Logger;
+  }) {
     this.providers = options.providers;
+    this.integrations = options.integrations;
     this.logger = options.logger;
   }
 
@@ -56,24 +71,8 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       return false;
     }
 
-    const provider = this.providers.find(p =>
-      location.target.startsWith(`${p.target}/`),
-    );
-    if (!provider) {
-      throw new Error(
-        `There is no GitHub Org provider that matches ${location.target}. Please add a configuration entry for it under catalog.processors.githubOrg.providers.`,
-      );
-    }
-
+    const client = await this.createClient(location.target);
     const { org } = parseUrl(location.target);
-    const client = !provider.token
-      ? graphql
-      : graphql.defaults({
-          baseUrl: provider.apiBaseUrl,
-          headers: {
-            authorization: `token ${provider.token}`,
-          },
-        });
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
@@ -111,6 +110,67 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     }
 
     return true;
+  }
+
+  private async createClient(orgUrl: string): Promise<GraphQL> {
+    let client = await this.createClientFromIntegrations(orgUrl);
+
+    if (!client) {
+      client = await this.createClientFromProvider(orgUrl);
+    }
+
+    if (!client) {
+      throw new Error(
+        `There is no GitHub Org provider that matches ${orgUrl}. Please add a configuration for an integration or add an entry for it under catalog.processors.githubOrg.providers.`,
+      );
+    }
+
+    return client;
+  }
+
+  private async createClientFromProvider(
+    orgUrl: string,
+  ): Promise<GraphQL | undefined> {
+    const provider = this.providers.find(p =>
+      orgUrl.startsWith(`${p.target}/`),
+    );
+
+    if (!provider) {
+      return undefined;
+    }
+
+    this.logger.warn(
+      'GithubOrgReaderProcessor uses provider defined in catalog.processors.githubOrg.providers, migrate to integrations instead. See https://backstage.io/docs/integrations/github/locations',
+    );
+
+    return !provider.token
+      ? graphql
+      : graphql.defaults({
+          baseUrl: provider.apiBaseUrl,
+          headers: {
+            authorization: `token ${provider.token}`,
+          },
+        });
+  }
+
+  private async createClientFromIntegrations(
+    orgUrl: string,
+  ): Promise<GraphQL | undefined> {
+    const gitHubConfig = this.integrations.github.byUrl(orgUrl)?.config;
+    if (!gitHubConfig) {
+      return undefined;
+    }
+
+    const credentialsProvider = GithubCredentialsProvider.create(gitHubConfig);
+
+    const { headers } = await credentialsProvider.getCredentials({
+      url: orgUrl,
+    });
+
+    return graphql.defaults({
+      baseUrl: gitHubConfig.apiBaseUrl,
+      headers,
+    });
   }
 }
 
