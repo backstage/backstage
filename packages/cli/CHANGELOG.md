@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.6.11
+
+### Patch Changes
+
+- 2cd70e164: Add context for versions:bump on what version it was bumped to. Updated tests for the same.
+- 3be844496: chore: bump `ts-node` versions to 9.1.1
+- e3fc89df6: update plugins created to use react-use 17.2.4
+
 ## 0.6.10
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/test-utils
 
+## 0.1.11
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- Updated dependencies [062bbf90f]
+- Updated dependencies [675a569a9]
+  - @backstage/core-api@0.2.18
+
 ## 0.1.10
 
 ### Patch Changes
