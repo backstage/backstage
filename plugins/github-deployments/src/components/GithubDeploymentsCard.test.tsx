@@ -336,7 +336,31 @@ describe('github-deployments', () => {
       });
     });
 
-    describe('entity with non url location', () => {
+    describe('entity with url location type', () => {
+      beforeEach(() => {
+        entity = entityStub;
+        entity.entity.metadata.annotations = {
+          'github.com/project-slug': 'org/repo',
+          'backstage.io/source-location':
+            'url:my-favourite-url-location/org/repo',
+          'backstage.io/managed-by-location':
+            'url:my-favourite-url-location/org/repo',
+        };
+      });
+
+      it('displays fetched data using default github api', async () => {
+        worker.use(
+          GRAPHQL_GITHUB_API.query('deployments', (_, res, ctx) =>
+            res(ctx.data(responseStub)),
+          ),
+        );
+
+        await assertFetchedData();
+        expect.assertions(7);
+      });
+    });
+      
+    describe('entity with other location types', () => {
       beforeEach(() => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
