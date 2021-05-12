@@ -64,7 +64,8 @@
     "stoppable": "^1.1.0",
     "tar": "^6.0.5",
     "unzipper": "^0.10.11",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "yn": "^4.0.0"
   },
   "peerDependencies": {
     "pg-connection-string": "^2.3.0"
@@ -96,6 +97,7 @@
     "jest": "^26.0.1",
     "mock-fs": "^4.13.0",
     "msw": "^0.21.2",
+    "mysql2": "^2.2.5",
     "recursive-readdir": "^2.2.2",
     "supertest": "^6.1.3"
   },
