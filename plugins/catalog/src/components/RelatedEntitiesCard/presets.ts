@@ -32,7 +32,7 @@ export const componentEntityColumns: TableColumn<ComponentEntity>[] = [
 export const componentEntityHelpLink: string =
   'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-component';
 export const asComponentEntities = (entities?: Entity[]): ComponentEntity[] =>
-  (entities as ComponentEntity[]) || new Array<ComponentEntity>();
+  (entities as ComponentEntity[]) || [];
 
 export const resourceEntityColumns: TableColumn<ResourceEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'resource' }),
@@ -44,7 +44,7 @@ export const resourceEntityColumns: TableColumn<ResourceEntity>[] = [
 export const resourceEntityHelpLink: string =
   'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource';
 export const asResourceEntities = (entities?: Entity[]): ResourceEntity[] =>
-  (entities as ResourceEntity[]) || new Array<ResourceEntity>();
+  (entities as ResourceEntity[]) || [];
 
 export const systemEntityColumns: TableColumn<SystemEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'system' }),
@@ -54,4 +54,4 @@ export const systemEntityColumns: TableColumn<SystemEntity>[] = [
 export const systemEntityHelpLink: string =
   'https://backstage.io/docs/features/software-catalog/descriptor-format#kind-system';
 export const asSystemEntities = (entities?: Entity[]): SystemEntity[] =>
-  (entities as SystemEntity[]) || new Array<SystemEntity>();
+  (entities as SystemEntity[]) || [];
