@@ -42,7 +42,6 @@ describe('BitbucketIntegration', () => {
   it('returns the basics', () => {
     const integration = new BitbucketIntegration({ host: 'h.com' } as any);
     expect(integration.type).toBe('bitbucket');
-    expect(integration.annotationPrefix).toBe('bitbucket.org');
     expect(integration.title).toBe('h.com');
   });
 

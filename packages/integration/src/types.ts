@@ -30,11 +30,6 @@ export interface ScmIntegration {
   type: string;
 
   /**
-   * The prefix used for entity metadata.annotations for the integration , e.g. "github.com".
-   */
-  annotationPrefix: string;
-
-  /**
    * A human readable title for the integration, that can be shown to users to
    * differentiate between different integrations.
    */

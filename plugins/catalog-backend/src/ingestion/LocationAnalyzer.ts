@@ -46,9 +46,27 @@ export class RepoLocationAnalyzer implements LocationAnalyzer {
     };
 
     const integration = this.scmIntegrations.byUrl(request.location.target);
-    if (integration) {
+    let annotationPrefix;
+    switch (integration?.type) {
+      case 'azure':
+        annotationPrefix = 'dev.azure.com';
+        break;
+      case 'bitbucket':
+        annotationPrefix = 'bitbucket.org';
+        break;
+      case 'github':
+        annotationPrefix = 'github.com';
+        break;
+      case 'gitlab':
+        annotationPrefix = 'gitlab.com';
+        break;
+      default:
+        break;
+    }
+
+    if (annotationPrefix) {
       entity.metadata.annotations = {
-        [`${integration.annotationPrefix}/project-slug`]: `${owner}/${name}`,
+        [`${annotationPrefix}/project-slug`]: `${owner}/${name}`,
       };
     }
 

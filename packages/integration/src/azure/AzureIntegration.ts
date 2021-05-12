@@ -36,13 +36,6 @@ export class AzureIntegration implements ScmIntegration {
     return 'azure';
   }
 
-  /**
-   * The prefix used for entity metadata.annotations for the integration.
-   */
-  get annotationPrefix(): string {
-    return 'dev.azure.com';
-  }
-
   get title(): string {
     return this.integrationConfig.host;
   }

@@ -41,13 +41,6 @@ export class BitbucketIntegration implements ScmIntegration {
     return 'bitbucket';
   }
 
-  /**
-   * The prefix used for entity metadata.annotations for the integration.
-   */
-  get annotationPrefix(): string {
-    return 'bitbucket.org';
-  }
-
   get title(): string {
     return this.integrationConfig.host;
   }

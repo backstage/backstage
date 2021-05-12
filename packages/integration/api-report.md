@@ -9,7 +9,6 @@ import { Config } from '@backstage/config';
 // @public (undocumented)
 export class AzureIntegration implements ScmIntegration {
     constructor(integrationConfig: AzureIntegrationConfig);
-    get annotationPrefix(): string;
     // (undocumented)
     get config(): AzureIntegrationConfig;
     // (undocumented)
@@ -37,7 +36,6 @@ export type AzureIntegrationConfig = {
 // @public (undocumented)
 export class BitbucketIntegration implements ScmIntegration {
     constructor(integrationConfig: BitbucketIntegrationConfig);
-    get annotationPrefix(): string;
     // (undocumented)
     get config(): BitbucketIntegrationConfig;
     // (undocumented)
@@ -120,7 +118,6 @@ export class GithubCredentialsProvider {
 // @public (undocumented)
 export class GitHubIntegration implements ScmIntegration {
     constructor(integrationConfig: GitHubIntegrationConfig);
-    get annotationPrefix(): string;
     // (undocumented)
     get config(): GitHubIntegrationConfig;
     // (undocumented)
@@ -151,7 +148,6 @@ export type GitHubIntegrationConfig = {
 // @public (undocumented)
 export class GitLabIntegration implements ScmIntegration {
     constructor(integrationConfig: GitLabIntegrationConfig);
-    get annotationPrefix(): string;
     // (undocumented)
     get config(): GitLabIntegrationConfig;
     // (undocumented)
@@ -213,7 +209,6 @@ export function readGoogleGcsIntegrationConfig(config: Config): GoogleGcsIntegra
 
 // @public
 export interface ScmIntegration {
-    annotationPrefix: string;
     resolveEditUrl(url: string): string;
     resolveUrl(options: {
         url: string;

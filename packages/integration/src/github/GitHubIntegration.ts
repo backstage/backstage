@@ -38,13 +38,6 @@ export class GitHubIntegration implements ScmIntegration {
     return 'github';
   }
 
-  /**
-   * The prefix used for entity metadata.annotations for the integration.
-   */
-  get annotationPrefix(): string {
-    return 'github.com';
-  }
-
   get title(): string {
     return this.integrationConfig.host;
   }
