@@ -250,7 +250,8 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/source-location': 'github:my-github-1.com',
+          'backstage.io/source-location':
+            'github:https://my-github-1.com/org/repo/tree/master/',
         };
       });
 
@@ -271,7 +272,8 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/managed-by-location': 'github:my-github-2.com',
+          'backstage.io/managed-by-location':
+            'github:https://my-github-2.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
@@ -292,7 +294,8 @@ describe('github-deployments', () => {
         entity = entityStub;
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
-          'backstage.io/managed-by-location': 'github:my-github-3.com',
+          'backstage.io/managed-by-location':
+            'github:https://my-github-3.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
@@ -305,7 +308,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No apiBaseUrl available for host github:my-github-3.com, please check your integrations config',
+            'Warning: No apiBaseUrl available for host my-github-3.com, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
@@ -317,7 +320,7 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/managed-by-location':
-            'github:my-github-unknown.com/org/repo',
+            'github:https://my-github-unknown.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
@@ -330,7 +333,7 @@ describe('github-deployments', () => {
 
         expect(
           await rendered.findByText(
-            'Warning: No matching GitHub integration configuration for host github:my-github-unknown.com/org/repo, please check your integrations config',
+            'Warning: No matching GitHub integration configuration for host my-github-unknown.com, please check your integrations config',
           ),
         ).toBeInTheDocument();
       });
@@ -342,15 +345,15 @@ describe('github-deployments', () => {
         entity.entity.metadata.annotations = {
           'github.com/project-slug': 'org/repo',
           'backstage.io/source-location':
-            'url:my-favourite-url-location/org/repo',
+            'url:https://my-github-1.com/org/repo/tree/master/',
           'backstage.io/managed-by-location':
-            'url:my-favourite-url-location/org/repo',
+            'url:https://my-github-1.com/org/repo/blob/master/catalog-info.yaml',
         };
       });
 
-      it('displays fetched data using default github api', async () => {
+      it('should fetch data using custom api', async () => {
         worker.use(
-          GRAPHQL_GITHUB_API.query('deployments', (_, res, ctx) =>
+          GRAPHQL_CUSTOM_API_1.query('deployments', (_, res, ctx) =>
             res(ctx.data(responseStub)),
           ),
         );
