@@ -19,6 +19,7 @@ export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export { CatalogTable } from './components/CatalogTable';
 export * from './components/EntitySwitch';
+export { EntityTypePicker } from './components/EntityTypePicker';
 export { Router } from './components/Router';
 export {
   CatalogEntityPage,

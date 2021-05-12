@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { CatalogTable } from './CatalogTable';
+export { UserListPicker } from './UserListPicker';
