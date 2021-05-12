@@ -76,7 +76,7 @@ export function InDepth() {
             </Typography>
 
             <Typography variant="body2" color="textSecondary">
-              <strong>Longest release</strong>:{' '}
+              <strong>Lengthiest release</strong>:{' '}
               <LongestReleaseTime averageReleaseTime={averageReleaseTime} />
             </Typography>
           </Box>
