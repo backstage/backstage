@@ -123,7 +123,11 @@ export const UserListPicker = () => {
     isStarredEntity: isStarredEntity,
   };
 
-  const { filters, updateFilters, backendEntities } = useEntityListProvider();
+  const {
+    filters: { user: userFilter },
+    updateFilters,
+    backendEntities,
+  } = useEntityListProvider();
   function setSelectedFilter({ id }: { id: UserListFilterKind }) {
     updateFilters({ user: new UserListFilter(id) });
   }
@@ -158,7 +162,7 @@ export const UserListPicker = () => {
                   button
                   divider
                   onClick={() => setSelectedFilter(item)}
-                  selected={item.id === filters.user?.value}
+                  selected={item.id === userFilter?.value}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -167,7 +171,11 @@ export const UserListPicker = () => {
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    <Typography variant="body1" className={classes.menuTitle}>
+                    <Typography
+                      variant="body1"
+                      className={classes.menuTitle}
+                      data-testid={`user-picker-${item.id}`}
+                    >
                       {item.label}
                     </Typography>
                   </ListItemText>

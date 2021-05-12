@@ -70,7 +70,11 @@ export type EntityListContextProps<
    * Update one or more of the registered filters. Optional filters can be set to `undefined` to
    * reset the filter.
    */
-  updateFilters: (filters: Partial<EntityFilters>) => void;
+  updateFilters: (
+    filters:
+      | Partial<EntityFilters>
+      | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
+  ) => void;
 
   loading: boolean;
   error?: Error;
@@ -148,8 +152,17 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   }, [backendEntities, filterEnv, filters]);
 
   const updateFilters = useCallback(
-    (patch: Partial<EntityFilter>) =>
-      setFilters(prevFilters => ({ ...prevFilters, ...patch })),
+    (
+      update:
+        | Partial<EntityFilter>
+        | ((prevFilters: EntityFilters) => Partial<EntityFilters>),
+    ) => {
+      if (typeof update === 'function') {
+        setFilters(prevFilters => ({ ...prevFilters, ...update(prevFilters) }));
+      } else {
+        setFilters(prevFilters => ({ ...prevFilters, ...update }));
+      }
+    },
     [],
   );
 

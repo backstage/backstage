@@ -129,9 +129,9 @@ describe('CatalogPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { findByText, getByText } = renderWrapped(<CatalogPage />);
+    const { findByText, getByTestId } = renderWrapped(<CatalogPage />);
     expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
-    fireEvent.click(getByText(/All/));
+    fireEvent.click(getByTestId('user-picker-all'));
     expect(await findByText(/All \(2\)/)).toBeInTheDocument();
   });
   it('should set initial filter correctly', async () => {
@@ -143,21 +143,21 @@ describe('CatalogPage', () => {
   // this test is for fixing the bug after favoriting an entity, the matching entities defaulting
   // to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selectedfilter', async () => {
-    const { findByText, findAllByTitle, getByText } = renderWrapped(
+    const { findByText, findAllByTitle, getByTestId } = renderWrapped(
       <CatalogPage />,
     );
     expect(await findByText(/Owned \(1\)/)).toBeInTheDocument();
     expect(await findByText(/Starred/)).toBeInTheDocument();
-    fireEvent.click(getByText(/Starred/));
+    fireEvent.click(getByTestId('user-picker-starred'));
     expect(await findByText(/Starred \(0\)/)).toBeInTheDocument();
-    fireEvent.click(getByText(/All/));
+    fireEvent.click(getByTestId('user-picker-all'));
     expect(await findByText(/All \(2\)/)).toBeInTheDocument();
 
     const starredIcons = await findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
     expect(await findByText(/All \(2\)/)).toBeInTheDocument();
 
-    fireEvent.click(getByText(/Starred/));
+    fireEvent.click(getByTestId('user-picker-starred'));
     waitFor(() => expect(findByText(/Starred \(1\)/)).toBeInTheDocument());
   });
 });

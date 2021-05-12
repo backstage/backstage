@@ -14,54 +14,69 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { capitalize } from 'lodash';
+import { useAsync } from 'react-use';
 import { Box } from '@material-ui/core';
-import { Select, useApi } from '@backstage/core';
+import { alertApiRef, Select, useApi } from '@backstage/core';
 import {
   catalogApiRef,
+  DefaultEntityFilters,
   EntityTypeFilter,
   useEntityListProvider,
 } from '@backstage/plugin-catalog-react';
-import { Entity } from '@backstage/catalog-model';
 
 export const EntityTypePicker = () => {
   const catalogApi = useApi(catalogApiRef);
-  const { filters, updateFilters } = useEntityListProvider();
+  const alertApi = useApi(alertApiRef);
+
+  const {
+    filters: { kind: kindFilter, type: typeFilter },
+    updateFilters,
+  } = useEntityListProvider();
   const [types, setTypes] = useState<string[]>([]);
 
-  const kindFilter = filters.kind?.value;
+  const kind = useMemo(() => kindFilter?.value, [kindFilter]);
 
   // Load all valid spec.type values straight from the catalogApi - we want the full set for the
   // selected kinds, not an otherwise filtered set.
-  useEffect(() => {
-    async function loadTypesForKinds() {
-      if (kindFilter) {
-        const response = await catalogApi.getEntities({
-          filter: { kind: kindFilter },
+  const { error, value: entities } = useAsync(async () => {
+    if (kind) {
+      const items = await catalogApi
+        .getEntities({
+          filter: { kind },
           fields: ['spec.type'],
-        });
-        const entities: Entity[] = response.items ?? [];
-        const newTypes = [
-          ...new Set(
-            entities.map(e => e.spec?.type).filter(Boolean) as string[],
-          ),
-        ].sort();
-        setTypes(newTypes);
-
-        if (filters.type && !newTypes.includes(filters.type.value)) {
-          updateFilters({ type: undefined });
-        }
-      }
+        })
+        .then(response => response.items);
+      return items;
     }
-    loadTypesForKinds();
-  }, [filters.type, catalogApi, kindFilter, updateFilters]);
+    return [];
+  }, [kind, catalogApi]);
 
-  const onChange = (value: any) => {
-    updateFilters({ type: new EntityTypeFilter(value) });
-  };
+  useEffect(() => {
+    const newTypes = [
+      ...new Set(
+        (entities ?? []).map(e => e.spec?.type).filter(Boolean) as string[],
+      ),
+    ].sort();
+    setTypes(newTypes);
 
-  if (!kindFilter) return null;
+    updateFilters((oldFilters: DefaultEntityFilters) =>
+      oldFilters.type && !newTypes.includes(oldFilters.type.value)
+        ? { type: undefined }
+        : {},
+    );
+  }, [updateFilters, entities]);
+
+  if (!types) return null;
+
+  if (error) {
+    alertApi.post({
+      message: `Failed to load types for ${kind}`,
+      severity: 'error',
+    });
+    return null;
+  }
 
   const items = [
     { value: 'all', label: 'All' },
@@ -71,12 +86,16 @@ export const EntityTypePicker = () => {
     })),
   ];
 
+  const onChange = (value: any) => {
+    updateFilters({ type: new EntityTypeFilter(value) });
+  };
+
   return (
     <Box pb={1} pt={1}>
       <Select
         label="Type"
         items={items}
-        selected={filters.type?.value ?? 'all'}
+        selected={typeFilter?.value ?? 'all'}
         onChange={onChange}
       />
     </Box>
