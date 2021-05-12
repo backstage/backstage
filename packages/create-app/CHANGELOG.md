@@ -1,5 +1,52 @@
 # @backstage/create-app
 
+## 0.3.22
+
+### Patch Changes
+
+- 3be844496: chore: bump `ts-node` versions to 9.1.1
+- Updated dependencies [062bbf90f]
+- Updated dependencies [2cd70e164]
+- Updated dependencies [0b033d07b]
+- Updated dependencies [3be844496]
+- Updated dependencies [5542de095]
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [82ca1ac22]
+- Updated dependencies [81ef1d57b]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [e3fc89df6]
+- Updated dependencies [9a207f052]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [fd39d4662]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/test-utils@0.1.11
+  - @backstage/plugin-api-docs@0.4.13
+  - @backstage/plugin-catalog@0.5.7
+  - @backstage/plugin-catalog-import@0.5.6
+  - @backstage/plugin-explore@0.3.5
+  - @backstage/plugin-github-actions@0.4.6
+  - @backstage/plugin-lighthouse@0.2.16
+  - @backstage/plugin-scaffolder@0.9.4
+  - @backstage/plugin-scaffolder-backend@0.11.1
+  - @backstage/plugin-search@0.3.6
+  - @backstage/plugin-tech-radar@0.3.11
+  - @backstage/plugin-techdocs@0.9.2
+  - @backstage/plugin-user-settings@0.2.10
+  - @backstage/cli@0.6.11
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+  - @backstage/plugin-catalog-backend@0.9.0
+  - @backstage/plugin-app-backend@0.3.13
+  - @backstage/plugin-auth-backend@0.3.10
+  - @backstage/plugin-proxy-backend@0.2.8
+  - @backstage/plugin-rollbar-backend@0.1.11
+  - @backstage/plugin-techdocs-backend@0.8.1
+
 ## 0.3.21
 
 ### Patch Changes

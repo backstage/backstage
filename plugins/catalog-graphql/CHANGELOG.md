@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-graphql
 
+## 0.2.9
+
+### Patch Changes
+
+- 3be844496: chore: bump `ts-node` versions to 9.1.1
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
 ## 0.2.8
 
 ### Patch Changes
