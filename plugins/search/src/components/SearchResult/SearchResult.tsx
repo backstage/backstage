@@ -21,21 +21,15 @@ import {
   TableColumn,
   useApi,
 } from '@backstage/core';
-import {
-  Divider,
-  Grid,
-  makeStyles,
-  Typography,
-  Button,
-} from '@material-ui/core';
+import { Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import ExportIcon from '@material-ui/icons/GetApp';
 
 import React, { useEffect, useState } from 'react';
 import { useAsync } from 'react-use';
 import { Result, SearchResults, searchApiRef } from '../../apis';
 
 import { Filters, FiltersButton, FiltersState } from '../Filters';
+import { SearchExport } from '../SearchExport';
 
 const useStyles = makeStyles(theme => ({
   searchQuery: {
@@ -52,17 +46,8 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(0, 2),
     padding: theme.spacing(2, 0),
   },
-  exportMenu: {
-    position: 'absolute',
-    top: '25px',
-    right: '25px',
-    zIndex: 1,
-  },
   tableContainer: {
     position: 'relative',
-  },
-  exportIcon: {
-    fontSize: '19px',
   },
 }));
 
@@ -147,73 +132,17 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
 
   const [filteredResults, setFilteredResults] = useState<SearchResults>([]);
 
-  const toCSV = (objArray: any[]) => {
-    const formatResults = (results: Array<Result>) =>
-      results.map(result => ({
-        name: result.name,
-        description: result.description,
-        owner: result.owner,
-        kind: result.kind,
-        lifecycle: result.lifecycle,
-        url: result.url,
-      }));
-    objArray.splice(0, 0, {
-      name: 'Name',
-      description: 'Description',
-      owner: 'Owner',
-      kind: 'Kind',
-      lifecycle: 'Lifecycle',
-      url: 'URL',
-    });
-    const formattedArray = formatResults(objArray);
-    const array =
-      typeof formattedArray !== 'object'
-        ? JSON.parse(formattedArray)
-        : formattedArray;
-    let str = '';
-
-    for (let i = 0; i < array.length; i++) {
-      let line = '';
-      for (const key in array[i]) {
-        if (array[i].hasOwnProperty(key)) {
-          if (line !== '') line += ',';
-          line += array[i][key];
-        }
-      }
-      str += `${line}\r\n`;
-    }
-
-    return str;
-  };
-
-  const convertor = (JSONData: any[]) => {
-    if (!JSONData?.length) {
-      return;
-    }
-
-    const values = toCSV(JSONData);
-    const reportTitle = `csv_globalSearch_${new Date().getTime()}`;
-    const fileName = reportTitle.replace(/ /g, '_');
-    const uri = `data:text/csv;charset=utf-8,${escape(values)}`;
-    const link = document.createElement('a');
-
-    link.href = uri;
-    link.style.visibility = 'hidden';
-    link.download = `${fileName}.csv`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleExportClick = () => {
-    convertor(filteredResults);
-  };
-
   const { loading, error, value: results } = useAsync(() => {
     return searchApi.getSearchResult();
   }, []);
-
+  const csvHeaders = [
+    'name',
+    'description',
+    'owner',
+    'kind',
+    'lifecycle',
+    'url',
+  ];
   useEffect(() => {
     if (results) {
       let withFilters = results;
@@ -327,15 +256,7 @@ export const SearchResult = ({ searchQuery }: SearchResultProps) => {
           </Grid>
         )}
         <Grid item xs={showFilters ? 9 : 12} className={classes.tableContainer}>
-          <div className={classes.exportMenu}>
-            <Button
-              aria-controls="fade-menu"
-              aria-haspopup="true"
-              onClick={() => handleExportClick()}
-            >
-              <ExportIcon className={classes.exportIcon} /> Export
-            </Button>
-          </div>
+          <SearchExport results={filteredResults} headers={csvHeaders} />
           <Table
             options={{ paging: true, pageSize: 20, search: false }}
             data={filteredResults}
