@@ -21,6 +21,7 @@ export {
   useEntityListProvider,
 } from './useEntityListProvider';
 export type { DefaultEntityFilters } from './useEntityListProvider';
+export { useEntityTypeFilter } from './useEntityTypeFilter';
 export { useOwnUser } from './useOwnUser';
 export { useRelatedEntities } from './useRelatedEntities';
 export { useStarredEntities } from './useStarredEntities';
