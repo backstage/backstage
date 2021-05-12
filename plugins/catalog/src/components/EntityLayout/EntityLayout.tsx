@@ -28,6 +28,7 @@ import {
   Page,
   Progress,
   RoutedTabs,
+  useCatalogConfig,
 } from '@backstage/core';
 import {
   EntityContext,
@@ -194,6 +195,7 @@ export const EntityLayout = ({
 }: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
+  const { apiMenu } = useCatalogConfig();
 
   const routes = createSubRoutesFromChildren(children, entity);
   const { headerTitle, headerType } = headerProps(
@@ -219,7 +221,7 @@ export const EntityLayout = ({
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {entity && (
+        {entity && apiMenu && (
           <>
             <EntityLabels entity={entity} />
             <EntityContextMenu

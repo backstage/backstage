@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-export { useQueryParamState } from './useQueryParamState';
-export { useSupportConfig } from './useSupportConfig';
-export { useCatalogConfig } from './useCatalogConfig';
-export type {
-  SupportConfig,
-  SupportItem,
-  SupportItemLink,
-} from './useSupportConfig';
+import { useApi, configApiRef } from '@backstage/core-api';
+
+export type CatalogConfig = {
+  apiMenu: boolean;
+};
+
+const DEFAULT_CATALOG_CONFIG: CatalogConfig = {
+  apiMenu: true,
+};
+
+export function useCatalogConfig(): CatalogConfig {
+  const config = useApi(configApiRef);
+  const catalogConfig = config.getOptionalConfig('app.catalog');
+
+  if (!catalogConfig) {
+    return DEFAULT_CATALOG_CONFIG;
+  }
+
+  return {
+    apiMenu: catalogConfig?.getBoolean('apiMenu'),
+  };
+}

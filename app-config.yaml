@@ -21,6 +21,8 @@ app:
         links:
           - url: https://discord.gg/MUpMjP2
             title: '#backstage'
+  catalog:
+    apiMenu: true
 
 backend:
   baseUrl: http://localhost:7000

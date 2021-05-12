@@ -65,6 +65,16 @@ export interface Config {
         }[];
       }[];
     };
+    /**
+     * Catalog configuration
+     */
+    catalog?: {
+      /**
+       * The menu visibility for all api.
+       * @visibility frontend
+       */
+      apiMenu: boolean;
+    };
   };
 
   /**
