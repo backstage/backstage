@@ -62,7 +62,6 @@ PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackag
 
 const DOCUMENTED_PACKAGES = [
   'packages/backend-common',
-  'packages/backend-testing',
   'packages/catalog-client',
   'packages/catalog-model',
   'packages/cli-common',
