@@ -15,7 +15,7 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabases } from '@backstage/backend-testing';
+import { Knex } from 'knex';
 import { DatabaseManager } from './database/DatabaseManager';
 import {
   DbRefreshStateReferencesRow,
@@ -26,200 +26,181 @@ import { DbSearchRow } from './search';
 import { DbFinalEntitiesRow, Stitcher } from './Stitcher';
 
 describe('Stitcher', () => {
-  const databases = TestDatabases.create();
+  let db: Knex;
   const logger = getVoidLogger();
 
-  it.each([
-    ['POSTGRES_13'],
-    ['POSTGRES_9'],
-    ['SQLITE_3'],
-    // TODO(freben): mysql:8 is not ready to use yet
-  ] as const)(
-    'runs the happy path for %p',
-    async databaseId => {
-      const db = await databases.init(databaseId);
-      await DatabaseManager.createDatabase(db);
+  beforeEach(async () => {
+    db = await DatabaseManager.createTestDatabaseConnection();
+    await DatabaseManager.createDatabase(db);
+  });
 
-      const stitcher = new Stitcher(db, logger);
+  it('runs the happy path', async () => {
+    const stitcher = new Stitcher(db, logger);
 
-      await db.transaction(async tx => {
-        await tx<DbRefreshStateRow>('refresh_state').insert([
+    await db.transaction(async tx => {
+      await tx<DbRefreshStateRow>('refresh_state').insert([
+        {
+          entity_id: 'my-id',
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: JSON.stringify({}),
+          processed_entity: JSON.stringify({
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'n',
+              namespace: 'ns',
+            },
+            spec: {
+              k: 'v',
+            },
+          }),
+          errors: '[]',
+          next_update_at: tx.fn.now(),
+          last_discovery_at: tx.fn.now(),
+        },
+      ]);
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references').insert([
+        { source_key: 'a', target_entity_ref: 'k:ns/n' },
+      ]);
+      await tx<DbRelationsRow>('relations').insert([
+        {
+          originating_entity_id: 'my-id',
+          source_entity_ref: 'k:ns/n',
+          type: 'looksAt',
+          target_entity_ref: 'k:ns/other',
+        },
+      ]);
+    });
+
+    await stitcher.stitch(new Set(['k:ns/n']));
+
+    let firstHash: string;
+    await db.transaction(async tx => {
+      const entities = await tx<DbFinalEntitiesRow>('final_entities');
+
+      expect(entities.length).toBe(1);
+      const entity = JSON.parse(entities[0].final_entity);
+      expect(entity).toEqual({
+        relations: [
           {
-            entity_id: 'my-id',
-            entity_ref: 'k:ns/n',
-            unprocessed_entity: JSON.stringify({}),
-            processed_entity: JSON.stringify({
-              apiVersion: 'a',
+            type: 'looksAt',
+            target: {
               kind: 'k',
-              metadata: {
-                name: 'n',
-                namespace: 'ns',
-              },
-              spec: {
-                k: 'v',
-              },
-            }),
-            errors: '[]',
-            next_update_at: tx.fn.now(),
-            last_discovery_at: tx.fn.now(),
+              namespace: 'ns',
+              name: 'other',
+            },
           },
-        ]);
-        await tx<DbRefreshStateReferencesRow>(
-          'refresh_state_references',
-        ).insert([{ source_key: 'a', target_entity_ref: 'k:ns/n' }]);
-        await tx<DbRelationsRow>('relations').insert([
+        ],
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: {
+          name: 'n',
+          namespace: 'ns',
+          etag: expect.any(String),
+          generation: 1,
+          uid: 'my-id',
+        },
+        spec: {
+          k: 'v',
+        },
+      });
+
+      expect(entity.metadata.etag).toEqual(entities[0].hash);
+      firstHash = entities[0].hash;
+
+      const search = await tx<DbSearchRow>('search');
+      expect(search).toEqual(
+        expect.arrayContaining([
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
+          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
+          { entity_id: 'my-id', key: 'kind', value: 'k' },
+          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
+          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
+          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
+          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+        ]),
+      );
+    });
+
+    // Re-stitch without any changes
+    await stitcher.stitch(new Set(['k:ns/n']));
+
+    await db.transaction(async tx => {
+      const entities = await tx<DbFinalEntitiesRow>('final_entities');
+      expect(entities.length).toBe(1);
+      const entity = JSON.parse(entities[0].final_entity);
+      expect(entities[0].hash).toEqual(firstHash);
+      expect(entity.metadata.etag).toEqual(firstHash);
+    });
+
+    // Now add one more relation and re-stitch
+    await db.transaction(async tx => {
+      await tx<DbRelationsRow>('relations').insert([
+        {
+          originating_entity_id: 'my-id',
+          source_entity_ref: 'k:ns/n',
+          type: 'looksAt',
+          target_entity_ref: 'k:ns/third',
+        },
+      ]);
+    });
+
+    await stitcher.stitch(new Set(['k:ns/n']));
+
+    await db.transaction(async tx => {
+      const entities = await tx<DbFinalEntitiesRow>('final_entities');
+
+      expect(entities.length).toBe(1);
+      const entity = JSON.parse(entities[0].final_entity);
+      expect(entity).toEqual({
+        relations: expect.arrayContaining([
           {
-            originating_entity_id: 'my-id',
-            source_entity_ref: 'k:ns/n',
             type: 'looksAt',
-            target_entity_ref: 'k:ns/other',
-          },
-        ]);
-      });
-
-      await stitcher.stitch(new Set(['k:ns/n']));
-
-      let firstHash: string;
-      await db.transaction(async tx => {
-        const entities = await tx<DbFinalEntitiesRow>('final_entities');
-
-        expect(entities.length).toBe(1);
-        const entity = JSON.parse(entities[0].final_entity);
-        expect(entity).toEqual({
-          relations: [
-            {
-              type: 'looksAt',
-              target: {
-                kind: 'k',
-                namespace: 'ns',
-                name: 'other',
-              },
+            target: {
+              kind: 'k',
+              namespace: 'ns',
+              name: 'other',
             },
-          ],
-          apiVersion: 'a',
-          kind: 'k',
-          metadata: {
-            name: 'n',
-            namespace: 'ns',
-            etag: expect.any(String),
-            generation: 1,
-            uid: 'my-id',
           },
-          spec: {
-            k: 'v',
-          },
-        });
-
-        expect(entity.metadata.etag).toEqual(entities[0].hash);
-        firstHash = entities[0].hash;
-
-        const search = await tx<DbSearchRow>('search');
-        expect(search).toEqual(
-          expect.arrayContaining([
-            {
-              entity_id: 'my-id',
-              key: 'relations.looksat',
-              value: 'k:ns/other',
-            },
-            { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-            { entity_id: 'my-id', key: 'kind', value: 'k' },
-            { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-            { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-            { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-            { entity_id: 'my-id', key: 'spec.k', value: 'v' },
-          ]),
-        );
-      });
-
-      // Re-stitch without any changes
-      await stitcher.stitch(new Set(['k:ns/n']));
-
-      await db.transaction(async tx => {
-        const entities = await tx<DbFinalEntitiesRow>('final_entities');
-        expect(entities.length).toBe(1);
-        const entity = JSON.parse(entities[0].final_entity);
-        expect(entities[0].hash).toEqual(firstHash);
-        expect(entity.metadata.etag).toEqual(firstHash);
-      });
-
-      // Now add one more relation and re-stitch
-      await db.transaction(async tx => {
-        await tx<DbRelationsRow>('relations').insert([
           {
-            originating_entity_id: 'my-id',
-            source_entity_ref: 'k:ns/n',
             type: 'looksAt',
-            target_entity_ref: 'k:ns/third',
+            target: {
+              kind: 'k',
+              namespace: 'ns',
+              name: 'third',
+            },
           },
-        ]);
+        ]),
+        apiVersion: 'a',
+        kind: 'k',
+        metadata: {
+          name: 'n',
+          namespace: 'ns',
+          etag: expect.any(String),
+          generation: 1,
+          uid: 'my-id',
+        },
+        spec: {
+          k: 'v',
+        },
       });
 
-      await stitcher.stitch(new Set(['k:ns/n']));
+      expect(entities[0].hash).not.toEqual(firstHash);
+      expect(entities[0].hash).toEqual(entity.metadata.etag);
 
-      await db.transaction(async tx => {
-        const entities = await tx<DbFinalEntitiesRow>('final_entities');
-
-        expect(entities.length).toBe(1);
-        const entity = JSON.parse(entities[0].final_entity);
-        expect(entity).toEqual({
-          relations: expect.arrayContaining([
-            {
-              type: 'looksAt',
-              target: {
-                kind: 'k',
-                namespace: 'ns',
-                name: 'other',
-              },
-            },
-            {
-              type: 'looksAt',
-              target: {
-                kind: 'k',
-                namespace: 'ns',
-                name: 'third',
-              },
-            },
-          ]),
-          apiVersion: 'a',
-          kind: 'k',
-          metadata: {
-            name: 'n',
-            namespace: 'ns',
-            etag: expect.any(String),
-            generation: 1,
-            uid: 'my-id',
-          },
-          spec: {
-            k: 'v',
-          },
-        });
-
-        expect(entities[0].hash).not.toEqual(firstHash);
-        expect(entities[0].hash).toEqual(entity.metadata.etag);
-
-        const search = await tx<DbSearchRow>('search');
-        expect(search).toEqual(
-          expect.arrayContaining([
-            {
-              entity_id: 'my-id',
-              key: 'relations.looksat',
-              value: 'k:ns/other',
-            },
-            {
-              entity_id: 'my-id',
-              key: 'relations.looksat',
-              value: 'k:ns/third',
-            },
-            { entity_id: 'my-id', key: 'apiversion', value: 'a' },
-            { entity_id: 'my-id', key: 'kind', value: 'k' },
-            { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
-            { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
-            { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
-            { entity_id: 'my-id', key: 'spec.k', value: 'v' },
-          ]),
-        );
-      });
-    },
-    30000,
-  );
+      const search = await tx<DbSearchRow>('search');
+      expect(search).toEqual(
+        expect.arrayContaining([
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/other' },
+          { entity_id: 'my-id', key: 'relations.looksat', value: 'k:ns/third' },
+          { entity_id: 'my-id', key: 'apiversion', value: 'a' },
+          { entity_id: 'my-id', key: 'kind', value: 'k' },
+          { entity_id: 'my-id', key: 'metadata.name', value: 'n' },
+          { entity_id: 'my-id', key: 'metadata.namespace', value: 'ns' },
+          { entity_id: 'my-id', key: 'metadata.uid', value: 'my-id' },
+          { entity_id: 'my-id', key: 'spec.k', value: 'v' },
+        ]),
+      );
+    });
+  });
 });
