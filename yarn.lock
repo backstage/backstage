@@ -24415,9 +24415,9 @@ store2@^2.7.1:
   integrity sha512-tWEpK0snS2RPUq1i3R6OahfJNjWCQYNxq0+by1amCSuw0mXtymJpzmZIeYpA1UAa+7B0grCpNYIbDcd7AgTbFg==
 
 storybook-dark-mode@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/storybook-dark-mode/-/storybook-dark-mode-1.0.3.tgz#8d58a874b6107ff1a7f29ebb0e6726b8036eee08"
-  integrity sha512-mjHLrv/dwtqKmbOoQ2CMtGKDttWSnUybutujsIPxLcEC77EujjWiRBFv46LtXAZEyZLm8sGFUz0s6HJJfJ3tSw==
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/storybook-dark-mode/-/storybook-dark-mode-1.0.8.tgz#bbd64b382fd62d38685fdd769e2cac4e32ec293d"
+  integrity sha512-uY6yTSd1vYE0YwlON50u+iIoNF/fmMj59ww1cpd/naUcmOmCjwawViKFG5YjichwdR/yJ5ybWRUF0tnRQfaSiw==
   dependencies:
     fast-deep-equal "^3.0.0"
     memoizerific "^1.11.3"
