@@ -19,7 +19,6 @@ import {
   resolvePackagePath,
   UrlReader,
 } from '@backstage/backend-common';
-import fs from 'fs-extra';
 import {
   DefaultNamespaceEntityPolicy,
   EntityPolicies,
@@ -39,6 +38,7 @@ import {
   EntitiesCatalog,
   LocationsCatalog,
 } from '../catalog';
+import { CommonDatabase } from '../database/CommonDatabase';
 import {
   AnnotateLocationEntityProcessor,
   BitbucketDiscoveryProcessor,
@@ -53,7 +53,6 @@ import {
   MicrosoftGraphOrgReaderProcessor,
   PlaceholderProcessor,
   PlaceholderResolver,
-  StaticLocationProcessor,
   UrlReaderProcessor,
 } from '../ingestion';
 import { RepoLocationAnalyzer } from '../ingestion/LocationAnalyzer';
@@ -64,16 +63,15 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
+import { CatalogProcessingEngine, LocationService } from '../next/types';
+import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
+import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
-import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
-import { DatabaseLocationProvider } from '../next/DatabaseLocationProvider';
+import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
-import { DefaultProcessingStateManager } from './DefaultProcessingStateManager';
-import { CatalogProcessingEngine } from '../next/types';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
 import { Stitcher } from './Stitcher';
-import { CommonDatabase } from '../database/CommonDatabase';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -236,6 +234,7 @@ export class NextCatalogBuilder {
     locationsCatalog: LocationsCatalog;
     locationAnalyzer: LocationAnalyzer;
     processingEngine: CatalogProcessingEngine;
+    locationService: LocationService;
   }> {
     const { config, database, logger } = this.env;
 
@@ -244,23 +243,16 @@ export class NextCatalogBuilder {
     const parser = this.parser || defaultEntityDataParser;
 
     const dbClient = await database.getClient();
-    const allMigrations = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrations',
-    );
-
-    const migrationsDir = resolvePackagePath(
-      '@backstage/plugin-catalog-backend',
-      'migrationsv2',
-    );
-    await fs.copy(allMigrations, migrationsDir);
     await dbClient.migrate.latest({
-      directory: migrationsDir,
+      directory: resolvePackagePath(
+        '@backstage/plugin-catalog-backend',
+        'migrationsv2',
+      ),
     });
+
     const db = new CommonDatabase(dbClient, logger);
 
     const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
-    const stateManager = new DefaultProcessingStateManager(processingDatabase);
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
@@ -271,25 +263,29 @@ export class NextCatalogBuilder {
     });
     const entitiesCatalog = new NextEntitiesCatalog(dbClient);
 
-    const locationStore = new DefaultLocationStore(db);
-    const dbLocationProvider = new DatabaseLocationProvider(locationStore);
+    const locationStore = new DefaultLocationStore(dbClient);
     const stitcher = new Stitcher(dbClient, logger);
+    const configLocationProvider = new ConfigLocationEntityProvider(config);
     const processingEngine = new DefaultCatalogProcessingEngine(
       logger,
-      [dbLocationProvider], // entityproviders
-      stateManager,
+      [locationStore, configLocationProvider],
+      processingDatabase,
       orchestrator,
       stitcher,
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
     const locationAnalyzer = new RepoLocationAnalyzer(logger);
-
+    const locationService = new DefaultLocationService(
+      locationStore,
+      orchestrator,
+    );
     return {
       entitiesCatalog,
       locationsCatalog,
       locationAnalyzer,
       processingEngine,
+      locationService,
     };
   }
 
@@ -324,7 +320,6 @@ export class NextCatalogBuilder {
 
     // These are always there no matter what
     const processors: CatalogProcessor[] = [
-      StaticLocationProcessor.fromConfig(config),
       new PlaceholderProcessor({ resolvers: placeholderResolvers, reader }),
       new BuiltinKindsEntityProcessor(),
     ];
@@ -340,7 +335,6 @@ export class NextCatalogBuilder {
         MicrosoftGraphOrgReaderProcessor.fromConfig(config, { logger }),
         new UrlReaderProcessor({ reader, logger }),
         CodeOwnersProcessor.fromConfig(config, { logger, reader }),
-        //        new LocationEntityProcessor({ integrations }),
         new AnnotateLocationEntityProcessor({ integrations }),
       );
     }

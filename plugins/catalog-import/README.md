@@ -18,8 +18,8 @@ Some features are not yet available for all supported Git providers.
 1. Install the Catalog Import Plugin:
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-catalog-import
 ```
 

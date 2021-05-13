@@ -13,8 +13,8 @@ The GitHub Deployments Plugin displays recent deployments from GitHub.
 1. Install the GitHub Deployments Plugin.
 
 ```bash
-# packages/app
-
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-github-deployments
 ```
 
@@ -51,4 +51,20 @@ spec:
   type: library
   owner: CNCF
   lifecycle: experimental
+```
+
+### Self-hosted / Enterprise GitHub
+
+The plugin will try to use `backstage.io/source-location` or `backstage.io/managed-by-location`
+annotations to figure out the location of the source code.
+
+1. Add the `host` and `apiBaseUrl` to your `app-config.yaml`
+
+```yaml
+# app-config.yaml
+
+integrations:
+  github:
+    - host: 'your-github-host.com'
+      apiBaseUrl: 'https://api.your-github-host.com'
 ```

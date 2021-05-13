@@ -16,6 +16,11 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { LocationSpec } from '@backstage/catalog-model';
+import {
+  GitHubIntegration,
+  ScmIntegrations,
+  ScmIntegrationsGroup,
+} from '@backstage/integration';
 import { GithubOrgReaderProcessor, parseUrl } from './GithubOrgReaderProcessor';
 
 describe('GithubOrgReaderProcessor', () => {
@@ -29,6 +34,20 @@ describe('GithubOrgReaderProcessor', () => {
   });
 
   describe('implementation', () => {
+    let integrations: ScmIntegrations;
+    let github: jest.Mocked<ScmIntegrationsGroup<GitHubIntegration>>;
+
+    beforeEach(() => {
+      github = {
+        byHost: jest.fn(),
+        byUrl: jest.fn(),
+        list: jest.fn(),
+      };
+      integrations = ({
+        github,
+      } as Partial<ScmIntegrations>) as ScmIntegrations;
+    });
+
     it('rejects unknown types', async () => {
       const processor = new GithubOrgReaderProcessor({
         providers: [
@@ -37,6 +56,7 @@ describe('GithubOrgReaderProcessor', () => {
             apiBaseUrl: 'https://api.github.com',
           },
         ],
+        integrations,
         logger: getVoidLogger(),
       });
       const location: LocationSpec = {
@@ -48,7 +68,7 @@ describe('GithubOrgReaderProcessor', () => {
       ).resolves.toBeFalsy();
     });
 
-    it('rejects unknown targets', async () => {
+    it('rejects unknown targets from providers', async () => {
       const processor = new GithubOrgReaderProcessor({
         providers: [
           {
@@ -56,6 +76,24 @@ describe('GithubOrgReaderProcessor', () => {
             apiBaseUrl: 'https://api.github.com',
           },
         ],
+        integrations,
+        logger: getVoidLogger(),
+      });
+      const location: LocationSpec = {
+        type: 'github-org',
+        target: 'https://not.github.com/apa',
+      };
+      await expect(
+        processor.readLocation(location, false, () => {}),
+      ).rejects.toThrow(
+        /There is no GitHub Org provider that matches https:\/\/not.github.com\/apa/,
+      );
+    });
+
+    it('rejects unknown targets from integrations', async () => {
+      const processor = new GithubOrgReaderProcessor({
+        providers: [],
+        integrations,
         logger: getVoidLogger(),
       });
       const location: LocationSpec = {

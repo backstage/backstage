@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-react
 
+## 0.1.6
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/catalog-model@0.7.9
+
+## 0.1.5
+
+### Patch Changes
+
+- 81c54d1f2: Fetch relations in batches in `useRelatedEntities`
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/core@0.7.8
+  - @backstage/catalog-model@0.7.8
+  - @backstage/catalog-client@0.3.11
+
 ## 0.1.4
 
 ### Patch Changes

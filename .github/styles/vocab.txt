@@ -41,8 +41,10 @@ Kaewkasi
 Knex
 Leasot
 Lerna
+LocalStack
 Luxon
 Minikube
+Minio
 Mkdocs
 Monorepo
 Namespaces
@@ -165,6 +167,7 @@ mailto
 maintainership
 makefile
 md
+memcache
 microsite
 middleware
 minikube
@@ -175,6 +178,7 @@ mkdocs
 monorepo
 monorepos
 msw
+mysql
 namespace
 namespaced
 namespaces

@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-backend
 
+## 0.9.0
+
+### Minor Changes
+
+- 9a207f052: Port `GithubOrgReaderProcessor` to support configuration via
+  [`integrations`](https://backstage.io/docs/integrations/github/locations) in
+  addition to [`catalog.processors.githubOrg.providers`](https://backstage.io/docs/integrations/github/org#configuration).
+  The `integrations` package supports authentication with both personal access
+  tokens and GitHub apps.
+
+  This deprecates the `catalog.processors.githubOrg.providers` configuration.
+  A [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
+  for the same host takes precedence over the provider configuration.
+  You might need to add additional scopes for the credentials.
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.8.2
+
+### Patch Changes
+
+- b219821a0: Expose `BitbucketRepositoryParser` introduced in [#5295](https://github.com/backstage/backstage/pull/5295)
+- 227439a72: Add support for non-organization accounts in GitHub Discovery
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.8.1
+
+### Patch Changes
+
+- a99e0bc42: Entity lifecycle and owner are now indexed by the `DefaultCatalogCollator`. A `locationTemplate` may now optionally be provided to its constructor to reflect a custom catalog entity path in the Backstage frontend.
+- Updated dependencies [e1e757569]
+  - @backstage/plugin-search-backend-node@0.1.4
+
 ## 0.8.0
 
 ### Minor Changes

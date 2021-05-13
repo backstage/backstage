@@ -1,5 +1,67 @@
 # @backstage/plugin-techdocs
 
+## 0.9.2
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/plugin-catalog-react@0.1.6
+  - @backstage/catalog-model@0.7.9
+
+## 0.9.1
+
+### Patch Changes
+
+- 2e05277e0: Fix navigation in a page using the table of contents.
+- 4075c6367: Make git config optional for techdocs feedback links
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [81c54d1f2]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [d8b81fd28]
+  - @backstage/integration@0.5.2
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-react@0.1.5
+  - @backstage/theme@0.2.7
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.9.0
+
+### Minor Changes
+
+- 21fddf452: Make `techdocsStorageApiRef` and `techdocsApiRef` use interfaces instead of the
+  actual implementation classes.
+
+  This renames the classes `TechDocsApi` to `TechDocsClient` and `TechDocsStorageApi`
+  to `TechDocsStorageClient` and renames the interfaces `TechDocs` to `TechDocsApi`
+  and `TechDocsStorage` to `TechDocsStorageApi` to comply the pattern elsewhere in
+  the project. This also fixes the types returned by some methods on those
+  interfaces.
+
+### Patch Changes
+
+- 6fbd7beca: Use `EntityRefLink` in header and use relations to reference the owner of the
+  document.
+- 15cbe6815: Fix TechDocs landing page table wrong copied link
+- 39bdaa004: Add customization and exportable components for TechDocs landing page
+- cb8c848a3: Disable color transitions on links to avoid issues in dark mode.
+- 17915e29b: Rework state management to avoid rendering multiple while navigating between pages.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
 ## 0.8.0
 
 ### Minor Changes

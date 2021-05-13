@@ -12,11 +12,11 @@ import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
-import { Format } from 'logform';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import * as http from 'http';
+import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { MergeResult } from 'isomorphic-git';
@@ -63,8 +63,27 @@ export class BitbucketUrlReader implements UrlReader {
     toString(): string;
 }
 
+// @public
+export interface CacheClient {
+    delete(key: string): Promise<void>;
+    get(key: string): Promise<JsonValue | undefined>;
+    set(key: string, value: JsonValue, options?: CacheSetOptions): Promise<void>;
+}
+
+// @public
+export class CacheManager {
+    forPlugin(pluginId: string): PluginCacheManager;
+    static fromConfig(config: Config): CacheManager;
+    }
+
 // @public (undocumented)
-export const coloredFormat: Format;
+export const coloredFormat: winston.Logform.Format;
+
+// @public (undocumented)
+export interface ContainerRunner {
+    // (undocumented)
+    runContainer(opts: RunContainerOptions): Promise<void>;
+}
 
 // @public @deprecated
 export const createDatabase: typeof createDatabaseClient;
@@ -80,6 +99,15 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
 
 // @public (undocumented)
 export function createStatusCheckRouter(options: StatusCheckRouterOptions): Promise<express.Router>;
+
+// @public (undocumented)
+export class DockerContainerRunner implements ContainerRunner {
+    constructor({ dockerClient }: {
+        dockerClient: Docker;
+    });
+    // (undocumented)
+    runContainer({ imageName, command, args, logStream, mountDirs, workingDir, envVars, }: RunContainerOptions): Promise<void>;
+}
 
 // @public
 export function ensureDatabaseExists(dbConfig: Config, ...databases: Array<string>): Promise<void>;
@@ -225,6 +253,11 @@ export function loadBackendConfig(options: Options): Promise<Config>;
 export function notFoundHandler(): RequestHandler;
 
 // @public
+export type PluginCacheManager = {
+    getClient: (options?: ClientOptions) => CacheClient;
+};
+
+// @public
 export interface PluginDatabaseManager {
     getClient(): Promise<Knex>;
 }
@@ -256,10 +289,15 @@ export function requestLoggingHandler(logger?: Logger): RequestHandler;
 export function resolvePackagePath(name: string, ...paths: string[]): string;
 
 // @public (undocumented)
-export const runDockerContainer: ({ imageName, args, logStream, dockerClient, mountDirs, workingDir, envVars, createOptions, }: RunDockerContainerOptions) => Promise<{
-    error: any;
-    statusCode: any;
-}>;
+export type RunContainerOptions = {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+};
 
 // @public
 export type SearchResponse = {

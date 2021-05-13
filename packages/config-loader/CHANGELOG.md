@@ -1,5 +1,13 @@
 # @backstage/config-loader
 
+## 0.6.1
+
+### Patch Changes
+
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config@0.1.5
+
 ## 0.6.0
 
 ### Minor Changes

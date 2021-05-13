@@ -156,7 +156,7 @@ describe('github', () => {
   describe('getOrganizationRepositories', () => {
     it('read repositories', async () => {
       const input: QueryResponse = {
-        organization: {
+        repositoryOwner: {
           repositories: {
             nodes: [
               {

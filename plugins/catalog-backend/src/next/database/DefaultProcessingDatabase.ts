@@ -15,6 +15,7 @@
  */
 
 import { ConflictError, NotFoundError } from '@backstage/errors';
+import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { Transaction } from '../../database';
 import lodash from 'lodash';
@@ -24,20 +25,23 @@ import {
   AddUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
   GetProcessableEntitiesResult,
+  ReplaceUnprocessedEntitiesOptions,
+  RefreshStateItem,
 } from './types';
 import type { Logger } from 'winston';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+
 import { v4 as uuid } from 'uuid';
+import { JsonObject } from '@backstage/config';
 
 export type DbRefreshStateRow = {
   entity_id: string;
   entity_ref: string;
   unprocessed_entity: string;
-  processed_entity: string;
-  cache: string;
+  processed_entity?: string;
+  cache?: string;
   next_update_at: string;
   last_discovery_at: string; // remove?
-  errors: string;
+  errors?: string;
 };
 
 export type DbRelationsRow = {
@@ -47,10 +51,10 @@ export type DbRelationsRow = {
   type: string;
 };
 
-export type DbRefreshStateReferences = {
-  source_special_key?: string;
-  source_entity_id?: string;
-  target_entity_id: string;
+export type DbRefreshStateReferencesRow = {
+  source_key?: string;
+  source_entity_ref?: string;
+  target_entity_ref: string;
 };
 
 // The number of items that are sent per batch to the database layer, when
@@ -86,7 +90,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         errors,
       })
       .where('entity_id', id);
-
     if (refreshResult === 0) {
       throw new NotFoundError(`Processing state not found for ${id}`);
     }
@@ -94,8 +97,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     // Schedule all deferred entities for future processing.
     await this.addUnprocessedEntities(tx, {
       entities: deferredEntities,
-      id,
-      type: 'entity',
+      entityRef: stringifyEntityRef(processedEntity),
     });
 
     // Update fragments
@@ -128,49 +130,230 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
   }
 
+  private async createDelta(
+    tx: Knex.Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<{ toAdd: Entity[]; toRemove: string[] }> {
+    if (options.type === 'delta') {
+      return {
+        toAdd: options.added,
+        toRemove: options.removed.map(e => stringifyEntityRef(e)),
+      };
+    }
+
+    const oldRefs = await tx<DbRefreshStateReferencesRow>(
+      'refresh_state_references',
+    )
+      .where({ source_key: options.sourceKey })
+      .select('target_entity_ref')
+      .then(rows => rows.map(r => r.target_entity_ref));
+
+    const items = options.items.map(entity => ({
+      entity,
+      ref: stringifyEntityRef(entity),
+    }));
+
+    const oldRefsSet = new Set(oldRefs);
+    const newRefsSet = new Set(items.map(item => item.ref));
+    const toAdd = items.filter(item => !oldRefsSet.has(item.ref));
+    const toRemove = oldRefs.filter(ref => !newRefsSet.has(ref));
+
+    return { toAdd: toAdd.map(({ entity }) => entity), toRemove };
+  }
+
+  async replaceUnprocessedEntities(
+    txOpaque: Transaction,
+    options: ReplaceUnprocessedEntitiesOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+
+    const { toAdd, toRemove } = await this.createDelta(tx, options);
+
+    if (toRemove.length) {
+      // TODO(freben): Batch split, to not hit variable limits?
+      /*
+      WITH RECURSIVE
+        -- All the nodes that can be reached downwards from our root
+        descendants(root_id, entity_ref) AS (
+          SELECT id, target_entity_ref
+          FROM refresh_state_references
+          WHERE source_key = "R1" AND target_entity_ref = "A"
+          UNION
+          SELECT descendants.root_id, target_entity_ref
+          FROM descendants
+          JOIN refresh_state_references ON source_entity_ref = descendants.entity_ref
+        ),
+        -- All the nodes that can be reached upwards from the descendants
+        ancestors(root_id, via_entity_ref, to_entity_ref) AS (
+          SELECT CAST(NULL as INT), entity_ref, entity_ref
+          FROM descendants
+          UNION
+          SELECT
+            CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END,
+            source_entity_ref,
+            ancestors.to_entity_ref
+          FROM ancestors
+          JOIN refresh_state_references ON target_entity_ref = ancestors.via_entity_ref
+        )
+      -- Start out with all of the descendants
+      SELECT descendants.entity_ref
+      FROM descendants
+      -- Expand with all ancestors that point to those, but aren't the current root
+      LEFT OUTER JOIN ancestors
+        ON ancestors.to_entity_ref = descendants.entity_ref
+        AND ancestors.root_id IS NOT NULL
+        AND ancestors.root_id != descendants.root_id
+      -- Exclude all lines that had such a foreign ancestor
+      WHERE ancestors.root_id IS NULL;
+      */
+      const removedCount = await tx<DbRefreshStateRow>('refresh_state')
+        .whereIn('entity_ref', function orphanedEntityRefs(orphans) {
+          return (
+            orphans
+              // All the nodes that can be reached downwards from our root
+              .withRecursive('descendants', function descendants(outer) {
+                return outer
+                  .select({ root_id: 'id', entity_ref: 'target_entity_ref' })
+                  .from('refresh_state_references')
+                  .where('source_key', options.sourceKey)
+                  .whereIn('target_entity_ref', toRemove)
+                  .union(function recursive(inner) {
+                    return inner
+                      .select({
+                        root_id: 'descendants.root_id',
+                        entity_ref:
+                          'refresh_state_references.target_entity_ref',
+                      })
+                      .from('descendants')
+                      .join('refresh_state_references', {
+                        'descendants.entity_ref':
+                          'refresh_state_references.source_entity_ref',
+                      });
+                  });
+              })
+              // All the nodes that can be reached upwards from the descendants
+              .withRecursive('ancestors', function ancestors(outer) {
+                return outer
+                  .select({
+                    root_id: tx.raw('CAST(NULL as INT)', []),
+                    via_entity_ref: 'entity_ref',
+                    to_entity_ref: 'entity_ref',
+                  })
+                  .from('descendants')
+                  .union(function recursive(inner) {
+                    return inner
+                      .select({
+                        root_id: tx.raw(
+                          'CASE WHEN source_key IS NOT NULL THEN id ELSE NULL END',
+                          [],
+                        ),
+                        via_entity_ref: 'source_entity_ref',
+                        to_entity_ref: 'ancestors.to_entity_ref',
+                      })
+                      .from('ancestors')
+                      .join('refresh_state_references', {
+                        target_entity_ref: 'ancestors.via_entity_ref',
+                      });
+                  });
+              })
+              // Start out with all of the descendants
+              .select('descendants.entity_ref')
+              .from('descendants')
+              // Expand with all ancestors that point to those, but aren't the current root
+              .leftOuterJoin('ancestors', function keepaliveRoots() {
+                this.on(
+                  'ancestors.to_entity_ref',
+                  '=',
+                  'descendants.entity_ref',
+                );
+                this.andOnNotNull('ancestors.root_id');
+                this.andOn('ancestors.root_id', '!=', 'descendants.root_id');
+              })
+              .whereNull('ancestors.root_id')
+          );
+        })
+        .delete();
+
+      await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+        .where('source_key', '=', options.sourceKey)
+        .whereIn('target_entity_ref', toRemove)
+        .delete();
+
+      this.logger.debug(
+        `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
+      );
+    }
+
+    if (toAdd.length) {
+      const state: Knex.DbRecord<DbRefreshStateRow>[] = toAdd.map(entity => ({
+        entity_id: uuid(),
+        entity_ref: stringifyEntityRef(entity),
+        unprocessed_entity: JSON.stringify(entity),
+        errors: '',
+        next_update_at: tx.fn.now(),
+        last_discovery_at: tx.fn.now(),
+      }));
+
+      const stateReferences: DbRefreshStateReferencesRow[] = toAdd.map(
+        entity => ({
+          source_key: options.sourceKey,
+          target_entity_ref: stringifyEntityRef(entity),
+        }),
+      );
+      // TODO(freben): Concurrency? If we did these one by one, a .onConflict().merge would have made sense
+      await tx.batchInsert('refresh_state', state, BATCH_SIZE);
+      await tx.batchInsert(
+        'refresh_state_references',
+        stateReferences,
+        BATCH_SIZE,
+      );
+    }
+  }
+
   async addUnprocessedEntities(
     txOpaque: Transaction,
     options: AddUnprocessedEntitiesOptions,
   ): Promise<void> {
     const tx = txOpaque as Knex.Transaction;
-    const entityIds = new Array<string>();
 
-    for (const entity of options.entities) {
-      const entityRef = stringifyEntityRef(entity);
-      await tx<DbRefreshStateRow>('refresh_state')
-        .insert({
+    const stateRows = options.entities.map(
+      entity =>
+        ({
           entity_id: uuid(),
-          entity_ref: entityRef,
+          entity_ref: stringifyEntityRef(entity),
           unprocessed_entity: JSON.stringify(entity),
           errors: '',
           next_update_at: tx.fn.now(),
           last_discovery_at: tx.fn.now(),
-        })
+        } as Knex.DbRecord<DbRefreshStateRow>),
+    );
+    const stateReferenceRows = stateRows.map(
+      stateRow =>
+        ({
+          source_entity_ref: options.entityRef,
+          target_entity_ref: stateRow.entity_ref,
+        } as Knex.DbRecord<DbRefreshStateReferencesRow>),
+    );
+
+    // Upsert all of the unprocessed entities into the refresh_state table, by
+    // their entity ref.
+    // TODO(freben): Can this be batched somehow?
+    for (const row of stateRows) {
+      await tx<DbRefreshStateRow>('refresh_state')
+        .insert(row)
         .onConflict('entity_ref')
         .merge(['unprocessed_entity', 'last_discovery_at']);
-
-      const [{ entity_id: entityId }] = await tx<DbRefreshStateRow>(
-        'refresh_state',
-      ).where({ entity_ref: entityRef });
-      entityIds.push(entityId);
     }
 
-    const key =
-      options.type === 'provider'
-        ? { source_special_key: options.id }
-        : { source_entity_id: options.id };
-    // copied from update refs
-    await tx<DbRefreshStateReferences>('refresh_state_references')
-      .where(key)
+    // Replace all references for the originating entity before creating new ones
+    await tx<DbRefreshStateReferencesRow>('refresh_state_references')
+      .where({ source_entity_ref: options.entityRef })
       .delete();
-
-    const referenceRows: DbRefreshStateReferences[] = entityIds.map(
-      entityId => ({
-        ...key,
-        target_entity_id: entityId,
-      }),
+    await tx.batchInsert(
+      'refresh_state_references',
+      stateReferenceRows,
+      BATCH_SIZE,
     );
-    await tx.batchInsert('refresh_state_references', referenceRows, BATCH_SIZE);
   }
 
   async getProcessableEntities(
@@ -198,16 +381,23 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       });
 
     return {
-      items: items.map(i => ({
-        id: i.entity_id,
-        entityRef: i.entity_ref,
-        unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
-        processedEntity: JSON.parse(i.processed_entity) as Entity,
-        nextUpdateAt: i.next_update_at,
-        lastDiscoveryAt: i.last_discovery_at,
-        state: JSON.parse(i.cache),
-        errors: i.errors,
-      })),
+      items: items.map(
+        i =>
+          ({
+            id: i.entity_id,
+            entityRef: i.entity_ref,
+            unprocessedEntity: JSON.parse(i.unprocessed_entity) as Entity,
+            processedEntity: i.processed_entity
+              ? (JSON.parse(i.processed_entity) as Entity)
+              : undefined,
+            nextUpdateAt: i.next_update_at,
+            lastDiscoveryAt: i.last_discovery_at,
+            state: i.cache
+              ? JSON.parse(i.cache)
+              : new Map<string, JsonObject>(),
+            errors: i.errors,
+          } as RefreshStateItem),
+      ),
     };
   }
 
