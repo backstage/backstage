@@ -18,7 +18,7 @@ import React from 'react';
 import { capitalize } from 'lodash';
 import { Box } from '@material-ui/core';
 import { alertApiRef, Select, useApi } from '@backstage/core';
-import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
+import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 export const EntityTypePicker = () => {
   const alertApi = useApi(alertApiRef);

@@ -98,7 +98,8 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
 
-  // TODO(timbonicus): should query params be registered as initialFilters when present?
+  // TODO(timbonicus): is it possible to register initial filters from query params? e.g. if the
+  // query key matches the generic definition, call a constructor with the value
   const [filters, setFilters] = useState<EntityFilters>(
     initialFilters ?? ({} as EntityFilters),
   );

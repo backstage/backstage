@@ -28,6 +28,7 @@ import {
   EntityKindFilter,
   EntityListProvider,
   EntityTagPicker,
+  EntityTypePicker,
   UserListFilter,
   UserListFilterKind,
   UserListPicker,
@@ -37,7 +38,6 @@ import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
 import CatalogLayout from './CatalogLayout';
-import { EntityTypePicker } from '../EntityTypePicker';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {

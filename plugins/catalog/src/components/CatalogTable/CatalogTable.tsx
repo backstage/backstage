@@ -58,11 +58,10 @@ type CatalogTableProps = {
 
 export const CatalogTable = ({ columns }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
-  // TODO(timbonicus): should the component loading entities register which fields it's interested in?
   const { loading, error, entities, filters } = useEntityListProvider();
 
   const showTypeColumn = filters.type !== undefined;
-  // TODO(timbonicus): this makes less sense with more complex filters, should we show filter chips instead?
+  // TODO(timbonicus): we should show filter chips for all filters instead
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
   if (error) {

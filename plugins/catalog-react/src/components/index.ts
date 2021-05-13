@@ -17,4 +17,5 @@ export * from './EntityProvider';
 export * from './EntityRefLink';
 export * from './EntityTable';
 export * from './EntityTagPicker';
+export * from './EntityTypePicker';
 export * from './UserListPicker';
