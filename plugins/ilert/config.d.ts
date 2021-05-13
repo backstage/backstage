@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export interface Config {
-  ilert: {
+  ilert?: {
     /**
      * Domain used by users to access iLert web UI.
      * Example: https://my-app.ilert.com/
