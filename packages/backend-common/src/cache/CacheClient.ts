@@ -92,7 +92,8 @@ export class DefaultCacheClient implements CacheClient {
     const wellFormedKey = Buffer.from(candidateKey).toString('base64');
 
     // Memcache in particular doesn't do well with keys > 250 bytes.
-    if (wellFormedKey.length < 250) {
+    // Padded because a plugin ID is also prepended to the key.
+    if (wellFormedKey.length < 200) {
       return wellFormedKey;
     }
 

@@ -65,7 +65,7 @@ export class CacheManager {
   }
 
   /**
-   * Generates a CacheManagerInstance for consumption by plugins.
+   * Generates a PluginCacheManager for consumption by plugins.
    *
    * @param pluginId The plugin that the cache manager should be created for. Plugin names should be unique.
    */
