@@ -38,7 +38,7 @@ type Props<T extends Entity> = {
   relationType: string;
   emptyMessage: string;
   emptyHelpLink: string;
-  asRenderableEntities: (entities?: Entity[]) => T[];
+  asRenderableEntities: (entities: Entity[]) => T[];
 };
 
 export function RelatedEntitiesCard<T extends Entity>({
@@ -86,7 +86,7 @@ export function RelatedEntitiesCard<T extends Entity>({
         </div>
       }
       columns={columns}
-      entities={asRenderableEntities(entities)}
+      entities={asRenderableEntities(entities || [])}
     />
   );
 }
