@@ -28,7 +28,7 @@ type ClientOptions = {
    * An optional handler for connection errors emitted from the underlying data
    * store.
    */
-  onError?: (err: Error) => void
+  onError?: (err: Error) => void;
 };
 
 /**
