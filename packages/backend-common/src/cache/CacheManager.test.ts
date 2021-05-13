@@ -86,6 +86,17 @@ describe('CacheManager', () => {
       expect(client).toHaveBeenCalledTimes(1);
     });
 
+    it('attaches error handler to client', () => {
+      const pluginId = 'error-test';
+      const handler = jest.fn();
+      manager.forPlugin(pluginId).getClient({ onError: handler });
+
+      const client = DefaultCacheClient as jest.Mock;
+      const mockCalls = client.mock.calls.splice(-1);
+      const realClient = mockCalls[0][0].client as Keyv;
+      expect(realClient.on).toHaveBeenCalledWith('error', handler);
+    });
+
     it('provides different plugins different cache clients', async () => {
       const plugin1Id = 'test1';
       const plugin2Id = 'test2';

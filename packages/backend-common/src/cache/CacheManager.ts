@@ -73,6 +73,12 @@ export class CacheManager {
     return {
       getClient: (opts = {}): CacheClient => {
         const concreteClient = this.getClientWithTtl(pluginId, opts.defaultTtl);
+
+        // Attach error handler if provided.
+        if (typeof opts?.onError === 'function') {
+          concreteClient.on('error', opts.onError);
+        }
+
         return new DefaultCacheClient({
           client: concreteClient,
         });

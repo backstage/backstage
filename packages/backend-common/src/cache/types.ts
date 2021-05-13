@@ -23,6 +23,12 @@ type ClientOptions = {
    * can be configured per entry at set-time).
    */
   defaultTtl?: number;
+
+  /**
+   * An optional handler for connection errors emitted from the underlying data
+   * store.
+   */
+  onError?: (err: Error) => void
 };
 
 /**
