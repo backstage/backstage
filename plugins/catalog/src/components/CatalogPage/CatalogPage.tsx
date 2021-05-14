@@ -20,6 +20,7 @@ import {
   ContentHeader,
   errorApiRef,
   SupportButton,
+  TableColumn,
   useApi,
   useRouteRef,
 } from '@backstage/core';
@@ -42,6 +43,7 @@ import {
   CatalogFilterType,
 } from '../CatalogFilter/CatalogFilter';
 import { CatalogTable } from '../CatalogTable/CatalogTable';
+import { EntityRow } from '../CatalogTable/types';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { useOwnUser } from '../useOwnUser';
 import CatalogLayout from './CatalogLayout';
@@ -61,6 +63,7 @@ const useStyles = makeStyles(theme => ({
 
 export type CatalogPageProps = {
   initiallySelectedFilter?: string;
+  columns?: TableColumn<EntityRow>[];
 };
 
 const CatalogPageContents = (props: CatalogPageProps) => {
@@ -210,6 +213,7 @@ const CatalogPageContents = (props: CatalogPageProps) => {
           <CatalogTable
             titlePreamble={selectedSidebarItem?.label ?? ''}
             view={selectedTab}
+            columns={props.columns}
             entities={matchingEntities}
             loading={loading}
             error={error}
