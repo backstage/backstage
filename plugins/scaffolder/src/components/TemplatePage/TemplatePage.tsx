@@ -26,7 +26,7 @@ import {
 import { LinearProgress } from '@material-ui/core';
 import { FormValidation, IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { generatePath, useNavigate, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
@@ -35,6 +35,7 @@ import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { RepoUrlPicker, OwnerPicker } from '../fields';
 import { JsonObject } from '@backstage/config';
+import { ExtensionContext } from '../../extensions';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -148,6 +149,7 @@ export const TemplatePage = () => {
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
+  const { state } = useContext(ExtensionContext)!;
 
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -173,6 +175,12 @@ export const TemplatePage = () => {
     return <Navigate to={rootLink()} />;
   }
 
+  const customFields = state!.fields.reduce((acc, next) => {
+    acc[next.name] = next.component;
+    return acc;
+  }, {} as Record<string, any>);
+
+  console.log(customFields);
   return (
     <Page themeId="home">
       <Header
@@ -194,7 +202,7 @@ export const TemplatePage = () => {
           >
             <MultistepJsonForm
               formData={formState}
-              fields={{ RepoUrlPicker, OwnerPicker }}
+              fields={customFields}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}

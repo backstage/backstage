@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/config';
 import {
   createApiFactory,
   createPlugin,
@@ -21,8 +22,11 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
+import { OwnerPicker as OwnerPickerComponent } from './components/fields/OwnerPicker';
+import { RepoUrlPicker as RepoUrlPickerComponent } from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
+import { createScaffolderFieldExtension } from './extensions';
 import { rootRouteRef, registerComponentRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
@@ -47,6 +51,35 @@ export const scaffolderPlugin = createPlugin({
   },
 });
 
+export const RepoUrlPicker = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    // TODO: work out how to type this component part so we can enforce FieldComponent from RJSF
+    component: {
+      sync: RepoUrlPickerComponent,
+    },
+    name: 'RepoUrlPicker',
+    validation: (value: JsonValue, validation) => {
+      try {
+        const { host, searchParams } = new URL(`https://${value}`);
+        if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
+          validation.addError('Incomplete repository location provided');
+        }
+      } catch {
+        validation.addError('Unable to parse the Repository URL');
+      }
+    },
+  }),
+);
+
+export const OwnerPicker = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: {
+      sync: OwnerPickerComponent,
+    },
+    name: 'OwnerPicker',
+    validation: () => {},
+  }),
+);
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     component: () => import('./components/Router').then(m => m.Router),

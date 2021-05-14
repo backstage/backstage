@@ -18,6 +18,8 @@ export {
   scaffolderPlugin,
   scaffolderPlugin as plugin,
   ScaffolderPage,
+  OwnerPicker,
+  RepoUrlPicker,
 } from './plugin';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';

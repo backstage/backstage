@@ -42,7 +42,12 @@ import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
-import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import {
+  ScaffolderPage,
+  scaffolderPlugin,
+  OwnerPicker,
+  RepoUrlPicker,
+} from '@backstage/plugin-scaffolder';
 import { SearchPage, SearchPageNext } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
@@ -107,7 +112,15 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route
+      path="/create"
+      element={
+        <ScaffolderPage>
+          <RepoUrlPicker />
+          <OwnerPicker />
+        </ScaffolderPage>
+      }
+    />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
