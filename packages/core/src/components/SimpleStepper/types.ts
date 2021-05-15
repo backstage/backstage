@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './transformer';
+import React from 'react';
 
-type InjectCssOptions = {
-  css: string;
+export type StepActions = {
+  showNext?: boolean;
+  canNext?: () => boolean;
+  onNext?: () => void;
+  nextStep?: (current: number, last: number) => number;
+  nextText?: string;
+
+  showBack?: boolean;
+  backText?: string;
+  onBack?: () => void;
+
+  showRestart?: boolean;
+  canRestart?: () => boolean;
+  onRestart?: () => void;
+  restartText?: string;
 };
 
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
-
-    return dom;
-  };
+export type StepProps = {
+  title: string;
+  children: React.ReactElement;
+  end?: boolean;
+  actions?: StepActions;
 };

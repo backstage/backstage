@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './transformer';
+import { createRouteRef } from '@backstage/core';
 
-type InjectCssOptions = {
-  css: string;
-};
+// TODO(freben): This is just a demo route for now
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'GitHub Actions',
+});
 
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
-
-    return dom;
-  };
-};
+export const buildRouteRef = createRouteRef({
+  path: ':id',
+  params: ['id'],
+  title: 'GitHub Actions Workflow Run',
+});

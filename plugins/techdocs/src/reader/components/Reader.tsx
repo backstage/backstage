@@ -23,7 +23,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
-import transformer, {
+import {
   addBaseUrl,
   addGitFeedbackLink,
   addLinkClickListener,
@@ -33,6 +33,7 @@ import transformer, {
   rewriteDocLinks,
   sanitizeDOM,
   simplifyMkdocsFooter,
+  transform as transformer,
 } from '../transformers';
 import { TechDocsNotFound } from './TechDocsNotFound';
 import TechDocsProgressBar from './TechDocsProgressBar';

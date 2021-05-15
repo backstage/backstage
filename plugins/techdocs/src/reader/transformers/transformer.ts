@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './transformer';
+export type Transformer = (dom: Element) => Element;
 
-type InjectCssOptions = {
-  css: string;
-};
+export const transform = (
+  html: string | Element,
+  transformers: Transformer[],
+): Element => {
+  let dom: Element;
 
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
+  if (typeof html === 'string') {
+    dom = new DOMParser().parseFromString(html, 'text/html').documentElement;
+  } else if (html instanceof Element) {
+    dom = html;
+  } else {
+    throw new Error('dom is not a recognized type');
+  }
 
-    return dom;
-  };
+  transformers.forEach(transformer => {
+    dom = transformer(dom);
+  });
+
+  return dom;
 };

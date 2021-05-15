@@ -26,8 +26,8 @@ import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { ReadTreeResponseFactory } from './tree';
 import {
+  IReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
@@ -65,7 +65,7 @@ export class GithubUrlReader implements UrlReader {
   constructor(
     private readonly integration: GitHubIntegration,
     private readonly deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
+      treeResponseFactory: IReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
   ) {

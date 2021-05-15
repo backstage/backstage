@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './transformer';
+import { createRouteRef } from '@backstage/core';
 
-type InjectCssOptions = {
-  css: string;
-};
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'TechDocs Landing Page',
+});
 
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
+export const rootDocsRouteRef = createRouteRef({
+  path: ':namespace/:kind/:name/*',
+  title: 'Docs',
+});
 
-    return dom;
-  };
-};
+export const rootCatalogDocsRouteRef = createRouteRef({
+  path: '*',
+  title: 'Docs',
+});

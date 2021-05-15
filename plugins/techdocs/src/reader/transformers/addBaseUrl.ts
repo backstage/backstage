@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EntityName } from '@backstage/catalog-model';
-import type { Transformer } from './index';
+import type { Transformer } from './transformer';
 import { TechDocsStorageApi } from '../../api';
 
 type AddBaseUrlOptions = {

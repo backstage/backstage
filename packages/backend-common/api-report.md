@@ -32,7 +32,7 @@ import { Writable } from 'stream';
 // @public (undocumented)
 export class AzureUrlReader implements UrlReader {
     constructor(integration: AzureIntegration, deps: {
-        treeResponseFactory: ReadTreeResponseFactory;
+        treeResponseFactory: IReadTreeResponseFactory;
     });
     // (undocumented)
     static factory: ReaderFactory;
@@ -49,7 +49,7 @@ export class AzureUrlReader implements UrlReader {
 // @public
 export class BitbucketUrlReader implements UrlReader {
     constructor(integration: BitbucketIntegration, deps: {
-        treeResponseFactory: ReadTreeResponseFactory;
+        treeResponseFactory: IReadTreeResponseFactory;
     });
     // (undocumented)
     static factory: ReaderFactory;
@@ -214,7 +214,7 @@ export class Git {
 // @public
 export class GithubUrlReader implements UrlReader {
     constructor(integration: GitHubIntegration, deps: {
-        treeResponseFactory: ReadTreeResponseFactory;
+        treeResponseFactory: IReadTreeResponseFactory;
         credentialsProvider: GithubCredentialsProvider;
     });
     // (undocumented)
@@ -232,7 +232,7 @@ export class GithubUrlReader implements UrlReader {
 // @public (undocumented)
 export class GitlabUrlReader implements UrlReader {
     constructor(integration: GitLabIntegration, deps: {
-        treeResponseFactory: ReadTreeResponseFactory;
+        treeResponseFactory: IReadTreeResponseFactory;
     });
     // (undocumented)
     static factory: ReaderFactory;

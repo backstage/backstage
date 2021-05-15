@@ -27,9 +27,9 @@ import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { ReadTreeResponseFactory } from './tree';
 import { stripFirstDirectoryFromPath } from './tree/util';
 import {
+  IReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
@@ -50,7 +50,7 @@ export class AzureUrlReader implements UrlReader {
 
   constructor(
     private readonly integration: AzureIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    private readonly deps: { treeResponseFactory: IReadTreeResponseFactory },
   ) {}
 
   async read(url: string): Promise<Buffer> {

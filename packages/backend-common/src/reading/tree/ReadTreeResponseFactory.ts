@@ -15,25 +15,16 @@
  */
 
 import os from 'os';
-import { Readable } from 'stream';
 import { Config } from '@backstage/config';
-import { ReadTreeResponse } from '../types';
+import {
+  ReadTreeResponse,
+  FromArchiveOptions,
+  IReadTreeResponseFactory,
+} from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 
-type FromArchiveOptions = {
-  // A binary stream of a tar archive.
-  stream: Readable;
-  // If unset, the files at the root of the tree will be read.
-  // subpath must not contain the name of the top level directory.
-  subpath?: string;
-  // etag of the blob
-  etag: string;
-  // Filter passed on from the ReadTreeOptions
-  filter?: (path: string) => boolean;
-};
-
-export class ReadTreeResponseFactory {
+export class ReadTreeResponseFactory implements IReadTreeResponseFactory {
   static create(options: { config: Config }): ReadTreeResponseFactory {
     return new ReadTreeResponseFactory(
       options.config.getOptionalString('backend.workingDirectory') ??
