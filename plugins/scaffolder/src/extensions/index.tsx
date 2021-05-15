@@ -19,8 +19,9 @@ import {
   ComponentLoader,
   createReactExtension,
   getComponentData,
+  attachComponentData,
 } from '@backstage/core';
-import { FieldValidation } from '@rjsf/core';
+import { FieldValidation, Field } from '@rjsf/core';
 import React from 'react';
 import { useMount } from 'react-use';
 
@@ -31,39 +32,37 @@ import {
   createCollector,
 } from '@backstage/core-api/src/extensions/traversal';
 
-export type FieldExtensionOptions<T> = {
+export type FieldExtensionOptions = {
   name: string;
-  component: ComponentLoader<T>;
+  component: Field;
   validation: (data: JsonValue, field: FieldValidation) => void;
 };
 
-export function createScaffolderFieldExtension<
-  T extends (props: any) => JSX.Element | null
->(options: FieldExtensionOptions<T>): Extension<T> {
-  const componentInData =
-    'lazy' in options.component
-      ? React.lazy(() =>
-          options.component.lazy().then(component => ({ default: component })),
-        )
-      : options.component.sync;
+export function createScaffolderFieldExtension(
+  options: FieldExtensionOptions,
+): Extension<Field> {
+  const extensionData = {
+    'scaffolder.extensions.field.v1': options,
+  };
 
-  return createReactExtension({
-    data: {
-      'scaffolder.extensions.field.v1': {
-        ...options,
-        component: componentInData,
-      },
+  const Result = (props: any) => <options.component {...props} />;
+
+  for (const [key, value] of Object.entries(extensionData)) {
+    attachComponentData(Result, key, value);
+  }
+  return {
+    expose() {
+      return Result;
     },
-    component: options.component,
-  });
+  };
 }
 
 export type ExtensionState = {
-  fields: FieldExtensionOptions<unknown>[];
+  fields: FieldExtensionOptions[];
 };
 export type RegisterFieldExtensionAction = {
   type: 'fields';
-  data: FieldExtensionOptions<unknown>[];
+  data: FieldExtensionOptions[];
 };
 
 export type ExtensionAction = RegisterFieldExtensionAction;
@@ -101,9 +100,9 @@ export const ExtensionCollector = ({
       discoverers: [childDiscoverer, routeElementDiscoverer],
       collectors: {
         fields: createCollector(
-          () => [] as FieldExtensionOptions<unknown>[],
+          () => [] as FieldExtensionOptions[],
           (acc, node) => {
-            const data = getComponentData<FieldExtensionOptions<unknown>>(
+            const data = getComponentData<FieldExtensionOptions>(
               node,
               'scaffolder.extensions.field.v1',
             );

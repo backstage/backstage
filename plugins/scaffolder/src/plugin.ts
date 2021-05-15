@@ -54,9 +54,7 @@ export const scaffolderPlugin = createPlugin({
 export const RepoUrlPicker = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     // TODO: work out how to type this component part so we can enforce FieldComponent from RJSF
-    component: {
-      sync: RepoUrlPickerComponent,
-    },
+    component: RepoUrlPickerComponent,
     name: 'RepoUrlPicker',
     validation: (value: JsonValue, validation) => {
       try {
@@ -73,9 +71,7 @@ export const RepoUrlPicker = scaffolderPlugin.provide(
 
 export const OwnerPicker = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    component: {
-      sync: OwnerPickerComponent,
-    },
+    component: OwnerPickerComponent,
     name: 'OwnerPicker',
     validation: () => {},
   }),
