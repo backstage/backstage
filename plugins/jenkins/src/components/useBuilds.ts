@@ -48,7 +48,6 @@ export function useBuilds(projectName: string, branch?: string) {
 
       return build || [];
     } catch (e) {
-      errorApi.post(e);
       throw e;
     }
   }, [api, errorApi, projectName, branch]);
