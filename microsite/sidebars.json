@@ -66,7 +66,7 @@
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
           "features/software-templates/template-legacy",
-          "features/software-templates/migrating-from-v1alpha-to-v2beta"
+          "features/software-templates/migrating-from-v1alpha-to-v1beta2"
         ]
       },
       {

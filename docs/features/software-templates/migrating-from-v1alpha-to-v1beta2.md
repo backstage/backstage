@@ -1,6 +1,6 @@
 ---
-id: migrating-from-v1alpha-to-v2beta
-title: Migrating to v2beta templates
+id: migrating-from-v1alpha-to-v1beta2
+title: Migrating to v1beta2 templates
 description:
   Help on how to move your old templates from v1alpha1 to the more declarative
   v1beta2
