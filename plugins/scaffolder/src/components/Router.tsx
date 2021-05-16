@@ -20,25 +20,17 @@ import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
-import {
-  ExtensionContext,
-  ExtensionCollector,
-  extensionsReducer,
-} from '../extensions';
 
 export const Router = ({ children }: React.PropsWithChildren<{}>) => {
-  const [state, dispatch] = React.useReducer(extensionsReducer, {
-    fields: [],
-  });
   return (
-    <ExtensionContext.Provider value={{ state, dispatch }}>
-      <ExtensionCollector>{children}</ExtensionCollector>
+    <>
       <Routes>
         <Route path="/" element={<ScaffolderPage />} />
         <Route path="/templates/:templateName" element={<TemplatePage />} />
         <Route path="/tasks/:taskId" element={<TaskPage />} />
         <Route path="/actions" element={<ActionsPage />} />
       </Routes>
-    </ExtensionContext.Provider>
+      {children}
+    </>
   );
 };

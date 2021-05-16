@@ -15,7 +15,7 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/config';
 import {
   createApiRef,
   DiscoveryApi,
@@ -24,6 +24,7 @@ import {
 } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { Field, FieldValidation } from '@rjsf/core';
 import ObservableImpl from 'zen-observable';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
@@ -52,6 +53,12 @@ export type LogEvent = {
   taskId: string;
 };
 
+export type CustomField = {
+  name: string;
+  component: Field;
+  validation: (data: JsonValue, field: FieldValidation) => void;
+};
+
 export interface ScaffolderApi {
   getTemplateParameterSchema(
     templateName: EntityName,
@@ -75,6 +82,13 @@ export interface ScaffolderApi {
   // Returns a list of all installed actions.
   listActions(): Promise<ListActionsResponse>;
 
+  // Register Custom Fields
+  registerCustomField(field: CustomField): void;
+  getCustomFields(): {
+    components: Map<string, Field>;
+    validators: Map<string, (data: JsonValue, field: FieldValidation) => void>;
+  };
+
   streamLogs({
     taskId,
     after,
@@ -88,6 +102,7 @@ export class ScaffolderClient implements ScaffolderApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
+  private readonly customFields: Map<string, CustomField> = new Map();
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
@@ -134,6 +149,24 @@ export class ScaffolderClient implements ScaffolderApi {
 
     const schema: TemplateParameterSchema = await response.json();
     return schema;
+  }
+
+  registerCustomField(field: CustomField) {
+    this.customFields.set(field.name, field);
+  }
+
+  getCustomFields() {
+    return [...this.customFields.entries()].reduce(
+      (previous, [name, field]) => {
+        previous.components.set(name, field.component);
+        previous.validators.set(name, field.validation);
+        return previous;
+      },
+      {
+        components: new Map(),
+        validators: new Map(),
+      },
+    );
   }
 
   /**

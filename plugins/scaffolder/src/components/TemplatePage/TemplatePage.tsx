@@ -24,23 +24,16 @@ import {
   useRouteRef,
 } from '@backstage/core';
 import { LinearProgress } from '@material-ui/core';
-import {
-  Field,
-  FieldValidation,
-  FormValidation,
-  IChangeEvent,
-} from '@rjsf/core';
+import { FieldValidation, FormValidation, IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { generatePath, useNavigate, Navigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { RepoUrlPicker, OwnerPicker } from '../fields';
 import { JsonObject, JsonValue } from '@backstage/config';
-import { ExtensionContext } from '../../extensions';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -62,7 +55,10 @@ function isObject(obj: unknown): obj is JsonObject {
 
 export const createValidator = (
   rootSchema: JsonObject,
-  validators: Record<string, (value: any, validation: FieldValidation) => void>,
+  validators: Map<
+    string,
+    (value: JsonValue, validation: FieldValidation) => void
+  >,
 ) => {
   function validate(
     schema: JsonObject,
@@ -90,9 +86,8 @@ export const createValidator = (
         const propSchema = schemaProps[key];
         const fieldName =
           isObject(propSchema) && (propSchema['ui:field'] as string);
-        const validator = fieldName && validators[fieldName];
-        if (validator) {
-          validator(propData, propValidation);
+        if (fieldName && validators.has(fieldName)) {
+          validators.get(fieldName)!(propData as JsonValue, propValidation);
         }
       }
     }
@@ -146,7 +141,6 @@ export const TemplatePage = () => {
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
-  const { state } = useContext(ExtensionContext)!;
 
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
@@ -172,18 +166,7 @@ export const TemplatePage = () => {
     return <Navigate to={rootLink()} />;
   }
 
-  const { components, validation } = state!.fields.reduce(
-    (acc, next) => {
-      acc.components[next.name] = next.component;
-      acc.validation[next.name] = next.validation;
-      return acc;
-    },
-    { components: {}, validation: {} } as {
-      components: Record<string, Field>;
-      validation: Record<string, (data: JsonValue, f: FieldValidation) => void>;
-    },
-  );
-
+  const { components, validators } = scaffolderApi.getCustomFields();
   return (
     <Page themeId="home">
       <Header
@@ -205,7 +188,7 @@ export const TemplatePage = () => {
           >
             <MultistepJsonForm
               formData={formState}
-              fields={components}
+              fields={Object.fromEntries(components.entries())}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
@@ -221,7 +204,7 @@ export const TemplatePage = () => {
 
                 return {
                   ...step,
-                  validate: createValidator(step.schema, validation),
+                  validate: createValidator(step.schema, validators),
                 };
               })}
             />
