@@ -25,6 +25,7 @@ export function useBuilds(projectName: string, branch?: string) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
+  const [error, setError] = useState<Error>();
 
   const restartBuild = async (buildName: string) => {
     try {
@@ -48,6 +49,7 @@ export function useBuilds(projectName: string, branch?: string) {
 
       return build || [];
     } catch (e) {
+      setError(e);
       throw e;
     }
   }, [api, errorApi, projectName, branch]);
@@ -60,6 +62,7 @@ export function useBuilds(projectName: string, branch?: string) {
       builds,
       projectName,
       total,
+      error,
     },
     {
       builds,

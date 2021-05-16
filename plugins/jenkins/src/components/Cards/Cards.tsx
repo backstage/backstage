@@ -17,6 +17,7 @@ import {
   InfoCard,
   InfoCardVariants,
   StructuredMetadataTable,
+  WarningPanel,
 } from '@backstage/core';
 import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
@@ -83,11 +84,19 @@ export const LatestRunCard = ({
   variant?: InfoCardVariants;
 }) => {
   const projectName = useProjectSlugFromEntity();
-  const [{ builds, loading }] = useBuilds(projectName, branch);
+  const [{ builds, loading, error }] = useBuilds(projectName, branch);
   const latestRun = builds ?? {};
   return (
     <InfoCard title={`Latest ${branch} build`} variant={variant}>
-      <WidgetContent loading={loading} branch={branch} latestRun={latestRun} />
+      {!error ? (
+        <WidgetContent
+          loading={loading}
+          branch={branch}
+          latestRun={latestRun}
+        />
+      ) : (
+        <WarningPanel severity="error" message={error.message} />
+      )}
     </InfoCard>
   );
 };
