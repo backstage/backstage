@@ -17,27 +17,27 @@
 import { RELATION_HAS_PART } from '@backstage/catalog-model';
 import React from 'react';
 import {
-  asSystemEntities,
+  asResourceEntities,
   RelatedEntitiesCard,
-  systemEntityColumns,
-  systemEntityHelpLink,
+  resourceEntityColumns,
+  resourceEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
 type Props = {
   variant?: 'gridItem';
 };
 
-export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
+export const HasResourcesCard = ({ variant = 'gridItem' }: Props) => {
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Systems"
-      entityKind="System"
+      title="Resources"
+      entityKind="Resource"
       relationType={RELATION_HAS_PART}
-      columns={systemEntityColumns}
-      asRenderableEntities={asSystemEntities}
-      emptyMessage="No system is part of this domain"
-      emptyHelpLink={systemEntityHelpLink}
+      columns={resourceEntityColumns}
+      asRenderableEntities={asResourceEntities}
+      emptyMessage="No resource is part of this system"
+      emptyHelpLink={resourceEntityHelpLink}
     />
   );
 };

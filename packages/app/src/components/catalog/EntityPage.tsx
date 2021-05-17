@@ -28,6 +28,8 @@ import {
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
+  EntityDependsOnComponentsCard,
+  EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
@@ -37,6 +39,7 @@ import {
   EntitySwitch,
   isComponentType,
   isKind,
+  EntityHasResourcesCard,
 } from '@backstage/plugin-catalog';
 import {
   EntityCircleCIContent,
@@ -288,6 +291,17 @@ const serviceEntityPage = (
       </Grid>
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/dependencies" title="Dependencies">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityDependsOnResourcesCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/docs" title="Docs">
       <EntityTechdocsContent />
     </EntityLayout.Route>
@@ -334,6 +348,17 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/errors" title="Errors">
       {errorsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/dependencies" title="Dependencies">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityDependsOnResourcesCard variant="gridItem" />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
@@ -465,6 +490,9 @@ const systemPage = (
         </Grid>
         <Grid item md={6}>
           <EntityHasApisCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityHasResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityLayout.Route>

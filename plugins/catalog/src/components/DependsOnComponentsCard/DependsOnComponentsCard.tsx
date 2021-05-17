@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import { RELATION_HAS_PART } from '@backstage/catalog-model';
+import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
 import React from 'react';
 import {
-  asSystemEntities,
+  asComponentEntities,
+  componentEntityColumns,
+  componentEntityHelpLink,
   RelatedEntitiesCard,
-  systemEntityColumns,
-  systemEntityHelpLink,
 } from '../RelatedEntitiesCard';
 
 type Props = {
   variant?: 'gridItem';
 };
 
-export const HasSystemsCard = ({ variant = 'gridItem' }: Props) => {
+export const DependsOnComponentsCard = ({ variant = 'gridItem' }: Props) => {
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Systems"
-      entityKind="System"
-      relationType={RELATION_HAS_PART}
-      columns={systemEntityColumns}
-      asRenderableEntities={asSystemEntities}
-      emptyMessage="No system is part of this domain"
-      emptyHelpLink={systemEntityHelpLink}
+      title="Components"
+      entityKind="Component"
+      relationType={RELATION_DEPENDS_ON}
+      columns={componentEntityColumns}
+      emptyMessage="No component is a dependency of this component"
+      emptyHelpLink={componentEntityHelpLink}
+      asRenderableEntities={asComponentEntities}
     />
   );
 };
