@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { render, waitFor, fireEvent, act } from '@testing-library/react';
-import { SplunkOnCallCard } from './SplunkOnCallCard';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
-import { wrapInTestApp } from '@backstage/test-utils';
 import {
   alertApiRef,
   ApiProvider,
@@ -27,10 +25,12 @@ import {
   ConfigReader,
   createApiRef,
 } from '@backstage/core';
+import { EntityContext } from '@backstage/plugin-catalog-react';
+import { wrapInTestApp } from '@backstage/test-utils';
 import {
   splunkOnCallApiRef,
-  UnauthorizedError,
   SplunkOnCallClient,
+  UnauthorizedError,
 } from '../api';
 import {
   ESCALATION_POLICIES,
@@ -39,6 +39,7 @@ import {
   MOCK_INCIDENT,
   MOCK_TEAM,
 } from '../api/mocks';
+import { EntitySplunkOnCallCard } from './EntitySplunkOnCallCard';
 
 const mockSplunkOnCallApi: Partial<SplunkOnCallClient> = {
   getUsers: async () => [],
@@ -65,15 +66,20 @@ const apis = ApiRegistry.from([
     }),
   ],
 ]);
-const entity: Entity = {
-  apiVersion: 'backstage.io/v1alpha1',
-  kind: 'Component',
-  metadata: {
-    name: 'splunkoncall-test',
-    annotations: {
-      'splunk.com/on-call-team': 'Example',
+
+const mockEntityData = {
+  loading: false,
+  error: undefined,
+  entity: {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'splunkoncall-test',
+      annotations: {
+        'splunk.com/on-call-team': 'Example',
+      },
     },
-  },
+  } as Entity,
 };
 
 describe('SplunkOnCallCard', () => {
@@ -85,7 +91,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <SplunkOnCallCard entity={entity} />
+          <EntityContext.Provider value={mockEntityData}>
+            <EntitySplunkOnCallCard />
+          </EntityContext.Provider>
         </ApiProvider>,
       ),
     );
@@ -106,7 +114,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <SplunkOnCallCard entity={entity} />
+          <EntityContext.Provider value={mockEntityData}>
+            <EntitySplunkOnCallCard />
+          </EntityContext.Provider>
         </ApiProvider>,
       ),
     );
@@ -123,7 +133,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <SplunkOnCallCard entity={entity} />
+          <EntityContext.Provider value={mockEntityData}>
+            <EntitySplunkOnCallCard />
+          </EntityContext.Provider>
         </ApiProvider>,
       ),
     );
@@ -144,7 +156,9 @@ describe('SplunkOnCallCard', () => {
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <SplunkOnCallCard entity={entity} />
+          <EntityContext.Provider value={mockEntityData}>
+            <EntitySplunkOnCallCard />
+          </EntityContext.Provider>
         </ApiProvider>,
       ),
     );
