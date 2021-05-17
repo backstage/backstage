@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createRouteRef } from '@backstage/core';
 
-import type { Transformer } from './transformer';
+export const rootRouteRef = createRouteRef({
+  path: '',
+  title: 'Google Cloudbuild',
+});
 
-type InjectCssOptions = {
-  css: string;
-};
-
-export const injectCss = ({ css }: InjectCssOptions): Transformer => {
-  return dom => {
-    dom
-      .getElementsByTagName('head')[0]
-      .insertAdjacentHTML('beforeend', `<style>${css}</style>`);
-
-    return dom;
-  };
-};
+export const buildRouteRef = createRouteRef({
+  path: ':id',
+  title: 'Cloudbuild Run',
+});

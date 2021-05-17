@@ -24,7 +24,7 @@ import os from 'os';
 import path from 'path';
 import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
-import { ReadTreeResponseFactory } from './tree';
+import { DefaultReadTreeResponseFactory } from './tree';
 import { NotModifiedError, NotFoundError } from '@backstage/errors';
 import {
   GitLabIntegration,
@@ -33,7 +33,7 @@ import {
 
 const logger = getVoidLogger();
 
-const treeResponseFactory = ReadTreeResponseFactory.create({
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 

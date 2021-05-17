@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { ScmIntegration, ScmIntegrationsGroup } from './types';
+import { AzureIntegration } from './azure/AzureIntegration';
+import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
+import { GitHubIntegration } from './github/GitHubIntegration';
+import { GitLabIntegration } from './gitlab/GitLabIntegration';
 
 /**
- * Encapsulates a single SCM integration.
+ * Holds all registered SCM integrations, of all types.
  */
-export interface ScmIntegration {
-  /**
-   * The type of integration, e.g. "github".
-   */
-  type: string;
-
-  /**
-   * A human readable title for the integration, that can be shown to users to
-   * differentiate between different integrations.
-   */
-  title: string;
+export interface ScmIntegrationRegistry
+  extends ScmIntegrationsGroup<ScmIntegration> {
+  azure: ScmIntegrationsGroup<AzureIntegration>;
+  bitbucket: ScmIntegrationsGroup<BitbucketIntegration>;
+  github: ScmIntegrationsGroup<GitHubIntegration>;
+  gitlab: ScmIntegrationsGroup<GitLabIntegration>;
 
   /**
    * Resolves an absolute or relative URL in relation to a base URL.
@@ -66,31 +65,3 @@ export interface ScmIntegration {
    */
   resolveEditUrl(url: string): string;
 }
-
-/**
- * Encapsulates several integrations, that are all of the same type.
- */
-export interface ScmIntegrationsGroup<T extends ScmIntegration> {
-  /**
-   * Lists all registered integrations of this type.
-   */
-  list(): T[];
-
-  /**
-   * Fetches an integration of this type by URL.
-   *
-   * @param url A URL that matches a registered integration of this type
-   */
-  byUrl(url: string | URL): T | undefined;
-
-  /**
-   * Fetches an integration of this type by host name.
-   *
-   * @param url A host name that matches a registered integration of this type
-   */
-  byHost(host: string): T | undefined;
-}
-
-export type ScmIntegrationsFactory<T extends ScmIntegration> = (options: {
-  config: Config;
-}) => ScmIntegrationsGroup<T>;
