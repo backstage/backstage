@@ -39,7 +39,7 @@ export type UrlReaderPredicateTuple = {
 export type ReaderFactory = (options: {
   config: Config;
   logger: Logger;
-  treeResponseFactory: IReadTreeResponseFactory;
+  treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
 /**
@@ -117,7 +117,7 @@ export type FromArchiveOptions = {
   filter?: (path: string) => boolean;
 };
 
-export interface IReadTreeResponseFactory {
+export interface ReadTreeResponseFactory {
   fromTarArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
   fromZipArchive(options: FromArchiveOptions): Promise<ReadTreeResponse>;
 }

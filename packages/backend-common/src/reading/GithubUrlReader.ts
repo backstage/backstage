@@ -27,7 +27,7 @@ import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
-  IReadTreeResponseFactory,
+  ReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
@@ -65,7 +65,7 @@ export class GithubUrlReader implements UrlReader {
   constructor(
     private readonly integration: GitHubIntegration,
     private readonly deps: {
-      treeResponseFactory: IReadTreeResponseFactory;
+      treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
   ) {

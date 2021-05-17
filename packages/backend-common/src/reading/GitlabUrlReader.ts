@@ -27,7 +27,7 @@ import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { stripFirstDirectoryFromPath } from './tree/util';
 import {
-  IReadTreeResponseFactory,
+  ReadTreeResponseFactory,
   ReaderFactory,
   ReadTreeOptions,
   ReadTreeResponse,
@@ -50,7 +50,7 @@ export class GitlabUrlReader implements UrlReader {
 
   constructor(
     private readonly integration: GitLabIntegration,
-    private readonly deps: { treeResponseFactory: IReadTreeResponseFactory },
+    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {}
 
   async read(url: string): Promise<Buffer> {

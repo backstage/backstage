@@ -19,14 +19,14 @@ import { Config } from '@backstage/config';
 import {
   ReadTreeResponse,
   FromArchiveOptions,
-  IReadTreeResponseFactory,
+  ReadTreeResponseFactory,
 } from '../types';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 
-export class ReadTreeResponseFactory implements IReadTreeResponseFactory {
-  static create(options: { config: Config }): ReadTreeResponseFactory {
-    return new ReadTreeResponseFactory(
+export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
+  static create(options: { config: Config }): DefaultReadTreeResponseFactory {
+    return new DefaultReadTreeResponseFactory(
       options.config.getOptionalString('backend.workingDirectory') ??
         os.tmpdir(),
     );
