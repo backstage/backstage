@@ -15,6 +15,7 @@
  */
 
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import { ConflictError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -35,12 +36,21 @@ export type DbFinalEntitiesRow = {
   final_entity: string;
 };
 
+type ProcessingStatus = {
+  errors?: JsonObject[];
+};
+
 function generateStableHash(entity: Entity) {
   return createHash('sha1')
     .update(stableStringify({ ...entity }))
     .digest('hex');
 }
 
+/**
+ * Performs the act of stitching - to take all of the various outputs from the
+ * ingestion process, and stitching them together into the final entity JSON
+ * shape.
+ */
 export class Stitcher {
   constructor(
     private readonly database: Knex,
@@ -109,7 +119,7 @@ export class Stitcher {
         const {
           entityId,
           processedEntity,
-          // errors,
+          errors,
           incomingReferenceCount,
           previousHash,
         } = result[0];
@@ -129,6 +139,7 @@ export class Stitcher {
         // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
+        const processingStatus: ProcessingStatus = {};
 
         if (isOrphan) {
           this.logger.debug(`${entityRef} is an orphan`);
@@ -136,6 +147,12 @@ export class Stitcher {
             ...entity.metadata.annotations,
             ['backstage.io/orphan']: 'true',
           };
+        }
+        if (errors) {
+          const parsedErrors = JSON.parse(errors);
+          if (Array.isArray(parsedErrors) && parsedErrors.length) {
+            processingStatus.errors = parsedErrors;
+          }
         }
 
         // TODO: entityRef is lower case and should be uppercase in the final
@@ -146,6 +163,10 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
+        entity.status = {
+          ...entity.status,
+          'backstage.io/catalog-processing': processingStatus,
+        };
 
         // If the output entity was actually not changed, just abort
         const hash = generateStableHash(entity);

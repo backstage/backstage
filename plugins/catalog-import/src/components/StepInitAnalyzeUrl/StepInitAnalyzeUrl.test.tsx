@@ -98,7 +98,11 @@ describe('<StepInitAnalyzeUrl />', () => {
     );
 
     await act(async () => {
-      userEvent.click(getByRole('button', { name: /Analyze/i }));
+      try {
+        userEvent.click(getByRole('button', { name: /Analyze/i }));
+      } catch {
+        return;
+      }
     });
 
     expect(catalogImportApi.analyzeUrl).toBeCalledTimes(0);

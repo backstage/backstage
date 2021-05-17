@@ -1,5 +1,12 @@
 # @backstage/catalog-model
 
+## 0.7.9
+
+### Patch Changes
+
+- 10c008a3a: Renamed parameters to input in template schema
+- 16be1d093: Improve error messages when schema validation fails
+
 ## 0.7.8
 
 ### Patch Changes

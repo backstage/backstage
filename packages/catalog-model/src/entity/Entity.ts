@@ -48,6 +48,14 @@ export type Entity = {
    * The relations that this entity has with other entities.
    */
   relations?: EntityRelation[];
+
+  /**
+   * The current status of the entity, as claimed by various sources.
+   *
+   * The keys are implementation defined and the values can be any JSON object
+   * with semantics that match that implementation.
+   */
+  status?: Record<string, JsonObject>;
 };
 
 /**

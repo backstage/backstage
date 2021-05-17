@@ -68,6 +68,20 @@ export interface Config {
           connection: string | object;
         };
 
+    /** Cache connection configuration, select cache type using the `store` field */
+    cache?:
+      | {
+          store: 'memory';
+        }
+      | {
+          store: 'memcache';
+          /**
+           * A memcache connection string in the form `user:pass@host:port`.
+           * @secret
+           */
+          connection: string;
+        };
+
     cors?: {
       origin?: string | string[];
       methods?: string | string[];

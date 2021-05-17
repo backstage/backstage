@@ -112,6 +112,7 @@ export type Entity = {
     metadata: EntityMeta;
     spec?: JsonObject;
     relations?: EntityRelation[];
+    status?: Record<string, JsonObject>;
 };
 
 // @public

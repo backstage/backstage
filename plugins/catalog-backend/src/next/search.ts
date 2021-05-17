@@ -43,6 +43,7 @@ const SPECIAL_KEYS = [
 // The maximum length allowed for search values. These columns are indexed, and
 // database engines do not like to index on massive values. For example,
 // postgres will balk after 8191 byte line sizes.
+const MAX_KEY_LENGTH = 200;
 const MAX_VALUE_LENGTH = 200;
 
 type Kv = {
@@ -145,7 +146,7 @@ export function mapToRows(input: Kv[], entityId: string): DbSearchRow[] {
       result.push({ entity_id: entityId, key, value: null });
     } else {
       const value = String(rawValue).toLocaleLowerCase('en-US');
-      if (value.length <= MAX_VALUE_LENGTH) {
+      if (key.length <= MAX_KEY_LENGTH && value.length <= MAX_VALUE_LENGTH) {
         result.push({ entity_id: entityId, key, value });
       }
     }
