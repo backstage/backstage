@@ -41,7 +41,10 @@ export class FileReaderProcessor implements CatalogProcessor {
         for (const fileMatch of fileMatches) {
           const data = await fs.readFile(fileMatch);
 
-          for (const parseResult of parseEntityYaml(data, location)) {
+          for (const parseResult of parseEntityYaml(data, {
+            type: 'file',
+            target: fileMatch,
+          })) {
             emit(parseResult);
           }
         }
