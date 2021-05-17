@@ -61,6 +61,14 @@ export const CatalogIndexPage = catalogPlugin.provide(
   }),
 );
 
+export const CatalogIndexBasePage = catalogPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CatalogPage').then(m => m.CatalogBasePage),
+    mountPoint: catalogRouteRef,
+  }),
+);
+
 export const CatalogEntityPage = catalogPlugin.provide(
   createRoutableExtension({
     component: () =>

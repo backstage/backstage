@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { CatalogPage } from './CatalogPage';
+export { CatalogBasePage } from './CatalogPageBase';

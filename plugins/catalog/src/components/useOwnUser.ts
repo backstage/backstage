@@ -30,12 +30,12 @@ export function useOwnUser(): AsyncState<UserEntity | undefined> {
   // TODO: get the full entity (or at least the full entity name) from the
   // identityApi
   return useAsync(
-    () =>
-      catalogApi.getEntityByName({
+    async () =>
+      await catalogApi.getEntityByName({
         kind: 'User',
         namespace: 'default',
         name: identityApi.getUserId(),
-      }) as Promise<UserEntity | undefined>,
+      }) as UserEntity | undefined,
     [catalogApi, identityApi],
   );
 }

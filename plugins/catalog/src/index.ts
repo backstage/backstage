@@ -23,6 +23,7 @@ export { Router } from './components/Router';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
+  CatalogIndexBasePage,
   catalogPlugin,
   catalogPlugin as plugin,
   EntityAboutCard,

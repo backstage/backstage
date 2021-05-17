@@ -19,9 +19,11 @@ import { createDevApp } from '@backstage/dev-utils';
 import {
   catalogPlugin,
   CatalogIndexPage,
+  CatalogIndexBasePage,
   CatalogEntityPage,
   EntityLayout,
 } from '../src';
+import { CustomTable } from './CustomTable';
 
 createDevApp()
   .registerPlugin(catalogPlugin)
@@ -39,6 +41,18 @@ createDevApp()
           <h1>Overview</h1>
         </EntityLayout.Route>
       </EntityLayout>
+    ),
+  })
+  .addPage({
+    path: '/custom-catalog',
+    title: 'Custom Catalog',
+    element: (
+      <CatalogIndexBasePage
+        showHeaderTabs={false}
+        showManagedFilters
+        showSupportButton
+        TableComponent={CustomTable}
+      />
     ),
   })
   .render();

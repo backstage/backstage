@@ -54,7 +54,7 @@ const defaultColumns: TableColumn<EntityRow>[] = [
   columnFactories.createTagsColumn(),
 ];
 
-type CatalogTableProps = {
+export type CatalogTableProps = {
   entities: Entity[];
   titlePreamble: string;
   loading: boolean;
