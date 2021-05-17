@@ -30,7 +30,8 @@
     "prettier:check": "prettier --check .",
     "lerna": "lerna",
     "storybook": "yarn workspace storybook start",
-    "build-storybook": "yarn workspace storybook build-storybook"
+    "build-storybook": "yarn workspace storybook build-storybook",
+    "prepare": "husky install"
   },
   "workspaces": {
     "packages": [
@@ -66,11 +67,6 @@
     "prettier": "^2.2.1",
     "recursive-readdir": "^2.2.2",
     "shx": "^0.3.2"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
