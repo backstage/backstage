@@ -72,10 +72,7 @@ export async function ensureDatabaseExists(
 ) {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  return ConnectorMapping[client]?.ensureDatabaseExists?.(
-    dbConfig,
-    ...databases,
-  );
+  ConnectorMapping[client]?.ensureDatabaseExists?.(dbConfig, ...databases);
 }
 
 /**
