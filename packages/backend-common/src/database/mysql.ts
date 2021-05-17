@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';
+import { DatabaseConnector } from './connector';
 import yn from 'yn';
 
 /**
@@ -159,3 +160,23 @@ export async function ensureMysqlDatabaseExists(
     await admin.destroy();
   }
 }
+
+export function createMysqlNameOverride(name: string): Partial<Knex.Config> {
+  return {
+    connection: {
+      database: name,
+    },
+  };
+}
+
+/**
+ * MySql database connector.
+ *
+ * Exposes database connector functionality via an immutable object.
+ * */
+export const mysqlConnector: DatabaseConnector = Object.freeze({
+  createClient: createMysqlDatabaseClient,
+  ensureDatabaseExists: ensureMysqlDatabaseExists,
+  createNameOverride: createMysqlNameOverride,
+  parseConnectionString: parseMysqlConnectionString,
+});

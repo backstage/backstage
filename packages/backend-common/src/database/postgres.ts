@@ -17,6 +17,7 @@
 import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
+import { DatabaseConnector } from './connector';
 
 /**
  * Creates a knex postgres database connection
@@ -131,3 +132,23 @@ export async function ensurePgDatabaseExists(
     await admin.destroy();
   }
 }
+
+export function createPgNameOverride(name: string): Partial<Knex.Config> {
+  return {
+    connection: {
+      database: name,
+    },
+  };
+}
+
+/**
+ * PostgreSQL database connector.
+ *
+ * Exposes database connector functionality via an immutable object.
+ * */
+export const pgConnector: DatabaseConnector = Object.freeze({
+  createClient: createPgDatabaseClient,
+  ensureDatabaseExists: ensurePgDatabaseExists,
+  createNameOverride: createPgNameOverride,
+  parseConnectionString: parsePgConnectionString,
+});

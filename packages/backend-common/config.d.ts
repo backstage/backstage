@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
+export type PluginDatabaseConfig =
+  | {
+      /** Database client to use for plugin. */
+      client?: 'sqlite3';
+      /** Database connection to use with plugin. */
+      connection?: ':memory:' | string | { filename: string };
+    }
+  | {
+      /** Database client to use for plugin. */
+      client?: 'pg';
+      /**
+       * PostgreSQL connection string or knex configuration object for plugin.
+       * @secret
+       */
+      connection?: string | object;
+    };
+
 export interface Config {
   app: {
     baseUrl: string; // defined in core, but repeated here without doc
@@ -58,6 +75,12 @@ export interface Config {
       | {
           client: 'sqlite3';
           connection: ':memory:' | string | { filename: string };
+          /** Optional sqlite3 database filename prefix. */
+          prefix?: string;
+          /** Override database config per plugin.  */
+          plugin?: {
+            [pluginId: string]: PluginDatabaseConfig;
+          };
         }
       | {
           client: 'pg';
@@ -66,6 +89,12 @@ export interface Config {
            * @secret
            */
           connection: string | object;
+          /** Optional PostgreSQL database prefix. */
+          prefix?: string;
+          /** Override database config per plugin.  */
+          plugin?: {
+            [pluginId: string]: PluginDatabaseConfig;
+          };
         };
 
     /** Cache connection configuration, select cache type using the `store` field */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Config } from '@backstage/config';
+import { Knex } from 'knex';
 
-export * from './connection';
-export * from './types';
-export * from './SingleConnection';
-export * from './PluginConnection';
+export interface DatabaseConnector {
+  createClient(dbConfig: Config, overrides?: Partial<Knex.Config>): Knex;
+  createNameOverride(name: string): Partial<Knex.Config>;
+  parseConnectionString(
+    connectionString: string,
+    client?: string,
+  ): Knex.StaticConnectionConfig;
+  ensureDatabaseExists?(
+    dbConfig: Config,
+    ...databases: Array<string>
+  ): Promise<void>;
+}

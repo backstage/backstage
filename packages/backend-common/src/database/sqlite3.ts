@@ -19,6 +19,7 @@ import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import path from 'path';
 import { mergeDatabaseConfig } from './config';
+import { DatabaseConnector } from './connector';
 
 /**
  * Creates a knex sqlite3 database connection
@@ -99,3 +100,28 @@ export function buildSqliteDatabaseConfig(
 
   return config;
 }
+
+export function createSqliteNameOverride(name: string): Partial<Knex.Config> {
+  return {
+    connection: parseSqliteConnectionString(name),
+  };
+}
+
+export function parseSqliteConnectionString(
+  name: string,
+): Knex.Sqlite3ConnectionConfig {
+  return {
+    filename: name,
+  };
+}
+
+/**
+ * Sqlite3 database connector.
+ *
+ * Exposes database connector functionality via an immutable object.
+ * */
+export const sqlite3Connector: DatabaseConnector = Object.freeze({
+  createClient: createSqliteDatabaseClient,
+  createNameOverride: createSqliteNameOverride,
+  parseConnectionString: parseSqliteConnectionString,
+});
