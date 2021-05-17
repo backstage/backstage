@@ -417,7 +417,7 @@ follows.
 {
   // ...
   "status": {
-    "backstage.io/processing-status": {
+    "backstage.io/catalog-processing": {
       "errors": []
     }
   },
@@ -428,9 +428,9 @@ follows.
 ```
 
 The keys of the `status` object are arbitrary strings. We recommend that any
-statuses, that are not strictly private within the organization, be namespaced
-to avoid collisions. Statuses emitted by Backstage core processes will for
-example be prefixed with `backstage.io/` as in the example above.
+statuses that are not strictly private within the organization be namespaced to
+avoid collisions. Statuses emitted by Backstage core processes will for example
+be prefixed with `backstage.io/` as in the example above.
 
 The values of the `status` object are currently left unrestricted, except that
 they must be objects. We reserve the right to extend this model in the future,

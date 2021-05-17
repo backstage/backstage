@@ -15,6 +15,7 @@
  */
 
 import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import { ConflictError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -33,6 +34,10 @@ export type DbFinalEntitiesRow = {
   entity_id: string;
   hash: string;
   final_entity: string;
+};
+
+type ProcessingStatus = {
+  errors?: JsonObject[];
 };
 
 function generateStableHash(entity: Entity) {
@@ -134,6 +139,7 @@ export class Stitcher {
         // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
+        const processingStatus: ProcessingStatus = {};
 
         if (isOrphan) {
           this.logger.debug(`${entityRef} is an orphan`);
@@ -142,15 +148,13 @@ export class Stitcher {
             ['backstage.io/orphan']: 'true',
           };
         }
-        if (errors !== '') {
+        if (errors) {
           const parsedErrors = JSON.parse(errors);
-          entity.status = {
-            ...entity.status,
-            'backstage.io/processing-status': {
-              errors: parsedErrors,
-            },
-          };
+          if (Array.isArray(parsedErrors) && parsedErrors.length) {
+            processingStatus.errors = parsedErrors;
+          }
         }
+
         // TODO: entityRef is lower case and should be uppercase in the final
         // result
         entity.relations = result
@@ -159,6 +163,10 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
+        entity.status = {
+          ...entity.status,
+          'backstage.io/catalog-processing': processingStatus,
+        };
 
         // If the output entity was actually not changed, just abort
         const hash = generateStableHash(entity);

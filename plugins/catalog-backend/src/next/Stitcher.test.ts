@@ -92,9 +92,7 @@ describe('Stitcher', () => {
           },
         ],
         status: {
-          'backstage.io/processing-status': {
-            errors: [],
-          },
+          'backstage.io/catalog-processing': {},
         },
         apiVersion: 'a',
         kind: 'k',
@@ -177,9 +175,7 @@ describe('Stitcher', () => {
           },
         ]),
         status: {
-          'backstage.io/processing-status': {
-            errors: [],
-          },
+          'backstage.io/catalog-processing': {},
         },
         apiVersion: 'a',
         kind: 'k',

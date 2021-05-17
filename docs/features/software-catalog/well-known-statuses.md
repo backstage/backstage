@@ -27,7 +27,7 @@ a standard concept of "severity" or "level" to these.
 
 This is a (non-exhaustive) list of statuses that are known to be in active use.
 
-### `backstage.io/processing-status`
+### `backstage.io/catalog-processing`
 
 Contains the current status of the catalog's ingestion of this entity. Errors
 that may appear here include inability to read from the remote SCM provider,
@@ -42,7 +42,7 @@ successfully ingested. This is normal.
 ```yaml
 # Example:
 status:
-  backstage.io/processing-status:
+  backstage.io/catalog-processing:
     errors: []
 ```
 
