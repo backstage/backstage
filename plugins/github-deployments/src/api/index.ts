@@ -53,6 +53,10 @@ const getBaseUrl = (
   return config?.config.apiBaseUrl;
 };
 
+type Node = {
+  logUrl?: string;
+};
+
 export type GithubDeployment = {
   environment: string;
   state: string;
@@ -61,8 +65,14 @@ export type GithubDeployment = {
     abbreviatedOid: string;
     commitUrl: string;
   };
+  statuses: {
+    nodes: Node[];
+  };
   creator: {
     login: string;
+  };
+  repository: {
+    nameWithOwner: string;
   };
   payload: string;
 };
@@ -89,9 +99,9 @@ export type Options = {
 };
 
 const deploymentsQuery = `
-query deployments($owner: String!, $repo: String!, $last: Int) {
+query deployments($owner: String!, $repo: String!, $lastDeployments: Int, $lastStatuses: Int) {
   repository(owner: $owner, name: $repo) {
-    deployments(last: $last) {
+    deployments(last: $lastDeployments) {
       nodes {
         state
         environment
@@ -100,8 +110,16 @@ query deployments($owner: String!, $repo: String!, $last: Int) {
           abbreviatedOid
           commitUrl
         }
+        statuses(last: $lastStatuses) {
+          nodes {
+            logUrl
+          }
+        }
         creator {
           login
+        }
+        repository {
+          nameWithOwner
         }
         payload
       }

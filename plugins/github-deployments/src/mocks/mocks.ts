@@ -51,7 +51,13 @@ export const responseStub: QueryResponse = {
           creator: {
             login: 'robot-user-001',
           },
-          payload: '{"target":"moon"}',
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
+          },
+          payload: '',
         },
         {
           state: 'pending',
@@ -62,9 +68,15 @@ export const responseStub: QueryResponse = {
             abbreviatedOid: '54321',
           },
           creator: {
-            login: 'robot-user-002',
+            login: 'robot-user-001',
           },
-          payload: '{"target":"sun"}',
+          statuses: {
+            nodes: [{ logUrl: '' }],
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
+          },
+          payload: '',
         },
       ],
     },
@@ -86,6 +98,12 @@ export const refreshedResponseStub: QueryResponse = {
           creator: {
             login: 'robot-user-001',
           },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
+          },
           payload: '',
         },
         {
@@ -97,7 +115,13 @@ export const refreshedResponseStub: QueryResponse = {
             abbreviatedOid: '54321',
           },
           creator: {
-            login: 'robot-user-002',
+            login: 'robot-user-001',
+          },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
           },
           payload: '',
         },
