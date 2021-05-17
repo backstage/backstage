@@ -40,6 +40,7 @@
           "features/software-catalog/references",
           "features/software-catalog/well-known-annotations",
           "features/software-catalog/well-known-relations",
+          "features/software-catalog/well-known-statuses",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
           "features/software-catalog/software-catalog-api"
