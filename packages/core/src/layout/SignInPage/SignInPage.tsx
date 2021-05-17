@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { configApiRef, SignInPageProps, useApi } from '@backstage/core-api';
+import { Button, Grid, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { Page } from '../Page';
-import { Header } from '../Header';
+import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
 import { ContentHeader } from '../ContentHeader/ContentHeader';
-import { Grid, Button, Typography } from '@material-ui/core';
-import { SignInPageProps, useApi, configApiRef } from '@backstage/core-api';
-import { useSignInProviders, getSignInProviders } from './providers';
-import { IdentityProviders, SignInProviderConfig } from './types';
-import { Progress } from '../../components/Progress';
-import { GridItem, useStyles } from './styles';
+import { Header } from '../Header';
 import { InfoCard } from '../InfoCard';
+import { Page } from '../Page';
+import { getSignInProviders, useSignInProviders } from './providers';
+import { GridItem, useStyles } from './styles';
+import { IdentityProviders, SignInProviderConfig } from './types';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -81,7 +81,7 @@ export const MultiSignInPage = ({
 export const SingleSignInPage = ({
   onResult,
   provider,
-  auto,
+  auto = true,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
@@ -92,9 +92,7 @@ export const SingleSignInPage = ({
 
   useEffect(() => {
     const login = async () => {
-      const identity = await authApi.getBackstageIdentity({
-        instantPopup: true,
-      });
+      const identity = await authApi.getBackstageIdentity();
 
       const profile = await authApi.getProfile();
       onResult({
