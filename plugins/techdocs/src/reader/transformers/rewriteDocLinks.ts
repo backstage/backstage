@@ -31,9 +31,7 @@ export const rewriteDocLinks = (): Transformer => {
             if (elemAttribute.match(/^https?:\/\//i)) {
               elem.setAttribute('target', '_blank');
             }
-            const normalizedWindowLocation = window.location.href.endsWith('/')
-              ? window.location.href
-              : `${window.location.href}/`;
+            const normalizedWindowLocation = normalizeUrl(window.location.href);
 
             elem.setAttribute(
               attributeName,
@@ -48,3 +46,14 @@ export const rewriteDocLinks = (): Transformer => {
     return dom;
   };
 };
+
+/** Make sure that the input url always ends with a '/' */
+export function normalizeUrl(input: string): string {
+  const url = new URL(input);
+
+  if (!url.pathname.endsWith('/')) {
+    url.pathname += '/';
+  }
+
+  return url.toString();
+}
