@@ -16,6 +16,7 @@
 
 import { createTestShadowDom, getSample } from '../../test-utils';
 import { rewriteDocLinks } from '../transformers';
+import { normalizeUrl } from './rewriteDocLinks';
 
 describe('rewriteDocLinks', () => {
   it('should not do anything', () => {
@@ -54,5 +55,19 @@ describe('rewriteDocLinks', () => {
       'http://localhost/example-docs',
       'http://localhost/example-docs/example-page',
     ]);
+  });
+});
+
+describe('normalizeUrl', () => {
+  it.each([
+    ['http://example.org', 'http://example.org/'],
+    ['http://example.org/', 'http://example.org/'],
+    ['http://example.org/folder', 'http://example.org/folder/'],
+    ['http://example.org/folder/', 'http://example.org/folder/'],
+    ['http://example.org/folder#intro', 'http://example.org/folder/#intro'],
+    ['http://example.org/folder/#intro', 'http://example.org/folder/#intro'],
+    ['http://example.org/folder#', 'http://example.org/folder/#'],
+  ])('should handle %s', (url, expected) => {
+    expect(normalizeUrl(url)).toEqual(expected);
   });
 });

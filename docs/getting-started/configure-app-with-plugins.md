@@ -27,14 +27,7 @@ package.json. Backstage Apps are set up as monorepos with
 [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
 CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
 
-2. Add the plugin itself to the App:
-
-```js
-// packages/app/src/plugins.ts
-export { plugin as CircleCi } from '@backstage/plugin-circleci';
-```
-
-3. Register the plugin in the entity pages:
+2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
 
 ```diff
  // packages/app/src/components/catalog/EntityPage.tsx

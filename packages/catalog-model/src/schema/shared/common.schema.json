@@ -29,7 +29,7 @@
       "$id": "#relation",
       "type": "object",
       "description": "A directed relation from one entity to another.",
-      "required": ["type", "source", "target"],
+      "required": ["type", "target"],
       "additionalProperties": false,
       "properties": {
         "type": {
@@ -38,13 +38,16 @@
           "pattern": "^\\w+$",
           "description": "The type of relation."
         },
-        "source": {
-          "$ref": "#reference"
-        },
         "target": {
           "$ref": "#reference"
         }
       }
+    },
+    "status": {
+      "$id": "#status",
+      "type": "object",
+      "description": "A specific status of an entity.",
+      "additionalProperties": true
     }
   }
 }

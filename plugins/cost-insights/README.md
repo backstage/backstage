@@ -16,6 +16,8 @@ Learn more with the Backstage blog post [New Cost Insights plugin: The engineer'
 ## Install
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-cost-insights
 ```
 
@@ -51,11 +53,17 @@ export const apis = [
 ];
 ```
 
-4. Add cost-insights to your Backstage plugins.
+4. Add the `CostInsightsPage` extension to your `App.tsx`:
 
-```ts
-// packages/app/src/plugins.ts
-export { plugin as CostInsights } from '@backstage/plugin-cost-insights';
+```tsx
+// packages/app/src/App.tsx
+import { CostInsightsPage } from '@backstage/plugin-cost-insights';
+
+<FlatRoutes>
+  ...
+  <Route path="/cost-insights" element={<CostInsightsPage />} />
+  ...
+</FlatRoutes>;
 ```
 
 5. Add Cost Insights to your app Sidebar.

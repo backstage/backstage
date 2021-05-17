@@ -1,5 +1,28 @@
 # @backstage/plugin-tech-radar
 
+## 0.3.11
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+
+## 0.3.10
+
+### Patch Changes
+
+- b2e2ec753: Update README for composability
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+  - @backstage/core@0.7.8
+  - @backstage/theme@0.2.7
+
 ## 0.3.9
 
 ### Patch Changes

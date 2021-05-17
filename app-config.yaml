@@ -2,6 +2,12 @@ app:
   title: Backstage Example App
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
+  #datadogRum:
+  #  clientToken: '123456789'
+  #  applicationId: qwerty
+  #   site: # datadoghq.eu default = datadoghq.com
+  #   env: # optional
+
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
@@ -74,6 +80,13 @@ proxy:
     allowedMethods: ['GET']
     headers:
       Authorization: ${SENTRY_TOKEN}
+
+  '/ilert':
+    target: https://api.ilert.com
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: ${ILERT_AUTH_HEADER}
 
 organization:
   name: My Company

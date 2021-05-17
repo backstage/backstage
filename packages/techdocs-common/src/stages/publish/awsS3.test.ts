@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
+import request from 'supertest';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
@@ -154,7 +157,6 @@ describe('AwsS3Publish', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      expect.assertions(3);
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
@@ -171,23 +173,22 @@ describe('AwsS3Publish', () => {
         }),
       ).rejects.toThrowError();
 
-      await publisher
-        .publish({
-          entity,
-          directory: wrongPathToGeneratedDirectory,
-        })
-        .catch(error => {
-          expect(error.message).toEqual(
-            // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-            // Issue reported https://github.com/tschaub/mock-fs/issues/118
-            expect.stringContaining(
-              `Unable to upload file(s) to AWS S3. Error: Failed to read template directory: ENOENT, no such file or directory`,
-            ),
-          );
-          expect(error.message).toEqual(
-            expect.stringContaining(wrongPathToGeneratedDirectory),
-          );
-        });
+      const fails = publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      });
+
+      // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
+      // Issue reported https://github.com/tschaub/mock-fs/issues/118
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          'Unable to upload file(s) to AWS S3. Error: Failed to read template directory: ENOENT, no such file or directory',
+        ),
+      });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
+
       mockFs.restore();
     });
   });
@@ -265,18 +266,57 @@ describe('AwsS3Publish', () => {
       const entity = createMockEntity();
       const entityRootDir = getEntityRootDir(entity);
 
-      await publisher
-        .fetchTechDocsMetadata(entityNameMock)
-        .catch(error =>
-          expect(error).toEqual(
-            new Error(
-              `TechDocs metadata fetch failed, The file ${path.join(
-                entityRootDir,
-                'techdocs_metadata.json',
-              )} does not exist !`,
-            ),
-          ),
-        );
+      const fails = publisher.fetchTechDocsMetadata(entityNameMock);
+
+      const errorPath = path.join(entityRootDir, 'techdocs_metadata.json');
+      await expect(fails).rejects.toMatchObject({
+        message: `TechDocs metadata fetch failed, The file ${errorPath} does not exist !`,
+      });
+    });
+  });
+
+  describe('docsRouter', () => {
+    let app: express.Express;
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
+
+    beforeEach(() => {
+      app = express().use(publisher.docsRouter());
+
+      mockFs.restore();
+      mockFs({
+        [entityRootDir]: {
+          img: {
+            'with spaces.png': 'found it',
+          },
+          'some folder': {
+            'also with spaces.js': 'found it too',
+          },
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should pass expected object path to bucket', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      // Ensures leading slash is trimmed and encoded path is decoded.
+      const pngResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
     });
   });
 });

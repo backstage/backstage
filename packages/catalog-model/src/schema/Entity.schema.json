@@ -62,6 +62,15 @@
       "items": {
         "$ref": "common#relation"
       }
+    },
+    "status": {
+      "type": "object",
+      "description": "The current status of the entity, as claimed by various sources.",
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "common#status"
+        }
+      }
     }
   }
 }

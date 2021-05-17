@@ -23,6 +23,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
 - [Common to All Kinds: Relations](#common-to-all-kinds-relations)
+- [Common to All Kinds: Status](#common-to-all-kinds-status)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
@@ -44,7 +45,7 @@ metadata:
   name: artist-web
   description: The place to be, for great artists
   labels:
-    system: public-websites
+    example.com/custom: custom_label_value
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
@@ -58,6 +59,7 @@ spec:
   type: website
   lifecycle: production
   owner: artist-relations-team
+  system: public-websites
 ```
 
 This is the same entity as returned in JSON from the software catalog API:
@@ -76,7 +78,7 @@ This is the same entity as returned in JSON from the software catalog API:
     "etag": "ZjU2MWRkZWUtMmMxZS00YTZiLWFmMWMtOTE1NGNiZDdlYzNk",
     "generation": 1,
     "labels": {
-      "system": "public-websites"
+      "example.com/custom": "custom_label_value"
     },
     "links": [{
       "url": "https://admin.example-org.com",
@@ -90,7 +92,8 @@ This is the same entity as returned in JSON from the software catalog API:
   "spec": {
     "lifecycle": "production",
     "owner": "artist-relations-team",
-    "type": "website"
+    "type": "website",
+    "system": "public-websites"
   }
 }
 ```
@@ -394,6 +397,54 @@ with it (such as the default kind being `Group` if not specified).
 See the [well-known relations section](well-known-relations.md) for a list of
 well-known / common relations and their semantics.
 
+## Common to All Kinds: Status
+
+The `status` root field is a read-only set of statuses, pertaining to the
+current state or health of the entity, described in the
+[well-known statuses section](well-known-statuses.md). Each status field
+contains a specific blob of data that describes some aspect of the state of the
+entity, as seen from the point of view of some specific system. Different
+systems may contribute to this status object, under their own respective keys.
+
+The current main use case for this field is for the ingestion processes of the
+catalog itself to convey information about failures and warnings back to the
+user.
+
+A status field as part of a single entity that's read out of the API may look as
+follows.
+
+```js
+{
+  // ...
+  "status": {
+    "backstage.io/catalog-processing": {
+      "errors": []
+    }
+  },
+  "spec": {
+    // ...
+  }
+}
+```
+
+The keys of the `status` object are arbitrary strings. We recommend that any
+statuses that are not strictly private within the organization be namespaced to
+avoid collisions. Statuses emitted by Backstage core processes will for example
+be prefixed with `backstage.io/` as in the example above.
+
+The values of the `status` object are currently left unrestricted, except that
+they must be objects. We reserve the right to extend this model in the future,
+such that some fields of those value objects gain standardized meaning. We may
+for example want to add a standard concept of "severity" or "level" to these.
+
+Entity descriptor YAML files are not supposed to contain this field. Instead,
+catalog processors analyze the entity descriptor data and its surroundings, and
+deduce status entries that are then attached onto the entity as read from the
+catalog.
+
+See the [well-known statuses section](well-known-statuses.md) for a list of
+well-known / common relations and their semantics.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -639,22 +690,11 @@ A list of strings that can be associated with the template, e.g.
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
 
-### `spec.type` [optional]
+### `spec.type` [required]
 
-The type of component as a string, e.g. `website`. This field is optional but
-recommended.
-
-The software catalog accepts any type value, but an organization should take
-great care to establish a proper taxonomy for these. Tools including Backstage
-itself may read this field and behave differently depending on its value. For
-example, a website type component may present tooling in the Backstage interface
-that is specific to just websites.
-
-The current set of well-known and common values for this field is:
-
-- `service` - a backend service, typically exposing an API
-- `website` - a website
-- `library` - a software library, such as an npm module or a Java library
+The type of component created by the template, e.g. `website`. This is used for
+filtering templates, and should ideally match the Component
+[spec.type](#spectype-required) created by the template.
 
 ### `spec.parameters` [required]
 

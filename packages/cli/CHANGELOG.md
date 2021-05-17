@@ -1,5 +1,32 @@
 # @backstage/cli
 
+## 0.6.11
+
+### Patch Changes
+
+- 2cd70e164: Add context for versions:bump on what version it was bumped to. Updated tests for the same.
+- 3be844496: chore: bump `ts-node` versions to 9.1.1
+- e3fc89df6: update plugins created to use react-use 17.2.4
+
+## 0.6.10
+
+### Patch Changes
+
+- f65adcde7: Fix some transitive dependency warnings in yarn
+- fc79a6dd3: Added lax option to backstage-cli app:build command
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config-loader@0.6.1
+  - @backstage/config@0.1.5
+
+## 0.6.9
+
+### Patch Changes
+
+- 4e5c94249: Add `config:docs` command that opens up reference documentation for the local configuration schema in a browser.
+- 1373f4f12: No longer add newly created plugins to `plugins.ts` in the app, as it is no longer needed.
+- 479b29124: Added support for Datadog rum events
+
 ## 0.6.8
 
 ### Patch Changes

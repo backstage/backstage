@@ -1,5 +1,21 @@
 # @backstage/core-api
 
+## 0.2.18
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+
+## 0.2.17
+
+### Patch Changes
+
+- ab07d77f6: Add support for discovering plugins through the app element tree, removing the need to register them explicitly.
+- 50ce875a0: Fixed a potentially confusing error being thrown about misuse of routable extensions where the error was actually something different.
+- Updated dependencies [931b21a12]
+  - @backstage/theme@0.2.6
+
 ## 0.2.16
 
 ### Patch Changes

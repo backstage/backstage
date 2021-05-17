@@ -1,5 +1,20 @@
 # @backstage/catalog-model
 
+## 0.7.9
+
+### Patch Changes
+
+- 10c008a3a: Renamed parameters to input in template schema
+- 16be1d093: Improve error messages when schema validation fails
+
+## 0.7.8
+
+### Patch Changes
+
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config@0.1.5
+
 ## 0.7.7
 
 ### Patch Changes

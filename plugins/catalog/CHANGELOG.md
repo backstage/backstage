@@ -1,5 +1,53 @@
 # @backstage/plugin-catalog
 
+## 0.5.7
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 5542de095: This makes the CatalogTable configurable with custom columns, passed through the CatalogPage component rendered on the home page.
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/plugin-catalog-react@0.1.6
+  - @backstage/catalog-model@0.7.9
+
+## 0.5.6
+
+### Patch Changes
+
+- 19a4dd710: Removed unused `swr` dependency.
+- da546ce00: Support `gridItem` variant for `EntityLinksCard`.
+- e0c9ed759: Add `if` prop to `EntityLayout.Route` to conditionally render tabs
+- 1a142ae8a: Switch out the time-based personal greeting for a plain title on the catalog index page, and remove the clocks for different timezones.
+- Updated dependencies [9afcac5af]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6eaecbd81]
+  - @backstage/core@0.7.7
+
+## 0.5.5
+
+### Patch Changes
+
+- 96728a2af: SystemDiagramCard UI improvements
+- 87c4f59de: Add low german greeting
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/theme@0.2.6
+
 ## 0.5.4
 
 ### Patch Changes

@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import Docker from 'dockerode';
 import express from 'express';
 import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
@@ -62,7 +61,6 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   reader: UrlReader;
-  dockerClient: Docker;
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
@@ -96,7 +94,6 @@ export async function createRouter(
     logger: parentLogger,
     config,
     reader,
-    dockerClient,
     database,
     catalogClient,
     actions,
@@ -124,13 +121,11 @@ export async function createRouter(
     ? actions
     : [
         ...createLegacyActions({
-          dockerClient,
           preparers,
           publishers,
           templaters,
         }),
         ...createBuiltinActions({
-          dockerClient,
           integrations,
           catalogClient,
           templaters,
@@ -243,7 +238,6 @@ export async function createRouter(
               const templater = templaters.get(ctx.entity.spec.templater);
               await templater.run({
                 workspacePath: ctx.workspacePath,
-                dockerClient,
                 logStream: ctx.logStream,
                 values: ctx.values,
               });
