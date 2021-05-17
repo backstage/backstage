@@ -31,14 +31,14 @@ import {
 } from '@backstage/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { MockStorageApi, wrapInTestApp } from '@backstage/test-utils';
-import { fireEvent, Matcher, render, waitFor } from '@testing-library/react';
+import { fireEvent, Matcher, render } from '@testing-library/react';
 import { within, screen } from '@testing-library/dom';
 import { EntityFilterGroupsProvider } from '../../filter';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogBasePage } from './CatalogPageBase';
 import { CustomTable } from '../../../dev/CustomTable';
 
-describe('CatalogPage', () => {
+describe('CatalogBasePage', () => {
   const catalogApi: Partial<CatalogApi> = {
     getEntities: () =>
       Promise.resolve({
@@ -134,7 +134,7 @@ describe('CatalogPage', () => {
         showSupportButton
         showManagedFilters
         TableComponent={() => <CustomTable useBuiltInFilters={false} />}
-      />,
+     />,
     );
     expect(await findByText(/Owned/)).toBeInTheDocument();
     fireEvent.click(getByText(/All/));

@@ -15,6 +15,8 @@
  */
 
 import React from 'react';
+import { useAsync } from 'react-use';
+import { Chip } from '@material-ui/core';
 import {
   catalogApiRef,
   EntityRefLink,
@@ -22,8 +24,6 @@ import {
   formatEntityRefTitle,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
-import { Chip } from '@material-ui/core';
-import { EntityRow } from '../src/components/CatalogTable/CatalogTable';
 import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
 import {
   CodeSnippet,
@@ -34,7 +34,8 @@ import {
   useApi,
   WarningPanel,
 } from '@backstage/core';
-import { useAsync } from 'react-use';
+import { EntityRow } from '../src/components/CatalogTable/types';
+import {CatalogBaseTableProps} from '../src/components/CatalogPage/CatalogPageBase';
 
 const columns: TableColumn<EntityRow>[] = [
   {
@@ -111,7 +112,9 @@ const filters: TableFilter[] = [
   },
 ];
 
-export const CustomTable = ({ useBuiltInFilters = true }) => {
+type CustomTableProps = CatalogBaseTableProps & { useBuiltInFilters?: boolean };
+
+export const CustomTable = ({ useBuiltInFilters = true }: CustomTableProps) => {
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: matchingEntities } = useAsync(() => {
     return catalogApi.getEntities({ filter: { kind: 'Component' } });

@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export type CatalogBaseTableProps = Pick<CatalogTableProps, 'error' | 'view'>;
+export type CatalogBaseTableProps = Partial<CatalogTableProps>;
 
 export type CatalogBasePageProps = {
   initiallySelectedFilter?: string;
