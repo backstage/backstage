@@ -39,7 +39,7 @@ export type Subscription = {
   /**
    * Value indicating whether the subscription is closed.
    */
-  readonly closed: Boolean;
+  readonly closed: boolean;
 };
 
 /**
@@ -51,12 +51,14 @@ export type Subscription = {
  * using many different observable implementations, such as zen-observable or RxJS 5.
  */
 export type Observable<T> = {
+  [Symbol.observable](): Observable<T>;
+
   /**
    * Subscribes to this observable to start receiving new values.
    */
   subscribe(observer: Observer<T>): Subscription;
   subscribe(
-    onNext: (value: T) => void,
+    onNext?: (value: T) => void,
     onError?: (error: Error) => void,
     onComplete?: () => void,
   ): Subscription;
