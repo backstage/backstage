@@ -110,9 +110,7 @@ export class GithubPublisher implements PublisherBase {
         repoName: name,
       });
     } catch (e) {
-      throw new Error(
-        `Failed to add branch protection to '${name}': ${e.message}`,
-      );
+      throw new Error(`Failed to add branch protection to '${name}', ${e}`);
     }
 
     return { remoteUrl, catalogInfoUrl };
