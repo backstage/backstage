@@ -97,15 +97,18 @@ export async function createConfig(
   if (checksEnabled) {
     plugins.push(
       new ForkTsCheckerWebpackPlugin({
-        tsconfig: paths.targetTsConfig,
-        eslint: true,
-        eslintOptions: {
-          parserOptions: {
-            project: paths.targetTsConfig,
-            tsconfigRootDir: paths.targetPath,
+        typescript: {
+          configFile: paths.targetTsConfig,
+        },
+        eslint: {
+          files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+          options: {
+            parserOptions: {
+              project: paths.targetTsConfig,
+              tsconfigRootDir: paths.targetPath,
+            },
           },
         },
-        reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
       }),
     );
   }
@@ -291,15 +294,18 @@ export async function createBackendConfig(
       ...(checksEnabled
         ? [
             new ForkTsCheckerWebpackPlugin({
-              tsconfig: paths.targetTsConfig,
-              eslint: true,
-              eslintOptions: {
-                parserOptions: {
-                  project: paths.targetTsConfig,
-                  tsconfigRootDir: paths.targetPath,
+              typescript: {
+                configFile: paths.targetTsConfig,
+              },
+              eslint: {
+                files: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
+                options: {
+                  parserOptions: {
+                    project: paths.targetTsConfig,
+                    tsconfigRootDir: paths.targetPath,
+                  },
                 },
               },
-              reportFiles: ['**', '!**/__tests__/**', '!**/?(*.)(spec|test).*'],
             }),
           ]
         : []),
