@@ -108,14 +108,16 @@ export class GitlabUrlReader implements UrlReader {
 
     // Fetch the latest commit that modifies the the filepath in the provided or default branch
     // to compare against the provided sha.
-    const branchQuery = `ref_name=${branch}`;
-    const pathQuery = !!filepath ? `&path=${filepath}` : '';
-
+    const commitsReqParams = new URLSearchParams();
+    commitsReqParams.set('ref_name', branch);
+    if (!!filepath) {
+      commitsReqParams.set('path', filepath);
+    }
     const commitsGitlabResponse = await fetch(
       new URL(
         `${this.integration.config.apiBaseUrl}/projects/${encodeURIComponent(
           full_name,
-        )}/repository/commits?${branchQuery}${pathQuery}`,
+        )}/repository/commits?${commitsReqParams.toString()}`,
       ).toString(),
       getGitLabRequestOptions(this.integration.config),
     );
