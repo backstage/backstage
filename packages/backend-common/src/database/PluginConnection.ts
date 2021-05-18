@@ -75,7 +75,7 @@ export class PluginConnectionDatabaseManager {
    *
    * @param pluginId Lookup the database name for given plugin
    */
-  getDatabaseName(pluginId: string): string {
+  private getDatabaseName(pluginId: string): string {
     const pluginConfig: Config = this.getConfigForPlugin(pluginId);
 
     // determine root sqlite config to pass through as this is a special case

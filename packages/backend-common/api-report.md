@@ -273,7 +273,6 @@ export class PluginConnectionDatabaseManager {
     static readonly DEFAULT_PREFIX = "backstage_plugin_";
     forPlugin(pluginId: string): PluginDatabaseManager;
     static fromConfig(config: Config): PluginConnectionDatabaseManager;
-    getDatabaseName(pluginId: string): string;
     }
 
 // @public
