@@ -17,7 +17,7 @@
 import globby from 'globby';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
-import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import { Octokit } from '@octokit/rest';
 
 export async function initRepoAndPush({
   dir,
@@ -81,16 +81,14 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   client,
   owner,
   isRetry = false,
-}: BranchProtectionOptions): Promise<
-  RestEndpointMethodTypes['repos']['updateBranchProtection']['response']
-> => {
+}: BranchProtectionOptions): Promise<void> => {
   const { data: repo } = await client.repos.get({
     owner,
     repo: repoName,
   });
 
   try {
-    const response = await client.repos.updateBranchProtection({
+    await client.repos.updateBranchProtection({
       headers: {
         Accept:
           /**
@@ -110,19 +108,19 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
       enforce_admins: true,
       required_pull_request_reviews: { required_approving_review_count: 1 },
     });
-
-    return response;
   } catch (e) {
     if (!isRetry && e.message.includes('Branch not found')) {
       // GitHub has eventual consistency. Fail silently, wait, and try again.
       await new Promise(resolve => setTimeout(resolve, 600));
 
-      return await enableBranchProtectionOnDefaultRepoBranch({
+      await enableBranchProtectionOnDefaultRepoBranch({
         repoName,
         client,
         owner,
         isRetry: true,
       });
+
+      return;
     }
 
     throw e;
