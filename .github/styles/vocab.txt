@@ -167,6 +167,7 @@ mailto
 maintainership
 makefile
 md
+memcache
 microsite
 middleware
 minikube
@@ -177,6 +178,7 @@ mkdocs
 monorepo
 monorepos
 msw
+mysql
 namespace
 namespaced
 namespaces

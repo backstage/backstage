@@ -17,6 +17,7 @@
 export { AboutCard } from './components/AboutCard';
 export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
+export { CatalogTable } from './components/CatalogTable';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
 export {

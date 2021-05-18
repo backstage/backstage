@@ -1,5 +1,12 @@
 # @backstage/core-api
 
+## 0.2.18
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+
 ## 0.2.17
 
 ### Patch Changes

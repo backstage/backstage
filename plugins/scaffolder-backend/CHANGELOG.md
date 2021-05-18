@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.1
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 82ca1ac22: The apiBaseUrl setting for Bitbucket Server integrations will now be used when it is set. Otherwise, it will default back to the host setting.
+- fd39d4662: Move `jest-when` to the dev dependencies
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
 ## 0.11.0
 
 ### Minor Changes
@@ -15,7 +29,6 @@
   +   DockerContainerRunner,
   +   SingleHostDiscovery,
   + } from '@backstage/backend-common';
-
 
     export default async function createPlugin({
       logger,

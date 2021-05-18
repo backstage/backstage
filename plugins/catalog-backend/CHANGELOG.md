@@ -1,5 +1,29 @@
 # @backstage/plugin-catalog-backend
 
+## 0.9.0
+
+### Minor Changes
+
+- 9a207f052: Port `GithubOrgReaderProcessor` to support configuration via
+  [`integrations`](https://backstage.io/docs/integrations/github/locations) in
+  addition to [`catalog.processors.githubOrg.providers`](https://backstage.io/docs/integrations/github/org#configuration).
+  The `integrations` package supports authentication with both personal access
+  tokens and GitHub apps.
+
+  This deprecates the `catalog.processors.githubOrg.providers` configuration.
+  A [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
+  for the same host takes precedence over the provider configuration.
+  You might need to add additional scopes for the credentials.
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
 ## 0.8.2
 
 ### Patch Changes
