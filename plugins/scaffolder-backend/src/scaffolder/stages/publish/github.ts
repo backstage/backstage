@@ -29,6 +29,7 @@ import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
+/** @deprecated */
 export class GithubPublisher implements PublisherBase {
   static async fromConfig(
     config: GitHubIntegrationConfig,
