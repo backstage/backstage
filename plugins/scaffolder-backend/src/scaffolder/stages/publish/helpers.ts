@@ -17,6 +17,7 @@
 import globby from 'globby';
 import { Logger } from 'winston';
 import { Git } from '@backstage/backend-common';
+import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
 
 export async function initRepoAndPush({
   dir,
@@ -67,3 +68,63 @@ export async function initRepoAndPush({
     remote: 'origin',
   });
 }
+
+type BranchProtectionOptions = {
+  client: Octokit;
+  owner: string;
+  repoName: string;
+  isRetry?: boolean;
+};
+
+export const enableBranchProtectionOnDefaultRepoBranch = async ({
+  repoName,
+  client,
+  owner,
+  isRetry = false,
+}: BranchProtectionOptions): Promise<
+  RestEndpointMethodTypes['repos']['updateBranchProtection']['response']
+> => {
+  const { data: repo } = await client.repos.get({
+    owner,
+    repo: repoName,
+  });
+
+  try {
+    const response = await client.repos.updateBranchProtection({
+      headers: {
+        Accept:
+          /**
+           * 👇 we need this header because allowing a custom
+           * reviewer count on branch protection is a preview
+           * feature.
+           *
+           * More here: https://docs.github.com/en/rest/overview/api-previews#require-multiple-approving-reviews
+           */
+          'application/vnd.github.luke-cage-preview+json',
+      },
+      owner,
+      repo: repoName,
+      branch: repo.default_branch,
+      required_status_checks: { strict: true, contexts: [] },
+      restrictions: null,
+      enforce_admins: true,
+      required_pull_request_reviews: { required_approving_review_count: 1 },
+    });
+
+    return response;
+  } catch (e) {
+    if (!isRetry && e.message.includes('Branch not found')) {
+      // GitHub has eventual consistency. Fail silently, wait, and try again.
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      return await enableBranchProtectionOnDefaultRepoBranch({
+        repoName,
+        client,
+        owner,
+        isRetry: true,
+      });
+    }
+
+    throw e;
+  }
+};
