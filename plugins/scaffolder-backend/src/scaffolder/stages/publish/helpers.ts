@@ -93,7 +93,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
         /**
          * 👇 we need this preview because allowing a custom
          * reviewer count on branch protection is a preview
-         * feature.
+         * feature
          *
          * More here: https://docs.github.com/en/rest/overview/api-previews#require-multiple-approving-reviews
          */
