@@ -57,6 +57,12 @@ export type MicrosoftGraphProviderConfig = {
    * E.g. "securityEnabled eq false and mailEnabled eq true"
    */
   groupFilter?: string;
+  /**
+   * Skip importing groups by id.
+   * 
+   * This doesn't affect the users that are part of the group.
+   */
+  ignoreGroupIds?: string[];
 };
 
 export function readMicrosoftGraphConfig(
@@ -75,6 +81,9 @@ export function readMicrosoftGraphConfig(
     const clientSecret = providerConfig.getString('clientSecret');
     const userFilter = providerConfig.getOptionalString('userFilter');
     const groupFilter = providerConfig.getOptionalString('groupFilter');
+    const ignoreGroupIds = providerConfig.getOptionalStringArray(
+      'ignoreGroupIds',
+    );
 
     providers.push({
       target,
@@ -84,6 +93,7 @@ export function readMicrosoftGraphConfig(
       clientSecret,
       userFilter,
       groupFilter,
+      ignoreGroupIds,
     });
   }
 

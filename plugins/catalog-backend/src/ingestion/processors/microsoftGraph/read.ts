@@ -126,7 +126,7 @@ export async function readMicrosoftGraphOrganization(
 export async function readMicrosoftGraphGroups(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { groupFilter?: string },
+  options?: { groupFilter?: string; ignoreGroupIds?: string[] },
 ): Promise<{
   groups: GroupEntity[]; // With all relations empty
   rootGroup: GroupEntity | undefined; // With all relations empty
@@ -149,6 +149,10 @@ export async function readMicrosoftGraphGroups(
     select: ['id', 'displayName', 'description', 'mail', 'mailNickname'],
   })) {
     if (!group.id || !group.displayName) {
+      continue;
+    }
+
+    if (options?.ignoreGroupIds && options.ignoreGroupIds.includes(group.id)) {
       continue;
     }
 
@@ -321,7 +325,11 @@ export function resolveRelations(
 export async function readMicrosoftGraphOrg(
   client: MicrosoftGraphClient,
   tenantId: string,
-  options?: { userFilter?: string; groupFilter?: string },
+  options?: {
+    userFilter?: string;
+    groupFilter?: string;
+    ignoreGroupIds?: string[];
+  },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const { users } = await readMicrosoftGraphUsers(client, {
     userFilter: options?.userFilter,
@@ -333,6 +341,7 @@ export async function readMicrosoftGraphOrg(
     groupMemberOf,
   } = await readMicrosoftGraphGroups(client, tenantId, {
     groupFilter: options?.groupFilter,
+    ignoreGroupIds: options?.ignoreGroupIds,
   });
 
   resolveRelations(rootGroup, groups, users, groupMember, groupMemberOf);

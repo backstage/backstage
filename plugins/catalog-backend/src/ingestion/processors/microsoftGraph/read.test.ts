@@ -172,6 +172,12 @@ describe('read microsoft graph', () => {
           description: 'Group Description',
           mail: 'group@example.com',
         };
+        yield {
+          id: 'ignore-groupid',
+          displayName: 'Ignore Group Name',
+          description: 'Ignore Group Description',
+          mail: 'ignore-group@example.com',
+        };
       }
 
       async function* getExampleGroupMembers(): AsyncIterable<GroupMember> {
@@ -202,6 +208,7 @@ describe('read microsoft graph', () => {
         rootGroup,
       } = await readMicrosoftGraphGroups(client, 'tenantid', {
         groupFilter: 'securityEnabled eq false',
+        ignoreGroupIds: ['ignore-groupid'],
       });
 
       const expectedRootGroup = group({

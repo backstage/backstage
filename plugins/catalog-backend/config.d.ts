@@ -408,6 +408,12 @@ export interface Config {
            * E.g. "securityEnabled eq false and mailEnabled eq true"
            */
           groupFilter?: string;
+          /**
+           * Skip importing groups by id. 
+           * 
+           * This doesn't affect the users that are part of the group.
+           */
+          ignoreGroupIds?: string[];
         }>;
       };
     };
