@@ -53,6 +53,8 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
+          - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
+
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Search Architecture: 'features/search/architecture.md'
