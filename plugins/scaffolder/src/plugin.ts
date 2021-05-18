@@ -22,8 +22,8 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
-import { OwnerPicker as OwnerPickerComponent } from './components/fields/OwnerPicker';
-import { RepoUrlPicker as RepoUrlPickerComponent } from './components/fields/RepoUrlPicker';
+import { OwnerPicker } from './components/fields/OwnerPicker';
+import { RepoUrlPicker } from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 import { createScaffolderFieldExtension } from './extensions';
@@ -51,12 +51,12 @@ export const scaffolderPlugin = createPlugin({
   },
 });
 
-export const RepoUrlPicker = scaffolderPlugin.provide(
-  createScaffolderFieldExtension({
-    // TODO: work out how to type this component part so we can enforce FieldComponent from RJSF
-    component: RepoUrlPickerComponent,
+export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension<string>({
+    // TODO(blam): work out how to fix these types properly.
+    component: RepoUrlPicker,
     name: 'RepoUrlPicker',
-    validation: (value: JsonValue, validation) => {
+    validation: (value, validation) => {
       try {
         const { host, searchParams } = new URL(`https://${value}`);
         if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
@@ -69,11 +69,11 @@ export const RepoUrlPicker = scaffolderPlugin.provide(
   }),
 );
 
-export const OwnerPicker = scaffolderPlugin.provide(
-  createScaffolderFieldExtension({
-    component: OwnerPickerComponent,
+export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension<string>({
+    // TODO(blam): work out how to fix these types properly.
+    component: OwnerPicker,
     name: 'OwnerPicker',
-    validation: () => {},
   }),
 );
 export const ScaffolderPage = scaffolderPlugin.provide(

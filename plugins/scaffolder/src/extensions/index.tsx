@@ -13,29 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { JsonValue } from '@backstage/config';
-import { Extension, useApi } from '@backstage/core';
-import { FieldValidation, Field } from '@rjsf/core';
-import { scaffolderApiRef } from '../api';
+import { Extension, attachComponentData } from '@backstage/core';
+import { FieldValidation, FieldProps } from '@rjsf/core';
 
-export type FieldExtensionOptions = {
+export type FieldExtensionOptions<T = any> = {
   name: string;
-  component: Field;
-  validation: (data: JsonValue, field: FieldValidation) => void;
+  component: (props: FieldProps<T>) => JSX.Element | null;
+  validation?: (data: T, field: FieldValidation) => void;
 };
 
-export function createScaffolderFieldExtension(
-  options: FieldExtensionOptions,
-): Extension<Field> {
-  const WrappingRegister = () => {
-    const scaffolderApi = useApi(scaffolderApiRef);
-    scaffolderApi.registerCustomField(options);
-    return null;
-  };
-
+export function createScaffolderFieldExtension<T = any>(
+  options: FieldExtensionOptions<T>,
+): Extension<void> {
   return {
     expose() {
-      return WrappingRegister;
+      const FieldExtensionDataHolder: any = () => null;
+
+      attachComponentData(
+        FieldExtensionDataHolder,
+        'scaffolder.extensions.field.v1',
+        options,
+      );
+
+      return FieldExtensionDataHolder;
     },
   };
 }

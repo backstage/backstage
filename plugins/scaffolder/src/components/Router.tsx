@@ -21,7 +21,7 @@ import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 
-export const Router = ({ children }: React.PropsWithChildren<{}>) => {
+export const Router = () => {
   return (
     <>
       <Routes>
@@ -30,7 +30,6 @@ export const Router = ({ children }: React.PropsWithChildren<{}>) => {
         <Route path="/tasks/:taskId" element={<TaskPage />} />
         <Route path="/actions" element={<ActionsPage />} />
       </Routes>
-      {children}
     </>
   );
 };
