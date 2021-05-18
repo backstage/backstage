@@ -3706,17 +3706,6 @@
     prop-types "^15.7.2"
     react-is "^16.8.0"
 
-"@material-ui/lab@4.0.0-alpha.57":
-  version "4.0.0-alpha.57"
-  resolved "https://registry.npmjs.org/@material-ui/lab/-/lab-4.0.0-alpha.57.tgz#e8961bcf6449e8a8dabe84f2700daacfcafbf83a"
-  integrity sha512-qo/IuIQOmEKtzmRD2E4Aa6DB4A87kmY6h0uYhjUmrrgmEAgbbw9etXpWPVXuRK6AGIQCjFzV6WO2i21m1R4FCw==
-  dependencies:
-    "@babel/runtime" "^7.4.4"
-    "@material-ui/utils" "^4.11.2"
-    clsx "^1.0.4"
-    prop-types "^15.7.2"
-    react-is "^16.8.0 || ^17.0.0"
-
 "@material-ui/pickers@^3.2.2":
   version "3.2.10"
   resolved "https://registry.npmjs.org/@material-ui/pickers/-/pickers-3.2.10.tgz#19df024895876eb0ec7cd239bbaea595f703f0ae"
@@ -4271,10 +4260,10 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.6"
 
-"@roadiehq/backstage-plugin-github-insights@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.8.tgz#d2a46ee80f9529c75e7bdf58b214b59c6e8b1eda"
-  integrity sha512-0Yag3yKe3QjhcFL00+krzPmcrmXqCBZStn56IXYjVOuz2QtSIP0rYIeOQwNFKkTN6VFGTGWS9krdnDBynkptAQ==
+"@roadiehq/backstage-plugin-github-insights@^1.1.10":
+  version "1.1.10"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.10.tgz#0af8ae29cab6d92985079a1d8f92ede2e50bf247"
+  integrity sha512-XeWnPOgLI1BWgRwGqrnGTk79gpjd9bQtzGLzpTAjecFQWMnp6eeCOpIq1xTQcFHnFOSaJhQLp2JOWtiM4ZUAXw==
   dependencies:
     "@backstage/catalog-model" "^0.7.7"
     "@backstage/core" "^0.7.8"
@@ -4288,7 +4277,7 @@
     "@octokit/types" "^6.14.2"
     history "^5.0.0"
     react "^16.13.1"
-    react-dom "^17.0.2"
+    react-dom "^16.13.1"
     react-router "^6.0.0-beta.0"
     react-use "^17.2.4"
 
@@ -22040,15 +22029,6 @@ react-dom@^16.12.0, react-dom@^16.13.1:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
-react-dom@^17.0.2:
-  version "17.0.2"
-  resolved "https://registry.npmjs.org/react-dom/-/react-dom-17.0.2.tgz#ecffb6845e3ad8dbfcdc498f0d0a939736502c23"
-  integrity sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    scheduler "^0.20.2"
-
 react-double-scrollbar@0.0.15:
   version "0.0.15"
   resolved "https://registry.npmjs.org/react-double-scrollbar/-/react-double-scrollbar-0.0.15.tgz#e915ab8cb3b959877075f49436debfdb04288fe4"
@@ -23472,14 +23452,6 @@ scheduler@^0.19.0, scheduler@^0.19.1:
   version "0.19.1"
   resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.19.1.tgz#4f3e2ed2c1a7d65681f4c854fa8c5a1ccb40f196"
   integrity sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-
-scheduler@^0.20.2:
-  version "0.20.2"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.20.2.tgz#4baee39436e34aa93b4874bddcbf0fe8b8b50e91"
-  integrity sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
