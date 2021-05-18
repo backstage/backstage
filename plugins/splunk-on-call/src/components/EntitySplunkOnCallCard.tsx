@@ -13,33 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useAsync } from 'react-use';
 import {
-  useApi,
-  Progress,
-  HeaderIconLinkRow,
-  MissingAnnotationEmptyState,
   configApiRef,
   EmptyState,
+  HeaderIconLinkRow,
   IconLinkVerticalProps,
+  MissingAnnotationEmptyState,
+  Progress,
+  useApi,
 } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
+  CardContent,
   CardHeader,
   Divider,
-  CardContent,
   Typography,
 } from '@material-ui/core';
-import { Incidents } from './Incident';
-import { EscalationPolicy } from './Escalation';
+import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import WebIcon from '@material-ui/icons/Web';
-import { useAsync } from 'react-use';
 import { Alert } from '@material-ui/lab';
 import { splunkOnCallApiRef, UnauthorizedError } from '../api';
-import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
-import { TriggerDialog } from './TriggerDialog';
 import { MissingApiKeyOrApiIdError } from './Errors/MissingApiKeyOrApiIdError';
+import { EscalationPolicy } from './Escalation';
+import { Incidents } from './Incident';
+import { TriggerDialog } from './TriggerDialog';
 import { User } from './types';
 
 export const SPLUNK_ON_CALL_TEAM = 'splunk.com/on-call-team';
@@ -58,16 +59,13 @@ export const MissingEventsRestEndpoint = () => (
   </CardContent>
 );
 
-export const isPluginApplicableToEntity = (entity: Entity) =>
+export const isSplunkOnCallAvailable = (entity: Entity) =>
   Boolean(entity.metadata.annotations?.[SPLUNK_ON_CALL_TEAM]);
 
-type Props = {
-  entity: Entity;
-};
-
-export const SplunkOnCallCard = ({ entity }: Props) => {
+export const EntitySplunkOnCallCard = () => {
   const config = useApi(configApiRef);
   const api = useApi(splunkOnCallApiRef);
+  const { entity } = useEntity();
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [refreshIncidents, setRefreshIncidents] = useState<boolean>(false);
   const team = entity.metadata.annotations![SPLUNK_ON_CALL_TEAM];
