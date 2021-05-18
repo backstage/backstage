@@ -19,7 +19,10 @@ import {
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
+import {
+  enableBranchProtectionOnDefaultRepoBranch,
+  initRepoAndPush,
+} from '../../../stages/publish/helpers';
 import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
@@ -171,7 +174,7 @@ export function createPublishGithubAction(options: {
               description: description,
             });
 
-      const { data } = await repoCreationPromise;
+      const { data: newRepo } = await repoCreationPromise;
       if (access?.startsWith(`${owner}/`)) {
         const [, team] = access.split('/');
         await client.teams.addOrUpdateRepoPermissionsInOrg({
@@ -212,8 +215,8 @@ export function createPublishGithubAction(options: {
         }
       }
 
-      const remoteUrl = data.clone_url;
-      const repoContentsUrl = `${data.html_url}/blob/master`;
+      const remoteUrl = newRepo.clone_url;
+      const repoContentsUrl = `${newRepo.html_url}/blob/master`;
 
       await initRepoAndPush({
         dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
@@ -224,6 +227,16 @@ export function createPublishGithubAction(options: {
         },
         logger: ctx.logger,
       });
+
+      try {
+        await enableBranchProtectionOnDefaultRepoBranch({
+          owner,
+          client,
+          repoName: newRepo.name,
+        });
+      } catch (e) {
+        throw new Error(`Failed to add branch protection to '${name}', ${e}`);
+      }
 
       ctx.output('remoteUrl', remoteUrl);
       ctx.output('repoContentsUrl', repoContentsUrl);
