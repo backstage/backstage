@@ -69,10 +69,13 @@ export const createDatabase = createDatabaseClient;
 export async function ensureDatabaseExists(
   dbConfig: Config,
   ...databases: Array<string>
-) {
+): Promise<void> {
   const client: DatabaseClient = dbConfig.getString('client');
 
-  ConnectorMapping[client]?.ensureDatabaseExists?.(dbConfig, ...databases);
+  return ConnectorMapping[client]?.ensureDatabaseExists?.(
+    dbConfig,
+    ...databases,
+  );
 }
 
 /**
