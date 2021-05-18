@@ -15,21 +15,38 @@
  */
 
 import React from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route, useOutlet } from 'react-router';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
+import { getComponentData } from '@backstage/core';
+import { FieldExtensionOptions } from '../extensions';
 
 export const Router = () => {
+  const children = useOutlet();
+  const fieldExtensions = React.Children.map(children ?? [], child => {
+    if (!React.isValidElement(child)) {
+      return null;
+    }
+
+    const data = getComponentData<FieldExtensionOptions<unknown>>(
+      child,
+      'scaffolder.extensions.field.v1',
+    );
+
+    return data;
+  }).filter(Boolean);
+
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<ScaffolderPage />} />
-        <Route path="/templates/:templateName" element={<TemplatePage />} />
-        <Route path="/tasks/:taskId" element={<TaskPage />} />
-        <Route path="/actions" element={<ActionsPage />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<ScaffolderPage />} />
+      <Route
+        path="/templates/:templateName"
+        element={<TemplatePage customFieldExtensions={fieldExtensions} />}
+      />
+      <Route path="/tasks/:taskId" element={<TaskPage />} />
+      <Route path="/actions" element={<ActionsPage />} />
+    </Routes>
   );
 };

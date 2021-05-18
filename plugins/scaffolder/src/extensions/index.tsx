@@ -24,7 +24,7 @@ export type FieldExtensionOptions<T = any> = {
 
 export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
-): Extension<void> {
+): Extension<() => null> {
   return {
     expose() {
       const FieldExtensionDataHolder: any = () => null;

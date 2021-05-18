@@ -34,6 +34,7 @@ import { scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
 import { JsonObject, JsonValue } from '@backstage/config';
+import { FieldExtensionOptions } from '../../extensions';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);
@@ -132,7 +133,11 @@ const storePathValidator = (
   return errors;
 };
 
-export const TemplatePage = () => {
+export const TemplatePage = ({
+  customFieldExtensions = [],
+}: {
+  customFieldExtensions: FieldExtensionOptions[];
+}) => {
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);
   const { templateName } = useParams();
@@ -141,7 +146,6 @@ export const TemplatePage = () => {
   const { schema, loading, error } = useTemplateParameterSchema(templateName);
   const [formState, setFormState] = useState({});
   const handleFormReset = () => setFormState({});
-
   const handleChange = useCallback(
     (e: IChangeEvent) => setFormState(e.formData),
     [setFormState],
@@ -166,7 +170,14 @@ export const TemplatePage = () => {
     return <Navigate to={rootLink()} />;
   }
 
-  const { components, validators } = scaffolderApi.getCustomFields();
+  const customFieldComponents = Object.fromEntries(
+    customFieldExtensions.map(({ name, component }) => [name, component]),
+  );
+
+  const customFieldValidators = Object.fromEntries(
+    customFieldExtensions.map(({ name, validation }) => [name, validation]),
+  );
+
   return (
     <Page themeId="home">
       <Header
@@ -188,7 +199,7 @@ export const TemplatePage = () => {
           >
             <MultistepJsonForm
               formData={formState}
-              fields={Object.fromEntries(components.entries())}
+              fields={customFieldComponents}
               onChange={handleChange}
               onReset={handleFormReset}
               onFinish={handleCreate}
@@ -204,7 +215,7 @@ export const TemplatePage = () => {
 
                 return {
                   ...step,
-                  validate: createValidator(step.schema, validators),
+                  validate: createValidator(step.schema, customFieldValidators),
                 };
               })}
             />
