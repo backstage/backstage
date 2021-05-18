@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { createDatabaseClient } from './connection';
+import { createDatabaseClient, ensureDatabaseExists } from './connection';
 import { SingleConnectionDatabaseManager } from './SingleConnection';
 
 jest.mock('./connection');
@@ -84,6 +84,14 @@ describe('SingleConnectionDatabaseManager', () => {
       expect(plugin1CallArgs[1].connection.database).not.toEqual(
         plugin2CallArgs[1].connection.database,
       );
+    });
+
+    it('ensure plugin database is created', async () => {
+      await manager.forPlugin('test').getClient();
+      const mockCalls = mocked(ensureDatabaseExists).mock.calls.splice(-1);
+      const [_, database] = mockCalls[0];
+
+      expect(database).toEqual('backstage_plugin_test');
     });
   });
 });
