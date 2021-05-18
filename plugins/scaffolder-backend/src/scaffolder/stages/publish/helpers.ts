@@ -89,16 +89,15 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
 
   try {
     await client.repos.updateBranchProtection({
-      headers: {
-        Accept:
-          /**
-           * 👇 we need this header because allowing a custom
-           * reviewer count on branch protection is a preview
-           * feature.
-           *
-           * More here: https://docs.github.com/en/rest/overview/api-previews#require-multiple-approving-reviews
-           */
-          'application/vnd.github.luke-cage-preview+json',
+      mediaType: {
+        /**
+         * 👇 we need this preview because allowing a custom
+         * reviewer count on branch protection is a preview
+         * feature.
+         *
+         * More here: https://docs.github.com/en/rest/overview/api-previews#require-multiple-approving-reviews
+         */
+        previews: ['luke-cage-preview'],
       },
       owner,
       repo: repoName,
