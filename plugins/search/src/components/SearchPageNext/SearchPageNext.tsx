@@ -13,59 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Content,
-  Header,
-  Lifecycle,
-  Page,
-  useQueryParamState,
-} from '@backstage/core';
+
+import React from 'react';
+import { Content, Header, Lifecycle, Page } from '@backstage/core';
 import { Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { useDebounce } from 'react-use';
-import { SearchBar } from '../SearchBar';
-import { SearchResult } from '../SearchResult';
+import { SearchBarNext } from '../SearchBarNext';
+import { SearchResultNext } from '../SearchResultNext';
+import { SearchContextProvider } from '../SearchContext';
 
 export const SearchPageNext = () => {
-  const [queryString, setQueryString] = useQueryParamState<string>('query');
-  const [searchQuery, setSearchQuery] = useState(queryString ?? '');
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    setSearchQuery(event.target.value);
-  };
-
-  useEffect(() => setSearchQuery(queryString ?? ''), [queryString]);
-
-  useDebounce(
-    () => {
-      setQueryString(searchQuery);
-    },
-    200,
-    [searchQuery],
-  );
-
-  const handleClearSearchBar = () => {
-    setSearchQuery('');
-  };
-
   return (
-    <Page themeId="home">
-      <Header title="Search" subtitle={<Lifecycle alpha />} />
-      <Content>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <SearchBar
-              handleSearch={handleSearch}
-              handleClearSearchBar={handleClearSearchBar}
-              searchQuery={searchQuery}
-            />
+    <SearchContextProvider>
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <SearchBarNext />
+            </Grid>
+            <Grid item xs={3}>
+              {/* filter component should be rendered here */}
+              <p>filter</p>
+            </Grid>
+            <Grid item xs={9}>
+              <SearchResultNext />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <SearchResult searchQuery={(queryString ?? '').toLowerCase()} />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
+        </Content>
+      </Page>
+    </SearchContextProvider>
   );
 };
