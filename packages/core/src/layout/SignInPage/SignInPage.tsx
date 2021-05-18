@@ -98,7 +98,18 @@ export const SingleSignInPage = ({
   useEffect(() => {
     const login = async () => {
       try {
-        const identity = await authApi.getBackstageIdentity();
+        let identity;
+        // Do an initial check if any logged-in session exists
+        identity = await authApi.getBackstageIdentity({
+          optional: true,
+        });
+
+        // If no session exists, show the sign-in page
+        if (!identity) {
+          identity = await authApi.getBackstageIdentity({
+            instantPopup: true,
+          });
+        }
 
         const profile = await authApi.getProfile();
         onResult({
@@ -111,9 +122,6 @@ export const SingleSignInPage = ({
             await authApi.signOut();
           },
         });
-
-        // Don't show if login is successful
-        setShowLoginPage(false);
       } catch (err) {
         // User closed the sign-in modal
         setError(err);
@@ -162,7 +170,9 @@ export const SingleSignInPage = ({
         </Grid>
       </Content>
     </Page>
-  ) : null;
+  ) : (
+    <Progress />
+  );
 };
 
 export const SignInPage = (props: Props) => {
