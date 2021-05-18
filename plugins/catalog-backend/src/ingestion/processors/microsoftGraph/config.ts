@@ -59,7 +59,7 @@ export type MicrosoftGraphProviderConfig = {
   groupFilter?: string;
   /**
    * Skip importing groups by id.
-   * 
+   *
    * This doesn't affect the users that are part of the group.
    */
   ignoreGroupIds?: string[];
