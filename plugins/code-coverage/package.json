@@ -31,7 +31,7 @@
     "@material-ui/styles": "^4.11.0",
     "@material-ui/lab": "4.0.0-alpha.45",
     "highlight.js": "^10.6.0",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-dom": "^16.13.1",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",

@@ -50,7 +50,7 @@
     "humanize-duration": "^3.25.1",
     "immer": "^9.0.1",
     "luxon": "^1.25.0",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
     "react-router": "6.0.0-beta.0",

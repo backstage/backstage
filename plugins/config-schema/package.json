@@ -29,7 +29,7 @@
     "@material-ui/lab": "4.0.0-alpha.45",
     "jsonschema": "^1.2.6",
     "zen-observable": "^0.8.15",
-    "react": "^16.13.1",
+    "react": "^17.0.2",
     "react-dom": "^16.13.1",
     "react-use": "^17.2.4"
   },
