@@ -75,7 +75,7 @@
     "eslint-plugin-react-hooks": "^4.0.0",
     "express": "^4.17.1",
     "file-loader": "^6.2.0",
-    "fork-ts-checker-webpack-plugin": "^4.0.5",
+    "fork-ts-checker-webpack-plugin": "^6.2.9",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
     "html-webpack-plugin": "^4.3.0",
