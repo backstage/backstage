@@ -90,29 +90,43 @@ export const SingleSignInPage = ({
   const [retry, setRetry] = useState<{} | boolean | undefined>(auto);
   const [error, setError] = useState<Error>();
 
+  // The SignIn component takes some time to decide whether the user is logged-in or not.
+  // showLoginPage is used to prevent a glitch-like experience where the sign-in page is
+  // displayed for a split second when the user is already logged-in.
+  const [showLoginPage, setShowLoginPage] = useState<boolean>(false);
+
   useEffect(() => {
     const login = async () => {
-      const identity = await authApi.getBackstageIdentity();
+      try {
+        const identity = await authApi.getBackstageIdentity();
 
-      const profile = await authApi.getProfile();
-      onResult({
-        userId: identity!.id,
-        profile: profile!,
-        getIdToken: () => {
-          return authApi.getBackstageIdentity().then(i => i!.idToken);
-        },
-        signOut: async () => {
-          await authApi.signOut();
-        },
-      });
+        const profile = await authApi.getProfile();
+        onResult({
+          userId: identity!.id,
+          profile: profile!,
+          getIdToken: () => {
+            return authApi.getBackstageIdentity().then(i => i!.idToken);
+          },
+          signOut: async () => {
+            await authApi.signOut();
+          },
+        });
+
+        // Don't show if login is successful
+        setShowLoginPage(false);
+      } catch (err) {
+        // User closed the sign-in modal
+        setError(err);
+        setShowLoginPage(true);
+      }
     };
 
     if (retry) {
-      login().catch(setError);
+      login();
     }
   }, [onResult, authApi, retry]);
 
-  return (
+  return showLoginPage ? (
     <Page themeId="home">
       <Header title={configApi.getString('app.title')} />
       <Content>
@@ -148,7 +162,7 @@ export const SingleSignInPage = ({
         </Grid>
       </Content>
     </Page>
-  );
+  ) : null;
 };
 
 export const SignInPage = (props: Props) => {
