@@ -145,7 +145,7 @@ export function createPgNameOverride(name: string): Partial<Knex.Config> {
  * PostgreSQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
- * */
+ */
 export const pgConnector: DatabaseConnector = Object.freeze({
   createClient: createPgDatabaseClient,
   ensureDatabaseExists: ensurePgDatabaseExists,

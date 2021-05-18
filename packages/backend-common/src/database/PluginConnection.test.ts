@@ -83,7 +83,7 @@ describe('PluginConnectionDatabaseManager', () => {
             },
             differentclientconnstring: {
               client: 'sqlite3',
-              connection: ':inmemory:',
+              connection: ':memory:',
             },
             stringoverride: {
               connection: 'postgresql://testuser:testpass@acme:5432/userdbname',
@@ -180,7 +180,7 @@ describe('PluginConnectionDatabaseManager', () => {
           backend: {
             database: {
               client: 'sqlite3',
-              connection: ':inmemory:',
+              connection: ':memory:',
             },
           },
         }),
@@ -192,7 +192,7 @@ describe('PluginConnectionDatabaseManager', () => {
 
       expect(overrides).toHaveProperty(
         'connection.filename',
-        expect.stringContaining(':inmemory:'),
+        expect.stringContaining(':memory:'),
       );
     });
 
@@ -276,7 +276,7 @@ describe('PluginConnectionDatabaseManager', () => {
 
       expect(baseConfig.get().client).toEqual('sqlite3');
 
-      expect(overrides).toHaveProperty('connection.filename', ':inmemory:');
+      expect(overrides).toHaveProperty('connection.filename', ':memory:');
     });
 
     it('generates a database name override when prefix is not explicitly set', async () => {

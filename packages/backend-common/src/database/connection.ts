@@ -31,7 +31,7 @@ type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
  *
  * Database connectors can be aliased here, for example mysql2 uses
  * the same connector as mysql.
- * */
+ */
 const ConnectorMapping: Record<DatabaseClient, DatabaseConnector> = {
   pg: pgConnector,
   sqlite3: sqlite3Connector,
@@ -80,7 +80,7 @@ export async function ensureDatabaseExists(
 
 /**
  * Provides a Knex.Config object with the provided database name for a given client.
- * */
+ */
 export function createNameOverride(
   client: string,
   name: string,
@@ -97,7 +97,7 @@ export function createNameOverride(
 
 /**
  * Parses a connection string for a given client and provides a connection config.
- * */
+ */
 export function parseConnectionString(
   connectionString: string,
   client?: string,
@@ -119,7 +119,7 @@ export function parseConnectionString(
 
 /**
  * Normalizes a connection config or string into an object which can be passed to Knex.
- * */
+ */
 export function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string,
   client: string,

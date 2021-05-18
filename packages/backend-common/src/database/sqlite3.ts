@@ -119,7 +119,7 @@ export function parseSqliteConnectionString(
  * Sqlite3 database connector.
  *
  * Exposes database connector functionality via an immutable object.
- * */
+ */
 export const sqlite3Connector: DatabaseConnector = Object.freeze({
   createClient: createSqliteDatabaseClient,
   createNameOverride: createSqliteNameOverride,

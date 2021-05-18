@@ -74,7 +74,7 @@ export class PluginConnectionDatabaseManager {
    * the value from `PluginConnectionDatabaseManager.DEFAULT_PREFIX`.
    *
    * @param pluginId Lookup the database name for given plugin
-   * */
+   */
   getDatabaseName(pluginId: string): string {
     const pluginConfig: Config = this.getConfigForPlugin(pluginId);
 
@@ -83,7 +83,7 @@ export class PluginConnectionDatabaseManager {
     const rootSqliteName =
       typeof rootConnection === 'string'
         ? rootConnection
-        : this.config.getOptionalString('connection.filename') ?? ':inmemory:';
+        : this.config.getOptionalString('connection.filename') ?? ':memory:';
 
     const prefix =
       this.config.getOptionalString('prefix') ??
@@ -95,7 +95,7 @@ export class PluginConnectionDatabaseManager {
       pluginConfig.getOptionalString('connection.database') ??
       // attempt to lookup sqlite3 database file name
       pluginConfig.getOptionalString('connection.filename') ??
-      // if root is sqlite - attempt to use top level connection, fallback to :inmemory:
+      // if root is sqlite - attempt to use top level connection, fallback to :memory:
       (isSqlite ? rootSqliteName : null) ??
       // generate a database name using prefix and pluginId
       `${prefix}${pluginId}`
@@ -113,7 +113,7 @@ export class PluginConnectionDatabaseManager {
    * connection config will be extended with plugin specific config.
    *
    * @param pluginId The plugin that the database baseConfig should correspond to
-   * */
+   */
   private getConfigForPlugin(pluginId: string): Config {
     const pluginConfig = this.config.getOptionalConfig(pluginPath(pluginId));
 

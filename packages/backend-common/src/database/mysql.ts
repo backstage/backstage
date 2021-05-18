@@ -173,7 +173,7 @@ export function createMysqlNameOverride(name: string): Partial<Knex.Config> {
  * MySql database connector.
  *
  * Exposes database connector functionality via an immutable object.
- * */
+ */
 export const mysqlConnector: DatabaseConnector = Object.freeze({
   createClient: createMysqlDatabaseClient,
   ensureDatabaseExists: ensureMysqlDatabaseExists,

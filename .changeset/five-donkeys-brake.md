@@ -27,7 +27,7 @@ backend:
           database: 'database_name_overriden'
       scaffolder:
         client: 'sqlite3'
-        connection: ':inmemory:'
+        connection: ':memory:'
 ```
 
 Existing backstage installations can be migrated by swapping out the database
