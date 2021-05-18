@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry, ConfigReader } from '@backstage/core';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
+
 import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from '@backstage/integration-react';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+  CatalogApi,
+  catalogApiRef,
+  EntityProvider,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { EntityOrphanWarning } from './EntityOrphanWarning';
 
 describe('<EntityOrphanWarning />', () => {
+  const catalogClient: jest.Mocked<CatalogApi> = {
+    removeEntityByUid: jest.fn(),
+  } as any;
+  const apis = ApiRegistry.with(catalogApiRef, catalogClient);
+
   it('renders EntityOrphanWarning if the entity is orphan', async () => {
     const entity = {
       apiVersion: 'v1',
@@ -41,14 +47,6 @@ describe('<EntityOrphanWarning />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      ),
-    );
 
     const { getByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -59,7 +57,7 @@ describe('<EntityOrphanWarning />', () => {
     );
     expect(
       getByText(
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to unregister.',
+        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
       ),
     ).toBeInTheDocument();
   });
@@ -79,14 +77,6 @@ describe('<EntityOrphanWarning />', () => {
         lifecycle: 'production',
       },
     };
-    const apis = ApiRegistry.with(
-      scmIntegrationsApiRef,
-      ScmIntegrationsApi.fromConfig(
-        new ConfigReader({
-          integrations: {},
-        }),
-      ),
-    );
 
     const { queryByText } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -97,7 +87,7 @@ describe('<EntityOrphanWarning />', () => {
     );
     expect(
       queryByText(
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to unregister.',
+        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
       ),
     ).not.toBeInTheDocument();
   });

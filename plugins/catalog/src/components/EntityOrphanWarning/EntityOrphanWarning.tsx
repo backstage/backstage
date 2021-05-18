@@ -18,7 +18,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+import { DeleteEntityDialog } from './DeleteEntityDialog';
 
 /**
  * Displays a warning alert if the entity is marked as orphan with the ability to delete said entity.
@@ -28,10 +28,7 @@ export const EntityOrphanWarning = () => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   const { entity } = useEntity();
-  if (
-    !entity.metadata?.annotations ||
-    entity.metadata?.annotations['backstage.io/orphan'] !== 'true'
-  ) {
+  if (entity.metadata?.annotations?.['backstage.io/orphan'] !== 'true') {
     return null;
   }
 
@@ -44,9 +41,9 @@ export const EntityOrphanWarning = () => {
     <>
       <Alert severity="warning" onClick={() => setConfirmationDialogOpen(true)}>
         This entity is not referenced by any location and is therefore not
-        receiving updates. Click here to unregister.
+        receiving updates. Click here to delete.
       </Alert>
-      <UnregisterEntityDialog
+      <DeleteEntityDialog
         open={confirmationDialogOpen}
         entity={entity!}
         onConfirm={cleanUpAfterRemoval}
