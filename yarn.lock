@@ -97,9 +97,9 @@
     tiny-merge-patch "^0.1.2"
 
 "@asyncapi/react-component@^0.23.0":
-  version "0.23.0"
-  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.23.0.tgz#dce9a95cd0fb0d9f0364278088ad31194d411d52"
-  integrity sha512-mX70k3j5eSM7ets8BBZWnu6RsNXapLKD/7np+dMeXFk7KFbigVQXXr3hS0k2R+c8tRfkhlklicibq5ar1+fjDA==
+  version "0.23.1"
+  resolved "https://registry.npmjs.org/@asyncapi/react-component/-/react-component-0.23.1.tgz#6ae574aac86d835e6845268d49803c4808f37b97"
+  integrity sha512-xBH8F//sF4Sb7M95eVDnQDG+czklQieFKHkCr8SJmmb2j4NylAOTJBoYSZJ3QTC9r0O+SxdQglwh+u1mhMAU+A==
   dependencies:
     "@asyncapi/avro-schema-parser" "^0.2.1"
     "@asyncapi/openapi-schema-parser" "^2.0.1"
