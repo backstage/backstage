@@ -51,7 +51,7 @@ export const SplunkOnCallPage = splunkOnCallPlugin.provide(
   }),
 );
 
-export const SplunkOnCallCard = splunkOnCallPlugin.provide(
+export const EntitySplunkOnCallCard = splunkOnCallPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>

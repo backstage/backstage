@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export {
-  SplunkOnCallCard,
+  EntitySplunkOnCallCard,
   splunkOnCallPlugin,
   splunkOnCallPlugin as plugin,
   SplunkOnCallPage,
