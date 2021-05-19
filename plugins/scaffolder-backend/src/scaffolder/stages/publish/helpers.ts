@@ -109,9 +109,9 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
     if (!e.message.includes('Branch not found')) {
       throw e;
     }
-  }
 
-  // GitHub has eventual consistency. Fail silently, wait, and try again.
-  await new Promise(resolve => setTimeout(resolve, 600));
-  await tryOnce();
+    // GitHub has eventual consistency. Fail silently, wait, and try again.
+    await new Promise(resolve => setTimeout(resolve, 600));
+    await tryOnce();
+  }
 };
