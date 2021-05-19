@@ -44,6 +44,7 @@ export class LunrSearchEngine implements SearchEngine {
     types,
   }: SearchQuery): ConcreteLunrQuery => {
     let lunrQueryFilters;
+    const lunrTerm = term ? `+${term}` : '';
     if (filters) {
       lunrQueryFilters = Object.entries(filters)
         .map(([key, value]) => ` +${key}:${value}`)
@@ -51,7 +52,7 @@ export class LunrSearchEngine implements SearchEngine {
     }
 
     return {
-      lunrQueryString: `${term}${lunrQueryFilters || ''}`,
+      lunrQueryString: `${lunrTerm}${lunrQueryFilters || ''}`,
       documentTypes: types || ['*'],
     };
   };
