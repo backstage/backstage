@@ -22,6 +22,9 @@ export type FieldExtensionOptions<T = any> = {
   validation?: (data: T, field: FieldValidation) => void;
 };
 
+export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
+export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
+
 export function createScaffolderFieldExtension<T = any>(
   options: FieldExtensionOptions<T>,
 ): Extension<() => null> {
@@ -31,11 +34,27 @@ export function createScaffolderFieldExtension<T = any>(
 
       attachComponentData(
         FieldExtensionDataHolder,
-        'scaffolder.extensions.field.v1',
+        FIELD_EXTENSION_KEY,
         options,
       );
 
       return FieldExtensionDataHolder;
+    },
+  };
+}
+
+export function createScaffolderFieldExtensionWrapper(): Extension<() => null> {
+  return {
+    expose() {
+      const FieldExtensionWrapperDataHolder: any = () => null;
+
+      attachComponentData(
+        FieldExtensionWrapperDataHolder,
+        FIELD_EXTENSION_WRAPPER_KEY,
+        true,
+      );
+
+      return FieldExtensionWrapperDataHolder;
     },
   };
 }

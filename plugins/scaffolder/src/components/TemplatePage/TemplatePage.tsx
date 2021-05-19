@@ -56,9 +56,9 @@ function isObject(obj: unknown): obj is JsonObject {
 
 export const createValidator = (
   rootSchema: JsonObject,
-  validators: Map<
+  validators: Record<
     string,
-    (value: JsonValue, validation: FieldValidation) => void
+    undefined | ((value: JsonValue, validation: FieldValidation) => void)
   >,
 ) => {
   function validate(
@@ -87,8 +87,8 @@ export const createValidator = (
         const propSchema = schemaProps[key];
         const fieldName =
           isObject(propSchema) && (propSchema['ui:field'] as string);
-        if (fieldName && validators.has(fieldName)) {
-          validators.get(fieldName)!(propData as JsonValue, propValidation);
+        if (fieldName && typeof validators[fieldName] === 'function') {
+          validators[fieldName]!(propData as JsonValue, propValidation);
         }
       }
     }

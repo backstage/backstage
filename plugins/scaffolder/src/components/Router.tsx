@@ -20,23 +20,20 @@ import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
-import { getComponentData } from '@backstage/core';
-import { FieldExtensionOptions } from '../extensions';
+import {
+  FieldExtensionOptions,
+  FIELD_EXTENSION_WRAPPER_KEY,
+  FIELD_EXTENSION_KEY,
+} from '../extensions';
+import { collect, collectChildren } from '../extensions/helpers';
 
 export const Router = () => {
-  const children = useOutlet();
-  const fieldExtensions = React.Children.map(children ?? [], child => {
-    if (!React.isValidElement(child)) {
-      return null;
-    }
+  const outlet = useOutlet();
 
-    const data = getComponentData<FieldExtensionOptions<unknown>>(
-      child,
-      'scaffolder.extensions.field.v1',
-    );
-
-    return data;
-  }).filter(Boolean);
+  const fieldExtensions = collect<FieldExtensionOptions>(
+    collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
+    FIELD_EXTENSION_KEY,
+  );
 
   return (
     <Routes>

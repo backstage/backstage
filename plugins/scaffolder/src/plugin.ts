@@ -26,7 +26,10 @@ import { OwnerPicker } from './components/fields/OwnerPicker';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import { createScaffolderFieldExtension } from './extensions';
+import {
+  createScaffolderFieldExtension,
+  createScaffolderFieldExtensionWrapper,
+} from './extensions';
 import { rootRouteRef, registerComponentRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
@@ -76,9 +79,14 @@ export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
     name: 'OwnerPicker',
   }),
 );
+
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
+);
+
+export const ScaffolderCustomFields = scaffolderPlugin.provide(
+  createScaffolderFieldExtensionWrapper(),
 );

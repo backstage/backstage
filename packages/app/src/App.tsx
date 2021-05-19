@@ -47,6 +47,7 @@ import {
   scaffolderPlugin,
   OwnerPickerFieldExtension,
   RepoUrlPickerFieldExtension,
+  ScaffolderCustomFields,
 } from '@backstage/plugin-scaffolder';
 import { SearchPage, SearchPageNext } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
@@ -113,8 +114,10 @@ const routes = (
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />}>
-      <RepoUrlPickerFieldExtension />
-      <OwnerPickerFieldExtension />
+      <ScaffolderCustomFields>
+        <RepoUrlPickerFieldExtension />
+        <OwnerPickerFieldExtension />
+      </ScaffolderCustomFields>
     </Route>
     <Route path="/explore" element={<ExplorePage />} />
     <Route
