@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiProvider, ApiRegistry, createRouteRef } from '@backstage/core';
+import { ApiProvider, ApiRegistry } from '@backstage/core';
 
 import {
   CatalogApi,
