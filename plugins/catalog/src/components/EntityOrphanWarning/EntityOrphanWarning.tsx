@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { DeleteEntityDialog } from './DeleteEntityDialog';
+
+export const isOrphan = (entity: Entity) =>
+  entity?.metadata?.annotations?.['backstage.io/orphan'] === 'true';
 
 /**
  * Displays a warning alert if the entity is marked as orphan with the ability to delete said entity.
@@ -28,7 +32,7 @@ export const EntityOrphanWarning = () => {
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
   const { entity } = useEntity();
-  if (entity.metadata?.annotations?.['backstage.io/orphan'] !== 'true') {
+  if (entity?.metadata?.annotations?.['backstage.io/orphan'] !== 'true') {
     return null;
   }
 

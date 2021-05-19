@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { EntityOrphanWarning } from './EntityOrphanWarning';
+export { EntityOrphanWarning, isOrphan } from './EntityOrphanWarning';
