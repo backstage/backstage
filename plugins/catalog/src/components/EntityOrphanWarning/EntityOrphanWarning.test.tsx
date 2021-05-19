@@ -61,34 +61,4 @@ describe('<EntityOrphanWarning />', () => {
       ),
     ).toBeInTheDocument();
   });
-
-  it('does not render EntityOrphanWarning if the entity is not orphan', async () => {
-    const entity = {
-      apiVersion: 'v1',
-      kind: 'Component',
-      metadata: {
-        name: 'software',
-        description: 'This is the description',
-      },
-
-      spec: {
-        owner: 'guest',
-        type: 'service',
-        lifecycle: 'production',
-      },
-    };
-
-    const { queryByText } = await renderInTestApp(
-      <ApiProvider apis={apis}>
-        <EntityProvider entity={entity}>
-          <EntityOrphanWarning />
-        </EntityProvider>
-      </ApiProvider>,
-    );
-    expect(
-      queryByText(
-        'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.',
-      ),
-    ).not.toBeInTheDocument();
-  });
 });

@@ -30,11 +30,7 @@ export const isOrphan = (entity: Entity) =>
 export const EntityOrphanWarning = () => {
   const navigate = useNavigate();
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
-
   const { entity } = useEntity();
-  if (entity?.metadata?.annotations?.['backstage.io/orphan'] !== 'true') {
-    return null;
-  }
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
