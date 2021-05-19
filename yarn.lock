@@ -6573,9 +6573,9 @@
     "@types/reactcss" "*"
 
 "@types/react-dev-utils@^9.0.4":
-  version "9.0.5"
-  resolved "https://registry.npmjs.org/@types/react-dev-utils/-/react-dev-utils-9.0.5.tgz#3265699edaba0078256d91b7793f98c4fb9bf6cf"
-  integrity sha512-uUsdRdc4LU1WQrfw3htnRIRchyOOsBnmnByK6H3oZMBdjmeyH1f7Cfy64YixQ3T3Dzy5gwGilcJVSDyOFjVBWQ==
+  version "9.0.6"
+  resolved "https://registry.npmjs.org/@types/react-dev-utils/-/react-dev-utils-9.0.6.tgz#c5d74358786ecd06caea3bd7b3af3195f53c73e4"
+  integrity sha512-CtrGzH+tSw4MCAZ92QzchrCq8kES/NUUu1kAXeeDXJyb7hRzucry0sRk/bcSwBR8dJJY7N7oaEDranyyOcX3hQ==
   dependencies:
     "@types/eslint" "*"
     "@types/express" "*"
