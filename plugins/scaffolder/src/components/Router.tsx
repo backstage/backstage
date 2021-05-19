@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
@@ -31,9 +31,13 @@ import { collectComponentData, collectChildren } from '../extensions/helpers';
 export const Router = () => {
   const outlet = useOutlet();
 
-  const fieldExtensions = collectComponentData<FieldExtensionOptions>(
-    collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
-    FIELD_EXTENSION_KEY,
+  const fieldExtensions = useMemo(
+    () =>
+      collectComponentData<FieldExtensionOptions>(
+        collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
+        FIELD_EXTENSION_KEY,
+      ),
+    [outlet],
   );
 
   return (
