@@ -20,6 +20,15 @@ import { Grid } from '@material-ui/core';
 import { SearchBarNext } from '../SearchBarNext';
 import { SearchResultNext } from '../SearchResultNext';
 import { SearchContextProvider } from '../SearchContext';
+import { FiltersNext, FilterType } from '../FiltersNext';
+
+const exampleFilterDefinition = [
+  {
+    field: 'lifecycle',
+    type: FilterType.CHECKBOX,
+    values: ['exerpimental', 'production'],
+  },
+];
 
 export const SearchPageNext = () => {
   return (
@@ -32,8 +41,7 @@ export const SearchPageNext = () => {
               <SearchBarNext />
             </Grid>
             <Grid item xs={3}>
-              {/* filter component should be rendered here */}
-              <p>filter</p>
+              <FiltersNext definitions={exampleFilterDefinition} />
             </Grid>
             <Grid item xs={9}>
               <SearchResultNext />
