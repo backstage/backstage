@@ -15,7 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { useEntity } from '@backstage/plugin-catalog-react';
+import { useRouteRef } from '@backstage/core';
+import { catalogRouteRef, useEntity } from '@backstage/plugin-catalog-react';
 import { Alert } from '@material-ui/lab';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -29,12 +30,13 @@ export const isOrphan = (entity: Entity) =>
  */
 export const EntityOrphanWarning = () => {
   const navigate = useNavigate();
+  const catalogLink = useRouteRef(catalogRouteRef);
   const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const { entity } = useEntity();
 
   const cleanUpAfterRemoval = async () => {
     setConfirmationDialogOpen(false);
-    navigate('/');
+    navigate(catalogLink());
   };
 
   return (
