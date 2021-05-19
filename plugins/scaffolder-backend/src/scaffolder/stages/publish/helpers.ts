@@ -80,10 +80,9 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   repoName,
   client,
   owner,
-  isRetry = false,
 }: BranchProtectionOptions): Promise<void> => {
-  try {
-    await client.repos.updateBranchProtection({
+  const tryOnce = () => {
+    return client.repos.updateBranchProtection({
       mediaType: {
         /**
          * 👇 we need this preview because allowing a custom
@@ -102,21 +101,17 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
       enforce_admins: true,
       required_pull_request_reviews: { required_approving_review_count: 1 },
     });
+  };
+
+  try {
+    await tryOnce();
   } catch (e) {
-    if (!isRetry && e.message.includes('Branch not found')) {
-      // GitHub has eventual consistency. Fail silently, wait, and try again.
-      await new Promise(resolve => setTimeout(resolve, 600));
-
-      await enableBranchProtectionOnDefaultRepoBranch({
-        repoName,
-        client,
-        owner,
-        isRetry: true,
-      });
-
-      return;
+    if (!e.message.includes('Branch not found')) {
+      throw e;
     }
-
-    throw e;
   }
+
+  // GitHub has eventual consistency. Fail silently, wait, and try again.
+  await new Promise(resolve => setTimeout(resolve, 600));
+  await tryOnce();
 };
