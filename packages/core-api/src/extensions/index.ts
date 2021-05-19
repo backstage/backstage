@@ -20,4 +20,3 @@ export {
   createRoutableExtension,
   createComponentExtension,
 } from './extensions';
-export type { ComponentLoader } from './extensions';

@@ -136,7 +136,7 @@ const storePathValidator = (
 export const TemplatePage = ({
   customFieldExtensions = [],
 }: {
-  customFieldExtensions: FieldExtensionOptions[];
+  customFieldExtensions?: FieldExtensionOptions[];
 }) => {
   const errorApi = useApi(errorApiRef);
   const scaffolderApi = useApi(scaffolderApiRef);

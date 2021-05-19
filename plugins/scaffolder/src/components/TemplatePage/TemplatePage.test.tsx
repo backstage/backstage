@@ -200,20 +200,23 @@ describe('TemplatePage', () => {
 
 describe('createValidator', () => {
   it('should validate deep schema', () => {
-    const validator = createValidator({
-      type: 'object',
-      properties: {
-        foo: {
-          type: 'object',
-          properties: {
-            bar: {
-              type: 'string',
-              'ui:field': 'RepoUrlPicker',
+    const validator = createValidator(
+      {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'object',
+            properties: {
+              bar: {
+                type: 'string',
+                'ui:field': 'RepoUrlPicker',
+              },
             },
           },
         },
       },
-    });
+      {},
+    );
 
     const errors = { foo: { bar: { addError: jest.fn() } } };
     validator({ foo: { bar: 'github.com?owner=a' } }, errors as any);
