@@ -24,7 +24,7 @@ import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
 import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
-import { useBuilds } from '../useBuilds';
+import { ErrorType, useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
@@ -76,6 +76,23 @@ const WidgetContent = ({
   );
 };
 
+const JenkinsApiErrorPanel = ({
+  message,
+  errorType,
+}: {
+  message: string;
+  errorType: ErrorType;
+}) => {
+  let title = undefined;
+  if (errorType === ErrorType.CONNECTION_ERROR) {
+    title = "Can't connect to Jenkins";
+  } else if (errorType === ErrorType.NOT_FOUND) {
+    title = "Can't find Jenkins project";
+  }
+
+  return <WarningPanel severity="error" title={title} message={message} />;
+};
+
 export const LatestRunCard = ({
   branch = 'master',
   variant,
@@ -95,7 +112,10 @@ export const LatestRunCard = ({
           latestRun={latestRun}
         />
       ) : (
-        <WarningPanel severity="error" message={error.message} />
+        <JenkinsApiErrorPanel
+          message={error.message}
+          errorType={error.errorType}
+        />
       )}
     </InfoCard>
   );

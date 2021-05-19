@@ -18,6 +18,11 @@ import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 
+export enum ErrorType {
+  CONNECTION_ERROR,
+  NOT_FOUND,
+}
+
 export function useBuilds(projectName: string, branch?: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
@@ -25,7 +30,10 @@ export function useBuilds(projectName: string, branch?: string) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
-  const [error, setError] = useState<Error>();
+  const [error, setError] = useState<{
+    message: string;
+    errorType: ErrorType;
+  }>();
 
   const restartBuild = async (buildName: string) => {
     try {
@@ -49,7 +57,10 @@ export function useBuilds(projectName: string, branch?: string) {
 
       return build || [];
     } catch (e) {
-      setError(e);
+      const errorType = e.notFound
+        ? ErrorType.NOT_FOUND
+        : ErrorType.CONNECTION_ERROR;
+      setError({ message: e.message, errorType });
       throw e;
     }
   }, [api, errorApi, projectName, branch]);
