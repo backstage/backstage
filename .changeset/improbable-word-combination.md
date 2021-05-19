@@ -2,15 +2,16 @@
 '@backstage/backend-common': patch
 ---
 
-Plugin developers may now provide handlers for connection errors emitted by cache stores.
+All cache-related connection errors are now handled and logged by the cache manager. App Integrators may provide an optional error handler when instantiating the cache manager if custom error handling is needed.
 
 ```typescript
 // Providing an error handler
-const cacheClient = somePluginCache.getClient({
-  defaultTtl: 3600000,
+const cacheManager = CacheManager.fromConfig(config, {
   onError: e => {
-    logger.error(`There was a cache connection problem: ${e.message}`);
-    execOtherErrorHandlingLogic();
+    if (isSomehowUnrecoverable(e)) {
+      gracefullyShutThingsDown();
+      process.exit(1);
+    }
   },
 });
 ```

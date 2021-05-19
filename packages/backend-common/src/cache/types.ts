@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Logger } from 'winston';
 import { CacheClient } from './CacheClient';
 
 type ClientOptions = {
@@ -23,12 +24,21 @@ type ClientOptions = {
    * can be configured per entry at set-time).
    */
   defaultTtl?: number;
+};
+
+export type OptionalOnError = ((err: Error) => void) | undefined;
+
+export type CacheManagerOptions = {
+  /**
+   * An optional logger for use by the PluginCacheManager.
+   */
+  logger?: Logger;
 
   /**
    * An optional handler for connection errors emitted from the underlying data
    * store.
    */
-  onError?: (err: Error) => void;
+  onError?: OptionalOnError;
 };
 
 /**

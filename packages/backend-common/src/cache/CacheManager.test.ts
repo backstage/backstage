@@ -88,13 +88,12 @@ describe('CacheManager', () => {
 
     it('attaches error handler to client', () => {
       const pluginId = 'error-test';
-      const handler = jest.fn();
-      manager.forPlugin(pluginId).getClient({ onError: handler });
+      manager.forPlugin(pluginId).getClient();
 
       const client = DefaultCacheClient as jest.Mock;
       const mockCalls = client.mock.calls.splice(-1);
       const realClient = mockCalls[0][0].client as Keyv;
-      expect(realClient.on).toHaveBeenCalledWith('error', handler);
+      expect(realClient.on).toHaveBeenCalledWith('error', expect.any(Function));
     });
 
     it('provides different plugins different cache clients', async () => {
@@ -172,6 +171,55 @@ describe('CacheManager', () => {
       const memcache = KeyvMemcache as jest.Mock;
       const mockMemcacheCalls = memcache.mock.calls.splice(-1);
       expect(mockMemcacheCalls[0][0]).toEqual(expectedHost);
+    });
+  });
+
+  describe('connection errors', () => {
+    it('uses provided logger', () => {
+      // Set up and inject mock logger.
+      const mockLogger = { child: jest.fn(), error: jest.fn() };
+      mockLogger.child.mockImplementation(() => mockLogger as any);
+      const manager = CacheManager.fromConfig(defaultConfig(), {
+        logger: mockLogger as any,
+      });
+
+      // Set up a cache client using the configured manager.
+      manager.forPlugin('error-logger-test').getClient();
+
+      // Retrieve the error handler attached to the cache client.
+      const client = DefaultCacheClient as jest.Mock;
+      const mockCalls = client.mock.calls.splice(-1);
+      const realClient = mockCalls[0][0].client as Keyv;
+      const realOnError = realClient.on as jest.Mock;
+      const realHandler = realOnError.mock.calls.splice(-1)[0][1];
+
+      // Invoke the actual error handler.
+      const expectedError = new Error('some error');
+      realHandler(expectedError);
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
+    });
+
+    it('calls provided handler', () => {
+      // Set up and inject mock logger.
+      const mockHandler = jest.fn();
+      const manager = CacheManager.fromConfig(defaultConfig(), {
+        onError: mockHandler,
+      });
+
+      // Set up a cache client using the configured manager.
+      manager.forPlugin('error-handler-test').getClient();
+
+      // Retrieve the error handler attached to the cache client.
+      const client = DefaultCacheClient as jest.Mock;
+      const mockCalls = client.mock.calls.splice(-1);
+      const realClient = mockCalls[0][0].client as Keyv;
+      const realOnError = realClient.on as jest.Mock;
+      const realHandler = realOnError.mock.calls.splice(-1)[0][1];
+
+      // Invoke the actual error handler.
+      const expectedError = new Error('some error');
+      realHandler(expectedError);
+      expect(mockHandler).toHaveBeenCalledWith(expectedError);
     });
   });
 });

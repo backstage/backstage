@@ -18,9 +18,15 @@ import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 // @ts-expect-error
 import KeyvMemcache from 'keyv-memcache';
+import { Logger } from 'winston';
+import { getRootLogger } from '../logging';
 import { DefaultCacheClient, CacheClient } from './CacheClient';
 import { NoStore } from './NoStore';
-import { PluginCacheManager } from './types';
+import {
+  CacheManagerOptions,
+  OptionalOnError,
+  PluginCacheManager,
+} from './types';
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients
@@ -38,8 +44,10 @@ export class CacheManager {
     none: this.getNoneClient,
   };
 
+  private readonly logger: Logger;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
+  private readonly errorHandler: OptionalOnError;
 
   /**
    * Creates a new CacheManager instance by reading from the `backend` config
@@ -47,21 +55,34 @@ export class CacheManager {
    *
    * @param config The loaded application configuration.
    */
-  static fromConfig(config: Config): CacheManager {
+  static fromConfig(
+    config: Config,
+    options: CacheManagerOptions = {},
+  ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with a "NoStore" cache client.
     const store = config.getOptionalString('backend.cache.store') || 'none';
     const connectionString =
       config.getOptionalString('backend.cache.connection') || '';
-    return new CacheManager(store, connectionString);
+    const logger = (options.logger || getRootLogger()).child({
+      type: 'cacheManager',
+    });
+    return new CacheManager(store, connectionString, logger, options.onError);
   }
 
-  private constructor(store: string, connectionString: string) {
+  private constructor(
+    store: string,
+    connectionString: string,
+    logger: Logger,
+    errorHandler: OptionalOnError,
+  ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
       throw new Error(`Unknown cache store: ${store}`);
     }
+    this.logger = logger;
     this.store = store as keyof CacheManager['storeFactories'];
     this.connection = connectionString;
+    this.errorHandler = errorHandler;
   }
 
   /**
@@ -74,10 +95,16 @@ export class CacheManager {
       getClient: (opts = {}): CacheClient => {
         const concreteClient = this.getClientWithTtl(pluginId, opts.defaultTtl);
 
-        // Attach error handler if provided.
-        if (typeof opts?.onError === 'function') {
-          concreteClient.on('error', opts.onError);
-        }
+        // Always provide an error handler to avoid killing the process.
+        concreteClient.on('error', (err: Error) => {
+          // In all cases, just log the error.
+          this.logger.error(err);
+
+          // Invoke any custom error handler if provided.
+          if (typeof this.errorHandler === 'function') {
+            this.errorHandler(err);
+          }
+        });
 
         return new DefaultCacheClient({
           client: concreteClient,
