@@ -37,7 +37,7 @@ const DefaultResultListItem = ({ result }: any) => {
 
 export const SearchResultNext = () => {
   const {
-    resultState: { loading, error, value },
+    result: { loading, error, value },
   } = useSearch();
 
   if (loading) {
@@ -58,9 +58,10 @@ export const SearchResultNext = () => {
   return (
     <List>
       {value.results.map(result => (
-        <>
-          <DefaultResultListItem result={result.document} />
-        </>
+        <DefaultResultListItem
+          key={result.document.location}
+          result={result.document}
+        />
       ))}
     </List>
   );

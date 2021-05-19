@@ -34,16 +34,13 @@ const useStyles = makeStyles(() => ({
 
 export const SearchBarNext = () => {
   const classes = useStyles();
-  const {
-    queryState: { term },
-    setQueryState,
-  } = useSearch();
+  const { term, setTerm, setPageCursor } = useSearch();
 
   const [queryString, setQueryString] = useQueryParamState<string>('query');
 
   useEffect(() => {
-    setQueryState({ term: queryString ?? '', pageCursor: '' });
-  }, [queryString, setQueryState]);
+    setTerm(queryString ?? '');
+  }, [queryString, setTerm]);
 
   useDebounce(
     () => {
@@ -55,14 +52,12 @@ export const SearchBarNext = () => {
 
   const handleSearch = (event: React.ChangeEvent | React.FormEvent) => {
     event.preventDefault();
-    setQueryState({
-      term: (event.target as HTMLInputElement).value,
-      pageCursor: '',
-    });
+    setTerm((event.target as HTMLInputElement).value as string);
   };
 
   const handleClearSearchBar = () => {
-    setQueryState({ term: '', pageCursor: '' });
+    setTerm('');
+    setPageCursor('');
   };
 
   return (

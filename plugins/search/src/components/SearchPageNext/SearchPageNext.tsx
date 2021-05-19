@@ -22,11 +22,16 @@ import { SearchResultNext } from '../SearchResultNext';
 import { SearchContextProvider } from '../SearchContext';
 import { FiltersNext, FilterType } from '../FiltersNext';
 
-const exampleFilterDefinition = [
+const defaultFilterDefinitions = [
+  {
+    field: 'kind',
+    type: FilterType.SELECT,
+    values: ['Component', 'Template'],
+  },
   {
     field: 'lifecycle',
     type: FilterType.CHECKBOX,
-    values: ['exerpimental', 'production'],
+    values: ['experimental', 'production'],
   },
 ];
 
@@ -41,7 +46,7 @@ export const SearchPageNext = () => {
               <SearchBarNext />
             </Grid>
             <Grid item xs={3}>
-              <FiltersNext definitions={exampleFilterDefinition} />
+              <FiltersNext definitions={defaultFilterDefinitions} />
             </Grid>
             <Grid item xs={9}>
               <SearchResultNext />

@@ -181,6 +181,7 @@ export const FiltersNext = ({ definitions }: FiltersProps) => {
           case 'checkbox':
             return (
               <CheckBoxFilter
+                key={definition.field}
                 fieldName={definition.field}
                 values={definition.values}
               />
@@ -188,6 +189,7 @@ export const FiltersNext = ({ definitions }: FiltersProps) => {
           case 'select':
             return (
               <SelectFilter
+                key={definition.field}
                 fieldName={definition.field}
                 values={definition.values}
               />
