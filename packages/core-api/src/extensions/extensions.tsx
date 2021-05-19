@@ -20,7 +20,7 @@ import { BackstagePlugin, Extension } from '../plugin/types';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 
-export type ComponentLoader<T> =
+type ComponentLoader<T> =
   | {
       lazy: () => Promise<T>;
     }

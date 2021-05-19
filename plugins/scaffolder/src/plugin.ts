@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/config';
 import {
   createApiFactory,
   createPlugin,
@@ -26,10 +25,7 @@ import { OwnerPicker } from './components/fields/OwnerPicker';
 import { RepoUrlPicker } from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
-import {
-  createScaffolderFieldExtension,
-  createScaffolderFieldExtensionWrapper,
-} from './extensions';
+import { createScaffolderFieldExtension } from './extensions';
 import { rootRouteRef, registerComponentRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
@@ -55,8 +51,7 @@ export const scaffolderPlugin = createPlugin({
 });
 
 export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
-  createScaffolderFieldExtension<string>({
-    // TODO(blam): work out how to fix these types properly.
+  createScaffolderFieldExtension({
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
     validation: (value, validation) => {
@@ -73,8 +68,7 @@ export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
 );
 
 export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
-  createScaffolderFieldExtension<string>({
-    // TODO(blam): work out how to fix these types properly.
+  createScaffolderFieldExtension({
     component: OwnerPicker,
     name: 'OwnerPicker',
   }),
@@ -85,8 +79,4 @@ export const ScaffolderPage = scaffolderPlugin.provide(
     component: () => import('./components/Router').then(m => m.Router),
     mountPoint: rootRouteRef,
   }),
-);
-
-export const ScaffolderCustomFields = scaffolderPlugin.provide(
-  createScaffolderFieldExtensionWrapper(),
 );

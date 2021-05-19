@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Extension, attachComponentData } from '@backstage/core';
 import { FieldValidation, FieldProps } from '@rjsf/core';
+import React from 'react';
 
 export type FieldExtensionOptions<T = any> = {
   name: string;
@@ -43,18 +45,5 @@ export function createScaffolderFieldExtension<T = any>(
   };
 }
 
-export function createScaffolderFieldExtensionWrapper(): Extension<() => null> {
-  return {
-    expose() {
-      const FieldExtensionWrapperDataHolder: any = () => null;
-
-      attachComponentData(
-        FieldExtensionWrapperDataHolder,
-        FIELD_EXTENSION_WRAPPER_KEY,
-        true,
-      );
-
-      return FieldExtensionWrapperDataHolder;
-    },
-  };
-}
+export const ScaffolderCustomFields: React.ComponentType = () => null;
+attachComponentData(ScaffolderCustomFields, FIELD_EXTENSION_WRAPPER_KEY, true);

@@ -16,7 +16,7 @@
 import React from 'react';
 import { getComponentData } from '@backstage/core';
 
-export const collect = <T>(
+export const collectComponentData = <T>(
   children: React.ReactNode,
   componentDataKey: string,
 ) => {

@@ -20,7 +20,7 @@ export {
   ScaffolderPage,
   OwnerPickerFieldExtension,
   RepoUrlPickerFieldExtension,
-  ScaffolderCustomFields,
 } from './plugin';
+export { ScaffolderCustomFields } from './extensions';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';

@@ -20,17 +20,18 @@ import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
+
 import {
   FieldExtensionOptions,
   FIELD_EXTENSION_WRAPPER_KEY,
   FIELD_EXTENSION_KEY,
 } from '../extensions';
-import { collect, collectChildren } from '../extensions/helpers';
+import { collectComponentData, collectChildren } from '../extensions/helpers';
 
 export const Router = () => {
   const outlet = useOutlet();
 
-  const fieldExtensions = collect<FieldExtensionOptions>(
+  const fieldExtensions = collectComponentData<FieldExtensionOptions>(
     collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
     FIELD_EXTENSION_KEY,
   );
