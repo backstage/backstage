@@ -16,7 +16,6 @@
 
 import { Config } from '@backstage/config';
 import express from 'express';
-import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
@@ -25,13 +24,9 @@ import {
   TemplaterBuilder,
   TemplaterValues,
   PublisherBuilder,
-  parseLocationAnnotation,
-  joinGitUrlPath,
-  FilePreparer,
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
-import { validate, ValidatorResult } from 'jsonschema';
-import parseGitUrl from 'git-url-parse';
+import { validate } from 'jsonschema';
 import {
   DatabaseTaskStore,
   StorageTaskBroker,
@@ -101,7 +96,6 @@ export async function createRouter(
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
-  const jobProcessor = await JobProcessor.fromConfig({ config, logger });
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
 
