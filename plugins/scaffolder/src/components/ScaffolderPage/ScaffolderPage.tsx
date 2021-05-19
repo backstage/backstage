@@ -176,6 +176,7 @@ export const ScaffolderPageContents = () => {
                 matchingEntities?.length > 0 &&
                 matchingEntities.map(template => (
                   <TemplateCard
+                    key={i}
                     template={template}
                     deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
                   />
