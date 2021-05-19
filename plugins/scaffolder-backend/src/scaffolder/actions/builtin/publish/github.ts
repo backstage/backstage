@@ -235,7 +235,9 @@ export function createPublishGithubAction(options: {
           repoName: newRepo.name,
         });
       } catch (e) {
-        throw new Error(`Failed to add branch protection to '${name}', ${e}`);
+        throw new Error(
+          `Failed to add branch protection to '${newRepo.name}', ${e}`,
+        );
       }
 
       ctx.output('remoteUrl', remoteUrl);
