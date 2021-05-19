@@ -21,18 +21,18 @@ import {
 import { TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Field } from '@rjsf/core';
+import { FieldProps } from '@rjsf/core';
 import React from 'react';
 import { useAsync } from 'react-use';
 
-export const EntityPicker: Field = ({
+export const EntityPicker = ({
   onChange,
   schema: { title = 'Entity', description = 'An entity from the catalog' },
   required,
   uiSchema,
   rawErrors,
   formData,
-}) => {
+}: FieldProps<string>) => {
   const allowedKinds = uiSchema['ui:options']?.allowedKinds as string[];
   const defaultKind = uiSchema['ui:options']?.defaultKind as string | undefined;
   const catalogApi = useApi(catalogApiRef);

@@ -21,15 +21,16 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
-import { OwnerPicker } from './components/fields/OwnerPicker';
-import {
-  RepoUrlPicker,
-  repoPickerValidation,
-} from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
+import { EntityPicker } from './components/fields/EntityPicker';
+import { OwnerPicker } from './components/fields/OwnerPicker';
+import {
+  repoPickerValidation,
+  RepoUrlPicker,
+} from './components/fields/RepoUrlPicker';
 import { createScaffolderFieldExtension } from './extensions';
-import { rootRouteRef, registerComponentRouteRef } from './routes';
+import { registerComponentRouteRef, rootRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -52,6 +53,13 @@ export const scaffolderPlugin = createPlugin({
     registerComponent: registerComponentRouteRef,
   },
 });
+
+export const EntityPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityPicker,
+    name: 'EntityPicker',
+  }),
+);
 
 export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
