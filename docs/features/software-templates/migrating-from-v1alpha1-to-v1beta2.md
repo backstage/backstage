@@ -14,12 +14,11 @@ steps which was pretty hard to extend and add new functionality to, difficult to
 re-use logic between templates. There used to be a fixed pipeline of
 `preparers`, `templaters`, and `publishers`, which were defined by the backend
 and needed to be run for each template. This is now changed, to give the
-template total control over what
-
-should be executed as part of the templating run. This makes templates a little
-more declarative as you can now register different `actions` or `functions` with
-the `scaffolder-backend` which you then can decide how, and in what order, to
-run using the template definition YAML file.
+template total control over what should be executed as part of the templating
+run. This makes templates a little more declarative as you can now register
+different `actions` or `functions` with the `scaffolder-backend` which you then
+can decide how, and in what order, to run using the template definition YAML
+file.
 
 We've also made some improvements, and added some helpers to work with
 cookiecutter. The skeleton for a template can now be stored in a different place
