@@ -19,7 +19,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
-  JobProcessor,
   PreparerBuilder,
   TemplaterBuilder,
   TemplaterValues,
