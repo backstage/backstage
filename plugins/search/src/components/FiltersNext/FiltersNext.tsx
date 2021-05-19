@@ -14,32 +14,40 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  makeStyles,
-  Typography,
   Card,
   CardContent,
-  Select,
   Checkbox,
+  FormControl,
+  InputLabel,
   List,
+  MenuItem,
   ListItem,
   ListItemText,
-  MenuItem,
+  makeStyles,
+  Select,
 } from '@material-ui/core';
+import React from 'react';
+import { useSearch } from '../SearchContext';
 
-const useStyles = makeStyles(theme => ({
+const useFilterStyles = makeStyles({
   filters: {
     background: 'transparent',
     boxShadow: '0px 0px 0px 0px',
   },
-  // checkbox: {
-  //   padding: theme.spacing(0, 1, 0, 1),
-  // },
-  // dropdown: {
-  //   width: '100%',
-  // },
+});
+
+const useCheckBoxStyles = makeStyles(theme => ({
+  checkbox: {
+    padding: theme.spacing(0, 1, 0, 1),
+  },
 }));
+
+const useSelectStyles = makeStyles({
+  select: {
+    width: '100%',
+  },
+});
 
 export type FilterOptions = {
   kind: Array<string>;
@@ -72,13 +80,45 @@ export type FilterDefinition = {
 };
 
 const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
+  const { filters, setFilters } = useSearch();
+  const classes = useCheckBoxStyles();
+
+  const setCheckboxFilter = (filter: string) => {
+    const newFilters = filters;
+    const currentValues = newFilters[fieldName] as string[];
+
+    if (!filter) return;
+
+    if (!currentValues) {
+      setFilters({ ...filters, [fieldName]: [filter] });
+    } else if (!currentValues?.includes(filter)) {
+      setFilters({
+        ...filters,
+        [fieldName]: [...currentValues, filter],
+      });
+    } else {
+      const filterToDelete = currentValues.find(value => value === filter);
+      if (filterToDelete) {
+        currentValues.splice(currentValues.indexOf(filterToDelete), 1);
+
+        setFilters({ ...filters, [fieldName]: currentValues });
+      }
+    }
+  };
   return (
     <CardContent>
-      <Typography variant="subtitle2">{fieldName}</Typography>
-      <List disablePadding dense>
+      <InputLabel htmlFor="checkboxInput">{fieldName}</InputLabel>
+      <List dense>
         {values.map((value: string) => (
-          <ListItem key={value} dense button onClick={() => {}}>
+          <ListItem
+            key={value}
+            dense
+            button
+            onClick={() => setCheckboxFilter(value)}
+          >
             <Checkbox
+              id="checkboxInput"
+              className={classes.checkbox}
               edge="start"
               disableRipple
               color="primary"
@@ -95,22 +135,44 @@ const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
 };
 
 const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
+  const { filters, setFilters } = useSearch();
+  const classes = useSelectStyles();
+
+  const setSelectFilter = (filter: string) => {
+    const newFilters = filters;
+    if (newFilters[fieldName] && filter === '') {
+      delete newFilters[fieldName];
+      setFilters({ newFilters });
+    } else {
+      setFilters({ ...filters, [fieldName]: filter as string });
+    }
+  };
+
   return (
     <CardContent>
-      <Typography variant="subtitle2">{fieldName}</Typography>
-      <Select id="outlined-select" onChange={() => {}} variant="outlined">
-        {values.map((value: string) => (
-          <MenuItem selected={value === ''} dense key={value} value={value}>
-            {value}
+      <FormControl variant="filled" className={classes.select}>
+        <InputLabel>{fieldName}</InputLabel>
+        <Select
+          variant="outlined"
+          value={filters[fieldName] || ''}
+          onChange={(e: React.ChangeEvent<any>) =>
+            setSelectFilter(e?.target?.value)
+          }
+        >
+          <MenuItem value="">
+            <em>All</em>
           </MenuItem>
-        ))}
-      </Select>
+          {values.map((value: string) => (
+            <MenuItem value={value}>{value}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </CardContent>
   );
 };
 
 export const FiltersNext = ({ definitions }: FiltersProps) => {
-  const classes = useStyles();
+  const classes = useFilterStyles();
 
   return (
     <Card className={classes.filters}>
