@@ -82,11 +82,6 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   owner,
   isRetry = false,
 }: BranchProtectionOptions): Promise<void> => {
-  const { data: repo } = await client.repos.get({
-    owner,
-    repo: repoName,
-  });
-
   try {
     await client.repos.updateBranchProtection({
       mediaType: {
@@ -101,7 +96,7 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
       },
       owner,
       repo: repoName,
-      branch: repo.default_branch,
+      branch: 'master',
       required_status_checks: { strict: true, contexts: [] },
       restrictions: null,
       enforce_admins: true,
