@@ -22,14 +22,21 @@ import React, {
 } from 'react';
 import { useAsync } from 'react-use';
 import { useApi } from '@backstage/core';
-import { SearchQuery, SearchResultSet } from '@backstage/search-common';
+import { SearchResultSet } from '@backstage/search-common';
 import { searchApiRef } from '../../apis';
 import { AsyncState } from 'react-use/lib/useAsync';
+import { JsonObject } from '@backstage/config';
 
 type SearchContextValue = {
-  resultState: AsyncState<SearchResultSet>;
-  queryState: SearchQuery;
-  setQueryState: React.Dispatch<React.SetStateAction<SearchQuery>>;
+  result: AsyncState<SearchResultSet>;
+  term: string;
+  setTerm: React.Dispatch<React.SetStateAction<string>>;
+  types: string[];
+  setTypes: React.Dispatch<React.SetStateAction<string[]>>;
+  filters: JsonObject;
+  setFilters: React.Dispatch<React.SetStateAction<JsonObject>>;
+  pageCursor: string;
+  setPageCursor: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const SearchContext = createContext({} as SearchContextValue);
@@ -38,23 +45,39 @@ export const SearchContextProvider = ({
   initialState = {
     term: '',
     pageCursor: '',
+    filters: {},
     types: ['*'],
   },
   children,
 }: PropsWithChildren<{ initialState?: any }>) => {
   const searchApi = useApi(searchApiRef);
-  const [queryState, setQueryState] = useState(initialState);
+  const [pageCursor, setPageCursor] = useState<string>(initialState.pageCursor);
+  const [filters, setFilters] = useState<JsonObject>(initialState.filters);
+  const [term, setTerm] = useState<string>(initialState.term);
+  const [types, setTypes] = useState<string[]>(initialState.types);
 
-  const resultState = useAsync(
+  const result = useAsync(
     () =>
       searchApi._alphaPerformSearch({
-        term: queryState.term,
-        pageCursor: queryState.pageCursor,
+        term,
+        filters,
+        pageCursor,
+        types,
       }),
-    [queryState.term],
+    [term, filters, types, pageCursor],
   );
 
-  const value: SearchContextValue = { resultState, queryState, setQueryState };
+  const value: SearchContextValue = {
+    result,
+    filters,
+    setFilters,
+    term,
+    setTerm,
+    types,
+    setTypes,
+    pageCursor,
+    setPageCursor,
+  };
 
   return <SearchContext.Provider value={value} children={children} />;
 };
