@@ -22,10 +22,14 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  Link,
   makeStyles,
+  Popover,
+  Typography,
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
+import WarningIcon from '@material-ui/icons/Warning';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
@@ -47,8 +51,18 @@ const useStyles = makeStyles({
   },
 });
 
+const useDeprecationStyles = makeStyles(theme => ({
+  deprecationIcon: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(3.5),
+    padding: '0.25rem',
+  },
+}));
+
 export type TemplateCardProps = {
   template: TemplateEntityV1alpha1;
+  deprecated?: boolean;
 };
 
 type TemplateProps = {
@@ -72,7 +86,54 @@ const getTemplateCardProps = (
   };
 };
 
-export const TemplateCard = ({ template }: TemplateCardProps) => {
+const DeprecationWarning = () => {
+  const [anchorEl, setAnchorEl] = React.useState<SVGSVGElement | null>(null);
+
+  const handleClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const styles = useDeprecationStyles();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const Title = (
+    <Typography style={{ padding: 10, maxWidth: 300 }}>
+      This template syntax is deprecated. Please follow the documentation{' '}
+      <Link href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2">
+        here
+      </Link>{' '}
+      to migrate
+    </Typography>
+  );
+
+  return (
+    <div className={styles.deprecationIcon}>
+      <WarningIcon onClick={handleClick} />
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        {Title}
+      </Popover>
+    </div>
+  );
+};
+
+export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
   const templateProps = getTemplateCardProps(template);
@@ -88,6 +149,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
     <Card>
       <CardMedia className={classes.cardHeader}>
         <FavouriteTemplate entity={template} />
+        {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
           subtitle={templateProps.type}
