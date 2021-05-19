@@ -108,7 +108,7 @@ export const StepInitAnalyzeUrl = ({
           }
         }
       } catch (e) {
-        setError(e.message);
+        setError(e.data?.error?.message ?? e.message);
         setSubmitted(false);
       }
     },
