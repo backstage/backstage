@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState, MouseEventHandler } from 'react';
-import { IconButton, makeStyles, Tooltip } from '@material-ui/core';
-import PropTypes from 'prop-types';
-import CopyIcon from '@material-ui/icons/FileCopy';
-import { BackstageTheme } from '@backstage/theme';
 import { errorApiRef, useApi } from '@backstage/plugin-api';
-
-const useStyles = makeStyles<BackstageTheme>(theme => ({
-  button: {
-    '&:hover': {
-      backgroundColor: theme.palette.highlight,
-      cursor: 'pointer',
-    },
-  },
-}));
+import { IconButton, Tooltip } from '@material-ui/core';
+import CopyIcon from '@material-ui/icons/FileCopy';
+import PropTypes from 'prop-types';
+import React, { MouseEventHandler, useRef, useState } from 'react';
 
 /**
  * Copy text button with visual feedback in the form of
@@ -61,7 +51,6 @@ export const CopyTextButton = (props: Props) => {
     ...defaultProps,
     ...props,
   };
-  const classes = useStyles(props);
   const errorApi = useApi(errorApiRef);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
@@ -84,7 +73,7 @@ export const CopyTextButton = (props: Props) => {
     <>
       <textarea
         ref={inputRef}
-        style={{ position: 'absolute', top: -9999, left: 9999 }}
+        style={{ position: 'absolute', top: -9999, left: -9999 }}
         defaultValue={text}
       />
       <Tooltip
@@ -95,7 +84,7 @@ export const CopyTextButton = (props: Props) => {
         onClose={() => setOpen(false)}
         open={open}
       >
-        <IconButton onClick={handleCopyClick} className={classes.button}>
+        <IconButton onClick={handleCopyClick}>
           <CopyIcon />
         </IconButton>
       </Tooltip>

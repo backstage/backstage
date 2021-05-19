@@ -17,12 +17,7 @@
 import React from 'react';
 import { DismissableBanner } from './DismissableBanner';
 import { Link, Typography } from '@material-ui/core';
-import {
-  ApiProvider,
-  ApiRegistry,
-  CreateStorageApiOptions,
-  WebStorage,
-} from '@backstage/core-api';
+import { ApiProvider, ApiRegistry, WebStorage } from '@backstage/app-api';
 import { ErrorApi, storageApiRef, StorageApi } from '@backstage/plugin-api';
 
 export default {
@@ -33,13 +28,8 @@ export default {
 let errorApi: ErrorApi;
 const containerStyle = { width: '70%' };
 
-const createWebStorage = (
-  args?: Partial<CreateStorageApiOptions>,
-): StorageApi => {
-  return WebStorage.create({
-    errorApi: errorApi,
-    ...args,
-  });
+const createWebStorage = (): StorageApi => {
+  return WebStorage.create({ errorApi });
 };
 
 const apis = ApiRegistry.from([[storageApiRef, createWebStorage()]]);

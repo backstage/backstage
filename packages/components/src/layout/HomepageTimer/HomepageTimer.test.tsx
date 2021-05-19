@@ -19,7 +19,7 @@ import { HomepageTimer } from './HomepageTimer';
 import React from 'react';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core';
-import { ConfigReader, ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry, ConfigReader } from '@backstage/app-api';
 import { ConfigApi, configApiRef } from '@backstage/plugin-api';
 
 it('changes default timezone to GMT', async () => {

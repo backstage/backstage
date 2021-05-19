@@ -16,6 +16,7 @@
 import React, { FunctionComponentFactory } from 'react';
 import { Button } from './Button';
 import { MemoryRouter, useLocation } from 'react-router-dom';
+import { createExternalRouteRef, useRouteRef } from '@backstage/plugin-api';
 import {
   Divider,
   Link,
@@ -25,6 +26,10 @@ import {
   Typography,
   Button as MaterialButton,
 } from '@material-ui/core';
+
+const routeRef = createExternalRouteRef({
+  id: 'storybook.test-route',
+});
 
 const Location = () => {
   const location = useLocation();
@@ -62,6 +67,7 @@ export default {
 };
 
 export const Default = () => {
+  const link = useRouteRef(routeRef);
   // Design Permutations:
   // color   = default | primary | secondary
   // variant = contained | outlined | text
@@ -75,7 +81,7 @@ export const Default = () => {
           <pre>color="primary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to="/hello" color="primary" variant="contained">
+        <Button to={link()} color="primary" variant="contained">
           Register Component
         </Button>
       </ListItem>
@@ -88,7 +94,7 @@ export const Default = () => {
           <pre>color="secondary" variant="contained"</pre>
         </ListItemText>
 
-        <Button to="/hello" color="secondary" variant="contained">
+        <Button to={link()} color="secondary" variant="contained">
           Cancel
         </Button>
       </ListItem>
@@ -101,7 +107,7 @@ export const Default = () => {
           <pre>color="default" variant="outlined"</pre>
         </ListItemText>
 
-        <Button to="/hello" color="default" variant="outlined">
+        <Button to={link()} color="default" variant="outlined">
           View Details
         </Button>
       </ListItem>
@@ -110,6 +116,8 @@ export const Default = () => {
 };
 
 export const ButtonLinks = () => {
+  const link = useRouteRef(routeRef);
+
   const handleClick = () => {
     return 'Your click worked!';
   };
@@ -121,7 +129,7 @@ export const ButtonLinks = () => {
           // TODO: Refactor to use new routing mechanisms
         }
         <ListItem>
-          <Button to="/hello" color="default" variant="outlined">
+          <Button to={link()} color="default" variant="outlined">
             Route Ref
           </Button>
           &nbsp; has props for both Material-UI's component as well as for

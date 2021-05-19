@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { TabbedLayout } from './TabbedLayout';
+export { RoutedTabs } from './RoutedTabs';

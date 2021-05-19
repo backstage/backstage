@@ -15,43 +15,27 @@
  */
 
 import React from 'react';
-import { SelectComponent as Select } from './Select';
 
-export default {
-  title: 'Inputs/Select',
-  component: Select,
+export type StepActions = {
+  showNext?: boolean;
+  canNext?: () => boolean;
+  onNext?: () => void;
+  nextStep?: (current: number, last: number) => number;
+  nextText?: string;
+
+  showBack?: boolean;
+  backText?: string;
+  onBack?: () => void;
+
+  showRestart?: boolean;
+  canRestart?: () => boolean;
+  onRestart?: () => void;
+  restartText?: string;
 };
 
-const SELECT_ITEMS = [
-  {
-    label: 'test 1',
-    value: 'test_1',
-  },
-  {
-    label: 'test 2',
-    value: 'test_2',
-  },
-  {
-    label: 'test 3',
-    value: 'test_3',
-  },
-];
-
-export const Default = () => (
-  <Select
-    onChange={() => {}}
-    placeholder="All results"
-    label="Default"
-    items={SELECT_ITEMS}
-  />
-);
-
-export const Multiple = () => (
-  <Select
-    placeholder="All results"
-    label="Multiple"
-    items={SELECT_ITEMS}
-    multiple
-    onChange={() => {}}
-  />
-);
+export type StepProps = {
+  title: string;
+  children: React.ReactElement;
+  end?: boolean;
+  actions?: StepActions;
+};

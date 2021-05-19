@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
 import { renderInTestApp, wrapInTestApp } from '@backstage/test-utils';
-import { TabbedCard, CardTab } from '.';
+import { fireEvent, render } from '@testing-library/react';
+import React from 'react';
+import { CardTab, TabbedCard } from './TabbedCard';
 
 const minProps = {
   title: 'Some title',

@@ -16,7 +16,8 @@
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useNavigate, useParams, useRoutes } from 'react-router';
-import { Content, HeaderTabs } from '../../layout';
+import { Content } from '../../layout/Content';
+import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
 
 export function useSelectedSubRoute(
@@ -48,7 +49,12 @@ export const RoutedTabs = ({ routes }: { routes: SubRoute[] }) => {
   const navigate = useNavigate();
   const { index, route, element } = useSelectedSubRoute(routes);
   const headerTabs = useMemo(
-    () => routes.map(t => ({ id: t.path, label: t.title })),
+    () =>
+      routes.map(t => ({
+        id: t.path,
+        label: t.title,
+        tabProps: t.tabProps,
+      })),
     [routes],
   );
 

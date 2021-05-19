@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-
-import { Select } from '.';
+import { SelectComponent as Select } from './Select';
 
 const SELECT_ITEMS = [
   {

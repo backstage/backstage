@@ -17,6 +17,7 @@
 import { Box, Chip, Grid, Link, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { MemoryRouter } from 'react-router';
+import { createApp } from '@backstage/app-api';
 import {
   Content,
   ContentHeader,
@@ -26,7 +27,6 @@ import {
   InfoCard,
   Page,
 } from '../';
-import { createApp } from '@backstage/core';
 import {
   GaugeCard,
   StatusOK,

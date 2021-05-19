@@ -15,43 +15,16 @@
  */
 
 import React from 'react';
-import { SelectComponent as Select } from './Select';
+import { render } from '@testing-library/react';
 
-export default {
-  title: 'Inputs/Select',
-  component: Select,
-};
+import { OverflowTooltip } from '.';
 
-const SELECT_ITEMS = [
-  {
-    label: 'test 1',
-    value: 'test_1',
-  },
-  {
-    label: 'test 2',
-    value: 'test_2',
-  },
-  {
-    label: 'test 3',
-    value: 'test_3',
-  },
-];
+describe('<OverflowTooltip />', () => {
+  it('renders without exploding', async () => {
+    render(<OverflowTooltip text="Text that may overflow" />);
+  });
 
-export const Default = () => (
-  <Select
-    onChange={() => {}}
-    placeholder="All results"
-    label="Default"
-    items={SELECT_ITEMS}
-  />
-);
-
-export const Multiple = () => (
-  <Select
-    placeholder="All results"
-    label="Multiple"
-    items={SELECT_ITEMS}
-    multiple
-    onChange={() => {}}
-  />
-);
+  it('renders without exploding when the text prop is missing', async () => {
+    render(<OverflowTooltip text={undefined} />);
+  });
+});

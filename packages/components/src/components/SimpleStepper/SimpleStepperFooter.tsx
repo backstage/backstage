@@ -15,7 +15,7 @@
  */
 import React, { useContext, ReactNode, PropsWithChildren } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
-import { StepActions } from './SimpleStepperStep';
+import { StepActions } from './types';
 import { VerticalStepperContext } from './SimpleStepper';
 
 const useStyles = makeStyles(theme => ({

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { HelpIcon } from '../../icons';
 import { useApp } from '@backstage/plugin-api';
+import { HelpIcon } from '../../icons';
 import {
   Box,
   Button,
+  DialogActions,
   List,
   ListItem,
   ListItemIcon,
@@ -100,7 +101,7 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
         color="primary"
         onClick={onClickHandler}
       >
-        <Box marginRight={1} display="flex">
+        <Box marginRight={1}>
           <HelpIcon />
         </Box>
         Support
@@ -128,6 +129,11 @@ export const SupportButton = ({ children }: PropsWithChildren<Props>) => {
           {items &&
             items.map((item, i) => <SupportListItem item={item} key={i} />)}
         </List>
+        <DialogActions>
+          <Button color="primary" onClick={popoverCloseHandler}>
+            Close
+          </Button>
+        </DialogActions>
       </Popover>
     </Fragment>
   );

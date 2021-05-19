@@ -17,7 +17,7 @@
 import { isEqual } from 'lodash';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from 'react-use';
 
 function stringify(queryParams: any): string {
@@ -58,35 +58,37 @@ type SetQueryParams<T> = (params: T) => void;
 
 export function useQueryParamState<T>(
   stateName: string,
+  /** @deprecated Don't configure a custom debouceTime */
+  debounceTime: number = 250,
 ): [T | undefined, SetQueryParams<T>] {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParamsString = searchParams.toString();
   const [queryParamState, setQueryParamState] = useState<T>(
-    extractState(location.search, stateName),
+    extractState(searchParamsString, stateName),
   );
 
   useEffect(() => {
-    const newState = extractState(location.search, stateName);
+    const newState = extractState(searchParamsString, stateName);
 
     setQueryParamState(oldState =>
       isEqual(newState, oldState) ? oldState : newState,
     );
-  }, [location, stateName]);
+  }, [searchParamsString, setQueryParamState, stateName]);
 
   useDebounce(
     () => {
       const queryString = joinQueryString(
-        location.search,
+        searchParamsString,
         stateName,
         queryParamState,
       );
 
-      if (location.search !== queryString) {
-        navigate({ ...location, search: `?${queryString}` }, { replace: true });
+      if (searchParamsString !== queryString) {
+        setSearchParams(queryString, { replace: true });
       }
     },
-    100,
-    [queryParamState],
+    debounceTime,
+    [setSearchParams, queryParamState, searchParamsString, stateName],
   );
 
   return [queryParamState, setQueryParamState];

@@ -16,12 +16,12 @@
 
 import React from 'react';
 import { AlertDisplay } from './AlertDisplay';
+import { alertApiRef } from '@backstage/plugin-api';
 import {
   ApiProvider,
   ApiRegistry,
   AlertApiForwarder,
-} from '@backstage/core-api'; // TODO ok-ish cause it's a test
-import { alertApiRef } from '@backstage/plugin-api';
+} from '@backstage/app-api';
 import Observable from 'zen-observable';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -61,5 +61,47 @@ describe('<AlertDisplay />', () => {
     );
 
     expect(queryByText(TEST_MESSAGE)).toBeInTheDocument();
+  });
+
+  describe('with multiple messages', () => {
+    let apiRegistry: ApiRegistry;
+
+    beforeEach(() => {
+      apiRegistry = ApiRegistry.from([
+        [
+          alertApiRef,
+          {
+            post() {},
+            alert$() {
+              return Observable.of(
+                { message: 'message one' },
+                { message: 'message two' },
+                { message: 'message three' },
+              );
+            },
+          },
+        ],
+      ]);
+    });
+
+    it('renders first message', async () => {
+      const { queryByText } = await renderInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <AlertDisplay />
+        </ApiProvider>,
+      );
+
+      expect(queryByText('message one')).toBeInTheDocument();
+    });
+
+    it('renders a count of remaining messages', async () => {
+      const { queryByText } = await renderInTestApp(
+        <ApiProvider apis={apiRegistry}>
+          <AlertDisplay />
+        </ApiProvider>,
+      );
+
+      expect(queryByText('(2 older messages)')).toBeInTheDocument();
+    });
   });
 });

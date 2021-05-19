@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Header } from '.';
 import { HeaderLabel } from '../HeaderLabel';
 import { Page } from '../Page';
+import { Header } from './Header';
 
 export default {
   title: 'Layout/Header',
@@ -43,6 +43,14 @@ export const HomeWithSubtitle = () => (
   <Header title="Start/Home Page" subtitle="This is a subtitle">
     {labels}
   </Header>
+);
+
+export const Apis = () => (
+  <Page themeId="apis">
+    <Header title="API catalogue" type="tool">
+      {labels}
+    </Header>
+  </Page>
 );
 
 export const Tool = () => (

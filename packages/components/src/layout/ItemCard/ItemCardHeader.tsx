@@ -77,8 +77,16 @@ export const ItemCardHeader = (props: ItemCardHeaderProps) => {
   const classes = useStyles(props);
   return (
     <div className={classes.root}>
-      {subtitle && <Typography variant="subtitle2">{subtitle}</Typography>}
-      {title && <Typography variant="h6">{title}</Typography>}
+      {subtitle && (
+        <Typography variant="subtitle2" component="h3">
+          {subtitle}
+        </Typography>
+      )}
+      {title && (
+        <Typography variant="h6" component="h4">
+          {title}
+        </Typography>
+      )}
       {children}
     </div>
   );

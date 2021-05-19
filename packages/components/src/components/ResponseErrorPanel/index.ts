@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import { TabProps } from '@material-ui/core';
-import * as React from 'react';
-
-export type SubRoute = {
-  path: string;
-  title: string;
-  children: JSX.Element;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
-};
+export { ResponseErrorDetails, ResponseErrorPanel } from './ResponseErrorPanel';
