@@ -32,11 +32,13 @@ GitLab
 Grafana
 GraphQL
 Hackathons
+Helidon
 Heroku
 Hostname
 Iain
 JaCoCo
 JavaScript
+Jira
 Kaewkasi
 kubernetes
 Knex

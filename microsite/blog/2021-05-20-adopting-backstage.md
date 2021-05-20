@@ -133,5 +133,3 @@ Integrating infrastructure of this size and complexity can seem overwhelming. It
 ## More questions about adopting Backstage?
 
 [Contact the Backstage team at Spotify.](https://calendly.com/spotify-backstage) We’ll share more about what we’ve learned from our experience here at Spotify — and from other companies who are already using Backstage to transform their developer experience.
-
-###
