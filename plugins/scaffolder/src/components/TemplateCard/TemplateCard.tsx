@@ -103,11 +103,11 @@ const DeprecationWarning = () => {
 
   const Title = (
     <Typography style={{ padding: 10, maxWidth: 300 }}>
-      This template syntax is deprecated. Please follow the documentation{' '}
+      This template syntax is deprecated.
+      <br />
       <Link href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2">
-        here
-      </Link>{' '}
-      to migrate
+        Please follow the documentation to migrate
+      </Link>
     </Typography>
   );
 
