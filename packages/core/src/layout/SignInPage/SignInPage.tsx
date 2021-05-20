@@ -81,13 +81,15 @@ export const MultiSignInPage = ({
 export const SingleSignInPage = ({
   onResult,
   provider,
-  auto = true,
+  auto,
 }: SingleSignInPageProps) => {
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
 
-  const [retry, setRetry] = useState<{} | boolean | undefined>(auto);
+  const [autoShowPopup, setAutoShowPopup] = useState<boolean>(auto ?? false);
+  // Defaults to true so that an initial check for existing user session is made
+  const [retry, setRetry] = useState<{} | boolean | undefined>(true);
   const [error, setError] = useState<Error>();
 
   // The SignIn component takes some time to decide whether the user is logged-in or not.
@@ -105,10 +107,17 @@ export const SingleSignInPage = ({
         });
 
         // If no session exists, show the sign-in page
-        if (!identity) {
+        if (!identity && autoShowPopup) {
+          // Unless auto is set to true, this step should not happen.
+          // When user intentionally clicks the Sign In button, autoShowPopup is set to true
           identity = await authApi.getBackstageIdentity({
             instantPopup: true,
           });
+        }
+
+        if (!identity) {
+          setShowLoginPage(true);
+          return;
         }
 
         const profile = await authApi.getProfile();
@@ -132,7 +141,7 @@ export const SingleSignInPage = ({
     if (retry) {
       login();
     }
-  }, [onResult, authApi, retry]);
+  }, [onResult, authApi, retry, autoShowPopup]);
 
   return showLoginPage ? (
     <Page themeId="home">
@@ -153,7 +162,10 @@ export const SingleSignInPage = ({
                 <Button
                   color="primary"
                   variant="outlined"
-                  onClick={() => setRetry({})}
+                  onClick={() => {
+                    setRetry({});
+                    setAutoShowPopup(true);
+                  }}
                 >
                   Sign In
                 </Button>
