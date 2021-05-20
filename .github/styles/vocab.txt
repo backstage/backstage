@@ -38,6 +38,7 @@ Iain
 JaCoCo
 JavaScript
 Kaewkasi
+kubernetes
 Knex
 Leasot
 Lerna
@@ -47,6 +48,8 @@ Minikube
 Minio
 Mkdocs
 Monorepo
+microservices
+microservice
 Namespaces
 OAuth
 Okta
