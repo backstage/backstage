@@ -24,7 +24,7 @@ import {
   Chip,
   Link,
   makeStyles,
-  Popover,
+  Tooltip,
   Typography,
   useTheme,
 } from '@material-ui/core';
@@ -58,6 +58,9 @@ const useDeprecationStyles = makeStyles(theme => ({
     right: theme.spacing(3.5),
     padding: '0.25rem',
   },
+  link: {
+    color: theme.palette.warning.light,
+  },
 }));
 
 export type TemplateCardProps = {
@@ -87,48 +90,24 @@ const getTemplateCardProps = (
 };
 
 const DeprecationWarning = () => {
-  const [anchorEl, setAnchorEl] = React.useState<SVGSVGElement | null>(null);
-
-  const handleClick = (event: React.MouseEvent<SVGSVGElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
   const styles = useDeprecationStyles();
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
 
   const Title = (
     <Typography style={{ padding: 10, maxWidth: 300 }}>
-      This template syntax is deprecated.
-      <br />
-      <Link href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2">
-        Please follow the documentation to migrate
-      </Link>
+      This template syntax is deprecated. Click for more info.
     </Typography>
   );
 
   return (
     <div className={styles.deprecationIcon}>
-      <WarningIcon onClick={handleClick} />
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        {Title}
-      </Popover>
+      <Tooltip title={Title}>
+        <Link
+          href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          className={styles.link}
+        >
+          <WarningIcon />
+        </Link>
+      </Tooltip>
     </div>
   );
 };
