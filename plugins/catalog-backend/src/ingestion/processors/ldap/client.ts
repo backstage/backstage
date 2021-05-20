@@ -75,10 +75,6 @@ export class LdapClient {
       return await new Promise<SearchEntry[]>((resolve, reject) => {
         const output: SearchEntry[] = [];
 
-        this.client.on('error', (err: ldap.Error) => {
-          reject(new Error(errorString(err)));
-        });
-
         this.client.search(dn, options, (err, res) => {
           if (err) {
             reject(new Error(errorString(err)));
