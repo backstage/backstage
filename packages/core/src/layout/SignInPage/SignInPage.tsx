@@ -110,6 +110,7 @@ export const SingleSignInPage = ({
         if (!identity && autoShowPopup) {
           // Unless auto is set to true, this step should not happen.
           // When user intentionally clicks the Sign In button, autoShowPopup is set to true
+          setShowLoginPage(true);
           identity = await authApi.getBackstageIdentity({
             instantPopup: true,
           });
