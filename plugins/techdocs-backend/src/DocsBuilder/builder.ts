@@ -16,7 +16,7 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
-  serializeEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotModifiedError } from '@backstage/errors';
 import {
@@ -75,7 +75,7 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 1 of 3: Preparing docs for entity ${serializeEntityRef(
+      `Step 1 of 3: Preparing docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );
@@ -116,7 +116,7 @@ export class DocsBuilder {
         // Set last check happened to now
         new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
         this.logger.debug(
-          `Docs for ${serializeEntityRef(
+          `Docs for ${stringifyEntityRef(
             this.entity,
           )} are unmodified. Using cache, skipping generate and prepare`,
         );
@@ -126,7 +126,7 @@ export class DocsBuilder {
     }
 
     this.logger.info(
-      `Prepare step completed for entity ${serializeEntityRef(
+      `Prepare step completed for entity ${stringifyEntityRef(
         this.entity,
       )}, stored at ${preparedDir}`,
     );
@@ -136,7 +136,7 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 2 of 3: Generating docs for entity ${serializeEntityRef(
+      `Step 2 of 3: Generating docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );
@@ -176,7 +176,7 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 3 of 3: Publishing docs for entity ${serializeEntityRef(
+      `Step 3 of 3: Publishing docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );
