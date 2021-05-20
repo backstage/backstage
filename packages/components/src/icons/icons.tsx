@@ -29,8 +29,10 @@ const overridableSystemIcon = (key: string): IconComponent => {
 
 // Should match the list of overridable system icon keys in @backstage/app-api
 export const BrokenImageIcon = overridableSystemIcon('brokenImage');
+export const CatalogIcon = overridableSystemIcon('catalog');
 export const ChatIcon = overridableSystemIcon('chat');
 export const DashboardIcon = overridableSystemIcon('dashboard');
+export const DocsIcon = overridableSystemIcon('docs');
 export const EmailIcon = overridableSystemIcon('email');
 export const GitHubIcon = overridableSystemIcon('github');
 export const GroupIcon = overridableSystemIcon('group');
