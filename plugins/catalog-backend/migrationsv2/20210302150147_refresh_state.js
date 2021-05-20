@@ -187,9 +187,9 @@ exports.up = async function up(knex) {
   });
 
   // Delete bootstrap location which is no longer required.
-  await knex.schema.raw(
-    `DELETE from locations WHERE type = 'bootstrap' AND target = 'bootstrap'`,
-  );
+  await knex('locations')
+    .where({ type: 'bootstrap', target: 'bootstrap' })
+    .delete();
 };
 
 /**
