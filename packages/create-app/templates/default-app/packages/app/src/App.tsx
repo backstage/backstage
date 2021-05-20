@@ -13,7 +13,13 @@ import {
   catalogPlugin,
 } from '@backstage/plugin-catalog';
 import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-import';
-import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { 
+  OwnerPickerFieldExtension, 
+  RepoUrlPickerFieldExtension, 
+  ScaffolderCustomFields, 
+  ScaffolderPage, 
+  scaffolderPlugin 
+} from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
@@ -51,7 +57,12 @@ const routes = (
       {entityPage}
     </Route>
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderCustomFields>
+        <RepoUrlPickerFieldExtension />
+        <OwnerPickerFieldExtension />
+      </ScaffolderCustomFields>
+    </Route>
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
       path="/tech-radar"
