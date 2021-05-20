@@ -73,7 +73,6 @@ type BranchProtectionOptions = {
   client: Octokit;
   owner: string;
   repoName: string;
-  isRetry?: boolean;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
