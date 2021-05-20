@@ -23,7 +23,7 @@ import { act } from 'react-dom/test-utils';
 import { MemoryRouter, Route } from 'react-router';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
-import { createValidator, TemplatePage } from './TemplatePage';
+import { TemplatePage } from './TemplatePage';
 
 jest.mock('react-router-dom', () => {
   return {
