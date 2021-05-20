@@ -15,13 +15,16 @@
  */
 
 import { getVoidLogger } from '@backstage/backend-common';
-import { LocationSpec } from '@backstage/catalog-model';
 import {
   GitHubIntegration,
   ScmIntegrations,
   ScmIntegrationsGroup,
 } from '@backstage/integration';
-import { GithubOrgReaderProcessor, parseUrl } from './GithubOrgReaderProcessor';
+import {
+  GitHubOrgLocationSpec,
+  GithubOrgReaderProcessor,
+  parseUrl,
+} from './GithubOrgReaderProcessor';
 
 describe('GithubOrgReaderProcessor', () => {
   describe('parseUrl', () => {
@@ -59,7 +62,7 @@ describe('GithubOrgReaderProcessor', () => {
         integrations,
         logger: getVoidLogger(),
       });
-      const location: LocationSpec = {
+      const location: GitHubOrgLocationSpec = {
         type: 'not-github-org',
         target: 'https://github.com',
       };
@@ -79,7 +82,7 @@ describe('GithubOrgReaderProcessor', () => {
         integrations,
         logger: getVoidLogger(),
       });
-      const location: LocationSpec = {
+      const location: GitHubOrgLocationSpec = {
         type: 'github-org',
         target: 'https://not.github.com/apa',
       };
@@ -96,7 +99,7 @@ describe('GithubOrgReaderProcessor', () => {
         integrations,
         logger: getVoidLogger(),
       });
-      const location: LocationSpec = {
+      const location: GitHubOrgLocationSpec = {
         type: 'github-org',
         target: 'https://not.github.com/apa',
       };

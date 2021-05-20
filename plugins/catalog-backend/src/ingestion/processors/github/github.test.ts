@@ -67,6 +67,44 @@ describe('github', () => {
 
       await expect(getOrganizationUsers(graphql, 'a')).resolves.toEqual(output);
     });
+
+    it('reads members when fetchEmail is false', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                avatarUrl: 'e',
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({ name: 'a', description: 'c' }),
+            spec: {
+              profile: { displayName: 'b', picture: 'e' },
+              memberOf: [],
+            },
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', (_req, res, ctx) => res(ctx.data(input))),
+      );
+
+      await expect(getOrganizationUsers(graphql, 'a', false)).resolves.toEqual(
+        output,
+      );
+    });
   });
 
   describe('getOrganizationTeams', () => {

@@ -77,13 +77,20 @@ export type Connection<T> = {
 export async function getOrganizationUsers(
   client: typeof graphql,
   org: string,
+  email: boolean = true,
 ): Promise<{ users: UserEntity[] }> {
   const query = `
-    query users($org: String!, $cursor: String) {
+    query users($org: String!, $email: Boolean!, $cursor: String) {
       organization(login: $org) {
         membersWithRole(first: 100, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
-          nodes { avatarUrl, bio, email, login, name }
+          nodes { 
+            avatarUrl
+            bio
+            login
+            name
+            email @include(if: $email)
+          }
         }
       }
     }`;
@@ -119,7 +126,7 @@ export async function getOrganizationUsers(
     query,
     r => r.organization?.membersWithRole,
     mapper,
-    { org },
+    { org, email },
   );
 
   return { users };

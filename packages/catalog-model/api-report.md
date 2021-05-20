@@ -304,6 +304,7 @@ export type LocationSpec = {
     type: string;
     target: string;
     presence?: 'optional' | 'required';
+    options?: object;
 };
 
 // @public (undocumented)

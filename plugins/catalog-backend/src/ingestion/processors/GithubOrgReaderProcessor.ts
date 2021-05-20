@@ -34,6 +34,15 @@ import { buildOrgHierarchy } from './util/org';
 
 type GraphQL = typeof graphql;
 
+export type GitHubOrgLocationSpec = LocationSpec & {
+  options?: {
+    // When users have private emails, the GraphQL query will fail. Setting this to true will opt-out
+    // of fetching the email on the users query.
+    // default value: true.
+    fetchEmail?: boolean;
+  };
+};
+
 /**
  * Extracts teams and users out of a GitHub org.
  */
@@ -63,7 +72,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
   }
 
   async readLocation(
-    location: LocationSpec,
+    location: GitHubOrgLocationSpec,
     _optional: boolean,
     emit: CatalogProcessorEmit,
   ): Promise<boolean> {
@@ -73,12 +82,13 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
     const client = await this.createClient(location.target);
     const { org } = parseUrl(location.target);
+    const { fetchEmail = true } = location.options || {};
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
     this.logger.info('Reading GitHub users and groups');
 
-    const { users } = await getOrganizationUsers(client, org);
+    const { users } = await getOrganizationUsers(client, org, fetchEmail);
     const { groups, groupMemberUsers } = await getOrganizationTeams(
       client,
       org,

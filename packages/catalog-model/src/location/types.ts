@@ -21,6 +21,7 @@ export type LocationSpec = {
   // This flag is then set to indicate that the file can be not present.
   // default value: 'required'.
   presence?: 'optional' | 'required';
+  options?: object;
 };
 
 export type Location = {

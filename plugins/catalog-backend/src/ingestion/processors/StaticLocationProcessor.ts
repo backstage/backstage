@@ -27,7 +27,13 @@ export class StaticLocationProcessor implements StaticLocationProcessor {
     for (const lConfig of lConfigs) {
       const type = lConfig.getString('type');
       const target = lConfig.getString('target');
-      locations.push({ type, target });
+
+      let options = {};
+      if (lConfig.has('options')) {
+        options = lConfig.get('options');
+      }
+
+      locations.push({ type, target, options });
     }
 
     return new StaticLocationProcessor(locations);
