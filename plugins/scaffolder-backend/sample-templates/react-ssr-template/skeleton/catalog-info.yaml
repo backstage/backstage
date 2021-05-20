@@ -4,8 +4,8 @@ metadata:
   name: {{cookiecutter.component_id | jsonify}}
   description: {{cookiecutter.description | jsonify}}
   annotations:
-    github.com/project-slug: {{cookiecutter.destination.git.owner + "/" + cookiecutter.destination.git.name}}
-    backstage.io/techdocs-ref: url:{{cookiecutter.storePath}}
+    github.com/project-slug: {{cookiecutter.destination.owner + "/" + cookiecutter.destination.repo}}
+    backstage.io/techdocs-ref: url:{{cookiecutter.destination.host + "/" + cookiecutter.destination.owner + "/" + cookiecutter.destination.repo}}
 spec:
   type: website
   lifecycle: experimental
