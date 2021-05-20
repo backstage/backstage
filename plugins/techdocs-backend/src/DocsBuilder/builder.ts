@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
@@ -142,7 +143,12 @@ export class DocsBuilder {
     );
 
     // Create a temporary directory to store the generated files in.
-    const tmpdirPath = os.tmpdir();
+    const config = await loadBackendConfig({
+      argv: process.argv,
+      logger: getRootLogger(),
+    });
+    const workingDir = config.get('backend.workingDirectory');
+    const tmpdirPath = workingDir ? String(workingDir) : os.tmpdir();
     // Fixes a problem with macOS returning a path that is a symlink
     const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
     const outputDir = await fs.mkdtemp(
