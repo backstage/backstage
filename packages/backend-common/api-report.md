@@ -73,7 +73,7 @@ export interface CacheClient {
 // @public
 export class CacheManager {
     forPlugin(pluginId: string): PluginCacheManager;
-    static fromConfig(config: Config): CacheManager;
+    static fromConfig(config: Config, options?: CacheManagerOptions): CacheManager;
     }
 
 // @public (undocumented)

@@ -32,24 +32,42 @@ import React from 'react';
 import WarningIcon from '@material-ui/icons/Warning';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
-import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
+import {
+  TemplateEntityV1alpha1,
+  Entity,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
 import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
+import {
+  getEntityRelations,
+  EntityRefLinks,
+} from '@backstage/plugin-catalog-react';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   cardHeader: {
     position: 'relative',
   },
   title: {
     backgroundImage: ({ backgroundImage }: any) => backgroundImage,
   },
-  description: {
+  box: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
     '-webkit-line-clamp': 10,
     '-webkit-box-orient': 'vertical',
+    paddingBottom: '0.8em',
   },
-});
+  label: {
+    color: theme.palette.text.secondary,
+    textTransform: 'uppercase',
+    fontSize: '0.65rem',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    lineHeight: 1,
+    paddingBottom: '0.2rem',
+  },
+}));
 
 const useDeprecationStyles = makeStyles(theme => ({
   deprecationIcon: {
@@ -116,7 +134,10 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
   const templateProps = getTemplateCardProps(template);
-
+  const ownedByRelations = getEntityRelations(
+    template as Entity,
+    RELATION_OWNED_BY,
+  );
   const themeId = pageTheme[templateProps.type] ? templateProps.type : 'other';
   const theme = backstageTheme.getPageTheme({ themeId });
   const classes = useStyles({ backgroundImage: theme.backgroundImage });
@@ -135,13 +156,27 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
           classes={{ root: classes.title }}
         />
       </CardMedia>
-      <CardContent>
+      <CardContent style={{ display: 'grid' }}>
+        <Box className={classes.box}>
+          <Typography variant="body2" className={classes.label}>
+            Description
+          </Typography>
+          {templateProps.description}
+        </Box>
+        <Box className={classes.box}>
+          <Typography variant="body2" className={classes.label}>
+            Owner
+          </Typography>
+          <EntityRefLinks entityRefs={ownedByRelations} defaultKind="Group" />
+        </Box>
         <Box>
+          <Typography variant="body2" className={classes.label}>
+            Tags
+          </Typography>
           {templateProps.tags?.map(tag => (
             <Chip size="small" label={tag} key={tag} />
           ))}
         </Box>
-        <Box className={classes.description}>{templateProps.description}</Box>
       </CardContent>
       <CardActions>
         <Button

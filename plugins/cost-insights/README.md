@@ -25,9 +25,7 @@ yarn add @backstage/plugin-cost-insights
 
 1. Configure `app-config.yaml`. See [Configuration](#configuration).
 
-2. Create a CostInsights client. Clients must implement the CostInsightsApi interface. See the [API file](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) for required methods and documentation.
-
-**Note:** We've briefly explored using the AWS Cost Explorer API to implement a CostInsights client. Learn more about our findings [here](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/contrib/aws-cost-explorer-api.md).
+2. Create a CostInsights client. Clients must implement the [CostInsightsApi](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/api/CostInsightsApi.ts) interface. Create your own or [use a template](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/src/example/templates/CostInsightsClient.ts) to get started.
 
 ```ts
 // path/to/CostInsightsClient.ts
@@ -36,7 +34,9 @@ import { CostInsightsApi } from '@backstage/plugin-cost-insights';
 export class CostInsightsClient implements CostInsightsApi { ... }
 ```
 
-3. Import the client and the CostInsights plugin API to your Backstage instance.
+**Note:** We've briefly explored using the AWS Cost Explorer API to implement a Cost Insights client. Learn more about our findings [here](https://github.com/backstage/backstage/blob/master/plugins/cost-insights/contrib/aws-cost-explorer-api.md).
+
+3. Import the client and the Cost Insights plugin API to your Backstage instance.
 
 ```ts
 // packages/app/src/api.ts
