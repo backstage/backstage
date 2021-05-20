@@ -29,7 +29,7 @@ export function getEntityClaims(entity: UserEntity): TokenParams['claims'] {
       ?.filter(
         r =>
           r.type === RELATION_MEMBER_OF &&
-          r.target.kind.toLocaleLowerCase() === 'group',
+          r.target.kind.toLocaleLowerCase('en-US') === 'group',
       )
       .map(r => stringifyEntityRef(r.target)) ?? [];
 

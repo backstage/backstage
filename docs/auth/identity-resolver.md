@@ -12,7 +12,7 @@ Backstage entity by a user. The ideas here were originally proposed in the RFC
 [#4089](https://github.com/backstage/backstage/issues/4089).
 
 When a user signs in to Backstage, inside the `claims` field of their Backstage
-ID Token (which are standard JWT tokens) a special `ent` field is set. `ent`
+Token (which are standard JWT tokens) a special `ent` claim is set. `ent`
 contains a list of
 [entity references](../features/software-catalog/references.md), each of which
 denotes an identity or a membership that is relevant to the user. There is no
@@ -41,7 +41,7 @@ export default async function createPlugin({
             }
 
             // Ignore email addresses which do not belong to company's domain name
-            if (email.split('@')[1] != 'mycompany.com') {
+            if (email.split('@')[1] !== 'mycompany.com') {
               throw new Error('Unrecognized domain name of the email ID used to sign in.')
             }
 
@@ -82,11 +82,11 @@ export default async function createPlugin({
 }
 ```
 
-As you can see, the generated Backstage ID Token now contains all the claims
-about the identity and membership of the user. Once the sign-in process is
-complete, and we need to find out if a user owns an Entity in the Software
-Catalog, these `ent` claims can be used to determine the ownership. A full
-algorithm as proposed in the RFC is as follows
+As you can see, the generated Backstage Token now contains all the claims about
+the identity and membership of the user. Once the sign-in process is complete,
+and we need to find out if a user owns an Entity in the Software Catalog, these
+`ent` claims can be used to determine the ownership. A full algorithm as
+proposed in the RFC is as follows
 
 The definition of the ownership of an entity E, for a user U, is as follows:
 
@@ -126,7 +126,7 @@ export default async function createPlugin({
 
 ## Profile transform
 
-Similar to a custom sign-in resolver, you can also write custom profile
+Similar to a custom sign-in resolver, you can also write a custom profile
 transformation function which is used to verify and convert the auth response
 into the profile that will be presented to the user. This is where you can
 customize things like display name and profile picture.
