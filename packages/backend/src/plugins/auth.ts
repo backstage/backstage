@@ -42,7 +42,7 @@ export default async function createPlugin({
             }
             const id = email.split('@')[0];
             const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, ent: [id] },
+              claims: { sub: id, ent: [`User:default/${id}`] },
             });
             return { id, token };
           },

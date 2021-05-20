@@ -51,10 +51,7 @@ export default async function createPlugin({
             // Let's use the username in the email ID as the user's default unique identifier inside Backstage
             const id = email.split('@')[0];
             // Let's add the unique ID in the list
-            ent.push(id)
-            // Note: While the complete entity references look like `kind:namespace/name`, it should be safe to assume
-            // that standalone strings without any : or / can be interpresed as user kind in the default namespace. So,
-            // a 'freben' inside the `ent` list should be translated to `User:default/freben` when making any assertions.
+            ent.push(`User:default/${id}`)
 
             // Let's call the GitHub Enterprise API inside the company and get the teams that the user belongs to
             const gheUsername = getGheUsername(email);
