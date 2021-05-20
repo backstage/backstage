@@ -1,5 +1,19 @@
 # @backstage/dev-utils
 
+## 0.1.15
+
+### Patch Changes
+
+- 5e7b36e74: Fix a bug where an instance of the SCM integrations API wasn't being provided properly to the dev app.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+- Updated dependencies [61c3f927c]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/test-utils@0.1.12
+
 ## 0.1.14
 
 ### Patch Changes

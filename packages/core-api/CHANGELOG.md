@@ -1,5 +1,21 @@
 # @backstage/core-api
 
+## 0.2.19
+
+### Patch Changes
+
+- 61c3f927c: Updated the `Observable` type to provide interoperability with `Symbol.observable`, making it compatible with at least `zen-observable` and `RxJS 7`.
+
+  In cases where this change breaks tests that mocked the `Observable` type, the following addition to the mock should fix the breakage:
+
+  ```ts
+    [Symbol.observable]() {
+      return this;
+    },
+  ```
+
+- 65e6c4541: Remove circular dependencies
+
 ## 0.2.18
 
 ### Patch Changes

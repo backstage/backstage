@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core",
   "description": "Core API used by Backstage plugins and apps",
-  "version": "0.7.9",
+  "version": "0.7.10",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.5",
-    "@backstage/core-api": "^0.2.18",
+    "@backstage/core-api": "^0.2.19",
     "@backstage/errors": "^0.1.1",
     "@backstage/theme": "^0.2.7",
     "@material-ui/core": "^4.11.0",
@@ -71,8 +71,8 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.11",
-    "@backstage/test-utils": "^0.1.11",
+    "@backstage/cli": "^0.6.12",
+    "@backstage/test-utils": "^0.1.12",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^13.1.8",

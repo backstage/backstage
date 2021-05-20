@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog-backend
 
+## 0.9.1
+
+### Patch Changes
+
+- 50a5348b7: Fix error handling in `LdapOrgReaderProcessor`, and support complex paging options
+- 1b8e28aed: Resolve the `target` for glob `file` locations correctly
+- dcd5a93a9: Correctly add `<source>/project-slug` annotation for new catalog-info.yaml PRs based on SCM integration.
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 62579ced6: Skip adding entries to the `entities_search` table if their `key` exceeds a length limit.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
 ## 0.9.0
 
 ### Minor Changes

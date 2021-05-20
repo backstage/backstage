@@ -1,5 +1,17 @@
 # @backstage/plugin-cloudbuild
 
+## 0.2.15
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+
 ## 0.2.14
 
 ### Patch Changes
