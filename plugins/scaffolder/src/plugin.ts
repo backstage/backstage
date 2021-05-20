@@ -22,7 +22,10 @@ import {
   identityApiRef,
 } from '@backstage/core';
 import { OwnerPicker } from './components/fields/OwnerPicker';
-import { RepoUrlPicker } from './components/fields/RepoUrlPicker';
+import {
+  RepoUrlPicker,
+  repoPickerValidation,
+} from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
 import { createScaffolderFieldExtension } from './extensions';
@@ -54,16 +57,7 @@ export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
     component: RepoUrlPicker,
     name: 'RepoUrlPicker',
-    validation: (value, validation) => {
-      try {
-        const { host, searchParams } = new URL(`https://${value}`);
-        if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
-          validation.addError('Incomplete repository location provided');
-        }
-      } catch {
-        validation.addError('Unable to parse the Repository URL');
-      }
-    },
+    validation: repoPickerValidation,
   }),
 );
 
