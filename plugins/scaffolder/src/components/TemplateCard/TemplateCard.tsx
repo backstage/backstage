@@ -22,11 +22,14 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  Link,
   makeStyles,
+  Tooltip,
   Typography,
   useTheme,
 } from '@material-ui/core';
 import React from 'react';
+import WarningIcon from '@material-ui/icons/Warning';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
 import {
@@ -66,8 +69,21 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const useDeprecationStyles = makeStyles(theme => ({
+  deprecationIcon: {
+    position: 'absolute',
+    top: theme.spacing(0.5),
+    right: theme.spacing(3.5),
+    padding: '0.25rem',
+  },
+  link: {
+    color: theme.palette.warning.light,
+  },
+}));
+
 export type TemplateCardProps = {
   template: TemplateEntityV1alpha1;
+  deprecated?: boolean;
 };
 
 type TemplateProps = {
@@ -91,7 +107,30 @@ const getTemplateCardProps = (
   };
 };
 
-export const TemplateCard = ({ template }: TemplateCardProps) => {
+const DeprecationWarning = () => {
+  const styles = useDeprecationStyles();
+
+  const Title = (
+    <Typography style={{ padding: 10, maxWidth: 300 }}>
+      This template syntax is deprecated. Click for more info.
+    </Typography>
+  );
+
+  return (
+    <div className={styles.deprecationIcon}>
+      <Tooltip title={Title}>
+        <Link
+          href="https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2"
+          className={styles.link}
+        >
+          <WarningIcon />
+        </Link>
+      </Tooltip>
+    </div>
+  );
+};
+
+export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
   const backstageTheme = useTheme<BackstageTheme>();
   const rootLink = useRouteRef(rootRouteRef);
   const templateProps = getTemplateCardProps(template);
@@ -110,6 +149,7 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
     <Card>
       <CardMedia className={classes.cardHeader}>
         <FavouriteTemplate entity={template} />
+        {deprecated && <DeprecationWarning />}
         <ItemCardHeader
           title={templateProps.title}
           subtitle={templateProps.type}
