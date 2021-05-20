@@ -185,6 +185,11 @@ exports.up = async function up(knex) {
     table.index(['key'], 'search_key_idx');
     table.index(['value'], 'search_value_idx');
   });
+
+  // Delete bootstrap location which is no longer required.
+  await knex.schema.raw(
+    `DELETE from locations WHERE type = 'bootstrap' AND target = 'bootstrap'`,
+  );
 };
 
 /**
