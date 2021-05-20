@@ -1,5 +1,38 @@
 # @backstage/plugin-splunk-on-call
 
+## 0.3.0
+
+### Minor Changes
+
+- 8aa0b6025: Updates the Splunk On-Call plugin for the [composability system
+  migration](https://backstage.io/docs/plugins/composability#porting-existing-plugins).
+
+  To upgrade, modify your `EntityPage` to use the updated export names. The
+  `EntitySplunkOnCallCard` should be wrapped in an `<EntitySwitch>` condition as
+  shown in the plugin README, which you may already have in place.
+
+  ```diff
+  import {
+  - isPluginApplicableToEntity as isSplunkOnCallAvailable,
+  +  isSplunkOnCallAvailable,
+  - SplunkOnCallCard
+  +  EntitySplunkOnCallCard,
+  } from '@backstage/plugin-splunk-on-call';
+
+  ...
+  -  <SplunkOnCallCard entity={entity}>
+  +  <EntitySplunkOnCallCard />
+  ```
+
+### Patch Changes
+
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+
 ## 0.2.1
 
 ### Patch Changes

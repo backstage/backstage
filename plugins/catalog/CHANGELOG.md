@@ -1,5 +1,26 @@
 # @backstage/plugin-catalog
 
+## 0.5.8
+
+### Patch Changes
+
+- a53f3d603: - Added `RelatedEntitesCard` as a base implementation of displaying entities that are related to another entity.
+  - Added `HasResourcesCard` to display resources that are part of a system.
+  - Added `DependsOnComponentsCard` to display components that are dependencies of a component.
+  - Added `DependsOnResourcesCard` to display resources that are dependencies of a component.
+  - Refactored `HasComponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSubcomponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSystemsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Updated the example app to take advantage of these new components.
+- b203699e9: Display warning when Entity has orphan annotation.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.5.7
 
 ### Patch Changes

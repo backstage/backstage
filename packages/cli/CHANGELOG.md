@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.6.12
+
+### Patch Changes
+
+- 2bfec55a6: Update `fork-ts-checker-webpack-plugin`
+- Updated dependencies [290405276]
+  - @backstage/config-loader@0.6.2
+
 ## 0.6.11
 
 ### Patch Changes
