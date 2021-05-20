@@ -28,6 +28,7 @@ import {
 import classNames from 'classnames';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
+import { slackChannel as defaultSlackChannel } from '../constants';
 
 const useStyles = makeStyles(theme => ({
   noPadding: {
@@ -112,7 +113,7 @@ type Props = {
   subheader?: ReactNode;
   divider?: boolean;
   deepLink?: BottomLinkProps;
-  slackChannel?: string;
+  slackChannel?: typeof defaultSlackChannel;
   variant?: InfoCardVariants;
   style?: object;
   cardStyle?: object;
@@ -133,7 +134,7 @@ export const InfoCard = ({
   subheader,
   divider = true,
   deepLink,
-  slackChannel = '#backstage',
+  slackChannel = defaultSlackChannel,
   variant,
   children,
   headerStyle,

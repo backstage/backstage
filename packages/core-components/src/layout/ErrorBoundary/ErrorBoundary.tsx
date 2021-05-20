@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ComponentClass, Component, ErrorInfo } from 'react';
+import { Button, CardContent, CardHeader } from '@material-ui/core';
+import React, { ComponentClass, Component, ErrorInfo, useState } from 'react';
+import { slackChannel as defaultSlackChannel } from '../constants';
 
 type Props = {
-  slackChannel?: string;
+  slackChannel?: typeof defaultSlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 };
 
@@ -28,15 +30,54 @@ type State = {
 
 type EProps = {
   error?: Error;
-  slackChannel?: string;
+  slackChannel?: typeof defaultSlackChannel;
   children?: React.ReactNode;
 };
 
-const Error = ({ slackChannel }: EProps) => {
+const Error = ({ slackChannel, error }: EProps) => {
+  const [isShowingTrace, setIsShowingTrace] = useState(false);
   return (
     <div role="alert">
-      Something went wrong here.{' '}
-      {slackChannel && <>Please contact {slackChannel} for help.</>}
+      <CardHeader title="Something Went Wrong" />
+      <CardContent>
+        <p>
+          <strong>Error:</strong> {error?.message ?? 'No Further Info'}
+        </p>
+        <div>
+          <Button
+            onClick={() => setIsShowingTrace(!isShowingTrace)}
+            variant="contained"
+            color="primary"
+          >
+            {isShowingTrace ? 'Hide' : 'Show'} Details
+          </Button>
+        </div>
+        {isShowingTrace && (
+          <pre style={{ overflow: 'auto' }}>
+            <code>
+              {error?.stack?.split('\n').map(line => (
+                <>
+                  {line}
+                  <br />
+                </>
+              )) ?? ''}
+            </code>
+          </pre>
+        )}
+        {slackChannel && (
+          <p>
+            Please contact{' '}
+            <a
+              href={slackChannel.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <u>{slackChannel.name}</u>
+            </a>{' '}
+            for help.
+          </p>
+        )}
+      </CardContent>
     </div>
   );
 };

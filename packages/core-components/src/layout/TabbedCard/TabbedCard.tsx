@@ -33,6 +33,7 @@ import {
 } from '@material-ui/core';
 import { BottomLink, BottomLinkProps } from '../BottomLink';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { slackChannel as defaultSlackChannel } from '../constants';
 
 const useTabsStyles = makeStyles(theme => ({
   root: {
@@ -52,7 +53,7 @@ const BoldHeader = withStyles(theme => ({
 }))(CardHeader);
 
 type Props = {
-  slackChannel?: string;
+  slackChannel?: typeof defaultSlackChannel;
   children?: ReactElement<TabProps>[];
   onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
   title?: string;
@@ -61,7 +62,7 @@ type Props = {
 };
 
 const TabbedCard = ({
-  slackChannel = '#backstage',
+  slackChannel = defaultSlackChannel,
   children,
   title,
   deepLink,
