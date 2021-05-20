@@ -89,7 +89,7 @@ export const SingleSignInPage = ({
 
   const [autoShowPopup, setAutoShowPopup] = useState<boolean>(auto ?? false);
   // Defaults to true so that an initial check for existing user session is made
-  const [retry, setRetry] = useState<{} | boolean | undefined>(true);
+  const [retry, setRetry] = useState<{} | boolean | undefined>(undefined);
   const [error, setError] = useState<Error>();
 
   // The SignIn component takes some time to decide whether the user is logged-in or not.
@@ -139,9 +139,7 @@ export const SingleSignInPage = ({
       }
     };
 
-    if (retry) {
-      login();
-    }
+    login();
   }, [onResult, authApi, retry, autoShowPopup]);
 
   return showLoginPage ? (
