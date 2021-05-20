@@ -35,7 +35,7 @@ Within today’s complex development environments, there are barriers both big a
 
 
 
-![Backstage Software Templates rocket](assets/21-05-20/create.png)
+![Backstage Software Templates rocket](assets/21-05-20/create.gif)
 
 ### Create
 **Job:** You’re an engineer, ready to start building a new microservice. Do you just pick whatever framework you want? How do you reserve capacity to run your service in production? What about managing CI/CD?
@@ -44,7 +44,7 @@ Within today’s complex development environments, there are barriers both big a
 
 **Result:** By making it easier to start new projects, your engineers get to the good part of coding features faster. And your organization’s best practices are built into the templates, encouraging standards and reducing complexity in your tech ecosystem.
 
-![Backstage Service Catalog system](assets/21-05-20/manage.png)
+![Backstage Service Catalog system](assets/21-05-20/manage.gif)
 
 ### Manage
 **Job:** You’re on a small team that owns a dozen services. Whenever you update and deploy those services, you’re switching between your CI, the AWS console, a security dashboard, and a CLI so you can try to figure out which Kubernetes cluster your service ended up on. In other words, you have a lot of open windows and tabs, and each step means switching to a new interface.
@@ -53,7 +53,7 @@ Within today’s complex development environments, there are barriers both big a
 
 **Result**: One page in Backstage has everything you need to manage the software you own. No more context-switching. No more digging through your cloud provider’s obscure admin features. Outside the repo and your IDE, everything you need to manage your service is right inside Backstage.
 
-![Backstage explorer](assets/21-05-20/explore.png)
+![Backstage explorer](assets/21-05-20/explore.gif)
 
 ### Explore
 **Job:** You're building a new mobile feature that needs to ensure a user is paying for the premium version of your product — but someone must’ve already built a library that handles that, right? A company-wide email and a few calls for help on Slack yield no response, so you resign yourself to building the capability yourself. Turns out someone did build the library you needed. They were just on vacation so they didn’t see your messages. How do you enable better discovery and collaboration across your org?
