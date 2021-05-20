@@ -376,8 +376,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`10 seconds`]) // TODO: test this in sqlite3
-            : tx.raw(`now() + interval '30 seconds'`),
+            ? tx.raw(`datetime('now', ?)`, [`100 seconds`])
+            : tx.raw(`now() + interval '100 seconds'`),
       });
 
     return {
