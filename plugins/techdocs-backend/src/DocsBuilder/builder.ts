@@ -147,8 +147,8 @@ export class DocsBuilder {
       argv: process.argv,
       logger: getRootLogger(),
     });
-    const workingDir = config.get('backend.workingDirectory');
-    const tmpdirPath = workingDir ? String(workingDir) : os.tmpdir();
+    const workingDir = config.getOptionalString('backend.workingDirectory');
+    const tmpdirPath = workingDir || os.tmpdir();
     // Fixes a problem with macOS returning a path that is a symlink
     const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
     const outputDir = await fs.mkdtemp(
