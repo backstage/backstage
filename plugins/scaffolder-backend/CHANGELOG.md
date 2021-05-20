@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.3
+
+### Patch Changes
+
+- 021eb366a: Instead of failing, warn when you need to pay for GitHub Pro.
+
 ## 0.11.2
 
 ### Patch Changes
