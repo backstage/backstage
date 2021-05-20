@@ -180,11 +180,32 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     if (!c) {
       return {};
     }
+
+    const paged = readOptionsPagedConfig(c);
+
     return {
       scope: c.getOptionalString('scope') as SearchOptions['scope'],
       filter: formatFilter(c.getOptionalString('filter')),
       attributes: c.getOptionalStringArray('attributes'),
-      paged: c.getOptionalBoolean('paged'),
+      ...(paged !== undefined ? { paged } : undefined),
+    };
+  }
+
+  function readOptionsPagedConfig(c: Config): SearchOptions['paged'] {
+    const pagedConfig = c.getOptional('paged');
+    if (pagedConfig === undefined) {
+      return undefined;
+    }
+
+    if (pagedConfig === true || pagedConfig === false) {
+      return pagedConfig;
+    }
+
+    const pageSize = c.getOptionalNumber('paged.pageSize');
+    const pagePause = c.getOptionalBoolean('paged.pagePause');
+    return {
+      ...(pageSize !== undefined ? { pageSize } : undefined),
+      ...(pagePause !== undefined ? { pagePause } : undefined),
     };
   }
 
@@ -258,7 +279,7 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
   }
 
   function formatFilter(filter?: string): string | undefined {
-    // Remove extra whitespaces between blocks to support multiline filters from the configuration
+    // Remove extra whitespace between blocks to support multiline filters from the configuration
     return filter?.replace(/\s*(\(|\))/g, '$1')?.trim();
   }
 
