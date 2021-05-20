@@ -1,5 +1,6 @@
 Apdex
 Api
+automations
 Autoscaling
 Avro
 Bigtable
@@ -34,6 +35,7 @@ GraphQL
 Hackathons
 Helidon
 Heroku
+hoc
 Hostname
 Iain
 JaCoCo
