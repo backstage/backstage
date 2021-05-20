@@ -2,7 +2,6 @@
 '@backstage/catalog-model': patch
 '@backstage/plugin-scaffolder': patch
 '@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-scaffolder': patch
 '@backstage/plugin-scaffolder-backend': patch
 ---
 

@@ -662,7 +662,7 @@ You can find out more about the `steps` key
 An [entity reference](#string-references) to the owner of the component, e.g.
 `artist-relations-team`. This field is required.
 
-In Backstage, the owner of an Template is the singular entity (commonly a team)
+In Backstage, the owner of a Template is the singular entity (commonly a team)
 that bears ultimate responsibility for the Template, and has the authority and
 capability to develop and maintain it. They will be the point of contact if
 something goes wrong, or if features are to be requested. The main purpose of

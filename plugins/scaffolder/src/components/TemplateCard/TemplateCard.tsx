@@ -58,11 +58,10 @@ const useStyles = makeStyles(theme => ({
   label: {
     color: theme.palette.text.secondary,
     textTransform: 'uppercase',
-    fontSize: '10px',
+    fontSize: '0.65rem',
     fontWeight: 'bold',
     letterSpacing: 0.5,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
+    lineHeight: 1,
     paddingBottom: '0.2rem',
   },
 }));

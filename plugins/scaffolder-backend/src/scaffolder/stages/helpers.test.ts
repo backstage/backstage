@@ -55,7 +55,7 @@ describe('Helpers', () => {
               },
             },
           },
-          owner: 'example@email.com',
+          owner: 'team-d@example.com',
         },
       };
 
@@ -104,7 +104,7 @@ describe('Helpers', () => {
               },
             },
           },
-          owner: 'example@email.com',
+          owner: 'team-b@example.com',
         },
       };
 
@@ -153,7 +153,7 @@ describe('Helpers', () => {
               },
             },
           },
-          owner: 'example@email.com',
+          owner: 'team-a@example.com',
         },
       };
 
@@ -201,7 +201,7 @@ describe('Helpers', () => {
               },
             },
           },
-          owner: 'example@email.com',
+          owner: 'team-b@example.com',
         },
       };
 
@@ -247,7 +247,7 @@ describe('Helpers', () => {
               },
             },
           },
-          owner: 'example@email.com',
+          owner: 'team-c@example.com',
         },
       };
 
