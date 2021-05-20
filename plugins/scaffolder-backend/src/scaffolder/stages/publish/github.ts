@@ -109,6 +109,7 @@ export class GithubPublisher implements PublisherBase {
         owner,
         client,
         repoName: name,
+        logger,
       });
     } catch (e) {
       throw new Error(`Failed to add branch protection to '${name}', ${e}`);

@@ -233,6 +233,7 @@ export function createPublishGithubAction(options: {
           owner,
           client,
           repoName: newRepo.name,
+          logger: ctx.logger,
         });
       } catch (e) {
         throw new Error(

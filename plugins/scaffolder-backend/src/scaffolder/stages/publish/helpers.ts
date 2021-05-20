@@ -73,12 +73,14 @@ type BranchProtectionOptions = {
   client: Octokit;
   owner: string;
   repoName: string;
+  logger: Logger;
 };
 
 export const enableBranchProtectionOnDefaultRepoBranch = async ({
   repoName,
   client,
   owner,
+  logger,
 }: BranchProtectionOptions): Promise<void> => {
   const tryOnce = () => {
     return client.repos.updateBranchProtection({
@@ -105,6 +107,17 @@ export const enableBranchProtectionOnDefaultRepoBranch = async ({
   try {
     await tryOnce();
   } catch (e) {
+    if (
+      e.message.includes(
+        'Upgrade to GitHub Pro or make this repository public to enable this feature',
+      )
+    ) {
+      logger.warn(
+        'Branch protection was not enabled as it requires GitHub Pro for private repositories',
+      );
+      return;
+    }
+
     if (!e.message.includes('Branch not found')) {
       throw e;
     }
