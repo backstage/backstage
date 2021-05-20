@@ -56,7 +56,7 @@ describe('<ErrorBoundary/>', () => {
       );
 
       expect(getByRole('alert')).toBeInTheDocument();
-      expect(getByText(/something went wrong here/i)).toBeInTheDocument();
+      expect(getByText(/something went wrong/i)).toBeInTheDocument();
     });
 
     expect(error).toEqual([
