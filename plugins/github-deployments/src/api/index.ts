@@ -60,7 +60,7 @@ export type GithubDeployment = {
   commit: {
     abbreviatedOid: string;
     commitUrl: string;
-  };
+  } | null;
   creator: {
     login: string;
   };
