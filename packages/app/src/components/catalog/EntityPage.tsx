@@ -40,6 +40,8 @@ import {
   isComponentType,
   isKind,
   EntityHasResourcesCard,
+  EntityOrphanWarning,
+  isOrphan,
 } from '@backstage/plugin-catalog';
 import {
   EntityCircleCIContent,
@@ -214,7 +216,15 @@ const errorsContent = (
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
-    <Grid item md={6}>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <Grid item md={8} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
 
@@ -226,7 +236,7 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    <Grid item md={4} sm={6}>
+    <Grid item md={4} xs={12}>
       <EntityLinksCard />
     </Grid>
 
@@ -260,7 +270,7 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    <Grid item md={6}>
+    <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
   </Grid>

@@ -35,3 +35,4 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
+export * from './components/EntityOrphanWarning';
