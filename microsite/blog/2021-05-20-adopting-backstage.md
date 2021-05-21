@@ -127,7 +127,7 @@ Integrating infrastructure of this size and complexity can seem overwhelming. It
 **Recommendation — Create, then manage, then explore:**
 
 - The fastest way to bring change to your ecosystem is to start at the beginning of the chain with Backstage Software Templates.
-- With every new component created with your templates, you’re establishing best practices and rewarding your developers with a streamlined experience focussed on their needs — all the while building up your new service catalog.
+- With every new component created with your templates, you’re establishing best practices and rewarding your developers with a streamlined experience focused on their needs — all the while building up your new service catalog.
 - The more the templates ease the process of starting up a project, the more your engineers will adopt them, and the faster the other benefits of Backstage will build up, transforming productivity across your organization. ([That’s how we did it at Spotify](https://open.spotify.com/episode/7iuQ3ew1Wwpuiq6LbBKzCl).)
 
 ## More questions about adopting Backstage?
