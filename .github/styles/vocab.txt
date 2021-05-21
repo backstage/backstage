@@ -1,5 +1,6 @@
 Apdex
 Api
+automations
 Autoscaling
 Avro
 Bigtable
@@ -32,12 +33,16 @@ GitLab
 Grafana
 GraphQL
 Hackathons
+Helidon
 Heroku
+hoc
 Hostname
 Iain
 JaCoCo
 JavaScript
+Jira
 Kaewkasi
+kubernetes
 Knex
 Leasot
 Lerna
@@ -47,6 +52,8 @@ Minikube
 Minio
 Mkdocs
 Monorepo
+microservices
+microservice
 Namespaces
 OAuth
 Okta
