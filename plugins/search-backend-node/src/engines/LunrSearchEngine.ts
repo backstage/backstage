@@ -47,7 +47,27 @@ export class LunrSearchEngine implements SearchEngine {
     const lunrTerm = term ? `+${term}` : '';
     if (filters) {
       lunrQueryFilters = Object.entries(filters)
-        .map(([key, value]) => ` +${key}:${value}`)
+        .map(([field, value]) => {
+          // Require that the given field has the given value (with +).
+          if (['string', 'number', 'boolean'].includes(typeof value)) {
+            return ` +${field}:${value}`;
+          }
+
+          // Illustrate how multi-value filters could work.
+          if (Array.isArray(value)) {
+            // But warn that Lurn supports this poorly.
+            this.logger.warn(
+              `Non-scalar filter value used for field ${field}. Consider using a different Search Engine for better results.`,
+            );
+            return ` ${value.map(v => {
+              return `${field}:${v}`;
+            })}`;
+          }
+
+          // Log a warning or something about unknown filter value
+          this.logger.warn(`Unknown filter type used on field ${field}`);
+          return '';
+        })
         .join('');
     }
 
