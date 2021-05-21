@@ -15,6 +15,7 @@
  */
 
 export { AboutCard } from './components/AboutCard';
+export { CatalogResultListItem } from './components/CatalogResultListItem';
 export { EntityLayout } from './components/EntityLayout';
 export { EntityPageLayout } from './components/EntityPageLayout';
 export { CatalogTable } from './components/CatalogTable';

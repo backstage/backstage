@@ -13,44 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EmptyState, Link, Progress } from '@backstage/core';
-import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
+import { EmptyState, Progress } from '@backstage/core';
+import { SearchResult } from '@backstage/search-common';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
 
 import { useSearch } from '../SearchContext';
 
-const DefaultResultListItem = ({ result }: any) => {
-  return (
-    <Link to={result.location}>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.title}
-          secondary={result.text}
-        />
-      </ListItem>
-      <Divider component="li" />
-    </Link>
-  );
-};
+type ChildrenArguments = {
+  results: SearchResult[];
+}
 
-const TechDocsResultListItem = ({ result }: any) => {
-  return (
-    <Link to={result.location}>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          primaryTypographyProps={{ variant: 'h6' }}
-          primary={result.text}
-          secondary={result.location}
-        />
-      </ListItem>
-      <Divider component="li" />
-    </Link>
-  );
-};
-
-export const SearchResultNext = () => {
+export const SearchResultNext = ({ children }: { children: (results: ChildrenArguments) => JSX.Element}) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -67,37 +41,8 @@ export const SearchResultNext = () => {
   }
 
   if (!value) {
-    return <EmptyState missing="data" title="Sorry, no results were found" />;
+    return <EmptyState missing="data" title="Sorry, no results were found" />; 
   }
 
-  return (
-    <List>
-      {value.results.map(result => {
-        // Render different result items based on document type
-        switch (result.type) {
-          case 'software-catalog':
-            return (
-              <DefaultResultListItem
-                key={result.document.location}
-                result={result.document}
-              />
-            );
-          case 'techdocs':
-            return (
-              <TechDocsResultListItem
-                key={result.document.location}
-                result={result.document}
-              />
-            );
-          default:
-            return (
-              <DefaultResultListItem
-                key={result.document.location}
-                result={result.document}
-              />
-            );
-        }
-      })}
-    </List>
-  );
+  return children({ results: value.results });
 };

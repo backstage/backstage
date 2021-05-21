@@ -23,11 +23,15 @@ export {
   SearchBarNext,
   SearchResultNext,
   SearchFiltersNext,
+  DefaultResultListItem,
 } from './plugin';
 export {
   Filters,
   FiltersButton,
+  FilterType,
   SearchBar,
+  SearchContextProvider,
+  useSearch,
   SearchPage as Router,
   SearchResult,
   SidebarSearch,

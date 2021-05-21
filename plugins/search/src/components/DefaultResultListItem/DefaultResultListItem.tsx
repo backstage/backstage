@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,17 +11,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * l
+imitations under the License.
  */
 
 import React from 'react';
-import { Outlet } from 'react-router';
-import { SearchContextProvider } from '../SearchContext';
+import { Link } from '@backstage/core';
+import { ListItem, ListItemText, Divider } from '@material-ui/core';
 
-export const SearchPageNext = () => {
+export const DefaultResultListItem = ({ result }: any) => {
   return (
-    <SearchContextProvider>
-      <Outlet />
-    </SearchContextProvider>
+    <Link to={result.location}>
+      <ListItem alignItems="flex-start">
+        <ListItemText
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={result.title}
+          secondary={result.text}
+        />
+      </ListItem>
+      <Divider component="li" />
+    </Link>
   );
 };

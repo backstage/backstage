@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-export * from './Filters';
-export * from './SearchFiltersNext';
-export * from './SearchBar';
-export * from './SearchBarNext';
-export * from './SearchPage';
-export * from './SearchPageNext';
-export * from './SearchResult';
-export * from './SearchResultNext';
-export * from './DefaultResultListItem';
-export * from './SidebarSearch';
-export * from './SearchContext';
+export { CatalogResultListItem } from './CatalogResultListItem';

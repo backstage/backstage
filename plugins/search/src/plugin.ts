@@ -90,6 +90,15 @@ export const SearchResultNext = searchPlugin.provide(
   }),
 );
 
+export const DefaultResultListItem= searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DefaultResultListItem').then(m => m.DefaultResultListItem),
+    },
+  }),
+);
+
 export const SearchFiltersNext = searchPlugin.provide(
   createComponentExtension({
     component: {

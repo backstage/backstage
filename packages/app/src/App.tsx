@@ -54,6 +54,7 @@ import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
 import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
+import { searchPage } from './components/search/SearchPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
@@ -121,8 +122,10 @@ const routes = (
     <Route path="/search" element={<SearchPage />} />
     <Route
       path="/search-next"
-      element={<SearchPageNext /* TODO: illustrate customization */ />}
-    />
+      element={<SearchPageNext />}
+    >
+      {searchPage}
+    </Route>
     <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
       path="/cost-insights/investigating-growth"
