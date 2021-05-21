@@ -28,6 +28,11 @@ type ConcreteLunrQuery = {
   documentTypes: string[];
 };
 
+type LunrResultEnvelope = {
+  result: lunr.Index.Result;
+  type: string;
+};
+
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -104,13 +109,22 @@ export class LunrSearchEngine implements SearchEngine {
       query,
     ) as ConcreteLunrQuery;
 
-    const results: lunr.Index.Result[] = [];
+    const results: LunrResultEnvelope[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
       // Iterate over all this.lunrIndex values.
-      Object.values(this.lunrIndices).forEach(i => {
+      Object.keys(this.lunrIndices).forEach(type => {
         try {
-          results.push(...i.search(lunrQueryString));
+          results.push(
+            ...this.lunrIndices[type]
+              .search(lunrQueryString)
+              .map(result => {
+                return {
+                  result: result,
+                  type: type,
+                };
+              })
+          );
         } catch (err) {
           // if a field does not exist on a index, we can see that as a no-match
           if (
@@ -123,10 +137,19 @@ export class LunrSearchEngine implements SearchEngine {
     } else {
       // Iterate over the filtered list of this.lunrIndex keys.
       Object.keys(this.lunrIndices)
-        .filter(d => documentTypes.includes(d))
-        .forEach(d => {
+        .filter(type => documentTypes.includes(type))
+        .forEach(type => {
           try {
-            results.push(...this.lunrIndices[d].search(lunrQueryString));
+            results.push(
+              ...this.lunrIndices[type]
+                .search(lunrQueryString)
+                .map(result => {
+                  return {
+                    result: result,
+                    type: type,
+                  };
+                })
+            );
           } catch (err) {
             // if a field does not exist on a index, we can see that as a no-match
             if (
@@ -140,16 +163,16 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Sort results.
     results.sort((doc1, doc2) => {
-      return doc2.score - doc1.score;
+      return doc2.result.score - doc1.result.score;
     });
 
     // Translate results into SearchResultSet
-    const resultSet: SearchResultSet = {
+    const realResultSet: SearchResultSet = {
       results: results.map(d => {
-        return { type: 'techdocs', document: this.docStore[d.ref] };
+        return { type: d.type, document: this.docStore[d.result.ref] };
       }),
     };
 
-    return Promise.resolve(resultSet);
+    return Promise.resolve(realResultSet);
   }
 }

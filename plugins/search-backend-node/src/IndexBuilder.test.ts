@@ -30,7 +30,7 @@ class TestDocumentCollator implements DocumentCollator {
 }
 
 class TestDocumentDecorator implements DocumentDecorator {
-  async execute(documents: IndexableDocument[]) {
+  async execute(_type: string, documents: IndexableDocument[]) {
     return documents;
   }
 }

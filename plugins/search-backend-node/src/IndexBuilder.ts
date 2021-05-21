@@ -113,7 +113,7 @@ export class IndexBuilder {
           this.logger.debug(
             `Decorating ${type} documents via ${decorators[i].constructor.name}`,
           );
-          documents = await decorators[i].execute(documents);
+          documents = await decorators[i].execute(type, documents);
         }
 
         if (!documents || documents.length === 0) {
