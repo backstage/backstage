@@ -65,7 +65,9 @@ describe('github', () => {
         graphqlMsw.query('users', (_req, res, ctx) => res(ctx.data(input))),
       );
 
-      await expect(getOrganizationUsers(graphql, 'a')).resolves.toEqual(output);
+      await expect(
+        getOrganizationUsers(graphql, 'a', 'token'),
+      ).resolves.toEqual(output);
     });
   });
 
