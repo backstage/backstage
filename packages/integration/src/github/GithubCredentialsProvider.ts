@@ -229,7 +229,7 @@ export class GithubCredentialsProvider {
     const owner = parsed.owner || parsed.name;
     const repo = parsed.owner ? parsed.name : undefined;
 
-    let type: GithubCredentialType =  'app';
+    let type: GithubCredentialType = 'app';
     let token = await this.githubAppCredentialsMux.getAppToken(owner, repo);
     if (!token) {
       type = 'token';
