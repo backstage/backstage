@@ -20,6 +20,9 @@ export {
   searchPlugin as plugin,
   SearchPage,
   SearchPageNext,
+  SearchBarNext,
+  SearchResultNext,
+  SearchFiltersNext,
 } from './plugin';
 export {
   Filters,

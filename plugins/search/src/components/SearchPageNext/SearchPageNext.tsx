@@ -20,7 +20,7 @@ import { Grid } from '@material-ui/core';
 import { SearchBarNext } from '../SearchBarNext';
 import { SearchResultNext } from '../SearchResultNext';
 import { SearchContextProvider } from '../SearchContext';
-import { FiltersNext, FilterType } from '../FiltersNext';
+import { SearchFiltersNext, FilterType } from '../SearchFiltersNext';
 
 const defaultFilterDefinitions = [
   {
@@ -46,7 +46,7 @@ export const SearchPageNext = () => {
               <SearchBarNext />
             </Grid>
             <Grid item xs={3}>
-              <FiltersNext definitions={defaultFilterDefinitions} />
+              <SearchFiltersNext definitions={defaultFilterDefinitions} />
             </Grid>
             <Grid item xs={9}>
               <SearchResultNext />

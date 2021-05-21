@@ -171,7 +171,7 @@ const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
   );
 };
 
-export const FiltersNext = ({ definitions }: FiltersProps) => {
+export const SearchFiltersNext = ({ definitions }: FiltersProps) => {
   const classes = useFilterStyles();
 
   return (

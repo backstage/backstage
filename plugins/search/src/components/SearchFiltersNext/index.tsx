@@ -15,4 +15,4 @@
  */
 
 export { FiltersButtonNext } from './FiltersButtonNext';
-export { FiltersNext, FilterType } from './FiltersNext';
+export { SearchFiltersNext, FilterType } from './SearchFiltersNext';
