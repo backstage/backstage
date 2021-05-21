@@ -146,7 +146,7 @@ export class LunrSearchEngine implements SearchEngine {
     // Translate results into SearchResultSet
     const resultSet: SearchResultSet = {
       results: results.map(d => {
-        return { document: this.docStore[d.ref] };
+        return { type: 'techdocs', document: this.docStore[d.ref] };
       }),
     };
 

@@ -35,6 +35,21 @@ const DefaultResultListItem = ({ result }: any) => {
   );
 };
 
+const TechDocsResultListItem = ({ result }: any) => {
+  return (
+    <Link to={result.location}>
+      <ListItem alignItems="flex-start">
+        <ListItemText
+          primaryTypographyProps={{ variant: 'h6' }}
+          primary={result.text}
+          secondary={result.location}
+        />
+      </ListItem>
+      <Divider component="li" />
+    </Link>
+  );
+};
+
 export const SearchResultNext = () => {
   const {
     result: { loading, error, value },
@@ -57,12 +72,32 @@ export const SearchResultNext = () => {
 
   return (
     <List>
-      {value.results.map(result => (
-        <DefaultResultListItem
-          key={result.document.location}
-          result={result.document}
-        />
-      ))}
+      {value.results.map(result => {
+        // Render different result items based on document type
+        switch (result.type) {
+          case 'software-catalog':
+            return (
+              <DefaultResultListItem
+                key={result.document.location}
+                result={result.document}
+              />
+            );
+          case 'techdocs':
+            return (
+              <TechDocsResultListItem
+                key={result.document.location}
+                result={result.document}
+              />
+            );
+          default:
+            return (
+              <DefaultResultListItem
+                key={result.document.location}
+                result={result.document}
+              />
+            );
+        }
+      })}
     </List>
   );
 };

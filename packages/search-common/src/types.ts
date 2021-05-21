@@ -23,6 +23,7 @@ export interface SearchQuery {
 }
 
 export interface SearchResult {
+  type: string;
   document: IndexableDocument;
 }
 
