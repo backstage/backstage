@@ -275,7 +275,7 @@ export class NextCatalogBuilder {
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
-    const locationAnalyzer = new RepoLocationAnalyzer(logger);
+    const locationAnalyzer = new RepoLocationAnalyzer(logger, integrations);
     const locationService = new DefaultLocationService(
       locationStore,
       orchestrator,

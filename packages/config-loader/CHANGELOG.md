@@ -1,5 +1,11 @@
 # @backstage/config-loader
 
+## 0.6.2
+
+### Patch Changes
+
+- 290405276: Updated dependencies
+
 ## 0.6.1
 
 ### Patch Changes

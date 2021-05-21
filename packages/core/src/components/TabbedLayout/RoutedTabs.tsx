@@ -16,7 +16,8 @@
 import React, { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useNavigate, useParams, useRoutes } from 'react-router';
-import { Content, HeaderTabs } from '../../layout';
+import { Content } from '../../layout/Content';
+import { HeaderTabs } from '../../layout/HeaderTabs';
 import { SubRoute } from './types';
 
 export function useSelectedSubRoute(

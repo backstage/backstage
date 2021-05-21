@@ -23,6 +23,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
 - [Common to All Kinds: Relations](#common-to-all-kinds-relations)
+- [Common to All Kinds: Status](#common-to-all-kinds-status)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
@@ -396,6 +397,54 @@ with it (such as the default kind being `Group` if not specified).
 See the [well-known relations section](well-known-relations.md) for a list of
 well-known / common relations and their semantics.
 
+## Common to All Kinds: Status
+
+The `status` root field is a read-only set of statuses, pertaining to the
+current state or health of the entity, described in the
+[well-known statuses section](well-known-statuses.md). Each status field
+contains a specific blob of data that describes some aspect of the state of the
+entity, as seen from the point of view of some specific system. Different
+systems may contribute to this status object, under their own respective keys.
+
+The current main use case for this field is for the ingestion processes of the
+catalog itself to convey information about failures and warnings back to the
+user.
+
+A status field as part of a single entity that's read out of the API may look as
+follows.
+
+```js
+{
+  // ...
+  "status": {
+    "backstage.io/catalog-processing": {
+      "errors": []
+    }
+  },
+  "spec": {
+    // ...
+  }
+}
+```
+
+The keys of the `status` object are arbitrary strings. We recommend that any
+statuses that are not strictly private within the organization be namespaced to
+avoid collisions. Statuses emitted by Backstage core processes will for example
+be prefixed with `backstage.io/` as in the example above.
+
+The values of the `status` object are currently left unrestricted, except that
+they must be objects. We reserve the right to extend this model in the future,
+such that some fields of those value objects gain standardized meaning. We may
+for example want to add a standard concept of "severity" or "level" to these.
+
+Entity descriptor YAML files are not supposed to contain this field. Instead,
+catalog processors analyze the entity descriptor data and its surroundings, and
+deduce status entries that are then attached onto the entity as read from the
+catalog.
+
+See the [well-known statuses section](well-known-statuses.md) for a list of
+well-known / common relations and their semantics.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -656,6 +705,25 @@ You can find out more about the `parameters` key
 
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
+
+### `spec.owner` [optional]
+
+An [entity reference](#string-references) to the owner of the component, e.g.
+`artist-relations-team`. This field is required.
+
+In Backstage, the owner of a Template is the singular entity (commonly a team)
+that bears ultimate responsibility for the Template, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this Template belongs. It is
+not to be used by automated processes to for example assign authorization in
+runtime systems. There may be others that also develop or otherwise touch the
+Template, but there will always be one ultimate owner.
+
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ## Kind: API
 

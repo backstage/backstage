@@ -1,5 +1,15 @@
 # @backstage/core
 
+## 0.7.10
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- 5da6a561d: Fix a bug where users are asked to log-in on every page refresh. This is specific to people with only one sign-in provider in their SignInPage component.
+- Updated dependencies [61c3f927c]
+- Updated dependencies [65e6c4541]
+  - @backstage/core-api@0.2.19
+
 ## 0.7.9
 
 ### Patch Changes

@@ -81,6 +81,13 @@ proxy:
     headers:
       Authorization: ${SENTRY_TOKEN}
 
+  '/ilert':
+    target: https://api.ilert.com
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: ${ILERT_AUTH_HEADER}
+
 organization:
   name: My Company
 

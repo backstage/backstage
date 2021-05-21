@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.5.3
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+
 ## 0.5.2
 
 ### Patch Changes

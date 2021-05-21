@@ -26,9 +26,13 @@ export {
   catalogPlugin,
   catalogPlugin as plugin,
   EntityAboutCard,
+  EntityDependsOnComponentsCard,
+  EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
+  EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
+export * from './components/EntityOrphanWarning';

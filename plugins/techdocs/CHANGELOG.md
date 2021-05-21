@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs
 
+## 0.9.3
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- a62cfe068: Bug fix on sidebar position when Tab-Bar is enabled
+- 35e091604: Handle URLs with a `#hash` correctly when rewriting link URLs.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.9.2
 
 ### Patch Changes
