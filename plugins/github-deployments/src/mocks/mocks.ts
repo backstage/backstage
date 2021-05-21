@@ -48,16 +48,16 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
-          creator: {
-            login: 'robot-user-001',
-          },
           statuses: {
             nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          creator: {
+            login: 'robot-user-001',
           },
           repository: {
             nameWithOwner: 'org/owner',
           },
-          payload: '',
+          payload: '{"target":"moon"}',
         },
         {
           state: 'pending',
@@ -67,16 +67,16 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
           creator: {
             login: 'robot-user-001',
-          },
-          statuses: {
-            nodes: [{ logUrl: '' }],
           },
           repository: {
             nameWithOwner: 'org/owner',
           },
-          payload: '',
+          payload: '{"target":"sun"}',
         },
       ],
     },
@@ -95,16 +95,16 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
-          creator: {
-            login: 'robot-user-001',
-          },
           statuses: {
             nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          creator: {
+            login: 'robot-user-001',
           },
           repository: {
             nameWithOwner: 'org/owner',
           },
-          payload: '',
+          payload: '{"target":"moon"}',
         },
         {
           state: 'failure',
@@ -114,16 +114,16 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
-          creator: {
-            login: 'robot-user-001',
-          },
           statuses: {
             nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
+          creator: {
+            login: 'robot-user-001',
           },
           repository: {
             nameWithOwner: 'org/owner',
           },
-          payload: '',
+          payload: '{"target":"sun"}',
         },
       ],
     },
