@@ -50,6 +50,8 @@ describe('<EntityTagPicker/>', () => {
       </MockEntityListContextProvider>,
     );
     expect(rendered.getByText('Tags')).toBeInTheDocument();
+
+    fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     taggedEntities
       .flatMap(e => e.metadata.tags!)
       .forEach(tag => {
@@ -72,6 +74,7 @@ describe('<EntityTagPicker/>', () => {
     );
     expect(updateFilters).not.toHaveBeenCalled();
 
+    fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     fireEvent.click(rendered.getByText('tag1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: new EntityTagFilter(['tag1']),
@@ -93,9 +96,10 @@ describe('<EntityTagPicker/>', () => {
       </MockEntityListContextProvider>,
     );
     expect(updateFilters).not.toHaveBeenCalled();
+    fireEvent.click(rendered.getByTestId('tag-picker-expand'));
     expect(rendered.getByLabelText('tag1')).toBeChecked();
 
-    fireEvent.click(rendered.getByText('tag1'));
+    fireEvent.click(rendered.getByLabelText('tag1'));
     expect(updateFilters).toHaveBeenLastCalledWith({
       tags: undefined,
     });

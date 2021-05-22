@@ -25,6 +25,7 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core-api';
+import { EntityTagFilter } from '../../types';
 
 const apis = ApiRegistry.from([
   [
@@ -68,7 +69,7 @@ describe('<UserListPicker />', () => {
       metadata: {
         namespace: 'namespace-1',
         name: 'component-1',
-        tags: [],
+        tags: ['tag1'],
       },
       relations: [
         {
@@ -83,7 +84,7 @@ describe('<UserListPicker />', () => {
       metadata: {
         namespace: 'namespace-2',
         name: 'component-2',
-        tags: [],
+        tags: ['tag1'],
       },
     },
     {
@@ -155,6 +156,27 @@ describe('<UserListPicker />', () => {
         ({ nextSibling }) => nextSibling?.textContent,
       ),
     ).toEqual(['2', '1', '4']);
+  });
+
+  it('respects other frontend filters in counts', () => {
+    const { getAllByRole } = render(
+      <ApiProvider apis={apis}>
+        <MockEntityListContextProvider
+          value={{
+            backendEntities,
+            filters: { tags: new EntityTagFilter(['tag1']) },
+          }}
+        >
+          <UserListPicker />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(
+      getAllByRole('menuitem').map(
+        ({ nextSibling }) => nextSibling?.textContent,
+      ),
+    ).toEqual(['1', '0', '2']);
   });
 
   it('updates user filter when a menuitem is selected', () => {

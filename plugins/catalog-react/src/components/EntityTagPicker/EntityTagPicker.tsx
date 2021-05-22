@@ -17,31 +17,22 @@
 import React, { useMemo } from 'react';
 import {
   Checkbox,
-  List,
-  ListItem,
-  ListItemText,
-  makeStyles,
-  Theme,
+  FormControlLabel,
+  TextField,
   Typography,
 } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Entity } from '@backstage/catalog-model';
 import { EntityTagFilter } from '../../types';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 
-const useStyles = makeStyles<Theme>(theme => ({
-  title: {
-    margin: theme.spacing(1, 0, 0, 1),
-    textTransform: 'uppercase',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  checkbox: {
-    padding: theme.spacing(0, 1, 0, 1),
-  },
-}));
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const EntityTagPicker = () => {
-  const classes = useStyles();
   const { updateFilters, backendEntities, filters } = useEntityListProvider();
   const availableTags = useMemo(
     () => [
@@ -56,40 +47,36 @@ export const EntityTagPicker = () => {
 
   if (!availableTags.length) return null;
 
-  const onClick = (tag: string) => {
-    const tags = filters.tags?.values ?? [];
-    const newTags = tags.includes(tag)
-      ? [...tags.filter((t: string) => t !== tag)]
-      : [...tags, tag];
+  const onChange = (tags: string[]) => {
     updateFilters({
-      tags: newTags.length ? new EntityTagFilter(newTags) : undefined,
+      tags: tags.length ? new EntityTagFilter(tags) : undefined,
     });
   };
 
   return (
     <>
-      <Typography variant="subtitle2" className={classes.title}>
-        Tags
-      </Typography>
-      <List disablePadding dense>
-        {availableTags.map(tag => {
-          const labelId = `checkbox-list-label-${tag}`;
-          return (
-            <ListItem key={tag} dense button onClick={() => onClick(tag)}>
+      <Typography variant="button">Tags</Typography>
+      <Autocomplete<string>
+        multiple
+        options={availableTags}
+        value={filters.tags?.values ?? []}
+        onChange={(_: object, value: string[]) => onChange(value)}
+        renderOption={(option, { selected }) => (
+          <FormControlLabel
+            control={
               <Checkbox
-                edge="start"
-                color="primary"
-                checked={(filters.tags?.values ?? []).includes(tag)}
-                tabIndex={-1}
-                disableRipple
-                className={classes.checkbox}
-                inputProps={{ 'aria-labelledby': labelId }}
+                icon={icon}
+                checkedIcon={checkedIcon}
+                checked={selected}
               />
-              <ListItemText id={labelId} primary={tag} />
-            </ListItem>
-          );
-        })}
-      </List>
+            }
+            label={option}
+          />
+        )}
+        size="small"
+        popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
+        renderInput={params => <TextField {...params} variant="outlined" />}
+      />
     </>
   );
 };

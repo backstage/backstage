@@ -57,6 +57,12 @@ export type EntityListContextProps<
   filters: EntityFilters;
 
   /**
+   * The filter environment passed to frontend filters; contains information available in the React
+   * tree.
+   */
+  filterEnv: FilterEnvironment;
+
+  /**
    * The resolved list of catalog entities, after all filters are applied.
    */
   entities: Entity[];
@@ -171,6 +177,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     <EntityListContext.Provider
       value={{
         filters,
+        filterEnv,
         entities,
         backendEntities,
         updateFilters,

@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { compact } from 'lodash';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
-import {
-  FilterEnvironment,
-  UserListFilter,
-  UserListFilterKind,
-} from '../../types';
-import {
-  useEntityListProvider,
-  useOwnUser,
-  useStarredEntities,
-} from '../../hooks';
+import { UserListFilter, UserListFilterKind } from '../../types';
+import { useEntityListProvider } from '../../hooks';
 import {
   Card,
   List,
@@ -39,6 +32,7 @@ import {
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import StarIcon from '@material-ui/icons/Star';
+import { reduceEntityFilters } from '../../utils';
 
 const useStyles = makeStyles<Theme>(theme => ({
   root: {
@@ -61,9 +55,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
   groupWrapper: {
     margin: theme.spacing(1, 1, 2, 1),
-  },
-  menuTitle: {
-    fontWeight: 500,
   },
 }));
 
@@ -115,19 +106,25 @@ export const UserListPicker = () => {
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const filterGroups = getFilterGroups(orgName);
 
-  // Unfortunate FilterEnvironment duplication for static filters used for counts
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
-  const filterEnv: FilterEnvironment = {
-    user: user,
-    isStarredEntity: isStarredEntity,
-  };
-
   const {
-    filters: { user: userFilter },
+    filters,
     updateFilters,
     backendEntities,
+    filterEnv,
   } = useEntityListProvider();
+
+  // To show proper counts for each section, apply all other frontend filters _except_ the user
+  // filter that's controlled by this picker.
+  const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] = useState(
+    backendEntities,
+  );
+  useEffect(() => {
+    const filterFn = reduceEntityFilters(
+      compact(Object.values({ ...filters, user: undefined })),
+      filterEnv,
+    );
+    setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
+  }, [filters, backendEntities, filterEnv]);
   function setSelectedFilter({ id }: { id: UserListFilterKind }) {
     updateFilters({ user: new UserListFilter(id) });
   }
@@ -135,15 +132,15 @@ export const UserListPicker = () => {
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
       case 'owned':
-        return backendEntities.filter(entity =>
+        return entitiesWithoutUserFilter.filter(entity =>
           ownedFilter.filterEntity(entity, filterEnv),
         ).length;
       case 'starred':
-        return backendEntities.filter(entity =>
+        return entitiesWithoutUserFilter.filter(entity =>
           starredFilter.filterEntity(entity, filterEnv),
         ).length;
       default:
-        return backendEntities.length;
+        return entitiesWithoutUserFilter.length;
     }
   }
 
@@ -162,7 +159,7 @@ export const UserListPicker = () => {
                   button
                   divider
                   onClick={() => setSelectedFilter(item)}
-                  selected={item.id === userFilter?.value}
+                  selected={item.id === filters.user?.value}
                   className={classes.menuItem}
                 >
                   {item.icon && (
@@ -173,7 +170,6 @@ export const UserListPicker = () => {
                   <ListItemText>
                     <Typography
                       variant="body1"
-                      className={classes.menuTitle}
                       data-testid={`user-picker-${item.id}`}
                     >
                       {item.label}
