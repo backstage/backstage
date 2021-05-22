@@ -209,6 +209,9 @@ async function createApp(
     }
     child.stdin?.write(`\n`);
 
+    await waitFor(() => stdout.includes('Select cache store for the backend'));
+    child.stdin?.write(`\n`);
+
     print('Waiting for app create script to be done');
     await waitForExit(child);
 
