@@ -24,7 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import * as React from 'react';
 import { CatalogTable } from './CatalogTable';
 import {
-  EntityListContext,
+  MockEntityListContextProvider,
   UserListFilter,
 } from '@backstage/plugin-catalog-react';
 
@@ -46,14 +46,6 @@ const entities: Entity[] = [
   },
 ];
 
-const emptyEntityListContext = {
-  entities: [],
-  backendEntities: [],
-  filters: [],
-  loading: false,
-  updateFilters: () => {},
-};
-
 describe('CatalogTable component', () => {
   beforeEach(() => {
     window.open = jest.fn();
@@ -65,11 +57,9 @@ describe('CatalogTable component', () => {
 
   it('should render error message', async () => {
     const rendered = await renderInTestApp(
-      <EntityListContext.Provider
-        value={{ ...emptyEntityListContext, error: new Error('error') }}
-      >
+      <MockEntityListContextProvider value={{ error: new Error('error') }}>
         <CatalogTable />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
     const errorMessage = await rendered.findByText(
       /Could not fetch catalog entities./,
@@ -79,15 +69,14 @@ describe('CatalogTable component', () => {
 
   it('should display entity names when loading has finished and no error occurred', async () => {
     const rendered = await renderInTestApp(
-      <EntityListContext.Provider
+      <MockEntityListContextProvider
         value={{
-          ...emptyEntityListContext,
           entities,
           filters: { user: new UserListFilter('owned') },
         }}
       >
         <CatalogTable />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
     expect(rendered.getByText(/Owned \(3\)/)).toBeInTheDocument();
     expect(rendered.getByText(/component1/)).toBeInTheDocument();
@@ -106,11 +95,9 @@ describe('CatalogTable component', () => {
     };
 
     const { getByTitle } = await renderInTestApp(
-      <EntityListContext.Provider
-        value={{ ...emptyEntityListContext, entities: [entity] }}
-      >
+      <MockEntityListContextProvider value={{ entities: [entity] }}>
         <CatalogTable />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
 
     const editButton = getByTitle('Edit');
@@ -133,11 +120,9 @@ describe('CatalogTable component', () => {
     };
 
     const { getByTitle } = await renderInTestApp(
-      <EntityListContext.Provider
-        value={{ ...emptyEntityListContext, entities: [entity] }}
-      >
+      <MockEntityListContextProvider value={{ entities: [entity] }}>
         <CatalogTable />
-      </EntityListContext.Provider>,
+      </MockEntityListContextProvider>,
     );
 
     const viewButton = getByTitle('View');

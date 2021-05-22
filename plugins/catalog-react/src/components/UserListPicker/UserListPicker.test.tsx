@@ -25,7 +25,7 @@ import {
   ConfigApi,
   configApiRef,
 } from '@backstage/core-api';
-import { EntityTagFilter } from '../../types';
+import { EntityTagFilter, FilterEnvironment } from '../../types';
 
 const apis = ApiRegistry.from([
   [
@@ -41,25 +41,20 @@ const apis = ApiRegistry.from([
   ],
 ]);
 
-jest.mock('../../hooks', () => ({
-  useOwnUser: jest.fn().mockReturnValue({
-    value: {
-      apiVersion: '1',
-      kind: 'User',
-      metadata: {
-        namespace: 'default',
-        name: 'testUser',
-      },
+const filterEnv: FilterEnvironment = {
+  user: {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'User',
+    metadata: {
+      namespace: 'default',
+      name: 'testUser',
     },
-  }),
-  useStarredEntities: jest.fn().mockReturnValue({
-    isStarredEntity: jest.fn(
-      (entity: Entity) => entity.metadata.name === 'component-3',
-    ),
-  }),
-  useEntityListProvider: jest.requireActual('../../hooks')
-    .useEntityListProvider,
-}));
+    spec: {
+      memberOf: [],
+    },
+  },
+  isStarredEntity: (entity: Entity) => entity.metadata.name === 'component-3',
+};
 
 describe('<UserListPicker />', () => {
   const backendEntities: Entity[] = [
@@ -143,7 +138,7 @@ describe('<UserListPicker />', () => {
   it('includes counts alongside each filter', () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ backendEntities }}>
+        <MockEntityListContextProvider value={{ backendEntities, filterEnv }}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
@@ -165,6 +160,7 @@ describe('<UserListPicker />', () => {
           value={{
             backendEntities,
             filters: { tags: new EntityTagFilter(['tag1']) },
+            filterEnv,
           }}
         >
           <UserListPicker />

@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { useOwnUser, useStarredEntities } from '../hooks';
 import {
   EntityListContext,
   EntityListContextProps,
@@ -25,16 +24,14 @@ export const MockEntityListContextProvider = ({
   children,
   value,
 }: PropsWithChildren<{ value: Partial<EntityListContextProps> }>) => {
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
   const defaultContext: EntityListContextProps = {
     entities: [],
     backendEntities: [],
     updateFilters: jest.fn(),
     filters: {},
     filterEnv: {
-      user,
-      isStarredEntity,
+      user: undefined,
+      isStarredEntity: () => false,
     },
     loading: false,
   };
