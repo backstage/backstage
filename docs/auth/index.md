@@ -77,7 +77,6 @@ built-in providers:
 +
 const app = createApp({
   apis,
-  plugins: Object.values(plugins),
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
@@ -96,7 +95,6 @@ To also allow unauthenticated guest access, use the `providers` prop for
 ```diff
 const app = createApp({
   apis,
-  plugins: Object.values(plugins),
 +  components: {
 +    SignInPage: props => (
 +      <SignInPage
