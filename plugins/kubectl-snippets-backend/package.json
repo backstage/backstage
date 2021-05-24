@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-kubectl-snippets-backend-backend",
+  "name": "@backstage/plugin-kubectl-snippets-backend",
   "version": "0.1.1",
   "main": "src/index.ts",
   "types": "src/index.ts",

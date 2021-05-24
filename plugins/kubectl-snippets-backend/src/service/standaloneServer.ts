@@ -43,9 +43,7 @@ export interface ServerOptions {
 export async function startStandaloneServer(
   options: ServerOptions,
 ): Promise<Server> {
-  const logger = options.logger.child({
-    service: 'kubectl-snippets-backend-backend',
-  });
+  const logger = options.logger.child({ service: 'kubectl-snippets-backend' });
   logger.debug('Starting application server...');
   const router = await createRouter({
     logger,
@@ -53,7 +51,7 @@ export async function startStandaloneServer(
 
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })
-    .addRouter('/kubectl-snippets-backend', router);
+    .addRouter('/kubectl-snippets', router);
 
   return await service.start().catch(err => {
     logger.error(err);
