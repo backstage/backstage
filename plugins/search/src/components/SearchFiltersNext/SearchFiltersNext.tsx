@@ -151,7 +151,7 @@ export const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
   return (
     <CardContent>
       <FormControl variant="filled" className={classes.select}>
-        <InputLabel>{fieldName}</InputLabel>
+        <InputLabel margin="dense">{fieldName}</InputLabel>
         <Select
           variant="outlined"
           value={filters[fieldName] || ''}
