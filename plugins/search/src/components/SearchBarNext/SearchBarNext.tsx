@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDebounce } from 'react-use';
 import { useQueryParamState } from '@backstage/core';
 import { Paper, InputBase, IconButton, makeStyles } from '@material-ui/core';
