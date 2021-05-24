@@ -27,9 +27,6 @@ export {
 export {
   Filters,
   FiltersButton,
-  FilterType,
-  CheckBoxFilter,
-  SelectFilter,
   SearchBar,
   SearchContextProvider,
   useSearch,
