@@ -204,7 +204,7 @@ get passed to the backend.
 ```
 
 If you have advanced filter needs, you can specify your own filter component
-like this (although contributions are welcome):
+like this (although new core filter contributions are welcome):
 
 ```tsx
 import { useSearch, SearchFilter } from '@backstage/plugin-search';
@@ -251,9 +251,10 @@ an example:
 ### Backend
 
 Backstage Search isn't a search engine itself, rather, it provides an interface
-between your Backstage instance and a Search Engine of your choice. Currently,
-we only support one, in-memory search Engine called Lunr. It can be instantiated
-like this:
+between your Backstage instance and a
+[Search Engine](./concepts.md#search-engines) of your choice. Currently, we only
+support one, in-memory search Engine called Lunr. It can be instantiated like
+this:
 
 ```typescript
 const searchEngine = new LunrSearchEngine({ logger });
@@ -261,9 +262,9 @@ const indexBuilder = new IndexBuilder({ logger, searchEngine });
 ```
 
 Backstage Search can be used to power search of anything! Plugins like the
-Catalog offer default "collators" which are responsible for providing documents
-to be indexed. You can register any number of collators with the `IndexBuilder`
-like this:
+Catalog offer default [collators](./concepts.md#collators) which are responsible
+for providing documents [to be indexed](./concepts.md#documents-and-indices).
+You can register any number of collators with the `IndexBuilder` like this:
 
 ```typescript
 const indexBuilder = new IndexBuilder({ logger, searchEngine });
@@ -281,10 +282,11 @@ indexBuilder.addCollator({
 });
 ```
 
-Backstage Search builds and maintains its index on a schedule. You can change
-how often the indexes are rebuilt for a given type of document. You may want to
-do this if your documents are updated more or less frequently. You can do so by
-modifying its `defaultRefreshIntervalSeconds` value, like this:
+Backstage Search builds and maintains its index
+[on a schedule](./concepts.md#the-scheduler). You can change how often the
+indexes are rebuilt for a given type of document. You may want to do this if
+your documents are updated more or less frequently. You can do so by modifying
+its `defaultRefreshIntervalSeconds` value, like this:
 
 ```typescript {3}
 indexBuilder.addCollator({

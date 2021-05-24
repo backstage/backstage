@@ -11,16 +11,14 @@ Backstage ecosystem.
 
 To get started, you should get familiar with these core concepts:
 
-TODO: Link these like a real TOC
-
-- Search Engines
-- Query Translators
-- Documents and Indices
-- Collators
-- Decorators
-- The Scheduler
-- The Search Page
-- Search Context and Components
+- [Search Engines](#search-engines)
+- [Query Translators](#query-translators)
+- [Documents and Indices](#documents-and-indices)
+- [Collators](#collators)
+- [Decorators](#decorators)
+- [The Scheduler](#the-scheduler)
+- [The Search Page](#the-search-page)
+- [Search Context and Components](#search-context-and-components)
 
 ### Search Engines
 
@@ -91,7 +89,8 @@ your heart's content, the Search Plugin takes care of state management and other
 search logic for you, but most of the layout of a search page lives in a search
 page component defined in your Backstage App.
 
-For an example of a simple search page, check [getting started](TODO)
+For an example of a simple search page, check
+[getting started](./getting-started.md#adding-search-to-the-frontend)
 
 ### Search Context and Components
 
@@ -106,7 +105,8 @@ search results can be displayed using the `<SearchResult />` component.
 
 The `<SearchResult />` and `<SearchFilter />` components are special, in that
 they themselves are extensible. For an example of how to extend these
-components, [check this out](TODO).
+components, check
+[getting started](./getting-started.md#adding-search-to-the-frontend).
 
 If you need even more customization, you can use the search context like any
 other React context to create custom search components of your own.
