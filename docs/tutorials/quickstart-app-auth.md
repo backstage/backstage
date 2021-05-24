@@ -335,19 +335,33 @@ provider information based on the table above.
 ```tsx
 const app = createApp({
   apis,
+  bindRoutes({ bind }) {
+    bind(catalogPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(apiDocsPlugin.externalRoutes, {
+      createComponent: scaffolderPlugin.routes.root,
+    });
+    bind(scaffolderPlugin.externalRoutes, {
+      registerComponent: catalogImportPlugin.routes.importPage,
+    });
+  },
   components: {
-    SignInPage: props => (
-      <SignInPage
-        {...props}
-        auto
-        provider={{
-          id: 'github-auth-provider',
-          title: 'GitHub',
-          message: 'Simple Backstage Application Login',
-          apiRef: githubAuthApiRef,
-        }}
-      />
-    ),
+    SignInPage: props => {
+      return (
+        <SignInPage
+          {...props}            // enter this literally
+          provider={{
+            id: 'development',  // enter this literally
+            title: 'Login',
+            message: 'Simple Backstage Application Login',
+            apiRef: microsoftAuthApiRef,
+          }}
+          align="center"
+        />
+      );
+    },
+  },
   },
 });
 ```
