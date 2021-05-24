@@ -190,10 +190,10 @@ databases are supported, plugins receive logically separated cache connections,
 which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
 
 At this time of writing, Backstage can be configured to use one of two cache
-stores: memory, which is mainly used for local testing, and memcache, which is
-is a cache store better suited for production deployment. The right cache store
-for your Backstage instance will depend on your own run-time constraints and
-those specified by the plugins you're running.
+stores: memory, which is mainly used for local testing, and memcache, which is a
+cache store better suited for production deployment. The right cache store for
+your Backstage instance will depend on your own run-time constraints and those
+required of the plugins you're running.
 
 Contributions supporting other cache stores are welcome!
 
