@@ -24,7 +24,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a', true],
     ['AZ09', true],
     ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(121), false],
     ['a-b', false],
     ['a_b', false],
     ['a.b', false],
@@ -45,7 +45,7 @@ describe('KubernetesValidatorFunctions', () => {
       false,
     ],
     [`a/${'a'.repeat(63)}`, true],
-    [`a/${'a'.repeat(64)}`, false],
+    [`a/${'a'.repeat(121)}`, false],
   ])(`isValidApiVersion %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidApiVersion(value)).toBe(matches);
   });
@@ -58,7 +58,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['AZ09', true],
     ['9AZ', false],
     ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(121), false],
     ['a-b', false],
   ])(`isValidKind %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidKind(value)).toBe(matches);
@@ -70,8 +70,8 @@ describe('KubernetesValidatorFunctions', () => {
     ['', false],
     ['a', true],
     ['AZ09', true],
-    ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(120), true],
+    ['a'.repeat(121), false],
     ['a/b', false],
     ['a-b', true],
     ['-a-b', false],
@@ -90,7 +90,7 @@ describe('KubernetesValidatorFunctions', () => {
     ['a', true],
     ['AZ09', false],
     ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(121), false],
     ['a/b', false],
     ['a-b', true],
     ['-a-b', false],
@@ -108,8 +108,8 @@ describe('KubernetesValidatorFunctions', () => {
     ['', false],
     ['a', true],
     ['AZ09', true],
-    ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(120), true],
+    ['a'.repeat(121), false],
     ['a/b', true],
     ['a-b', true],
     ['-a-b', false],
@@ -132,8 +132,8 @@ describe('KubernetesValidatorFunctions', () => {
       )}/a`,
       false,
     ],
-    [`a/${'a'.repeat(63)}`, true],
-    [`a/${'a'.repeat(64)}`, false],
+    [`a/${'a'.repeat(120)}`, true],
+    [`a/${'a'.repeat(121)}`, false],
   ])(`isValidLabelKey %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidLabelKey(value)).toBe(matches);
   });
@@ -144,8 +144,8 @@ describe('KubernetesValidatorFunctions', () => {
     ['', true],
     ['a', true],
     ['AZ09', true],
-    ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(120), true],
+    ['a'.repeat(121), false],
     ['a/b', false],
     ['a-b', true],
     ['-a-b', false],
@@ -163,8 +163,8 @@ describe('KubernetesValidatorFunctions', () => {
     ['', false],
     ['a', true],
     ['AZ09', true],
-    ['a'.repeat(63), true],
-    ['a'.repeat(64), false],
+    ['a'.repeat(120), true],
+    ['a'.repeat(121), false],
     ['a/b', true],
     ['a-b', true],
     ['-a-b', false],
@@ -187,8 +187,8 @@ describe('KubernetesValidatorFunctions', () => {
       )}/a`,
       false,
     ],
-    [`a/${'a'.repeat(63)}`, true],
-    [`a/${'a'.repeat(64)}`, false],
+    [`a/${'a'.repeat(120)}`, true],
+    [`a/${'a'.repeat(121)}`, false],
   ])(`isValidAnnotationKey %p ? %p`, (value, matches) => {
     expect(KubernetesValidatorFunctions.isValidAnnotationKey(value)).toBe(
       matches,
