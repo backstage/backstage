@@ -56,6 +56,7 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
+import { KubectlSnippetsPage } from '@backstage/plugin-kubectl-snippets';
 
 const app = createApp({
   apis,
@@ -133,6 +134,7 @@ const routes = (
       element={<CostInsightsLabelDataflowInstructionsPage />}
     />
     <Route path="/settings" element={<UserSettingsPage />} />
+    <Route path="/kubectl-snippets" element={<KubectlSnippetsPage />} />
   </FlatRoutes>
 );
 

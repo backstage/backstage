@@ -23,6 +23,7 @@
     "@backstage/plugin-graphiql": "^0.2.11",
     "@backstage/plugin-jenkins": "^0.4.3",
     "@backstage/plugin-kafka": "^0.2.7",
+    "@backstage/plugin-kubectl-snippets": "^0.1.1",
     "@backstage/plugin-kubernetes": "^0.4.4",
     "@backstage/plugin-lighthouse": "^0.2.16",
     "@backstage/plugin-newrelic": "^0.2.7",
