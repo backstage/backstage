@@ -17,9 +17,15 @@
 import React from 'react';
 import { Content, Header, Lifecycle, Page } from '@backstage/core';
 import { Grid, List } from '@material-ui/core';
-import { SearchBarNext } from '@backstage/plugin-search';
-import { SearchResultNext, DefaultResultListItem } from '@backstage/plugin-search';
-import { SearchFiltersNext, FilterType } from '@backstage/plugin-search';
+import {
+  SearchBarNext,
+  SearchResultNext,
+  DefaultResultListItem,
+  SearchFiltersNext,
+  FilterType,
+  CheckBoxFilter,
+  SelectFilter,
+} from '@backstage/plugin-search';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 
 const filterDefinitions = [
@@ -44,11 +50,36 @@ export const searchPage = (
           <SearchBarNext />
         </Grid>
         <Grid item xs={3}>
-          <SearchFiltersNext definitions={filterDefinitions} />
+          <SearchFiltersNext>
+            <>
+              {filterDefinitions.map(definition => {
+                switch (definition.type) {
+                  case 'checkbox':
+                    return (
+                      <CheckBoxFilter
+                        key={definition.field}
+                        fieldName={definition.field}
+                        values={definition.values}
+                      />
+                    );
+                  case 'select':
+                    return (
+                      <SelectFilter
+                        key={definition.field}
+                        fieldName={definition.field}
+                        values={definition.values}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </>
+          </SearchFiltersNext>
         </Grid>
         <Grid item xs={9}>
           <SearchResultNext>
-            {({results}) => (
+            {({ results }) => (
               <List>
                 {results.map(result => {
                   switch (result.type) {

@@ -55,7 +55,7 @@ export type FilterOptions = {
 };
 
 type FiltersProps = {
-  definitions: FilterDefinition[];
+  children: React.ReactChild;
 };
 
 type ValuedFilterProps = {
@@ -79,7 +79,7 @@ export type FilterDefinition = {
   values: string[];
 };
 
-const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
+export const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
   const { filters, setFilters } = useSearch();
   const classes = useCheckBoxStyles();
 
@@ -134,7 +134,7 @@ const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
   );
 };
 
-const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
+export const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
   const { filters, setFilters } = useSearch();
   const classes = useSelectStyles();
 
@@ -171,33 +171,8 @@ const SelectFilter = ({ fieldName, values }: ValuedFilterProps) => {
   );
 };
 
-export const SearchFiltersNext = ({ definitions }: FiltersProps) => {
+export const SearchFiltersNext = ({ children }: FiltersProps) => {
   const classes = useFilterStyles();
 
-  return (
-    <Card className={classes.filters}>
-      {definitions.map(definition => {
-        switch (definition.type) {
-          case 'checkbox':
-            return (
-              <CheckBoxFilter
-                key={definition.field}
-                fieldName={definition.field}
-                values={definition.values}
-              />
-            );
-          case 'select':
-            return (
-              <SelectFilter
-                key={definition.field}
-                fieldName={definition.field}
-                values={definition.values}
-              />
-            );
-          default:
-            return null;
-        }
-      })}
-    </Card>
-  );
+  return <Card className={classes.filters}>{children}</Card>;
 };

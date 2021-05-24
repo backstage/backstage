@@ -15,4 +15,9 @@
  */
 
 export { FiltersButtonNext } from './FiltersButtonNext';
-export { SearchFiltersNext, FilterType } from './SearchFiltersNext';
+export {
+  SearchFiltersNext,
+  CheckBoxFilter,
+  SelectFilter,
+  FilterType,
+} from './SearchFiltersNext';
