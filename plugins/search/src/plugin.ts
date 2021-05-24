@@ -90,11 +90,13 @@ export const SearchResultNext = searchPlugin.provide(
   }),
 );
 
-export const DefaultResultListItem= searchPlugin.provide(
+export const DefaultResultListItem = searchPlugin.provide(
   createComponentExtension({
     component: {
       lazy: () =>
-        import('./components/DefaultResultListItem').then(m => m.DefaultResultListItem),
+        import('./components/DefaultResultListItem').then(
+          m => m.DefaultResultListItem,
+        ),
     },
   }),
 );
