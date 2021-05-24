@@ -63,6 +63,7 @@ describe.each`
   ${'?foo=bar'}                                       | ${{}}
   ${'?group'}                                         | ${{ group: null }}
   ${'?project'}                                       | ${{ project: null }}
+  ${'?project&group'}                                 | ${{ group: null, project: null }}
   ${'?group=some-group'}                              | ${{ group: 'some-group' }}
   ${'?group=some-group&project'}                      | ${{ group: 'some-group', project: null }}
   ${'?group=some-group&project=some-project'}         | ${{ group: 'some-group', project: 'some-project' }}
