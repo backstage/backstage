@@ -528,6 +528,15 @@ export interface TemplateEntityV1beta2 extends Entity {
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
 
+// @public
+export type UNSTABLE_EntityStatusLevel = 'ok' | 'info' | 'warning' | 'error';
+
+// @public
+export type UNSTABLE_EntityStatusValue = {
+    status: UNSTABLE_EntityStatusLevel;
+    message?: string;
+};
+
 // @public (undocumented)
 interface UserEntityV1alpha1 extends Entity {
     // (undocumented)

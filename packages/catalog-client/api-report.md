@@ -7,6 +7,9 @@
 import { Entity } from '@backstage/catalog-model';
 import { EntityName } from '@backstage/catalog-model';
 import { Location as Location_2 } from '@backstage/catalog-model';
+import { SerializedError } from '@backstage/errors';
+import { UNSTABLE_EntityStatusLevel } from '@backstage/catalog-model';
+import { UNSTABLE_EntityStatusValue } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export type AddLocationRequest = {
@@ -74,6 +77,21 @@ export type CatalogEntitiesRequest = {
 // @public (undocumented)
 export type CatalogListResponse<T> = {
     items: T[];
+};
+
+// @public
+export const ENTITY_STATUS_CATALOG_PROCESSING_KEY = "backstage.io/catalog-processing";
+
+// @public
+export type UNSTABLE_CatalogProcessingStatus = UNSTABLE_EntityStatusValue & {
+    items?: UNSTABLE_CatalogProcessingStatusItem[];
+};
+
+// @public (undocumented)
+export type UNSTABLE_CatalogProcessingStatusItem = {
+    status: UNSTABLE_EntityStatusLevel;
+    message?: string;
+    error?: SerializedError;
 };
 
 

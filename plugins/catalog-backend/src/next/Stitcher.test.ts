@@ -16,6 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import { Knex } from 'knex';
+import { ENTITY_STATUS_CATALOG_PROCESSING_KEY } from '@backstage/catalog-client';
 import { DatabaseManager } from './database/DatabaseManager';
 import {
   DbRefreshStateReferencesRow,
@@ -92,7 +93,7 @@ describe('Stitcher', () => {
           },
         ],
         status: {
-          'backstage.io/catalog-processing': {},
+          [ENTITY_STATUS_CATALOG_PROCESSING_KEY]: { status: 'ok' },
         },
         apiVersion: 'a',
         kind: 'k',
@@ -175,7 +176,7 @@ describe('Stitcher', () => {
           },
         ]),
         status: {
-          'backstage.io/catalog-processing': {},
+          [ENTITY_STATUS_CATALOG_PROCESSING_KEY]: { status: 'ok' },
         },
         apiVersion: 'a',
         kind: 'k',

@@ -15,6 +15,7 @@
  */
 
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { serializeError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { ProcessingDatabase } from './database/types';
 import { Stitcher } from './Stitcher';
@@ -128,7 +129,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
         id,
         processedEntity: result.completedEntity,
         state: result.state,
-        errors: JSON.stringify(result.errors),
+        errors: JSON.stringify(result.errors.map(e => serializeError(e))),
         relations: result.relations,
         deferredEntities: result.deferredEntities,
       });

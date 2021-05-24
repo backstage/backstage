@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,19 @@
  * limitations under the License.
  */
 
-export { CatalogClient } from './CatalogClient';
-export * from './types';
+/**
+ * Each entity status entry has a level, describing its severity.
+ */
+export type UNSTABLE_EntityStatusLevel =
+  | 'ok' // Everything is OK
+  | 'info' // Only informative data
+  | 'warning' // Warnings were found
+  | 'error'; // Errors were found
+
+/**
+ * Reserved root fields in all `status` object values.
+ */
+export type UNSTABLE_EntityStatusValue = {
+  status: UNSTABLE_EntityStatusLevel;
+  message?: string;
+};
