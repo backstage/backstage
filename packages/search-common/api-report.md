@@ -15,7 +15,7 @@ export interface DocumentCollator {
 // @public
 export interface DocumentDecorator {
     // (undocumented)
-    execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+    execute(type: string, documents: IndexableDocument[]): Promise<IndexableDocument[]>;
 }
 
 // @public
@@ -41,6 +41,8 @@ export interface SearchQuery {
 export interface SearchResult {
     // (undocumented)
     document: IndexableDocument;
+    // (undocumented)
+    type: string;
 }
 
 // @public (undocumented)
