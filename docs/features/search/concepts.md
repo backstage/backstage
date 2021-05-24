@@ -6,7 +6,8 @@ description: Documentation on Backstage Search Concepts
 
 # Search Concepts
 
-Backstage Search is _blah_.
+Backstage Search lets you find the right information you are looking for in the
+Backstage ecosystem.
 
 To get started, you should get familiar with these core concepts:
 
