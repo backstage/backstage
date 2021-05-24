@@ -112,19 +112,10 @@ export default async (cmd: Command): Promise<void> => {
       // @ts-ignore
       choices: ['SQLite', 'PostgreSQL'],
     },
-    {
-      type: 'list',
-      name: 'cacheType',
-      message: chalk.blue('Select cache store for the backend [required]'),
-      // @ts-ignore
-      choices: ['in-memory', 'memcache'],
-    },
   ];
   const answers: Answers = await inquirer.prompt(questions);
   answers.dbTypePG = answers.dbType === 'PostgreSQL';
   answers.dbTypeSqlite = answers.dbType === 'SQLite';
-  answers.cacheTypeMemory = answers.cacheType === 'in-memory';
-  answers.cacheTypeMemcache = answers.cacheType === 'memcache';
 
   const templateDir = paths.resolveOwn('templates/default-app');
   const tempDir = resolvePath(os.tmpdir(), answers.name);

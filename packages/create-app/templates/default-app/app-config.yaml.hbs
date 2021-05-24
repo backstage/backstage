@@ -34,15 +34,8 @@ backend:
         #ca: # if you have a CA file and want to verify it you can uncomment this section
         #  $file: <file-path>/ca/server.crt
   {{/if}}
-  {{#if cacheTypeMemory}}
   cache:
     store: memory
-  {{/if}}
-  {{#if cacheTypeMemcache}}
-  cache:
-    store: memcache
-    connection: ${MEMCACHE_USER}:${MEMCACHE_PASSWORD}@${MEMCACHE_HOST}:$MEMCACHE_PORT}
-  {{/if}}
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
