@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
-import { ConflictError } from '@backstage/errors';
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import {
+  Entity,
+  parseEntityRef,
+  UNSTABLE_EntityStatusItem,
+} from '@backstage/catalog-model';
+import { ConflictError, SerializedError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -34,10 +38,6 @@ export type DbFinalEntitiesRow = {
   entity_id: string;
   hash: string;
   final_entity: string;
-};
-
-type ProcessingStatus = {
-  errors?: JsonObject[];
 };
 
 function generateStableHash(entity: Entity) {
@@ -139,7 +139,7 @@ export class Stitcher {
         // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
-        const processingStatus: ProcessingStatus = {};
+        let statusItems: UNSTABLE_EntityStatusItem[] = [];
 
         if (isOrphan) {
           this.logger.debug(`${entityRef} is an orphan`);
@@ -149,9 +149,14 @@ export class Stitcher {
           };
         }
         if (errors) {
-          const parsedErrors = JSON.parse(errors);
+          const parsedErrors = JSON.parse(errors) as SerializedError[];
           if (Array.isArray(parsedErrors) && parsedErrors.length) {
-            processingStatus.errors = parsedErrors;
+            statusItems = parsedErrors.map(e => ({
+              type: ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+              level: 'error',
+              message: e.toString(),
+              error: e,
+            }));
           }
         }
 
@@ -163,10 +168,12 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
-        entity.status = {
-          ...entity.status,
-          'backstage.io/catalog-processing': processingStatus,
-        };
+        if (statusItems.length) {
+          entity.status = {
+            ...entity.status,
+            items: [...(entity.status?.items ?? []), ...statusItems],
+          };
+        }
 
         // If the output entity was actually not changed, just abort
         const hash = generateStableHash(entity);

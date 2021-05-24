@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@backstage/config": "^0.1.5",
+    "@backstage/errors": "^0.1.1",
     "@types/json-schema": "^7.0.5",
     "@types/yup": "^0.29.8",
     "ajv": "^7.0.3",

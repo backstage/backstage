@@ -31,6 +31,7 @@
   "dependencies": {
     "@azure/msal-node": "^1.0.0-beta.3",
     "@backstage/backend-common": "^0.8.1",
+    "@backstage/catalog-client": "^0.3.11",
     "@backstage/catalog-model": "^0.7.10",
     "@backstage/config": "^0.1.5",
     "@backstage/errors": "^0.1.1",

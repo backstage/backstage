@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export { CatalogClient } from './CatalogClient';
-export * from './types';
+/**
+ * This is a copy of the core DiscoveryApi, to avoid importing core.
+ */
+export type DiscoveryApi = {
+  getBaseUrl(pluginId: string): Promise<string>;
+};

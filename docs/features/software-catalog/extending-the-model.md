@@ -353,18 +353,43 @@ relation could be considered for addition to the core.
 
 ## Adding a New Status field
 
-Example intents:
+Example intent:
 
 > "We would like to convey entity statuses through the catalog in a generic way,
 > as an integration layer. Our monitoring and alerting system has a plugin with
 > Backstage, and it would be useful if the entity's status field contained the
-> current alert state close to the actual entity data for anyone to consume.
+> current alert state close to the actual entity data for anyone to consume. We
+> find the `status.items` semantics a poor fit, so we would prefer to make our
+> own custom field under `status` for these purposes."
 
-While we are considering a mechanism for contributing generic statuses to
-entities, no such mechanism has yet been built. If you are interested in that
-topic, [this issue](https://github.com/backstage/backstage/issues/2292) contains
+We have not yet ventured to define any generic semantics for the `status`
+object. We recommend sticking with the `status.items` mechanism where possible
+(see below), since third party consumers will not be able to consume your status
+information otherwise. Please reach out to the maintainers on Discord or by
+making a GitHub issue describing your use case if you are interested in this
+topic.
+
+## Adding a New Status Item Type
+
+Example intent:
+
+> "The semantics of the entity `status.items` field are fine for our needs, but
+> we want to contribute our own type of status into that array instead of the
+> catalog specific one."
+
+This is a simple, low risk way of adding your own status information to
+entities. Consumers will be able to easily track and display the status together
+with other types / sources.
+
+We recommend that any status type that are not strictly private within the
+organization be namespaced to avoid collisions. Statuses emitted by Backstage
+core processes will for example be prefixed with `backstage.io/`, your
+organization may prefix with `my-org.net/`, and `pagerduty.com/active-alerts`
+could be a sensible complete status item type for that particular external
+system.
+
+The mechanics for how to emit custom statuses is not in place yet, so if this is
+of interest to you, you might consider contacting the maintainers on Discord or
+my making a GitHub issue describing your use case.
+[This issue](https://github.com/backstage/backstage/issues/2292) also contains
 more context.
-
-But in general, errors emitted (and exceptions thrown) by any processor
-including custom ones, end up in the [well known key](well-known-statuses.md)
-for ingestion status.

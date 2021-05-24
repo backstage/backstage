@@ -399,16 +399,17 @@ well-known / common relations and their semantics.
 
 ## Common to All Kinds: Status
 
-The `status` root field is a read-only set of statuses, pertaining to the
+The `status` root object is a read-only set of statuses, pertaining to the
 current state or health of the entity, described in the
-[well-known statuses section](well-known-statuses.md). Each status field
-contains a specific blob of data that describes some aspect of the state of the
-entity, as seen from the point of view of some specific system. Different
-systems may contribute to this status object, under their own respective keys.
+[well-known statuses section](well-known-statuses.md).
+
+Currently, the only defined field is the `items` array. Each of its items
+contains a specific data structure that describes some aspect of the state of
+the entity, as seen from the point of view of some specific system. Different
+systems may contribute to this array, under their own respective `type` keys.
 
 The current main use case for this field is for the ingestion processes of the
-catalog itself to convey information about failures and warnings back to the
-user.
+catalog itself to convey information about errors and warnings back to the user.
 
 A status field as part of a single entity that's read out of the API may look as
 follows.
@@ -417,9 +418,18 @@ follows.
 {
   // ...
   "status": {
-    "backstage.io/catalog-processing": {
-      "errors": []
-    }
+    "items": [
+      {
+        "type": "backstage.io/catalog-processing",
+        "level": "error",
+        "message": "NotFoundError: File not found",
+        "error": {
+          "name": "NotFoundError",
+          "message": "File not found",
+          "stack": "..."
+        }
+      }
+    ]
   },
   "spec": {
     // ...
@@ -427,23 +437,27 @@ follows.
 }
 ```
 
-The keys of the `status` object are arbitrary strings. We recommend that any
-statuses that are not strictly private within the organization be namespaced to
-avoid collisions. Statuses emitted by Backstage core processes will for example
-be prefixed with `backstage.io/` as in the example above.
+The fields of a status item are:
 
-The values of the `status` object are currently left unrestricted, except that
-they must be objects. We reserve the right to extend this model in the future,
-such that some fields of those value objects gain standardized meaning. We may
-for example want to add a standard concept of "severity" or "level" to these.
+| Field     | Type   | Description                                                                                      |
+| --------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `type`    | String | The type of status as a unique key per source. Each type may appear more than once in the array. |
+| `level`   | String | The level / severity of the status item: 'info', 'warning, or 'error'.                           |
+| `message` | String | A brief message describing the status, intended for human consumption.                           |
+| `error`   | Object | An optional serialized error object related to the status.                                       |
 
-Entity descriptor YAML files are not supposed to contain this field. Instead,
-catalog processors analyze the entity descriptor data and its surroundings, and
-deduce status entries that are then attached onto the entity as read from the
-catalog.
+The `type` is an arbitrary string, but we recommend that types that are not
+strictly private within the organization be namespaced to avoid collisions.
+Types emitted by Backstage core processes will for example be prefixed with
+`backstage.io/` as in the example above.
+
+Entity descriptor YAML files are not supposed to contain a `status` root key.
+Instead, catalog processors analyze the entity descriptor data and its
+surroundings, and deduce status entries that are then attached onto the entity
+as read from the catalog.
 
 See the [well-known statuses section](well-known-statuses.md) for a list of
-well-known / common relations and their semantics.
+well-known / common status types.
 
 ## Kind: Component
 
