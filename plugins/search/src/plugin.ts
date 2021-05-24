@@ -100,12 +100,3 @@ export const DefaultResultListItem = searchPlugin.provide(
     },
   }),
 );
-
-export const SearchFiltersNext = searchPlugin.provide(
-  createComponentExtension({
-    component: {
-      lazy: () =>
-        import('./components/SearchFiltersNext').then(m => m.SearchFiltersNext),
-    },
-  }),
-);

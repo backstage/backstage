@@ -16,30 +16,14 @@
 
 import React from 'react';
 import { Content, Header, Lifecycle, Page } from '@backstage/core';
-import { Grid, List } from '@material-ui/core';
+import { Grid, List, Card, CardContent } from '@material-ui/core';
 import {
   SearchBarNext,
   SearchResultNext,
   DefaultResultListItem,
-  SearchFiltersNext,
-  FilterType,
-  CheckBoxFilter,
-  SelectFilter,
+  SearchFilterNext,
 } from '@backstage/plugin-search';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
-
-const filterDefinitions = [
-  {
-    field: 'kind',
-    type: FilterType.SELECT,
-    values: ['Component', 'Template'],
-  },
-  {
-    field: 'lifecycle',
-    type: FilterType.CHECKBOX,
-    values: ['experimental', 'production'],
-  },
-];
 
 export const searchPage = (
   <Page themeId="home">
@@ -50,32 +34,20 @@ export const searchPage = (
           <SearchBarNext />
         </Grid>
         <Grid item xs={3}>
-          <SearchFiltersNext>
-            <>
-              {filterDefinitions.map(definition => {
-                switch (definition.type) {
-                  case 'checkbox':
-                    return (
-                      <CheckBoxFilter
-                        key={definition.field}
-                        fieldName={definition.field}
-                        values={definition.values}
-                      />
-                    );
-                  case 'select':
-                    return (
-                      <SelectFilter
-                        key={definition.field}
-                        fieldName={definition.field}
-                        values={definition.values}
-                      />
-                    );
-                  default:
-                    return null;
-                }
-              })}
-            </>
-          </SearchFiltersNext>
+          <Card>
+            <CardContent>
+              <SearchFilterNext.Select
+                name="kind"
+                values={['Component', 'Template']}
+              />
+            </CardContent>
+            <CardContent>
+              <SearchFilterNext.Checkbox
+                name="lifecycle"
+                values={['experimental', 'production']}
+              />
+            </CardContent>
+          </Card>
         </Grid>
         <Grid item xs={9}>
           <SearchResultNext>

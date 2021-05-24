@@ -39,6 +39,11 @@ type SearchContextValue = {
   setPageCursor: React.Dispatch<React.SetStateAction<string>>;
 };
 
+type SettableSearchContext = Omit<
+  SearchContextValue,
+  'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPageCursor'
+>;
+
 const SearchContext = createContext({} as SearchContextValue);
 
 export const SearchContextProvider = ({
@@ -49,7 +54,7 @@ export const SearchContextProvider = ({
     types: ['*'],
   },
   children,
-}: PropsWithChildren<{ initialState?: any }>) => {
+}: PropsWithChildren<{ initialState?: SettableSearchContext }>) => {
   const searchApi = useApi(searchApiRef);
   const [pageCursor, setPageCursor] = useState<string>(initialState.pageCursor);
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);

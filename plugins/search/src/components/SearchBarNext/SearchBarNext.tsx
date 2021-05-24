@@ -36,11 +36,7 @@ export const SearchBarNext = () => {
   const classes = useStyles();
   const { term, setTerm, setPageCursor } = useSearch();
 
-  const [queryString, setQueryString] = useQueryParamState<string>('query');
-
-  useEffect(() => {
-    setTerm(queryString ?? '');
-  }, [queryString, setTerm]);
+  const [, setQueryString] = useQueryParamState<string>('query');
 
   useDebounce(
     () => {

@@ -15,12 +15,26 @@
  */
 
 import React from 'react';
-import { Outlet } from 'react-router';
+import qs from 'qs';
+import { Outlet, useLocation } from 'react-router';
+import { useQueryParamState } from '@backstage/core';
 import { SearchContextProvider } from '../SearchContext';
+import { JsonObject } from '@backstage/config';
 
 export const SearchPageNext = () => {
+  const location = useLocation();
+  const [queryString] = useQueryParamState<string>('query');
+  const filters = (qs.parse(location.search.substring(1), { arrayLimit: 0 })
+    .filters || {}) as JsonObject;
+  const initialState = {
+    term: queryString || '',
+    types: [],
+    pageCursor: '',
+    filters,
+  };
+
   return (
-    <SearchContextProvider>
+    <SearchContextProvider initialState={initialState}>
       <Outlet />
     </SearchContextProvider>
   );

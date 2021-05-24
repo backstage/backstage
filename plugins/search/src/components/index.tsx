@@ -15,6 +15,7 @@
  */
 
 export * from './Filters';
+export * from './SearchFilterNext';
 export * from './SearchFiltersNext';
 export * from './SearchBar';
 export * from './SearchBarNext';
