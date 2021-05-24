@@ -66,5 +66,8 @@ export interface DocumentCollator {
  * additional metadata.
  */
 export interface DocumentDecorator {
-  execute(type: string, documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+  execute(
+    type: string,
+    documents: IndexableDocument[],
+  ): Promise<IndexableDocument[]>;
 }

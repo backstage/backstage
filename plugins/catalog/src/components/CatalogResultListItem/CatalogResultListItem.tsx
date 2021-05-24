@@ -11,13 +11,19 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * l
-imitations under the License.
+ * limitations under the License.
  */
 
 import React from 'react';
 import { Link } from '@backstage/core';
-import { Box, Chip, Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
+import {
+  Box,
+  Chip,
+  Divider,
+  ListItem,
+  ListItemText,
+  makeStyles,
+} from '@material-ui/core';
 
 const useStyles = makeStyles({
   flexContainer: {
@@ -41,8 +47,10 @@ export const CatalogResultListItem = ({ result }: any) => {
           secondary={result.text}
         />
         <Box>
-          {result.kind && (<Chip label={`Kind: ${result.kind}`} size="small" />)}
-          {result.lifecycle && (<Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />)}
+          {result.kind && <Chip label={`Kind: ${result.kind}`} size="small" />}
+          {result.lifecycle && (
+            <Chip label={`Lifecycle: ${result.lifecycle}`} size="small" />
+          )}
         </Box>
       </ListItem>
       <Divider component="li" />

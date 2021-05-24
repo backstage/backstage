@@ -120,10 +120,7 @@ const routes = (
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
     <Route path="/search" element={<SearchPage />} />
-    <Route
-      path="/search-next"
-      element={<SearchPageNext />}
-    >
+    <Route path="/search-next" element={<SearchPageNext />}>
       {searchPage}
     </Route>
     <Route path="/cost-insights" element={<CostInsightsPage />} />

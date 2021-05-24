@@ -116,14 +116,12 @@ export class LunrSearchEngine implements SearchEngine {
       Object.keys(this.lunrIndices).forEach(type => {
         try {
           results.push(
-            ...this.lunrIndices[type]
-              .search(lunrQueryString)
-              .map(result => {
-                return {
-                  result: result,
-                  type: type,
-                };
-              })
+            ...this.lunrIndices[type].search(lunrQueryString).map(result => {
+              return {
+                result: result,
+                type: type,
+              };
+            }),
           );
         } catch (err) {
           // if a field does not exist on a index, we can see that as a no-match
@@ -141,14 +139,12 @@ export class LunrSearchEngine implements SearchEngine {
         .forEach(type => {
           try {
             results.push(
-              ...this.lunrIndices[type]
-                .search(lunrQueryString)
-                .map(result => {
-                  return {
-                    result: result,
-                    type: type,
-                  };
-                })
+              ...this.lunrIndices[type].search(lunrQueryString).map(result => {
+                return {
+                  result: result,
+                  type: type,
+                };
+              }),
             );
           } catch (err) {
             // if a field does not exist on a index, we can see that as a no-match
