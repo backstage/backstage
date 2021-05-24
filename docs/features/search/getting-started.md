@@ -12,9 +12,9 @@ use Search.
 If you haven't setup Backstage already, start
 [here](../../getting-started/index.md).
 
-> If you used `npx @backstage/create-app`, Search may already be present.
->
-> You should skip to [`Customizing Search`](#customizing-search) below.
+> If you used `npx @backstage/create-app`, and you have a search page defined in
+> `packages/app/src/components/search`, skip to
+> [`Customizing Search`](#customizing-search) below.
 
 ## Adding Search to the Frontend
 
@@ -24,7 +24,92 @@ cd packages/app
 yarn add @backstage/plugin-search
 ```
 
-TODO: Add frontend instructions here.
+Create a new `packages/app/src/components/search/SearchPage.tsx` file in your
+Backstage app with the following contents:
+
+```tsx
+import React from 'react';
+import { Content, Header, Page } from '@backstage/core';
+import { Grid, List, Card, CardContent } from '@material-ui/core';
+import {
+  SearchBar,
+  SearchResult,
+  DefaultResultListItem,
+  SearchFilter,
+} from '@backstage/plugin-search';
+import { CatalogResultListItem } from '@backstage/plugin-catalog';
+
+export const searchPage = (
+  <Page themeId="home">
+    <Header title="Search" />
+    <Content>
+      <Grid container direction="row">
+        <Grid item xs={12}>
+          <SearchBar />
+        </Grid>
+        <Grid item xs={3}>
+          <Card>
+            <CardContent>
+              <SearchFilter.Select
+                name="kind"
+                values={['Component', 'Template']}
+              />
+            </CardContent>
+            <CardContent>
+              <SearchFilter.Checkbox
+                name="lifecycle"
+                values={['experimental', 'production']}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={9}>
+          <SearchResult>
+            {({ results }) => (
+              <List>
+                {results.map(result => {
+                  switch (result.type) {
+                    case 'software-catalog':
+                      return (
+                        <CatalogResultListItem
+                          key={result.document.location}
+                          result={result.document}
+                        />
+                      );
+                    default:
+                      return (
+                        <DefaultResultListItem
+                          key={result.document.location}
+                          result={result.document}
+                        />
+                      );
+                  }
+                })}
+              </List>
+            )}
+          </SearchResult>
+        </Grid>
+      </Grid>
+    </Content>
+  </Page>
+);
+```
+
+Bind the above Search Page to the `/search` route in your
+`packages/app/src/App.tsx` file, like this:
+
+```tsx
+import { SearchPage } from '@backstage/plugin-search';
+import { searchPage } from './components/search/SearchPage';
+
+const routes = (
+  <FlatRoutes>
+    <Route path="/search" element={<SearchPage />}>
+      {searchPage}
+    </Route>
+  </FlatRoutes>
+);
+```
 
 ## Adding Search to the Backend
 
@@ -96,6 +181,75 @@ apiRouter.use('/search', await search(searchEnv));
 
 ## Customizing Search
 
+### Frontend
+
+The Search Plugin exposes several default filter types as static properties,
+including `<SearchFilter.Select />` and `<SearchFilter.Checkbox />`. These allow
+you to provide values relevant to your Backstage instance that, when selected,
+get passed to the backend.
+
+```tsx {2-5,8-11}
+<CardContent>
+  <SearchFilter.Select
+    name="kind"
+    values={['Component', 'Template']}
+  />
+</CardContent>
+<CardContent>
+  <SearchFilter.Checkbox
+    name="lifecycle"
+    values={['production', 'experimental']}
+  />
+</CardContent>
+```
+
+If you have advanced filter needs, you can specify your own filter component
+like this (although contributions are welcome):
+
+```tsx
+import { useSearch, SearchFilter } from '@backstage/plugin-search';
+
+const MyCustomFilter = () => {
+  // Note: filters contain filter data from other filter components. Be sure
+  // not to clobber other filters' data!
+  const { filters, setFilters } = useSearch();
+
+  return (/* ... */);
+};
+
+// Which could be rendered like this:
+<SearchFilter component={MyCustomFilter} />
+```
+
+It's good practice for search results to highlight information that was used to
+return it in the first place! The code below highlights how you might specify a
+custom result item component, using the `<CatalogResultListItem />` component as
+an example:
+
+```tsx {7-13}
+<SearchResult>
+  {({ results }) => (
+    <List>
+      {results.map(result => {
+        // result.type is the index type defined by the collator.
+        switch (result.type) {
+          case 'software-catalog':
+            return (
+              <CatalogResultListItem
+                key={result.document.location}
+                result={result.document}
+              />
+            );
+          // ...
+        }
+      })}
+    </List>
+  )}
+</SearchResult>
+```
+
+### Backend
+
 Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a Search Engine of your choice. Currently,
 we only support one, in-memory search Engine called Lunr. It can be instantiated
@@ -139,17 +293,3 @@ indexBuilder.addCollator({
   collator: new DefaultCatalogCollator({ discovery }),
 });
 ```
-
----
-
-[Primarily solves for “As an App Integrator, I should be able to install out-of
-the-box Search”]
-
-Backend: Different for new Backstage instances (created via create-app) vs.
-people enabling search on existing Backstage instances (see catalog install for
-example).
-
-Frontend: Search Page Route…? Customizing result components…?
-
-Conceptually… What’s the difference between “out-of-the-box” or “basic” and the
-recommended deployment (which will come)

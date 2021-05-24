@@ -10,12 +10,16 @@ Backstage Search is _blah_.
 
 To get started, you should get familiar with these core concepts:
 
+TODO: Link these like a real TOC
+
 - Search Engines
 - Query Translators
 - Documents and Indices
 - Collators
 - Decorators
 - The Scheduler
+- The Search Page
+- Search Context and Components
 
 ### Search Engines
 
@@ -23,8 +27,8 @@ Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a Search Engine of your choice. More
 concretely, a `SearchEngine` is an interface whose concrete implementations
 facilitate communication with different search engines (like ElasticSearch,
-Solr, Algolia, etc). This abstraction exists in order to support your
-organization's needs.
+Solr, etc). This abstraction exists in order to support your organization's
+needs.
 
 Out of the box, Backstage Search comes pre-packaged with an in-memory search
 engine implementation built on top of Lunr.
@@ -39,7 +43,7 @@ search engine.
 
 Search Engines come pre-packaged with simple translators that do rudimentary
 transformations of search terms and filters, but you may want to provide your
-own to help tune seearch results in the context of your organization.
+own to help tune search results in the context of your organization.
 
 ### Documents and Indices
 
@@ -78,11 +82,30 @@ Search chooses to completely rebuild indices on a schedule. Different collators
 can be configured to refresh at different intervals, depending on how often the
 source information is updated.
 
-TODO: There should probably be some front-end concepts here too?
+### The Search Page
 
-- Search Page
-- Search Components
-- Search Context
+Search pages are very custom things. Not every Backstage instance will want the
+same interface! In order to allow you to customize your search experience to
+your heart's content, the Search Plugin takes care of state management and other
+search logic for you, but most of the layout of a search page lives in a search
+page component defined in your Backstage App.
 
-[Primarily solves for “As an App Integrator, I should know how to add do uments
-to the search index”]
+For an example of a simple search page, check [getting started](TODO)
+
+### Search Context and Components
+
+A search experience, like a page, is composed of any number of search
+components, which are all wired up using a search context.
+
+Each search experience's context consists of details like a search term,
+filters, types, results, and a page cursor for handling pagination. Different
+components use this context in different ways, for example the `<SearchBar />`
+can set the search term, `<SearchFilter />` components can set filters, and
+search results can be displayed using the `<SearchResult />` component.
+
+The `<SearchResult />` and `<SearchFilter />` components are special, in that
+they themselves are extensible. For an example of how to extend these
+components, [check this out](TODO).
+
+If you need even more customization, you can use the search context like any
+other React context to create custom search components of your own.
