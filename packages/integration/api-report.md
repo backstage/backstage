@@ -116,6 +116,9 @@ export class GithubCredentialsProvider {
     }
 
 // @public (undocumented)
+export type GithubCredentialType = 'app' | 'token';
+
+// @public (undocumented)
 export class GitHubIntegration implements ScmIntegration {
     constructor(integrationConfig: GitHubIntegrationConfig);
     // (undocumented)
