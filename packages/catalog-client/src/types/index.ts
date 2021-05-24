@@ -21,8 +21,4 @@ export type {
   CatalogEntitiesRequest,
   CatalogListResponse,
 } from './api';
-export { ENTITY_STATUS_CATALOG_PROCESSING_KEY } from './status';
-export type {
-  UNSTABLE_CatalogProcessingStatus,
-  UNSTABLE_CatalogProcessingStatusItem,
-} from './status';
+export { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from './status';

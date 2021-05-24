@@ -46,8 +46,53 @@
     "status": {
       "$id": "#status",
       "type": "object",
-      "description": "A specific status of an entity.",
-      "additionalProperties": true
+      "description": "The current status of the entity, as claimed by various sources.",
+      "required": [],
+      "additionalProperties": true,
+      "properties": {
+        "items": {
+          "$ref": "#statusItem"
+        }
+      }
+    },
+    "statusItem": {
+      "$id": "#statusItem",
+      "type": "object",
+      "description": "A specific status item on a well known format.",
+      "required": ["type", "level", "message"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "level": {
+          "$ref": "#statusLevel",
+          "description": "The status level / severity of the status item."
+        },
+        "message": {
+          "type": "string",
+          "description": "A brief message describing the status, intended for human consumption."
+        },
+        "error": {
+          "$ref": "#error",
+          "description": "An optional serialized error object related to the status."
+        }
+      }
+    },
+    "statusLevel": {
+      "$id": "#statusLevel",
+      "type": "string",
+      "description": "A status level / severity.",
+      "enum": ["info", "warning", "error"]
+    },
+    "error": {
+      "$id": "#error",
+      "type": "object",
+      "description": "A serialized error object.",
+      "required": [],
+      "additionalProperties": true,
+      "properties": {}
     }
   }
 }

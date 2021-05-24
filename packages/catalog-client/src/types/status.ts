@@ -14,50 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  UNSTABLE_EntityStatusLevel,
-  UNSTABLE_EntityStatusValue,
-} from '@backstage/catalog-model';
-import { SerializedError } from '@backstage/errors';
-
-/*
- * This is the entity status field that's emitted by the catalog processing
- * engine, to inform about the status of an entity.
- *
- * Example:
- *
- * "status": {
- *   "backstage.io/catalog-processing": {
- *     "status": "error",
- *     "items": [
- *       {
- *         "status": "error",
- *         "error": {
- *           "name": "InputError",
- *           "message": "Syntax error: ..."
- *         }
- *       }
- *     ]
- *   }
- * }
- */
-
 /**
- * The entity `status` key for the status of the processing engine in regards
- * to entity.
+ * The entity `status.items[].type` for the status of the processing engine in
+ * regards to an entity.
  */
-export const ENTITY_STATUS_CATALOG_PROCESSING_KEY =
+export const ENTITY_STATUS_CATALOG_PROCESSING_TYPE =
   'backstage.io/catalog-processing';
-
-/**
- * The status value for the `backstage.io/catalog-processing` key.
- */
-export type UNSTABLE_CatalogProcessingStatus = UNSTABLE_EntityStatusValue & {
-  items?: UNSTABLE_CatalogProcessingStatusItem[];
-};
-
-export type UNSTABLE_CatalogProcessingStatusItem = {
-  status: UNSTABLE_EntityStatusLevel;
-  message?: string;
-  error?: SerializedError;
-};

@@ -27,6 +27,11 @@ export type {
   EntityRelation,
   EntityRelationSpec,
 } from './Entity';
+export type {
+  UNSTABLE_EntityStatus,
+  UNSTABLE_EntityStatusItem,
+  UNSTABLE_EntityStatusLevel,
+} from './EntityStatus';
 export * from './policies';
 export {
   compareEntityToRef,
@@ -36,10 +41,6 @@ export {
   serializeEntityRef,
   stringifyEntityRef,
 } from './ref';
-export type {
-  UNSTABLE_EntityStatusLevel,
-  UNSTABLE_EntityStatusValue,
-} from './status';
 export {
   entityHasChanges,
   generateEntityEtag,

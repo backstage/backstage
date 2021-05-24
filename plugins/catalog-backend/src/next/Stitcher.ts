@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
 import {
-  ENTITY_STATUS_CATALOG_PROCESSING_KEY,
-  UNSTABLE_CatalogProcessingStatusItem,
-} from '@backstage/catalog-client';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+  Entity,
+  parseEntityRef,
+  UNSTABLE_EntityStatusItem,
+} from '@backstage/catalog-model';
 import { ConflictError, SerializedError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
@@ -138,7 +139,7 @@ export class Stitcher {
         // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
-        let statusItems: UNSTABLE_CatalogProcessingStatusItem[] = [];
+        let statusItems: UNSTABLE_EntityStatusItem[] = [];
 
         if (isOrphan) {
           this.logger.debug(`${entityRef} is an orphan`);
@@ -151,7 +152,9 @@ export class Stitcher {
           const parsedErrors = JSON.parse(errors) as SerializedError[];
           if (Array.isArray(parsedErrors) && parsedErrors.length) {
             statusItems = parsedErrors.map(e => ({
-              status: 'error',
+              type: ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+              level: 'error',
+              message: e.toString(),
               error: e,
             }));
           }
@@ -165,12 +168,12 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
-        entity.status = {
-          ...entity.status,
-          [ENTITY_STATUS_CATALOG_PROCESSING_KEY]: statusItems.length
-            ? { status: 'error', items: statusItems }
-            : { status: 'ok' },
-        };
+        if (statusItems.length) {
+          entity.status = {
+            ...entity.status,
+            items: [...(entity.status?.items ?? []), ...statusItems],
+          };
+        }
 
         // If the output entity was actually not changed, just abort
         const hash = generateStableHash(entity);

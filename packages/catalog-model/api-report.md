@@ -7,6 +7,7 @@
 import { JsonObject } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/config';
+import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
 // @public (undocumented)
@@ -112,7 +113,7 @@ export type Entity = {
     metadata: EntityMeta;
     spec?: JsonObject;
     relations?: EntityRelation[];
-    status?: Record<string, JsonObject>;
+    status?: UNSTABLE_EntityStatus;
 };
 
 // @public
@@ -528,14 +529,21 @@ export interface TemplateEntityV1beta2 extends Entity {
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
 
-// @public
-export type UNSTABLE_EntityStatusLevel = 'ok' | 'info' | 'warning' | 'error';
-
-// @public
-export type UNSTABLE_EntityStatusValue = {
-    status: UNSTABLE_EntityStatusLevel;
-    message?: string;
+// @alpha
+export type UNSTABLE_EntityStatus = {
+    items?: UNSTABLE_EntityStatusItem[];
 };
+
+// @alpha
+export type UNSTABLE_EntityStatusItem = {
+    type: string;
+    level: UNSTABLE_EntityStatusLevel;
+    message: string;
+    error?: SerializedError;
+};
+
+// @alpha
+export type UNSTABLE_EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @public (undocumented)
 interface UserEntityV1alpha1 extends Entity {

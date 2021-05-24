@@ -49,8 +49,8 @@
   },
   "version": "1.0.0",
   "dependencies": {
-    "@microsoft/api-extractor": "7.13.2-pr1916.0",
     "@microsoft/api-documenter": "^7.12.16",
+    "@microsoft/api-extractor": "7.13.2-pr1916.0",
     "@microsoft/api-extractor-model": "^7.12.5"
   },
   "devDependencies": {
