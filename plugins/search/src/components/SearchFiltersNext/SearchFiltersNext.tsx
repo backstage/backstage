@@ -122,6 +122,11 @@ export const CheckBoxFilter = ({ fieldName, values }: ValuedFilterProps) => {
               edge="start"
               disableRipple
               color="primary"
+              checked={
+                filters[fieldName]
+                  ? (filters[fieldName] as string[]).includes(value)
+                  : false
+              }
               tabIndex={-1}
               value={value}
               name={value}
