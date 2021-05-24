@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,13 @@ import { useSearch } from '../SearchContext';
 
 type ChildrenArguments = {
   results: SearchResult[];
-}
+};
 
-export const SearchResultNext = ({ children }: { children: (results: ChildrenArguments) => JSX.Element}) => {
+export const SearchResultNext = ({
+  children,
+}: {
+  children: (results: ChildrenArguments) => JSX.Element;
+}) => {
   const {
     result: { loading, error, value },
   } = useSearch();
@@ -41,7 +45,7 @@ export const SearchResultNext = ({ children }: { children: (results: ChildrenArg
   }
 
   if (!value) {
-    return <EmptyState missing="data" title="Sorry, no results were found" />; 
+    return <EmptyState missing="data" title="Sorry, no results were found" />;
   }
 
   return children({ results: value.results });
