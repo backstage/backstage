@@ -277,6 +277,9 @@ function createEmitter(logger: Logger, parentEntity: Entity) {
       return;
     }
     if (i.type === 'entity') {
+      // TODO(freben): Perform the most basic validation here
+      // (apiVersion, kind, metadata, metadata.name, metadata.namespace, spec)
+
       const originLocation = getEntityOriginLocationRef(parentEntity);
 
       deferredEntities.push({
