@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { useQueryParamState } from '@backstage/core';
 import { Paper, InputBase, IconButton, makeStyles } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
@@ -32,23 +31,26 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const SearchBarNext = () => {
+type Props = {
+  debounceTime?: number;
+};
+
+export const SearchBarNext = ({ debounceTime = 200 }: Props) => {
   const classes = useStyles();
   const { term, setTerm, setPageCursor } = useSearch();
-
-  const [, setQueryString] = useQueryParamState<string>('query');
+  const [value, setValue] = useState<string>(term);
 
   useDebounce(
     () => {
-      setQueryString(term);
+      setTerm(value);
     },
-    200,
-    [term],
+    debounceTime,
+    [value],
   );
 
   const handleSearch = (event: React.ChangeEvent | React.FormEvent) => {
     event.preventDefault();
-    setTerm((event.target as HTMLInputElement).value as string);
+    setValue((event.target as HTMLInputElement).value as string);
   };
 
   const handleClearSearchBar = () => {
@@ -57,22 +59,18 @@ export const SearchBarNext = () => {
   };
 
   return (
-    <Paper
-      component="form"
-      onSubmit={e => handleSearch(e)}
-      className={classes.root}
-    >
+    <Paper component="form" onSubmit={handleSearch} className={classes.root}>
       <IconButton disabled type="submit" aria-label="search">
         <SearchIcon />
       </IconButton>
       <InputBase
         className={classes.input}
         placeholder="Search in Backstage"
-        value={term}
-        onChange={e => handleSearch(e)}
+        value={value}
+        onChange={handleSearch}
         inputProps={{ 'aria-label': 'search backstage' }}
       />
-      <IconButton aria-label="search" onClick={() => handleClearSearchBar()}>
+      <IconButton aria-label="search" onClick={handleClearSearchBar}>
         <ClearButton />
       </IconButton>
     </Paper>

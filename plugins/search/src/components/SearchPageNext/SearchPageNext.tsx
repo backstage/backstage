@@ -17,15 +17,38 @@
 import React from 'react';
 import qs from 'qs';
 import { Outlet, useLocation } from 'react-router';
-import { useQueryParamState } from '@backstage/core';
-import { SearchContextProvider } from '../SearchContext';
+import { SearchContextProvider, useSearch } from '../SearchContext';
 import { JsonObject } from '@backstage/config';
+
+export const UrlUpdater = () => {
+  const { term, types, pageCursor, filters } = useSearch();
+
+  const newParams = qs.stringify(
+    {
+      query: term,
+      types,
+      pageCursor,
+      filters,
+    },
+    { arrayFormat: 'brackets' },
+  );
+  const newUrl = `${window.location.pathname}?${newParams}`;
+
+  // We directly manipulate window history here in order to not re-render
+  // infinitely (state => location => state => etc). The intention of this
+  // code is just to ensure the right query/filters are loaded when a user
+  // clicks the "back" button after clicking a result.
+  window.history.replaceState(null, document.title, newUrl);
+
+  return null;
+};
 
 export const SearchPageNext = () => {
   const location = useLocation();
-  const [queryString] = useQueryParamState<string>('query');
-  const filters = (qs.parse(location.search.substring(1), { arrayLimit: 0 })
-    .filters || {}) as JsonObject;
+  const query = qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+  const filters = (query.filters as JsonObject) || {};
+  const queryString = (query.query as string) || '';
+
   const initialState = {
     term: queryString || '',
     types: [],
@@ -35,6 +58,7 @@ export const SearchPageNext = () => {
 
   return (
     <SearchContextProvider initialState={initialState}>
+      <UrlUpdater />
       <Outlet />
     </SearchContextProvider>
   );
