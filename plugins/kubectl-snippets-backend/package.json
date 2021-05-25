@@ -26,7 +26,10 @@
     "express-promise-router": "^4.1.0",
     "winston": "^3.2.1",
     "cross-fetch": "^3.0.6",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "rx": "^4.1.0",
+    "js-yaml": "^4.1.0",
+    "underscore": "^1.13.1"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.12",
