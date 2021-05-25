@@ -23,7 +23,7 @@ const styles = (theme: Theme) =>
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fill, minmax(22em, 1fr))',
       gridAutoRows: '1fr',
-      gridGap: theme.spacing(2),
+      gridGap: theme.spacing(0),
     },
   });
 

@@ -26,8 +26,7 @@ export const kubectlSnippetsPlugin = createPlugin({
 
 export const KubectlSnippetsPage = kubectlSnippetsPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+    component: () => import('./components/Component').then(m => m.Component),
     mountPoint: rootRouteRef,
   }),
 );

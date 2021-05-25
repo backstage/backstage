@@ -13,5 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import '@testing-library/jest-dom';
-import 'cross-fetch/polyfill';
+export type Snippet = {
+  name: string;
+  code: string;
+  tags: Array<string>;
+  modifiedTime: number;
+};

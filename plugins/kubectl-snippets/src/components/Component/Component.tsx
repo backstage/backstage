@@ -22,30 +22,31 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
-  SupportButton,
 } from '@backstage/core';
-import { ExampleFetchComponent } from '../ExampleFetchComponent';
+import { ListComponent } from '../ListComponent';
+import { DetailsComponent } from '../DetailsComponent';
 
-export const ExampleComponent = () => (
+export const Component = () => (
   <Page themeId="tool">
-    <Header title="Welcome to kubectl-snippets!" subtitle="Optional subtitle">
+    <Header title="Welcome to kubectl-snippets!">
       <HeaderLabel label="Owner" value="Team X" />
       <HeaderLabel label="Lifecycle" value="Alpha" />
     </Header>
     <Content>
-      <ContentHeader title="Plugin title">
-        <SupportButton>A description of your plugin goes here.</SupportButton>
-      </ContentHeader>
+      <ContentHeader title="kubectl-snippets" />
       <Grid container spacing={3} direction="column">
-        <Grid item>
+        {/* <Grid item>
           <InfoCard title="Information card">
             <Typography variant="body1">
               All content should be wrapped in a card like this.
             </Typography>
           </InfoCard>
+        </Grid> */}
+        <Grid item>
+          <ListComponent />
         </Grid>
         <Grid item>
-          <ExampleFetchComponent />
+          <DetailsComponent />
         </Grid>
       </Grid>
     </Content>

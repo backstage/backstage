@@ -13,10 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { kubectlSnippetsPlugin } from './plugin';
-
-describe('kubectl-snippets', () => {
-  it('should export plugin', () => {
-    expect(kubectlSnippetsPlugin).toBeDefined();
-  });
-});
+export { ListComponent } from './ListComponent';
