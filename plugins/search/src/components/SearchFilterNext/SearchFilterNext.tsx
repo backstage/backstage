@@ -79,30 +79,31 @@ const CheckboxFilter = ({ name, defaultValue, values }: Component) => {
         [name]: defaultValue,
       }));
     }
-  }, [defaultValue, setFilters]);
+  }, [name, defaultValue, setFilters]);
 
   return (
     <FormControl>
       <FormLabel>{name}</FormLabel>
       {values &&
-        values.map((v: string) => (
+        values.map((value: string) => (
           <FormControlLabel
+            key={value}
             control={
               <Checkbox
                 color="primary"
                 tabIndex={-1}
-                inputProps={{ 'aria-labelledby': v }}
-                value={v}
-                name={v}
-                onChange={() => setCheckboxFilter(v)}
+                inputProps={{ 'aria-labelledby': value }}
+                value={value}
+                name={value}
+                onChange={() => setCheckboxFilter(value)}
                 checked={
                   filters[name]
-                    ? (filters[name] as string[]).includes(v)
+                    ? (filters[name] as string[]).includes(value)
                     : false
                 }
               />
             }
-            label={v}
+            label={value}
           />
         ))}
     </FormControl>
@@ -130,7 +131,7 @@ const SelectFilter = ({ name, defaultValue, values }: Component) => {
         [name]: defaultValue,
       }));
     }
-  }, [setFilters, defaultValue]);
+  }, [name, defaultValue, setFilters]);
 
   return (
     <FormControl variant="filled" className={classes.select}>
@@ -147,7 +148,9 @@ const SelectFilter = ({ name, defaultValue, values }: Component) => {
         </MenuItem>
         {values &&
           values.map((value: string) => (
-            <MenuItem value={value}>{value}</MenuItem>
+            <MenuItem key={value} value={value}>
+              {value}
+            </MenuItem>
           ))}
       </Select>
     </FormControl>
