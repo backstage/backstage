@@ -38,6 +38,7 @@ import {
   MOCKED_USER,
   MOCK_INCIDENT,
   MOCK_TEAM,
+  MOCK_TEAM_NO_INCIDENTS,
 } from '../api/mocks';
 import { EntitySplunkOnCallCard } from './EntitySplunkOnCallCard';
 
@@ -82,16 +83,34 @@ const mockEntityData = {
   } as Entity,
 };
 
+const mockEntityDataNoIncidents = {
+  loading: false,
+  error: undefined,
+  entity: {
+    apiVersion: 'backstage.io/v1alpha1',
+    kind: 'Component',
+    metadata: {
+      name: 'splunkoncall-test',
+      annotations: {
+        'splunk.com/on-call-team': 'test-noincidents',
+      },
+    },
+  } as Entity,
+};
+
 describe('SplunkOnCallCard', () => {
   it('Render splunkoncall', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
       .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementation(async () => [MOCK_TEAM_NO_INCIDENTS]);
 
     const { getByText, queryByTestId } = render(
       wrapInTestApp(
         <ApiProvider apis={apis}>
-          <EntityContext.Provider value={mockEntityData}>
+          <EntityContext.Provider value={mockEntityDataNoIncidents}>
             <EntitySplunkOnCallCard />
           </EntityContext.Provider>
         </ApiProvider>,
@@ -148,10 +167,36 @@ describe('SplunkOnCallCard', () => {
     ).toBeInTheDocument();
   });
 
+  it('handles warning for incorrect team annotation', async () => {
+    mockSplunkOnCallApi.getUsers = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementationOnce(async () => []);
+
+    const { getByText, queryByTestId } = render(
+      wrapInTestApp(
+        <ApiProvider apis={apis}>
+          <EntityContext.Provider value={mockEntityData}>
+            <EntitySplunkOnCallCard />
+          </EntityContext.Provider>
+        </ApiProvider>,
+      ),
+    );
+    await waitFor(() => !queryByTestId('progress'));
+    expect(
+      getByText('Could not find team named "test" in the Splunk On-Call API'),
+    ).toBeInTheDocument();
+  });
+
   it('opens the dialog when trigger button is clicked', async () => {
     mockSplunkOnCallApi.getUsers = jest
       .fn()
       .mockImplementationOnce(async () => [MOCKED_USER]);
+    mockSplunkOnCallApi.getTeams = jest
+      .fn()
+      .mockImplementationOnce(async () => [MOCK_TEAM]);
 
     const { getByText, queryByTestId, getByRole } = render(
       wrapInTestApp(
