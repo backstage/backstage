@@ -157,7 +157,7 @@ export function SystemDiagramCard() {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
         'spec.system': [
           currentSystemName,
-          `${ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
+          `${entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
         ],
       },
     });
