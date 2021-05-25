@@ -76,7 +76,7 @@ const mockEntityData = {
     metadata: {
       name: 'splunkoncall-test',
       annotations: {
-        'splunk.com/on-call-team': 'Example',
+        'splunk.com/on-call-team': 'test',
       },
     },
   } as Entity,
