@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-export type PluginDatabaseConfig = {
-  /** Database client to use. */
-  client?: 'sqlite3' | 'pg';
-  /**
-   * Database connection to use.
-   * @secret
-   */
-  connection?: string | object;
-};
-
 export interface Config {
   app: {
     baseUrl: string; // defined in core, but repeated here without doc

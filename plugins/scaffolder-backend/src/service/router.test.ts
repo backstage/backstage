@@ -31,7 +31,7 @@ jest.doMock('fs-extra', () => ({
 import {
   getVoidLogger,
   PluginDatabaseManager,
-  SingleConnectionDatabaseManager,
+  DatabaseManager,
   UrlReaders,
 } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -47,7 +47,7 @@ const createCatalogClient = (templates: any[] = []) =>
   } as CatalogApi);
 
 function createDatabase(): PluginDatabaseManager {
-  return SingleConnectionDatabaseManager.fromConfig(
+  return DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
         database: {

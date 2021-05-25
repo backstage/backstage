@@ -1,5 +1,6 @@
 ---
 '@backstage/backend-common': minor
+'@backstage/create-app': minor
 ---
 
 Deprecates `SingleConnectionDatabaseManager` and provides an API compatible database

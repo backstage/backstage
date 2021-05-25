@@ -1,42 +1,40 @@
 ---
 id: configuring-plugin-databases
-title: Configuring Plugin Specific Databases
+title: Configuring Plugin Databases
 # prettier-ignore
-description: Guide on how to use predefined databases for each plugin.
+description: Guide on how to configure Backstage databases.
 ---
 
-There are occasions where it may be difficult to deploy Backstage with
-automatically created databases in production due to access control or other
-restrictions. For example, your infrastructure might be defined as code using
-tools such as Terraform or AWS CloudFormation where the name of each database is
-defined, created and assigned explicitly. You may also need to use different
-credentials for each database or use a set of credentials without the
-permissions needed to create databases.
+This guide covers a variety of production persistence use cases which are
+supported out of the box by Backstage. The database manager allows the developer
+to set the client and database connection details on a per plugin basis in
+addition to the base client and connection configuration. This means that you
+can use a SQLite 3 in-memory database for a specific plugin whilst using
+PostgreSQL for everything else and so on.
 
-`@backstage/backend-common` provides an alternate database manager,
-`PluginConnectionDatabaseManager`, which allows the developer to set the client
-and database connection on a per plugin basis in addition to the default client
-and connection configuration. This means that you can use a `sqlite3` in memory
-database for a specific plugin whilst using `postgres` for everything else and
-so on.
+By default, Backstage uses automatically created databases for each plugin whose
+names follow the `backstage_plugin_<pluginId>` pattern, e.g.
+`backstage_plugin_auth`. You can configure a different database name prefix for
+use cases where you have multiple deployments running on a shared database
+instance or cluster.
 
-The database manager also allows you to change the database name prefix which is
-used when a plugin database isn't explicitly configured.
+With infrastructure defined as code or data (Terraform, AWS CloudFormation,
+etc.), you may have database credentials which lack permissions to create new
+databases or you do not have control over the database names. In these
+instances, you can set the database name and connection information on a per
+plugin basis as mentioned earlier.
 
-There are two additional configuration options for this database manager:
+Backstage supports all of these use cases with the `DatabaseManager` provided by
+`@backstage/backend-common`. We will now cover how to use and configure
+Backstage's databases.
 
-- **`backend.database.prefix`:** is used to override the default
-  `backstage_plugin_` prefix which is used to generate a database name when it
-  is not explicitly set for that plugin.
-- **`backend.database.plugin.<pluginId>`:** is used to define a `client` and
-  `connection` block for the plugin matching the `pluginId`, e.g. `catalog` is
-  the `pluginId` for the catalog plugin and any configuration defined under that
-  block is specific to that plugin.
+## Prerequisites
 
-## Install Database Drivers
+### Dependencies
 
-If you intend to use both `postgres` and `sqlite3`, you need to make sure the
-appropriate database drivers are installed in your `backend` package.
+Please ensure the appropriate database drivers are installed in your `backend`
+package. If you intend to use both `postgres` and `sqlite3`, you can install
+both of them.
 
 ```shell
 cd packages/backend
@@ -51,48 +49,17 @@ yarn add sqlite3
 From an operational perspective, you only need to install drivers for clients
 that are actively used.
 
-## Add Configuration
+### Database Manager
 
-You can set the same type of values for `backend.database.<pluginId>.client` and
-`backend.database.<pluginId>.connection` which are also accepted at the top
-level.
-
-It is possible to override the default database name prefix,
-`backstage_plugin_`, which is used when a name isn't explicitly defined. Set
-`backend.database.prefix` as shown below. The database names for plugins such as
-`catalog` and `auth` would now be `my_company_catalog` and `my_company_auth`
-instead of `backstage_plugin_catalog` and `backstage_plugin_auth`.
-
-```yaml
-backend:
-  database:
-    client: pg
-    prefix: my_company_
-    connection:
-      host: localhost
-      user: postgres
-      password: password
-    plugin:
-      code-coverage:
-        connection:
-          database: pg_code_coverage_set_by_user
-```
-
-In the example above, the `code-coverage` plugin will use the same connection
-configuration defined under `database.connection` and use
-`pg_code_coverage_set_by_user` instead of `my_company_code-coverage` which would
-be automatically generated if a plugin configuration wasn't explicitly set.
-
-## Integrate `PluginConnectionDatabaseManager` into `backend`
-
-The `SingleConnectionDatabaseManager` used by default should be replaced with
-the `PluginConnectionDatabaseManager` in your `packages/backend/src/index.ts`
-file. Import the manager and replace the `.fromConfig` call as shown below:
+Existing Backstage instances should be updated to use `DatabaseManager` from
+`@backstage/backend-common` in your `packages/backend/src/index.ts` file, the
+`SingleConnectionDatabaseManager` has been deprecated. Import the manager and
+update the references as shown below if this is not the case:
 
 ```diff
 import {
 -  SingleConnectionDatabaseManager,
-+  PluginConnectionDatabaseManager,
++  DatabaseManager,
 } from '@backstage/backend-common';
 
 // ...
@@ -100,24 +67,121 @@ import {
 function makeCreateEnv(config: Config) {
   // ...
 -  const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
-+  const databaseManager = PluginConnectionDatabaseManager.fromConfig(config);
++  const databaseManager = DatabaseManager.fromConfig(config);
   // ...
 }
 ```
 
+## Configuration
+
+You should set the base database client and connection information in your
+`app-config.yaml` (or equivalent) file. The base client and configuration is
+used as the default which is extended for each plugin with the same or unset
+client type. If a client type is specified for a specific plugin which does not
+match the base client, the configuration set for the plugin will be used as is
+without extending the base configuration.
+
+Client type and configuration for plugins need to be defined under
+**`backend.database.plugin.<pluginId>`**. As an example, `catalog` is the
+`pluginId` for the catalog plugin and any configuration defined under that block
+is specific to that plugin. We will now explore more detailed example
+configurations below.
+
+### Minimal In-Memory Configuration
+
+In the example below, we are using `sqlite3` in-memory databases for all
+plugins. You may want to use this configuration for testing or other non-durable
+use cases.
+
+```yaml
+backend:
+  database:
+    client: sqlite3
+    connection: ':memory:'
+```
+
+### PostgreSQL
+
+The example below uses PostgreSQL (`pg`) as the database client for all plugins.
+The `auth` plugin uses a user defined database name instead of the automatically
+generated one which would have been `backstage_plugin_auth`.
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection:
+      host: some.example-pg-instance.tld
+      user: postgres
+      password: password
+      port: 5432
+    plugin:
+      auth:
+        connection:
+          database: pg_auth_set_by_user
+```
+
+### Custom Database Name Prefix
+
+The configuration below uses `example_prefix_` as the database name prefix
+instead of `backstage_plugin_`. Plugins such as `auth` and `catalog` will use
+databases named `example_prefix_auth` and `example_prefix_catalog` respectively.
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection:
+      host: some.example-pg-instance.tld
+      user: postgres
+      password: password
+      port: 5432
+    prefix: 'example_prefix_'
+```
+
+### Connection Configuration Per Plugin
+
+Both `auth` and `catalog` use connection configuration with different
+credentials and database names. This type of configuration can be useful for
+environments with infrastructure as code or data which may provide randomly
+generated credentials and/or database names.
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection: 'postgresql://some.example-pg-instance.tld:5432'
+    plugin:
+      auth:
+        connection: 'postgresql://fort:knox@some.example-pg-instance.tld:5432/unwitting_fox_jumps'
+      catalog:
+        connection: 'postgresql://bank:reserve@some.example-pg-instance.tld:5432/shuffle_ransack_playback'
+```
+
+### PostgreSQL and SQLite 3
+
+The example below uses PostgreSQL (`pg`) as the database client for all plugins
+except the `auth` plugin which uses `sqlite3`. As the `auth` plugin's client
+type is different from the base client type, the connection configuration for
+`auth` is used verbatim without extending the base configuration for PostgreSQL.
+
+```yaml
+backend:
+  database:
+    client: pg
+    connection: 'postgresql://foo:bar@some.example-pg-instance.tld:5432'
+    plugin:
+      auth:
+        client: sqlite3
+        connection: ':memory:'
+```
+
 ## Check Your Databases
 
-The `PluginConnectionDatabaseManager` preserves the behaviour of the
-`SingleConnectionDatabaseManager`. If the database does not exist, it will
-attempt to create it.
+The `DatabaseManager` will attempt to create the databases if they do not exist.
+If you have set credentials per plugin because the credentials in the base
+configuration do not have permissions to create databases, you must ensure they
+exist before starting the service. The service will not be able to create them,
+it can only use them.
 
-If you are using this database manager to set the database name upfront because
-the credentials do not have permissions to create databases, you must ensure
-they exist before starting the service. The service will not be able to create
-them, it can only use them.
-
-`sqlite3` databases do not need to be created upfront as with the existing
-database manager.
-
-Your Backstage App can now use different database clients and configuration per
-plugin!
+Good luck!

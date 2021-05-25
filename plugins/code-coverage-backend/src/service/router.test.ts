@@ -20,14 +20,14 @@ import {
   getVoidLogger,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
-  SingleConnectionDatabaseManager,
+  DatabaseManager,
   UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 
 function createDatabase(): PluginDatabaseManager {
-  return SingleConnectionDatabaseManager.fromConfig(
+  return DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
         database: {
