@@ -16,12 +16,9 @@
 import React from 'react';
 import { Card, CardActions, CardMedia, CardContent } from '@material-ui/core';
 import { Content, ContentHeader } from '@backstage/core';
-// import { ItemCardGrid } from '../../../../../packages/core/src/layout/ItemCard';
-// import { ItemCardHeader } from '../../../../../packages/core/src/layout/ItemCard';
-// import { Button } from '../../../../../packages/core/src/components';
-import { ItemCardGrid } from './ItemCardGrid';
-import { ItemCardHeader } from './ItemCardHeader';
-import { Button } from '../../components';
+import { ItemCardGrid } from '../../../../../packages/core/src/layout/ItemCard';
+import { ItemCardHeader } from '../../../../../packages/core/src/layout/ItemCard';
+import { Button } from '../../../../../packages/core/src/components';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
