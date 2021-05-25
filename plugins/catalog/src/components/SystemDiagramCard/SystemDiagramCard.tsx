@@ -149,7 +149,6 @@ export function SystemDiagramCard() {
   const currentSystemNode = stringifyEntityRef(entity);
   const systemNodes = new Array<{ id: string; kind: string; name: string }>();
   const systemEdges = new Array<{ from: string; to: string; label: string }>();
-  const ref = parseEntityRef(currentSystemNode);
 
   const catalogApi = useApi(catalogApiRef);
   const { loading, error, value: catalogResponse } = useAsync(() => {
@@ -158,7 +157,7 @@ export function SystemDiagramCard() {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
         'spec.system': [
           currentSystemName,
-          `${ref.namespace || 'Current Namespace'}/${currentSystemName}`,
+          `${ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
         ],
       },
     });
