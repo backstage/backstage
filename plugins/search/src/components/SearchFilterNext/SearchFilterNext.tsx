@@ -43,12 +43,9 @@ export type Props = {
   debug?: boolean;
   name: string;
   values?: string[];
-  defaultValue?: string | null;
+  defaultValue?: string[] | string | null;
 };
 
-/**
- * @param defaultValue - The default value. If more than one value should be defaulted to "checked," pass a comma-separated string.
- */
 const CheckboxFilter = ({ name, defaultValue, values }: Component) => {
   const { filters, setFilters } = useSearch();
 
@@ -76,13 +73,12 @@ const CheckboxFilter = ({ name, defaultValue, values }: Component) => {
   };
 
   useEffect(() => {
-    if (defaultValue) {
+    if (defaultValue && Array.isArray(defaultValue)) {
       setFilters(prevFilters => ({
         ...prevFilters,
-        [name]: defaultValue.split(','),
+        [name]: defaultValue,
       }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue, setFilters]);
 
   return (
@@ -127,18 +123,14 @@ const SelectFilter = ({ name, defaultValue, values }: Component) => {
     }
   };
 
-  useEffect(
-    () => {
-      if (defaultValue) {
-        setFilters(prevFilters => ({
-          ...prevFilters,
-          [name]: defaultValue,
-        }));
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setFilters, defaultValue],
-  );
+  useEffect(() => {
+    if (defaultValue && typeof defaultValue === 'string') {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        [name]: defaultValue,
+      }));
+    }
+  }, [setFilters, defaultValue]);
 
   return (
     <FormControl variant="filled" className={classes.select}>
