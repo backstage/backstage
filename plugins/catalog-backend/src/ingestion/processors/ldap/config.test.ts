@@ -105,7 +105,10 @@ describe('readLdapConfig', () => {
               scope: 'base',
               attributes: ['*'],
               filter: 'f',
-              paged: true,
+              paged: {
+                pageSize: 7,
+                pagePause: true,
+              },
             },
             set: { p: 'v' },
             map: {
@@ -153,7 +156,10 @@ describe('readLdapConfig', () => {
             scope: 'base',
             attributes: ['*'],
             filter: 'f',
-            paged: true,
+            paged: {
+              pageSize: 7,
+              pagePause: true,
+            },
           },
           set: { p: 'v' },
           map: {

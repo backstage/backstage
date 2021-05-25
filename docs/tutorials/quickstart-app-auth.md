@@ -329,12 +329,12 @@ above:
 
 ### 6. In the same file, modify createApp
 
-Remember to modify the provider information based on the table above.
+Remember to add or modify a `SignInPage` component for `createApp`, using
+provider information based on the table above.
 
 ```tsx
 const app = createApp({
   apis,
-  plugins: Object.values(plugins),
   components: {
     SignInPage: props => (
       <SignInPage

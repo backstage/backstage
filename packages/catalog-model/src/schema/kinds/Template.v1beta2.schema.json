@@ -125,7 +125,7 @@
                     "type": "string",
                     "description": "The name of the action to execute."
                   },
-                  "parameters": {
+                  "input": {
                     "type": "object",
                     "description": "A templated object describing the inputs to the action."
                   }
@@ -168,6 +168,11 @@
               "additionalProperties": {
                 "type": "string"
               }
+            },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the template",
+              "minLength": 1
             }
           }
         }

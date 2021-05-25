@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
-import { ConflictError } from '@backstage/errors';
+import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client';
+import {
+  Entity,
+  parseEntityRef,
+  UNSTABLE_EntityStatusItem,
+} from '@backstage/catalog-model';
+import { ConflictError, SerializedError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
@@ -41,6 +46,11 @@ function generateStableHash(entity: Entity) {
     .digest('hex');
 }
 
+/**
+ * Performs the act of stitching - to take all of the various outputs from the
+ * ingestion process, and stitching them together into the final entity JSON
+ * shape.
+ */
 export class Stitcher {
   constructor(
     private readonly database: Knex,
@@ -84,14 +94,14 @@ export class Stitcher {
             relationTarget: 'relations.target_entity_ref',
           })
           .from('refresh_state')
-          .leftJoin('incoming_references', {})
+          .where({ 'refresh_state.entity_ref': entityRef })
+          .crossJoin(tx.raw('incoming_references'))
           .leftOuterJoin('final_entities', {
             'final_entities.entity_id': 'refresh_state.entity_id',
           })
           .leftOuterJoin('relations', {
             'relations.source_entity_ref': 'refresh_state.entity_ref',
           })
-          .where({ 'refresh_state.entity_ref': entityRef })
           .orderBy('relationType', 'asc')
           .orderBy('relationTarget', 'asc');
 
@@ -109,7 +119,7 @@ export class Stitcher {
         const {
           entityId,
           processedEntity,
-          // errors,
+          errors,
           incomingReferenceCount,
           previousHash,
         } = result[0];
@@ -129,6 +139,7 @@ export class Stitcher {
         // it
         const entity = JSON.parse(processedEntity) as Entity;
         const isOrphan = Number(incomingReferenceCount) === 0;
+        let statusItems: UNSTABLE_EntityStatusItem[] = [];
 
         if (isOrphan) {
           this.logger.debug(`${entityRef} is an orphan`);
@@ -136,6 +147,17 @@ export class Stitcher {
             ...entity.metadata.annotations,
             ['backstage.io/orphan']: 'true',
           };
+        }
+        if (errors) {
+          const parsedErrors = JSON.parse(errors) as SerializedError[];
+          if (Array.isArray(parsedErrors) && parsedErrors.length) {
+            statusItems = parsedErrors.map(e => ({
+              type: ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
+              level: 'error',
+              message: e.toString(),
+              error: e,
+            }));
+          }
         }
 
         // TODO: entityRef is lower case and should be uppercase in the final
@@ -146,6 +168,12 @@ export class Stitcher {
             type: row.relationType!,
             target: parseEntityRef(row.relationTarget!),
           }));
+        if (statusItems.length) {
+          entity.status = {
+            ...entity.status,
+            items: [...(entity.status?.items ?? []), ...statusItems],
+          };
+        }
 
         // If the output entity was actually not changed, just abort
         const hash = generateStableHash(entity);

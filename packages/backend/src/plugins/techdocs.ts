@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DockerContainerRunner } from '@backstage/backend-common';
 import {
   createRouter,
   Generators,
@@ -35,9 +36,14 @@ export default async function createPlugin({
     reader,
   });
 
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  const dockerClient = new Docker();
+  const containerRunner = new DockerContainerRunner({ dockerClient });
+
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(config, {
     logger,
+    containerRunner,
   });
 
   // Publisher is used for
@@ -51,14 +57,10 @@ export default async function createPlugin({
   // checks if the publisher is working and logs the result
   await publisher.getReadiness();
 
-  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
-
   return await createRouter({
     preparers,
     generators,
     publisher,
-    dockerClient,
     logger,
     config,
     discovery,

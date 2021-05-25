@@ -34,6 +34,11 @@ export type UpdateProcessedEntityOptions = {
   deferredEntities: Entity[];
 };
 
+export type UpdateProcessedEntityErrorsOptions = {
+  id: string;
+  errors?: string;
+};
+
 export type RefreshStateItem = {
   id: string;
   entityRef: string;
@@ -80,10 +85,18 @@ export interface ProcessingDatabase {
   ): Promise<GetProcessableEntitiesResult>;
 
   /**
-   * Updates the
+   * Updates a processed entity
    */
   updateProcessedEntity(
     txOpaque: Transaction,
     options: UpdateProcessedEntityOptions,
+  ): Promise<void>;
+
+  /**
+   * Updates only the errors of a processed entity
+   */
+  updateProcessedEntityErrors(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityErrorsOptions,
   ): Promise<void>;
 }

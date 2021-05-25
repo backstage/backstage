@@ -1,5 +1,117 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.3
+
+### Patch Changes
+
+- 021eb366a: Instead of failing, warn when you need to pay for GitHub Pro.
+
+## 0.11.2
+
+### Patch Changes
+
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 65e6c4541: Remove circular dependencies
+- 81d7b9c6f: Added deprecation warnings for `v1alpha1` templates
+- 9962faa2b: Add branch protection for default branches of scaffolded GitHub repositories
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
+## 0.11.1
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 82ca1ac22: The apiBaseUrl setting for Bitbucket Server integrations will now be used when it is set. Otherwise, it will default back to the host setting.
+- fd39d4662: Move `jest-when` to the dev dependencies
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.11.0
+
+### Minor Changes
+
+- e0bfd3d44: Migrate the plugin to use the `ContainerRunner` interface instead of `runDockerContainer(…)`.
+  It also provides the `ContainerRunner` to the individual templaters instead of to the `createRouter` function.
+
+  To apply this change to an existing backend application, add the following to `src/plugins/scaffolder.ts`:
+
+  ```diff
+  - import { SingleHostDiscovery } from '@backstage/backend-common';
+  + import {
+  +   DockerContainerRunner,
+  +   SingleHostDiscovery,
+  + } from '@backstage/backend-common';
+
+    export default async function createPlugin({
+      logger,
+      config,
+      database,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  +   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const cookiecutterTemplater = new CookieCutter();
+  +   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater();
+      const templaters = new Templaters();
+
+      templaters.register('cookiecutter', cookiecutterTemplater);
+      templaters.register('cra', craTemplater);
+
+      const preparers = await Preparers.fromConfig(config, { logger });
+      const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const dockerClient = new Docker();
+
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+        preparers,
+        templaters,
+        publishers,
+        logger,
+        config,
+  -     dockerClient,
+        database,
+        catalogClient,
+        reader,
+      });
+    }
+  ```
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- 69eefb5ae: Fix GithubPR built-in action `credentialsProvider.getCredentials` URL.
+  Adding Documentation for GitHub PR built-in action.
+- 75c8cec39: bump `jsonschema` from 1.2.7 to 1.4.0
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+  - @backstage/catalog-client@0.3.11
+
 ## 0.10.1
 
 ### Patch Changes

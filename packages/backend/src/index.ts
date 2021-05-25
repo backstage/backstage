@@ -24,6 +24,7 @@
 
 import Router from 'express-promise-router';
 import {
+  CacheManager,
   createServiceBuilder,
   getRootLogger,
   loadBackendConfig,
@@ -59,11 +60,13 @@ function makeCreateEnv(config: Config) {
   root.info(`Created UrlReader ${reader}`);
 
   const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  const cacheManager = CacheManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
-    return { logger, database, config, reader, discovery };
+    const cache = cacheManager.forPlugin(plugin);
+    return { logger, cache, database, config, reader, discovery };
   };
 }
 

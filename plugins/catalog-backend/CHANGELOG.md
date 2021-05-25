@@ -1,5 +1,64 @@
 # @backstage/plugin-catalog-backend
 
+## 0.9.1
+
+### Patch Changes
+
+- 50a5348b7: Fix error handling in `LdapOrgReaderProcessor`, and support complex paging options
+- 1b8e28aed: Resolve the `target` for glob `file` locations correctly
+- dcd5a93a9: Correctly add `<source>/project-slug` annotation for new catalog-info.yaml PRs based on SCM integration.
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 62579ced6: Skip adding entries to the `entities_search` table if their `key` exceeds a length limit.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
+## 0.9.0
+
+### Minor Changes
+
+- 9a207f052: Port `GithubOrgReaderProcessor` to support configuration via
+  [`integrations`](https://backstage.io/docs/integrations/github/locations) in
+  addition to [`catalog.processors.githubOrg.providers`](https://backstage.io/docs/integrations/github/org#configuration).
+  The `integrations` package supports authentication with both personal access
+  tokens and GitHub apps.
+
+  This deprecates the `catalog.processors.githubOrg.providers` configuration.
+  A [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
+  for the same host takes precedence over the provider configuration.
+  You might need to add additional scopes for the credentials.
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.8.2
+
+### Patch Changes
+
+- b219821a0: Expose `BitbucketRepositoryParser` introduced in [#5295](https://github.com/backstage/backstage/pull/5295)
+- 227439a72: Add support for non-organization accounts in GitHub Discovery
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
 ## 0.8.1
 
 ### Patch Changes

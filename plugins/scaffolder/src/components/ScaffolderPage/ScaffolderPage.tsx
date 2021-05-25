@@ -175,7 +175,10 @@ export const ScaffolderPageContents = () => {
               {matchingEntities &&
                 matchingEntities?.length > 0 &&
                 matchingEntities.map(template => (
-                  <TemplateCard template={template} />
+                  <TemplateCard
+                    template={template}
+                    deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
+                  />
                 ))}
             </ItemCardGrid>
           </div>

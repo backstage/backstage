@@ -123,6 +123,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
   }
 
+  async updateProcessedEntityErrors(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { id, errors } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .update({
+        errors,
+      })
+      .where('entity_id', id);
+  }
+
   private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
     return lodash.uniqBy(
       rows,
@@ -185,7 +199,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         ),
         -- All the nodes that can be reached upwards from the descendants
         ancestors(root_id, via_entity_ref, to_entity_ref) AS (
-          SELECT NULL, entity_ref, entity_ref
+          SELECT CAST(NULL as INT), entity_ref, entity_ref
           FROM descendants
           UNION
           SELECT
@@ -235,7 +249,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               .withRecursive('ancestors', function ancestors(outer) {
                 return outer
                   .select({
-                    root_id: tx.raw('NULL', []),
+                    root_id: tx.raw('CAST(NULL as INT)', []),
                     via_entity_ref: 'entity_ref',
                     to_entity_ref: 'entity_ref',
                   })
@@ -376,8 +390,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`10 seconds`]) // TODO: test this in sqlite3
-            : tx.raw(`now() + interval '30 seconds'`),
+            ? tx.raw(`datetime('now', ?)`, [`100 seconds`])
+            : tx.raw(`now() + interval '100 seconds'`),
       });
 
     return {

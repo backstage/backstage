@@ -28,6 +28,8 @@ import {
 import { EntityBadgesDialog } from '@backstage/plugin-badges';
 import {
   EntityAboutCard,
+  EntityDependsOnComponentsCard,
+  EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
@@ -37,6 +39,9 @@ import {
   EntitySwitch,
   isComponentType,
   isKind,
+  EntityHasResourcesCard,
+  EntityOrphanWarning,
+  isOrphan,
 } from '@backstage/plugin-catalog';
 import {
   EntityCircleCIContent,
@@ -211,7 +216,15 @@ const errorsContent = (
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
-    <Grid item md={6}>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <Grid item md={8} xs={12}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
 
@@ -223,7 +236,7 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    <Grid item md={4} sm={6}>
+    <Grid item md={4} xs={12}>
       <EntityLinksCard />
     </Grid>
 
@@ -257,7 +270,7 @@ const overviewContent = (
       </EntitySwitch.Case>
     </EntitySwitch>
 
-    <Grid item md={6}>
+    <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
   </Grid>
@@ -284,6 +297,17 @@ const serviceEntityPage = (
         </Grid>
         <Grid item md={6}>
           <EntityConsumedApisCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/dependencies" title="Dependencies">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityLayout.Route>
@@ -334,6 +358,17 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/errors" title="Errors">
       {errorsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/dependencies" title="Dependencies">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityDependsOnResourcesCard variant="gridItem" />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
@@ -465,6 +500,9 @@ const systemPage = (
         </Grid>
         <Grid item md={6}>
           <EntityHasApisCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityHasResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
     </EntityLayout.Route>

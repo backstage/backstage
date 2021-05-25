@@ -221,10 +221,9 @@ export class OpenStackSwiftPublish implements PublisherBase {
    */
   docsRouter(): express.Handler {
     return async (req, res) => {
-      // Trim the leading forward slash
+      // Decode and trim the leading forward slash
       // filePath example - /default/Component/documented-component/index.html
-
-      const filePath = req.path.replace(/^\//, '');
+      const filePath = decodeURI(req.path.replace(/^\//, ''));
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
       const fileExtension = path.extname(filePath);

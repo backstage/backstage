@@ -1,5 +1,44 @@
 # @backstage/plugin-catalog
 
+## 0.5.8
+
+### Patch Changes
+
+- a53f3d603: - Added `RelatedEntitesCard` as a base implementation of displaying entities that are related to another entity.
+  - Added `HasResourcesCard` to display resources that are part of a system.
+  - Added `DependsOnComponentsCard` to display components that are dependencies of a component.
+  - Added `DependsOnResourcesCard` to display resources that are dependencies of a component.
+  - Refactored `HasComponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSubcomponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSystemsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Updated the example app to take advantage of these new components.
+- b203699e9: Display warning when Entity has orphan annotation.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
+## 0.5.7
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 5542de095: This makes the CatalogTable configurable with custom columns, passed through the CatalogPage component rendered on the home page.
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/plugin-catalog-react@0.1.6
+  - @backstage/catalog-model@0.7.9
+
 ## 0.5.6
 
 ### Patch Changes

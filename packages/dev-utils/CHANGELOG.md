@@ -1,5 +1,36 @@
 # @backstage/dev-utils
 
+## 0.1.15
+
+### Patch Changes
+
+- 5e7b36e74: Fix a bug where an instance of the SCM integrations API wasn't being provided properly to the dev app.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+- Updated dependencies [61c3f927c]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/test-utils@0.1.12
+
+## 0.1.14
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- Updated dependencies [062bbf90f]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/test-utils@0.1.11
+  - @backstage/plugin-catalog-react@0.1.6
+  - @backstage/catalog-model@0.7.9
+
 ## 0.1.13
 
 ### Patch Changes

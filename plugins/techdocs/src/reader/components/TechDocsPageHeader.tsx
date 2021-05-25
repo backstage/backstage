@@ -24,7 +24,7 @@ import {
 import CodeIcon from '@material-ui/icons/Code';
 import React from 'react';
 import { AsyncState } from 'react-use/lib/useAsync';
-import { rootRouteRef } from '../../plugin';
+import { rootRouteRef } from '../../routes';
 import { TechDocsMetadata } from '../../types';
 
 type TechDocsPageHeaderProps = {

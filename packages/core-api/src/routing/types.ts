@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons';
+import { IconComponent } from '../icons/types';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
 export type AnyParams = { [param in string]: string } | undefined;

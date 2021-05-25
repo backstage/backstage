@@ -16,6 +16,7 @@
 
 import { JsonObject } from '@backstage/config';
 import { EntityName } from '../types';
+import { UNSTABLE_EntityStatus } from './EntityStatus';
 
 /**
  * The format envelope that's common to all versions/kinds of entity.
@@ -48,6 +49,14 @@ export type Entity = {
    * The relations that this entity has with other entities.
    */
   relations?: EntityRelation[];
+
+  /**
+   * The current status of the entity, as claimed by various sources.
+   *
+   * The keys are implementation defined and the values can be any JSON object
+   * with semantics that match that implementation.
+   */
+  status?: UNSTABLE_EntityStatus;
 };
 
 /**

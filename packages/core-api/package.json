@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-api",
   "description": "Internal Core API used by Backstage plugins and apps",
-  "version": "0.2.17",
+  "version": "0.2.19",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -38,17 +38,17 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-router-dom": "6.0.0-beta.0",
-    "react-use": "^15.3.3",
+    "react-use": "^17.2.4",
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.9",
-    "@backstage/test-utils": "^0.1.10",
+    "@backstage/cli": "^0.6.12",
+    "@backstage/test-utils": "^0.1.12",
     "@backstage/test-utils-core": "^0.1.1",
     "@testing-library/jest-dom": "^5.10.1",
     "@testing-library/react": "^11.2.5",
     "@testing-library/react-hooks": "^3.3.0",
-    "@testing-library/user-event": "^12.0.7",
+    "@testing-library/user-event": "^13.1.8",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32",
     "@types/zen-observable": "^0.8.0",

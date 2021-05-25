@@ -7,6 +7,7 @@
 import { JsonObject } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/config';
+import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
 // @public (undocumented)
@@ -112,6 +113,7 @@ export type Entity = {
     metadata: EntityMeta;
     spec?: JsonObject;
     relations?: EntityRelation[];
+    status?: UNSTABLE_EntityStatus;
 };
 
 // @public
@@ -486,6 +488,7 @@ interface TemplateEntityV1alpha1 extends Entity {
         templater: string;
         path?: string;
         schema: JSONSchema;
+        owner?: string;
     };
 }
 
@@ -514,16 +517,33 @@ export interface TemplateEntityV1beta2 extends Entity {
             id?: string;
             name?: string;
             action: string;
-            parameters?: JsonObject;
+            input?: JsonObject;
         }>;
         output?: {
             [name: string]: string;
         };
+        owner?: string;
     };
 }
 
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
+
+// @alpha
+export type UNSTABLE_EntityStatus = {
+    items?: UNSTABLE_EntityStatusItem[];
+};
+
+// @alpha
+export type UNSTABLE_EntityStatusItem = {
+    type: string;
+    level: UNSTABLE_EntityStatusLevel;
+    message: string;
+    error?: SerializedError;
+};
+
+// @alpha
+export type UNSTABLE_EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @public (undocumented)
 interface UserEntityV1alpha1 extends Entity {
