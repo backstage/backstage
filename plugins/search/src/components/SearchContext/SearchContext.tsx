@@ -19,8 +19,9 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
 } from 'react';
-import { useAsync } from 'react-use';
+import { useAsync, usePrevious } from 'react-use';
 import { useApi } from '@backstage/core';
 import { SearchResultSet } from '@backstage/search-common';
 import { searchApiRef } from '../../apis';
@@ -60,6 +61,7 @@ export const SearchContextProvider = ({
   const [filters, setFilters] = useState<JsonObject>(initialState.filters);
   const [term, setTerm] = useState<string>(initialState.term);
   const [types, setTypes] = useState<string[]>(initialState.types);
+  const prevTerm = usePrevious(term);
 
   const result = useAsync(
     () =>
@@ -71,6 +73,13 @@ export const SearchContextProvider = ({
       }),
     [term, filters, types, pageCursor],
   );
+
+  useEffect(() => {
+    // Any time a term is reset, we want to start from page 0.
+    if (term && prevTerm && term !== prevTerm) {
+      setPageCursor('');
+    }
+  }, [term, prevTerm]);
 
   const value: SearchContextValue = {
     result,

@@ -37,7 +37,7 @@ type Props = {
 
 export const SearchBarNext = ({ debounceTime = 200 }: Props) => {
   const classes = useStyles();
-  const { term, setTerm, setPageCursor } = useSearch();
+  const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
 
   useDebounce(
@@ -55,7 +55,6 @@ export const SearchBarNext = ({ debounceTime = 200 }: Props) => {
 
   const handleClearSearchBar = () => {
     setTerm('');
-    setPageCursor('');
   };
 
   return (

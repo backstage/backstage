@@ -48,11 +48,12 @@ export const SearchPageNext = () => {
   const query = qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
   const filters = (query.filters as JsonObject) || {};
   const queryString = (query.query as string) || '';
+  const pageCursor = (query.pageCursor as string) || '';
 
   const initialState = {
     term: queryString || '',
     types: [],
-    pageCursor: '',
+    pageCursor,
     filters,
   };
 
