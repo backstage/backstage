@@ -35,7 +35,7 @@ type Props = {
   debounceTime?: number;
 };
 
-export const SearchBarNext = ({ debounceTime = 200 }: Props) => {
+export const SearchBarNext = ({ debounceTime = 0 }: Props) => {
   const classes = useStyles();
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);

@@ -31,7 +31,7 @@ export const searchPage = (
     <Content>
       <Grid container direction="row">
         <Grid item xs={12}>
-          <SearchBarNext />
+          <SearchBarNext debounceTime={100} />
         </Grid>
         <Grid item xs={3}>
           <Card>
