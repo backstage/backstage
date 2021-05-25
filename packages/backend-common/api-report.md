@@ -105,6 +105,12 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
 export function createStatusCheckRouter(options: StatusCheckRouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
+export class DatabaseManager {
+    forPlugin(pluginId: string): PluginDatabaseManager;
+    static fromConfig(config: Config): DatabaseManager;
+    }
+
+// @public (undocumented)
 export class DockerContainerRunner implements ContainerRunner {
     constructor({ dockerClient }: {
         dockerClient: Docker;
@@ -267,14 +273,6 @@ export type PluginCacheManager = {
     getClient: (options?: ClientOptions) => CacheClient;
 };
 
-// @public (undocumented)
-export class PluginConnectionDatabaseManager {
-    // (undocumented)
-    static readonly DEFAULT_PREFIX = "backstage_plugin_";
-    forPlugin(pluginId: string): PluginDatabaseManager;
-    static fromConfig(config: Config): PluginConnectionDatabaseManager;
-    }
-
 // @public
 export interface PluginDatabaseManager {
     getClient(): Promise<Knex>;
@@ -344,11 +342,8 @@ export type ServiceBuilder = {
 // @public (undocumented)
 export function setRootLogger(newLogger: winston.Logger): void;
 
-// @public
-export class SingleConnectionDatabaseManager {
-    forPlugin(pluginId: string): PluginDatabaseManager;
-    static fromConfig(config: Config): SingleConnectionDatabaseManager;
-    }
+// @public @deprecated
+export const SingleConnectionDatabaseManager: typeof DatabaseManager;
 
 // @public
 export class SingleHostDiscovery implements PluginEndpointDiscovery {

@@ -17,4 +17,4 @@
 export * from './connection';
 export * from './types';
 export * from './SingleConnection';
-export * from './PluginConnection';
+export * from './DatabaseManager';

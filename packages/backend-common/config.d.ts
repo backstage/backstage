@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-export type PluginDatabaseConfig =
-  | {
-      /** Database client to use for plugin. */
-      client?: 'sqlite3';
-      /** Database connection to use with plugin. */
-      connection?: ':memory:' | string | { filename: string };
-    }
-  | {
-      /** Database client to use for plugin. */
-      client?: 'pg';
-      /**
-       * PostgreSQL connection string or knex configuration object for plugin.
-       * @secret
-       */
-      connection?: string | object;
-    };
+export type PluginDatabaseConfig = {
+  /** Database client to use. */
+  client?: 'sqlite3' | 'pg';
+  /**
+   * Database connection to use.
+   * @secret
+   */
+  connection?: string | object;
+};
 
 export interface Config {
   app: {
@@ -70,32 +63,30 @@ export interface Config {
           };
         };
 
-    /** Database connection configuration, select database type using the `client` field */
-    database:
-      | {
-          client: 'sqlite3';
-          connection: ':memory:' | string | { filename: string };
-          /** Optional sqlite3 database filename prefix. */
-          prefix?: string;
-          /** Override database config per plugin.  */
-          plugin?: {
-            [pluginId: string]: PluginDatabaseConfig;
-          };
-        }
-      | {
-          client: 'pg';
+    /** Database connection configuration, select base database type using the `client` field */
+    database: {
+      /** Default database client to use */
+      client: 'sqlite3' | 'pg';
+      /**
+       * Base database connection string or Knex object
+       * @secret
+       */
+      connection: string | object;
+      /** Database name prefix override */
+      prefix?: string;
+      /** Plugin specific database configuration and client override */
+      plugin?: {
+        [pluginId: string]: {
+          /** Database client override */
+          client?: 'sqlite3' | 'pg';
           /**
-           * PostgreSQL connection string or knex configuration object.
+           * Database connection string or Knex object override
            * @secret
            */
-          connection: string | object;
-          /** Optional PostgreSQL database prefix. */
-          prefix?: string;
-          /** Override database config per plugin.  */
-          plugin?: {
-            [pluginId: string]: PluginDatabaseConfig;
-          };
+          connection?: string | object;
         };
+      };
+    };
 
     /** Cache connection configuration, select cache type using the `store` field */
     cache?:

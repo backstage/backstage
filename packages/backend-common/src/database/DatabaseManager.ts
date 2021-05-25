@@ -28,11 +28,9 @@ function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
 
-export class PluginConnectionDatabaseManager {
-  static readonly DEFAULT_PREFIX = 'backstage_plugin_';
-
+export class DatabaseManager {
   /**
-   * Creates a PluginConnectionDatabaseManager from `backend.database` config.
+   * Creates a DatabaseManager from `backend.database` config.
    *
    * The database manager allows the user to set connection and client settings on a per pluginId
    * basis by defining a database config block under `plugin.<pluginId>` in addition to top level
@@ -41,13 +39,19 @@ export class PluginConnectionDatabaseManager {
    *
    * @param config The loaded application configuration.
    */
-  static fromConfig(config: Config): PluginConnectionDatabaseManager {
-    return new PluginConnectionDatabaseManager(
-      config.getConfig('backend.database'),
+  static fromConfig(config: Config): DatabaseManager {
+    const databaseConfig = config.getConfig('backend.database');
+
+    return new DatabaseManager(
+      databaseConfig,
+      databaseConfig.getOptionalString('prefix'),
     );
   }
 
-  private constructor(private readonly config: Config) {}
+  private constructor(
+    private readonly config: Config,
+    private readonly prefix: string = 'backstage_plugin_',
+  ) {}
 
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
@@ -70,8 +74,8 @@ export class PluginConnectionDatabaseManager {
    *
    * This method provides the effective database name which is determined using global
    * and plugin specific database config. If no explicit database name is configured,
-   * this method will provide a generated name which is the pluginId prefixed using
-   * the value from `PluginConnectionDatabaseManager.DEFAULT_PREFIX`.
+   * this method will provide a generated name which is the pluginId prefixed with
+   * 'backstage_plugin_'.
    *
    * @param pluginId Lookup the database name for given plugin
    */
@@ -85,10 +89,6 @@ export class PluginConnectionDatabaseManager {
         ? rootConnection
         : this.config.getOptionalString('connection.filename') ?? ':memory:';
 
-    const prefix =
-      this.config.getOptionalString('prefix') ??
-      PluginConnectionDatabaseManager.DEFAULT_PREFIX;
-
     const isSqlite = this.config.getString('client') === 'sqlite3';
     return (
       // attempt to lookup pg and mysql database name
@@ -98,7 +98,7 @@ export class PluginConnectionDatabaseManager {
       // if root is sqlite - attempt to use top level connection, fallback to :memory:
       (isSqlite ? rootSqliteName : null) ??
       // generate a database name using prefix and pluginId
-      `${prefix}${pluginId}`
+      `${this.prefix}${pluginId}`
     );
   }
 

@@ -18,7 +18,11 @@ import { ConfigReader } from '@backstage/config';
 import { createDatabaseClient, ensureDatabaseExists } from './connection';
 import { SingleConnectionDatabaseManager } from './SingleConnection';
 
-jest.mock('./connection');
+jest.mock('./connection', () => ({
+  ...jest.requireActual('./connection'),
+  createDatabaseClient: jest.fn(),
+  ensureDatabaseExists: jest.fn(),
+}));
 
 describe('SingleConnectionDatabaseManager', () => {
   const defaultConfigOptions = {
@@ -43,9 +47,8 @@ describe('SingleConnectionDatabaseManager', () => {
 
   describe('SingleConnectionDatabaseManager.fromConfig', () => {
     it('accesses the backend.database key', () => {
-      const getConfig = jest.fn();
       const config = defaultConfig();
-      config.getConfig = getConfig;
+      const getConfig = jest.spyOn(config, 'getConfig');
 
       SingleConnectionDatabaseManager.fromConfig(config);
 
@@ -64,7 +67,6 @@ describe('SingleConnectionDatabaseManager', () => {
 
       const mockCalls = mocked(createDatabaseClient).mock.calls.splice(-1);
       const callArgs = mockCalls[0];
-      expect(callArgs[0].get()).toEqual(defaultConfigOptions.backend.database);
       expect(callArgs[1].connection.database).toEqual(
         `backstage_plugin_${pluginId}`,
       );

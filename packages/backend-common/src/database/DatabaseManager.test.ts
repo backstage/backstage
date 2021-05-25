@@ -16,7 +16,7 @@
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
 import { createDatabaseClient, ensureDatabaseExists } from './connection';
-import { PluginConnectionDatabaseManager } from './PluginConnection';
+import { DatabaseManager } from './DatabaseManager';
 
 jest.mock('./connection', () => ({
   ...jest.requireActual('./connection'),
@@ -24,40 +24,35 @@ jest.mock('./connection', () => ({
   ensureDatabaseExists: jest.fn(),
 }));
 
-describe('PluginConnectionDatabaseManager', () => {
+describe('DatabaseManager', () => {
   // This is similar to the ts-jest `mocked` helper.
   const mocked = (f: Function) => f as jest.Mock;
 
   afterEach(() => jest.resetAllMocks());
 
-  describe('PluginConnectionDatabaseManager.fromConfig', () => {
-    const backendConfig = {
-      backend: {
-        database: {
-          client: 'pg',
-          connection: {
-            host: 'localhost',
-            user: 'foo',
-            password: 'bar',
-            database: 'foodb',
+  describe('DatabaseManager.fromConfig', () => {
+    it('accesses the backend.database key', () => {
+      const config = new ConfigReader({
+        backend: {
+          database: {
+            client: 'pg',
+            connection: {
+              host: 'localhost',
+              user: 'foo',
+              password: 'bar',
+              database: 'foodb',
+            },
           },
         },
-      },
-    };
-    const defaultConfig = () => new ConfigReader(backendConfig);
+      });
+      const getConfigSpy = jest.spyOn(config, 'getConfig');
+      DatabaseManager.fromConfig(config);
 
-    it('accesses the backend.database key', () => {
-      const getConfig = jest.fn();
-      const config = defaultConfig();
-      config.getConfig = getConfig;
-
-      PluginConnectionDatabaseManager.fromConfig(config);
-
-      expect(getConfig.mock.calls[0][0]).toEqual('backend.database');
+      expect(getConfigSpy).toHaveBeenCalledWith('backend.database');
     });
   });
 
-  describe('PluginConnectionDatabaseManager.forPlugin', () => {
+  describe('DatabaseManager.forPlugin', () => {
     const config = {
       backend: {
         database: {
@@ -92,9 +87,7 @@ describe('PluginConnectionDatabaseManager', () => {
         },
       },
     };
-    const manager = PluginConnectionDatabaseManager.fromConfig(
-      new ConfigReader(config),
-    );
+    const manager = DatabaseManager.fromConfig(new ConfigReader(config));
 
     it('connects to a plugin database using default config', async () => {
       const pluginId = 'pluginwithoutconfig';
@@ -120,7 +113,7 @@ describe('PluginConnectionDatabaseManager', () => {
     });
 
     it('provides a plugin db which uses components from top level connection string', async () => {
-      const testManager = PluginConnectionDatabaseManager.fromConfig(
+      const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
@@ -153,7 +146,7 @@ describe('PluginConnectionDatabaseManager', () => {
     });
 
     it('uses top level sqlite database filename if plugin config is not present', async () => {
-      const testManager = PluginConnectionDatabaseManager.fromConfig(
+      const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
@@ -175,7 +168,7 @@ describe('PluginConnectionDatabaseManager', () => {
     });
 
     it('provides an inmemory sqlite database if top level is also inmemory and plugin config is not present', async () => {
-      const testManager = PluginConnectionDatabaseManager.fromConfig(
+      const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
@@ -280,7 +273,7 @@ describe('PluginConnectionDatabaseManager', () => {
     });
 
     it('generates a database name override when prefix is not explicitly set', async () => {
-      const testManager = PluginConnectionDatabaseManager.fromConfig(
+      const testManager = DatabaseManager.fromConfig(
         new ConfigReader({
           backend: {
             database: {
@@ -302,7 +295,7 @@ describe('PluginConnectionDatabaseManager', () => {
 
       expect(overrides).toHaveProperty(
         'connection.database',
-        expect.stringContaining(PluginConnectionDatabaseManager.DEFAULT_PREFIX),
+        expect.stringContaining('backstage_plugin_'),
       );
     });
 
