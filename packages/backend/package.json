@@ -46,7 +46,7 @@
     "@backstage/plugin-search-backend-node": "^0.1.3",
     "@backstage/plugin-techdocs-backend": "^0.8.1",
     "@backstage/plugin-todo-backend": "^0.1.5",
-    "@gitbeaker/node": "^28.0.2",
+    "@gitbeaker/node": "^29.2.0",
     "@octokit/rest": "^18.5.3",
     "azure-devops-node-api": "^10.1.1",
     "dockerode": "^3.2.1",
