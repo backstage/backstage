@@ -91,9 +91,6 @@ describe('Stitcher', () => {
             },
           },
         ],
-        status: {
-          'backstage.io/catalog-processing': {},
-        },
         apiVersion: 'a',
         kind: 'k',
         metadata: {
@@ -174,9 +171,6 @@ describe('Stitcher', () => {
             },
           },
         ]),
-        status: {
-          'backstage.io/catalog-processing': {},
-        },
         apiVersion: 'a',
         kind: 'k',
         metadata: {

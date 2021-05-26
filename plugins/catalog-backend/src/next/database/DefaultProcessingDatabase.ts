@@ -123,6 +123,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     );
   }
 
+  async updateProcessedEntityErrors(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { id, errors } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .update({
+        errors,
+      })
+      .where('entity_id', id);
+  }
+
   private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
     return lodash.uniqBy(
       rows,

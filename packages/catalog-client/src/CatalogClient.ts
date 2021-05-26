@@ -31,8 +31,8 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
-  DiscoveryApi,
-} from './types';
+} from './types/api';
+import { DiscoveryApi } from './types/discovery';
 
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
