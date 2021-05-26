@@ -23,7 +23,7 @@ import {
   TableColumn,
 } from '@backstage/core';
 import {
-  EntityKindFilter,
+  EntityKindPicker,
   EntityListProvider,
   EntityTagPicker,
   EntityTypePicker,
@@ -58,9 +58,6 @@ export const CatalogPage = ({
   columns,
 }: CatalogPageProps) => {
   const styles = useStyles();
-  const initialFilters = {
-    kind: new EntityKindFilter('component'),
-  };
 
   return (
     <CatalogLayout>
@@ -70,8 +67,9 @@ export const CatalogPage = ({
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
-          <EntityListProvider initialFilters={initialFilters}>
+          <EntityListProvider>
             <div>
+              <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />

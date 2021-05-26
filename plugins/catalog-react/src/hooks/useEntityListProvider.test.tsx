@@ -19,6 +19,8 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import {
   ApiProvider,
   ApiRegistry,
+  ConfigApi,
+  configApiRef,
   IdentityApi,
   identityApiRef,
   storageApiRef,
@@ -27,13 +29,17 @@ import { MockStorageApi } from '@backstage/test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, UserEntity } from '@backstage/catalog-model';
 import {
-  DefaultEntityFilters,
   EntityListProvider,
-  EntityListProviderProps,
   useEntityListProvider,
 } from './useEntityListProvider';
 import { catalogApiRef } from '../api';
-import { EntityKindFilter, EntityTypeFilter, UserListFilter } from '../types';
+import {
+  EntityKindFilter,
+  EntityTypeFilter,
+  UserListFilter,
+  UserListFilterKind,
+} from '../types';
+import { EntityKindPicker, UserListPicker } from '../components';
 
 const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1beta1',
@@ -73,6 +79,9 @@ const entities: Entity[] = [
   },
 ];
 
+const mockConfigApi = {
+  getOptionalString: () => '',
+} as Partial<ConfigApi>;
 const mockIdentityApi: Partial<IdentityApi> = {
   getUserId: () => 'guest@example.com',
 };
@@ -83,18 +92,21 @@ const mockCatalogApi: Partial<CatalogApi> = {
   getEntityByName: () => Promise.resolve(mockUser),
 };
 const apis = ApiRegistry.from([
+  [configApiRef, mockConfigApi],
   [catalogApiRef, mockCatalogApi],
   [identityApiRef, mockIdentityApi],
   [storageApiRef, MockStorageApi.create()],
 ]);
 
 const wrapper = ({
+  userFilter,
   children,
-  initialFilters,
-}: PropsWithChildren<EntityListProviderProps<DefaultEntityFilters>>) => {
+}: PropsWithChildren<{ userFilter: UserListFilterKind }>) => {
   return (
     <ApiProvider apis={apis}>
-      <EntityListProvider initialFilters={initialFilters}>
+      <EntityListProvider>
+        <EntityKindPicker initialFilter="component" hidden />
+        <UserListPicker initialFilter={userFilter} />
         {children}
       </EntityListProvider>
     </ApiProvider>
@@ -111,9 +123,6 @@ describe('<EntityListProvider/>', () => {
       () => useEntityListProvider(),
       {
         wrapper,
-        initialProps: {
-          initialFilters: { kind: new EntityKindFilter('component') },
-        },
       },
     );
     await waitForValueToChange(() => result.current.backendEntities);
@@ -127,9 +136,7 @@ describe('<EntityListProvider/>', () => {
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
       initialProps: {
-        initialFilters: {
-          user: new UserListFilter('owned', mockUser, () => true),
-        },
+        userFilter: 'owned',
       },
     });
     await waitFor(() => !!result.current.entities.length);
@@ -140,9 +147,6 @@ describe('<EntityListProvider/>', () => {
   it('does not fetch when only frontend filters change', async () => {
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
-      initialProps: {
-        initialFilters: { kind: new EntityKindFilter('component') },
-      },
     });
     await waitFor(() => !!result.current.entities.length);
     expect(result.current.entities.length).toBe(2);
@@ -188,7 +192,7 @@ describe('<EntityListProvider/>', () => {
 
     mockCatalogApi.getEntities = jest.fn().mockRejectedValue('error');
     act(() => {
-      result.current.updateFilters({ kind: new EntityKindFilter('component') });
+      result.current.updateFilters({ kind: new EntityKindFilter('api') });
     });
     await waitForNextUpdate();
     expect(result.current.error).toBeDefined();

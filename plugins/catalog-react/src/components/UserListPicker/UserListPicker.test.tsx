@@ -32,7 +32,7 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core';
-import { EntityTagFilter } from '../../types';
+import { EntityTagFilter, UserListFilter } from '../../types';
 import { CatalogApi } from '@backstage/catalog-client';
 import { catalogApiRef } from '../../api';
 import { MockStorageApi } from '@backstage/test-utils';
@@ -68,14 +68,16 @@ const apis = ApiRegistry.from([
   [storageApiRef, MockStorageApi.create()],
 ]);
 
+const mockIsStarredEntity = (entity: Entity) =>
+  entity.metadata.name === 'component-3';
+
 jest.mock('../../hooks', () => {
   const actual = jest.requireActual('../../hooks');
   return {
     ...actual,
     useOwnUser: () => ({ value: mockUser }),
     useStarredEntities: () => ({
-      isStarredEntity: (entity: Entity) =>
-        entity.metadata.name === 'component-3',
+      isStarredEntity: mockIsStarredEntity,
     }),
   };
 });
@@ -212,7 +214,8 @@ describe('<UserListPicker />', () => {
 
     fireEvent.click(getByText('Starred'));
 
-    expect(updateFilters).toHaveBeenCalledTimes(1);
-    expect(updateFilters.mock.calls[0][0].user.value).toEqual('starred');
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      user: new UserListFilter('starred', mockUser, mockIsStarredEntity),
+    });
   });
 });

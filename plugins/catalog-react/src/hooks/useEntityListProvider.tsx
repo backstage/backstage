@@ -80,24 +80,12 @@ export const EntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
 
-export type EntityListProviderProps<
-  EntityFilters extends DefaultEntityFilters
-> = {
-  initialFilters?: EntityFilters;
-};
-
 export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
-  initialFilters,
   children,
-}: PropsWithChildren<EntityListProviderProps<EntityFilters>>) => {
+}: PropsWithChildren<{}>) => {
   const catalogApi = useApi(catalogApiRef);
 
-  // TODO(timbonicus): is it possible to register initial filters from query params? e.g. if the
-  // query key matches the generic definition, call a constructor with the value
-  const [filters, setFilters] = useState<EntityFilters>(
-    initialFilters ?? ({} as EntityFilters),
-  );
-
+  const [filters, setFilters] = useState<EntityFilters>({} as EntityFilters);
   const [entities, setEntities] = useState<Entity[]>([]);
   const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
 
