@@ -182,6 +182,21 @@ work but
 [aren't tested as fully](https://github.com/backstage/backstage/issues/2460)
 yet.
 
+## Cache
+
+The Backstage backend and its builtin plugins are also able to leverage cache
+stores as a means of improving performance or reliability. Similar to how
+databases are supported, plugins receive logically separated cache connections,
+which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
+
+At this time of writing, Backstage can be configured to use one of two cache
+stores: memory, which is mainly used for local testing, and memcache, which is a
+cache store better suited for production deployment. The right cache store for
+your Backstage instance will depend on your own run-time constraints and those
+required of the plugins you're running.
+
+Contributions supporting other cache stores are welcome!
+
 ## Containerization
 
 The example Backstage architecture shown above would Dockerize into three
