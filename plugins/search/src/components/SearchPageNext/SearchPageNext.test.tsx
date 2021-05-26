@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { render, screen, waitFor } from '@testing-library/react';
 import { useLocation, Outlet } from 'react-router';
 
 import { useSearch, SearchContextProvider } from '../SearchContext';

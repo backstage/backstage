@@ -44,7 +44,7 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    _alphaPerformSearch.mockResolvedValue([]);
+    _alphaPerformSearch.mockResolvedValue({});
     (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
   });
 
