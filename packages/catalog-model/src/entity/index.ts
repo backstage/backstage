@@ -27,6 +27,7 @@ export type {
   EntityRelation,
   EntityRelationSpec,
 } from './Entity';
+export type { EntityEnvelope } from './EntityEnvelope';
 export type {
   UNSTABLE_EntityStatus,
   UNSTABLE_EntityStatusItem,

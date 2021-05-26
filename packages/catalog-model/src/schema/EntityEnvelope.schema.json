@@ -1,31 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "Entity",
-  "description": "The parts of the format that's common to all versions/kinds of entity.",
+  "$id": "EntityEnvelope",
+  "description": "The envelope skeleton parts of an entity - whatever is necessary to be able to give it a ref and pass to further validation / policy checking.",
   "examples": [
     {
       "apiVersion": "backstage.io/v1alpha1",
       "kind": "Component",
       "metadata": {
-        "name": "LoremService",
-        "description": "Creates Lorems like a pro.",
-        "labels": {
-          "product_name": "Random value Generator"
-        },
-        "annotations": {
-          "docs": "https://github.com/..../tree/develop/doc"
-        }
-      },
-      "spec": {
-        "type": "service",
-        "lifecycle": "production",
-        "owner": "tools"
+        "name": "LoremService"
       }
     }
   ],
   "type": "object",
   "required": ["apiVersion", "kind", "metadata"],
-  "additionalProperties": false,
+  "additionalProperties": true,
   "properties": {
     "apiVersion": {
       "type": "string",
@@ -50,21 +38,24 @@
       ]
     },
     "metadata": {
-      "$ref": "EntityMeta"
-    },
-    "spec": {
       "type": "object",
-      "description": "The specification data describing the entity itself."
-    },
-    "relations": {
-      "type": "array",
-      "description": "The relations that this entity has with other entities.",
-      "items": {
-        "$ref": "common#relation"
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the entity. Must be unique within the catalog at any given point in time, for any given namespace + kind pair.",
+          "examples": ["metadata-proxy"],
+          "minLength": 1
+        },
+        "namespace": {
+          "type": "string",
+          "description": "The namespace that the entity belongs to.",
+          "default": "default",
+          "examples": ["default", "admin"],
+          "minLength": 1
+        }
       }
-    },
-    "status": {
-      "$ref": "common#status"
     }
   }
 }
