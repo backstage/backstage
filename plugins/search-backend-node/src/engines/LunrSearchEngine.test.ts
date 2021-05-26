@@ -53,7 +53,7 @@ describe('LunrSearchEngine', () => {
 
       expect(mockedTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
-        lunrQueryString: 'testTerm',
+        lunrQueryString: '+testTerm',
       });
     });
 
@@ -66,7 +66,7 @@ describe('LunrSearchEngine', () => {
 
       expect(mockedTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
-        lunrQueryString: 'testTerm +kind:testKind',
+        lunrQueryString: '+testTerm +kind:testKind',
       });
     });
 
@@ -79,7 +79,7 @@ describe('LunrSearchEngine', () => {
 
       expect(mockedTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
-        lunrQueryString: 'testTerm +kind:testKind +namespace:testNameSpace',
+        lunrQueryString: '+testTerm +kind:testKind +namespace:testNameSpace',
       });
     });
   });
