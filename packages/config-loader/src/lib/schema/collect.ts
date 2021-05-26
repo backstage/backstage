@@ -124,7 +124,9 @@ export async function collectConfigSchemas(
     );
   }
 
-  await Promise.all(packageNames.map(name => processItem({ name })));
+  await Promise.all(
+    packageNames.map(name => processItem({ name, parentPath: currentDir })),
+  );
 
   const tsSchemas = compileTsSchemas(tsSchemaPaths);
 
