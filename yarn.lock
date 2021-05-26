@@ -2093,16 +2093,6 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
-"@gitbeaker/core@^28.0.2":
-  version "28.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-28.2.0.tgz#87e6f789faf55d726f75d05e470020e4bbb8e08c"
-  integrity sha512-GfXknRVtdDPqt0WfxILbR4AOb/yPyBC9jDtPSh1+B8JB5HP+ursA70RJnGKFfP/aOHyikJE1MH/sdA7QBbRAKg==
-  dependencies:
-    "@gitbeaker/requester-utils" "^28.2.0"
-    form-data "^4.0.0"
-    li "^1.3.0"
-    xcase "^2.0.1"
-
 "@gitbeaker/core@^29.2.0":
   version "29.2.0"
   resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-29.2.0.tgz#d1ad60e47e03fe9dcc05ce73099cbd506865ec77"
@@ -2121,15 +2111,6 @@
     "@gitbeaker/core" "^29.2.0"
     "@gitbeaker/requester-utils" "^29.2.0"
     got "^11.8.2"
-    xcase "^2.0.1"
-
-"@gitbeaker/requester-utils@^28.2.0":
-  version "28.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-28.2.0.tgz#c3e1dd5adeddee51ec428bfeb12541efc63696eb"
-  integrity sha512-J6NO6DWrii/fczwu4ZnFPAXwa0REgXEC4a5QFseLixrJP8t2apf1THR9Q+J+2oGnIzCqogLT8YzliGoTAbCGng==
-  dependencies:
-    form-data "^4.0.0"
-    query-string "^7.0.0"
     xcase "^2.0.1"
 
 "@gitbeaker/requester-utils@^29.2.0":
