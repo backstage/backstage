@@ -35,12 +35,14 @@ import {
 
 const GithubDeploymentsComponent = ({
   projectSlug,
-  last,
+  lastDeployments,
+  lastStatuses,
   columns,
   host,
 }: {
   projectSlug: string;
-  last: number;
+  lastDeployments: number;
+  lastStatuses: number;
   columns: TableColumn<GithubDeployment>[];
   host: string | undefined;
 }) => {
@@ -48,7 +50,14 @@ const GithubDeploymentsComponent = ({
   const [owner, repo] = projectSlug.split('/');
 
   const { loading, value, error, retry: reload } = useAsyncRetry(
-    async () => await api.listDeployments({ host, owner, repo, last }),
+    async () =>
+      await api.listDeployments({
+        host,
+        owner,
+        repo,
+        lastStatuses,
+        lastDeployments,
+      }),
   );
 
   if (error) {
@@ -66,10 +75,12 @@ const GithubDeploymentsComponent = ({
 };
 
 export const GithubDeploymentsCard = ({
-  last,
+  lastDeployments,
+  lastStatuses,
   columns,
 }: {
-  last?: number;
+  lastDeployments?: number;
+  lastStatuses?: number;
   columns?: TableColumn<GithubDeployment>[];
 }) => {
   const { entity } = useEntity();
@@ -85,7 +96,8 @@ export const GithubDeploymentsCard = ({
       projectSlug={
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
-      last={last || 10}
+      lastDeployments={lastDeployments || 10}
+      lastStatuses={lastStatuses || 5}
       host={host}
       columns={columns || GithubDeploymentsTable.defaultDeploymentColumns}
     />

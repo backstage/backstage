@@ -81,7 +81,8 @@ type QueryParams = {
   host: string | undefined;
   owner: string;
   repo: string;
-  last: number;
+  lastDeployments: number;
+  lastStatuses: number;
 };
 
 export interface GithubDeploymentsApi {
