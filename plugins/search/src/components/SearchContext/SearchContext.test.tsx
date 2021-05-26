@@ -15,47 +15,205 @@
  */
 
 import React from 'react';
-import { renderInTestApp } from '@backstage/test-utils';
-import * as SearchContext from './SearchContext';
+import { render, screen, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
 
-const mockContextState = ({ term }: { term: string }) => {
-  return {
-    term,
+import { useApi } from '@backstage/core';
+
+import { useSearch, SearchContextProvider } from './SearchContext';
+
+jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
+  useApi: jest.fn(),
+}));
+
+describe('SearchContext', () => {
+  const _alphaPerformSearch = jest.fn();
+
+  const wrapper = ({ children, initialState }: any) => (
+    <SearchContextProvider initialState={initialState}>
+      {children}
+    </SearchContextProvider>
+  );
+
+  const initialState = {
+    term: '',
     pageCursor: '',
     filters: {},
     types: ['*'],
-    result: { results: [], loading: false, error: undefined },
-    setTerm: jest.fn(),
-    setFilters: jest.fn(),
-    setTypes: jest.fn(),
-    setPageCursor: jest.fn(),
   };
-};
 
-const MockSearchContextConsumer = () => {
-  const { term } = SearchContext.useSearch();
+  beforeEach(() => {
+    _alphaPerformSearch.mockResolvedValue([]);
+    (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+  });
 
-  return <h6>{term}</h6>;
-};
-
-describe('useSearch', () => {
-  afterEach(() => {
+  afterAll(() => {
     jest.resetAllMocks();
   });
 
-  it('context should use initial term', async () => {
-    jest.spyOn(SearchContext, 'useSearch');
-    const { getByRole } = await renderInTestApp(<MockSearchContextConsumer />);
-    expect(getByRole('heading')).toBeInTheDocument();
+  it('Passes children', async () => {
+    const text = 'text';
+
+    render(
+      <SearchContextProvider initialState={initialState}>
+        {text}
+      </SearchContextProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
   });
 
-  it('context should use mocked term', async () => {
-    jest
-      .spyOn(SearchContext, 'useSearch')
-      .mockImplementation(() => mockContextState({ term: 'new-term' }));
+  it('Throws error when no context is set', () => {
+    const { result } = renderHook(() => useSearch());
 
-    const { getByRole } = await renderInTestApp(<MockSearchContextConsumer />);
+    expect(result.error).toEqual(
+      Error('useSearch must be used within a SearchContextProvider'),
+    );
+  });
 
-    expect(getByRole('heading', { name: 'new-term' })).toBeInTheDocument();
+  it('Uses initial state values', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+      wrapper,
+      initialProps: {
+        initialState,
+      },
+    });
+
+    await waitForNextUpdate();
+
+    expect(result.current).toEqual(expect.objectContaining(initialState));
+  });
+
+  it('Resets cursor when term is set (and different from previous)', async () => {
+    const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+      wrapper,
+      initialProps: {
+        initialState: {
+          ...initialState,
+          pageCursor: '1',
+        },
+      },
+    });
+
+    await waitForNextUpdate();
+
+    expect(result.current.pageCursor).toBe('1');
+
+    act(() => {
+      result.current.setTerm('first term');
+    });
+
+    await waitForNextUpdate();
+
+    expect(result.current.pageCursor).toBe('1');
+
+    act(() => {
+      result.current.setTerm('second term');
+    });
+
+    await waitForNextUpdate();
+
+    expect(result.current.pageCursor).toBe('');
+  });
+
+  describe('Performs search (and sets results)', () => {
+    it('When term is set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const term = 'term';
+
+      act(() => {
+        result.current.setTerm(term);
+      });
+
+      await waitForNextUpdate();
+
+      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+        ...initialState,
+        term,
+      });
+    });
+
+    it('When filters are set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const filters = { filter: 'filter' };
+
+      act(() => {
+        result.current.setFilters(filters);
+      });
+
+      await waitForNextUpdate();
+
+      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+        ...initialState,
+        filters,
+      });
+    });
+
+    it('When pageCursor is set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const pageCursor = 'pageCursor';
+
+      act(() => {
+        result.current.setPageCursor(pageCursor);
+      });
+
+      await waitForNextUpdate();
+
+      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+        ...initialState,
+        pageCursor,
+      });
+    });
+
+    it('When types is set', async () => {
+      const { result, waitForNextUpdate } = renderHook(() => useSearch(), {
+        wrapper,
+        initialProps: {
+          initialState,
+        },
+      });
+
+      await waitForNextUpdate();
+
+      const types = ['type'];
+
+      act(() => {
+        result.current.setTypes(types);
+      });
+
+      await waitForNextUpdate();
+
+      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+        ...initialState,
+        types,
+      });
+    });
   });
 });

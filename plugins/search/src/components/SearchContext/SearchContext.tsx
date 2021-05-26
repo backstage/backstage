@@ -45,7 +45,7 @@ type SettableSearchContext = Omit<
   'result' | 'setTerm' | 'setTypes' | 'setFilters' | 'setPageCursor'
 >;
 
-const SearchContext = createContext({} as SearchContextValue);
+const SearchContext = createContext<SearchContextValue | undefined>(undefined);
 
 export const SearchContextProvider = ({
   initialState = {

@@ -16,11 +16,41 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
+import { useApi } from '@backstage/core';
+
+import { SearchContextProvider } from '../SearchContext';
 import { SearchBarNext } from './SearchBarNext';
 
+jest.mock('@backstage/core', () => ({
+  ...jest.requireActual('@backstage/core'),
+  useApi: jest.fn(),
+}));
+
 describe('<SearchBarNext />', () => {
+  const _alphaPerformSearch = jest.fn();
+
+  const initialState = {
+    term: '',
+    pageCursor: '',
+    filters: {},
+    types: ['*'],
+  };
+
+  beforeEach(() => {
+    _alphaPerformSearch.mockResolvedValue([]);
+    (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+  });
+
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
+
   it('renders without exploding', async () => {
-    const { getByRole } = await renderInTestApp(<SearchBarNext />);
+    const { getByRole } = await renderInTestApp(
+      <SearchContextProvider initialState={initialState}>
+        <SearchBarNext />
+      </SearchContextProvider>,
+    );
 
     expect(
       getByRole('textbox', { name: 'search backstage' }),
