@@ -49,10 +49,11 @@ export const SearchPageNext = () => {
   const filters = (query.filters as JsonObject) || {};
   const queryString = (query.query as string) || '';
   const pageCursor = (query.pageCursor as string) || '';
+  const types = (query.types as string[]) || [];
 
   const initialState = {
     term: queryString || '',
-    types: [],
+    types,
     pageCursor,
     filters,
   };
