@@ -26,7 +26,6 @@ import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { buildEntitySearch, DbSearchRow } from './search';
-import { createTimer } from './util';
 import { v4 as uuid } from 'uuid';
 
 // The number of items that are sent per batch to the database layer, when
