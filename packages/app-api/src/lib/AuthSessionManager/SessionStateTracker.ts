@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BehaviorSubject } from '..';
+import { BehaviorSubject } from '../subjects';
 import { SessionState } from '@backstage/plugin-api';
 import { Observable } from '../../types';
 

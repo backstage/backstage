@@ -85,7 +85,7 @@ describe('ApiFactoryRegistry', () => {
     expect(registry.register('app', factory2)).toBe(true);
     expect(registry.get(ref1)).toEqual(factory2);
     expect(registry.get(ref2)).toEqual(factory2);
-    expect(registry.getAllApis()).toEqual(new Set([ref2]));
-    expect(registry.getAllApis()).not.toEqual(new Set([ref1]));
+    expect(Array.from(registry.getAllApis())[0]).toBe(ref2);
+    expect(Array.from(registry.getAllApis())[0]).not.toBe(ref1);
   });
 });

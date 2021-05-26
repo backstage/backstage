@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { ErrorApi, ErrorContext } from '@backstage/plugin-api';
-import { PublishSubject } from '../../../lib';
+import { PublishSubject } from '../../../lib/subjects';
 import { Observable } from '../../../types';
 
 /**

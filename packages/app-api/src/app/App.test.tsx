@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LocalStorageFeatureFlags } from '../apis';
 import { renderWithEffects, withLogCollector } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
@@ -22,6 +23,9 @@ import { BrowserRouter, Routes } from 'react-router-dom';
 import { createRoutableExtension } from '../extensions';
 import { defaultAppIcons } from './icons';
 import {
+  configApiRef,
+  createApiFactory,
+  featureFlagsApiRef,
   createPlugin,
   useRouteRef,
   createExternalRouteRef,
@@ -92,6 +96,12 @@ describe('Integration Test', () => {
 
   const plugin1 = createPlugin({
     id: 'blob',
+    // Both absolute and sub route refs should be assignable to the plugin routes
+    routes: {
+      ref1: plugin1RouteRef,
+      ref2: plugin2RouteRef,
+      ref3: subRouteRef1,
+    },
     externalRoutes: {
       extRouteRef1,
       extRouteRef2,
@@ -200,6 +210,9 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink2: /foo/a')).toBeInTheDocument();
     expect(screen.getByText('extLink3: /sub1')).toBeInTheDocument();
     expect(screen.getByText('extLink4: /foo/b')).toBeInTheDocument();
+
+    // Plugins should be discovered through element tree
+    expect(app.getPlugins()).toEqual([plugin1, plugin2]);
   });
 
   it('runs happy paths without optional routes', async () => {
@@ -243,6 +256,67 @@ describe('Integration Test', () => {
     expect(screen.getByText('extLink2: /foo')).toBeInTheDocument();
     expect(screen.getByText('extLink3: <none>')).toBeInTheDocument();
     expect(screen.getByText('extLink4: <none>')).toBeInTheDocument();
+  });
+
+  it('should wait for the config to load before calling feature flags', async () => {
+    const storageFlags = new LocalStorageFeatureFlags();
+    jest.spyOn(storageFlags, 'registerFlag');
+
+    const apis = [
+      createApiFactory({
+        api: featureFlagsApiRef,
+        deps: { configApi: configApiRef },
+        factory() {
+          return storageFlags;
+        },
+      }),
+    ];
+
+    const app = new PrivateAppImpl({
+      apis,
+      defaultApis: [],
+      themes: [
+        {
+          id: 'light',
+          title: 'Light Theme',
+          variant: 'light',
+          theme: lightTheme,
+        },
+      ],
+      icons: defaultAppIcons,
+      plugins: [
+        createPlugin({
+          id: 'test',
+          register: p => p.featureFlags.register('name'),
+        }),
+      ],
+      components,
+      bindRoutes: ({ bind }) => {
+        bind(plugin1.externalRoutes, {
+          extRouteRef1: plugin1RouteRef,
+          extRouteRef2: plugin2RouteRef,
+        });
+      },
+    });
+
+    const Provider = app.getProvider();
+    const Router = app.getRouter();
+
+    await renderWithEffects(
+      <Provider>
+        <Router>
+          <Routes>
+            <ExposedComponent path="/" />
+            <HiddenComponent path="/foo" />
+          </Routes>
+        </Router>
+      </Provider>,
+    );
+
+    expect(storageFlags.registerFlag).toHaveBeenCalledWith({
+      name: 'name',
+      pluginId: 'test',
+    });
   });
 
   it('should throw some error when the route has duplicate params', () => {

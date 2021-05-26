@@ -29,7 +29,7 @@ import { AppConfig } from '@backstage/config';
 import { AppIcons } from './icons';
 
 export type BootErrorPageProps = {
-  step: 'load-config';
+  step: 'load-config' | 'load-chunk';
   error: Error;
 };
 

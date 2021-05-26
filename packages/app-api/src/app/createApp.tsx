@@ -128,7 +128,7 @@ export function createApp(options?: AppOptions) {
   ];
   const configLoader = options?.configLoader ?? defaultConfigLoader;
 
-  const app = new PrivateAppImpl({
+  return new PrivateAppImpl({
     apis,
     icons,
     plugins,
@@ -138,8 +138,4 @@ export function createApp(options?: AppOptions) {
     defaultApis,
     bindRoutes: options?.bindRoutes,
   });
-
-  app.verify();
-
-  return app;
 }

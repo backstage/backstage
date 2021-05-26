@@ -39,8 +39,16 @@ export type Subscription = {
   /**
    * Value indicating whether the subscription is closed.
    */
-  readonly closed: Boolean;
+  readonly closed: boolean;
 };
+
+// Declares the global well-known Symbol.observable
+// We get the actual runtime polyfill from zen-observable
+declare global {
+  interface SymbolConstructor {
+    readonly observable: symbol;
+  }
+}
 
 /**
  * Observable sequence of values and errors, see TC39.
@@ -51,12 +59,14 @@ export type Subscription = {
  * using many different observable implementations, such as zen-observable or RxJS 5.
  */
 export type Observable<T> = {
+  [Symbol.observable](): Observable<T>;
+
   /**
    * Subscribes to this observable to start receiving new values.
    */
   subscribe(observer: Observer<T>): Subscription;
   subscribe(
-    onNext: (value: T) => void,
+    onNext?: (value: T) => void,
     onError?: (error: Error) => void,
     onComplete?: () => void,
   ): Subscription;

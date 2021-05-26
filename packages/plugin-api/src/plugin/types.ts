@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteRef, ExternalRouteRef } from '../routing';
+import { RouteRef, SubRouteRef, ExternalRouteRef } from '../routing';
 import { AnyApiFactory } from '../apis/system';
 
 export type RouteOptions = {
@@ -36,7 +36,7 @@ export type Extension<T> = {
   expose(plugin: BackstagePlugin<any, any>): T;
 };
 
-export type AnyRoutes = { [name: string]: RouteRef<any> };
+export type AnyRoutes = { [name: string]: RouteRef | SubRouteRef };
 
 export type AnyExternalRoutes = { [name: string]: ExternalRouteRef };
 

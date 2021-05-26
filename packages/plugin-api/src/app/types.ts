@@ -19,7 +19,7 @@ import { ProfileInfo } from '../apis/definitions';
 import { IconComponent } from '../icons';
 
 export type BootErrorPageProps = {
-  step: 'load-config';
+  step: 'load-config' | 'load-chunk';
   error: Error;
 };
 

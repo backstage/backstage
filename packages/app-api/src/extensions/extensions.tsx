@@ -21,6 +21,7 @@ import {
   BackstagePlugin,
   RouteRef,
   useRouteRef,
+  useApp,
 } from '@backstage/plugin-api';
 
 type ComponentLoader<T> =
@@ -31,8 +32,11 @@ type ComponentLoader<T> =
       sync: T;
     };
 
+// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+// making it impossible to make the usage of children type safe.
 export function createRoutableExtension<
-  T extends (props: any) => JSX.Element
+  T extends (props: any) => JSX.Element | null
 >(options: {
   component: () => Promise<T>;
   mountPoint: RouteRef;
@@ -41,22 +45,44 @@ export function createRoutableExtension<
   return createReactExtension({
     component: {
       lazy: () =>
-        component().then(InnerComponent => {
-          const RoutableExtensionWrapper = ((props: any) => {
-            // Validate that the routing is wired up correctly in the App.tsx
-            try {
-              useRouteRef(mountPoint);
-            } catch {
-              throw new Error(
-                'Routable extension component was not discovered in the app element tree. ' +
-                  'Routable extension components may not be rendered by other components and must be ' +
-                  'directly available as an element within the App provider component.',
-              );
-            }
-            return <InnerComponent {...props} />;
-          }) as T;
-          return RoutableExtensionWrapper;
-        }),
+        component().then(
+          InnerComponent => {
+            const RoutableExtensionWrapper: any = (props: any) => {
+              // Validate that the routing is wired up correctly in the App.tsx
+              try {
+                useRouteRef(mountPoint);
+              } catch (error) {
+                if (error?.message.startsWith('No path for ')) {
+                  throw new Error(
+                    `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
+                      'Routable extension components may not be rendered by other components and must be ' +
+                      'directly available as an element within the App provider component.',
+                  );
+                }
+                throw error;
+              }
+              return <InnerComponent {...props} />;
+            };
+
+            const componentName =
+              (InnerComponent as { displayName?: string }).displayName ||
+              InnerComponent.name ||
+              'LazyComponent';
+
+            RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
+
+            return RoutableExtensionWrapper as T;
+          },
+          error => {
+            const RoutableExtensionWrapper: any = (_: any) => {
+              const app = useApp();
+              const { BootErrorPage } = app.getComponents();
+
+              return <BootErrorPage step="load-chunk" error={error} />;
+            };
+            return RoutableExtensionWrapper;
+          },
+        ),
     },
     data: {
       'core.mountPoint': mountPoint,
@@ -64,15 +90,21 @@ export function createRoutableExtension<
   });
 }
 
+// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+// making it impossible to make the usage of children type safe.
 export function createComponentExtension<
-  T extends (props: any) => JSX.Element
+  T extends (props: any) => JSX.Element | null
 >(options: { component: ComponentLoader<T> }): Extension<T> {
   const { component } = options;
   return createReactExtension({ component });
 }
 
+// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
+// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
+// making it impossible to make the usage of children type safe.
 export function createReactExtension<
-  T extends (props: any) => JSX.Element
+  T extends (props: any) => JSX.Element | null
 >(options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
