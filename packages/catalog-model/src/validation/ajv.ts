@@ -20,8 +20,9 @@ import entityEnvelopeSchema from '../schema/EntityEnvelope.schema.json';
 import entityMetaSchema from '../schema/EntityMeta.schema.json';
 import commonSchema from '../schema/shared/common.schema.json';
 
-// A local cache of compiled schemas, to avoid duplicate work
-const compiledSchemaCache = new Map<unknown, ValidateFunction<unknown>>();
+// A local cache of compiled schemas, to avoid duplicate work.
+// The keys are JSON stringified versions of the schema
+const compiledSchemaCache = new Map<string, ValidateFunction<unknown>>();
 
 // The core schemas that others can depend on
 const refDependencyCandidates = [
@@ -57,9 +58,10 @@ export function compileAjvSchema(
   options: { disableCache?: boolean } = {},
 ): ValidateFunction<unknown> {
   const disableCache = options?.disableCache ?? false;
+  const cacheKey = disableCache ? '' : JSON.stringify(schema);
 
   if (!disableCache) {
-    const cached = compiledSchemaCache.get(schema);
+    const cached = compiledSchemaCache.get(cacheKey);
     if (cached) {
       return cached;
     }
@@ -77,7 +79,7 @@ export function compileAjvSchema(
   const compiled = ajv.compile(schema);
 
   if (!disableCache) {
-    compiledSchemaCache.set(schema, compiled);
+    compiledSchemaCache.set(cacheKey, compiled);
   }
 
   return compiled;
