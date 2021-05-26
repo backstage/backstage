@@ -14,17 +14,26 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { useDebounce } from 'react-use';
-import { Paper, InputBase, IconButton, makeStyles } from '@material-ui/core';
+import {
+  Theme,
+  Paper,
+  InputBase,
+  InputAdornment,
+  IconButton,
+  makeStyles,
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
+
 import { useSearch } from '../SearchContext';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
+    padding: theme.spacing(0, 0, 0, 1.5),
   },
   input: {
     flex: 1,
@@ -40,36 +49,29 @@ export const SearchBarNext = ({ debounceTime = 0 }: Props) => {
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
 
-  useDebounce(
-    () => {
-      setTerm(value);
-    },
-    debounceTime,
-    [value],
-  );
+  useDebounce(() => setTerm(value), debounceTime, [value]);
 
-  const handleSearch = (event: React.ChangeEvent | React.FormEvent) => {
-    event.preventDefault();
-    setValue((event.target as HTMLInputElement).value as string);
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
   };
 
-  const handleClearSearchBar = () => {
-    setTerm('');
-  };
+  const handleClear = () => setValue('');
 
   return (
-    <Paper component="form" onSubmit={handleSearch} className={classes.root}>
-      <IconButton disabled type="submit" aria-label="search">
-        <SearchIcon />
-      </IconButton>
+    <Paper component="form" className={classes.root}>
       <InputBase
         className={classes.input}
         placeholder="Search in Backstage"
         value={value}
         onChange={handleSearch}
-        inputProps={{ 'aria-label': 'search backstage' }}
+        inputProps={{ 'aria-label': 'Search term' }}
+        startAdornment={
+          <InputAdornment position="start">
+            <SearchIcon />
+          </InputAdornment>
+        }
       />
-      <IconButton aria-label="search" onClick={handleClearSearchBar}>
+      <IconButton aria-label="Clear term" onClick={handleClear}>
         <ClearButton />
       </IconButton>
     </Paper>

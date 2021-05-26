@@ -24,9 +24,7 @@ import { SearchContextProvider } from '../SearchContext';
 
 jest.mock('@backstage/core', () => ({
   ...jest.requireActual('@backstage/core'),
-  useApi: jest.fn().mockReturnValue({
-    _alphaPerformSearch: jest.fn().mockResolvedValue({}),
-  }),
+  useApi: jest.fn().mockReturnValue({}),
 }));
 
 describe('SearchFilterNext', () => {
@@ -43,6 +41,10 @@ describe('SearchFilterNext', () => {
 
   const _alphaPerformSearch = jest.fn().mockResolvedValue({});
   (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
 
   it('Check that element was rendered and received props', async () => {
     const CustomFilter = (props: { name: string }) => <h6>{props.name}</h6>;
