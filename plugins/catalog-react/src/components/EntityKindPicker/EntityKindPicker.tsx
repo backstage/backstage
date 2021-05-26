@@ -39,5 +39,8 @@ export const EntityKindPicker = ({
 
   if (hidden) return null;
 
+  // TODO(timbonicus): This should load available kinds from the catalog-backend, similar to
+  // EntityTypePicker.
+
   return <Alert severity="warning">Kind filter not yet available</Alert>;
 };

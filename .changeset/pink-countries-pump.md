@@ -3,14 +3,22 @@
 '@backstage/plugin-catalog-react': minor
 ---
 
-Reworks how catalog entities are fetched from the `catalog-backend` for the main
-catalog homepage. This enables easier customization of the catalog, and supports
-showing all types of catalog entities rather than just components.
+The default `CatalogPage` has been reworked to be more composable and make
+customization easier. This change only affects those who have replaced the
+default `CatalogPage` with a custom implementation; others can safely ignore the
+rest of this changelog.
 
-This change only affects those that have replaced the default `CatalogPage` with
-a custom implementation.
+If you created a custom `CatalogPage` to **add or remove tabs** from the
+catalog, a custom page is no longer necessary. The fixed tabs have been replaced
+with a `spec.type` dropdown that shows all available `Component` types in the
+catalog.
 
-The `useFilteredEntities` and `useEntityFilterGroups` hooks have been replaced
-with a `useEntityListProvider` hook and wrapping `EntityListProvider` context.
-This handles querying the `catalog-backend` and applying filters that can either
-provide query parameters or a frontend filtering function.
+For other needs, customizing the `CatalogPage` should now be easier. The new
+[CatalogPage.tsx](https://github.com/backstage/backstage/blob/9a4baa74509b6452d7dc054d34cf079f9997166d/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx)
+shows the default implementation. Overriding this with your own, similar
+`CatalogPage` component in your `App.tsx` routing allows you to adjust the
+layout, header, and which filters are available.
+
+See the documentation added on [Catalog
+Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
+for instructions.
