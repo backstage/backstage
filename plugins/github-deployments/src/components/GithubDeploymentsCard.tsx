@@ -35,13 +35,13 @@ import {
 
 const GithubDeploymentsComponent = ({
   projectSlug,
-  lastDeployments,
+  last,
   lastStatuses,
   columns,
   host,
 }: {
   projectSlug: string;
-  lastDeployments: number;
+  last: number;
   lastStatuses: number;
   columns: TableColumn<GithubDeployment>[];
   host: string | undefined;
@@ -55,8 +55,8 @@ const GithubDeploymentsComponent = ({
         host,
         owner,
         repo,
+        last,
         lastStatuses,
-        lastDeployments,
       }),
   );
 
@@ -75,11 +75,11 @@ const GithubDeploymentsComponent = ({
 };
 
 export const GithubDeploymentsCard = ({
-  lastDeployments,
+  last,
   lastStatuses,
   columns,
 }: {
-  lastDeployments?: number;
+  last?: number;
   lastStatuses?: number;
   columns?: TableColumn<GithubDeployment>[];
 }) => {
@@ -96,7 +96,7 @@ export const GithubDeploymentsCard = ({
       projectSlug={
         entity?.metadata.annotations?.[GITHUB_PROJECT_SLUG_ANNOTATION] || ''
       }
-      lastDeployments={lastDeployments || 10}
+      last={last || 10}
       lastStatuses={lastStatuses || 5}
       host={host}
       columns={columns || GithubDeploymentsTable.defaultDeploymentColumns}
