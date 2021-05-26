@@ -49,6 +49,16 @@ export const MissingTeamAnnotation = () => (
   <MissingAnnotationEmptyState annotation={SPLUNK_ON_CALL_TEAM} />
 );
 
+export const InvalidTeamAnnotation = ({ teamName }: { teamName: string }) => (
+  <CardContent>
+    <EmptyState
+      title={`Could not find team named "${teamName}" in the Splunk On-Call API`}
+      missing="info"
+      description={`Escalation Policy and incident information unavailable. Please verify that the team you added "${teamName}" is valid if you want to enable Splunk On-Call.`}
+    />
+  </CardContent>
+);
+
 export const MissingEventsRestEndpoint = () => (
   <CardContent>
     <EmptyState
@@ -81,7 +91,7 @@ export const EntitySplunkOnCallCard = () => {
     setShowDialog(x => !x);
   }, []);
 
-  const { value: users, loading, error } = useAsync(async () => {
+  const { value: usersAndTeam, loading, error } = useAsync(async () => {
     const allUsers = await api.getUsers();
     const usersHashMap = allUsers.reduce(
       (map: Record<string, User>, obj: User) => {
@@ -92,7 +102,9 @@ export const EntitySplunkOnCallCard = () => {
       },
       {},
     );
-    return { usersHashMap, userList: allUsers };
+    const teams = await api.getTeams();
+    const foundTeam = teams.find(teamValue => teamValue.name === team);
+    return { usersHashMap, foundTeam };
   });
 
   if (error instanceof UnauthorizedError) {
@@ -116,6 +128,10 @@ export const EntitySplunkOnCallCard = () => {
       return <MissingTeamAnnotation />;
     }
 
+    if (!usersAndTeam?.foundTeam) {
+      return <InvalidTeamAnnotation teamName={team} />;
+    }
+
     if (!eventsRestEndpoint) {
       return <MissingEventsRestEndpoint />;
     }
@@ -123,8 +139,8 @@ export const EntitySplunkOnCallCard = () => {
     return (
       <>
         <Incidents team={team} refreshIncidents={refreshIncidents} />
-        {users?.usersHashMap && team && (
-          <EscalationPolicy team={team} users={users.usersHashMap} />
+        {usersAndTeam?.usersHashMap && team && (
+          <EscalationPolicy team={team} users={usersAndTeam.usersHashMap} />
         )}
         <TriggerDialog
           team={team}
