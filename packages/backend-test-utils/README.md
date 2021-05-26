@@ -1,4 +1,4 @@
-# @backstage/backend-testing
+# @backstage/backend-test-utils
 
 Test helpers library for Backstage backends.
 
@@ -9,7 +9,7 @@ Add the library as a `devDependency` to your backend package:
 ```sh
 # From the Backstage root directory, go to your backend package, or to a backend plugin
 cd plugins/my-plugin-backend
-yarn add --dev @backstage/backend-testing
+yarn add --dev @backstage/backend-test-utils
 ```
 
 ## Documentation

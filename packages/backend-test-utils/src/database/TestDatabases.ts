@@ -17,66 +17,24 @@
 import { SingleConnectionDatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
-import { GenericContainer, StartedTestContainer } from 'testcontainers';
-import { v4 as uuid } from 'uuid';
-
-type TestDatabaseProperties = {
-  name: string;
-  driver: string;
-  dockerImageName?: string;
-  connectionStringEnvironmentVariableName?: string;
-};
-
-type Instance = {
-  container?: StartedTestContainer;
-  databaseManager: SingleConnectionDatabaseManager;
-  connections: Array<Knex>;
-};
-
-const supportedDatabases = Object.freeze({
-  POSTGRES_13: {
-    name: 'Postgres 13.x',
-    driver: 'pg',
-    dockerImageName: 'postgres:13',
-    connectionStringEnvironmentVariableName:
-      'BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING',
-  },
-  POSTGRES_9: {
-    name: 'Postgres 9.x',
-    driver: 'pg',
-    dockerImageName: 'postgres:9',
-    connectionStringEnvironmentVariableName:
-      'BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING',
-  },
-  MYSQL_8: {
-    name: 'MySQL 8.x',
-    driver: 'mysql2',
-    dockerImageName: 'mysql:8',
-    connectionStringEnvironmentVariableName:
-      'BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING',
-  },
-  SQLITE_3: {
-    name: 'SQLite 3.x',
-    driver: 'sqlite3',
-  },
-} as const);
-
-/**
- * The possible databases to test against.
- */
-export type TestDatabaseId =
-  | 'POSTGRES_13'
-  | 'POSTGRES_9'
-  | 'MYSQL_8'
-  | 'SQLITE_3';
+import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
+import { startMysqlContainer } from './startMysqlContainer';
+import { startPostgresContainer } from './startPostgresContainer';
+import {
+  allDatabases,
+  Instance,
+  TestDatabaseId,
+  TestDatabaseProperties,
+} from './types';
 
 /**
  * Encapsulates the creation of ephemeral test database instances for use
  * inside unit or integration tests.
  */
 export class TestDatabases {
-  private instanceById: Map<string, Instance> = new Map();
-  private lastDatabaseId = 0;
+  private readonly instanceById: Map<string, Instance>;
+  private readonly supportedIds: TestDatabaseId[];
+  private lastDatabaseIndex: number;
 
   /**
    * Creates an empty `TestDatabases` instance, and sets up Jest to clean up
@@ -89,8 +47,43 @@ export class TestDatabases {
    * But initializing a new logical database inside that instance using `init`
    * is very fast.
    */
-  static create() {
-    const databases = new TestDatabases();
+  static create(options?: {
+    ids?: TestDatabaseId[];
+    disableDocker?: boolean;
+  }): TestDatabases {
+    const defaultOptions = {
+      ids: Object.keys(allDatabases) as TestDatabaseId[],
+      disableDocker: isDockerDisabledForTests(),
+    };
+
+    const { ids, disableDocker } = Object.assign(defaultOptions, options ?? {});
+
+    const supportedIds = ids.filter(id => {
+      const properties = allDatabases[id];
+      if (!properties) {
+        return false;
+      }
+      // If the caller has set up the env with an explicit connection string,
+      // we'll assume that this database will work
+      if (
+        properties.connectionStringEnvironmentVariableName &&
+        process.env[properties.connectionStringEnvironmentVariableName]
+      ) {
+        return true;
+      }
+      // If the database doesn't require docker at all, there's nothing to worry
+      // about
+      if (!properties.dockerImageName) {
+        return true;
+      }
+      // If the database requires docker, but docker is disabled, we will fail.
+      if (disableDocker) {
+        return false;
+      }
+      return true;
+    });
+
+    const databases = new TestDatabases(supportedIds);
 
     afterAll(async () => {
       await databases.shutdown();
@@ -99,7 +92,19 @@ export class TestDatabases {
     return databases;
   }
 
-  private constructor() {}
+  private constructor(supportedIds: TestDatabaseId[]) {
+    this.instanceById = new Map();
+    this.supportedIds = supportedIds;
+    this.lastDatabaseIndex = 0;
+  }
+
+  supports(id: TestDatabaseId): boolean {
+    return this.supportedIds.includes(id);
+  }
+
+  eachSupportedId(): [TestDatabaseId][] {
+    return this.supportedIds.map(id => [id]);
+  }
 
   /**
    * Returns a fresh, unique, empty logical database on an instance of the
@@ -109,11 +114,17 @@ export class TestDatabases {
    * @returns A `Knex` connection object
    */
   async init(id: TestDatabaseId): Promise<Knex> {
-    const properties = supportedDatabases[id];
+    const properties = allDatabases[id];
     if (!properties) {
-      const candidates = Object.keys(supportedDatabases).join(', ');
+      const candidates = Object.keys(allDatabases).join(', ');
       throw new Error(
-        `Unsupported test database ${id}, possible values are ${candidates}`,
+        `Unknown test database ${id}, possible values are ${candidates}`,
+      );
+    }
+    if (!this.supportedIds.includes(id)) {
+      const candidates = this.supportedIds.join(', ');
+      throw new Error(
+        `Unsupported test database ${id} for this environment, possible values are ${candidates}`,
       );
     }
 
@@ -127,7 +138,7 @@ export class TestDatabases {
 
     // Ensure that a unique logical database is created in the instance
     const connection = await instance.databaseManager
-      .forPlugin(String(this.lastDatabaseId++))
+      .forPlugin(String(this.lastDatabaseIndex++))
       .getClient();
 
     instance.connections.push(connection);
@@ -176,32 +187,23 @@ export class TestDatabases {
   private async initPostgres(
     properties: TestDatabaseProperties,
   ): Promise<Instance> {
-    const password = uuid();
-
-    const container = await new GenericContainer(properties.dockerImageName!)
-      .withExposedPorts(5432)
-      .withEnv('POSTGRES_PASSWORD', password)
-      .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
-      .start();
+    const { host, port, user, password, stop } = await startPostgresContainer(
+      properties.dockerImageName!,
+    );
 
     const databaseManager = SingleConnectionDatabaseManager.fromConfig(
       new ConfigReader({
         backend: {
           database: {
             client: 'pg',
-            connection: {
-              host: container.getHost(),
-              port: container.getMappedPort(5432),
-              user: 'postgres',
-              password,
-            },
+            connection: { host, port, user, password },
           },
         },
       }),
     );
 
     return {
-      container,
+      stopContainer: stop,
       databaseManager,
       connections: [],
     };
@@ -210,32 +212,23 @@ export class TestDatabases {
   private async initMysql(
     properties: TestDatabaseProperties,
   ): Promise<Instance> {
-    const password = uuid();
-
-    const container = await new GenericContainer(properties.dockerImageName!)
-      .withExposedPorts(3306)
-      .withEnv('MYSQL_ROOT_PASSWORD', password)
-      .withTmpFs({ '/var/lib/mysql': 'rw' })
-      .start();
+    const { host, port, user, password, stop } = await startMysqlContainer(
+      properties.dockerImageName!,
+    );
 
     const databaseManager = SingleConnectionDatabaseManager.fromConfig(
       new ConfigReader({
         backend: {
           database: {
             client: 'mysql2',
-            connection: {
-              host: container.getHost(),
-              port: container.getMappedPort(3306),
-              user: 'root',
-              password,
-            },
+            connection: { host, port, user, password },
           },
         },
       }),
     );
 
     return {
-      container,
+      stopContainer: stop,
       databaseManager,
       connections: [],
     };
@@ -262,17 +255,20 @@ export class TestDatabases {
   }
 
   private async shutdown() {
-    for (const { container, connections } of this.instanceById.values()) {
-      try {
-        await Promise.all(connections.map(c => c.destroy()));
-      } catch {
-        // ignore
-      }
-      try {
-        await container?.stop({ timeout: 10_000 });
-      } catch {
-        // ignore
-      }
-    }
+    const instances = [...this.instanceById.values()];
+    await Promise.all(
+      instances.map(async ({ stopContainer, connections }) => {
+        try {
+          await Promise.all(connections.map(c => c.destroy()));
+        } catch {
+          // ignore
+        }
+        try {
+          await stopContainer?.();
+        } catch {
+          // ignore
+        }
+      }),
+    );
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/backend-testing",
+  "name": "@backstage/backend-test-utils",
   "description": "Test helpers library for Backstage backends",
   "version": "0.1.1",
   "main": "src/index.ts",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/backend-testing"
+    "directory": "packages/backend-test-utils"
   },
   "keywords": [
     "backstage",

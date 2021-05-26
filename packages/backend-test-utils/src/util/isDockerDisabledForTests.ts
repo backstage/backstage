@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export * from './database';
+export function isDockerDisabledForTests() {
+  return Boolean(process.env.BACKSTAGE_TEST_DISABLE_DOCKER);
+}
