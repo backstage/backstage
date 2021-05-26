@@ -93,7 +93,7 @@ describe('<EntityTypePicker/>', () => {
     );
     expect(rendered.getByText('Type')).toBeInTheDocument();
 
-    const input = await rendered.getByTestId('select');
+    const input = rendered.getByTestId('select');
     fireEvent.click(input);
 
     await waitFor(() => rendered.getByText('Service'));
@@ -119,7 +119,7 @@ describe('<EntityTypePicker/>', () => {
         </MockEntityListContextProvider>
       </ApiProvider>,
     );
-    const input = await rendered.getByTestId('select');
+    const input = rendered.getByTestId('select');
     fireEvent.click(input);
 
     await waitFor(() => rendered.getByText('Service'));

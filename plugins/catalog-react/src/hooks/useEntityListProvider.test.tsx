@@ -127,7 +127,9 @@ describe('<EntityListProvider/>', () => {
     const { result, waitFor } = renderHook(() => useEntityListProvider(), {
       wrapper,
       initialProps: {
-        initialFilters: { user: new UserListFilter('owned') },
+        initialFilters: {
+          user: new UserListFilter('owned', mockUser, () => true),
+        },
       },
     });
     await waitFor(() => !!result.current.entities.length);
@@ -147,7 +149,9 @@ describe('<EntityListProvider/>', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
 
     act(() =>
-      result.current.updateFilters({ user: new UserListFilter('owned') }),
+      result.current.updateFilters({
+        user: new UserListFilter('owned', mockUser, () => true),
+      }),
     );
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(result.current.entities.length).toBe(1);

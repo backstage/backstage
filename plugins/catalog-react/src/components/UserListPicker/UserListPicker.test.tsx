@@ -16,7 +16,11 @@
 
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
-import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { UserListPicker } from './UserListPicker';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import {
@@ -24,90 +28,110 @@ import {
   ApiRegistry,
   ConfigApi,
   configApiRef,
-} from '@backstage/core-api';
-import { EntityTagFilter, FilterEnvironment } from '../../types';
+  IdentityApi,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core';
+import { EntityTagFilter } from '../../types';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '../../api';
+import { MockStorageApi } from '@backstage/test-utils';
 
-const apis = ApiRegistry.from([
-  [
-    configApiRef,
-    ({
-      getOptionalString: jest.fn(
-        (key: string) =>
-          ({
-            'organization.name': 'Test Company',
-          }[key]),
-      ),
-    } as unknown) as ConfigApi,
-  ],
-]);
-
-const filterEnv: FilterEnvironment = {
-  user: {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind: 'User',
-    metadata: {
-      namespace: 'default',
-      name: 'testUser',
-    },
-    spec: {
-      memberOf: [],
-    },
+const mockUser: UserEntity = {
+  apiVersion: 'backstage.io/v1alpha1',
+  kind: 'User',
+  metadata: {
+    namespace: 'default',
+    name: 'testUser',
   },
-  isStarredEntity: (entity: Entity) => entity.metadata.name === 'component-3',
+  spec: {
+    memberOf: [],
+  },
 };
 
-describe('<UserListPicker />', () => {
-  const backendEntities: Entity[] = [
-    {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        namespace: 'namespace-1',
-        name: 'component-1',
-        tags: ['tag1'],
-      },
-      relations: [
-        {
-          type: RELATION_OWNED_BY,
-          target: { kind: 'User', namespace: 'default', name: 'testUser' },
-        },
-      ],
-    },
-    {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        namespace: 'namespace-2',
-        name: 'component-2',
-        tags: ['tag1'],
-      },
-    },
-    {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        namespace: 'namespace-2',
-        name: 'component-3',
-        tags: [],
-      },
-    },
-    {
-      apiVersion: '1',
-      kind: 'Component',
-      metadata: {
-        namespace: 'namespace-2',
-        name: 'component-4',
-        tags: [],
-      },
-      relations: [
-        {
-          type: RELATION_OWNED_BY,
-          target: { kind: 'User', namespace: 'default', name: 'testUser' },
-        },
-      ],
-    },
-  ];
+const mockConfigApi = {
+  getOptionalString: () => 'Test Company',
+} as Partial<ConfigApi>;
 
+const mockCatalogApi = {
+  getEntityByName: () => Promise.resolve(mockUser),
+} as Partial<CatalogApi>;
+
+const mockIdentityApi = {
+  getUserId: () => '',
+} as Partial<IdentityApi>;
+
+const apis = ApiRegistry.from([
+  [configApiRef, mockConfigApi],
+  [catalogApiRef, mockCatalogApi],
+  [identityApiRef, mockIdentityApi],
+  [storageApiRef, MockStorageApi.create()],
+]);
+
+jest.mock('../../hooks', () => {
+  const actual = jest.requireActual('../../hooks');
+  return {
+    ...actual,
+    useOwnUser: () => ({ value: mockUser }),
+    useStarredEntities: () => ({
+      isStarredEntity: (entity: Entity) =>
+        entity.metadata.name === 'component-3',
+    }),
+  };
+});
+
+const backendEntities: Entity[] = [
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      namespace: 'namespace-1',
+      name: 'component-1',
+      tags: ['tag1'],
+    },
+    relations: [
+      {
+        type: RELATION_OWNED_BY,
+        target: { kind: 'User', namespace: 'default', name: 'testUser' },
+      },
+    ],
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      namespace: 'namespace-2',
+      name: 'component-2',
+      tags: ['tag1'],
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      namespace: 'namespace-2',
+      name: 'component-3',
+      tags: [],
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      namespace: 'namespace-2',
+      name: 'component-4',
+      tags: [],
+    },
+    relations: [
+      {
+        type: RELATION_OWNED_BY,
+        target: { kind: 'User', namespace: 'default', name: 'testUser' },
+      },
+    ],
+  },
+];
+
+describe('<UserListPicker />', () => {
   it('renders filter groups', () => {
     const { queryByText } = render(
       <ApiProvider apis={apis}>
@@ -138,7 +162,7 @@ describe('<UserListPicker />', () => {
   it('includes counts alongside each filter', () => {
     const { getAllByRole } = render(
       <ApiProvider apis={apis}>
-        <MockEntityListContextProvider value={{ backendEntities, filterEnv }}>
+        <MockEntityListContextProvider value={{ backendEntities }}>
           <UserListPicker />
         </MockEntityListContextProvider>
       </ApiProvider>,
@@ -160,7 +184,6 @@ describe('<UserListPicker />', () => {
           value={{
             backendEntities,
             filters: { tags: new EntityTagFilter(['tag1']) },
-            filterEnv,
           }}
         >
           <UserListPicker />

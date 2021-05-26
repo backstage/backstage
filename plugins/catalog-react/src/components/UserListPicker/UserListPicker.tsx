@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { compact } from 'lodash';
 import { configApiRef, IconComponent, useApi } from '@backstage/core';
 import { UserListFilter, UserListFilterKind } from '../../types';
-import { useEntityListProvider } from '../../hooks';
+import {
+  useEntityListProvider,
+  useOwnUser,
+  useStarredEntities,
+} from '../../hooks';
 import {
   Card,
   List,
@@ -96,22 +100,26 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-// Static filters; only used for generating counts of potentially unselected kinds
-const ownedFilter = new UserListFilter('owned');
-const starredFilter = new UserListFilter('starred');
-
 export const UserListPicker = () => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
   const filterGroups = getFilterGroups(orgName);
 
-  const {
-    filters,
-    updateFilters,
-    backendEntities,
-    filterEnv,
-  } = useEntityListProvider();
+  const { value: user } = useOwnUser();
+  const { isStarredEntity } = useStarredEntities();
+
+  // Static filters; used for generating counts of potentially unselected kinds
+  const ownedFilter = useMemo(
+    () => new UserListFilter('owned', user, isStarredEntity),
+    [user, isStarredEntity],
+  );
+  const starredFilter = useMemo(
+    () => new UserListFilter('starred', user, isStarredEntity),
+    [user, isStarredEntity],
+  );
+
+  const { filters, updateFilters, backendEntities } = useEntityListProvider();
 
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
@@ -121,23 +129,22 @@ export const UserListPicker = () => {
   useEffect(() => {
     const filterFn = reduceEntityFilters(
       compact(Object.values({ ...filters, user: undefined })),
-      filterEnv,
     );
     setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
-  }, [filters, backendEntities, filterEnv]);
+  }, [filters, backendEntities]);
   function setSelectedFilter({ id }: { id: UserListFilterKind }) {
-    updateFilters({ user: new UserListFilter(id) });
+    updateFilters({ user: new UserListFilter(id, user, isStarredEntity) });
   }
 
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
       case 'owned':
         return entitiesWithoutUserFilter.filter(entity =>
-          ownedFilter.filterEntity(entity, filterEnv),
+          ownedFilter.filterEntity(entity),
         ).length;
       case 'starred':
         return entitiesWithoutUserFilter.filter(entity =>
-          starredFilter.filterEntity(entity, filterEnv),
+          starredFilter.filterEntity(entity),
         ).length;
       default:
         return entitiesWithoutUserFilter.length;

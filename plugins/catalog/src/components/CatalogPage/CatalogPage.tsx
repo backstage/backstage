@@ -29,9 +29,11 @@ import {
   EntityListProvider,
   EntityTagPicker,
   EntityTypePicker,
+  useOwnUser,
   UserListFilter,
   UserListFilterKind,
   UserListPicker,
+  useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 
 import { createComponentRouteRef } from '../../routes';
@@ -62,9 +64,11 @@ export const CatalogPage = ({
 }: CatalogPageProps) => {
   const styles = useStyles();
   const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { value: user } = useOwnUser();
+  const { isStarredEntity } = useStarredEntities();
   const initialFilters = {
     kind: new EntityKindFilter('component'),
-    user: new UserListFilter(initiallySelectedFilter),
+    user: new UserListFilter(initiallySelectedFilter, user, isStarredEntity),
   };
 
   return (

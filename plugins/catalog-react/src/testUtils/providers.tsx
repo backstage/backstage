@@ -29,10 +29,6 @@ export const MockEntityListContextProvider = ({
     backendEntities: [],
     updateFilters: jest.fn(),
     filters: {},
-    filterEnv: {
-      user: undefined,
-      isStarredEntity: () => false,
-    },
     loading: false,
   };
 

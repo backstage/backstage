@@ -72,7 +72,9 @@ describe('CatalogTable component', () => {
       <MockEntityListContextProvider
         value={{
           entities,
-          filters: { user: new UserListFilter('owned') },
+          filters: {
+            user: new UserListFilter('owned', undefined, () => false),
+          },
         }}
       >
         <CatalogTable />

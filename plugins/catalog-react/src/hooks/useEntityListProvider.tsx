@@ -20,7 +20,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
@@ -33,11 +32,8 @@ import {
   EntityKindFilter,
   EntityTagFilter,
   EntityTypeFilter,
-  FilterEnvironment,
   UserListFilter,
 } from '../types';
-import { useOwnUser } from './useOwnUser';
-import { useStarredEntities } from './useStarredEntities';
 import { compact, isEqual } from 'lodash';
 
 export type DefaultEntityFilters = {
@@ -55,12 +51,6 @@ export type EntityListContextProps<
    * of that default (to add custom filter types).
    */
   filters: EntityFilters;
-
-  /**
-   * The filter environment passed to frontend filters; contains information available in the React
-   * tree.
-   */
-  filterEnv: FilterEnvironment;
 
   /**
    * The resolved list of catalog entities, after all filters are applied.
@@ -101,8 +91,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   children,
 }: PropsWithChildren<EntityListProviderProps<EntityFilters>>) => {
   const catalogApi = useApi(catalogApiRef);
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
 
   // TODO(timbonicus): is it possible to register initial filters from query params? e.g. if the
   // query key matches the generic definition, call a constructor with the value
@@ -112,14 +100,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
 
   const [entities, setEntities] = useState<Entity[]>([]);
   const [backendEntities, setBackendEntities] = useState<Entity[]>([]);
-
-  const filterEnv: FilterEnvironment = useMemo(
-    () => ({
-      user,
-      isStarredEntity,
-    }),
-    [user, isStarredEntity],
-  );
 
   // Store resolved catalog-backend filters and deep compare on filter updates, to avoid refetching
   // when only frontend filters change
@@ -153,10 +133,10 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
   // Apply frontend filters
   useEffect(() => {
     const resolvedEntities = (backendEntities ?? []).filter(
-      reduceEntityFilters(compact(Object.values(filters)), filterEnv),
+      reduceEntityFilters(compact(Object.values(filters))),
     );
     setEntities(resolvedEntities);
-  }, [backendEntities, filterEnv, filters]);
+  }, [backendEntities, filters]);
 
   const updateFilters = useCallback(
     (
@@ -177,7 +157,6 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
     <EntityListContext.Provider
       value={{
         filters,
-        filterEnv,
         entities,
         backendEntities,
         updateFilters,
