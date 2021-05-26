@@ -111,7 +111,7 @@
     "url-loader": "^4.1.0",
     "webpack": "^4.41.6",
     "webpack-dev-server": "3.11.0",
-    "webpack-node-externals": "^2.5.0",
+    "webpack-node-externals": "^3.0.0",
     "yaml": "^1.10.0",
     "yaml-jest": "^1.0.5",
     "yml-loader": "^2.1.0",
