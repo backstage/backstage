@@ -154,7 +154,6 @@ nav:
           - Backend: 'api/backend.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
-      - Monorepo App Setup With Authentication: 'tutorials/quickstart-app-auth.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
   - Architecture Decision Records (ADRs):

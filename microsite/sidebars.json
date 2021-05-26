@@ -239,7 +239,6 @@
     ],
     "Tutorials": [
       "tutorials/journey",
-      "tutorials/quickstart-app-auth",
       "tutorials/quickstart-app-plugin",
       "tutorials/switching-sqlite-postgres"
     ],
