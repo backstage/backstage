@@ -89,7 +89,7 @@ export const SingleSignInPage = ({
 
   const [autoShowPopup, setAutoShowPopup] = useState<boolean>(auto ?? false);
   // Defaults to true so that an initial check for existing user session is made
-  const [retry, setRetry] = useState<{} | boolean | undefined>(true);
+  const [retry, setRetry] = useState<{} | boolean | undefined>(undefined);
   const [error, setError] = useState<Error>();
 
   // The SignIn component takes some time to decide whether the user is logged-in or not.
@@ -110,6 +110,7 @@ export const SingleSignInPage = ({
         if (!identity && autoShowPopup) {
           // Unless auto is set to true, this step should not happen.
           // When user intentionally clicks the Sign In button, autoShowPopup is set to true
+          setShowLoginPage(true);
           identity = await authApi.getBackstageIdentity({
             instantPopup: true,
           });
@@ -138,9 +139,7 @@ export const SingleSignInPage = ({
       }
     };
 
-    if (retry) {
-      login();
-    }
+    login();
   }, [onResult, authApi, retry, autoShowPopup]);
 
   return showLoginPage ? (
