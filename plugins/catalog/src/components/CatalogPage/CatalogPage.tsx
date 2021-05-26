@@ -15,31 +15,26 @@
  */
 
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Button, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import {
   Content,
   ContentHeader,
   SupportButton,
   TableColumn,
-  useRouteRef,
 } from '@backstage/core';
 import {
   EntityKindFilter,
   EntityListProvider,
   EntityTagPicker,
   EntityTypePicker,
-  useOwnUser,
-  UserListFilter,
   UserListFilterKind,
   UserListPicker,
-  useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 
-import { createComponentRouteRef } from '../../routes';
 import { CatalogTable } from '../CatalogTable';
 import { EntityRow } from '../CatalogTable/types';
 import CatalogLayout from './CatalogLayout';
+import { CreateComponentButton } from '../CreateComponentButton';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -63,35 +58,22 @@ export const CatalogPage = ({
   columns,
 }: CatalogPageProps) => {
   const styles = useStyles();
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-  const { value: user } = useOwnUser();
-  const { isStarredEntity } = useStarredEntities();
   const initialFilters = {
     kind: new EntityKindFilter('component'),
-    user: new UserListFilter(initiallySelectedFilter, user, isStarredEntity),
   };
 
   return (
     <CatalogLayout>
       <Content>
         <ContentHeader title="Components">
-          {createComponentLink && (
-            <Button
-              component={RouterLink}
-              variant="contained"
-              color="primary"
-              to={createComponentLink()}
-            >
-              Create Component
-            </Button>
-          )}
+          <CreateComponentButton />
           <SupportButton>All your software catalog entities</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <EntityListProvider initialFilters={initialFilters}>
             <div>
               <EntityTypePicker />
-              <UserListPicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
               <EntityTagPicker />
             </div>
             <CatalogTable columns={columns} />

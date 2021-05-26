@@ -100,7 +100,11 @@ function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
   ];
 }
 
-export const UserListPicker = () => {
+type UserListPickerProps = {
+  initialFilter?: UserListFilterKind;
+};
+
+export const UserListPicker = ({ initialFilter }: UserListPickerProps) => {
   const classes = useStyles();
   const configApi = useApi(configApiRef);
   const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
@@ -108,6 +112,7 @@ export const UserListPicker = () => {
 
   const { value: user } = useOwnUser();
   const { isStarredEntity } = useStarredEntities();
+  const [selectedUserFilter, setSelectedUserFilter] = useState(initialFilter);
 
   // Static filters; used for generating counts of potentially unselected kinds
   const ownedFilter = useMemo(
@@ -121,6 +126,14 @@ export const UserListPicker = () => {
 
   const { filters, updateFilters, backendEntities } = useEntityListProvider();
 
+  useEffect(() => {
+    updateFilters({
+      user: selectedUserFilter
+        ? new UserListFilter(selectedUserFilter, user, isStarredEntity)
+        : undefined,
+    });
+  }, [selectedUserFilter, user, isStarredEntity, updateFilters]);
+
   // To show proper counts for each section, apply all other frontend filters _except_ the user
   // filter that's controlled by this picker.
   const [entitiesWithoutUserFilter, setEntitiesWithoutUserFilter] = useState(
@@ -132,9 +145,6 @@ export const UserListPicker = () => {
     );
     setEntitiesWithoutUserFilter(backendEntities.filter(filterFn));
   }, [filters, backendEntities]);
-  function setSelectedFilter({ id }: { id: UserListFilterKind }) {
-    updateFilters({ user: new UserListFilter(id, user, isStarredEntity) });
-  }
 
   function getFilterCount(id: UserListFilterKind) {
     switch (id) {
@@ -165,7 +175,7 @@ export const UserListPicker = () => {
                   key={item.id}
                   button
                   divider
-                  onClick={() => setSelectedFilter(item)}
+                  onClick={() => setSelectedUserFilter(item.id)}
                   selected={item.id === filters.user?.value}
                   className={classes.menuItem}
                 >

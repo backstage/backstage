@@ -159,7 +159,7 @@ export const CatalogTable = ({ columns }: CatalogTableProps) => {
         padding: 'dense',
         pageSizeOptions: [20, 50, 100],
       }}
-      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
+      title={`${titlePreamble} (${entities.length})`}
       data={rows}
       actions={actions}
     />
