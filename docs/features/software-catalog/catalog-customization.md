@@ -13,6 +13,12 @@ If you want to change the default index page - such as to add a custom filter to
 the catalog - you can replace the routing in `App.tsx` to point to your own
 `CatalogIndexPage`.
 
+> Note: The catalog index page is designed to have a minimal code footprint to
+> support easy customization, but creating a copy does introduce a possibility
+> of drifting out of date over time. Be sure to check the catalog
+> [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md)
+> periodically.
+
 For example, suppose that I want to allow filtering by a custom annotation added
 to entities, `company.com/itgc-enabled`. To start, I'll copy the code for the
 default catalog page, either in a new plugin or just in the `app` package:
