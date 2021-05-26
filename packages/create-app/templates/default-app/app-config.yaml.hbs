@@ -34,6 +34,8 @@ backend:
         #ca: # if you have a CA file and want to verify it you can uncomment this section
         #  $file: <file-path>/ca/server.crt
   {{/if}}
+  cache:
+    store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
@@ -62,7 +64,7 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
-  # see https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers
+  # see https://backstage.io/docs/auth/ to learn about auth providers
   providers: {}
 
 scaffolder:

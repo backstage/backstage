@@ -66,11 +66,12 @@ export function createStatusColumn(): TableColumn<GithubDeployment> {
 export function createCommitColumn(): TableColumn<GithubDeployment> {
   return {
     title: 'Commit',
-    render: (row: GithubDeployment): JSX.Element => (
-      <Link to={row.commit.commitUrl} target="_blank" rel="noopener">
-        {row.commit.abbreviatedOid}
-      </Link>
-    ),
+    render: (row: GithubDeployment) =>
+      row.commit && (
+        <Link to={row.commit.commitUrl} target="_blank" rel="noopener">
+          {row.commit.abbreviatedOid}
+        </Link>
+      ),
   };
 }
 

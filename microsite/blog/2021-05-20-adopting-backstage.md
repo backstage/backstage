@@ -72,7 +72,7 @@ Within today’s complex development environments, there are barriers both big a
 
 After talking with companies who have already adopted Backstage, we’ve seen a few common strategies for getting started. The different strategies are based on the size of your engineering org (which often also corresponds with how fast you’re growing).
 
-![200 engineers](assets/21-05-20/200-engineers.png)
+![200 engineers](assets/21-05-20/200-engineers_v.2.png)
 <br>
 
 ### My org has ~200 engineers (and is growing fast)
@@ -93,7 +93,7 @@ You’re big enough to start feeling the pain, and only getting bigger. Onboardi
 - At this size, you might not have a dedicated platform/infra team in place yet, but Backstage can provide the framework for centralizing and sharing knowledge — from managing compliance requirements to finding the right API documentation.
 - This allows both new and old engineers to collaborate more efficiently, easily discover best practices, and cuts down on duplicated work (e.g., a new team doesn’t end up rebuilding a database that already exists but nobody can find).
 
-![1,000 engineers](assets/21-05-20/1000-engineers.png)
+![1,000 engineers](assets/21-05-20/1000-engineers_v.2.png)
 
 ### My org has ~1,000 engineers
 
@@ -112,7 +112,7 @@ You’re officially big. Lots and lots of teams are managing lots and lots of so
 - The service catalog also helps your developers visualize your existing software ecosystem, beyond the software they own. And with Backstage Software Templates, every new software component is already added to the catalog.
 - Even at this scale, a small platform team should be all it takes to build and maintain your own version of Backstage. At Spotify, we have a 4-person team responsible for our internal version of Backstage, which is used by all of Spotify’s 1,600+ developers.
 
-![More than 1,000 engineers](assets/21-05-20/1000-plus-engineers.png)
+![More than 1,000 engineers](assets/21-05-20/1000-plus-engineers_v.2.png)
 
 ### My org has 1,000+ engineers
 
