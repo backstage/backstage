@@ -2093,7 +2093,7 @@
   dependencies:
     yaml-ast-parser "0.0.43"
 
-"@gitbeaker/core@^28.0.2", "@gitbeaker/core@^28.2.0":
+"@gitbeaker/core@^28.0.2":
   version "28.2.0"
   resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-28.2.0.tgz#87e6f789faf55d726f75d05e470020e4bbb8e08c"
   integrity sha512-GfXknRVtdDPqt0WfxILbR4AOb/yPyBC9jDtPSh1+B8JB5HP+ursA70RJnGKFfP/aOHyikJE1MH/sdA7QBbRAKg==
@@ -2103,20 +2103,39 @@
     li "^1.3.0"
     xcase "^2.0.1"
 
-"@gitbeaker/node@^28.0.2":
-  version "28.2.0"
-  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-28.2.0.tgz#7c18630af5d0bcdf6e8d986f7c6265c3068bc9b3"
-  integrity sha512-rtaXEEwL2aX33FDD427gj+KHinJJoVvaii44R9QyleqvoHLqUx3UUGUkFpbbLpL/lVg4t4pjze7dkRjvig1EMQ==
+"@gitbeaker/core@^29.2.0":
+  version "29.2.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/core/-/core-29.2.0.tgz#d1ad60e47e03fe9dcc05ce73099cbd506865ec77"
+  integrity sha512-VvJMzAquoOAjHX/MGfFuXJkWtxOlDeY7Q18gHYQRL6ON9a1+L8aYRIzoCAWCemAKuMdP1lAU/29Aw7ehfwJAsg==
   dependencies:
-    "@gitbeaker/core" "^28.2.0"
-    "@gitbeaker/requester-utils" "^28.2.0"
-    got "^11.7.0"
+    "@gitbeaker/requester-utils" "^29.2.0"
+    form-data "^4.0.0"
+    li "^1.3.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/node@^29.2.0":
+  version "29.2.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/node/-/node-29.2.0.tgz#62e32df1f404b87c70bb8b8bda77f8ac5ea4cfcb"
+  integrity sha512-WnFJs5aCUfBZEOUa2tbzq4Swh8KGyy7IlNn3KVsRpSi+IIkzGNIjJW585GOqT1nUxYN8mNZil5Q3TjQyhaRisA==
+  dependencies:
+    "@gitbeaker/core" "^29.2.0"
+    "@gitbeaker/requester-utils" "^29.2.0"
+    got "^11.8.2"
     xcase "^2.0.1"
 
 "@gitbeaker/requester-utils@^28.2.0":
   version "28.2.0"
   resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-28.2.0.tgz#c3e1dd5adeddee51ec428bfeb12541efc63696eb"
   integrity sha512-J6NO6DWrii/fczwu4ZnFPAXwa0REgXEC4a5QFseLixrJP8t2apf1THR9Q+J+2oGnIzCqogLT8YzliGoTAbCGng==
+  dependencies:
+    form-data "^4.0.0"
+    query-string "^7.0.0"
+    xcase "^2.0.1"
+
+"@gitbeaker/requester-utils@^29.2.0":
+  version "29.2.0"
+  resolved "https://registry.npmjs.org/@gitbeaker/requester-utils/-/requester-utils-29.2.0.tgz#8b69da14dcf4c719e4a476167fcc47173ba44460"
+  integrity sha512-B/xrNmcgCVFUPAA6EjGZ39o//VAVUCaI15tDRl3LCx0hLxce2JOAZNaKKlTqe+4F6xNYIkcuRl28IQS9BPcaAg==
   dependencies:
     form-data "^4.0.0"
     query-string "^7.0.0"
@@ -14349,7 +14368,7 @@ google-p12-pem@^3.0.3:
   dependencies:
     node-forge "^0.10.0"
 
-got@^11.5.2, got@^11.7.0, got@^11.8.0:
+got@^11.5.2, got@^11.8.0, got@^11.8.2:
   version "11.8.2"
   resolved "https://registry.npmjs.org/got/-/got-11.8.2.tgz#7abb3959ea28c31f3576f1576c1effce23f33599"
   integrity sha512-D0QywKgIe30ODs+fm8wMZiAcZjypcCodPNuMz5H9Mny7RJ+IjJ10BdmGW7OM7fHXP+O7r6ZwapQ/YQmMSvB0UQ==
