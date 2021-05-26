@@ -222,7 +222,7 @@ You can see it in the above full example which is a separate step and it looks a
 little like this:
 
 ```yaml
-   - title: Choose a location
+    - title: Choose a location
       required:
         - repoUrl
       properties:
