@@ -57,11 +57,11 @@ If Backstage is configured to use GitHub Apps authentication you must grant
 `Read-Only` access for `Members` under `Organization` in order to ingest users
 correctly. You can modify the app's permissions under the organization settings,
 `https://github.com/organizations/{ORG}/settings/apps/{APP_NAME}/permissions`.
-![permissions](./permissions.png)
+![permissions](../../assets/integrations/github/permissions.png)
 
 **Please note that when you change permissions, the app owner will get an email
 that must be approved first before the changes are applied.**
-![email](./email.png)
+![email](../../assets/integrations/github/email.png)
 
 Locations point out the specific org(s) you want to import. The `type` of these
 locations must be `github-org`, and the `target` must point to the exact URL of
