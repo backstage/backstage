@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import React from 'react';
 import { EmptyState, Progress } from '@backstage/core';
 import { SearchResult } from '@backstage/search-common';
 import { Alert } from '@material-ui/lab';
-import React from 'react';
 
 import { useSearch } from '../SearchContext';
 
-type ChildrenArguments = {
-  results: SearchResult[];
+type Props = {
+  children: (results: { results: SearchResult[] }) => JSX.Element;
 };
 
-export const SearchResultNext = ({
-  children,
-}: {
-  children: (results: ChildrenArguments) => JSX.Element;
-}) => {
+export const SearchResultNext = ({ children }: Props) => {
   const {
     result: { loading, error, value },
   } = useSearch();

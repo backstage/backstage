@@ -16,9 +16,14 @@
 
 import React from 'react';
 import { Link } from '@backstage/core';
+import { IndexableDocument } from '@backstage/search-common';
 import { ListItem, ListItemText, Divider } from '@material-ui/core';
 
-export const DefaultResultListItem = ({ result }: any) => {
+type Props = {
+  result: IndexableDocument;
+};
+
+export const DefaultResultListItem = ({ result }: Props) => {
   return (
     <Link to={result.location}>
       <ListItem alignItems="flex-start">
