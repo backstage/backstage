@@ -101,9 +101,10 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
       });
     }
 
-    // TODO: move final_entities to use entity_Ref
+    // TODO: move final_entities to use entity_ref
     entitiesQuery = entitiesQuery
       .select('final_entities.*')
+      .whereNotNull('final_entities.final_entity')
       .orderBy('entity_id', 'asc');
 
     const { limit, offset } = parsePagination(request?.pagination);
@@ -131,7 +132,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
     }
 
     return {
-      entities: rows.map(e => JSON.parse(e.final_entity)),
+      entities: rows.map(e => JSON.parse(e.final_entity!)),
       pageInfo,
     };
   }
