@@ -60,7 +60,6 @@ export class Stitcher {
 
   async stitch(entityRefs: Set<string>) {
     for (const entityRef of entityRefs) {
-      const endTimer = createTimer('stitch');
       try {
         const ticket = uuid();
         const ticketRows = await this.database<DbFinalEntitiesRow>(
@@ -236,7 +235,6 @@ export class Stitcher {
           .where({ entity_id: entityId })
           .delete();
         await this.database.batchInsert('search', searchEntries, BATCH_SIZE);
-        endTimer();
       } catch (error) {
         this.logger.error(`Failed to stitch ${entityRef}, ${error}`);
       }
