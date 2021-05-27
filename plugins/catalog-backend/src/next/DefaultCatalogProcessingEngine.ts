@@ -110,6 +110,7 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       return;
     }
 
+    // TODO: replace Promise.all with something more sophisticated for parallel processing.
     await Promise.all(
       items.map(async item => {
         const { id, state, unprocessedEntity } = item;

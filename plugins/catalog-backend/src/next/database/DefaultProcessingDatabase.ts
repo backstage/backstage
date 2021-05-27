@@ -32,7 +32,6 @@ import type { Logger } from 'winston';
 
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/config';
-import { DbFinalEntitiesRow } from '../Stitcher';
 
 export type DbRefreshStateRow = {
   entity_id: string;
@@ -122,15 +121,6 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.deduplicateRelations(relationRows),
       BATCH_SIZE,
     );
-
-    await tx<DbFinalEntitiesRow>('final_entities')
-      .insert({
-        entity_id: id,
-        hash: '',
-        stitch_ticket: '',
-      })
-      .onConflict('entity_id')
-      .ignore();
   }
 
   async updateProcessedEntityErrors(

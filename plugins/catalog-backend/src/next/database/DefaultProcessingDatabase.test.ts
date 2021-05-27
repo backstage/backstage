@@ -27,7 +27,6 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import * as uuid from 'uuid';
 import { getVoidLogger } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/config';
-import { DbFinalEntitiesRow } from '../Stitcher';
 
 describe('Default Processing Database', () => {
   let db: Knex;
@@ -116,10 +115,6 @@ describe('Default Processing Database', () => {
       );
       expect(entities[0].cache).toEqual(JSON.stringify(state));
       expect(entities[0].errors).toEqual("['something broke']");
-      const finalEntities = await db<DbFinalEntitiesRow>('final_entities')
-        .where('entity_id', id)
-        .select();
-      expect(finalEntities.length).toBe(1);
     });
 
     it('removes old relations and stores the new relationships', async () => {

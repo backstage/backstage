@@ -73,15 +73,6 @@ describe('Stitcher', () => {
       },
     ]);
 
-    await db<DbFinalEntitiesRow>('final_entities')
-      .insert({
-        entity_id: 'my-id',
-        hash: '',
-        stitch_ticket: '',
-      })
-      .onConflict('entity_id')
-      .ignore();
-
     await stitcher.stitch(new Set(['k:ns/n']));
 
     entities = await db<DbFinalEntitiesRow>('final_entities');

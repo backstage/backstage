@@ -27,6 +27,7 @@ import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { buildEntitySearch, DbSearchRow } from './search';
 import { v4 as uuid } from 'uuid';
+import { DbRefreshStateRow } from './database/DefaultProcessingDatabase';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -61,21 +62,28 @@ export class Stitcher {
   async stitch(entityRefs: Set<string>) {
     for (const entityRef of entityRefs) {
       try {
-        const ticket = uuid();
-        const ticketRows = await this.database<DbFinalEntitiesRow>(
-          'final_entities',
+        const entityResult = await this.database<DbRefreshStateRow>(
+          'refresh_state',
         )
-          .update('stitch_ticket', ticket)
-          .whereIn('entity_id', qb =>
-            qb
-              .select('entity_id')
-              .from('refresh_state')
-              .where({ entity_ref: entityRef }),
-          );
-        if (ticketRows === 0) {
-          // No ticket written.
+          .where({ entity_ref: entityRef })
+          .limit(1)
+          .select('entity_id');
+        if (!entityResult.length) {
+          // Entity does no exist in refresh state table, no stitching required.
           continue;
         }
+
+        // Insert stitching ticket that will be compared before inserting the final entity.
+        const ticket = uuid();
+        await this.database<DbFinalEntitiesRow>('final_entities')
+          .insert({
+            entity_id: entityResult[0].entity_id,
+            hash: '',
+            stitch_ticket: ticket,
+          })
+          .onConflict('entity_id')
+          .merge(['stitch_ticket']);
+
         // Selecting from refresh_state and final_entities should yield exactly
         // one row (except in abnormal cases where the stitch was invoked for
         // something that didn't exist at all, in which case it's zero rows).
