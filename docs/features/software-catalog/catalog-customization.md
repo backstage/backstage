@@ -20,13 +20,14 @@ the catalog - you can replace the routing in `App.tsx` to point to your own
 > periodically.
 
 For example, suppose that I want to allow filtering by a custom annotation added
-to entities, `company.com/itgc-enabled`. To start, I'll copy the code for the
-default catalog page, either in a new plugin or just in the `app` package:
+to entities, `company.com/security-tier`. To start, I'll copy the code for the
+default catalog page and create a component in a
+[new plugin](../../plugins/create-a-plugin.md):
 
 ```tsx
 // imports, etc omitted for brevity. for full source see:
 // https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx
-export const CustomCatalogIndexPage = () => {
+export const CustomCatalogPage = () => {
   return (
     <CatalogLayout>
       <Content>
@@ -52,20 +53,20 @@ export const CustomCatalogIndexPage = () => {
 ```
 
 The `EntityListProvider` shown here provides a list of entities from the
-`catalog-backend`, and a way to hook in filters. `EntityListProvider` has a
-[generic](https://www.typescriptlang.org/docs/handbook/2/generics.html) argument
-that can be extended to provide your own filters.
+`catalog-backend`, and a way to hook in filters.
 
 Now we're ready to create a new filter that implements the `EntityFilter`
 interface:
 
 ```ts
-import { EntityFilter } from '@backstage/catalog-react';
+import { EntityFilter } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 
-class ItgcEntityFilter implements EntityFilter {
+class EntitySecurityTierFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
   filterEntity(entity: Entity): boolean {
-    return entity.metadata.annotations?.['company.com/itgc-enabled'] === true;
+    const tier = entity.metadata.annotations?.['company.com/security-tier'];
+    return tier !== undefined && this.values.includes(tier);
   }
 }
 ```
@@ -74,58 +75,69 @@ The `EntityFilter` interface permits backend filters, which are passed along to
 the `catalog-backend` - or frontend filters, which are applied after entities
 are loaded from the backend.
 
-Let's create the custom filter shape extending the default and update the
-`EntityListProvider` in the custom index page to use it:
+We'll use this filter to extend the default filters in a type-safe way. Let's
+create the custom filter shape extending the default somewhere alongside this
+filter:
 
-```diff
-+export type CustomFilters = DefaultEntityFilters & {
-+  itgc: ItgcEntityFilter;
-+};
-
-export const CustomCatalogIndexPage = () => {
-...
-        <div className={styles.contentWrapper}>
--          <EntityListProvider>
-+          <EntityListProvider<CustomFilters>>
-            <div>
-...
+```ts
+export type CustomFilters = DefaultEntityFilters & {
+  securityTiers?: EntitySecurityTierFilter;
+};
 ```
 
-To control this filter, we can create a React component that shows a checkbox.
-This component will make use of the `useEntityListProvider` hook, which also
-accepts the same generic so we can use the added filter field:
+To control this filter, we can create a React component that shows checkboxes
+for the security tiers. This component will make use of the
+`useEntityListProvider` hook, which accepts this extended filter type as a
+[generic](https://www.typescriptlang.org/docs/handbook/2/generics.html)
+parameter:
 
 ```tsx
-export const ItgcPicker = () => {
+export const EntitySecurityTierPicker = () => {
+  // The securityTiers key is recognized due to the CustomFilter generic
   const {
-    filters: { itgc: currentItgcFilter },
+    filters: { securityTiers },
     updateFilters,
   } = useEntityListProvider<CustomFilters>();
-  const [enabled, setEnabled] = useState(false);
 
-  useEffect(() => {
-    updateFilters({ itgc: enabled ? new ItgcEntityFilter() : undefined });
-  }, [enabled, updateFilters]);
+  // Toggles the value, depending on whether it's already selected
+  function onChange(value: string) {
+    const newTiers = securityTiers?.values.includes(value)
+      ? securityTiers.values.filter(tier => tier !== value)
+      : [...(securityTiers?.values ?? []), value];
+    updateFilters({
+      securityTiers: newTiers.length
+        ? new EntitySecurityTierFilter(newTiers)
+        : undefined,
+    });
+  }
 
+  const tierOptions = ['1', '2', '3'];
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={!!currentItgcFilter}
-          onChange={() => setEnabled(isEnabled => !isEnabled)}
-          name="itgc-picker"
-        />
-      }
-      label="ITGC Required"
-    />
+    <FormControl component="fieldset">
+      <Typography variant="button">Security Tier</Typography>
+      <FormGroup>
+        {tierOptions.map(tier => (
+          <FormControlLabel
+            key={tier}
+            control={
+              <Checkbox
+                checked={securityTiers?.values.includes(tier)}
+                onChange={() => onChange(tier)}
+              />
+            }
+            label={`Tier ${tier}`}
+          />
+        ))}
+      </FormGroup>
+    </FormControl>
   );
 };
 ```
 
-Now I can add the component to `CustomCatalogIndexPage`:
+Now we can add the component to `CustomCatalogPage`:
 
 ```diff
-export const CustomCatalogIndexPage = () => {
+export const CustomCatalogPage = () => {
   return (
     ...
           <EntityListProvider>
@@ -133,7 +145,7 @@ export const CustomCatalogIndexPage = () => {
               <EntityKindPicker initialFilter="component" hidden />
               <EntityTypePicker />
               <UserListPicker />
-+              <ItgcPicker />
++              <EntitySecurityTierPicker />
               <EntityTagPicker />
             </div>
             <CatalogTable />
@@ -142,6 +154,30 @@ export const CustomCatalogIndexPage = () => {
 };
 ```
 
+This page itself can be exported as a routable extension in the plugin:
+
+```ts
+export const CustomCatalogIndexPage = myPlugin.provide(
+  createRoutableExtension({
+    component: () =>
+      import('./components/CustomCatalogPage').then(m => m.CustomCatalogPage),
+    mountPoint: catalogRouteRef,
+  }),
+);
+```
+
+Finally, we can replace the catalog route in the Backstage application with our
+new `CustomCatalogIndexPage`.
+
+```diff
+# packages/app/src/App.tsx
+const routes = (
+  <FlatRoutes>
+    <Navigate key="/" to="/catalog" />
+-    <Route path="/catalog" element={<CatalogIndexPage />} />
++    <Route path="/catalog" element={<CustomCatalogIndexPage />} />
+```
+
 The same method can be used to customize the _default_ filters with a different
-interface - for such usage, the generic argument won't be needed since the
-filter shape remains the same as the default.
+interface - for such usage, the generic argument isn't needed since the filter
+shape remains the same as the default.
