@@ -150,8 +150,8 @@ export const TemplatePage = () => {
   const handleFormReset = () => setFormState({});
 
   const handleChange = useCallback(
-    (e: IChangeEvent) => setFormState({ ...formState, ...e.formData }),
-    [setFormState, formState],
+    (e: IChangeEvent) => setFormState(e.formData),
+    [setFormState],
   );
 
   const handleCreate = async () => {
