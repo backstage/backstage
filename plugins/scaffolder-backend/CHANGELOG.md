@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.4
+
+### Patch Changes
+
+- 260aaa684: Bump `@gitbeaker` dependencies to `29.x`.
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
 ## 0.11.3
 
 ### Patch Changes

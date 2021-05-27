@@ -1,7 +1,7 @@
 {
   "name": "@backstage/dev-utils",
   "description": "Utilities for developing Backstage plugins.",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -29,10 +29,10 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core": "^0.7.10",
-    "@backstage/catalog-model": "^0.7.10",
+    "@backstage/core": "^0.7.11",
+    "@backstage/catalog-model": "^0.8.0",
     "@backstage/integration-react": "^0.1.2",
-    "@backstage/plugin-catalog-react": "^0.1.6",
+    "@backstage/plugin-catalog-react": "^0.2.0",
     "@backstage/test-utils": "^0.1.12",
     "@backstage/theme": "^0.2.3",
     "@material-ui/core": "^4.11.0",
@@ -48,7 +48,7 @@
     "react-router-dom": "6.0.0-beta.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.12",
+    "@backstage/cli": "^0.6.13",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32"
   },

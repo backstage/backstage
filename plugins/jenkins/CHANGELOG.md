@@ -1,5 +1,18 @@
 # @backstage/plugin-jenkins
 
+## 0.4.4
+
+### Patch Changes
+
+- 5baf2ff0f: Show error in Jenkins card for errors exposed by the Jenkins API
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
 ## 0.4.3
 
 ### Patch Changes

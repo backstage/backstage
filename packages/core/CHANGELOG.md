@@ -1,5 +1,13 @@
 # @backstage/core
 
+## 0.7.11
+
+### Patch Changes
+
+- cc592248b: SignInPage: Show login page while pop-up is being displayed when `auto` prop is set.
+- Updated dependencies [d597a50c6]
+  - @backstage/core-api@0.2.20
+
 ## 0.7.10
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/techdocs-common
 
+## 0.6.3
+
+### Patch Changes
+
+- 8cefadca0: Adding validation to mkdocs.yml parsing to prevent directory tree traversing
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-model@0.8.0
+
 ## 0.6.2
 
 ### Patch Changes

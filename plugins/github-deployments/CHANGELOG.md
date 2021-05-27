@@ -1,5 +1,20 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.7
+
+### Patch Changes
+
+- 4d38bab75: Handle deployments without a commit
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
 ## 0.1.6
 
 ### Patch Changes

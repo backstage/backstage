@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.6.13
+
+### Patch Changes
+
+- 1cd0cacd9: Add support for transforming yaml files in jest with 'yaml-jest'
+- 7a7da5146: Bumped `eslint-config-prettier` to `8.x`.
+- 3a181cff1: Bump webpack-node-externals from `2.5.2` to `3.0.0`.
+- Updated dependencies [2cf98d279]
+- Updated dependencies [438a512eb]
+  - @backstage/config-loader@0.6.3
+
 ## 0.6.12
 
 ### Patch Changes
