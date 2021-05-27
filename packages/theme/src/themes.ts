@@ -22,7 +22,7 @@ export const lightTheme = createTheme({
   palette: {
     type: 'light',
     background: {
-      default: '#F8F8F8',
+      default: '#eef0f1',
     },
     status: {
       ok: '#1DB954',
@@ -40,7 +40,7 @@ export const lightTheme = createTheme({
       },
     },
     primary: {
-      main: '#2E77D0',
+      main: '#002b45',
     },
     banner: {
       info: '#2E77D0',
@@ -102,7 +102,7 @@ export const darkTheme = createTheme({
       },
     },
     primary: {
-      main: '#2E77D0',
+      main: '#002b45',
     },
     banner: {
       info: '#2E77D0',
