@@ -32,6 +32,8 @@
     "@backstage/catalog-model": "^0.7.9",
     "@backstage/core": "^0.7.9",
     "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.45",
     "@types/react": "^16.9",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.11",
+    "@backstage/core": "^0.7.10",
     "@backstage/dev-utils": "^0.1.14",
     "@backstage/test-utils": "^0.1.11",
     "@testing-library/jest-dom": "^5.10.1",

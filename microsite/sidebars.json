@@ -43,6 +43,7 @@
           "features/software-catalog/well-known-statuses",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
+          "features/software-catalog/catalog-customization",
           "features/software-catalog/software-catalog-api"
         ]
       },

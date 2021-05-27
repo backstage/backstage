@@ -40,6 +40,7 @@ nav:
           - Well-known Statuses: 'features/software-catalog/well-known-statuses.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
+          - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'

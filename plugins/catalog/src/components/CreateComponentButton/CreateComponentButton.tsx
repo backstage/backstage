@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { CircularProgress, useTheme } from '@material-ui/core';
 import React from 'react';
-import { useAsync } from 'react-use';
+import { Link as RouterLink } from 'react-router-dom';
+import { Button } from '@material-ui/core';
+import { useRouteRef } from '@backstage/core';
+import { createComponentRouteRef } from '../../routes';
 
-export const AllServicesCount = () => {
-  const theme = useTheme();
-  const catalogApi = useApi(catalogApiRef);
-  const { value, loading } = useAsync(() => catalogApi.getEntities());
+export const CreateComponentButton = () => {
+  const createComponentLink = useRouteRef(createComponentRouteRef);
 
-  if (loading) {
-    return <CircularProgress size={theme.spacing(2)} />;
-  }
+  if (!createComponentLink) return null;
 
-  return <span>{value ?? length ?? '-'}</span>;
+  return (
+    <Button
+      component={RouterLink}
+      variant="contained"
+      color="primary"
+      to={createComponentLink()}
+    >
+      Create Component
+    </Button>
+  );
 };

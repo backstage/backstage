@@ -13,5 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { CatalogTable } from './CatalogTable';
+export { CreateComponentButton } from './CreateComponentButton';

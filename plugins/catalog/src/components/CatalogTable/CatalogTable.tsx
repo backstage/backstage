@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Entity,
-  RELATION_OWNED_BY,
-  RELATION_PART_OF,
-} from '@backstage/catalog-model';
+import { RELATION_OWNED_BY, RELATION_PART_OF } from '@backstage/catalog-model';
 import {
   CodeSnippet,
   Table,
@@ -28,10 +24,12 @@ import {
 import {
   formatEntityRefTitle,
   getEntityRelations,
+  useEntityListProvider,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { capitalize } from 'lodash';
 import React from 'react';
 import {
   getEntityMetadataEditUrl,
@@ -55,23 +53,16 @@ const defaultColumns: TableColumn<EntityRow>[] = [
 ];
 
 type CatalogTableProps = {
-  entities: Entity[];
-  titlePreamble: string;
-  loading: boolean;
-  error?: any;
-  view?: string;
   columns?: TableColumn<EntityRow>[];
 };
 
-export const CatalogTable = ({
-  entities,
-  loading,
-  error,
-  titlePreamble,
-  view,
-  columns,
-}: CatalogTableProps) => {
+export const CatalogTable = ({ columns }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
+  const { loading, error, entities, filters } = useEntityListProvider();
+
+  const showTypeColumn = filters.type !== undefined;
+  // TODO(timbonicus): we should show filter chips for all filters instead
+  const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
   if (error) {
     return (
@@ -152,7 +143,7 @@ export const CatalogTable = ({
 
   const typeColumn = (columns || defaultColumns).find(c => c.title === 'Type');
   if (typeColumn) {
-    typeColumn.hidden = view !== 'Other';
+    typeColumn.hidden = !showTypeColumn;
   }
 
   return (
@@ -168,7 +159,7 @@ export const CatalogTable = ({
         padding: 'dense',
         pageSizeOptions: [20, 50, 100],
       }}
-      title={`${titlePreamble} (${(entities && entities.length) || 0})`}
+      title={`${titlePreamble} (${entities.length})`}
       data={rows}
       actions={actions}
     />
