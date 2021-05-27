@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createRouteRef } from '@backstage/plugin-api';
+import { createRouteRef } from '@backstage/core-plugin-api';
 
 export const graphiQLRouteRef = createRouteRef({
   id: 'graphiql-root',

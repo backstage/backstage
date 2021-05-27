@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/plugin-api';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export type GraphQLEndpoint = {
   // Will be used as unique key for storing history and query data
