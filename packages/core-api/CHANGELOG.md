@@ -1,5 +1,11 @@
 # @backstage/core-api
 
+## 0.2.20
+
+### Patch Changes
+
+- d597a50c6: Add a global type definition for `Symbol.observable`, fix type checking in projects that didn't already have it defined.
+
 ## 0.2.19
 
 ### Patch Changes

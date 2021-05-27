@@ -1,5 +1,13 @@
 # @backstage/plugin-cost-insights
 
+## 0.10.1
+
+### Patch Changes
+
+- 41c3ec421: fix for query parameters with null groups
+- Updated dependencies [cc592248b]
+  - @backstage/core@0.7.11
+
 ## 0.10.0
 
 ### Minor Changes
