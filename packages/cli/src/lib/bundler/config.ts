@@ -197,6 +197,15 @@ export async function createConfig(
       chunkFilename: isDev
         ? '[name].chunk.js'
         : 'static/[name].[chunkhash:8].chunk.js',
+      ...(isDev
+        ? {
+            devtoolModuleFilenameTemplate: info =>
+              `file:///${resolvePath(info.absoluteResourcePath).replace(
+                /\\/g,
+                '/',
+              )}`,
+          }
+        : {}),
     },
     plugins,
   };
@@ -281,7 +290,11 @@ export async function createBackendConfig(
         : '[name].[chunkhash:8].chunk.js',
       ...(isDev
         ? {
-            devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+            devtoolModuleFilenameTemplate: info =>
+              `file:///${resolvePath(info.absoluteResourcePath).replace(
+                /\\/g,
+                '/',
+              )}`,
           }
         : {}),
     },
