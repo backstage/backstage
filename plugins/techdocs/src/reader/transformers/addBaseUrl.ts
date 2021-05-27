@@ -48,6 +48,7 @@ export const addBaseUrl = ({
     updateDom<HTMLImageElement>(dom.querySelectorAll('img'), 'src');
     updateDom<HTMLScriptElement>(dom.querySelectorAll('script'), 'src');
     updateDom<HTMLLinkElement>(dom.querySelectorAll('link'), 'href');
+    updateDom<HTMLAnchorElement>(dom.querySelectorAll('a[download]'), 'href');
 
     return dom;
   };

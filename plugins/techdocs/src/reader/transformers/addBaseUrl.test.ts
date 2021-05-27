@@ -37,6 +37,7 @@ const fixture = `
     <body>
       <img src="test.jpg" />
       <script type="javascript" src="script.js"></script>
+      <a href="afile.pdf" download>Download Now</a>
     </body>
   </html>
 `;
@@ -75,6 +76,12 @@ describe('addBaseUrl', () => {
     expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
       3,
       'astyle.css',
+      mockEntityId,
+      '',
+    );
+    expect(techdocsStorageApi.getBaseUrl).toHaveBeenNthCalledWith(
+      4,
+      'afile.pdf',
       mockEntityId,
       '',
     );
