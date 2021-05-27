@@ -60,7 +60,7 @@ export const CatalogTable = ({ columns }: CatalogTableProps) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const { loading, error, entities, filters } = useEntityListProvider();
 
-  const showTypeColumn = filters.type !== undefined;
+  const showTypeColumn = filters.type === undefined;
   // TODO(timbonicus): we should show filter chips for all filters instead
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
 
