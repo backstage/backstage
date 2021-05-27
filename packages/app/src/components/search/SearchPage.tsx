@@ -15,67 +15,88 @@
  */
 
 import React from 'react';
-import { Content, Header, Lifecycle, Page } from '@backstage/core';
-import { Grid, List, Card, CardContent } from '@material-ui/core';
-import {
-  SearchBarNext,
-  SearchResultNext,
-  DefaultResultListItem,
-  SearchFilterNext,
-} from '@backstage/plugin-search';
-import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
 
-export const searchPage = (
-  <Page themeId="home">
-    <Header title="Search" subtitle={<Lifecycle alpha />} />
-    <Content>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <SearchBarNext debounceTime={100} />
-        </Grid>
-        <Grid item xs={3}>
-          <Card>
-            <CardContent>
-              <SearchFilterNext.Select
+import { Content, Header, Lifecycle, Page } from '@backstage/core';
+import { CatalogResultListItem } from '@backstage/plugin-catalog';
+import {
+  SearchBarNext as SearchBar,
+  SearchFilterNext as SearchFilter,
+  SearchResultNext as SearchResult,
+  DefaultResultListItem,
+} from '@backstage/plugin-search';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  bar: {
+    padding: theme.spacing(1, 0),
+  },
+  filters: {
+    padding: theme.spacing(2),
+  },
+  filter: {
+    '& + &': {
+      marginTop: theme.spacing(2.5),
+    },
+  },
+}));
+
+const SearchPage = () => {
+  const classes = useStyles();
+
+  return (
+    <Page themeId="home">
+      <Header title="Search" subtitle={<Lifecycle alpha />} />
+      <Content>
+        <Grid container direction="row">
+          <Grid item xs={12}>
+            <Paper className={classes.bar}>
+              <SearchBar debounceTime={100} />
+            </Paper>
+          </Grid>
+          <Grid item xs={3}>
+            <Paper className={classes.filters}>
+              <SearchFilter.Select
+                className={classes.filter}
                 name="kind"
                 values={['Component', 'Template']}
               />
-            </CardContent>
-            <CardContent>
-              <SearchFilterNext.Checkbox
+              <SearchFilter.Checkbox
+                className={classes.filter}
                 name="lifecycle"
                 values={['experimental', 'production']}
               />
-            </CardContent>
-          </Card>
+            </Paper>
+          </Grid>
+          <Grid item xs={9}>
+            <SearchResult>
+              {({ results }) => (
+                <List>
+                  {results.map(({ type, document }) => {
+                    switch (type) {
+                      case 'software-catalog':
+                        return (
+                          <CatalogResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                      default:
+                        return (
+                          <DefaultResultListItem
+                            key={document.location}
+                            result={document}
+                          />
+                        );
+                    }
+                  })}
+                </List>
+              )}
+            </SearchResult>
+          </Grid>
         </Grid>
-        <Grid item xs={9}>
-          <SearchResultNext>
-            {({ results }) => (
-              <List>
-                {results.map(result => {
-                  switch (result.type) {
-                    case 'software-catalog':
-                      return (
-                        <CatalogResultListItem
-                          key={result.document.location}
-                          result={result.document}
-                        />
-                      );
-                    default:
-                      return (
-                        <DefaultResultListItem
-                          key={result.document.location}
-                          result={result.document}
-                        />
-                      );
-                  }
-                })}
-              </List>
-            )}
-          </SearchResultNext>
-        </Grid>
-      </Grid>
-    </Content>
-  </Page>
-);
+      </Content>
+    </Page>
+  );
+};
+
+export const searchPage = <SearchPage />;

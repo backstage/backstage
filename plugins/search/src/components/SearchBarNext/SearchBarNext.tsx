@@ -16,64 +16,52 @@
 
 import React, { ChangeEvent, useState } from 'react';
 import { useDebounce } from 'react-use';
-import {
-  Theme,
-  Paper,
-  InputBase,
-  InputAdornment,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core';
+import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
 import { useSearch } from '../SearchContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 0, 0, 1.5),
-  },
-  input: {
-    flex: 1,
-  },
-}));
-
 type Props = {
+  className?: string;
   debounceTime?: number;
 };
 
-export const SearchBarNext = ({ debounceTime = 0 }: Props) => {
-  const classes = useStyles();
+export const SearchBarNext = ({ className, debounceTime = 0 }: Props) => {
   const { term, setTerm } = useSearch();
   const [value, setValue] = useState<string>(term);
 
   useDebounce(() => setTerm(value), debounceTime, [value]);
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
   const handleClear = () => setValue('');
 
   return (
-    <Paper component="form" className={classes.root}>
-      <InputBase
-        className={classes.input}
-        placeholder="Search in Backstage"
-        value={value}
-        onChange={handleSearch}
-        inputProps={{ 'aria-label': 'Search term' }}
-        startAdornment={
-          <InputAdornment position="start">
+    <InputBase
+      className={className}
+      data-testid="search-bar-next"
+      fullWidth
+      placeholder="Search in Backstage"
+      value={value}
+      onChange={handleQuery}
+      inputProps={{ 'aria-label': 'Search term' }}
+      startAdornment={
+        <InputAdornment position="start">
+          <IconButton aria-label="Query term" disabled>
             <SearchIcon />
-          </InputAdornment>
-        }
-      />
-      <IconButton aria-label="Clear term" onClick={handleClear}>
-        <ClearButton />
-      </IconButton>
-    </Paper>
+          </IconButton>
+        </InputAdornment>
+      }
+      endAdornment={
+        <InputAdornment position="end">
+          <IconButton aria-label="Clear term" onClick={handleClear}>
+            <ClearButton />
+          </IconButton>
+        </InputAdornment>
+      }
+    />
   );
 };

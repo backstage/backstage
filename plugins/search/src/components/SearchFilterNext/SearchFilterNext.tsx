@@ -35,6 +35,7 @@ const useStyles = makeStyles({
 });
 
 export type Component = {
+  className?: string;
   name: string;
   values?: string[];
   defaultValue?: string[] | string | null;
@@ -45,7 +46,12 @@ export type Props = Component & {
   debug?: boolean;
 };
 
-const CheckboxFilter = ({ name, defaultValue, values = [] }: Component) => {
+const CheckboxFilter = ({
+  className,
+  name,
+  defaultValue,
+  values = [],
+}: Component) => {
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
 
@@ -72,7 +78,11 @@ const CheckboxFilter = ({ name, defaultValue, values = [] }: Component) => {
   };
 
   return (
-    <FormControl>
+    <FormControl
+      className={className}
+      fullWidth
+      data-testid="search-checkboxfilter-next"
+    >
       <FormLabel className={classes.label}>{name}</FormLabel>
       {values.map((value: string) => (
         <FormControlLabel
@@ -95,7 +105,12 @@ const CheckboxFilter = ({ name, defaultValue, values = [] }: Component) => {
   );
 };
 
-const SelectFilter = ({ name, defaultValue, values = [] }: Component) => {
+const SelectFilter = ({
+  className,
+  name,
+  defaultValue,
+  values = [],
+}: Component) => {
   const classes = useStyles();
   const { filters, setFilters } = useSearch();
 
@@ -120,7 +135,12 @@ const SelectFilter = ({ name, defaultValue, values = [] }: Component) => {
   };
 
   return (
-    <FormControl variant="filled" fullWidth>
+    <FormControl
+      className={className}
+      variant="filled"
+      fullWidth
+      data-testid="search-selectfilter-next"
+    >
       <InputLabel className={classes.label} margin="dense">
         {name}
       </InputLabel>
