@@ -110,56 +110,63 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       return;
     }
 
-    const { id, state, unprocessedEntity } = items[0];
-
-    const result = await this.orchestrator.process({
-      entity: unprocessedEntity,
-      state,
-    });
-    for (const error of result.errors) {
-      this.logger.warn(error.message);
-    }
-    const errorsString = JSON.stringify(
-      result.errors.map(e => serializeError(e)),
-    );
-
-    // If the result was marked as not OK, it signals that some part of the
-    // processing pipeline threw an exception. This can happen both as part of
-    // non-catastrophic things such as due to validation errors, as well as if
-    // something fatal happens inside the processing for other reasons. In any
-    // case, this means we can't trust that anything in the output is okay. So
-    // just store the errors and trigger a stich so that they become visible to
-    // the outside.
-    if (!result.ok) {
-      await this.processingDatabase.transaction(async tx => {
-        await this.processingDatabase.updateProcessedEntityErrors(tx, {
-          id,
-          errors: errorsString,
+    // TODO: replace Promise.all with something more sophisticated for parallel processing.
+    await Promise.all(
+      items.map(async item => {
+        const { id, state, unprocessedEntity } = item;
+        const result = await this.orchestrator.process({
+          entity: unprocessedEntity,
+          state,
         });
-      });
-      await this.stitcher.stitch(
-        new Set([stringifyEntityRef(unprocessedEntity)]),
-      );
-      return;
-    }
 
-    result.completedEntity.metadata.uid = id;
-    await this.processingDatabase.transaction(async tx => {
-      await this.processingDatabase.updateProcessedEntity(tx, {
-        id,
-        processedEntity: result.completedEntity,
-        state: result.state,
-        errors: errorsString,
-        relations: result.relations,
-        deferredEntities: result.deferredEntities,
-      });
-    });
+        for (const error of result.errors) {
+          this.logger.warn(error.message);
+        }
+        const errorsString = JSON.stringify(
+          result.errors.map(e => serializeError(e)),
+        );
 
-    const setOfThingsToStitch = new Set<string>([
-      stringifyEntityRef(result.completedEntity),
-      ...result.relations.map(relation => stringifyEntityRef(relation.source)),
-    ]);
-    await this.stitcher.stitch(setOfThingsToStitch);
+        // If the result was marked as not OK, it signals that some part of the
+        // processing pipeline threw an exception. This can happen both as part of
+        // non-catastrophic things such as due to validation errors, as well as if
+        // something fatal happens inside the processing for other reasons. In any
+        // case, this means we can't trust that anything in the output is okay. So
+        // just store the errors and trigger a stich so that they become visible to
+        // the outside.
+        if (!result.ok) {
+          await this.processingDatabase.transaction(async tx => {
+            await this.processingDatabase.updateProcessedEntityErrors(tx, {
+              id,
+              errors: errorsString,
+            });
+          });
+          await this.stitcher.stitch(
+            new Set([stringifyEntityRef(unprocessedEntity)]),
+          );
+          return;
+        }
+
+        result.completedEntity.metadata.uid = id;
+        await this.processingDatabase.transaction(async tx => {
+          await this.processingDatabase.updateProcessedEntity(tx, {
+            id,
+            processedEntity: result.completedEntity,
+            state: result.state,
+            errors: errorsString,
+            relations: result.relations,
+            deferredEntities: result.deferredEntities,
+          });
+        });
+
+        const setOfThingsToStitch = new Set<string>([
+          stringifyEntityRef(result.completedEntity),
+          ...result.relations.map(relation =>
+            stringifyEntityRef(relation.source),
+          ),
+        ]);
+        await this.stitcher.stitch(setOfThingsToStitch);
+      }),
+    );
   }
 
   private async wait() {

@@ -20,13 +20,14 @@ import {
   parseEntityRef,
   UNSTABLE_EntityStatusItem,
 } from '@backstage/catalog-model';
-import { ConflictError, SerializedError } from '@backstage/errors';
+import { SerializedError } from '@backstage/errors';
 import { createHash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
-import { Transaction } from '../database';
 import { buildEntitySearch, DbSearchRow } from './search';
+import { v4 as uuid } from 'uuid';
+import { DbRefreshStateRow } from './database/DefaultProcessingDatabase';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -37,7 +38,8 @@ const BATCH_SIZE = 50;
 export type DbFinalEntitiesRow = {
   entity_id: string;
   hash: string;
-  final_entity: string;
+  stitch_ticket: string;
+  final_entity?: string;
 };
 
 function generateStableHash(entity: Entity) {
@@ -59,8 +61,28 @@ export class Stitcher {
 
   async stitch(entityRefs: Set<string>) {
     for (const entityRef of entityRefs) {
-      await this.transaction(async txOpaque => {
-        const tx = txOpaque as Knex.Transaction;
+      try {
+        const entityResult = await this.database<DbRefreshStateRow>(
+          'refresh_state',
+        )
+          .where({ entity_ref: entityRef })
+          .limit(1)
+          .select('entity_id');
+        if (!entityResult.length) {
+          // Entity does no exist in refresh state table, no stitching required.
+          continue;
+        }
+
+        // Insert stitching ticket that will be compared before inserting the final entity.
+        const ticket = uuid();
+        await this.database<DbFinalEntitiesRow>('final_entities')
+          .insert({
+            entity_id: entityResult[0].entity_id,
+            hash: '',
+            stitch_ticket: ticket,
+          })
+          .onConflict('entity_id')
+          .merge(['stitch_ticket']);
 
         // Selecting from refresh_state and final_entities should yield exactly
         // one row (except in abnormal cases where the stitch was invoked for
@@ -77,7 +99,7 @@ export class Stitcher {
           previousHash?: string;
           relationType?: string;
           relationTarget?: string;
-        }> = await tx
+        }> = await this.database
           .with('incoming_references', function incomingReferences(builder) {
             return builder
               .from('refresh_state_references')
@@ -95,7 +117,7 @@ export class Stitcher {
           })
           .from('refresh_state')
           .where({ 'refresh_state.entity_ref': entityRef })
-          .crossJoin(tx.raw('incoming_references'))
+          .crossJoin(this.database.raw('incoming_references'))
           .leftOuterJoin('final_entities', {
             'final_entities.entity_id': 'refresh_state.entity_id',
           })
@@ -110,10 +132,10 @@ export class Stitcher {
         // if we emit a relation to something that hasn't been ingested yet.
         // It's safe to ignore this stitch attempt in that case.
         if (!result.length) {
-          this.logger.debug(
+          this.logger.error(
             `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
           );
-          return;
+          continue;
         }
 
         const {
@@ -132,7 +154,7 @@ export class Stitcher {
           this.logger.debug(
             `Unable to stitch ${entityRef}, the entity has not yet been processed`,
           );
-          return;
+          continue;
         }
 
         // Grab the processed entity and stitch all of the relevant data into
@@ -179,7 +201,7 @@ export class Stitcher {
         const hash = generateStableHash(entity);
         if (hash === previousHash) {
           this.logger.debug(`Skipped stitching of ${entityRef}, no changes`);
-          return;
+          continue;
         }
 
         entity.metadata.uid = entityId;
@@ -190,56 +212,40 @@ export class Stitcher {
           entity.metadata.etag = hash;
         }
 
-        await tx<DbFinalEntitiesRow>('final_entities')
-          .insert({
-            entity_id: entityId,
+        const rowsChanged = await this.database<DbFinalEntitiesRow>(
+          'final_entities',
+        )
+          .update({
             final_entity: JSON.stringify(entity),
             hash,
           })
+          .where('entity_id', entityId)
+          .where('stitch_ticket', ticket)
           .onConflict('entity_id')
           .merge(['final_entity', 'hash']);
 
+        if (rowsChanged.length === 0) {
+          this.logger.debug(
+            `Entity ${entityRef} is already processed, skipping write.`,
+          );
+          continue;
+        }
+
+        // TODO(freben): Search will probably need a similar safeguard against
+        // race conditions like the final_entities ticket handling above.
+        // Otherwise, it can be the case that:
+        // A writes the entity ->
+        // B writes the entity ->
+        // B writes search ->
+        // A writes search
         const searchEntries = buildEntitySearch(entityId, entity);
-        await tx<DbSearchRow>('search').where({ entity_id: entityId }).delete();
-        await tx.batchInsert('search', searchEntries, BATCH_SIZE);
-      });
-    }
-  }
-
-  private async transaction<T>(
-    fn: (tx: Transaction) => Promise<T>,
-  ): Promise<T> {
-    try {
-      let result: T | undefined = undefined;
-
-      await this.database.transaction(
-        async tx => {
-          // We can't return here, as knex swallows the return type in case the transaction is rolled back:
-          // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
-          result = await fn(tx);
-        },
-        {
-          // If we explicitly trigger a rollback, don't fail.
-          doNotRejectOnRollback: true,
-          isolationLevel:
-            this.database.client.config.client === 'sqlite3'
-              ? undefined // sqlite3 only supports serializable transactions, ignoring the isolation level param
-              : 'serializable',
-        },
-      );
-
-      return result!;
-    } catch (e) {
-      this.logger.debug(`Error during transaction, ${e}`);
-
-      if (
-        /SQLITE_CONSTRAINT: UNIQUE/.test(e.message) ||
-        /unique constraint/.test(e.message)
-      ) {
-        throw new ConflictError(`Rejected due to a conflicting entity`, e);
+        await this.database<DbSearchRow>('search')
+          .where({ entity_id: entityId })
+          .delete();
+        await this.database.batchInsert('search', searchEntries, BATCH_SIZE);
+      } catch (error) {
+        this.logger.error(`Failed to stitch ${entityRef}, ${error}`);
       }
-
-      throw e;
     }
   }
 }

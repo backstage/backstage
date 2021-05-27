@@ -92,8 +92,14 @@ exports.up = async function up(knex) {
         'Stable hash of the entity data, to be used for caching and avoiding redundant work',
       );
     table
-      .text('final_entity')
+      .text('stitch_ticket')
       .notNullable()
+      .comment(
+        'A random value representing a unique stitch attempt ticket, that gets updated each time that a stitching attempt is made on the entity',
+      );
+    table
+      .text('final_entity')
+      .nullable()
       .comment('The JSON encoded final entity');
     table.index('entity_id', 'final_entities_entity_id_idx');
   });
@@ -192,9 +198,9 @@ exports.up = async function up(knex) {
  */
 exports.down = async function down(knex) {
   await knex.schema.alterTable('refresh_state_references', table => {
-    table.dropIndex([], 'refresh_state_references_source_special_key_idx');
-    table.dropIndex([], 'refresh_state_references_source_entity_id_idx');
-    table.dropIndex([], 'refresh_state_references_target_entity_id_idx');
+    table.dropIndex([], 'refresh_state_references_source_key_idx');
+    table.dropIndex([], 'refresh_state_references_source_entity_ref_idx');
+    table.dropIndex([], 'refresh_state_references_target_entity_ref_idx');
   });
   await knex.schema.alterTable('refresh_state', table => {
     table.dropUnique([], 'refresh_state_entity_ref_uniq');
