@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { spawn } from 'child_process';
+import { isAbsolute, normalize } from 'path';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { PassThrough, Writable } from 'stream';
@@ -136,6 +137,30 @@ export const getRepoUrlFromLocationAnnotation = (
   }
 
   return undefined;
+};
+
+/**
+ * Validating mkdocs config file for incorrect/insecure values
+ * Throws on invalid configs
+ *
+ * @param {string} mkdocsYmlPath Absolute path to mkdocs.yml or equivalent of a docs site
+ */
+export const validateMkdocsYaml = async (mkdocsYmlPath: string) => {
+  let mkdocsYmlFileString;
+  try {
+    mkdocsYmlFileString = await fs.readFile(mkdocsYmlPath, 'utf8');
+  } catch (error) {
+    throw new Error(
+      `Could not read MkDocs YAML config file ${mkdocsYmlPath} before for validation: ${error.message}`,
+    );
+  }
+
+  const mkdocsYml: any = yaml.load(mkdocsYmlFileString);
+  if (mkdocsYml.docs_dir && isAbsolute(normalize(mkdocsYml.docs_dir))) {
+    throw new Error(
+      "docs_dir configuration value in mkdocs can't be an absolute directory path for security reasons. Use relative paths instead which are resolved relative to your mkdocs.yml file location.",
+    );
+  }
 };
 
 /**

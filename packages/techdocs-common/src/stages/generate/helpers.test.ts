@@ -27,6 +27,7 @@ import {
   isValidRepoUrlForMkdocs,
   patchMkdocsYmlPreBuild,
   storeEtagMetadata,
+  validateMkdocsYaml,
 } from './helpers';
 
 const mockEntity = {
@@ -42,6 +43,9 @@ const mkdocsYml = fs.readFileSync(
 );
 const mkdocsYmlWithRepoUrl = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_repo_url.yml'),
+);
+const mkdocsYmlWithInvalidDocDir = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_invalid_doc_dir.yml'),
 );
 const mockLogger = getVoidLogger();
 const rootDir = os.platform() === 'win32' ? 'C:\\rootDir' : '/rootDir';
@@ -298,6 +302,30 @@ describe('helpers', () => {
 
       const json = await fs.readJson(filePath);
       expect(json.etag).toBe('etag123abc');
+    });
+  });
+
+  describe('validateMkdocsYaml', () => {
+    beforeEach(() => {
+      mockFs({
+        '/mkdocs.yml': mkdocsYml,
+        '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
+        '/mkdocs_invalid_doc_dir.yml': mkdocsYmlWithInvalidDocDir,
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should return true on when no docs_dir present', async () => {
+      await expect(validateMkdocsYaml('/mkdocs.yml')).resolves.toBeUndefined();
+    });
+
+    it('should return false on absolute doc_dir path', async () => {
+      await expect(
+        validateMkdocsYaml('/mkdocs_invalid_doc_dir.yml'),
+      ).rejects.toThrow();
     });
   });
 });
