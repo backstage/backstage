@@ -1,22 +1,22 @@
-# @backstage/core
+# @backstage/core-components
 
-This package provides the core API used by Backstage plugins and apps.
+This package provides the core components used by Backstage plugins and apps
 
 ## Installation
 
-Install the package via npm or Yarn:
+Install the package via Yarn or npm:
 
 ```sh
-$ npm install --save @backstage/core
+$ yarn add @backstage/core-components
 ```
 
 or
 
 ```sh
-$ yarn add @backstage/core
+$ npm install --save @backstage/core-components
 ```
 
 ## Documentation
 
 - [Backstage Readme](https://github.com/backstage/backstage/blob/master/README.md)
-- [Backstage Documentation](https://github.com/backstage/backstage/blob/master/docs/README.md)
+- [Backstage Documentation](https://backstage.io/docs)
