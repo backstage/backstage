@@ -42,6 +42,7 @@ spec:
     - title: Choose a location
       required:
         - repoUrl
+        - dryRun
       properties:
         repoUrl:
           title: Repository Location
@@ -50,6 +51,10 @@ spec:
           ui:options:
             allowedHosts:
               - github.com
+        dryRun:
+          title: Only perform a dry run, don't publish anything
+          type: boolean
+          default: false
 
   steps:
     - id: fetch-base
@@ -70,6 +75,7 @@ spec:
         url: https://github.com/backstage/community/tree/main/backstage-community-sessions
 
     - id: publish
+      if: '{{ not parameters.dryRun }}'
       name: Publish
       action: publish:github
       input:
@@ -78,12 +84,19 @@ spec:
         repoUrl: '{{ parameters.repoUrl }}'
 
     - id: register
+      if: '{{ not parameters.dryRun }}'
       name: Register
       action: catalog:register
       input:
         repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
         catalogInfoPath: '/catalog-info.yaml'
 
+    - name: Results
+      if: '{{ parameters.dryRun }}'
+      action: publish:log
+      input:
+        listWorkspace: true
+
   output:
-    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
-    entityRef: '{{ steps.register.output.entityRef }}'
+    remoteUrl: '{{#unless parameters.dryRun}}{{ steps.publish.output.remoteUrl }}{{/unless}}'
+    entityRef: '{{#unless parameters.dryRun}}{{ steps.register.output.entityRef }}{{/unless}}'
