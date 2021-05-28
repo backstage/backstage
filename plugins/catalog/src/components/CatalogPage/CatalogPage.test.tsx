@@ -34,7 +34,7 @@ import {
   renderWithEffects,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { createComponentRouteRef } from '../../routes';
 import { CatalogPage } from './CatalogPage';
@@ -132,35 +132,38 @@ describe('CatalogPage', () => {
   // related to some theme issues in mui-table
   // https://github.com/mbrn/material-table/issues/1293
   it('should render', async () => {
-    const { getByText, getByTestId } = await renderWrapped(<CatalogPage />);
-    expect(getByText(/Owned \(1\)/)).toBeInTheDocument();
+    const { findByText, getByTestId } = await renderWrapped(<CatalogPage />);
+    await expect(findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
     fireEvent.click(getByTestId('user-picker-all'));
-    expect(getByText(/All \(2\)/)).toBeInTheDocument();
+    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
   });
+
   it('should set initial filter correctly', async () => {
-    const { getByText } = await renderWrapped(
+    const { findByText } = await renderWrapped(
       <CatalogPage initiallySelectedFilter="all" />,
     );
-    expect(getByText(/All \(2\)/)).toBeInTheDocument();
+    await expect(findByText(/All \(2\)/)).resolves.toBeInTheDocument();
   });
-  // this test is for fixing the bug after favoriting an entity, the matching entities defaulting
-  // to "owned" filter and not based on the selected filter
-  it('should render the correct entities filtered on the selectedfilter', async () => {
-    const { getByText, findAllByTitle, getByTestId } = await renderWrapped(
-      <CatalogPage />,
-    );
-    expect(getByText(/Owned \(1\)/)).toBeInTheDocument();
-    expect(getByText(/Starred/)).toBeInTheDocument();
-    fireEvent.click(getByTestId('user-picker-starred'));
-    expect(getByText(/Starred \(0\)/)).toBeInTheDocument();
-    fireEvent.click(getByTestId('user-picker-all'));
-    expect(getByText(/All \(2\)/)).toBeInTheDocument();
 
-    const starredIcons = await findAllByTitle('Add to favorites');
+  // this test is for fixing the bug after favoriting an entity, the matching
+  // entities defaulting to "owned" filter and not based on the selected filter
+  it('should render the correct entities filtered on the selected filter', async () => {
+    await renderWrapped(<CatalogPage />);
+    await expect(screen.findByText(/Owned \(1\)/)).resolves.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('user-picker-starred'));
+    await expect(
+      screen.findByText(/Starred \(0\)/),
+    ).resolves.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('user-picker-all'));
+    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
+
+    const starredIcons = await screen.findAllByTitle('Add to favorites');
     fireEvent.click(starredIcons[0]);
-    expect(getByText(/All \(2\)/)).toBeInTheDocument();
+    await expect(screen.findByText(/All \(2\)/)).resolves.toBeInTheDocument();
 
-    fireEvent.click(getByTestId('user-picker-starred'));
-    waitFor(() => expect(getByText(/Starred \(1\)/)).toBeInTheDocument());
+    fireEvent.click(screen.getByTestId('user-picker-starred'));
+    await expect(
+      screen.findByText(/Starred \(1\)/),
+    ).resolves.toBeInTheDocument();
   });
 });

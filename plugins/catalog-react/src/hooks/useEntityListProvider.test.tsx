@@ -157,6 +157,7 @@ describe('<EntityListProvider/>', () => {
         user: new UserListFilter('owned', mockUser, () => true),
       }),
     );
+    await waitFor(() => result.current.entities.length !== 2);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(result.current.entities.length).toBe(1);
   });
