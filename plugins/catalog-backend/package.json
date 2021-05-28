@@ -38,6 +38,7 @@
     "@backstage/integration": "^0.5.4",
     "@backstage/plugin-search-backend-node": "^0.1.4",
     "@backstage/search-common": "^0.1.1",
+    "@microsoft/microsoft-graph-types": "^1.25.0",
     "@octokit/graphql": "^4.5.8",
     "@types/express": "^4.17.6",
     "@types/ldapjs": "^1.0.9",
