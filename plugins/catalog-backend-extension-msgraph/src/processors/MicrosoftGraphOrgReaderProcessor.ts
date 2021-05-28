@@ -16,30 +16,32 @@
 
 import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  results,
+} from '@backstage/plugin-catalog-backend';
 import { Logger } from 'winston';
 import {
+  GroupTransformer,
   MicrosoftGraphClient,
   MicrosoftGraphProviderConfig,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
-} from './microsoftGraph';
-import * as results from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
-
-// TODO: Remove this deprecated processor, the related code in
-// ./microsoftGraph/, and the config section in the future.
+} from '../microsoftGraph';
 
 /**
  * Extracts teams and users out of a the Microsoft Graph API.
- *
- * @deprecated Use the MicrosoftGraphOrgReaderProcessor from package
- * @backstage/plugin-catalog-backend-extension-msgraph instead.
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
   private readonly logger: Logger;
+  private readonly groupTransformer?: GroupTransformer;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(
+    config: Config,
+    options: { logger: Logger; groupTransformer?: GroupTransformer },
+  ) {
     const c = config.getOptionalConfig('catalog.processors.microsoftGraphOrg');
     return new MicrosoftGraphOrgReaderProcessor({
       ...options,
@@ -50,9 +52,11 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
     logger: Logger;
+    groupTransformer?: GroupTransformer;
   }) {
     this.providers = options.providers;
     this.logger = options.logger;
+    this.groupTransformer = options.groupTransformer;
   }
 
   async readLocation(
@@ -63,10 +67,6 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     if (location.type !== 'microsoft-graph-org') {
       return false;
     }
-
-    this.logger.warn(
-      'MicrosoftGraphOrgReaderProcessor from @backstage/plugin-catalog is deprecated and will be removed in the future. Please migrate to the new one from @backstage/plugin-catalog-backend-extension-msgraph instead.',
-    );
 
     const provider = this.providers.find(p =>
       location.target.startsWith(p.target),
@@ -89,6 +89,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
       {
         userFilter: provider.userFilter,
         groupFilter: provider.groupFilter,
+        groupTransformer: this.groupTransformer,
       },
     );
 
