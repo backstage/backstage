@@ -42,7 +42,7 @@
     "@rollup/plugin-node-resolve": "^11.2.0",
     "@rollup/plugin-yaml": "^2.1.1",
     "@spotify/eslint-config-base": "^9.0.0",
-    "@spotify/eslint-config-react": "^9.0.0",
+    "@spotify/eslint-config-react": "^10.0.0",
     "@spotify/eslint-config-typescript": "^9.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/plugin-jsx": "5.5.x",
