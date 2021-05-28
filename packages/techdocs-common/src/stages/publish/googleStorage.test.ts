@@ -309,7 +309,9 @@ describe('GoogleGCSPublish', () => {
       const pngResponse = await request(app).get(
         `/${namespace}/${kind}/${name}/img/with%20spaces.png`,
       );
-      expect(pngResponse.text).toEqual('found it');
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
       const jsResponse = await request(app).get(
         `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
       );
