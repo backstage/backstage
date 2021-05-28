@@ -26,6 +26,7 @@ import {
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
+  createPublishLogAction,
 } from './publish';
 
 export const createBuiltinActions = (options: {
@@ -61,6 +62,7 @@ export const createBuiltinActions = (options: {
     createPublishAzureAction({
       integrations,
     }),
+    createPublishLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
   ];
 };

@@ -20,3 +20,4 @@ export { createPublishAzureAction } from './azure';
 export { createPublishGitlabAction } from './gitlab';
 export { createPublishBitbucketAction } from './bitbucket';
 export { createPublishFileAction } from './file';
+export { createPublishLogAction } from './log';
