@@ -203,7 +203,6 @@ describe('TaskWorker', () => {
 
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
-    console.warn(events);
     expect((event?.body?.output as JsonObject).result).toBe('winning');
   });
 
