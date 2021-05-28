@@ -18,13 +18,13 @@ import {
   getVoidLogger,
   SingleConnectionDatabaseManager,
 } from '@backstage/backend-common';
-import { TaskWorker } from './TaskWorker';
-import os from 'os';
 import { ConfigReader, JsonObject } from '@backstage/config';
-import { StorageTaskBroker } from './StorageTaskBroker';
-import { DatabaseTaskStore } from './DatabaseTaskStore';
+import os from 'os';
 import { createTemplateAction, TemplateActionRegistry } from '../actions';
 import { RepoSpec } from '../actions/builtin/publish/util';
+import { DatabaseTaskStore } from './DatabaseTaskStore';
+import { StorageTaskBroker } from './StorageTaskBroker';
+import { TaskWorker } from './TaskWorker';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = SingleConnectionDatabaseManager.fromConfig(
@@ -54,6 +54,7 @@ describe('TaskWorker', () => {
       id: 'test-action',
       handler: async ctx => {
         ctx.output('testOutput', 'winning');
+        ctx.output('badOutput', false);
       },
     });
   });
@@ -170,6 +171,74 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should execute steps conditionally', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        { id: 'test', name: 'test', action: 'test-action' },
+        {
+          id: 'conditional',
+          name: 'conditional',
+          action: 'test-action',
+          if: '"{{ steps.test.output.testOutput }}"',
+        },
+      ],
+      output: {
+        result: '{{ steps.conditional.output.testOutput }}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+    console.warn(events);
+    expect((event?.body?.output as JsonObject).result).toBe('winning');
+  });
+
+  it('should skip steps conditionally', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = new TaskWorker({
+      logger,
+      workingDirectory: os.tmpdir(),
+      actionRegistry,
+      taskBroker: broker,
+    });
+
+    const { taskId } = await broker.dispatch({
+      steps: [
+        { id: 'test', name: 'test', action: 'test-action' },
+        {
+          id: 'conditional',
+          name: 'conditional',
+          action: 'test-action',
+          if: '{{ steps.test.output.badOutput }}',
+        },
+      ],
+      output: {
+        result:
+          '{{#if steps.conditional}}{{ steps.conditional.output.testOutput }}{{/if}}',
+      },
+      values: {},
+    });
+
+    const task = await broker.claim();
+    await taskWorker.runOneTask(task);
+
+    const { events } = await storage.listEvents({ taskId });
+    const event = events.find(e => e.type === 'completion');
+    expect((event?.body?.output as JsonObject).result).toEqual('');
   });
 
   it('should parse strings as objects if possible', async () => {
