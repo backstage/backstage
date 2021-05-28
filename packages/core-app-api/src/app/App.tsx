@@ -155,6 +155,10 @@ function useConfigLoader(
 class AppContextImpl implements AppContext {
   constructor(private readonly app: PrivateAppImpl) {}
 
+  getPlugins(): BackstagePlugin<any, any>[] {
+    return this.app.getPlugins();
+  }
+
   getSystemIcon(key: string): IconComponent | undefined {
     return this.app.getSystemIcon(key);
   }

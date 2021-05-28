@@ -16,7 +16,13 @@
 
 import type { ApiRef } from './types';
 
-export type ApiRefConfig = { id: string };
+export type ApiRefConfig = {
+  id: string;
+  /**
+   * @deprecated Will be removed in the future
+   */
+  description?: string;
+};
 
 class ApiRefImpl<T> implements ApiRef<T> {
   constructor(private readonly config: ApiRefConfig) {
@@ -33,6 +39,12 @@ class ApiRefImpl<T> implements ApiRef<T> {
 
   get id(): string {
     return this.config.id;
+  }
+
+  get description() {
+    // eslint-disable-next-line no-console
+    console.warn('Deprecated use of ApiRef.description');
+    return this.config.description;
   }
 
   // Utility for getting type of an api, using `typeof apiRef.T`

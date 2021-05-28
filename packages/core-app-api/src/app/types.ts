@@ -228,6 +228,11 @@ export type BackstageApp = {
 
 export type AppContext = {
   /**
+   * Get a list of all plugins that are installed in the app.
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
+  /**
    * Get a common or custom icon for this app.
    */
   getSystemIcon(key: string): IconComponent | undefined;

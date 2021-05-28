@@ -21,6 +21,15 @@ import {
   ParamKeys,
   OptionalParams,
 } from './types';
+import { IconComponent } from '../icons/types';
+
+// TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
+export type RouteRefConfig<Params extends AnyParams> = {
+  params?: ParamKeys<Params>;
+  path?: string;
+  icon?: IconComponent;
+  title: string;
+};
 
 export class RouteRefImpl<Params extends AnyParams>
   implements RouteRef<Params> {
@@ -29,7 +38,25 @@ export class RouteRefImpl<Params extends AnyParams>
   constructor(
     private readonly id: string,
     readonly params: ParamKeys<Params>,
+    private readonly config: {
+      path?: string;
+      icon?: IconComponent;
+      title?: string;
+    },
   ) {}
+
+  get icon() {
+    return this.config.icon;
+  }
+
+  // TODO(Rugvip): Remove this, routes are looked up via the registry instead
+  get path() {
+    return this.config.path ?? '';
+  }
+
+  get title() {
+    return this.config.title ?? this.id;
+  }
 
   toString() {
     return `routeRef{type=absolute,id=${this.id}}`;
@@ -46,15 +73,23 @@ export function createRouteRef<
   ParamKey extends string = never
 >(config: {
   /** The id of the route ref, used to identify it when printed */
-  id: string;
+  id?: string;
   /** A list of parameter names that the path that this route ref is bound to must contain */
   params?: ParamKey[];
+  /** @deprecated Route refs no longer decide their own path */
+  path?: string;
+  /** @deprecated Route refs no longer decide their own icon */
+  icon?: IconComponent;
+  /** @deprecated Route refs no longer decide their own title */
+  title?: string;
 }): RouteRef<OptionalParams<Params>> {
-  if (!config.id) {
+  const id = config.id || config.title;
+  if (!id) {
     throw new Error('RouteRef must be provided a non-empty id');
   }
   return new RouteRefImpl(
-    config.id,
+    id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
+    config,
   );
 }

@@ -17,6 +17,7 @@
 import { ComponentType } from 'react';
 import { ProfileInfo } from '../apis/definitions';
 import { IconComponent } from '../icons';
+import { BackstagePlugin } from '../plugin/types';
 
 export type BootErrorPageProps = {
   step: 'load-config' | 'load-chunk';
@@ -68,6 +69,11 @@ export type AppComponents = {
 };
 
 export type AppContext = {
+  /**
+   * Get a list of all plugins that are installed in the app.
+   */
+  getPlugins(): BackstagePlugin<any, any>[];
+
   /**
    * Get a common or custom icon for this app.
    */

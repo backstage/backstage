@@ -21,7 +21,10 @@ import {
 } from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
-type RouteRefType = Exclude<keyof RouteRef, 'params'>;
+type RouteRefType = Exclude<
+  keyof RouteRef,
+  'params' | 'path' | 'title' | 'icon'
+>;
 export const routeRefType: RouteRefType = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),

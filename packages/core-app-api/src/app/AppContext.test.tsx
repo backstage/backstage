@@ -36,6 +36,7 @@ describe('v1 consumer', () => {
 
   it('should provide an app context', () => {
     const mockContext: AppContextV1 = {
+      getPlugins: jest.fn(),
       getComponents: jest.fn(),
       getSystemIcon: jest.fn(),
     };
@@ -46,6 +47,10 @@ describe('v1 consumer', () => {
       ),
     });
     const result = renderedHook.result.current;
+
+    expect(mockContext.getPlugins).toHaveBeenCalledTimes(0);
+    result.getPlugins();
+    expect(mockContext.getPlugins).toHaveBeenCalledTimes(1);
 
     expect(mockContext.getComponents).toHaveBeenCalledTimes(0);
     result.getComponents();
