@@ -20,7 +20,7 @@ import { getFileTreeRecursively, getHeadersForFileExtension } from './helpers';
 
 describe('getHeadersForFileExtension', () => {
   const correctMapOfExtensions = [
-    ['.html', 'text/html; charset=utf-8'],
+    ['.html', 'text/plain; charset=utf-8'],
     ['.css', 'text/css; charset=utf-8'],
     ['.png', 'image/png'],
     ['.jpg', 'image/jpeg'],

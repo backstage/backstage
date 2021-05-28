@@ -28,10 +28,18 @@ export type responseHeadersType = {
 export const getHeadersForFileExtension = (
   fileExtension: string,
 ): responseHeadersType => {
-  return {
+  const headerType = {
     'Content-Type':
       mime.contentType(fileExtension) || 'text/plain; charset=utf-8',
-  } as responseHeadersType;
+  };
+
+  // Prevent sanitization bypass by preventing browers from directly rendering
+  // the contents of HTML files kept in storage.
+  if (headerType['Content-Type'].match(/html/)) {
+    headerType['Content-Type'] = 'text/plain; charset=utf-8';
+  }
+
+  return headerType;
 };
 
 /**
