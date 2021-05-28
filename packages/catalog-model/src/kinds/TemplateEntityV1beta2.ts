@@ -33,6 +33,7 @@ export interface TemplateEntityV1beta2 extends Entity {
       name?: string;
       action: string;
       input?: JsonObject;
+      if?: string | boolean;
     }>;
     output?: { [name: string]: string };
     owner?: string;

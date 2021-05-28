@@ -45,7 +45,8 @@
             "action": "publish:github",
             "parameters": {
               "repoUrl": "{{ parameters.repoUrl }}"
-            }
+            },
+            "if": "{{ parameters.repoUrl }}"
           }
         ],
         "output": {
@@ -128,6 +129,10 @@
                   "input": {
                     "type": "object",
                     "description": "A templated object describing the inputs to the action."
+                  },
+                  "if": {
+                    "type": ["string", "boolean"],
+                    "description": "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed."
                   }
                 }
               }
