@@ -16,7 +16,7 @@
 import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 
-export type Status = 'open' | 'processing' | 'failed' | 'completed';
+export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 export type Job = {
   id: string;
