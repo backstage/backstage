@@ -38,10 +38,27 @@ export const addBaseUrl = ({
         .forEach(async (elem: T) => {
           const elemAttribute = elem.getAttribute(attributeName);
           if (!elemAttribute) return;
-          elem.setAttribute(
-            attributeName,
-            await techdocsStorageApi.getBaseUrl(elemAttribute, entityId, path),
+
+          // Special handling for SVG images.
+          const newValue = await techdocsStorageApi.getBaseUrl(
+            elemAttribute,
+            entityId,
+            path,
           );
+          if (attributeName === 'src' && elemAttribute.endsWith('.svg')) {
+            try {
+              const svg = await fetch(newValue);
+              const svgContent = await svg.text();
+              elem.setAttribute(
+                attributeName,
+                `data:image/svg+xml;base64,${btoa(svgContent)}`,
+              );
+            } catch (e) {
+              elem.setAttribute('alt', `Error: ${elemAttribute}`);
+            }
+          } else {
+            elem.setAttribute(attributeName, newValue);
+          }
         });
     };
 

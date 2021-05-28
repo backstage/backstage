@@ -47,8 +47,17 @@ const mockEntityId = {
   namespace: '',
   name: '',
 };
-
 describe('addBaseUrl', () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
   it('contains relative paths', () => {
     createTestShadowDom(fixture, {
       preTransformers: [
@@ -85,5 +94,35 @@ describe('addBaseUrl', () => {
       mockEntityId,
       '',
     );
+  });
+
+  it('transforms svg img src to data uri', async () => {
+    const svgContent = '<svg></svg>';
+    const expectedSrc = `data:image/svg+xml;base64,${Buffer.from(
+      svgContent,
+    ).toString('base64')}`;
+
+    (global.fetch as jest.Mock).mockReturnValue({
+      text: jest.fn().mockResolvedValue(svgContent),
+    });
+
+    const root = createTestShadowDom('<img id="x" src="test.svg" />', {
+      preTransformers: [
+        addBaseUrl({
+          techdocsStorageApi,
+          entityId: mockEntityId,
+          path: '',
+        }),
+      ],
+      postTransformers: [],
+    });
+
+    await new Promise<void>(done => {
+      process.nextTick(() => {
+        const actualSrc = root.getElementById('x')?.getAttribute('src');
+        expect(expectedSrc).toEqual(actualSrc);
+        done();
+      });
+    });
   });
 });
