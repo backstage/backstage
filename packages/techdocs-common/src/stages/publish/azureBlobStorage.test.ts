@@ -343,6 +343,9 @@ describe('publishing with valid credentials', () => {
       mockFs.restore();
       mockFs({
         [entityRootDir]: {
+          html: {
+            'file.html': '<html></html>',
+          },
           img: {
             'with spaces.png': 'found it',
           },
@@ -374,6 +377,21 @@ describe('publishing with valid credentials', () => {
         `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass text/plain content-type for html', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const response = await request(app).get(
+        `/${namespace}/${kind}/${name}/html/file.html`,
+      );
+      expect(response.text).toEqual('<html></html>');
+      expect(response.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
     });
   });
 });

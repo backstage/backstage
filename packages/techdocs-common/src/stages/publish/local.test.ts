@@ -16,8 +16,11 @@
 import {
   getVoidLogger,
   PluginEndpointDiscovery,
+  resolvePackagePath,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
+import request from 'supertest';
 import mockFs from 'mock-fs';
 import * as os from 'os';
 import { LocalPublish } from './local';
@@ -35,10 +38,20 @@ const createMockEntity = (annotations = {}) => {
   };
 };
 
+const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+  getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7000/api/techdocs'),
+  getExternalBaseUrl: jest.fn(),
+};
+
 const logger = getVoidLogger();
 
 const tmpDir =
   os.platform() === 'win32' ? 'C:\\tmp\\generatedDir' : '/tmp/generatedDir';
+
+const resolvedDir = resolvePackagePath(
+  '@backstage/plugin-techdocs-backend',
+  'static/docs',
+);
 
 describe('local publisher', () => {
   it('should publish generated documentation dir', async () => {
@@ -47,13 +60,6 @@ describe('local publisher', () => {
         'index.html': '',
       },
     });
-
-    const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
-      getBaseUrl: jest
-        .fn()
-        .mockResolvedValue('http://localhost:7000/api/techdocs'),
-      getExternalBaseUrl: jest.fn(),
-    };
 
     const mockConfig = new ConfigReader({});
 
@@ -65,5 +71,34 @@ describe('local publisher', () => {
     expect(await publisher.hasDocsBeenGenerated(mockEntity)).toBe(true);
 
     mockFs.restore();
+  });
+
+  describe('docsRouter', () => {
+    const mockConfig = new ConfigReader({});
+    const publisher = new LocalPublish(mockConfig, logger, testDiscovery);
+    let app: express.Express;
+
+    beforeEach(() => {
+      app = express().use(publisher.docsRouter());
+
+      mockFs.restore();
+      mockFs({
+        [resolvedDir]: {
+          'some-file.html': 'found it',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should pass text/plain content-type for html', async () => {
+      const response = await request(app).get(`/some-file.html`);
+      expect(response.text).toEqual('found it');
+      expect(response.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
+    });
   });
 });
