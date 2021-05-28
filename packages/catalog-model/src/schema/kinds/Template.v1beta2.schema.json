@@ -132,7 +132,7 @@
                   },
                   "if": {
                     "type": ["string", "boolean"],
-                    "description": "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed."
+                    "description": "A templated condition that skips the step when evaluated to false. If the condition is true or not defined, the step is executed. The condition is true, if the input is not `false`, `undefined`, `null`, `\"\"`, `0`, or `[]`."
                   }
                 }
               }
