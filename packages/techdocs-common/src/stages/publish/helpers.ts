@@ -34,8 +34,8 @@ export const getHeadersForFileExtension = (
   };
 
   // Prevent sanitization bypass by preventing browers from directly rendering
-  // the contents of HTML files kept in storage.
-  if (headerType['Content-Type'].match(/html/)) {
+  // the contents of untrusted content.
+  if (headerType['Content-Type'].match(/html|xml/)) {
     headerType['Content-Type'] = 'text/plain; charset=utf-8';
   }
 

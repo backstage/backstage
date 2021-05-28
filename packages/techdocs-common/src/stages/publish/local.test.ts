@@ -84,7 +84,8 @@ describe('local publisher', () => {
       mockFs.restore();
       mockFs({
         [resolvedDir]: {
-          'some-file.html': 'found it',
+          'unsafe.html': '<html></html>',
+          'unsafe.svg': '<svg></svg>',
         },
       });
     });
@@ -93,10 +94,16 @@ describe('local publisher', () => {
       mockFs.restore();
     });
 
-    it('should pass text/plain content-type for html', async () => {
-      const response = await request(app).get(`/some-file.html`);
-      expect(response.text).toEqual('found it');
-      expect(response.header).toMatchObject({
+    it('should pass text/plain content-type for unsafe types', async () => {
+      const htmlResponse = await request(app).get(`/unsafe.html`);
+      expect(htmlResponse.text).toEqual('<html></html>');
+      expect(htmlResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
+
+      const svgResponse = await request(app).get(`/unsafe.svg`);
+      expect(svgResponse.text).toEqual('<svg></svg>');
+      expect(svgResponse.header).toMatchObject({
         'content-type': 'text/plain; charset=utf-8',
       });
     });

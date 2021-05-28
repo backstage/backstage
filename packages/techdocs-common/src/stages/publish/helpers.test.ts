@@ -25,7 +25,7 @@ describe('getHeadersForFileExtension', () => {
     ['.png', 'image/png'],
     ['.jpg', 'image/jpeg'],
     ['.jpeg', 'image/jpeg'],
-    ['.svg', 'image/svg+xml'],
+    ['.svg', 'text/plain; charset=utf-8'],
     ['.json', 'application/json; charset=utf-8'],
     ['.this-in-not-an-extension', 'text/plain; charset=utf-8'],
   ];
