@@ -1,10 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "TemplateV1beta1",
+  "$id": "TemplateV1beta2",
   "description": "A Template describes a scaffolding task for use with the Scaffolder. It describes the required parameters as well as a series of steps that will be taken to execute the scaffolding task.",
   "examples": [
     {
-      "apiVersion": "backstage.io/v1beta1",
+      "apiVersion": "backstage.io/v1beta2",
       "kind": "Template",
       "metadata": {
         "name": "react-ssr-template",
