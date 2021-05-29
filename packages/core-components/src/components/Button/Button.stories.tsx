@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponentFactory } from 'react';
+import React, { ComponentType } from 'react';
 import { Button } from './Button';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import {
-  createExternalRouteRef,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
 import {
   Divider,
   Link,
@@ -29,8 +26,13 @@ import {
   Typography,
   Button as MaterialButton,
 } from '@material-ui/core';
+// We don't want to export RoutingProvider from core-app-api, but it's way easier to
+// use here. This hack only works in storybook stories.
+// TODO: Export a nicer to user routing provider, perhaps from test-utils
+// eslint-disable-next-line monorepo/no-internal-import
+import { RoutingProvider } from '@backstage/core-app-api/src/routing/RoutingProvider';
 
-const routeRef = createExternalRouteRef({
+const routeRef = createRouteRef({
   id: 'storybook.test-route',
 });
 
@@ -43,7 +45,7 @@ export default {
   title: 'Inputs/Button',
   component: Button,
   decorators: [
-    (storyFn: FunctionComponentFactory<{}>) => (
+    (Story: ComponentType<{}>) => (
       <>
         <Typography>
           A collection of buttons that should be used in the Backstage
@@ -57,12 +59,19 @@ export default {
         <Divider />
 
         <MemoryRouter>
-          <div>
+          <RoutingProvider
+            routeBindings={new Map()}
+            routeObjects={[]}
+            routeParents={new Map()}
+            routePaths={new Map([[routeRef, '/hello']])}
+          >
             <div>
-              <Location />
+              <div>
+                <Location />
+              </div>
+              <Story />
             </div>
-            {storyFn()}
-          </div>
+          </RoutingProvider>
         </MemoryRouter>
       </>
     ),

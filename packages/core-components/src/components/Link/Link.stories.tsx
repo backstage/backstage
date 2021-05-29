@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { FunctionComponentFactory } from 'react';
+import React, { ComponentType } from 'react';
 import { Link } from './Link';
 import {
   MemoryRouter,
@@ -21,12 +21,13 @@ import {
   useLocation,
   NavLink as RouterNavLink,
 } from 'react-router-dom';
-import {
-  createExternalRouteRef,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+import { createRouteRef, useRouteRef } from '@backstage/core-plugin-api';
+// We don't want to export RoutingProvider from core-app-api, but it's way easier to
+// use here. This hack only works in storybook stories.
+// eslint-disable-next-line monorepo/no-internal-import
+import { RoutingProvider } from '@backstage/core-app-api/src/routing/RoutingProvider';
 
-const routeRef = createExternalRouteRef({
+const routeRef = createRouteRef({
   id: 'storybook.test-route',
 });
 
@@ -39,14 +40,21 @@ export default {
   title: 'Navigation/Link',
   component: Link,
   decorators: [
-    (storyFn: FunctionComponentFactory<{}>) => (
+    (Story: ComponentType<{}>) => (
       <MemoryRouter>
-        <div>
+        <RoutingProvider
+          routeBindings={new Map()}
+          routeObjects={[]}
+          routeParents={new Map()}
+          routePaths={new Map([[routeRef, '/hello']])}
+        >
           <div>
-            <Location />
+            <div>
+              <Location />
+            </div>
+            <Story />
           </div>
-          {storyFn()}
-        </div>
+        </RoutingProvider>
       </MemoryRouter>
     ),
   ],
