@@ -1693,20 +1693,6 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
-"@backstage/catalog-model@^0.7.7":
-  version "0.8.0"
-  dependencies:
-    "@backstage/config" "^0.1.5"
-    "@backstage/errors" "^0.1.1"
-    "@types/json-schema" "^7.0.5"
-    "@types/yup" "^0.29.8"
-    ajv "^7.0.3"
-    json-schema "^0.3.0"
-    lodash "^4.17.15"
-    typescript-json-schema "^0.49.0"
-    uuid "^8.0.0"
-    yup "^0.29.3"
-
 "@backstage/catalog-model@^0.7.9":
   version "0.8.0"
   dependencies:
@@ -1721,7 +1707,7 @@
     uuid "^8.0.0"
     yup "^0.29.3"
 
-"@backstage/plugin-catalog-react@^0.1.4", "@backstage/plugin-catalog-react@^0.1.5":
+"@backstage/plugin-catalog-react@^0.1.4":
   version "0.1.6"
   resolved "https://registry.npmjs.org/@backstage/plugin-catalog-react/-/plugin-catalog-react-0.1.6.tgz#1d72756cce22b880987c30ac27e23af8efa22843"
   integrity sha512-/60GIrcFfyAiKn3bylXegwtHf1NQxQa4PcXD7nSIB5ISCuot2mkI32LMjciEvNHR7efGA5Yv6yWelFSFdvbcKQ==
@@ -4362,14 +4348,14 @@
     react-router-dom "6.0.0-beta.0"
     react-use "^15.3.6"
 
-"@roadiehq/backstage-plugin-github-insights@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.10.tgz#0af8ae29cab6d92985079a1d8f92ede2e50bf247"
-  integrity sha512-XeWnPOgLI1BWgRwGqrnGTk79gpjd9bQtzGLzpTAjecFQWMnp6eeCOpIq1xTQcFHnFOSaJhQLp2JOWtiM4ZUAXw==
+"@roadiehq/backstage-plugin-github-insights@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-insights/-/backstage-plugin-github-insights-1.1.11.tgz#6f716a0864b7e3a7255d7ec97c92a68a99874025"
+  integrity sha512-fDW92aCGXJtZ36TLgEkHiLCZgNKh5lqRFSmStd+58o4QRMiJp852Tcbi2ySrtf03SnGKn7rvD2CqThx/VcwPwg==
   dependencies:
-    "@backstage/catalog-model" "^0.7.7"
-    "@backstage/core" "^0.7.8"
-    "@backstage/plugin-catalog-react" "^0.1.5"
+    "@backstage/catalog-model" "^0.8.0"
+    "@backstage/core" "^0.7.11"
+    "@backstage/plugin-catalog-react" "^0.2.0"
     "@backstage/theme" "^0.2.7"
     "@date-io/core" "2.10.7"
     "@material-ui/core" "^4.11.0"
