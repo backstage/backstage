@@ -4165,7 +4165,7 @@
     node-fetch "^2.6.1"
     universal-user-agent "^6.0.0"
 
-"@octokit/rest@^18.1.0", "@octokit/rest@^18.1.1", "@octokit/rest@^18.5.3":
+"@octokit/rest@^18.1.0", "@octokit/rest@^18.5.3":
   version "18.5.3"
   resolved "https://registry.npmjs.org/@octokit/rest/-/rest-18.5.3.tgz#6a2e6006a87ebbc34079c419258dd29ec9ff659d"
   integrity sha512-KPAsUCr1DOdLVbZJgGNuE/QVLWEaVBpFQwDAz/2Cnya6uW2wJ/P5RVGk0itx7yyN1aGa8uXm2pri4umEqG1JBA==
@@ -4368,17 +4368,17 @@
     react-router "^6.0.0-beta.0"
     react-use "^17.2.4"
 
-"@roadiehq/backstage-plugin-github-pull-requests@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-1.0.0.tgz#5103d9ff65ed38a752ceb8ac1c7369fd0724388f"
-  integrity sha512-HAi3X0kto/xMNaMzy9f4t142MGvxwuxDfiLN+bZUsWwta4iI3CgK/9fZAd5kU9+E04EFxkRXmg72FXxG64H6Zg==
+"@roadiehq/backstage-plugin-github-pull-requests@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-github-pull-requests/-/backstage-plugin-github-pull-requests-1.0.5.tgz#7b71823b1c39dbcb89276a5725815c15a0e27943"
+  integrity sha512-be+buEb4tkMfVB1qFn3OwFc4pq9/Nu+5C5LsdEwhRnJHN7eLcOBMnhH5l0zAYkHErpF3zbI3xngbap+TATbm0Q==
   dependencies:
-    "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.3"
-    "@backstage/plugin-catalog-react" "^0.1.4"
+    "@backstage/catalog-model" "^0.8.0"
+    "@backstage/core" "^0.7.11"
+    "@backstage/plugin-catalog-react" "^0.2.0"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
-    "@octokit/rest" "^18.1.1"
+    "@octokit/rest" "^18.5.3"
     "@octokit/types" "^5.0.1"
     "@types/node-fetch" "^2.5.7"
     history "^5.0.0"
@@ -4387,7 +4387,7 @@
     react "^16.13.1"
     react-dom "^16.13.1"
     react-router "6.0.0-beta.0"
-    react-use "^15.3.6"
+    react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-travis-ci@^1.0.0":
   version "1.0.0"
@@ -22467,7 +22467,7 @@ react-use@^12.2.0:
     ts-easing "^0.2.0"
     tslib "^1.10.0"
 
-react-use@^15.3.3, react-use@^15.3.6:
+react-use@^15.3.3:
   version "15.3.8"
   resolved "https://registry.npmjs.org/react-use/-/react-use-15.3.8.tgz#ca839ac7fb3d696e5ccbeabbc8dadc2698969d30"
   integrity sha512-GeGcrmGuUvZrY5wER3Lnph9DSYhZt5nEjped4eKDq8BRGr2CnLf9bDQWG9RFc7oCPphnscUUdOovzq0E5F2c6Q==
