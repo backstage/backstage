@@ -4326,27 +4326,26 @@
   resolved "https://registry.npmjs.org/@rjsf/material-ui/-/material-ui-2.5.1.tgz#b93ac9f1f4a909e2aae729616859c2d72557e53e"
   integrity sha512-ooKxQJO12+i1xCGtknMZDxWSbVlSEgQ5U1I7lJ+uI/MvwAg3Rz9wb2cTEF3ErBczT7EEW+j1lR19rxBjFd78MA==
 
-"@roadiehq/backstage-plugin-buildkite@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-1.0.0.tgz#0c00352eb7a204ac45f55bc5dd4c17c9c1cfdf9e"
-  integrity sha512-R6pxMSOeTK+4OBBhSktEEEIkaVTcOWTsgnpB5FEZ748YZ3Ul4dp4H2S3bup2OnMIL79xY2oAxYt1iRmAe69Bng==
+"@roadiehq/backstage-plugin-buildkite@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@roadiehq/backstage-plugin-buildkite/-/backstage-plugin-buildkite-1.0.3.tgz#d865da83380e1cdcec5825f856597446f5652f53"
+  integrity sha512-HMDworpWRgwhmQETAe2DUX3cxddP+N1q8bTWxAQwOHO6mecF08uvZDGA1VdWabXSPpJwFUiZEi9OLlNYkl32GA==
   dependencies:
-    "@backstage/catalog-model" "^0.7.4"
-    "@backstage/core" "^0.7.3"
-    "@backstage/plugin-catalog" "^0.5.1"
-    "@backstage/plugin-catalog-react" "^0.1.4"
-    "@backstage/theme" "^0.2.5"
+    "@backstage/catalog-model" "^0.8.0"
+    "@backstage/core" "^0.7.11"
+    "@backstage/plugin-catalog-react" "^0.2.0"
+    "@backstage/theme" "^0.2.7"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
     history "^5.0.0"
-    moment "^2.27.0"
+    moment "^2.29.1"
     react "^16.13.1"
     react-dom "^16.13.1"
     react-lazylog "^4.5.2"
     react-router "6.0.0-beta.0"
     react-router-dom "6.0.0-beta.0"
-    react-use "^15.3.6"
+    react-use "^17.2.4"
 
 "@roadiehq/backstage-plugin-github-insights@^1.1.11":
   version "1.1.11"
