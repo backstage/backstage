@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-// This folder contains implementations for all core APIs.
-//
-// Plugins should rely on these APIs for functionality as much as possible.
-
 export { UrlPatternDiscovery } from './UrlPatternDiscovery';
