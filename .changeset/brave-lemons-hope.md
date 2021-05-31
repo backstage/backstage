@@ -1,9 +1,8 @@
 ---
-'@backstage/plugin-scaffolder': minor
-'@backstage/create-app': patch
+'@backstage/plugin-scaffolder': patch
 ---
 
-Scaffolder Field Extensions are here! This means you'll now have to change how the `ScaffolderPage` is wired up in your `app/src/App.tsx` to pass in the custom fields to the Scaffolder.
+Scaffolder Field Extensions are here! This means you'll now the ability to create custom field extensions and have the Scaffolder use the components when collecting information from the user in the wizard. By default we supply the `RepoUrlPicker` and the `OwnerPicker`, but if you want to provide some more extensions or override the built on ones you will have to change how the `ScaffolderPage` is wired up in your `app/src/App.tsx` to pass in the custom fields to the Scaffolder.
 
 You'll need to move this:
 
@@ -24,10 +23,10 @@ import {
   <ScaffolderFieldExtensions>
     <RepoUrlPickerFieldExtension />
     <OwnerPickerFieldExtension />
+
+    {/*Any other extensions you want to provide*/}
   </ScaffolderFieldExtensions>
 </Route>;
 ```
-
-Failure to do this will result in no component being rendered for the custom field's like `OwnerPicker` and `RepoUrlPicker`.
 
 More documentation on how to write your own `FieldExtensions` to follow.

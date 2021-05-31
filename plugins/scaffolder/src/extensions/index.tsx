@@ -15,14 +15,8 @@
  */
 
 import { Extension, attachComponentData } from '@backstage/core';
-import { FieldValidation, FieldProps } from '@rjsf/core';
 import React from 'react';
-
-export type FieldExtensionOptions<T = any> = {
-  name: string;
-  component: (props: FieldProps<T>) => JSX.Element | null;
-  validation?: (data: T, field: FieldValidation) => void;
-};
+import { FieldExtensionOptions } from './types';
 
 export const FIELD_EXTENSION_WRAPPER_KEY = 'scaffolder.extensions.wrapper.v1';
 export const FIELD_EXTENSION_KEY = 'scaffolder.extensions.field.v1';
@@ -51,3 +45,7 @@ attachComponentData(
   FIELD_EXTENSION_WRAPPER_KEY,
   true,
 );
+
+export type { FieldExtensionOptions };
+
+export { DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS } from './default';

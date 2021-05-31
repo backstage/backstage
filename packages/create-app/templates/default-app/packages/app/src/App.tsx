@@ -14,9 +14,6 @@ import {
 } from '@backstage/plugin-catalog';
 import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-import';
 import { 
-  OwnerPickerFieldExtension, 
-  RepoUrlPickerFieldExtension, 
-  ScaffolderFieldExtensions, 
   ScaffolderPage, 
   scaffolderPlugin 
 } from '@backstage/plugin-scaffolder';
@@ -57,12 +54,7 @@ const routes = (
       {entityPage}
     </Route>
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/create" element={<ScaffolderPage />}>
-      <ScaffolderFieldExtensions>
-        <RepoUrlPickerFieldExtension />
-        <OwnerPickerFieldExtension />
-      </ScaffolderFieldExtensions>
-    </Route>
+    <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
       path="/tech-radar"

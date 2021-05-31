@@ -113,12 +113,7 @@ const routes = (
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
-    <Route path="/create" element={<ScaffolderPage />}>
-      <ScaffolderFieldExtensions>
-        <RepoUrlPickerFieldExtension />
-        <OwnerPickerFieldExtension />
-      </ScaffolderFieldExtensions>
-    </Route>
+    <Route path="/create" element={<ScaffolderPage />} />
     <Route path="/explore" element={<ExplorePage />} />
     <Route
       path="/tech-radar"
