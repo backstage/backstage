@@ -335,20 +335,26 @@ describe('read microsoft graph', () => {
 
       expect(rootGroup.spec.parent).toBeUndefined();
       expect(rootGroup.spec.children).toEqual(
-        expect.arrayContaining(['a', 'b']),
+        expect.arrayContaining(['group:default/a', 'group:default/b']),
       );
 
-      expect(groupA.spec.parent).toEqual('root');
+      expect(groupA.spec.parent).toEqual('group:default/root');
       expect(groupA.spec.children).toEqual(expect.arrayContaining([]));
 
-      expect(groupB.spec.parent).toEqual('root');
-      expect(groupB.spec.children).toEqual(expect.arrayContaining(['c']));
+      expect(groupB.spec.parent).toEqual('group:default/root');
+      expect(groupB.spec.children).toEqual(
+        expect.arrayContaining(['group:default/c']),
+      );
 
-      expect(groupC.spec.parent).toEqual('b');
+      expect(groupC.spec.parent).toEqual('group:default/b');
       expect(groupC.spec.children).toEqual(expect.arrayContaining([]));
 
-      expect(user1.spec.memberOf).toEqual(expect.arrayContaining(['a']));
-      expect(user2.spec.memberOf).toEqual(expect.arrayContaining(['b', 'c']));
+      expect(user1.spec.memberOf).toEqual(
+        expect.arrayContaining(['group:default/a']),
+      );
+      expect(user2.spec.memberOf).toEqual(
+        expect.arrayContaining(['group:default/c']),
+      );
     });
   });
 });

@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { GroupEntity, UserEntity } from '@backstage/catalog-model';
+import {
+  GroupEntity,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import limiterFactory from 'p-limit';
 import { MicrosoftGraphClient } from './client';
@@ -332,9 +336,7 @@ export function resolveRelations(
     retrieveItems(groupMember, id).forEach(m => {
       const childGroup = groupMap.get(m);
       if (childGroup) {
-        // TODO: This break when groups are transformed into different namespaces, use full entity refs instead
-
-        group.spec.children.push(childGroup.metadata.name);
+        group.spec.children.push(stringifyEntityRef(childGroup));
       }
     });
 
@@ -342,9 +344,7 @@ export function resolveRelations(
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
         // TODO: Only having a single parent group might not match every companies model, but fine for now.
-
-        // TODO: use full entity refs
-        group.spec.parent = parentGroup.metadata.name;
+        group.spec.parent = stringifyEntityRef(parentGroup);
       }
     });
   });
@@ -359,8 +359,7 @@ export function resolveRelations(
     retrieveItems(groupMemberOf, id).forEach(p => {
       const parentGroup = groupMap.get(p);
       if (parentGroup) {
-        // TODO: use full entity refs
-        user.spec.memberOf.push(parentGroup.metadata.name);
+        user.spec.memberOf.push(stringifyEntityRef(parentGroup));
       }
     });
   });
