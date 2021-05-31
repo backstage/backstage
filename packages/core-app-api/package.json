@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "description": "Core app API used by Backstage plugins and apps",
+  "description": "Core app API used by Backstage apps",
   "version": "0.1.0",
   "private": false,
   "publishConfig": {
