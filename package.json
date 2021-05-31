@@ -40,6 +40,7 @@
     ]
   },
   "resolutions": {
+    "**/@types/react": "^16.9.0",
     "**/@roadiehq/**/@backstage/core": "*",
     "**/@roadiehq/**/@backstage/plugin-catalog": "*",
     "**/@roadiehq/**/@backstage/catalog-model": "*",
