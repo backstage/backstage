@@ -11767,10 +11767,10 @@ docker-compose@^0.23.8:
   dependencies:
     yaml "^1.10.2"
 
-docker-modem@^2.1.0:
-  version "2.1.3"
-  resolved "https://registry.npmjs.org/docker-modem/-/docker-modem-2.1.3.tgz#15432225f63db02eb5de4bb9a621b7293e5f264d"
-  integrity sha512-cwaRptBmYZwu/FyhGcqBm2MzXA77W2/E6eVkpOZVDk6PkI9Bjj84xPrXiHMA+OWjzNy+DFjgKh8Q+1hMR7/OHg==
+docker-modem@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/docker-modem/-/docker-modem-3.0.0.tgz#cb912ad8daed42f858269fb3be6944df281ec12d"
+  integrity sha512-WwFajJ8I5geZ/dDZ5FDMDA6TBkWa76xWwGIGw8uzUjNUGCN0to83wJ8Oi1AxrJTC0JBn+7fvIxUctnawtlwXeg==
   dependencies:
     debug "^4.1.1"
     readable-stream "^3.5.0"
@@ -11778,11 +11778,11 @@ docker-modem@^2.1.0:
     ssh2 "^0.8.7"
 
 dockerode@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.2.1.tgz#4a2222e3e1df536bf595e78e76d3cfbf6d4d93b9"
-  integrity sha512-XsSVB5Wu5HWMg1aelV5hFSqFJaKS5x1aiV/+sT7YOzOq1IRl49I/UwV8Pe4x6t0iF9kiGkWu5jwfvbkcFVupBw==
+  version "3.3.0"
+  resolved "https://registry.npmjs.org/dockerode/-/dockerode-3.3.0.tgz#bedaf48ef9fa9124275a54a9881a92374c51008e"
+  integrity sha512-St08lfOjpYCOXEM8XA0VLu3B3hRjtddODphNW5GFoA0AS3JHgoPQKOz0Qmdzg3P+hUPxhb02g1o1Cu1G+U3lRg==
   dependencies:
-    docker-modem "^2.1.0"
+    docker-modem "^3.0.0"
     tar-fs "~2.0.1"
 
 doctrine@1.5.0:
