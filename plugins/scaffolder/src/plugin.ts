@@ -21,8 +21,14 @@ import {
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
+import { OwnerPicker } from './components/fields/OwnerPicker';
+import {
+  RepoUrlPicker,
+  repoPickerValidation,
+} from './components/fields/RepoUrlPicker';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
+import { createScaffolderFieldExtension } from './extensions';
 import { rootRouteRef, registerComponentRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
@@ -46,6 +52,21 @@ export const scaffolderPlugin = createPlugin({
     registerComponent: registerComponentRouteRef,
   },
 });
+
+export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: RepoUrlPicker,
+    name: 'RepoUrlPicker',
+    validation: repoPickerValidation,
+  }),
+);
+
+export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: OwnerPicker,
+    name: 'OwnerPicker',
+  }),
+);
 
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({

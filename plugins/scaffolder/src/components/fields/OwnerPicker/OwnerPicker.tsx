@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Field } from '@rjsf/core';
+import { FieldProps } from '@rjsf/core';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core';
 import { useAsync } from 'react-use';
@@ -39,14 +39,14 @@ const entityRef = (entity: Entity | undefined): string => {
   return `${kindPart}${namespacePart}${name}`;
 };
 
-export const OwnerPicker: Field = ({
+export const OwnerPicker = ({
   onChange,
   schema: { title = 'Owner', description = 'The owner of the component' },
   required,
   uiSchema,
   rawErrors,
   formData,
-}) => {
+}: FieldProps<string>) => {
   const allowedKinds = (uiSchema['ui:options']?.allowedKinds || [
     'Group',
     'User',

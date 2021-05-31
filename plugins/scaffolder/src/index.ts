@@ -18,6 +18,9 @@ export {
   scaffolderPlugin,
   scaffolderPlugin as plugin,
   ScaffolderPage,
+  OwnerPickerFieldExtension,
+  RepoUrlPickerFieldExtension,
 } from './plugin';
+export { ScaffolderFieldExtensions } from './extensions';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';

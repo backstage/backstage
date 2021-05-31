@@ -15,7 +15,7 @@
  */
 
 import { EntityName } from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
+import { JsonObject, JsonValue } from '@backstage/config';
 import {
   createApiRef,
   DiscoveryApi,
@@ -24,6 +24,7 @@ import {
 } from '@backstage/core';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { Field, FieldValidation } from '@rjsf/core';
 import ObservableImpl from 'zen-observable';
 import { ListActionsResponse, ScaffolderTask, Status } from './types';
 
@@ -50,6 +51,12 @@ export type LogEvent = {
   createdAt: string;
   id: string;
   taskId: string;
+};
+
+export type CustomField = {
+  name: string;
+  component: Field;
+  validation: (data: JsonValue, field: FieldValidation) => void;
 };
 
 export interface ScaffolderApi {

@@ -23,7 +23,7 @@ import { act } from 'react-dom/test-utils';
 import { MemoryRouter, Route } from 'react-router';
 import { ScaffolderApi, scaffolderApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';
-import { createValidator, TemplatePage } from './TemplatePage';
+import { TemplatePage } from './TemplatePage';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -195,40 +195,5 @@ describe('TemplatePage', () => {
     // Go to the final page
     fireEvent.click(await findByText('Next step'));
     expect(await findByText('Reset')).toBeInTheDocument();
-  });
-});
-
-describe('createValidator', () => {
-  it('should validate deep schema', () => {
-    const validator = createValidator({
-      type: 'object',
-      properties: {
-        foo: {
-          type: 'object',
-          properties: {
-            bar: {
-              type: 'string',
-              'ui:field': 'RepoUrlPicker',
-            },
-          },
-        },
-      },
-    });
-
-    const errors = { foo: { bar: { addError: jest.fn() } } };
-    validator({ foo: { bar: 'github.com?owner=a' } }, errors as any);
-    expect(errors.foo.bar.addError).toHaveBeenCalledWith(
-      'Incomplete repository location provided',
-    );
-    jest.resetAllMocks();
-
-    validator({ foo: { bar: 'github.com?repo=b' } }, errors as any);
-    expect(errors.foo.bar.addError).toHaveBeenCalledWith(
-      'Incomplete repository location provided',
-    );
-    jest.resetAllMocks();
-
-    validator({ foo: { bar: 'github.com?owner=a&repo=b' } }, errors as any);
-    expect(errors.foo.bar.addError).not.toHaveBeenCalled();
   });
 });

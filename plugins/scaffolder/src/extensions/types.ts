@@ -13,5 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { RepoUrlPicker } from './RepoUrlPicker';
-export { repoPickerValidation } from './validation';
+import { FieldValidation, FieldProps } from '@rjsf/core';
+
+export type FieldExtensionOptions<T = any> = {
+  name: string;
+  component: (props: FieldProps<T>) => JSX.Element | null;
+  validation?: (data: T, field: FieldValidation) => void;
+};

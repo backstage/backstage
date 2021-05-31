@@ -13,5 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { RepoUrlPicker } from './RepoUrlPicker';
-export { repoPickerValidation } from './validation';
+import { OwnerPicker } from '../components/fields/OwnerPicker';
+import {
+  RepoUrlPicker,
+  repoPickerValidation,
+} from '../components/fields/RepoUrlPicker';
+import { FieldExtensionOptions } from './types';
+
+export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS: FieldExtensionOptions[] = [
+  {
+    component: RepoUrlPicker,
+    name: 'RepoUrlPicker',
+    validation: repoPickerValidation,
+  },
+  {
+    component: OwnerPicker,
+    name: 'OwnerPicker',
+  },
+];

@@ -13,5 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { RepoUrlPicker } from './RepoUrlPicker';
-export { repoPickerValidation } from './validation';
+import { FieldValidation } from '@rjsf/core';
+
+export const repoPickerValidation = (
+  value: string,
+  validation: FieldValidation,
+) => {
+  try {
+    const { host, searchParams } = new URL(`https://${value}`);
+    if (!host || !searchParams.get('owner') || !searchParams.get('repo')) {
+      validation.addError('Incomplete repository location provided');
+    }
+  } catch {
+    validation.addError('Unable to parse the Repository URL');
+  }
+};
