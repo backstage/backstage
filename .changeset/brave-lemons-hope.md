@@ -15,16 +15,16 @@ To this:
 
 ```tsx
 import {
-  ScaffolderCustomFields,
+  ScaffolderFieldExtensions,
   RepoUrlPickerFieldExtension,
   OwnerPickerFieldExtension,
 } from '@backstage/plugin-scaffolder';
 
 <Route path="/create" element={<ScaffolderPage />}>
-  <ScaffolderCustomFields>
+  <ScaffolderFieldExtensions>
     <RepoUrlPickerFieldExtension />
     <OwnerPickerFieldExtension />
-  </ScaffolderCustomFields>
+  </ScaffolderFieldExtensions>
 </Route>;
 ```
 

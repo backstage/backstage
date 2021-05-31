@@ -16,7 +16,7 @@ import {CatalogImportPage, catalogImportPlugin} from '@backstage/plugin-catalog-
 import { 
   OwnerPickerFieldExtension, 
   RepoUrlPickerFieldExtension, 
-  ScaffolderCustomFields, 
+  ScaffolderFieldExtensions, 
   ScaffolderPage, 
   scaffolderPlugin 
 } from '@backstage/plugin-scaffolder';
@@ -58,10 +58,10 @@ const routes = (
     </Route>
     <Route path="/docs" element={<TechdocsPage />} />
     <Route path="/create" element={<ScaffolderPage />}>
-      <ScaffolderCustomFields>
+      <ScaffolderFieldExtensions>
         <RepoUrlPickerFieldExtension />
         <OwnerPickerFieldExtension />
-      </ScaffolderCustomFields>
+      </ScaffolderFieldExtensions>
     </Route>
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route

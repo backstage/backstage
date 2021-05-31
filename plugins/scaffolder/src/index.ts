@@ -21,6 +21,6 @@ export {
   OwnerPickerFieldExtension,
   RepoUrlPickerFieldExtension,
 } from './plugin';
-export { ScaffolderCustomFields } from './extensions';
+export { ScaffolderFieldExtensions } from './extensions';
 export type { ScaffolderApi } from './api';
 export { ScaffolderClient, scaffolderApiRef } from './api';
