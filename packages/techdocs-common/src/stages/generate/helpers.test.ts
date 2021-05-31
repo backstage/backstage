@@ -41,6 +41,9 @@ const mockEntity = {
 const mkdocsYml = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs.yml'),
 );
+const mkdocsYmlWithExtensions = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_extensions.yml'),
+);
 const mkdocsYmlWithRepoUrl = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_repo_url.yml'),
 );
@@ -175,11 +178,12 @@ describe('helpers', () => {
     });
   });
 
-  describe('pathMkdocsPreBuild', () => {
+  describe('patchMkdocsYmlPreBuild', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs.yml': mkdocsYml,
         '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
+        '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
       });
     });
 
@@ -203,6 +207,28 @@ describe('helpers', () => {
 
       expect(updatedMkdocsYml.toString()).toContain(
         'repo_url: https://github.com/backstage/backstage',
+      );
+    });
+
+    it('should add repo_url to mkdocs.yml that contains custom yaml tags', async () => {
+      const parsedLocationAnnotation: ParsedLocationAnnotation = {
+        type: 'github',
+        target: 'https://github.com/backstage/backstage',
+      };
+
+      await patchMkdocsYmlPreBuild(
+        '/mkdocs_with_extensions.yml',
+        mockLogger,
+        parsedLocationAnnotation,
+      );
+
+      const updatedMkdocsYml = await fs.readFile('/mkdocs_with_extensions.yml');
+
+      expect(updatedMkdocsYml.toString()).toContain(
+        'repo_url: https://github.com/backstage/backstage',
+      );
+      expect(updatedMkdocsYml.toString()).toContain(
+        "emoji_index: !!python/name:materialx.emoji.twemoji ''",
       );
     });
 
@@ -309,7 +335,7 @@ describe('helpers', () => {
     beforeEach(() => {
       mockFs({
         '/mkdocs.yml': mkdocsYml,
-        '/mkdocs_with_repo_url.yml': mkdocsYmlWithRepoUrl,
+        '/mkdocs_with_extensions.yml': mkdocsYmlWithExtensions,
         '/mkdocs_invalid_doc_dir.yml': mkdocsYmlWithInvalidDocDir,
       });
     });
@@ -326,6 +352,12 @@ describe('helpers', () => {
       await expect(
         validateMkdocsYaml('/mkdocs_invalid_doc_dir.yml'),
       ).rejects.toThrow();
+    });
+
+    it('should validate files with custom yaml tags', async () => {
+      await expect(
+        validateMkdocsYaml('/mkdocs_with_extensions.yml'),
+      ).resolves.toBeUndefined();
     });
   });
 });
