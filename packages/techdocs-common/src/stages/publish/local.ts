@@ -137,10 +137,10 @@ export class LocalPublish implements PublisherBase {
       // Handle content-type header the same as all other publishers.
       setHeaders: (res, filePath) => {
         const fileExtension = path.extname(filePath);
-        const { 'Content-Type': header } = getHeadersForFileExtension(
-          fileExtension,
-        );
-        res.setHeader('Content-Type', header);
+        const headers = getHeadersForFileExtension(fileExtension);
+        for (const [header, value] of Object.entries(headers)) {
+          res.setHeader(header, value);
+        }
       },
     });
   }

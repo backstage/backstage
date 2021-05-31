@@ -16,6 +16,22 @@
 import mime from 'mime-types';
 import recursiveReadDir from 'recursive-readdir';
 
+/**
+ * Helper to get the expected content-type for a given file extension. Also
+ * takes XSS mitigation into account.
+ */
+const getContentTypeForExtension = (ext: string): string => {
+  const defaultContentType = 'text/plain; charset=utf-8';
+
+  // Prevent sanitization bypass by preventing browsers from directly rendering
+  // the contents of untrusted files.
+  if (ext.match(/htm|xml|svg/i)) {
+    return defaultContentType;
+  }
+
+  return mime.contentType(ext) || defaultContentType;
+};
+
 export type responseHeadersType = {
   'Content-Type': string;
 };
@@ -28,18 +44,9 @@ export type responseHeadersType = {
 export const getHeadersForFileExtension = (
   fileExtension: string,
 ): responseHeadersType => {
-  const headerType = {
-    'Content-Type':
-      mime.contentType(fileExtension) || 'text/plain; charset=utf-8',
+  return {
+    'Content-Type': getContentTypeForExtension(fileExtension),
   };
-
-  // Prevent sanitization bypass by preventing browers from directly rendering
-  // the contents of untrusted content.
-  if (headerType['Content-Type'].match(/html|xml/)) {
-    headerType['Content-Type'] = 'text/plain; charset=utf-8';
-  }
-
-  return headerType;
 };
 
 /**
