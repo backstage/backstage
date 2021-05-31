@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertApi, AlertMessage } from '@backstage/core-plugin-api';
+import { AlertApi, AlertMessage, Observable } from '@backstage/core-plugin-api';
 import { PublishSubject } from '../../../lib/subjects';
-import { Observable } from '../../../types';
 
 /**
  * Base implementation for the AlertApi that simply forwards alerts to consumers.

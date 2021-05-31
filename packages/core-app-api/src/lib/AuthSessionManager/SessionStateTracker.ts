@@ -15,8 +15,7 @@
  */
 
 import { BehaviorSubject } from '../subjects';
-import { SessionState } from '@backstage/core-plugin-api';
-import { Observable } from '../../types';
+import { Observable, SessionState } from '@backstage/core-plugin-api';
 
 export class SessionStateTracker {
   private readonly subject = new BehaviorSubject<SessionState>(

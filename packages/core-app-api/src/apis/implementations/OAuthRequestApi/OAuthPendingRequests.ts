@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { Observable } from '@backstage/core-plugin-api';
 import { BehaviorSubject } from '../../../lib/subjects';
-import { Observable } from '../../../types';
 
 type RequestQueueEntry<ResultType> = {
   scopes: Set<string>;

@@ -19,10 +19,10 @@ import {
   PendingAuthRequest,
   AuthRequester,
   AuthRequesterOptions,
+  Observable,
 } from '@backstage/core-plugin-api';
 import { OAuthPendingRequests, PendingRequest } from './OAuthPendingRequests';
 import { BehaviorSubject } from '../../../lib/subjects';
-import { Observable } from '../../../types';
 
 /**
  * The OAuthRequestManager is an implementation of the OAuthRequestApi.

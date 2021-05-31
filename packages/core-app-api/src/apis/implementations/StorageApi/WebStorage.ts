@@ -17,8 +17,8 @@ import {
   StorageApi,
   StorageValueChange,
   ErrorApi,
+  Observable,
 } from '@backstage/core-plugin-api';
-import { Observable } from '../../../types';
 import ObservableImpl from 'zen-observable';
 
 const buckets = new Map<string, WebStorage>();

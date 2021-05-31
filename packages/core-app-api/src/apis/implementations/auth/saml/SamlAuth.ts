@@ -17,7 +17,6 @@
 import SamlIcon from '@material-ui/icons/AcUnit';
 import { DirectAuthConnector } from '../../../../lib/AuthConnector';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { Observable } from '../../../../types';
 import {
   ProfileInfo,
   BackstageIdentity,
@@ -26,6 +25,7 @@ import {
   ProfileInfoApi,
   BackstageIdentityApi,
   SessionApi,
+  Observable,
 } from '@backstage/core-plugin-api';
 import { SamlSession } from './types';
 import {

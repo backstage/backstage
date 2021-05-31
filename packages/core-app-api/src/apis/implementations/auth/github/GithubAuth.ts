@@ -24,13 +24,13 @@ import {
   ProfileInfo,
   BackstageIdentity,
   AuthRequestOptions,
+  Observable,
 } from '@backstage/core-plugin-api';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
 import {
   AuthSessionStore,
   StaticAuthSessionManager,
 } from '../../../../lib/AuthSessionManager';
-import { Observable } from '../../../../types';
 import { OAuthApiCreateOptions } from '../types';
 
 export type GithubAuthResponse = {

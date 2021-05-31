@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Observable } from '../../types';
-import { SessionState } from '@backstage/core-plugin-api';
+import { Observable, SessionState } from '@backstage/core-plugin-api';
 
 export type GetSessionOptions = {
   optional?: boolean;

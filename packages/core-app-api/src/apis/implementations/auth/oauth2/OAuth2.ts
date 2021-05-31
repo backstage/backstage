@@ -18,7 +18,6 @@ import OAuth2Icon from '@material-ui/icons/AcUnit';
 import { DefaultAuthConnector } from '../../../../lib/AuthConnector';
 import { RefreshingAuthSessionManager } from '../../../../lib/AuthSessionManager';
 import { SessionManager } from '../../../../lib/AuthSessionManager/types';
-import { Observable } from '../../../../types';
 import {
   AuthRequestOptions,
   BackstageIdentity,
@@ -29,6 +28,7 @@ import {
   SessionState,
   SessionApi,
   BackstageIdentityApi,
+  Observable,
 } from '@backstage/core-plugin-api';
 import { OAuth2Session } from './types';
 import { OAuthApiCreateOptions } from '../types';
