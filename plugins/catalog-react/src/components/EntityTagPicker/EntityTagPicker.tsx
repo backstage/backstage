@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import { Entity } from '@backstage/catalog-model';
 import {
   Checkbox,
   FormControlLabel,
   TextField,
   Typography,
 } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Entity } from '@backstage/catalog-model';
-import { EntityTagFilter } from '../../types';
+import { Autocomplete } from '@material-ui/lab';
+import React, { useMemo } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { EntityTagFilter } from '../../types';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -35,13 +35,14 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const EntityTagPicker = () => {
   const { updateFilters, backendEntities, filters } = useEntityListProvider();
   const availableTags = useMemo(
-    () => [
-      ...new Set(
-        backendEntities
-          .flatMap((e: Entity) => e.metadata.tags)
-          .filter(Boolean) as string[],
-      ),
-    ],
+    () =>
+      [
+        ...new Set(
+          backendEntities
+            .flatMap((e: Entity) => e.metadata.tags)
+            .filter(Boolean) as string[],
+        ),
+      ].sort(),
     [backendEntities],
   );
 
