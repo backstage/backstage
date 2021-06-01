@@ -58,6 +58,7 @@ export interface IndexableDocument {
  * search.
  */
 export interface DocumentCollator {
+  readonly type: string;
   execute(): Promise<IndexableDocument[]>;
 }
 
@@ -66,8 +67,6 @@ export interface DocumentCollator {
  * additional metadata.
  */
 export interface DocumentDecorator {
-  execute(
-    type: string,
-    documents: IndexableDocument[],
-  ): Promise<IndexableDocument[]>;
+  readonly types?: string[];
+  execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
 }

@@ -30,6 +30,7 @@ export interface CatalogEntityDocument extends IndexableDocument {
 export class DefaultCatalogCollator implements DocumentCollator {
   protected discovery: PluginEndpointDiscovery;
   protected locationTemplate: string;
+  public readonly type: string = 'software-catalog';
 
   constructor({
     discovery,

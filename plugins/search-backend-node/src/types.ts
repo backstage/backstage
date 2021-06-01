@@ -27,11 +27,6 @@ import {
  */
 export interface RegisterCollatorParameters {
   /**
-   * The type of document to be indexed (used to name indices, to configure refresh loop, etc).
-   */
-  type: string;
-
-  /**
    * The default interval (in seconds) that the provided collator will be called (can be overridden in config).
    */
   defaultRefreshIntervalSeconds: number;
@@ -50,12 +45,6 @@ export interface RegisterDecoratorParameters {
    * The decorator class responsible for appending or modifying documents of the given type(s).
    */
   decorator: DocumentDecorator;
-
-  /**
-   * (Optional) An array of document types that the given decorator should apply to. If none are provided,
-   * the decorator will be applied to all types.
-   */
-  types?: string[];
 }
 
 /**
