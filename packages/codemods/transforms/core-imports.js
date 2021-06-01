@@ -48,6 +48,9 @@ module.exports = (file, /** @type {import('jscodeshift').API} */ api) => {
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  // Grab the file comment from the first node in case the import gets removed
+  const firstNodeComment = root.find(j.Program).get('body', 0).node.comments;
+
   // Find all import statements of @backstage/core
   const imports = root.find(j.ImportDeclaration, {
     source: {
@@ -81,6 +84,9 @@ module.exports = (file, /** @type {import('jscodeshift').API} */ api) => {
 
   // And add the new imports. `addImports` will take care of resolving duplicates
   addImports(root, newImportStatements);
+
+  // Restore the initial file comment in case it got removed
+  root.find(j.Program).get('body', 0).node.comments = firstNodeComment;
 
   return root.toSource();
 };
