@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/errors';
-import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
-import { Knex } from 'knex';
-import { Transaction } from '../../database';
-import lodash from 'lodash';
-
-import {
-  ProcessingDatabase,
-  AddUnprocessedEntitiesOptions,
-  UpdateProcessedEntityOptions,
-  GetProcessableEntitiesResult,
-  ReplaceUnprocessedEntitiesOptions,
-  RefreshStateItem,
-} from './types';
-import type { Logger } from 'winston';
-
-import { v4 as uuid } from 'uuid';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
+import { ConflictError, NotFoundError } from '@backstage/errors';
+import { Knex } from 'knex';
+import lodash from 'lodash';
+import { v4 as uuid } from 'uuid';
+import type { Logger } from 'winston';
+import { Transaction } from '../../database';
+import {
+  AddUnprocessedEntitiesOptions,
+  GetProcessableEntitiesResult,
+  ProcessingDatabase,
+  RefreshStateItem,
+  ReplaceUnprocessedEntitiesOptions,
+  UpdateProcessedEntityOptions,
+} from './types';
 
 export type DbRefreshStateRow = {
   entity_id: string;
