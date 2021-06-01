@@ -6,8 +6,9 @@ description: Documentation on Writing Backstage Configuration Files
 
 ## File Format
 
-Configuration is stored in YAML format in `app-config.yaml` files, looking
-something like this:
+Configuration is stored in YAML format in `app-config.yaml` files. This
+configuration is shared between the frontend and backend and it looks something
+like this:
 
 ```yaml
 app:
