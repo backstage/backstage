@@ -15,6 +15,7 @@ $ npx @backstage/create-app
 With a local clone of this repo, from the main `create-app/` folder, run:
 
 ```sh
+$ yarn
 $ yarn backstage-create-app
 ```
 
