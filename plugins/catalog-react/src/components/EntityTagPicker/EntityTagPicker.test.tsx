@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
 import { Entity } from '@backstage/catalog-model';
-import { EntityTagPicker } from './EntityTagPicker';
-import { EntityTagFilter } from '../../types';
+import { fireEvent, render } from '@testing-library/react';
+import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
+import { EntityTagFilter } from '../../types';
+import { EntityTagPicker } from './EntityTagPicker';
 
 const taggedEntities: Entity[] = [
   {
@@ -27,7 +27,7 @@ const taggedEntities: Entity[] = [
     kind: 'Component',
     metadata: {
       name: 'component-1',
-      tags: ['tag1', 'tag2'],
+      tags: ['tag4', 'tag1', 'tag2'],
     },
   },
   {
@@ -57,6 +57,26 @@ describe('<EntityTagPicker/>', () => {
       .forEach(tag => {
         expect(rendered.getByText(tag)).toBeInTheDocument();
       });
+  });
+
+  it('renders unique tags in alphabetical order', () => {
+    const rendered = render(
+      <MockEntityListContextProvider
+        value={{ entities: taggedEntities, backendEntities: taggedEntities }}
+      >
+        <EntityTagPicker />
+      </MockEntityListContextProvider>,
+    );
+    expect(rendered.getByText('Tags')).toBeInTheDocument();
+
+    fireEvent.click(rendered.getByTestId('tag-picker-expand'));
+
+    expect(rendered.getAllByRole('option').map(o => o.textContent)).toEqual([
+      'tag1',
+      'tag2',
+      'tag3',
+      'tag4',
+    ]);
   });
 
   it('adds tags to filters', () => {
