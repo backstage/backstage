@@ -16,7 +16,6 @@
 
 import { JsonObject } from '@backstage/config';
 import { EntityName } from '../types';
-import { EntityEnvelope } from './EntityEnvelope';
 import { UNSTABLE_EntityStatus } from './EntityStatus';
 
 /**
@@ -24,7 +23,7 @@ import { UNSTABLE_EntityStatus } from './EntityStatus';
  *
  * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
  */
-export type Entity = EntityEnvelope & {
+export type Entity = {
   /**
    * The version of specification format for this particular entity that
    * this is written against.
