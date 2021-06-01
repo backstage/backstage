@@ -13,128 +13,161 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { v4 as uuid } from 'uuid';
 import { DatabaseManager } from './database/DatabaseManager';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
-const createLocationStore = async () => {
-  const knex = await DatabaseManager.createTestDatabaseConnection();
-  await DatabaseManager.createDatabase(knex);
-  const connection = { applyMutation: jest.fn() };
-  const store = new DefaultLocationStore(knex);
-  await store.connect(connection);
-  return { store, connection };
-};
-
 describe('DefaultLocationStore', () => {
-  it('should do a full sync with the locations on connect', async () => {
-    const { connection } = await createLocationStore();
-
-    expect(connection.applyMutation).toHaveBeenCalledWith({
-      type: 'full',
-      entities: [],
-    });
+  const databases = TestDatabases.create({
+    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
 
-  describe('listLocations', () => {
-    it('lists empty locations when there is no locations', async () => {
-      const { store } = await createLocationStore();
-      expect(await store.listLocations()).toEqual([]);
-    });
+  async function createLocationStore(databaseId: TestDatabaseId) {
+    const knex = await databases.init(databaseId);
+    await DatabaseManager.createDatabase(knex);
+    const connection = { applyMutation: jest.fn() };
+    const store = new DefaultLocationStore(knex);
+    await store.connect(connection);
+    return { store, connection };
+  }
 
-    it('lists locations that are added to the db', async () => {
-      const { store } = await createLocationStore();
-      await store.createLocation({
-        target:
-          'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-        type: 'url',
+  it.each(databases.eachSupportedId())(
+    'should do a full sync with the locations on connect, %p',
+    async databaseId => {
+      const { connection } = await createLocationStore(databaseId);
+
+      expect(connection.applyMutation).toHaveBeenCalledWith({
+        type: 'full',
+        entities: [],
       });
+    },
+    60_000,
+  );
 
-      const listLocations = await store.listLocations();
-      expect(listLocations).toHaveLength(1);
-      expect(listLocations).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            target:
-              'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-            type: 'url',
-          }),
-        ]),
-      );
-    });
+  describe('listLocations', () => {
+    it.each(databases.eachSupportedId())(
+      'lists empty locations when there is no locations, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+        expect(await store.listLocations()).toEqual([]);
+      },
+      60_000,
+    );
+
+    it.each(databases.eachSupportedId())(
+      'lists locations that are added to the db, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+        await store.createLocation({
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+          type: 'url',
+        });
+
+        const listLocations = await store.listLocations();
+        expect(listLocations).toHaveLength(1);
+        expect(listLocations).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              target:
+                'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+              type: 'url',
+            }),
+          ]),
+        );
+      },
+      60_000,
+    );
   });
 
   describe('createLocation', () => {
-    it('throws when the location already exists', async () => {
-      const { store } = await createLocationStore();
-      const spec = {
-        target:
-          'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-        type: 'url',
-      };
-      await store.createLocation(spec);
-      await expect(() => store.createLocation(spec)).rejects.toThrow(
-        new RegExp(`Location ${spec.type}:${spec.target} already exists`),
-      );
-    });
+    it.each(databases.eachSupportedId())(
+      'throws when the location already exists, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+        const spec = {
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+          type: 'url',
+        };
+        await store.createLocation(spec);
+        await expect(() => store.createLocation(spec)).rejects.toThrow(
+          new RegExp(`Location ${spec.type}:${spec.target} already exists`),
+        );
+      },
+      60_000,
+    );
 
-    it('calls apply mutation when adding a new location', async () => {
-      const { store, connection } = await createLocationStore();
-      await store.createLocation({
-        target:
-          'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-        type: 'url',
-      });
+    it.each(databases.eachSupportedId())(
+      'calls apply mutation when adding a new location, %p',
+      async databaseId => {
+        const { store, connection } = await createLocationStore(databaseId);
+        await store.createLocation({
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+          type: 'url',
+        });
 
-      expect(connection.applyMutation).toHaveBeenCalledWith({
-        type: 'delta',
-        removed: [],
-        added: expect.arrayContaining([
-          expect.objectContaining({
-            spec: {
-              target:
-                'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-              type: 'url',
-            },
-          }),
-        ]),
-      });
-    });
+        expect(connection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          removed: [],
+          added: expect.arrayContaining([
+            expect.objectContaining({
+              spec: {
+                target:
+                  'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+                type: 'url',
+              },
+            }),
+          ]),
+        });
+      },
+      60_000,
+    );
   });
 
   describe('deleteLocation', () => {
-    it('throws if the location does not exist', async () => {
-      const { store } = await createLocationStore();
-      const id = uuid();
-      await expect(() => store.deleteLocation(id)).rejects.toThrow(
-        new RegExp(`Found no location with ID ${id}`),
-      );
-    });
+    it.each(databases.eachSupportedId())(
+      'throws if the location does not exist, %p',
+      async databaseId => {
+        const { store } = await createLocationStore(databaseId);
+        const id = uuid();
+        await expect(() => store.deleteLocation(id)).rejects.toThrow(
+          new RegExp(`Found no location with ID ${id}`),
+        );
+      },
+      60_000,
+    );
 
-    it('calls apply mutation when adding a new location', async () => {
-      const { store, connection } = await createLocationStore();
+    it.each(databases.eachSupportedId())(
+      'calls apply mutation when adding a new location, %p',
+      async databaseId => {
+        const { store, connection } = await createLocationStore(databaseId);
 
-      const location = await store.createLocation({
-        target:
-          'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-        type: 'url',
-      });
+        const location = await store.createLocation({
+          target:
+            'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+          type: 'url',
+        });
 
-      await store.deleteLocation(location.id);
+        await store.deleteLocation(location.id);
 
-      expect(connection.applyMutation).toHaveBeenCalledWith({
-        type: 'delta',
-        added: [],
-        removed: expect.arrayContaining([
-          expect.objectContaining({
-            spec: {
-              target:
-                'https://github.com/backstage/demo/blob/master/catalog-info.yml',
-              type: 'url',
-            },
-          }),
-        ]),
-      });
-    });
+        expect(connection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [],
+          removed: expect.arrayContaining([
+            expect.objectContaining({
+              spec: {
+                target:
+                  'https://github.com/backstage/demo/blob/master/catalog-info.yml',
+                type: 'url',
+              },
+            }),
+          ]),
+        });
+      },
+      60_000,
+    );
   });
 });
