@@ -19,32 +19,39 @@ Typically, this means creating a `src/plugins/jenkins.ts` file and adding a refe
 ```typescript
 import {
   createRouter,
-  SingleJenkinsInfoProvider,
+  DefaultJenkinsInfoProvider,
 } from '@backstage/plugin-jenkins-backend';
+import { CatalogClient } from '@backstage/catalog-client';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
+  config,
+  discovery,
 }: PluginEnvironment): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
   return await createRouter({
     logger,
-    jenkinsInfoProvider: new SingleJenkinsInfoProvider(),
+    jenkinsInfoProvider: new DefaultJenkinsInfoProvider(catalogClient, config),
   });
 }
 ```
 
 This plugin must be provided with a JenkinsInfoProvider, this is a strategy object for finding the jenkins instance and job for an entity.
 
-There is a selection of standard ones provided, but the Integrator is free to build their own.
+There is a standard one provided, but the Integrator is free to build their own.
 
-### SingleJenkinsInfoProvider
+### DefaultJenkinsInfoProvider
 
-Allows configuration of a single global jenkins instance and annotating entities with the job name on that instance.
+Allows configuration of either a single or multiple global jenkins instances and annotating entities with the job name on that instance (and optionally the name of the instance).
+
+#### Example - Single global instance
 
 The following will look for jobs for this entity at `https://jenkins.example.com/job/teamA/job/artistLookup-build`
 
-#### Config
+Config
 
 ```yaml
 jenkins:
@@ -53,7 +60,7 @@ jenkins:
   apikey: 123456789abcdef0123456789abcedf012
 ```
 
-#### Catalog
+Catalog
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -61,16 +68,16 @@ kind: Component
 metadata:
   name: artist-lookup
   annotations:
-    'jenkins.io/github-folder': teamA/artistLookup-build
+    'jenkins.io/job-slug': teamA/artistLookup-build
 ```
 
-### PrefixedJenkinsInfoProvider
+The old annotation name of `jenkins.io/github-folder` is equivalent to `jenkins.io/job-slug`
 
-Allows configuration of multiple global jenkins instance and annotating entities with the name of the instance and job name on that instance.
+#### Example - Multiple global instances
 
 The following will look for jobs for this entity at `https://jenkins-foo.example.com/job/teamA/job/artistLookup-build`
 
-#### Config
+Config
 
 ```yaml
 jenkins:
@@ -85,7 +92,7 @@ jenkins:
       apikey: 123456789abcdef0123456789abcedf012
 ```
 
-#### Catalog
+Catalog
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -93,53 +100,92 @@ kind: Component
 metadata:
   name: artist-lookup
   annotations:
-    'jenkins.io/github-folder': departmentFoo#teamA/artistLookup-build
+    'jenkins.io/job-slug': departmentFoo:teamA/artistLookup-build
 ```
 
-If the `departmentFoo#` part is omitted, the default instance will be assumed.
+If the `departmentFoo:` part is omitted, the default instance will be assumed.
 
-### DefaultJenkinsInfoProvider
-
-The default jenkins info provider makes it clear it is replaceable in the config but is otherwise the same as PrefixedJenkinsInfoProvider
-
-The following will look for jobs for this entity at `https://jenkins-foo.example.com/job/teamA/job/artistLookup-build`
-
-#### Config
+The following config is an equivalent (but less clear) version of the above:
 
 ```yaml
 jenkins:
-  DefaultJenkinsInfoProvider:
-    instances:
-      - name: default
-        baseUrl: https://jenkins.example.com
-        username: backstage-bot
-        apikey: 123456789abcdef0123456789abcedf012
-      - name: departmentFoo
-        baseUrl: https://jenkins-foo.example.com
-        username: backstage-bot
-        apikey: 123456789abcdef0123456789abcedf012
+  baseUrl: https://jenkins.example.com
+  username: backstage-bot
+  apikey: 123456789abcdef0123456789abcedf012
+  instances:
+    - name: departmentFoo
+      baseUrl: https://jenkins-foo.example.com
+      username: backstage-bot
+      apikey: 123456789abcdef0123456789abcedf012
 ```
 
-#### Catalog
+### Custom JenkinsInfoProvider
 
-```yaml
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: artist-lookup
-  annotations:
-    'jenkins.io/github-folder': departmentFoo#teamA/artistLookup-build
+An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the jenkins info (including jobName):
+
+```typescript
+class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
+  constructor(private readonly catalog: CatalogClient) {}
+
+  async getInstance(opt: {
+    entityRef: EntityName;
+    jobName?: string;
+  }): Promise<JenkinsInfo> {
+    const PAAS_ANNOTATION = 'acme.example.com/paas-project-name';
+
+    // lookup pass-project-name from entity annotation
+    const entity = await this.catalog.getEntityByName(opt.entityRef);
+    if (!entity) {
+      throw new Error(
+        `Couldn't find entity with name: ${stringifyEntityRef(opt.entityRef)}`,
+      );
+    }
+
+    const paasProjectName = entity.metadata.annotations?.[PAAS_ANNOTATION];
+    if (!paasProjectName) {
+      throw new Error(
+        `Couldn't find paas annotation (${PAAS_ANNOTATION}) on entity with name: ${stringifyEntityRef(
+          opt.entityRef,
+        )}`,
+      );
+    }
+
+    // lookup department and team for paas project name
+    const { team, dept } = this.lookupPaasInfo(paasProjectName);
+
+    const baseUrl = `https://jenkins-${dept}.example.com/`;
+    const jobName = `${team}/${paasProjectName}`;
+    const username = 'backstage-bot';
+    const apiKey = this.getJenkinsApiKey(paasProjectName);
+    const creds = btoa(`${username}:${apiKey}`);
+
+    return {
+      baseUrl,
+      headers: {
+        Authorization: `Basic ${creds}`,
+      },
+      jobName,
+    };
+  }
+
+  private lookupPaasInfo(_: string): { team: string; dept: string } {
+    // Mock implementation, this would get info from the paas system somehow in reality.
+    return {
+      team: 'teamA',
+      dept: 'DepartmentFoo',
+    };
+  }
+
+  private getJenkinsApiKey(_: string): string {
+    // Mock implementation, this would get info from the paas system somehow in reality.
+    return '123456789abcdef0123456789abcedf012';
+  }
+}
 ```
 
-### AcmeJenkinsInfoProvider
+No config would be needed if using this JenkinsInfoProvider
 
-An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the jenkins info (including jobName)
-
-#### Config
-
-None needed
-
-#### Catalog
+A Catalog entity of the following will look for jobs for this entity at `https://jenkins-departmentFoo.example.com/job/teamA/job/artistLookupService`
 
 ```yaml
 apiVersion: backstage.io/v1alpha1
@@ -149,8 +195,6 @@ metadata:
   annotations:
     'acme.example.com/paas-project-name': artistLookupService
 ```
-
-The following will look for jobs for this entity at `https://jenkins-departmentFoo.example.com/job/teamA/job/artistLookupService`
 
 ## Jenkins' terminology notes
 
