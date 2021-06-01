@@ -59,7 +59,18 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
  * concrete, search engine-specific queries.
  */
 export interface SearchEngine {
-  translator: QueryTranslator;
+  /**
+   * Override the default translator provided by the SearchEngine.
+   */
+  setTranslator(translator: QueryTranslator): void;
+
+  /**
+   * Add the given documents to the SearchEngine index of the given type.
+   */
   index(type: string, documents: IndexableDocument[]): void;
+
+  /**
+   * Perform a search query against the SearchEngine.
+   */
   query(query: SearchQuery): Promise<SearchResultSet>;
 }

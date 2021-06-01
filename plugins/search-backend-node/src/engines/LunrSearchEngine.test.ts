@@ -18,6 +18,15 @@ import { getVoidLogger } from '@backstage/backend-common';
 import { LunrSearchEngine } from './LunrSearchEngine';
 import { SearchEngine } from '../types';
 
+/**
+ * Just used to test the default translator shipped with LunrSearchEngine.
+ */
+class LunrSearchEngineForTranslatorTests extends LunrSearchEngine {
+  getTranslator() {
+    return this.translator;
+  }
+}
+
 describe('LunrSearchEngine', () => {
   let testLunrSearchEngine: SearchEngine;
 
@@ -27,16 +36,21 @@ describe('LunrSearchEngine', () => {
 
   describe('translator', () => {
     it('query translator invoked', async () => {
-      const translatorSpy = jest.spyOn(testLunrSearchEngine, 'translator');
+      // Given: Set a translator spy on the search engine.
+      const translatorSpy = jest.fn().mockReturnValue({
+        lunrQueryString: '',
+        documentTypes: [],
+      });
+      testLunrSearchEngine.setTranslator(translatorSpy);
 
-      // Translate query and ensure the translator was invoked.
-      await testLunrSearchEngine.translator({
+      // When: querying the search engine
+      testLunrSearchEngine.query({
         term: 'testTerm',
         filters: {},
         pageCursor: '',
       });
 
-      expect(translatorSpy).toHaveBeenCalled();
+      // Then: the translator is invoked with expected args.
       expect(translatorSpy).toHaveBeenCalledWith({
         term: 'testTerm',
         filters: {},
@@ -45,39 +59,54 @@ describe('LunrSearchEngine', () => {
     });
 
     it('should return translated query', async () => {
-      const mockedTranslatedQuery = await testLunrSearchEngine.translator({
+      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+        logger: getVoidLogger(),
+      });
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
         term: 'testTerm',
         filters: {},
         pageCursor: '',
       });
 
-      expect(mockedTranslatedQuery).toMatchObject({
+      expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
         lunrQueryString: '+testTerm',
       });
     });
 
     it('should return translated query with 1 filter', async () => {
-      const mockedTranslatedQuery = await testLunrSearchEngine.translator({
+      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+        logger: getVoidLogger(),
+      });
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
         term: 'testTerm',
         filters: { kind: 'testKind' },
         pageCursor: '',
       });
 
-      expect(mockedTranslatedQuery).toMatchObject({
+      expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
         lunrQueryString: '+testTerm +kind:testKind',
       });
     });
 
     it('should return translated query with multiple filters', async () => {
-      const mockedTranslatedQuery = await testLunrSearchEngine.translator({
+      const inspectableSearchEngine = new LunrSearchEngineForTranslatorTests({
+        logger: getVoidLogger(),
+      });
+      const translatorUnderTest = inspectableSearchEngine.getTranslator();
+
+      const actualTranslatedQuery = translatorUnderTest({
         term: 'testTerm',
         filters: { kind: 'testKind', namespace: 'testNameSpace' },
         pageCursor: '',
       });
 
-      expect(mockedTranslatedQuery).toMatchObject({
+      expect(actualTranslatedQuery).toMatchObject({
         documentTypes: ['*'],
         lunrQueryString: '+testTerm +kind:testKind +namespace:testNameSpace',
       });

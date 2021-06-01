@@ -33,6 +33,8 @@ type LunrResultEnvelope = {
   type: string;
 };
 
+type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -43,7 +45,7 @@ export class LunrSearchEngine implements SearchEngine {
     this.docStore = {};
   }
 
-  translator: QueryTranslator = ({
+  protected translator: QueryTranslator = ({
     term,
     filters,
     types,
@@ -81,6 +83,10 @@ export class LunrSearchEngine implements SearchEngine {
       documentTypes: types || ['*'],
     };
   };
+
+  setTranslator(translator: LunrQueryTranslator) {
+    this.translator = translator;
+  }
 
   index(type: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
