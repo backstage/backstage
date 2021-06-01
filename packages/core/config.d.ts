@@ -26,7 +26,7 @@ export interface Config {
     baseUrl: string;
 
     /**
-     * The title of the app.
+     * The title of the app, as shown in the Backstage web interface.
      * @visibility frontend
      */
     title?: string;
@@ -43,7 +43,7 @@ export interface Config {
       /**
        * A list of categorized support item groupings.
        */
-      items: {
+      items: Array<{
         /**
          * The title of the support item grouping.
          * @visibility frontend
@@ -55,15 +55,15 @@ export interface Config {
          */
         icon?: string;
         /**
-         * A list of support links for the Backstage instance.
+         * A list of support links for the Backstage instance inside this grouping.
          */
-        links: {
+        links: Array<{
           /** @visibility frontend */
           url: string;
           /** @visibility frontend */
           title?: string;
-        }[];
-      }[];
+        }>;
+      }>;
     };
   };
 
@@ -72,7 +72,7 @@ export interface Config {
    */
   backend: {
     /**
-     * The public absolute root URL that the backend is reachable at.
+     * The public absolute root URL that the backend is reachable at, from the browser's perspective.
      * @visibility frontend
      */
     baseUrl: string;
@@ -90,16 +90,16 @@ export interface Config {
   };
 
   homepage?: {
-    clocks?: {
+    clocks?: Array<{
       /** @visibility frontend */
       label: string;
       /** @visibility frontend */
       timezone: string;
-    }[];
+    }>;
   };
 
   /**
-   * Configuration that provides information on available authentication providers configured for app
+   * Configuration that provides information on available configured authentication providers.
    */
   auth?: {
     /**
