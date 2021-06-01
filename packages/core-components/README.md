@@ -4,16 +4,11 @@ This package provides the core components used by Backstage plugins and apps
 
 ## Installation
 
-Install the package via Yarn or npm:
+Install the package via Yarn:
 
 ```sh
-$ yarn add @backstage/core-components
-```
-
-or
-
-```sh
-$ npm install --save @backstage/core-components
+cd <package-dir> # if within a monorepo
+yarn add @backstage/core-components
 ```
 
 ## Documentation

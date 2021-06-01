@@ -4,16 +4,11 @@ This package provides the core API used by Backstage plugins.
 
 ## Installation
 
-Install the package via Yarn or npm:
+Install the package via Yarn:
 
 ```sh
-$ yarn add @backstage/core-plugin-api
-```
-
-or
-
-```sh
-$ npm install --save @backstage/core-plugin-api
+cd <package-dir> # if within a monorepo
+yarn add @backstage/core-plugin-api
 ```
 
 ## Documentation
