@@ -33,6 +33,15 @@ proxy:
 Configuration files are typically checked in and stored in the repo that houses
 the rest of the Backstage application.
 
+The particular configuration that is available to each Backstage app depends on
+what plugins and packages are installed. To view the configuration reference for
+your own project, including what configuration keys available and whether they
+are needed by the frontend, use the following command:
+
+```sh
+yarn backstage-cli config:docs
+```
+
 ## Environment Variable Overrides
 
 Individual configuration values can be overridden using environment variables
