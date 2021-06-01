@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  Table,
-  TableColumn,
-  useApi,
-  OverflowTooltip,
-  Link,
-  ResponseErrorPanel,
-} from '@backstage/core';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import React, { useState } from 'react';
 import { todoApiRef } from '../../api';
 import { TodoItem, TodoListOptions } from '../../api/types';
+
+import {
+  Table,
+  TableColumn,
+  OverflowTooltip,
+  Link,
+  ResponseErrorPanel,
+} from '@backstage/core-components';
+import { useApi } from '@backstage/core-plugin-api';
 
 const PAGE_SIZE = 10;
 

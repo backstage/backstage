@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core';
 import { Entity } from '@backstage/catalog-model';
+import { createApiRef } from '@backstage/core-plugin-api';
 
 export type TodoItem = {
   /** The contents of the TODO comment */

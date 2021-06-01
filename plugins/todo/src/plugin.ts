@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { todoApiRef, TodoClient } from './api';
 import {
   createApiFactory,
   createPlugin,
   createComponentExtension,
   discoveryApiRef,
   identityApiRef,
-} from '@backstage/core';
-import { todoApiRef, TodoClient } from './api';
+} from '@backstage/core-plugin-api';
 
 // import { rootRouteRef } from './routes';
 
