@@ -17,8 +17,7 @@
   "scripts": {
     "start": "nodemon --",
     "lint": "backstage-cli lint",
-    "test": "backstage-cli test",
-    "test:e2e": "yarn start"
+    "test": "backstage-cli test"
   },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"
@@ -37,7 +36,7 @@
   },
   "nodemonConfig": {
     "watch": "./src",
-    "exec": "bin/e2e-test",
+    "exec": "bin/backstage-codemods",
     "ext": "ts"
   }
 }
