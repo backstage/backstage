@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-import program, { Command } from 'commander';
+import program from 'commander';
 import chalk from 'chalk';
+import { codemods } from './codemods';
+import { exitWithError } from './errors';
+import { createCodemodAction } from './action';
 import { version } from '../package.json';
-
-const codemods = [
-  {
-    name: 'core-imports',
-    description:
-      'Updates @backstage/core imports to use @backstage/core-* imports instead.',
-  },
-];
-
-function createCodemodAction(name: string) {
-  return (cmd: Command) => {
-    console.log(`Fake codemod ${cmd} ${name}`);
-  };
-}
 
 async function main(argv: string[]) {
   program.name('backstage-codemods').version(version);
 
   for (const codemod of codemods) {
     program
-      .command(codemod.name)
+      .command(`${codemod.name} <target-dir>`)
       .description(codemod.description)
       .option('-d, --dry', 'Dry run, no changes written to files')
       .action(createCodemodAction(codemod.name));
@@ -52,16 +41,6 @@ async function main(argv: string[]) {
   });
 
   program.parse(argv);
-}
-
-function exitWithError(err: Error & { code?: unknown }) {
-  process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
-
-  if (typeof err.code === 'number') {
-    process.exit(err.code);
-  } else {
-    process.exit(1);
-  }
 }
 
 process.on('unhandledRejection', (rejection: unknown) => {

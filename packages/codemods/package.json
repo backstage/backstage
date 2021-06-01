@@ -24,6 +24,7 @@
     "backstage-codemods": "bin/backstage-codemods"
   },
   "dependencies": {
+    "@backstage/cli-common": "0.1.1",
     "chalk": "^4.0.0",
     "jscodeshift": "^0.12.0"
   },
