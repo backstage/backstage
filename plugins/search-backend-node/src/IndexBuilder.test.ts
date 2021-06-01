@@ -131,7 +131,7 @@ describe('IndexBuilder', () => {
       // wait for async decorator execution
       await Promise.resolve();
       expect(decoratorSpy).toHaveBeenCalled();
-      expect(decoratorSpy).toHaveBeenCalledWith([docFixture]);
+      expect(decoratorSpy).toHaveBeenCalledWith(expectedType, [docFixture]);
     });
 
     it('adds a type-specific decorator that should not be called', async () => {
