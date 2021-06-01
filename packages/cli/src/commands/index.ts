@@ -225,10 +225,8 @@ export function registerCommands(program: CommanderStatic) {
     .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
 
   program
-    .command('create-github-app <github-org>', { hidden: true })
-    .description(
-      'Create new GitHub App in your organization. This command is experimental and may change in the future.',
-    )
+    .command('create-github-app <github-org>')
+    .description('Create new GitHub App in your organization.')
     .action(lazy(() => import('./create-github-app').then(m => m.default)));
 }
 
