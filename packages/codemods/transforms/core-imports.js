@@ -58,6 +58,14 @@ module.exports = (file, /** @type {import('jscodeshift').API} */ api) => {
     },
   });
 
+  if (imports.size === 0) {
+    return undefined;
+  }
+
+  // Check what style we're using for the imports, ' or "
+  const useSingleQuote =
+    root.find(j.ImportDeclaration).nodes()[0]?.source.extra.raw[0] === "'";
+
   // Then loop through all the import statement and collects each imported symbol
   const importedSymbols = imports.nodes().flatMap(node =>
     (node.specifiers || []).flatMap(specifier => ({
@@ -88,5 +96,7 @@ module.exports = (file, /** @type {import('jscodeshift').API} */ api) => {
   // Restore the initial file comment in case it got removed
   root.find(j.Program).get('body', 0).node.comments = firstNodeComment;
 
-  return root.toSource();
+  return root.toSource({
+    quote: useSingleQuote ? 'single' : 'double',
+  });
 };
