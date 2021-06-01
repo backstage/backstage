@@ -10,12 +10,14 @@ import { JsonObject } from '@backstage/config';
 export interface DocumentCollator {
     // (undocumented)
     execute(): Promise<IndexableDocument[]>;
+    readonly type: string;
 }
 
 // @public
 export interface DocumentDecorator {
     // (undocumented)
-    execute(type: string, documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+    execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+    readonly types?: string[];
 }
 
 // @public
