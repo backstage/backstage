@@ -911,7 +911,7 @@
 
 "@spotify/prettier-config@^10.0.0":
   version "10.0.0"
-  resolved "https://registry.yarnpkg.com/@spotify/prettier-config/-/prettier-config-10.0.0.tgz#fa076d98d2e7e6c53dd3d86a696307a7010bd056"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-10.0.0.tgz#fa076d98d2e7e6c53dd3d86a696307a7010bd056"
   integrity sha512-VYOdo8P7lIScAkl02nB9KpUAuOYMManryBIBuKJkAw5D3aVtLobfmdIKvdV6MqEmGMEQPbn7w/UpnjJYhUH+IA==
 
 "@types/cheerio@^0.22.8":
@@ -1039,7 +1039,7 @@ argparse@^1.0.10, argparse@^1.0.7:
 
 argparse@^2.0.1:
   version "2.0.1"
-  resolved "https://registry.yarnpkg.com/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
+  resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
 arr-diff@^4.0.0:
@@ -3864,7 +3864,7 @@ js-yaml@^3.13.1, js-yaml@^3.8.1:
 
 js-yaml@^4.1.0:
   version "4.1.0"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
+  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz#c1fb65f8f5017901cdd2c951864ba18458a10602"
   integrity sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==
   dependencies:
     argparse "^2.0.1"
@@ -5199,7 +5199,7 @@ prepend-http@^2.0.0:
 
 prettier@^2.3.0:
   version "2.3.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.0.tgz#b6a5bf1284026ae640f17f7ff5658a7567fc0d18"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-2.3.0.tgz#b6a5bf1284026ae640f17f7ff5658a7567fc0d18"
   integrity sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==
 
 prismjs@^1.22.0:
