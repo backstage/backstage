@@ -1,12 +1,12 @@
 # Jenkins Plugin (Alpha)
 
-Welcome to the jenkins backend plugin! Website: [https://jenkins.io/](https://jenkins.io/)
+Welcome to the Jenkins backend plugin! Website: [https://jenkins.io/](https://jenkins.io/)
 
-This is the backend half of the 2 jenkins plugins and is responsible for:
+This is the backend half of the 2 Jenkins plugins and is responsible for:
 
-- finding an appropriate instance of jenkins for an entity
+- finding an appropriate instance of Jenkins for an entity
 - finding the appropriate job(s) on that instance for an entity
-- connecting to jenkins and gathering data to present to the frontend
+- connecting to Jenkins and gathering data to present to the frontend
 
 ## Integrating into a backstage instance
 
@@ -39,13 +39,13 @@ export default async function createPlugin({
 }
 ```
 
-This plugin must be provided with a JenkinsInfoProvider, this is a strategy object for finding the jenkins instance and job for an entity.
+This plugin must be provided with a JenkinsInfoProvider, this is a strategy object for finding the Jenkins instance and job for an entity.
 
 There is a standard one provided, but the Integrator is free to build their own.
 
 ### DefaultJenkinsInfoProvider
 
-Allows configuration of either a single or multiple global jenkins instances and annotating entities with the job name on that instance (and optionally the name of the instance).
+Allows configuration of either a single or multiple global Jenkins instances and annotating entities with the job name on that instance (and optionally the name of the instance).
 
 #### Example - Single global instance
 
@@ -121,7 +121,7 @@ jenkins:
 
 ### Custom JenkinsInfoProvider
 
-An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the jenkins info (including jobName):
+An example of a bespoke JenkinsInfoProvider which uses an organisation specific annotation to look up the Jenkins info (including jobName):
 
 ```typescript
 class AcmeJenkinsInfoProvider implements JenkinsInfoProvider {
