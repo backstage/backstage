@@ -5,6 +5,6 @@ This is your newly scaffolded Backstage App, Good Luck!
 To start the app, run:
 
 ```sh
-$ yarn
-$ yarn dev
+yarn install
+yarn dev
 ```
