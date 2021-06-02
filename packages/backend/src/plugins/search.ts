@@ -30,7 +30,7 @@ export default async function createPlugin({
   const indexBuilder = new IndexBuilder({ logger, searchEngine });
 
   indexBuilder.addCollator({
-    defaultRefreshIntervalSeconds: 10,
+    defaultRefreshIntervalSeconds: 600,
     collator: new DefaultCatalogCollator({ discovery }),
   });
 
