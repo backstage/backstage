@@ -22,10 +22,16 @@ function findExports(packageName) {
   const packagePath = require.resolve(`${packageName}/package.json`);
   const typesPath = resolvePath(packagePath, '../dist/index.d.ts');
   const content = fs.readFileSync(typesPath, 'utf8');
-  const [, exportSymbols] = content.match(/export \{ (.*) \};/);
-  return exportSymbols
-    .split(', ')
-    .map(exported => exported.match(/.* as (.*)/)?.[1] || exported);
+
+  // For each export statement in the type declarations we grab the exported symbol names
+  return content
+    .split(/export \{ (.*) \}/)
+    .filter((_, i) => i % 2)
+    .flatMap(symbolsStr =>
+      symbolsStr
+        .split(', ')
+        .map(exported => exported.match(/.* as (.*)/)?.[1] || exported),
+    );
 }
 
 const symbolTable = {
