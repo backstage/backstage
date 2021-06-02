@@ -19,4 +19,7 @@ export type {
   JenkinsInfo,
   JenkinsInfoProvider,
 } from './service/jenkinsInfoProvider';
-export { DummyJenkinsInfoProvider } from './service/jenkinsInfoProvider';
+export {
+  DummyJenkinsInfoProvider,
+  DefaultJenkinsInfoProvider,
+} from './service/jenkinsInfoProvider';

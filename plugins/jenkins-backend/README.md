@@ -57,7 +57,7 @@ Config
 jenkins:
   baseUrl: https://jenkins.example.com
   username: backstage-bot
-  apikey: 123456789abcdef0123456789abcedf012
+  apiKey: 123456789abcdef0123456789abcedf012
 ```
 
 Catalog
@@ -85,11 +85,11 @@ jenkins:
     - name: default
       baseUrl: https://jenkins.example.com
       username: backstage-bot
-      apikey: 123456789abcdef0123456789abcedf012
+      apiKey: 123456789abcdef0123456789abcedf012
     - name: departmentFoo
       baseUrl: https://jenkins-foo.example.com
       username: backstage-bot
-      apikey: 123456789abcdef0123456789abcedf012
+      apiKey: 123456789abcdef0123456789abcedf012
 ```
 
 Catalog
@@ -111,12 +111,12 @@ The following config is an equivalent (but less clear) version of the above:
 jenkins:
   baseUrl: https://jenkins.example.com
   username: backstage-bot
-  apikey: 123456789abcdef0123456789abcedf012
+  apiKey: 123456789abcdef0123456789abcedf012
   instances:
     - name: departmentFoo
       baseUrl: https://jenkins-foo.example.com
       username: backstage-bot
-      apikey: 123456789abcdef0123456789abcedf012
+      apiKey: 123456789abcdef0123456789abcedf012
 ```
 
 ### Custom JenkinsInfoProvider
