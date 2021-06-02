@@ -105,16 +105,16 @@ export async function createRouter(
   );
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
-  const workers = new Array(taskWorkers || 1);
-  workers.map(_ => {
+  const workers = [];
+  for (let i = 0; i < (taskWorkers || 1); i++) {
     const worker = new TaskWorker({
       logger,
       taskBroker,
       actionRegistry,
       workingDirectory,
     });
-    return worker;
-  });
+    workers.push(worker);
+  }
 
   const actionsToRegister = Array.isArray(actions)
     ? actions
