@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons/types';
+import { OldIconComponent } from '../icons/types';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
 
 export type AnyParams = { [param in string]: string } | undefined;
@@ -48,7 +48,7 @@ export type RouteRef<Params extends AnyParams = any> = {
   /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
   path: string;
   /** @deprecated icons are no longer accessed via RouteRefs */
-  icon?: IconComponent;
+  icon?: OldIconComponent;
   /** @deprecated titles are no longer accessed via RouteRefs */
   title?: string;
 };
