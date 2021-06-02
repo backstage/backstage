@@ -1,6 +1,6 @@
 # @backstage/codemods
 
-A collection of codemods for use with Backstage projects.
+A collection of codemods for use with Backstage projects. They are intended to improve and simplify large scale refactoring, upgrades of code to use new implementations, alignment to ADRs or project standards, or other refactoring.
 
 ## Usage
 
