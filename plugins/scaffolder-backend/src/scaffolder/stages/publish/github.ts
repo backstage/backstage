@@ -45,6 +45,7 @@ export class GithubPublisher implements PublisherBase {
       credentialsProvider,
       repoVisibility,
       apiBaseUrl: config.apiBaseUrl,
+      defaultBranch: config.defaultBranch,
     });
   }
 
@@ -53,6 +54,7 @@ export class GithubPublisher implements PublisherBase {
       credentialsProvider: GithubCredentialsProvider;
       repoVisibility: RepoVisibilityOptions;
       apiBaseUrl: string | undefined;
+      defaultBranch: string | undefined;
     },
   ) {}
 
@@ -62,6 +64,7 @@ export class GithubPublisher implements PublisherBase {
     logger,
   }: PublisherOptions): Promise<PublisherResult> {
     const { owner, name } = parseGitUrl(values.storePath);
+    const { defaultBranch = 'master' } = this.config;
 
     const { token } = await this.config.credentialsProvider.getCredentials({
       url: values.storePath,
@@ -97,11 +100,12 @@ export class GithubPublisher implements PublisherBase {
         password: token,
       },
       logger,
+      defaultBranch,
     });
 
     const catalogInfoUrl = remoteUrl.replace(
       /\.git$/,
-      '/blob/master/catalog-info.yaml',
+      `/blob/${defaultBranch}/catalog-info.yaml`,
     );
 
     try {
@@ -110,6 +114,7 @@ export class GithubPublisher implements PublisherBase {
         client,
         repoName: name,
         logger,
+        defaultBranch,
       });
     } catch (e) {
       throw new Error(`Failed to add branch protection to '${name}', ${e}`);

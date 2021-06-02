@@ -65,6 +65,13 @@ export type GitHubIntegrationConfig = {
    * If no apps are specified, token or anonymous is used.
    */
   apps?: GithubAppConfig[];
+
+  /**
+   * The default branch for scaffolded repositories.
+   *
+   * If no branch is specified, master is used.
+   */
+  defaultBranch?: string;
 };
 
 /**

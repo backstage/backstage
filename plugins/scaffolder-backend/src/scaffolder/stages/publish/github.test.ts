@@ -99,6 +99,7 @@ describe('GitHub Publisher', () => {
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
+          defaultBranch: 'master',
         });
       });
 
@@ -150,6 +151,7 @@ describe('GitHub Publisher', () => {
           remoteUrl: 'https://github.com/backstage/backstage.git',
           auth: { username: 'x-access-token', password: 'fake-token' },
           logger,
+          defaultBranch: 'master',
         });
       });
     });
@@ -208,6 +210,7 @@ describe('GitHub Publisher', () => {
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
+        defaultBranch: 'master',
       });
     });
   });
@@ -259,6 +262,7 @@ describe('GitHub Publisher', () => {
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
+        defaultBranch: 'master',
       });
     });
   });
@@ -309,6 +313,59 @@ describe('GitHub Publisher', () => {
         remoteUrl: 'https://github.com/backstage/backstage.git',
         auth: { username: 'x-access-token', password: 'fake-token' },
         logger,
+        defaultBranch: 'master',
+      });
+    });
+  });
+
+  describe('using main as default branch', () => {
+    it('creates a repository', async () => {
+      const publisher = await GithubPublisher.fromConfig(
+        {
+          token: 'fake-token',
+          host: 'github.com',
+          defaultBranch: 'main',
+        },
+        { repoVisibility: 'public' },
+      );
+
+      mockGithubClient.repos.createForAuthenticatedUser.mockResolvedValue({
+        data: {
+          clone_url: 'https://github.com/backstage/backstage.git',
+        },
+      } as RestEndpointMethodTypes['repos']['createForAuthenticatedUser']['response']);
+      mockGithubClient.users.getByUsername.mockResolvedValue({
+        data: {
+          type: 'User',
+        },
+      } as RestEndpointMethodTypes['users']['getByUsername']['response']);
+
+      const result = await publisher!.publish({
+        values: {
+          storePath: 'https://github.com/blam/test',
+          owner: 'bob',
+        },
+        workspacePath,
+        logger,
+      });
+
+      expect(result).toEqual({
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        catalogInfoUrl:
+          'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+      });
+      expect(
+        mockGithubClient.repos.createForAuthenticatedUser,
+      ).toHaveBeenCalledWith({
+        name: 'test',
+        private: false,
+      });
+      expect(initRepoAndPush).toHaveBeenCalledWith({
+        dir: resultPath,
+        remoteUrl: 'https://github.com/backstage/backstage.git',
+        auth: { username: 'x-access-token', password: 'fake-token' },
+        logger,
+        defaultBranch: 'main',
       });
     });
   });
