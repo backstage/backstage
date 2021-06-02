@@ -171,7 +171,7 @@ this:
     "ui:options":{
       "orderable": false
     }
-  }
+  },
   "telephone": {
     "ui:options": {
       "inputType": "tel"
