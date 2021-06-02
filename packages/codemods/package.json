@@ -41,5 +41,9 @@
     "watch": "./src",
     "exec": "bin/backstage-codemods",
     "ext": "ts"
-  }
+  },
+  "files": [
+    "dist",
+    "transforms"
+  ]
 }
