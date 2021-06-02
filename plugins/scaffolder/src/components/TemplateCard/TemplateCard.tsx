@@ -182,7 +182,7 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
         <Button
           color="primary"
           to={href}
-          aria-label={`Choose ${templateProps.title} `}
+          aria-label={`Choose ${templateProps.title}`}
         >
           Choose
         </Button>
