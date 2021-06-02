@@ -4,16 +4,11 @@ This package provides the core API used by Backstage apps.
 
 ## Installation
 
-Install the package via Yarn or npm:
+Install the package via Yarn:
 
 ```sh
-$ yarn add @backstage/core-app-api
-```
-
-or
-
-```sh
-$ npm install --save @backstage/core-app-api
+cd packages/app
+yarn add @backstage/core-app-api
 ```
 
 ## Documentation

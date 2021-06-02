@@ -4,13 +4,7 @@ This package provides a CLI for developing Backstage plugins and apps.
 
 ## Installation
 
-Install the package via npm or Yarn:
-
-```sh
-npm install --save @backstage/cli
-```
-
-or
+Install the package via Yarn:
 
 ```sh
 yarn add @backstage/cli
