@@ -58,6 +58,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
+  taskWorkers?: number;
 }
 
 function isAlpha1Template(
@@ -91,6 +92,7 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
+    taskWorkers,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
@@ -103,12 +105,16 @@ export async function createRouter(
   );
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
-  const worker = new TaskWorker({
-    logger,
-    taskBroker,
-    actionRegistry,
-    workingDirectory,
-  });
+  const workers = [];
+  for (let i = 0; i < (taskWorkers || 1); i++) {
+    const worker = new TaskWorker({
+      logger,
+      taskBroker,
+      actionRegistry,
+      workingDirectory,
+    });
+    workers.push(worker);
+  }
 
   const actionsToRegister = Array.isArray(actions)
     ? actions
@@ -127,8 +133,7 @@ export async function createRouter(
       ];
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
-
-  worker.start();
+  workers.forEach(worker => worker.start());
 
   router
     .get(
