@@ -9,6 +9,7 @@ import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { SvgIconProps } from '@material-ui/core';
 
 // @public
 export type AlertApi = {
@@ -206,7 +207,7 @@ export function createRouteRef<Params extends {
     id?: string;
     params?: ParamKey[];
     path?: string;
-    icon?: IconComponent;
+    icon?: OldIconComponent;
     title?: string;
 }): RouteRef<OptionalParams<Params>>;
 
@@ -424,7 +425,7 @@ export type RouteRef<Params extends AnyParams = any> = {
     readonly [routeRefType]: 'absolute';
     params: ParamKeys<Params>;
     path: string;
-    icon?: IconComponent;
+    icon?: OldIconComponent;
     title?: string;
 };
 
