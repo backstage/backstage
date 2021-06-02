@@ -60,7 +60,6 @@ export type TechRadarPageProps = TechRadarComponentProps & {
 export interface TechRadarPageProps {
   width: number;
   height: number;
-  getData?: () => Promise<TechRadarLoaderResponse>;
   svgProps?: object;
 }
 ```

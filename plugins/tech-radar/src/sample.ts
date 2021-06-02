@@ -19,6 +19,7 @@ import {
   RadarQuadrant,
   RadarEntry,
   TechRadarLoaderResponse,
+  TechRadarApi,
 } from './api';
 
 const rings = new Array<RadarRing>();
@@ -164,15 +165,19 @@ entries.push({
   ],
   url: '#',
   key: 'github-actions',
-  id: 'github-actions',
-  title: 'GitHub Actions',
+  id: 'github-actiosns',
+  title: 'GitHub Acssstions',
   quadrant: 'infrastructure',
 });
 
-export default function getSampleData(): Promise<TechRadarLoaderResponse> {
-  return Promise.resolve({
-    rings,
-    quadrants,
-    entries,
-  });
+export const mock: TechRadarLoaderResponse = {
+  entries,
+  quadrants,
+  rings,
+};
+
+export class SampleTechRadarApi implements TechRadarApi {
+  async load() {
+    return mock;
+  }
 }
