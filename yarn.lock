@@ -5994,9 +5994,9 @@
     "@types/d3-path" "^1"
 
 "@types/d3-zoom@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/@types/d3-zoom/-/d3-zoom-2.0.0.tgz#ef8b87464e8ebc7c66b70f6383d1ae841e78e7fc"
-  integrity sha512-daL0PJm4yT0ISTGa7p2lHX0kvv9FO/IR1ooWbHR/7H4jpbaKiLux5FslyS/OvISPiJ5SXb4sOqYhO6fMB6hKRw==
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@types/d3-zoom/-/d3-zoom-2.0.1.tgz#6f0d993042124947314053c937784e24d8b003cf"
+  integrity sha512-FuiGLfaHmp84b9wsj0dG03E/aJl5k98OLnJ2/5p7bQOHEpWqR+z5WCoWYMAbdGxaca7VNd9tCT5i6AJnpauNTQ==
   dependencies:
     "@types/d3-interpolate" "*"
     "@types/d3-selection" "*"
