@@ -107,7 +107,7 @@ export const domainEntityV1alpha1Validator: KindValidator;
 export const EDIT_URL_ANNOTATION = "backstage.io/edit-url";
 
 // @public
-export type Entity = EntityEnvelope & {
+export type Entity = {
     apiVersion: string;
     kind: string;
     metadata: EntityMeta;
