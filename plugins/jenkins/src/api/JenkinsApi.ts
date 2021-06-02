@@ -62,7 +62,7 @@ export interface Project {
   inQueue: string;
   // added by us
   status: string; // == inQueue ? 'queued' : lastBuild.building ? 'running' : lastBuild.result,
-  onRestartClick: () => void; // TODO handle.* ?
+  onRestartClick: () => Promise<void>; // TODO rename to handle.* ? also, should this be on lastBuild?
 }
 
 export interface JenkinsApi {
@@ -98,7 +98,11 @@ export interface JenkinsApi {
     buildNumber: string,
   ): Promise<Build>;
 
-  retry(entity: EntityName, jobName: string, buildNumber: string): Promise<any>;
+  retry(
+    entity: EntityName,
+    jobName: string,
+    buildNumber: string,
+  ): Promise<void>;
 }
 
 export class JenkinsApiImpl implements JenkinsApi {
@@ -135,7 +139,14 @@ export class JenkinsApiImpl implements JenkinsApi {
       },
     });
 
-    return (await response.json()).projects;
+    return (
+      (await response.json()).projects?.map((p: Project) => ({
+        ...p,
+        onRestartClick: async () => {
+          await this.retry(entity, p.fullName, String(p.lastBuild.number));
+        },
+      })) || []
+    );
   }
 
   async getBuild(
@@ -160,14 +171,23 @@ export class JenkinsApiImpl implements JenkinsApi {
     return (await response.json()).build;
   }
 
-  retry(
-    // @ts-ignore unused because unimplemented
+  async retry(
     entity: EntityName,
-    // @ts-ignore unused because unimplemented
     jobName: string,
-    // @ts-ignore unused because unimplemented
     buildNumber: string,
-  ): Promise<any> {
-    return Promise.resolve(undefined);
+  ): Promise<void> {
+    const url = `${await this.discoveryApi.getBaseUrl('jenkins')}/v1/entity/${
+      entity.namespace
+    }/${entity.kind}/${entity.name}/job/${encodeURIComponent(
+      jobName,
+    )}/${buildNumber}:rebuild`;
+
+    const idToken = await this.identityApi.getIdToken();
+    await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+    });
   }
 }

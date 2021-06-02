@@ -100,11 +100,11 @@ const generatedColumns: TableColumn[] = [
         <Link
           component={RouterLink}
           to={generatePath(buildRouteRef.path, {
-            jobName: row.fullName,
-            buildNumber: row.lastBuild?.number.toString(),
+            jobName: encodeURIComponent(row.fullName),
+            buildNumber: String(row.lastBuild?.number),
           })}
         >
-          {row.fullName}
+          {row.fullDisplayName}
         </Link>
       );
     },

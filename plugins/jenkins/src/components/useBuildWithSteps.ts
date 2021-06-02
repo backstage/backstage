@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { jenkinsApiRef } from '../api';
 import { useAsyncPolling } from './useAsyncPolling';
@@ -32,7 +32,7 @@ export function useBuildWithSteps(jobName: string, buildNumber: string) {
   const api = useApi(jenkinsApiRef);
   const errorApi = useApi(errorApiRef);
   const { entity } = useEntity();
-  const entityName = getEntityName(entity);
+  const entityName = useMemo(() => getEntityName(entity), [entity]);
 
   const getBuildWithSteps = useCallback(async () => {
     try {
@@ -42,14 +42,6 @@ export function useBuildWithSteps(jobName: string, buildNumber: string) {
       return Promise.reject(e);
     }
   }, [buildNumber, jobName, entityName, api, errorApi]);
-
-  const restartBuild = async () => {
-    try {
-      await api.retry(entityName, jobName, buildNumber);
-    } catch (e) {
-      errorApi.post(e);
-    }
-  };
 
   const { loading, value, retry } = useAsyncRetry(() => getBuildWithSteps(), [
     getBuildWithSteps,
@@ -63,7 +55,6 @@ export function useBuildWithSteps(jobName: string, buildNumber: string) {
   return [
     { loading, value, retry },
     {
-      restartBuild,
       getBuildWithSteps,
       startPolling,
       stopPolling,

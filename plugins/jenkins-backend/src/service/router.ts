@@ -52,8 +52,10 @@ const jobTreeSpec = `actions[*],
                    ${lastBuildTreeSpec}
                    jobs{0,1},
                    name,
+                   fullName,
                    displayName,
-                   fullDisplayName`;
+                   fullDisplayName,
+                   inQueue`;
 
 const jobsTreeSpec = `jobs[
                    ${jobTreeSpec}
@@ -67,8 +69,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  // @ts-ignore keeping unused logger for future use
-  const { logger, jenkinsInfoProvider } = options;
+  const { jenkinsInfoProvider } = options;
 
   const router = Router();
   router.use(express.json());
@@ -166,6 +167,34 @@ export async function createRouter(
       response.send({
         build: augmentBuild(build, jobScmInfo),
       });
+    },
+  );
+
+  router.post(
+    '/v1/entity/:namespace/:kind/:name/job/:jobName/:buildNumber::rebuild',
+    async (request, response) => {
+      const { namespace, kind, name, jobName } = request.params;
+
+      const jenkinsInfo = await jenkinsInfoProvider.getInstance({
+        entityRef: {
+          kind,
+          namespace,
+          name,
+        },
+        jobName,
+      });
+
+      const client = await getClient(jenkinsInfo);
+
+      // looks like the current SDK only supports triggering a new build
+      // can't see any support for replay (re-running the specific build with the same SCM info)
+
+      // Note Jenkins itself has concepts of rebuild and replay on a job.
+      // The latter should be possible to trigger with a POST to /replay/rebuild
+      await client.job.build(jobName);
+
+      // TODO: return the buildNumber which was started.
+      response.send({});
     },
   );
 

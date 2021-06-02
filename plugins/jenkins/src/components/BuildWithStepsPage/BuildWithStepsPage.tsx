@@ -48,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const BuildWithStepsView = () => {
+  // TODO: Add a test that react-router decodes this (even though `generatePath` doesn't encode it for you!)
   const { jobName, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
 
