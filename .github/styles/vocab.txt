@@ -241,6 +241,10 @@ supertype
 talkdesk
 Talkdesk
 tasklist
+taskworker
+Taskworker
+taskworkers
+Taskworkers
 techdocs
 Telenor
 templated
