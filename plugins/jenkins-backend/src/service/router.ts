@@ -94,7 +94,6 @@ export async function createRouter(
         // we have been asked to filter to a single branch.
         // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
         // TODO: extract a strategy interface for this
-        // @ts-ignore
         const job = await client.job.get({
           name: `${jenkinsInfo.jobName}/${branch}`,
           tree: jobTreeSpec.replace(/\s/g, ''),
@@ -103,7 +102,6 @@ export async function createRouter(
       } else {
         // We aren't filtering
         // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
-        // @ts-ignore
         const folder = await client.job.get({
           name: jenkinsInfo.jobName,
           // Filter only be the information we need, instead of loading all fields.
@@ -156,7 +154,6 @@ export async function createRouter(
 
       const client = await getClient(jenkinsInfo);
 
-      // @ts-ignore
       const project = await client.job.get({
         name: jobName,
         depth: 1,
@@ -306,9 +303,10 @@ function getTestReport(
 }
 
 async function getClient(jenkinsInfo: JenkinsInfo) {
+  // The typings for the jenkins library are out of date so just cast to any
   return jenkins({
     baseUrl: jenkinsInfo.baseUrl,
     headers: jenkinsInfo.headers,
     promisify: true,
-  });
+  }) as any;
 }
