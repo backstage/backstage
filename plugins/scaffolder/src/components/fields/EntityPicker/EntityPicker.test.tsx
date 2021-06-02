@@ -19,8 +19,9 @@ import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { FieldProps } from '@rjsf/core';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { OwnerPicker } from './OwnerPicker';
+import { EntityPicker } from './EntityPicker';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -28,12 +29,14 @@ const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   metadata: { namespace, name },
 });
 
-describe('<OwnerPicker />', () => {
+describe('<EntityPicker />', () => {
   let entities: Entity[];
   const onChange = jest.fn();
   const schema = {};
   const required = false;
-  let uiSchema: { 'ui:options': { allowedKinds?: string[] } };
+  let uiSchema: {
+    'ui:options': { allowedKinds?: string[]; defaultKind?: string };
+  };
   const rawErrors: string[] = [];
   const formData = undefined;
 
@@ -78,18 +81,28 @@ describe('<OwnerPicker />', () => {
       catalogApi.getEntities.mockResolvedValue({ items: entities });
     });
 
-    it('searches for users and groups', async () => {
+    it('searches for all entities', async () => {
       await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <EntityPicker {...props} />
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['Group', 'User'],
-        },
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(undefined);
+    });
+
+    it('updates even if there is not an exact match', async () => {
+      const { getByLabelText } = await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+      const input = getByLabelText('Entity');
+
+      userEvent.type(input, 'squ');
+      input.blur();
+
+      expect(onChange).toHaveBeenCalledWith('squ');
     });
   });
 
@@ -111,7 +124,7 @@ describe('<OwnerPicker />', () => {
     it('searches for users and groups', async () => {
       await renderInTestApp(
         <Wrapper>
-          <OwnerPicker {...props} />
+          <EntityPicker {...props} />
         </Wrapper>,
       );
 

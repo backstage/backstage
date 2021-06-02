@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { JsonObject, JsonValue } from '@backstage/config';
 import {
   Content,
   errorApiRef,
@@ -27,14 +28,13 @@ import { LinearProgress } from '@material-ui/core';
 import { FieldValidation, FormValidation, IChangeEvent } from '@rjsf/core';
 import parseGitUrl from 'git-url-parse';
 import React, { useCallback, useState } from 'react';
-import { generatePath, useNavigate, Navigate } from 'react-router';
+import { generatePath, Navigate, useNavigate } from 'react-router';
 import { useParams } from 'react-router-dom';
 import { useAsync } from 'react-use';
 import { scaffolderApiRef } from '../../api';
+import { FieldExtensionOptions } from '../../extensions';
 import { rootRouteRef } from '../../routes';
 import { MultistepJsonForm } from '../MultistepJsonForm';
-import { JsonObject, JsonValue } from '@backstage/config';
-import { FieldExtensionOptions } from '../../extensions';
 
 const useTemplateParameterSchema = (templateName: string) => {
   const scaffolderApi = useApi(scaffolderApiRef);

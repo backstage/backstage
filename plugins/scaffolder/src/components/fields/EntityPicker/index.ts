@@ -13,6 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './EntityPicker';
-export * from './OwnerPicker';
-export * from './RepoUrlPicker';
+export { EntityPicker } from './EntityPicker';
