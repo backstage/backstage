@@ -42,7 +42,6 @@ jobs:
 
       - name: lock
         run: yarn lock:check
-        working-directory: microsite
 
       - name: build microsite
         run: yarn build
