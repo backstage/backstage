@@ -246,7 +246,7 @@ export class NextCatalogBuilder {
     await dbClient.migrate.latest({
       directory: resolvePackagePath(
         '@backstage/plugin-catalog-backend',
-        'migrationsv2',
+        'migrations',
       ),
     });
 

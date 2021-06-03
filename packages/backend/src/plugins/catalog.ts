@@ -29,49 +29,49 @@ export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
   /*
-   * ** WARNING **
-   * DO NOT enable the experimental catalog, it will brick your database migrations.
-   * This is solely for internal backstage development.
+   * This environment variable exists as an emergency option during the release
+   * of the new catalog processing engine.
+   * If you experience any issues, make sure to report them as this flag
+   * will be removed in a subsequent release.
    */
-  if (process.env.EXPERIMENTAL_CATALOG === '1') {
-    const builder = new NextCatalogBuilder(env);
+  if (process.env.LEGACY_CATALOG === '1') {
+    const builder = new CatalogBuilder(env);
     const {
       entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
       locationAnalyzer,
-      processingEngine,
-      locationService,
     } = await builder.build();
 
-    // TODO(jhaals): run and manage in background.
-    await processingEngine.start();
+    useHotCleanup(
+      module,
+      runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
+    );
 
-    return await createNextRouter({
+    return await createRouter({
       entitiesCatalog,
+      locationsCatalog,
+      higherOrderOperation,
       locationAnalyzer,
-      locationService,
       logger: env.logger,
       config: env.config,
     });
   }
-
-  const builder = new CatalogBuilder(env);
+  const builder = new NextCatalogBuilder(env);
   const {
     entitiesCatalog,
-    locationsCatalog,
-    higherOrderOperation,
     locationAnalyzer,
+    processingEngine,
+    locationService,
   } = await builder.build();
 
-  useHotCleanup(
-    module,
-    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
-  );
+  // TODO(jhaals): run and manage in background.
+  await processingEngine.start();
 
-  return await createRouter({
+  return await createNextRouter({
     entitiesCatalog,
-    locationsCatalog,
-    higherOrderOperation,
     locationAnalyzer,
+    locationService,
     logger: env.logger,
     config: env.config,
   });
