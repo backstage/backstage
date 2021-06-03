@@ -323,7 +323,7 @@ to the steps will be available by using the template syntax
 `{{ parameters.something }}`. This is great for passing the values from the form
 into different steps and reusing these input variables. To pass arrays or objects
 use the syntax `{{ json paramaters.something }}` where `paramaters.something` is 
-of type `object` or `array` in the jsonSchema, such as the nicknames paramter 
+of type `object` or `array` in the `jsonSchema`, such as the `nicknames` parameter 
 in the previous example.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
