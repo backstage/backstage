@@ -16,9 +16,9 @@
 
 import {
   Entity,
-  LocationSpec,
-  Location,
   EntityRelationSpec,
+  Location,
+  LocationSpec,
 } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
 

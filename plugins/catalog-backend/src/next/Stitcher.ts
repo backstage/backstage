@@ -176,7 +176,7 @@ export class Stitcher {
             statusItems = parsedErrors.map(e => ({
               type: ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
               level: 'error',
-              message: e.toString(),
+              message: `${e.name}: ${e.message}`,
               error: e,
             }));
           }
