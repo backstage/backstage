@@ -34,13 +34,6 @@ import {
   GraphQLEndpoints,
 } from '@backstage/plugin-graphiql';
 
-import { techRadarApiRef, TechRadarApi } from '@backstage/plugin-tech-radar';
-
-class MyOwnClient implements TechRadarApi {
-  async load() {
-    throw new Error('blah');
-  }
-}
 export const apis: AnyApiFactory[] = [
   createApiFactory({
     api: scmIntegrationsApiRef,
@@ -68,6 +61,4 @@ export const apis: AnyApiFactory[] = [
   }),
 
   createApiFactory(costInsightsApiRef, new ExampleCostInsightsClient()),
-
-  createApiFactory(),
 ];
