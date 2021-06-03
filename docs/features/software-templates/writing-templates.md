@@ -215,8 +215,8 @@ spec:
           ui:autocomplete: given-name
         nicknames:
           type: array
-          items: 
-            type: string 
+          items:
+            type: string
           ui:options:
             orderable: false
         telephone:
@@ -321,10 +321,10 @@ You might have noticed in the examples that there are `{{ }}`, and these are a
 `yaml` together. All the form inputs from the `parameters` section, when passed
 to the steps will be available by using the template syntax
 `{{ parameters.something }}`. This is great for passing the values from the form
-into different steps and reusing these input variables. To pass arrays or objects
-use the syntax `{{ json paramaters.something }}` where `paramaters.something` is 
-of type `object` or `array` in the `jsonSchema`, such as the `nicknames` parameter 
-in the previous example.
+into different steps and reusing these input variables. To pass arrays or
+objects use the syntax `{{ json paramaters.something }}` where
+`paramaters.something` is of type `object` or `array` in the `jsonSchema`, such
+as the `nicknames` parameter in the previous example.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. So you can grab that output by using
