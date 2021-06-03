@@ -165,8 +165,8 @@ entries.push({
   ],
   url: '#',
   key: 'github-actions',
-  id: 'github-actiosns',
-  title: 'GitHub Acssstions',
+  id: 'github-actions',
+  title: 'GitHub Actions',
   quadrant: 'infrastructure',
 });
 

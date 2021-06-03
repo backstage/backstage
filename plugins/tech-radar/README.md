@@ -72,36 +72,35 @@ export interface TechRadarPageProps {
 
 ### How do I load in my own data?
 
-It's simple, you can pass through a `getData` prop which expects a `Promise<TechRadarLoaderResponse>` signature.
+The `TechRadar` plugin uses the `TechRadarApiRef` to get a client which implements the `TechRadarApi` interface. The default sample one is located here: https://github.com/backstage/backstage/blob/master/plugins/tech-radar/src/sample.ts. To load your own data, you'll need to provide a class that implements the `TechRadarApi` and override the `TechRadarApiRef` in the `app/src/apis.ts`.
 
-Here's an example:
+```ts
+// app/src/lib/MyClient.ts
+import {
+  TechRadarApi,
+  TechRadarLoaderResponse,
+} from '@backstage/plugin-tech-radar';
 
-```tsx
-const getHardCodedData = () =>
-  Promise.resolve({
-    quadrants: [{ id: 'infrastructure', name: 'Infrastructure' }],
-    rings: [{ id: 'use', name: 'USE', color: '#93c47d' }],
-    entries: [
-      {
-        url: '#',
-        key: 'github-actions',
-        id: 'github-actions',
-        title: 'GitHub Actions',
-        quadrant: 'infrastructure',
-        timeline: [
-          {
-            moved: 0,
-            ringId: 'use',
-            date: new Date('2020-08-06'),
-            description:
-              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat',
-          },
-        ],
-      },
-    ],
-  });
+class MyOwnClient implements TechRadarApi {
+  async load(): Promise<TechRadarLoaderResponse> {
+    const data = await fetch('https://mydata.json').then(res => res.json());
 
-<TechRadarComponent width={1400} height={800} getData={getHardCodedData} />;
+    // maybe you'll need to do some data transformation here to make it look like TechRadarLoaderResponse
+
+    return data;
+  }
+}
+
+// app/src/apis.ts
+import { MyOwnClient } from './lib/MyClient';
+import { techRadarApiRef } from '@backstage/plugin-tech-radar';
+
+export const apis: AnyApiFactory[] = [
+  /*
+  ...
+  */
+  createApiFactory(techRadarApiRef, new MyOwnClient()),
+];
 ```
 
 ### How do I write tests?
