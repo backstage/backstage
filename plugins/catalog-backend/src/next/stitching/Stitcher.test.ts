@@ -17,14 +17,15 @@
 import { getVoidLogger } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { DatabaseManager } from './database/DatabaseManager';
+import { DatabaseManager } from '../database/DatabaseManager';
 import {
+  DbFinalEntitiesRow,
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
-} from './database/DefaultProcessingDatabase';
-import { DbSearchRow } from './search';
-import { DbFinalEntitiesRow, Stitcher } from './Stitcher';
+  DbSearchRow,
+} from '../database/tables';
+import { Stitcher } from './Stitcher';
 
 describe('Stitcher', () => {
   let db: Knex;

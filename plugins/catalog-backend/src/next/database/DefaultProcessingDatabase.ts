@@ -23,6 +23,11 @@ import { v4 as uuid } from 'uuid';
 import type { Logger } from 'winston';
 import { Transaction } from '../../database';
 import {
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+  DbRelationsRow,
+} from './tables';
+import {
   AddUnprocessedEntitiesOptions,
   GetProcessableEntitiesResult,
   ProcessingDatabase,
@@ -30,30 +35,6 @@ import {
   ReplaceUnprocessedEntitiesOptions,
   UpdateProcessedEntityOptions,
 } from './types';
-
-export type DbRefreshStateRow = {
-  entity_id: string;
-  entity_ref: string;
-  unprocessed_entity: string;
-  processed_entity?: string;
-  cache?: string;
-  next_update_at: string;
-  last_discovery_at: string; // remove?
-  errors?: string;
-};
-
-export type DbRelationsRow = {
-  originating_entity_id: string;
-  source_entity_ref: string;
-  target_entity_ref: string;
-  type: string;
-};
-
-export type DbRefreshStateReferencesRow = {
-  source_key?: string;
-  source_entity_ref?: string;
-  target_entity_ref: string;
-};
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause

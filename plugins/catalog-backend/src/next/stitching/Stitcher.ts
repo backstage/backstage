@@ -21,32 +21,16 @@ import {
   UNSTABLE_EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
-import { createHash } from 'crypto';
-import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
-import { buildEntitySearch, DbSearchRow } from './search';
 import { v4 as uuid } from 'uuid';
-import { DbRefreshStateRow } from './database/DefaultProcessingDatabase';
-
-// The number of items that are sent per batch to the database layer, when
-// doing .batchInsert calls to knex. This needs to be low enough to not cause
-// errors in the underlying engine due to exceeding query limits, but large
-// enough to get the speed benefits.
-const BATCH_SIZE = 50;
-
-export type DbFinalEntitiesRow = {
-  entity_id: string;
-  hash: string;
-  stitch_ticket: string;
-  final_entity?: string;
-};
-
-function generateStableHash(entity: Entity) {
-  return createHash('sha1')
-    .update(stableStringify({ ...entity }))
-    .digest('hex');
-}
+import { Logger } from 'winston';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateRow,
+  DbSearchRow,
+} from '../database/tables';
+import { buildEntitySearch } from './buildEntitySearch';
+import { BATCH_SIZE, generateStableHash } from './util';
 
 /**
  * Performs the act of stitching - to take all of the various outputs from the

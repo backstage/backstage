@@ -23,7 +23,6 @@ const createLocationStore = async () => {
   const connection = { applyMutation: jest.fn() };
   const store = new DefaultLocationStore(knex);
   await store.connect(connection);
-
   return { store, connection };
 };
 
