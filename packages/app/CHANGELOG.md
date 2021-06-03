@@ -1,5 +1,38 @@
 # example-app
 
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies [497f4ce18]
+- Updated dependencies [ee4eb5b40]
+- Updated dependencies [84160313e]
+- Updated dependencies [3772de8ba]
+- Updated dependencies [7e7c71417]
+- Updated dependencies [f430b6c6f]
+- Updated dependencies [2a942cc9e]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [90a505a77]
+- Updated dependencies [76f99a1a0]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [1157fa307]
+- Updated dependencies [8e919a6f8]
+- Updated dependencies [2305ab8fc]
+- Updated dependencies [054bcd029]
+- Updated dependencies [aad98c544]
+- Updated dependencies [f46a9e82d]
+  - @backstage/plugin-scaffolder@0.9.7
+  - @backstage/cli@0.6.14
+  - @backstage/plugin-catalog@0.6.1
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-catalog-react@0.2.1
+  - @backstage/plugin-techdocs@0.9.5
+
 ## 0.2.30
 
 ### Patch Changes

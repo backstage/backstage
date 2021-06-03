@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.2.8
+
+### Patch Changes
+
+- e7c5e4b30: Update installation instructions in README.
+
 ## 0.2.7
 
 ### Patch Changes

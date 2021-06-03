@@ -1,5 +1,11 @@
 # @backstage/catalog-model
 
+## 0.8.1
+
+### Patch Changes
+
+- ebe802bc4: Remove the explicit connection from `EntityEnvelope` and `Entity`.
+
 ## 0.8.0
 
 ### Minor Changes

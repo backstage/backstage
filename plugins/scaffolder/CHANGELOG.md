@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.7
+
+### Patch Changes
+
+- 497f4ce18: Scaffolder Field Extensions are here! This means you'll now the ability to create custom field extensions and have the Scaffolder use the components when collecting information from the user in the wizard. By default we supply the `RepoUrlPicker` and the `OwnerPicker`, but if you want to provide some more extensions or override the built on ones you will have to change how the `ScaffolderPage` is wired up in your `app/src/App.tsx` to pass in the custom fields to the Scaffolder.
+
+  You'll need to move this:
+
+  ```tsx
+  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  To this:
+
+  ```tsx
+  import {
+    ScaffolderFieldExtensions,
+    RepoUrlPickerFieldExtension,
+    OwnerPickerFieldExtension,
+  } from '@backstage/plugin-scaffolder';
+
+  <Route path="/create" element={<ScaffolderPage />}>
+    <ScaffolderFieldExtensions>
+      <RepoUrlPickerFieldExtension />
+      <OwnerPickerFieldExtension />
+
+      {/*Any other extensions you want to provide*/}
+    </ScaffolderFieldExtensions>
+  </Route>;
+  ```
+
+  More documentation on how to write your own `FieldExtensions` to follow.
+
+- 3772de8ba: Remove the trailing space from a the aria-label of the Template "CHOOSE" button.
+- f430b6c6f: Don't merge with previous from state on form changes.
+- 76f99a1a0: Export `createScaffolderFieldExtension` to enable the creation of new field extensions.
+- 1157fa307: Add a `<EntityPicker>` field to the scaffolder to pick arbitrary entity kinds, like systems.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
 ## 0.9.6
 
 ### Patch Changes

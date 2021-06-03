@@ -1,5 +1,17 @@
 # @backstage/techdocs-common
 
+## 0.6.4
+
+### Patch Changes
+
+- aad98c544: Fixes multiple XSS and sanitization bypass vulnerabilities in TechDocs.
+- 090594755: Support parsing `mkdocs.yml` files that are using custom yaml tags like
+  `!!python/name:materialx.emoji.twemoji`.
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
 ## 0.6.3
 
 ### Patch Changes

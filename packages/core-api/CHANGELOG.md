@@ -1,5 +1,15 @@
 # @backstage/core-api
 
+## 0.2.21
+
+### Patch Changes
+
+- 0160678b1: Made the `RouteRef*` types compatible with the ones exported from `@backstage/core-plugin-api`.
+- Updated dependencies [031ccd45f]
+- Updated dependencies [e7c5e4b30]
+  - @backstage/core-plugin-api@0.1.1
+  - @backstage/theme@0.2.8
+
 ## 0.2.20
 
 ### Patch Changes
