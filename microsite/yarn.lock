@@ -6767,10 +6767,10 @@ yargs@^2.3.0:
   dependencies:
     wordwrap "0.0.2"
 
-yarn-lock-check@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/yarn-lock-check/-/yarn-lock-check-1.0.3.tgz#9d506a1544daf75750b44907b2d119fe393b4405"
-  integrity sha512-+jWUbTJdBZDbvOzjR+qkMZ+/ndM7d87ahCwQGJr5D5p4BT51gkQwYv4W5dJ48orcA2jI+3PmR72nwxS6PW6Mbg==
+yarn-lock-check@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/yarn-lock-check/-/yarn-lock-check-1.0.4.tgz#a0373de051be0c8442d8933070df7a45595263b4"
+  integrity sha512-Gj0wRN85c4OPZUlE7WsQ0a1COv38uyeWWR0YAvJr2Vxw1f32bwK19xySjUZlxt9o4QopJkd8g6x6CLv81OHwYg==
   dependencies:
     "@types/glob" "^7.1.3"
     "@types/node" "^15.6.1"
