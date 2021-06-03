@@ -285,8 +285,12 @@ describe('GoogleGCSPublish', () => {
       mockFs.restore();
       mockFs({
         [entityRootDir]: {
+          html: {
+            'unsafe.html': '<html></html>',
+          },
           img: {
             'with spaces.png': 'found it',
+            'unsafe.svg': '<svg></svg>',
           },
           'some folder': {
             'also with spaces.js': 'found it too',
@@ -309,11 +313,36 @@ describe('GoogleGCSPublish', () => {
       const pngResponse = await request(app).get(
         `/${namespace}/${kind}/${name}/img/with%20spaces.png`,
       );
-      expect(pngResponse.text).toEqual('found it');
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
       const jsResponse = await request(app).get(
         `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass text/plain content-type for html', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const htmlResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/html/unsafe.html`,
+      );
+      expect(htmlResponse.text).toEqual('<html></html>');
+      expect(htmlResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
+
+      const svgResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/unsafe.svg`,
+      );
+      expect(svgResponse.text).toEqual('<svg></svg>');
+      expect(svgResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
     });
   });
 });
