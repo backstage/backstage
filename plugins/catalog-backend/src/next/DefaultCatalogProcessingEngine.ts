@@ -22,10 +22,10 @@ import {
 import { serializeError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { ProcessingDatabase } from './database/types';
-import { Stitcher } from './Stitcher';
+import { CatalogProcessingOrchestrator } from './processing/types';
+import { Stitcher } from './stitching/Stitcher';
 import {
   CatalogProcessingEngine,
-  CatalogProcessingOrchestrator,
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,

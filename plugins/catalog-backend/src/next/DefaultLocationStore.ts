@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-import { LocationSpec, Location } from '@backstage/catalog-model';
-import {
-  LocationStore,
-  EntityProvider,
-  EntityProviderConnection,
-} from './types';
-import { v4 as uuid } from 'uuid';
-import { locationSpecToLocationEntity } from './util';
+import { Location, LocationSpec } from '@backstage/catalog-model';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-
-type DbLocationsRow = {
-  id: string;
-  type: string;
-  target: string;
-};
+import { v4 as uuid } from 'uuid';
+import { DbLocationsRow } from './database/tables';
+import {
+  EntityProvider,
+  EntityProviderConnection,
+  LocationStore,
+} from './types';
+import { locationSpecToLocationEntity } from './util';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;

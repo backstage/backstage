@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 import {
-  LocationSpec,
-  Location,
   Entity,
+  Location,
+  LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
 } from '@backstage/catalog-model';
-import {
-  LocationService,
-  LocationStore,
-  CatalogProcessingOrchestrator,
-} from './types';
+import { CatalogProcessingOrchestrator } from './processing/types';
+import { LocationService, LocationStore } from './types';
 import { locationSpecToMetadataName } from './util';
 
 export class DefaultLocationService implements LocationService {

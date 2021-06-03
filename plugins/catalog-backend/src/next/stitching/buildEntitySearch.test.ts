@@ -15,9 +15,9 @@
  */
 
 import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-import { buildEntitySearch, mapToRows, traverse } from './search';
+import { buildEntitySearch, mapToRows, traverse } from './buildEntitySearch';
 
-describe('search', () => {
+describe('buildEntitySearch', () => {
   describe('traverse', () => {
     it('expands lists of strings to several rows', () => {
       const input = { a: ['b', 'c', 'd'] };

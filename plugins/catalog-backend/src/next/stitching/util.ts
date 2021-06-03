@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-export { NextCatalogBuilder } from './NextCatalogBuilder';
-export { createNextRouter } from './NextRouter';
-export * from './processing';
-export * from './stitching';
+import { Entity } from '@backstage/catalog-model';
+import { createHash } from 'crypto';
+import stableStringify from 'fast-json-stable-stringify';
+
+// The number of items that are sent per batch to the database layer, when
+// doing .batchInsert calls to knex. This needs to be low enough to not cause
+// errors in the underlying engine due to exceeding query limits, but large
+// enough to get the speed benefits.
+export const BATCH_SIZE = 50;
+
+export function generateStableHash(entity: Entity) {
+  return createHash('sha1')
+    .update(stableStringify({ ...entity }))
+    .digest('hex');
+}

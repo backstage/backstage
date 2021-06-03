@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityRelationSpec,
-  Location,
-  LocationSpec,
-} from '@backstage/catalog-model';
-import { JsonObject } from '@backstage/config';
+import { Entity, Location, LocationSpec } from '@backstage/catalog-model';
 
 export interface LocationService {
   createLocation(
@@ -55,27 +49,4 @@ export interface EntityProviderConnection {
 export interface EntityProvider {
   getProviderName(): string;
   connect(connection: EntityProviderConnection): Promise<void>;
-}
-
-export type EntityProcessingRequest = {
-  entity: Entity;
-  state: Map<string, JsonObject>; // Versions for multiple deployments etc
-};
-
-export type EntityProcessingResult =
-  | {
-      ok: true;
-      state: Map<string, JsonObject>;
-      completedEntity: Entity;
-      deferredEntities: Entity[];
-      relations: EntityRelationSpec[];
-      errors: Error[];
-    }
-  | {
-      ok: false;
-      errors: Error[];
-    };
-
-export interface CatalogProcessingOrchestrator {
-  process(request: EntityProcessingRequest): Promise<EntityProcessingResult>;
 }

@@ -19,12 +19,7 @@ import {
   ENTITY_DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-
-export type DbSearchRow = {
-  entity_id: string;
-  key: string;
-  value: string | null;
-};
+import { DbSearchRow } from '../database/tables';
 
 // These are excluded in the generic loop, either because they do not make sense
 // to index, or because they are special-case always inserted whether they are
