@@ -27451,7 +27451,7 @@ yargs@^5.0.0:
     y18n "^3.2.1"
     yargs-parser "^3.2.0"
 
-yarn-lock-check@^1.0.3:
+yarn-lock-check@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/yarn-lock-check/-/yarn-lock-check-1.0.4.tgz#a0373de051be0c8442d8933070df7a45595263b4"
   integrity sha512-Gj0wRN85c4OPZUlE7WsQ0a1COv38uyeWWR0YAvJr2Vxw1f32bwK19xySjUZlxt9o4QopJkd8g6x6CLv81OHwYg==
