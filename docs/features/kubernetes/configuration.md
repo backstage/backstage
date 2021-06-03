@@ -25,14 +25,15 @@ kubernetes:
         - url: http://127.0.0.1:9999
           name: minikube
           authProvider: 'serviceAccount'
-          serviceAccountToken:
-            $env: K8S_MINIKUBE_TOKEN
+          skipTLSVerify: false
+          serviceAccountToken: ${K8S_MINIKUBE_TOKEN}
         - url: http://127.0.0.2:9999
           name: aws-cluster-1
           authProvider: 'aws'
     - type: 'gke'
       projectId: 'gke-clusters'
       region: 'europe-west1'
+      skipTLSVerify: true
 ```
 
 ### `serviceLocatorMethod`
@@ -78,6 +79,12 @@ cluster. Valid values are:
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `serviceAccount` | This will use a Kubernetes [service account](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) to access the Kubernetes API. When this is used the `serviceAccountToken` field should also be set. |
 | `google`         | This will use a user's Google auth token from the [Google auth plugin](https://backstage.io/docs/auth/) to access the Kubernetes API.                                                                                             |
+| `aws`            | This will use AWS credentials to access resources in EKS clusters                                                                                                                                                                 |
+
+##### `clusters.\*.skipTLSVerify`
+
+This determines whether or not the Kubernetes client verifies the TLS
+certificate presented by the API server. Defaults to `false`.
 
 ##### `clusters.\*.serviceAccountToken` (optional)
 
@@ -122,6 +129,39 @@ The Google Cloud project to look for Kubernetes clusters in.
 
 The Google Cloud region to look for Kubernetes clusters in. Defaults to all
 regions.
+
+##### `skipTLSVerify`
+
+This determines whether or not the Kubernetes client verifies the TLS
+certificate presented by the API server. Defaults to `false`.
+
+### `customResources` (optional)
+
+Configures which [custom resources][3] to look for when returning an entity's
+Kubernetes resources.
+
+Defaults to empty array. Example:
+
+```yaml
+---
+kubernetes:
+  customResources:
+    - group: 'argoproj.io'
+      apiVersion: 'v1alpha1'
+      plural: 'rollouts'
+```
+
+#### `customResources.\*.group`
+
+The custom resource's group.
+
+#### `customResources.\*.apiVersion`
+
+The custom resource's apiVersion.
+
+#### `customResources.\*.plural`
+
+The plural representing the custom resource.
 
 ### Role Based Access Control
 
@@ -176,3 +216,5 @@ for more info.
 
 [1]: https://cloud.google.com/kubernetes-engine
 [2]: https://cloud.google.com/docs/authentication/production#linux-or-macos
+[3]:
+  https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/

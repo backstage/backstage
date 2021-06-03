@@ -1,5 +1,199 @@
 # @backstage/techdocs-common
 
+## 0.6.4
+
+### Patch Changes
+
+- aad98c544: Fixes multiple XSS and sanitization bypass vulnerabilities in TechDocs.
+- 090594755: Support parsing `mkdocs.yml` files that are using custom yaml tags like
+  `!!python/name:materialx.emoji.twemoji`.
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
+## 0.6.3
+
+### Patch Changes
+
+- 8cefadca0: Adding validation to mkdocs.yml parsing to prevent directory tree traversing
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-model@0.8.0
+
+## 0.6.2
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
+## 0.6.1
+
+### Patch Changes
+
+- e04f1ccfb: Fixed a bug that prevented loading static assets from GCS, S3, Azure, and OpenStackSwift whose keys contain spaces or other special characters.
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.6.0
+
+### Minor Changes
+
+- e0bfd3d44: Migrate the package to use the `ContainerRunner` interface instead of `runDockerContainer(…)`.
+  It also no longer provides the `ContainerRunner` as an input to the `GeneratorBase#run(…)` function, but expects it as a constructor parameter instead.
+
+  If you use the `TechdocsGenerator` you need to update the usage:
+
+  ```diff
+  + const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  - const generator = new TechdocsGenerator(logger, config);
+  + const techdocsGenerator = new TechdocsGenerator({
+  +   logger,
+  +   containerRunner,
+  +   config,
+  + });
+
+    await this.generator.run({
+      inputDir: preparedDir,
+      outputDir,
+  -   dockerClient: this.dockerClient,
+      parsedLocationAnnotation,
+      etag: newEtag,
+    });
+  ```
+
+### Patch Changes
+
+- e9e56b01a: Adding optional config to enable S3-like API for tech-docs using s3ForcePathStyle option.
+  This allows providers like LocalStack, Minio and Wasabi (+possibly others) to be used to host tech docs.
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.5.1
+
+### Patch Changes
+
+- f4af06ebe: Gracefully handle HTTP request failures in download method of AzureBlobStorage publisher.
+
+## 0.5.0
+
+### Minor Changes
+
+- bc9d62f4f: Move the sanity checks of the publisher configurations to a dedicated `PublisherBase#getReadiness()` method instead of throwing an error when doing `Publisher.fromConfig(...)`.
+  You should include the check when your backend to get early feedback about a potential misconfiguration:
+
+  ```diff
+    // packages/backend/src/plugins/techdocs.ts
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // ...
+
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      })
+
+  +   // checks if the publisher is working and logs the result
+  +   await publisher.getReadiness();
+
+      // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+      const dockerClient = new Docker();
+
+      // ...
+  }
+  ```
+
+  If you want to crash your application on invalid configurations, you can throw an `Error` to preserve the old behavior.
+  Please be aware that this is not the recommended for the use in a Backstage backend but might be helpful in CLI tools such as the `techdocs-cli`.
+
+  ```ts
+  const publisher = await Publisher.fromConfig(config, {
+    logger,
+    discovery,
+  });
+
+  const ready = await publisher.getReadiness();
+  if (!ready.isAvailable) {
+    throw new Error('Invalid TechDocs publisher configuration');
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
+## 0.4.5
+
+### Patch Changes
+
+- 8686eb38c: Use errors from `@backstage/errors`
+- 424742dc1: Applies only if you use TechDocs local builder instead of building on CI/CD i.e. if `techdocs.builder` in your `app-config.yaml` is set to `'local'`
+
+  Improvements
+
+  1. Do not check for updates in the repository if a check has been made in the last 60 seconds. This is to prevent the annoying check for update on every page switch or load.
+  2. No need to maintain an in-memory etag storage, and use the one stored in `techdocs_metadata.json` file alongside generated docs.
+
+  New feature
+
+  1. You can now use a mix of basic and recommended setup i.e. `techdocs.builder` is `'local'` but using an external cloud storage instead of local storage. Previously, in this setup, the docs would never get updated.
+
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.4.4
+
+### Patch Changes
+
+- d7245b733: Remove runDockerContainer, and start using the utility function provided by @backstage/backend-common
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 2ef5bc7ea: Implement proper AWS Credentials precedence with assume-role and explicit credentials
+- aa095e469: OpenStack Swift publisher added for tech-docs.
+- bc46435f5: - Improve deprecation warning messaging in logs.
+  - Replace temp folder path from git provider domain(`source`) to full git host name (`resource`). (See: https://github.com/IonicaBizau/git-url-parse#giturlparseurl)
+- a501128db: Refactor log messaging to improve clarity
+- ca4a904f6: Add an optional configuration option for setting the url endpoint for AWS S3 publisher: `techdocs.publisher.awsS3.endpoint`
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.4.3
 
 ### Patch Changes

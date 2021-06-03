@@ -1,5 +1,1117 @@
 # @backstage/create-app
 
+## 0.3.24
+
+### Patch Changes
+
+- 1ddf551f4: Add CLI output and README how to start app after create-app CLI
+- Updated dependencies [7af9cef07]
+- Updated dependencies [497f4ce18]
+- Updated dependencies [ee4eb5b40]
+- Updated dependencies [84160313e]
+- Updated dependencies [3772de8ba]
+- Updated dependencies [7e7c71417]
+- Updated dependencies [f430b6c6f]
+- Updated dependencies [2a942cc9e]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [90a505a77]
+- Updated dependencies [76f99a1a0]
+- Updated dependencies [1157fa307]
+- Updated dependencies [6fe1567a7]
+- Updated dependencies [e7a5a3474]
+- Updated dependencies [2305ab8fc]
+- Updated dependencies [054bcd029]
+- Updated dependencies [aad98c544]
+- Updated dependencies [63a432e9c]
+- Updated dependencies [f46a9e82d]
+  - @backstage/test-utils@0.1.13
+  - @backstage/plugin-scaffolder@0.9.7
+  - @backstage/cli@0.6.14
+  - @backstage/plugin-catalog@0.6.1
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-scaffolder-backend@0.11.5
+  - @backstage/plugin-catalog-backend@0.10.1
+  - @backstage/plugin-techdocs@0.9.5
+
+## 0.3.23
+
+### Patch Changes
+
+- 6c4bd674c: Cache management has been added to the Backstage backend.
+
+  To apply this change to an existing app, make the following changes:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  import { Logger } from 'winston';
+  import { Config } from '@backstage/config';
+  import {
+  +  PluginCacheManager,
+    PluginDatabaseManager,
+    PluginEndpointDiscovery,
+    UrlReader,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    logger: Logger;
+    database: PluginDatabaseManager;
+  +  cache: PluginCacheManager;
+    config: Config;
+    reader: UrlReader
+    discovery: PluginEndpointDiscovery;
+  };
+  ```
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  import Router from 'express-promise-router';
+  import {
+    createServiceBuilder,
+    loadBackendConfig,
+    getRootLogger,
+    useHotMemoize,
+    notFoundHandler,
+  +  CacheManager,
+    SingleConnectionDatabaseManager,
+    SingleHostDiscovery,
+    UrlReaders,
+  } from '@backstage/backend-common';
+  import { Config } from '@backstage/config';
+
+  function makeCreateEnv(config: Config) {
+    const root = getRootLogger();
+    const reader = UrlReaders.default({ logger: root, config });
+    const discovery = SingleHostDiscovery.fromConfig(config);
+
+    root.info(`Created UrlReader ${reader}`);
+
+    const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  +  const cacheManager = CacheManager.fromConfig(config);
+
+    return (plugin: string): PluginEnvironment => {
+      const logger = root.child({ type: 'plugin', plugin });
+      const database = databaseManager.forPlugin(plugin);
+  -    return { logger, database, config, reader, discovery };
+  +    const cache = cacheManager.forPlugin(plugin);
+  +    return { logger, database, cache, config, reader, discovery };
+    };
+  }
+  ```
+
+  To configure a cache store, add a `backend.cache` key to your app-config.yaml.
+
+  ```diff
+  // app-config.yaml
+
+  backend:
+    baseUrl: http://localhost:7000
+    listen:
+      port: 7000
+    database:
+      client: sqlite3
+      connection: ':memory:'
+  +  cache:
+  +    store: memory
+  ```
+
+- f86ab6d49: Added newer entity relationship cards to the default `@backstage/create-app` template:
+
+  - `EntityDependsOnComponentsCard`
+  - `EntityDependsOnResourcesCard`
+  - `EntityHasResourcesCard`
+  - `EntityHasSubcomponentsCard`
+
+  The `EntityLinksCard` was also added to the overview page. To apply these to your Backstage application, compare against the updated [EntityPage.tsx](https://github.com/backstage/backstage/blob/371760ca2493c8f63e9b44ecc57cc8488131ba5b/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+
+- 260aaa684: Bumped the `@gitbeaker` dependencies to `29.x`.
+
+  To apply this change to an existing app, update all `@gitbeaker/*` dependencies in your `package.json`s to point to `^29.2.0`. Then run `yarn install` at the root of your project.
+
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [1cd0cacd9]
+- Updated dependencies [4ea9df9d3]
+- Updated dependencies [7a7da5146]
+- Updated dependencies [bf805b467]
+- Updated dependencies [203ce6f6f]
+- Updated dependencies [7ab5bfe68]
+- Updated dependencies [260aaa684]
+- Updated dependencies [704875e26]
+- Updated dependencies [3a181cff1]
+  - @backstage/plugin-catalog-backend@0.10.0
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog@0.6.0
+  - @backstage/cli@0.6.13
+  - @backstage/plugin-techdocs@0.9.4
+  - @backstage/plugin-scaffolder-backend@0.11.4
+  - @backstage/plugin-api-docs@0.4.15
+  - @backstage/plugin-auth-backend@0.3.12
+  - @backstage/plugin-catalog-import@0.5.8
+  - @backstage/plugin-explore@0.3.6
+  - @backstage/plugin-github-actions@0.4.8
+  - @backstage/plugin-lighthouse@0.2.17
+  - @backstage/plugin-scaffolder@0.9.6
+  - @backstage/plugin-search@0.3.7
+  - @backstage/plugin-techdocs-backend@0.8.2
+
+## 0.3.22
+
+### Patch Changes
+
+- 3be844496: chore: bump `ts-node` versions to 9.1.1
+- Updated dependencies [062bbf90f]
+- Updated dependencies [2cd70e164]
+- Updated dependencies [0b033d07b]
+- Updated dependencies [3be844496]
+- Updated dependencies [5542de095]
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [82ca1ac22]
+- Updated dependencies [81ef1d57b]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [e3fc89df6]
+- Updated dependencies [9a207f052]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [fd39d4662]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/test-utils@0.1.11
+  - @backstage/plugin-api-docs@0.4.13
+  - @backstage/plugin-catalog@0.5.7
+  - @backstage/plugin-catalog-import@0.5.6
+  - @backstage/plugin-explore@0.3.5
+  - @backstage/plugin-github-actions@0.4.6
+  - @backstage/plugin-lighthouse@0.2.16
+  - @backstage/plugin-scaffolder@0.9.4
+  - @backstage/plugin-scaffolder-backend@0.11.1
+  - @backstage/plugin-search@0.3.6
+  - @backstage/plugin-tech-radar@0.3.11
+  - @backstage/plugin-techdocs@0.9.2
+  - @backstage/plugin-user-settings@0.2.10
+  - @backstage/cli@0.6.11
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+  - @backstage/plugin-catalog-backend@0.9.0
+  - @backstage/plugin-app-backend@0.3.13
+  - @backstage/plugin-auth-backend@0.3.10
+  - @backstage/plugin-proxy-backend@0.2.8
+  - @backstage/plugin-rollbar-backend@0.1.11
+  - @backstage/plugin-techdocs-backend@0.8.1
+
+## 0.3.21
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- e0bfd3d44: The `scaffolder-backend` and `techdocs-backend` plugins have been updated.
+  In order to update, you need to apply the following changes to your existing backend application:
+
+  `@backstage/plugin-techdocs-backend`:
+
+  ```diff
+  // packages/backend/src/plugin/techdocs.ts
+
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // Preparers are responsible for fetching source files for documentation.
+      const preparers = await Preparers.fromConfig(config, {
+        logger,
+        reader,
+      });
+
+  +   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+      // Generators are used for generating documentation sites.
+      const generators = await Generators.fromConfig(config, {
+        logger,
+  +     containerRunner,
+      });
+
+      // Publisher is used for
+      // 1. Publishing generated files to storage
+      // 2. Fetching files from storage and passing them to TechDocs frontend.
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      });
+
+      // checks if the publisher is working and logs the result
+      await publisher.getReadiness();
+
+  -   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  -   const dockerClient = new Docker();
+
+      return await createRouter({
+        preparers,
+        generators,
+        publisher,
+  -     dockerClient,
+        logger,
+        config,
+        discovery,
+      });
+    }
+  ```
+
+  `@backstage/plugin-scaffolder-backend`:
+
+  ```diff
+  // packages/backend/src/plugin/scaffolder.ts
+
+  - import { SingleHostDiscovery } from '@backstage/backend-common';
+  + import {
+  +   DockerContainerRunner,
+  +   SingleHostDiscovery,
+  + } from '@backstage/backend-common';
+
+    export default async function createPlugin({
+      logger,
+      config,
+      database,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+  +   const cookiecutterTemplater = new CookieCutter({ containerRunner });
+  -   const cookiecutterTemplater = new CookieCutter();
+  +   const craTemplater = new CreateReactAppTemplater({ containerRunner });
+  -   const craTemplater = new CreateReactAppTemplater();
+      const templaters = new Templaters();
+
+      templaters.register('cookiecutter', cookiecutterTemplater);
+      templaters.register('cra', craTemplater);
+
+      const preparers = await Preparers.fromConfig(config, { logger });
+      const publishers = await Publishers.fromConfig(config, { logger });
+
+  -   const dockerClient = new Docker();
+
+      const discovery = SingleHostDiscovery.fromConfig(config);
+      const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+      return await createRouter({
+        preparers,
+        templaters,
+        publishers,
+        logger,
+        config,
+  -     dockerClient,
+        database,
+        catalogClient,
+        reader,
+      });
+    }
+  ```
+
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [80888659b]
+- Updated dependencies [b219821a0]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [8aedbb4af]
+- Updated dependencies [fc79a6dd3]
+- Updated dependencies [69eefb5ae]
+- Updated dependencies [75c8cec39]
+- Updated dependencies [b2e2ec753]
+- Updated dependencies [227439a72]
+- Updated dependencies [9314a8592]
+- Updated dependencies [2e05277e0]
+- Updated dependencies [4075c6367]
+- Updated dependencies [cdb3426e5]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/plugin-scaffolder-backend@0.11.0
+  - @backstage/backend-common@0.7.0
+  - @backstage/plugin-techdocs-backend@0.8.0
+  - @backstage/plugin-catalog-import@0.5.5
+  - @backstage/plugin-github-actions@0.4.5
+  - @backstage/cli@0.6.10
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-backend@0.8.2
+  - @backstage/theme@0.2.7
+  - @backstage/plugin-tech-radar@0.3.10
+  - @backstage/plugin-scaffolder@0.9.3
+  - @backstage/plugin-techdocs@0.9.1
+  - @backstage/plugin-proxy-backend@0.2.7
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+  - @backstage/catalog-client@0.3.11
+  - @backstage/plugin-app-backend@0.3.12
+  - @backstage/plugin-auth-backend@0.3.9
+  - @backstage/plugin-rollbar-backend@0.1.10
+
+## 0.3.20
+
+### Patch Changes
+
+- 73f3f5d78: Updates the end to end test in the app to match the new catalog index page title. To apply this change to an existing app, update `packages/app/cypress/integration/app.js` to search for `"My Company Catalog"` instead of `"My Company Service Catalog"`.
+- Updated dependencies [1ce80ff02]
+- Updated dependencies [4c42ecca2]
+- Updated dependencies [c614ede9a]
+- Updated dependencies [9afcac5af]
+- Updated dependencies [07a7806c3]
+- Updated dependencies [f6efa71ee]
+- Updated dependencies [19a4dd710]
+- Updated dependencies [a99e0bc42]
+- Updated dependencies [dcd54c7cd]
+- Updated dependencies [da546ce00]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6fbd7beca]
+- Updated dependencies [15cbe6815]
+- Updated dependencies [39bdaa004]
+- Updated dependencies [cb8c848a3]
+- Updated dependencies [21fddf452]
+- Updated dependencies [17915e29b]
+- Updated dependencies [a1783f306]
+- Updated dependencies [6eaecbd81]
+- Updated dependencies [23769512a]
+- Updated dependencies [1a142ae8a]
+  - @backstage/plugin-api-docs@0.4.12
+  - @backstage/plugin-github-actions@0.4.4
+  - @backstage/plugin-catalog-import@0.5.4
+  - @backstage/plugin-explore@0.3.4
+  - @backstage/plugin-lighthouse@0.2.15
+  - @backstage/core@0.7.7
+  - @backstage/plugin-scaffolder@0.9.2
+  - @backstage/plugin-catalog@0.5.6
+  - @backstage/plugin-catalog-backend@0.8.1
+  - @backstage/plugin-search@0.3.5
+  - @backstage/plugin-techdocs@0.9.0
+  - @backstage/plugin-scaffolder-backend@0.10.1
+
+## 0.3.19
+
+### Patch Changes
+
+- ee22773e9: Removed `plugins.ts` from the app, as plugins are now discovered through the react tree.
+
+  To apply this change to an existing app, simply delete `packages/app/src/plugins.ts` along with the import and usage in `packages/app/src/App.tsx`.
+
+  Note that there are a few plugins that require explicit registration, in which case you would need to keep them in `plugins.ts`. The set of plugins that need explicit registration is any plugin that doesn't have a component extension that gets rendered as part of the app element tree. An example of such a plugin in the main Backstage repo is `@backstage/plugin-badges`. In the case of the badges plugin this is because there is not yet a component-based API for adding context menu items to the entity layout.
+
+  If you have plugins that still rely on route registration through the `register` method of `createPlugin`, these need to be kept in `plugins.ts` as well. However, it is recommended to migrate these to export an extensions component instead.
+
+- 670acd88e: Fix system diagram card to be on the system page
+
+  To apply the same fix to an existing application, in `EntityPage.tsx` simply move the `<EntityLayout.route>` for the `/diagram` path from the `groupPage` down into the `systemPage` element.
+
+- Updated dependencies [94da20976]
+- Updated dependencies [84c54474d]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [4e5c94249]
+- Updated dependencies [99fbef232]
+- Updated dependencies [cb0206b2b]
+- Updated dependencies [1373f4f12]
+- Updated dependencies [29a7e4be8]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [49574a8a3]
+- Updated dependencies [d367f63b5]
+- Updated dependencies [96728a2af]
+- Updated dependencies [5fe62f124]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [87c4f59de]
+- Updated dependencies [09b5fcf2e]
+- Updated dependencies [b42531cfe]
+- Updated dependencies [c2306f898]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+- Updated dependencies [ac6025f63]
+- Updated dependencies [e292e393f]
+- Updated dependencies [479b29124]
+  - @backstage/core@0.7.6
+  - @backstage/plugin-scaffolder-backend@0.10.0
+  - @backstage/cli@0.6.9
+  - @backstage/plugin-scaffolder@0.9.1
+  - @backstage/plugin-catalog-import@0.5.3
+  - @backstage/plugin-rollbar-backend@0.1.9
+  - @backstage/backend-common@0.6.3
+  - @backstage/plugin-catalog@0.5.5
+  - @backstage/plugin-catalog-backend@0.8.0
+  - @backstage/theme@0.2.6
+  - @backstage/plugin-techdocs@0.8.0
+
+## 0.3.18
+
+### Patch Changes
+
+- b49a525ab: Fixing dependency resolution for problematic library `graphql-language-service-interface`.
+
+  This change might not have to be applied to your local installation, however if you run into this error:
+
+  ```
+  Error: Failed to compile.
+  /tmp/backstage-e2e-uMeycm/test-app/node_modules/graphql-language-service-interface/esm/GraphQLLanguageService.js 100:23
+  Module parse failed: Unexpected token (100:23)
+  You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
+  |         }
+  |         let customRules = null;
+  >         if (extensions?.customValidationRules &&
+  |             typeof extensions.customValidationRules === 'function') {
+  |             customRules = extensions.customValidationRules(this._graphQLConfig);
+  ```
+
+  You can fix it by adding the following to the root `package.json`.
+
+  ```json
+  ...
+  "resolutions": {
+    "graphql-language-service-interface": "2.8.2",
+    "graphql-language-service-parser": "1.9.0"
+   },
+  ...
+  ```
+
+- a360f9478: Expose the catalog-import route as an external route from the scaffolder.
+
+  This will make it possible to hide the "Register Existing Component" button
+  when you for example are running backstage with `catalog.readonly=true`.
+
+  As a consequence of this change you need add a new binding to your createApp call to
+  keep the button visible. However, if you instead want to hide the button you can safely
+  ignore the following example.
+
+  To bind the external route from the catalog-import plugin to the scaffolder template
+  index page, make sure you have the appropriate imports and add the following
+  to the createApp call:
+
+  ```typescript
+  import { catalogImportPlugin } from '@backstage/plugin-catalog-import';
+
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      // ...
+      bind(scaffolderPlugin.externalRoutes, {
+        registerComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- f1952337c: Due to a change in the techdocs publishers, they don't check if they are able to reach e.g. the configured S3 bucket anymore.
+  This can be added again by the following change. Note that the backend process will no longer exit when it is not reachable but will only emit an error log message.
+  You should include the check when your backend to get early feedback about a potential misconfiguration:
+
+  ```diff
+    // packages/backend/src/plugins/techdocs.ts
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // ...
+
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      })
+
+  +   // checks if the publisher is working and logs the result
+  +   await publisher.getReadiness();
+
+      // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+      const dockerClient = new Docker();
+
+      // ...
+  }
+  ```
+
+- Updated dependencies [d8ffec739]
+- Updated dependencies [7abec4dbc]
+- Updated dependencies [017192ee8]
+- Updated dependencies [a360f9478]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d840d30bc]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [b25846562]
+- Updated dependencies [12390778e]
+- Updated dependencies [cba5944fc]
+- Updated dependencies [a376e3ee8]
+- Updated dependencies [fef852ecd]
+- Updated dependencies [18f7345a6]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [423a514c3]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [442f34b87]
+- Updated dependencies [e27cb6c45]
+- Updated dependencies [184b02bef]
+- Updated dependencies [0b7fd7a9d]
+- Updated dependencies [60ce64aa2]
+  - @backstage/plugin-scaffolder-backend@0.9.6
+  - @backstage/plugin-catalog-backend@0.7.1
+  - @backstage/plugin-scaffolder@0.9.0
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/plugin-catalog@0.5.4
+  - @backstage/plugin-api-docs@0.4.11
+  - @backstage/plugin-techdocs-backend@0.7.1
+  - @backstage/plugin-techdocs@0.7.2
+  - @backstage/catalog-client@0.3.10
+  - @backstage/plugin-tech-radar@0.3.9
+  - @backstage/cli@0.6.8
+
+## 0.3.17
+
+### Patch Changes
+
+- 3e7de08af: **Fully migrated the template to the new composability API**
+
+  The `create-app` template is now fully migrated to the new composability API, see [Composability System Migration Documentation](https://backstage.io/docs/plugins/composability) for explanations and more details. The final change which is now done was to migrate the `EntityPage` from being a component built on top of the `EntityPageLayout` and several more custom components, to an element tree built with `EntitySwitch` and `EntityLayout`.
+
+  To apply this change to an existing plugin, it is important that all plugins that you are using have already been migrated. In this case the most crucial piece is that no entity page cards of contents may require the `entity` prop, and they must instead consume the entity from context using `useEntity`.
+
+  Since this change is large with a lot of repeated changes, we'll describe a couple of common cases rather than the entire change. If your entity pages are unchanged from the `create-app` template, you can also just bring in the latest version directly from the [template itself](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx).
+
+  The first step of the change is to change the `packages/app/src/components/catalog/EntityPage.tsx` export to `entityPage` rather than `EntityPage`. This will require an update to `App.tsx`, which is the only change we need to do outside of `EntityPage.tsx`:
+
+  ```diff
+  -import { EntityPage } from './components/catalog/EntityPage';
+  +import { entityPage } from './components/catalog/EntityPage';
+
+   <Route
+     path="/catalog/:namespace/:kind/:name"
+     element={<CatalogEntityPage />}
+   >
+  -  <EntityPage />
+  +  {entityPage}
+   </Route>
+  ```
+
+  The rest of the changes happen within `EntityPage.tsx`, and can be split into two broad categories, updating page components, and updating switch components.
+
+  #### Migrating Page Components
+
+  Let's start with an example of migrating a user page component. The following is the old code in the template:
+
+  ```tsx
+  const UserOverviewContent = ({ entity }: { entity: UserEntity }) => (
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <UserProfileCard entity={entity} variant="gridItem" />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <OwnershipCard entity={entity} variant="gridItem" />
+      </Grid>
+    </Grid>
+  );
+
+  const UserEntityPage = ({ entity }: { entity: Entity }) => (
+    <EntityPageLayout>
+      <EntityPageLayout.Content
+        path="/*"
+        title="Overview"
+        element={<UserOverviewContent entity={entity as UserEntity} />}
+      />
+    </EntityPageLayout>
+  );
+  ```
+
+  There's the main `UserEntityPage` component, and the `UserOverviewContent` component. Let's start with migrating the page contents, which we do by rendering an element rather than creating a component, as well as replace the cards with their new composability compatible variants. The new cards and content components can be identified by the `Entity` prefix.
+
+  ```tsx
+  const userOverviewContent = (
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={6}>
+        <EntityUserProfileCard variant="gridItem" />
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <EntityOwnershipCard variant="gridItem" />
+      </Grid>
+    </Grid>
+  );
+  ```
+
+  Now let's migrate the page component, again by converting it into a rendered element instead of a component, as well as replacing the use of `EntityPageLayout` with `EntityLayout`.
+
+  ```tsx
+  const userPage = (
+    <EntityLayout>
+      <EntityLayout.Route path="/" title="Overview">
+        {userOverviewContent}
+      </EntityLayout.Route>
+    </EntityLayout>
+  );
+  ```
+
+  At this point the `userPage` is quite small, so throughout this migration we have inlined the page contents for all pages. This is an optional step, but may help reduce noise. The final page now looks like this:
+
+  ```tsx
+  const userPage = (
+    <EntityLayout>
+      <EntityLayout.Route path="/" title="Overview">
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <EntityUserProfileCard variant="gridItem" />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <EntityOwnershipCard variant="gridItem" />
+          </Grid>
+        </Grid>
+      </EntityLayout.Route>
+    </EntityLayout>
+  );
+  ```
+
+  #### Migrating Switch Components
+
+  Switch components were used to select what entity page components or cards to render, based on for example the kind of entity. For this example we'll focus on the root `EntityPage` switch component, but the process is the same for example for the CI/CD switcher.
+
+  The old `EntityPage` looked like this:
+
+  ```tsx
+  export const EntityPage = () => {
+    const { entity } = useEntity();
+
+    switch (entity?.kind?.toLocaleLowerCase('en-US')) {
+      case 'component':
+        return <ComponentEntityPage entity={entity} />;
+      case 'api':
+        return <ApiEntityPage entity={entity} />;
+      case 'group':
+        return <GroupEntityPage entity={entity} />;
+      case 'user':
+        return <UserEntityPage entity={entity} />;
+      case 'system':
+        return <SystemEntityPage entity={entity} />;
+      case 'domain':
+        return <DomainEntityPage entity={entity} />;
+      case 'location':
+      case 'resource':
+      case 'template':
+      default:
+        return <DefaultEntityPage entity={entity} />;
+    }
+  };
+  ```
+
+  In order to migrate to the composability API, we need to make this an element instead of a component, which means we're unable to keep the switch statement as is. To help with this, the catalog plugin provides an `EntitySwitch` component, which functions similar to a regular `switch` statement, which the first match being the one that is rendered. The catalog plugin also provides a number of built-in filter functions to use, such as `isKind` and `isComponentType`.
+
+  To migrate the `EntityPage`, we convert the `switch` statement into an `EntitySwitch` element, and each `case` statement into an `EntitySwitch.Case` element. We also move over to use our new element version of the page components, with the result looking like this:
+
+  ```tsx
+  export const entityPage = (
+    <EntitySwitch>
+      <EntitySwitch.Case if={isKind('component')} children={componentPage} />
+      <EntitySwitch.Case if={isKind('api')} children={apiPage} />
+      <EntitySwitch.Case if={isKind('group')} children={groupPage} />
+      <EntitySwitch.Case if={isKind('user')} children={userPage} />
+      <EntitySwitch.Case if={isKind('system')} children={systemPage} />
+      <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
+
+      <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
+    </EntitySwitch>
+  );
+  ```
+
+  Another example is the `ComponentEntityPage`, which is migrated from this:
+
+  ```tsx
+  export const ComponentEntityPage = ({ entity }: { entity: Entity }) => {
+    switch (entity?.spec?.type) {
+      case 'service':
+        return <ServiceEntityPage entity={entity} />;
+      case 'website':
+        return <WebsiteEntityPage entity={entity} />;
+      default:
+        return <DefaultEntityPage entity={entity} />;
+    }
+  };
+  ```
+
+  To this:
+
+  ```tsx
+  const componentPage = (
+    <EntitySwitch>
+      <EntitySwitch.Case if={isComponentType('service')}>
+        {serviceEntityPage}
+      </EntitySwitch.Case>
+
+      <EntitySwitch.Case if={isComponentType('website')}>
+        {websiteEntityPage}
+      </EntitySwitch.Case>
+
+      <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
+    </EntitySwitch>
+  );
+  ```
+
+  Note that if you want to conditionally render some piece of content, you can omit the default `EntitySwitch.Case`. If no case is matched in an `EntitySwitch`, nothing will be rendered.
+
+- Updated dependencies [802b41b65]
+- Updated dependencies [2b2b31186]
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [3f96a9d5a]
+- Updated dependencies [b051e770c]
+- Updated dependencies [f9c75f7a9]
+- Updated dependencies [ae6250ce3]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/plugin-scaffolder-backend@0.9.5
+  - @backstage/plugin-auth-backend@0.3.8
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+  - @backstage/plugin-scaffolder@0.8.2
+  - @backstage/plugin-catalog-import@0.5.2
+  - @backstage/test-utils@0.1.10
+  - @backstage/plugin-catalog@0.5.3
+  - @backstage/backend-common@0.6.2
+  - @backstage/cli@0.6.7
+  - @backstage/plugin-app-backend@0.3.11
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies [676ede643]
+- Updated dependencies [2ab6f3ff0]
+- Updated dependencies [0d55dcc74]
+- Updated dependencies [ee5529268]
+- Updated dependencies [2c29611a0]
+- Updated dependencies [29e1789e1]
+- Updated dependencies [aa58c01e2]
+- Updated dependencies [60bddefce]
+- Updated dependencies [bebd1c4fe]
+- Updated dependencies [f1b2c1d2c]
+- Updated dependencies [676ede643]
+- Updated dependencies [9f48b548c]
+- Updated dependencies [8bee6a131]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+- Updated dependencies [6b2d54fd6]
+- Updated dependencies [44590510d]
+- Updated dependencies [dd7fa21e2]
+- Updated dependencies [164cc4c53]
+- Updated dependencies [676ede643]
+  - @backstage/plugin-catalog-backend@0.7.0
+  - @backstage/plugin-scaffolder@0.8.1
+  - @backstage/plugin-scaffolder-backend@0.9.4
+  - @backstage/plugin-auth-backend@0.3.7
+  - @backstage/plugin-api-docs@0.4.10
+  - @backstage/plugin-github-actions@0.4.3
+  - @backstage/plugin-catalog@0.5.2
+  - @backstage/plugin-techdocs@0.7.1
+  - @backstage/catalog-client@0.3.9
+  - @backstage/plugin-catalog-import@0.5.1
+  - @backstage/plugin-explore@0.3.3
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+  - @backstage/plugin-user-settings@0.2.9
+
+## 0.3.15
+
+### Patch Changes
+
+- 2c525f85e: (fix) Adds locationAnalyzer to default-app template
+
+  The locationAnalyzer was missing from the default-app template.
+  This resulted in 404 errors in newly bootstrapped backstage applications,
+  when adding components without configuration.
+
+  To fix this in an existing backstage application, the locationAnalyzer needs
+  to be carried from the builder to the router in the
+  `packages/backend/src/plugins/catalog.ts` file.
+
+  ```diff
+     const builder = new CatalogBuilder(env);
+     const {
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+     } = await builder.build();
+     // ...
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+  +    locationAnalyzer,
+       logger: env.logger,
+     });
+  ```
+
+- f88fe9dd9: Adds plugin-org and more capability to the default EntityPage to display Users, Groups and Systems.
+
+  To update an existing application, add the org plugin:
+
+  ```shell
+  cd packages/app
+  yarn add @backstage/plugin-org
+  ```
+
+  Then add the example systems locations to your `app-config.yaml`:
+
+  ```diff
+  catalog:
+    rules:
+  -    - allow: [Component, API, Group, User, Template, Location]
+  +    - allow: [Component, System, API, Group, User, Template, Location]
+    locations:
+      # Backstage example components
+      - type: url
+        target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
+
+  +    # Backstage example systems
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-systems.yaml
+  +
+      # Backstage example APIs
+  ```
+
+  Additionally, the default app sidebar was updated to parity with the Backstage
+  repo. You can see these changes in the template
+  [App.tsx](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/App.tsx#L70)
+  referencing a new `Root` component.
+
+  Finally, compare your `packages/app/src/components/catalog/EntityPage.tsx` to
+  [EntityPage](https://github.com/backstage/backstage/blob/8817a87cdd5c881fbe8a43557ba7f9df0f9e3258/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+  from the `@backstage/create-app` default template to pick up additional
+  changes there.
+
+- 4d248725e: Update the create-app template to use the correct latest version of `express-promise-router`.
+
+  To apply the same change in your own repository, update all of your repo's dependencies on `express-promise-router` to `"^4.1.0"`.
+
+- Updated dependencies [9f2e51e89]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [449776cd6]
+- Updated dependencies [91e87c055]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [113d3d59e]
+- Updated dependencies [f47e11427]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [c862b3f36]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-scaffolder-backend@0.9.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/plugin-techdocs-backend@0.7.0
+  - @backstage/plugin-auth-backend@0.3.6
+  - @backstage/core@0.7.3
+  - @backstage/plugin-catalog-backend@0.6.7
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
+## 0.3.14
+
+### Patch Changes
+
+- 3385b374b: Supply a `scmIntegrationsApiRef` from the new `@backstage/integration-react`.
+
+  This is a new facility that plugins will start to use. You will have to add it to your local `packages/app` as described below. If this is not done, runtime errors will be seen in the frontend, on the form `No API factory available for dependency apiRef{integration.scmintegrations}`.
+
+  In `packages/app/package.json`:
+
+  ```diff
+     "dependencies": {
+  +    "@backstage/integration-react": "^0.1.1",
+  ```
+
+  In `packages/app/src/apis.ts`:
+
+  ```diff
+  +import {
+  +  scmIntegrationsApiRef,
+  +  ScmIntegrationsApi,
+  +} from '@backstage/integration-react';
+
+   export const apis: AnyApiFactory[] = [
+  +  createApiFactory({
+  +    api: scmIntegrationsApiRef,
+  +    deps: { configApi: configApiRef },
+  +    factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+  +  }),
+  ```
+
+- 9ca0e4009: use local version of lowerCase and upperCase methods
+- 028339210: Adds example groups and users to the default app template.
+
+  To apply this change in an existing application, change the following in `app-config.yaml`:
+
+  ```diff
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
+
+  +    # Backstage example organization groups
+  +    - type: url
+  +      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
+  +      rules:
+  +        - allow: [Group, User]
+  +
+       # Backstage example templates
+       - type: url
+         target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/react-ssr-template/template.yaml
+  ```
+
+- Updated dependencies [010aed784]
+- Updated dependencies [633a31fec]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [34e6bb409]
+- Updated dependencies [b56815b40]
+- Updated dependencies [147b4c5b1]
+- Updated dependencies [83bfc98a3]
+- Updated dependencies [7d8c4c97c]
+- Updated dependencies [e7baa0d2e]
+- Updated dependencies [8b4f7e42a]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [84972540b]
+- Updated dependencies [3385b374b]
+- Updated dependencies [0434853a5]
+- Updated dependencies [a0dacc184]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [4bc98a5b9]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [d2f4efc5d]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [c8b54c370]
+- Updated dependencies [4e0b5055a]
+- Updated dependencies [8b5e59750]
+- Updated dependencies [8686eb38c]
+  - @backstage/plugin-catalog-backend@0.6.6
+  - @backstage/plugin-catalog@0.5.0
+  - @backstage/catalog-client@0.3.8
+  - @backstage/plugin-tech-radar@0.3.8
+  - @backstage/plugin-user-settings@0.2.8
+  - @backstage/plugin-techdocs@0.6.2
+  - @backstage/plugin-catalog-import@0.5.0
+  - @backstage/plugin-techdocs-backend@0.6.5
+  - @backstage/plugin-scaffolder-backend@0.9.2
+  - @backstage/backend-common@0.6.0
+  - @backstage/cli@0.6.5
+  - @backstage/plugin-scaffolder@0.8.0
+  - @backstage/config@0.1.4
+  - @backstage/core@0.7.2
+  - @backstage/plugin-api-docs@0.4.9
+  - @backstage/plugin-explore@0.3.2
+  - @backstage/plugin-github-actions@0.4.1
+  - @backstage/plugin-lighthouse@0.2.14
+  - @backstage/plugin-search@0.3.4
+  - @backstage/plugin-auth-backend@0.3.5
+  - @backstage/test-utils@0.1.9
+  - @backstage/plugin-app-backend@0.3.10
+  - @backstage/plugin-proxy-backend@0.2.6
+  - @backstage/plugin-rollbar-backend@0.1.8
+
+## 0.3.13
+
+### Patch Changes
+
+- b03fba0dc: Adds "yarn dev" command to simplify local development.
+
+  To add the command to an existing application, first add it to the `scripts`
+  section of your monorepo root `package.json` like so:
+
+  ```diff
+   "scripts": {
+  +    "dev": "concurrently \"yarn start\" \"yarn start-backend\"",
+       "start": "yarn workspace app start",
+       "start-backend": "yarn workspace backend start",
+  ```
+
+  And then add the `concurrently` package to your monorepo, like so:
+
+  ```sh
+  yarn add concurrently@6.0.0 --dev -W
+  ```
+
+  Notes:
+
+  - This needs to be done to the monorepo root, not your frontend or backend package.
+  - The `--dev -W` will add it only to `devDependencies`, and force it to the monorepo main root.
+
+  You can then run `yarn dev` which will start both the Backstage frontend and backend in a single window.
+
+- Updated dependencies [13fb84244]
+- Updated dependencies [9ef5a126d]
+- Updated dependencies [4f3d0dce0]
+- Updated dependencies [d7245b733]
+- Updated dependencies [393b623ae]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [c532c1682]
+- Updated dependencies [761698831]
+- Updated dependencies [aa095e469]
+- Updated dependencies [761698831]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9f7dc10fb]
+- Updated dependencies [eabe89d38]
+- Updated dependencies [93c62c755]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [868e4cdf2]
+- Updated dependencies [02d78290a]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+- Updated dependencies [5f1b7ea35]
+- Updated dependencies [5ab5864f6]
+- Updated dependencies [4202807bb]
+- Updated dependencies [2e57922de]
+  - @backstage/plugin-github-actions@0.4.0
+  - @backstage/plugin-catalog-backend@0.6.5
+  - @backstage/plugin-catalog@0.4.2
+  - @backstage/backend-common@0.5.6
+  - @backstage/plugin-app-backend@0.3.9
+  - @backstage/plugin-scaffolder-backend@0.9.1
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+  - @backstage/core@0.7.1
+  - @backstage/plugin-techdocs-backend@0.6.4
+  - @backstage/plugin-techdocs@0.6.1
+  - @backstage/plugin-auth-backend@0.3.4
+  - @backstage/plugin-scaffolder@0.7.1
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore@0.3.1
+  - @backstage/cli@0.6.4
+
 ## 0.3.12
 
 ### Patch Changes
@@ -30,26 +1142,25 @@
 
   Update imports and remove the usage of the deprecated `app.getRoutes()`.
 
-  ```diff
-  -import { Router as DocsRouter } from '@backstage/plugin-techdocs';
-  +import { TechdocsPage } from '@backstage/plugin-techdocs';
-   import { CatalogImportPage } from '@backstage/plugin-catalog-import';
-  -import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
-  -import { SearchPage as SearchRouter } from '@backstage/plugin-search';
-  -import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
-  +import { TechRadarPage } from '@backstage/plugin-tech-radar';
-  +import { SearchPage } from '@backstage/plugin-search';
-  +import { UserSettingsPage } from '@backstage/plugin-user-settings';
-  +import { ApiExplorerPage } from '@backstage/plugin-api-docs';
-   import { EntityPage } from './components/catalog/EntityPage';
-   import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
-  ```
+```diff
+- import { Router as DocsRouter } from '@backstage/plugin-techdocs';
++ import { TechdocsPage } from '@backstage/plugin-techdocs';
+  import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+- import { Router as TechRadarRouter } from '@backstage/plugin-tech-radar';
+- import { SearchPage as SearchRouter } from '@backstage/plugin-search';
+- import { Router as SettingsRouter } from '@backstage/plugin-user-settings';
++ import { TechRadarPage } from '@backstage/plugin-tech-radar';
++ import { SearchPage } from '@backstage/plugin-search';
++ import { UserSettingsPage } from '@backstage/plugin-user-settings';
++ import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+  import { EntityPage } from './components/catalog/EntityPage';
+  import { scaffolderPlugin, ScaffolderPage } from '@backstage/plugin-scaffolder';
 
-const AppProvider = app.getProvider();
-const AppRouter = app.getRouter();
--const deprecatedAppRoutes = app.getRoutes();
 
-````
+  const AppProvider = app.getProvider();
+  const AppRouter = app.getRouter();
+- const deprecatedAppRoutes = app.getRoutes();
+```
 
 As well as update or add the following routes:
 
@@ -72,7 +1183,7 @@ As well as update or add the following routes:
 -  {deprecatedAppRoutes}
 +  <Route path="/search" element={<SearchPage />} />
 +  <Route path="/settings" element={<UserSettingsPage />} />
-````
+```
 
 If you have added additional plugins with registered routes or are using `Router` components from other plugins, these should be migrated to use the `*Page` components as well. See [this commit](https://github.com/backstage/backstage/commit/abd655e42d4ed416b70848ffdb1c4b99d189f13b) for more examples of how to migrate.
 

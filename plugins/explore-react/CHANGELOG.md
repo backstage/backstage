@@ -1,5 +1,26 @@
 # @backstage/plugin-explore-react
 
+## 0.0.5
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- Updated dependencies [062bbf90f]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+
+## 0.0.4
+
+### Patch Changes
+
+- c9b5c1eca: Standardize the tool cards in explore some more
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [2089de76b]
+- Updated dependencies [dc1fc92c8]
+  - @backstage/core@0.7.1
+
 ## 0.0.3
 
 ### Patch Changes

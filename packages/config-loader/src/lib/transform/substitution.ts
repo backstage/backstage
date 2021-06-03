@@ -28,10 +28,16 @@ export function createSubstitutionTransform(env: EnvFunc): TransformFunc {
       return { applied: false };
     }
 
-    const parts: (string | undefined)[] = input.split(/(?<!\$)\$\{([^{}]+)\}/);
+    const parts: (string | undefined)[] = input.split(/(\$?\$\{[^{}]*\})/);
     for (let i = 1; i < parts.length; i += 2) {
-      parts[i] = await env(parts[i]!.trim());
+      const part = parts[i]!;
+      if (part.startsWith('$$')) {
+        parts[i] = part.slice(1);
+      } else {
+        parts[i] = await env(part.slice(2, -1).trim());
+      }
     }
+
     if (parts.some(part => part === undefined)) {
       return { applied: true, value: undefined };
     }

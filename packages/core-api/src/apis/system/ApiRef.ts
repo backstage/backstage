@@ -18,7 +18,7 @@ import type { ApiRef } from './types';
 
 export type ApiRefConfig = {
   id: string;
-  description: string;
+  description?: string;
 };
 
 class ApiRefImpl<T> implements ApiRef<T> {
@@ -38,7 +38,7 @@ class ApiRefImpl<T> implements ApiRef<T> {
     return this.config.id;
   }
 
-  get description(): string {
+  get description() {
     return this.config.description;
   }
 

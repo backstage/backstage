@@ -32,6 +32,8 @@ import {
   RELATION_API_PROVIDED_BY,
   RELATION_CHILD_OF,
   RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
   RELATION_HAS_MEMBER,
   RELATION_HAS_PART,
   RELATION_MEMBER_OF,
@@ -44,6 +46,7 @@ import {
   resourceEntityV1alpha1Validator,
   SystemEntity,
   systemEntityV1alpha1Validator,
+  TemplateEntity,
   templateEntityV1alpha1Validator,
   templateEntityV1beta2Validator,
   UserEntity,
@@ -90,7 +93,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
 
     function doEmit(
       targets: string | string[] | undefined,
-      context: { defaultKind: string; defaultNamespace: string },
+      context: { defaultKind?: string; defaultNamespace: string },
       outgoingRelation: string,
       incomingRelation: string,
     ): void {
@@ -99,21 +102,47 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
       }
       for (const target of [targets].flat()) {
         const targetRef = parseEntityRef(target, context);
+        if (targetRef.kind === undefined) {
+          throw new Error(
+            `Entity reference "${target}" did not specify a kind (e.g. starting with "Component:"), and has no default`,
+          );
+        }
         emit(
           result.relation({
             source: selfRef,
             type: outgoingRelation,
-            target: targetRef,
+            target: {
+              kind: targetRef.kind,
+              namespace: targetRef.namespace,
+              name: targetRef.name,
+            },
           }),
         );
         emit(
           result.relation({
-            source: targetRef,
+            source: {
+              kind: targetRef.kind,
+              namespace: targetRef.namespace,
+              name: targetRef.name,
+            },
             type: incomingRelation,
             target: selfRef,
           }),
         );
       }
+    }
+
+    /*
+     * Emit relations for the Template kind
+     */
+    if (entity.kind === 'Template') {
+      const template = entity as TemplateEntity;
+      doEmit(
+        template.spec.owner,
+        { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
     }
 
     /*
@@ -145,6 +174,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'API', defaultNamespace: selfRef.namespace },
         RELATION_CONSUMES_API,
         RELATION_API_CONSUMED_BY,
+      );
+      doEmit(
+        component.spec.dependsOn,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDS_ON,
+        RELATION_DEPENDENCY_OF,
       );
       doEmit(
         component.spec.system,
@@ -187,6 +222,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_OWNER_OF,
       );
       doEmit(
+        resource.spec.dependsOn,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_DEPENDS_ON,
+        RELATION_DEPENDENCY_OF,
+      );
+      doEmit(
         resource.spec.system,
         { defaultKind: 'System', defaultNamespace: selfRef.namespace },
         RELATION_PART_OF,
@@ -225,6 +266,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         { defaultKind: 'Group', defaultNamespace: selfRef.namespace },
         RELATION_PARENT_OF,
         RELATION_CHILD_OF,
+      );
+      doEmit(
+        group.spec.members,
+        { defaultKind: 'User', defaultNamespace: selfRef.namespace },
+        RELATION_HAS_MEMBER,
+        RELATION_MEMBER_OF,
       );
     }
 

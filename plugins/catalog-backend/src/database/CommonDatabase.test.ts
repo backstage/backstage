@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ConflictError } from '@backstage/backend-common';
 import { Entity, Location, parseEntityRef } from '@backstage/catalog-model';
-import { EntityFilters } from '../service/EntityFilters';
+import { ConflictError } from '@backstage/errors';
+import { basicEntityFilter } from '../service/request';
 import { DatabaseManager } from './DatabaseManager';
 import type {
   DbEntityRequest,
@@ -385,8 +385,8 @@ describe('CommonDatabase', () => {
         ]);
       });
       const result = await db.transaction(async tx => db.entities(tx));
-      expect(result.length).toEqual(2);
-      expect(result).toEqual(
+      expect(result.entities.length).toEqual(2);
+      expect(result.entities).toEqual(
         expect.arrayContaining([
           {
             locationId: undefined,
@@ -424,11 +424,13 @@ describe('CommonDatabase', () => {
         );
       });
 
-      await expect(
-        db.transaction(async tx =>
-          db.entities(tx, EntityFilters.ofFilterString('kind=k2,spec.c=some')),
-        ),
-      ).resolves.toEqual([
+      const response = await db.transaction(async tx =>
+        db.entities(tx, {
+          filter: basicEntityFilter({ kind: 'k2', 'spec.c': 'some' }),
+        }),
+      );
+
+      expect(response.entities).toEqual([
         {
           locationId: undefined,
           entity: expect.objectContaining({ kind: 'k2' }),
@@ -466,14 +468,13 @@ describe('CommonDatabase', () => {
       });
 
       const rows = await db.transaction(async tx =>
-        db.entities(
-          tx,
-          EntityFilters.ofFilterString('ApiVersioN=A,spEc.C=some'),
-        ),
+        db.entities(tx, {
+          filter: basicEntityFilter({ ApiVersioN: 'A', 'spEc.C': 'some' }),
+        }),
       );
 
-      expect(rows.length).toEqual(3);
-      expect(rows).toEqual(
+      expect(rows.entities.length).toEqual(3);
+      expect(rows.entities).toEqual(
         expect.arrayContaining([
           {
             locationId: undefined,
@@ -531,7 +532,8 @@ describe('CommonDatabase', () => {
         { target: mockRelations[0].target, type: 'child' },
       ]);
 
-      const [returnedEntity3] = await db.transaction(tx => db.entities(tx));
+      const { entities } = await db.transaction(tx => db.entities(tx));
+      const [returnedEntity3] = entities;
       expect(returnedEntity3?.entity.relations).toEqual([
         { target: mockRelations[0].target, type: 'child' },
       ]);
@@ -615,7 +617,7 @@ describe('CommonDatabase', () => {
 
       const res = await db.transaction(tx => db.entities(tx));
       expect(
-        res.map(r => ({
+        res.entities.map(r => ({
           name: r.entity.metadata.name,
           relations: r.entity.relations,
         })),
@@ -660,7 +662,7 @@ describe('CommonDatabase', () => {
 
       const res2 = await db.transaction(tx => db.entities(tx));
       expect(
-        res2.map(r => ({
+        res2.entities.map(r => ({
           name: r.entity.metadata.name,
           relations: r.entity.relations,
         })),

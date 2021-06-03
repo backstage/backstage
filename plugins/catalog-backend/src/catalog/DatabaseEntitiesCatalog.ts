@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/backend-common';
 import {
   Entity,
   entityHasChanges,
@@ -23,19 +22,18 @@ import {
   LOCATION_ANNOTATION,
   serializeEntityRef,
 } from '@backstage/catalog-model';
+import { ConflictError } from '@backstage/errors';
 import { chunk, groupBy } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Logger } from 'winston';
-import type {
-  Database,
-  DbEntityResponse,
-  EntityFilter,
-  Transaction,
-} from '../database';
-import { EntityFilters } from '../service/EntityFilters';
+import type { Database, DbEntityResponse, Transaction } from '../database';
+import { DbEntitiesRequest } from '../database/types';
+import { basicEntityFilter } from '../service/request';
 import { durationText } from '../util/timing';
 import type {
   EntitiesCatalog,
+  EntitiesRequest,
+  EntitiesResponse,
   EntityUpsertRequest,
   EntityUpsertResponse,
 } from './types';
@@ -65,40 +63,29 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     private readonly logger: Logger,
   ) {}
 
-  async entities(filter?: EntityFilter): Promise<Entity[]> {
-    const items = await this.database.transaction(tx =>
-      this.database.entities(tx, filter),
+  async entities(request?: EntitiesRequest): Promise<EntitiesResponse> {
+    const dbRequest: DbEntitiesRequest = {
+      filter: request?.filter,
+      pagination: request?.pagination,
+    };
+
+    const dbResponse = await this.database.transaction(tx =>
+      this.database.entities(tx, dbRequest),
     );
-    return items.map(i => i.entity);
+
+    const entities = dbResponse.entities.map(e =>
+      request?.fields ? request.fields(e.entity) : e.entity,
+    );
+
+    return {
+      entities,
+      pageInfo: dbResponse.pageInfo,
+    };
   }
 
   async removeEntityByUid(uid: string): Promise<void> {
-    return await this.database.transaction(async tx => {
-      const entityResponse = await this.database.entityByUid(tx, uid);
-      if (!entityResponse) {
-        throw new NotFoundError(`Entity with ID ${uid} was not found`);
-      }
-      const location =
-        entityResponse.entity.metadata.annotations?.[LOCATION_ANNOTATION];
-      const colocatedEntities = location
-        ? await this.database.entities(
-            tx,
-            EntityFilters.ofMatchers({
-              [`metadata.annotations.${LOCATION_ANNOTATION}`]: location,
-            }),
-          )
-        : [entityResponse];
-      for (const dbResponse of colocatedEntities) {
-        await this.database.removeEntityByUid(
-          tx,
-          dbResponse?.entity.metadata.uid!,
-        );
-      }
-
-      if (entityResponse.locationId) {
-        await this.database.removeLocation(tx, entityResponse?.locationId!);
-      }
-      return undefined;
+    await this.database.transaction(async tx => {
+      await this.database.removeEntityByUid(tx, uid);
     });
   }
 
@@ -206,13 +193,12 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
       }
 
       if (options?.outputEntities && responses.length > 0) {
-        const writtenEntities = await this.database.entities(
-          tx,
-          EntityFilters.ofMatchers({
+        const writtenEntities = await this.database.entities(tx, {
+          filter: basicEntityFilter({
             'metadata.uid': responses.map(e => e.entityId),
           }),
-        );
-        responses = writtenEntities.map(e => ({
+        });
+        responses = writtenEntities.entities.map(e => ({
           entityId: e.entity.metadata.uid!,
           entity: e.entity,
         }));
@@ -247,17 +233,16 @@ export class DatabaseEntitiesCatalog implements EntitiesCatalog {
     // Here we make use of the fact that all of the entities share kind and
     // namespace within a batch
     const names = requests.map(({ entity }) => entity.metadata.name);
-    const oldEntities = await this.database.entities(
-      tx,
-      EntityFilters.ofMatchers({
+    const oldEntitiesResponse = await this.database.entities(tx, {
+      filter: basicEntityFilter({
         kind: kind,
         'metadata.namespace': namespace,
         'metadata.name': names,
       }),
-    );
+    });
 
     const oldEntitiesByName = new Map(
-      oldEntities.map(e => [e.entity.metadata.name, e.entity]),
+      oldEntitiesResponse.entities.map(e => [e.entity.metadata.name, e.entity]),
     );
 
     const toAdd: EntityUpsertRequest[] = [];

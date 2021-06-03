@@ -27,44 +27,38 @@ type RouteObject = {
 // Similar to the same function from react-router, this collects routes from the
 // children, but only the first level of routes
 function createRoutesFromChildren(childrenNode: ReactNode): RouteObject[] {
-  return Children.toArray(childrenNode)
-    .flatMap(child => {
-      if (!isValidElement(child)) {
-        return [];
-      }
+  return Children.toArray(childrenNode).flatMap(child => {
+    if (!isValidElement(child)) {
+      return [];
+    }
 
-      const { children } = child.props;
+    const { children } = child.props;
 
-      if (child.type === Fragment) {
-        return createRoutesFromChildren(children);
-      }
+    if (child.type === Fragment) {
+      return createRoutesFromChildren(children);
+    }
 
-      let path = child.props.path as string | undefined;
+    let path = child.props.path as string | undefined;
 
-      // TODO(Rugvip): Work around plugins registering empty paths, remove once deprecated routes are gone
-      if (path === '') {
-        return [];
-      }
-      path = path?.replace(/\/\*$/, '') ?? '/';
+    // TODO(Rugvip): Work around plugins registering empty paths, remove once deprecated routes are gone
+    if (path === '') {
+      return [];
+    }
+    path = path?.replace(/\/\*$/, '') ?? '/';
 
-      return [
-        {
-          path,
-          element: child,
-          children: children && [
-            {
-              path: '/*',
-              element: children,
-            },
-          ],
-        },
-      ];
-    })
-    .sort((a, b) => b.path.localeCompare(a.path))
-    .map(obj => {
-      obj.path = obj.path === '/' ? '/' : `${obj.path}/*`;
-      return obj;
-    });
+    return [
+      {
+        path,
+        element: child,
+        children: children && [
+          {
+            path: '/*',
+            element: children,
+          },
+        ],
+      },
+    ];
+  });
 }
 
 type FlatRoutesProps = {
@@ -74,7 +68,14 @@ type FlatRoutesProps = {
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
-  const routes = createRoutesFromChildren(props.children);
+  const routes = createRoutesFromChildren(props.children)
+    // Routes are sorted to work around a bug where prefixes are unexpectedly matched
+    .sort((a, b) => b.path.localeCompare(a.path))
+    // We make sure all routes have '/*' appended, except '/'
+    .map(obj => {
+      obj.path = obj.path === '/' ? '/' : `${obj.path}/*`;
+      return obj;
+    });
 
   // TODO(Rugvip): Possibly add a way to skip this, like a noNotFoundPage prop
   routes.push({

@@ -17,13 +17,14 @@ import {
   InfoCard,
   InfoCardVariants,
   StructuredMetadataTable,
+  WarningPanel,
 } from '@backstage/core';
 import { LinearProgress, Link, makeStyles, Theme } from '@material-ui/core';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
 import React from 'react';
 import { JenkinsRunStatus } from '../BuildsPage/lib/Status';
-import { useBuilds } from '../useBuilds';
+import { ErrorType, useBuilds } from '../useBuilds';
 import { useProjectSlugFromEntity } from '../useProjectSlugFromEntity';
 
 const useStyles = makeStyles<Theme>({
@@ -75,6 +76,23 @@ const WidgetContent = ({
   );
 };
 
+const JenkinsApiErrorPanel = ({
+  message,
+  errorType,
+}: {
+  message: string;
+  errorType: ErrorType;
+}) => {
+  let title = undefined;
+  if (errorType === ErrorType.CONNECTION_ERROR) {
+    title = "Can't connect to Jenkins";
+  } else if (errorType === ErrorType.NOT_FOUND) {
+    title = "Can't find Jenkins project";
+  }
+
+  return <WarningPanel severity="error" title={title} message={message} />;
+};
+
 export const LatestRunCard = ({
   branch = 'master',
   variant,
@@ -82,12 +100,23 @@ export const LatestRunCard = ({
   branch: string;
   variant?: InfoCardVariants;
 }) => {
-  const { owner, repo } = useProjectSlugFromEntity();
-  const [{ builds, loading }] = useBuilds(owner, repo, branch);
+  const projectName = useProjectSlugFromEntity();
+  const [{ builds, loading, error }] = useBuilds(projectName, branch);
   const latestRun = builds ?? {};
   return (
     <InfoCard title={`Latest ${branch} build`} variant={variant}>
-      <WidgetContent loading={loading} branch={branch} latestRun={latestRun} />
+      {!error ? (
+        <WidgetContent
+          loading={loading}
+          branch={branch}
+          latestRun={latestRun}
+        />
+      ) : (
+        <JenkinsApiErrorPanel
+          message={error.message}
+          errorType={error.errorType}
+        />
+      )}
     </InfoCard>
   );
 };

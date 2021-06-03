@@ -1,5 +1,53 @@
 # @backstage/plugin-app-backend
 
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [f9fb4a205]
+  - @backstage/backend-common@0.8.0
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/config-loader@0.6.1
+  - @backstage/config@0.1.5
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies [82c66b8cd]
+- Updated dependencies [b779b5fee]
+  - @backstage/config-loader@0.6.0
+  - @backstage/backend-common@0.6.2
+
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.3.9
+
+### Patch Changes
+
+- 393b623ae: Add a `Cache-Control: no-store, max-age=0` header to the `index.html` response to instruct the browser to not cache the pages.
+  This tells the browser to not serve a cached `index.html` that might link to static assets from a previous deployment that are not available anymore.
+- Updated dependencies [d7245b733]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+
 ## 0.3.8
 
 ### Patch Changes

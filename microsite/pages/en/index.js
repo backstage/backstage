@@ -292,7 +292,7 @@ class Index extends React.Component {
             Build your own software templates
           </ActionBlock.Title>
           <ActionBlock.Link
-            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/extending/index.md`}
+            href={`https://github.com/backstage/backstage/blob/master/docs/features/software-templates/index.md`}
           >
             Contribute
           </ActionBlock.Link>
@@ -431,7 +431,7 @@ class Index extends React.Component {
               <Block.SmallTitle small>Pick a cloud, any cloud</Block.SmallTitle>
               <Block.Paragraph>
                 Since Backstage uses the Kubernetes API, it's cloud agnostic —
-                so it works no matter which cloud provide or managed Kubernetes
+                so it works no matter which cloud provider or managed Kubernetes
                 service you use, and even works in multi-cloud orgs
               </Block.Paragraph>
             </Block.TextBox>

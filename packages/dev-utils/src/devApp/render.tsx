@@ -19,6 +19,8 @@ import {
   AnyApiFactory,
   ApiFactory,
   attachComponentData,
+  configApiRef,
+  createApiFactory,
   createApp,
   createPlugin,
   createRouteRef,
@@ -31,6 +33,10 @@ import {
   SidebarPage,
   SidebarSpacer,
 } from '@backstage/core';
+import {
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { Box } from '@material-ui/core';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
@@ -136,8 +142,19 @@ class DevAppBuilder {
     const DummyPage = () => <Box p={3}>Page belonging to another plugin.</Box>;
     attachComponentData(DummyPage, 'core.mountPoint', dummyRouteRef);
 
+    const apis = [...this.apis];
+    if (!apis.some(api => api.api.id === scmIntegrationsApiRef.id)) {
+      apis.push(
+        createApiFactory({
+          api: scmIntegrationsApiRef,
+          deps: { configApi: configApiRef },
+          factory: ({ configApi }) => ScmIntegrationsApi.fromConfig(configApi),
+        }),
+      );
+    }
+
     const app = createApp({
-      apis: this.apis,
+      apis,
       plugins: this.plugins,
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {

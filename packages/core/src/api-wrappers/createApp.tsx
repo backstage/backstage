@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import privateExports, {
   AppOptions,
   defaultSystemIcons,
   BootErrorPageProps,
   AppConfigLoader,
 } from '@backstage/core-api';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import {
+  BrowserRouter,
+  MemoryRouter,
+  useInRouterContext,
+} from 'react-router-dom';
 import LightIcon from '@material-ui/icons/WbSunny';
 import DarkIcon from '@material-ui/icons/Brightness2';
 import { ErrorPage } from '../layout/ErrorPage';
@@ -58,7 +62,10 @@ export const defaultConfigLoader: AppConfigLoader = async (
   const configs = (appConfig.slice() as unknown) as AppConfig[];
 
   // Avoiding this string also being replaced at runtime
-  if (runtimeConfigJson !== '__app_injected_runtime_config__'.toUpperCase()) {
+  if (
+    runtimeConfigJson !==
+    '__app_injected_runtime_config__'.toLocaleUpperCase('en-US')
+  ) {
     try {
       const data = JSON.parse(runtimeConfigJson) as JsonObject;
       if (Array.isArray(data)) {
@@ -86,6 +93,13 @@ export const defaultConfigLoader: AppConfigLoader = async (
 // The actual implementation of the app class still lives in core-api,
 // as it needs to be used by dev- and test-utils.
 
+export function OptionallyWrapInRouter({ children }: PropsWithChildren<{}>) {
+  if (useInRouterContext()) {
+    return <>{children}</>;
+  }
+  return <MemoryRouter>{children}</MemoryRouter>;
+}
+
 /**
  * Creates a new Backstage App.
  */
@@ -97,12 +111,14 @@ export function createApp(options?: AppOptions) {
     let message = '';
     if (step === 'load-config') {
       message = `The configuration failed to load, someone should have a look at this error: ${error.message}`;
+    } else if (step === 'load-chunk') {
+      message = `Lazy loaded chunk failed to load, try to reload the page: ${error.message}`;
     }
     // TODO: figure out a nicer way to handle routing on the error page, when it can be done.
     return (
-      <MemoryRouter>
+      <OptionallyWrapInRouter>
         <ErrorPage status="501" statusMessage={message} />
-      </MemoryRouter>
+      </OptionallyWrapInRouter>
     );
   };
 

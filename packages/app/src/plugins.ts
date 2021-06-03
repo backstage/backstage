@@ -45,3 +45,8 @@ export { plugin as Org } from '@backstage/plugin-org';
 export { plugin as Kafka } from '@backstage/plugin-kafka';
 export { dfdsCapabilityOverviewPlugin } from '@backstage/plugin-dfds-capability-overview';
 export { dfdsCapabilityManagementPlugin } from '@backstage/plugin-dfds-capability-management';
+
+// TODO(Rugvip): This plugin is currently not part of the app element tree,
+//               ideally we have an API for the context menu that permits that.
+export { badgesPlugin } from '@backstage/plugin-badges';
+export { shortcutsPlugin } from '@backstage/plugin-shortcuts';

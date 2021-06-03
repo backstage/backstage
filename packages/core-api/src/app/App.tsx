@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import React, {
   ComponentType,
   PropsWithChildren,
   ReactElement,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -50,14 +52,16 @@ import {
 } from '../extensions/traversal';
 import { IconComponent, IconComponentMap, IconKey } from '../icons';
 import { BackstagePlugin } from '../plugin';
+import { pluginCollector } from '../plugin/collectors';
 import { AnyRoutes } from '../plugin/types';
-import { RouteRef, ExternalRouteRef } from '../routing';
+import { RouteRef, ExternalRouteRef, SubRouteRef } from '../routing';
 import {
   routeObjectCollector,
   routeParentCollector,
   routePathCollector,
 } from '../routing/collectors';
-import { RoutingProvider, validateRoutes } from '../routing/hooks';
+import { RoutingProvider } from '../routing/hooks';
+import { validateRoutes } from '../routing/validation';
 import { AppContextProvider } from './AppContext';
 import { AppIdentity } from './AppIdentity';
 import { AppThemeProvider } from './AppThemeProvider';
@@ -72,10 +76,8 @@ import {
   SignInResult,
 } from './types';
 
-export function generateBoundRoutes(
-  bindRoutes: AppOptions['bindRoutes'],
-): Map<ExternalRouteRef, RouteRef> {
-  const result = new Map<ExternalRouteRef, RouteRef>();
+export function generateBoundRoutes(bindRoutes: AppOptions['bindRoutes']) {
+  const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
 
   if (bindRoutes) {
     const bind: AppRouteBinder = (externalRoutes, targetRoutes: AnyRoutes) => {
@@ -188,7 +190,7 @@ export class PrivateAppImpl implements BackstageApp {
 
   private readonly apis: Iterable<AnyApiFactory>;
   private readonly icons: IconComponentMap;
-  private readonly plugins: BackstagePlugin<any, any>[];
+  private readonly plugins: Set<BackstagePlugin<any, any>>;
   private readonly components: AppComponents;
   private readonly themes: AppTheme[];
   private readonly configLoader?: AppConfigLoader;
@@ -200,7 +202,7 @@ export class PrivateAppImpl implements BackstageApp {
   constructor(options: FullAppOptions) {
     this.apis = options.apis;
     this.icons = options.icons;
-    this.plugins = options.plugins;
+    this.plugins = new Set(options.plugins);
     this.components = options.components;
     this.themes = options.themes;
     this.configLoader = options.configLoader;
@@ -209,7 +211,7 @@ export class PrivateAppImpl implements BackstageApp {
   }
 
   getPlugins(): BackstagePlugin<any, any>[] {
-    return this.plugins;
+    return Array.from(this.plugins);
   }
 
   getSystemIcon(key: IconKey): IconComponent | undefined {
@@ -275,25 +277,6 @@ export class PrivateAppImpl implements BackstageApp {
 
   getProvider(): ComponentType<{}> {
     const appContext = new AppContextImpl(this);
-    const apiHolder = this.getApiHolder();
-
-    const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
-
-    for (const plugin of this.plugins.values()) {
-      for (const output of plugin.output()) {
-        switch (output.type) {
-          case 'feature-flag': {
-            featureFlagsApi.registerFlag({
-              name: output.name,
-              pluginId: plugin.getId(),
-            });
-            break;
-          }
-          default:
-            break;
-        }
-      }
-    }
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const appThemeApi = useMemo(
@@ -309,10 +292,21 @@ export class PrivateAppImpl implements BackstageApp {
             routePaths: routePathCollector,
             routeParents: routeParentCollector,
             routeObjects: routeObjectCollector,
+            collectedPlugins: pluginCollector,
           },
         });
 
         validateRoutes(result.routePaths, result.routeParents);
+
+        // TODO(Rugvip): Restructure the public API so that we can get an immediate view of
+        //               the app, rather than having to wait for the provider to render.
+        //               For now we need to push the additional plugins we find during
+        //               collection and then make sure we initialize things afterwards.
+        result.collectedPlugins.forEach(plugin => this.plugins.add(plugin));
+        this.verifyPlugins(this.plugins);
+
+        // Initialize APIs once all plugins are available
+        this.getApiHolder();
 
         return result;
       }, [children]);
@@ -323,15 +317,41 @@ export class PrivateAppImpl implements BackstageApp {
         appThemeApi,
       );
 
+      const hasConfigApi = 'api' in loadedConfig;
+      if (hasConfigApi) {
+        const { api } = loadedConfig as { api: Config };
+        this.configApi = api;
+      }
+
+      useEffect(() => {
+        if (hasConfigApi) {
+          const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+
+          for (const plugin of this.plugins.values()) {
+            for (const output of plugin.output()) {
+              switch (output.type) {
+                case 'feature-flag': {
+                  featureFlagsApi.registerFlag({
+                    name: output.name,
+                    pluginId: plugin.getId(),
+                  });
+                  break;
+                }
+                default:
+                  break;
+              }
+            }
+          }
+        }
+      }, [hasConfigApi, loadedConfig]);
+
       if ('node' in loadedConfig) {
         // Loading or error
         return loadedConfig.node;
       }
 
-      this.configApi = loadedConfig.api;
-
       return (
-        <ApiProvider apis={apiHolder}>
+        <ApiProvider apis={this.getApiHolder()}>
           <AppContextProvider appContext={appContext}>
             <AppThemeProvider>
               <RoutingProvider
@@ -486,10 +506,15 @@ export class PrivateAppImpl implements BackstageApp {
     return this.apiHolder;
   }
 
-  verify() {
+  /**
+   * @deprecated
+   */
+  verify() {}
+
+  private verifyPlugins(plugins: Iterable<BackstagePlugin>) {
     const pluginIds = new Set<string>();
 
-    for (const plugin of this.plugins) {
+    for (const plugin of plugins) {
       const id = plugin.getId();
       if (pluginIds.has(id)) {
         throw new Error(`Duplicate plugin found '${id}'`);

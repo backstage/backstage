@@ -15,15 +15,15 @@
  */
 
 import {
-  identityApiRef,
-  configApiRef,
   createApiFactory,
   createPlugin,
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
   githubAuthApiRef,
+  identityApiRef,
 } from '@backstage/core';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogImportApiRef, CatalogImportClient } from './api';
 
@@ -41,20 +41,20 @@ export const catalogImportPlugin = createPlugin({
         discoveryApi: discoveryApiRef,
         githubAuthApi: githubAuthApiRef,
         identityApi: identityApiRef,
-        configApi: configApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
         catalogApi: catalogApiRef,
       },
       factory: ({
         discoveryApi,
         githubAuthApi,
         identityApi,
-        configApi,
+        scmIntegrationsApi,
         catalogApi,
       }) =>
         new CatalogImportClient({
           discoveryApi,
           githubAuthApi,
-          configApi,
+          scmIntegrationsApi,
           identityApi,
           catalogApi,
         }),

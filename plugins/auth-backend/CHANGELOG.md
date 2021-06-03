@@ -1,5 +1,120 @@
 # @backstage/plugin-auth-backend
 
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
+## 0.3.11
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+- Updated dependencies [61c3f927c]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/test-utils@0.1.12
+
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies [062bbf90f]
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/test-utils@0.1.11
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [d1b1306d9]
+  - @backstage/backend-common@0.7.0
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+  - @backstage/catalog-client@0.3.11
+
+## 0.3.8
+
+### Patch Changes
+
+- 2b2b31186: When using OAuth2 authentication the name is now taken from the name property of the JWT instead of the email property
+- Updated dependencies [97b60de98]
+- Updated dependencies [ae6250ce3]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [b779b5fee]
+  - @backstage/catalog-model@0.7.6
+  - @backstage/test-utils@0.1.10
+  - @backstage/backend-common@0.6.2
+
+## 0.3.7
+
+### Patch Changes
+
+- 0d55dcc74: Fixes timezone bug for auth signing keys
+- 676ede643: Added the `getOriginLocationByEntity` and `removeLocationById` methods to the catalog client
+- Updated dependencies [676ede643]
+- Updated dependencies [b196a4569]
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-client@0.3.9
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.3.6
+
+### Patch Changes
+
+- 449776cd6: The `auth` config types now properly accept any declared auth environment. Previously only `development` was accepted.
+
+  The `audience` configuration is no longer required for GitLab auth; this will default to `https://gitlab.com`
+
+## 0.3.5
+
+### Patch Changes
+
+- 8686eb38c: Use errors from `@backstage/errors`
+- 8b5e59750: expose verifyNonce and readState publicly from auth-backend
+- Updated dependencies [8686eb38c]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [4e0b5055a]
+- Updated dependencies [8686eb38c]
+  - @backstage/catalog-client@0.3.8
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+  - @backstage/test-utils@0.1.9
+
+## 0.3.4
+
+### Patch Changes
+
+- 761698831: Bump to the latest version of the Knex library.
+- 5f1b7ea35: Change the JWKS url value for the oidc configuration endpoint
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [761698831]
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+  - @backstage/catalog-client@0.3.7
+
 ## 0.3.3
 
 ### Patch Changes

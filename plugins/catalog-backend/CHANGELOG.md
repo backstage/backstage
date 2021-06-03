@@ -1,5 +1,297 @@
 # @backstage/plugin-catalog-backend
 
+## 0.10.1
+
+### Patch Changes
+
+- e7a5a3474: Only validate the envelope for emitted entities, and defer full validation to when they get processed later on.
+- 63a432e9c: Skip deletion of bootstrap location when running the new catalog.
+- f46a9e82d: Move dependency to `@microsoft/microsoft-graph-types` from `@backstage/plugin-catalog`
+  to `@backstage/plugin-catalog-backend`.
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
+## 0.10.0
+
+### Minor Changes
+
+- 0fd4ea443: Updates the `GithubCredentialsProvider` to return the token type, it can either be `token` or `app` depending on the authentication method.
+
+  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4 for more info.
+
+  **Removes** deprecated GithubOrgReaderProcessor provider configuration(`catalog.processors.githubOrg`). If you're using the deprecated config section make sure to migrate to [integrations](https://backstage.io/docs/integrations/github/locations) instead.
+
+### Patch Changes
+
+- add62a455: Foundation for standard entity status values
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
+## 0.9.1
+
+### Patch Changes
+
+- 50a5348b7: Fix error handling in `LdapOrgReaderProcessor`, and support complex paging options
+- 1b8e28aed: Resolve the `target` for glob `file` locations correctly
+- dcd5a93a9: Correctly add `<source>/project-slug` annotation for new catalog-info.yaml PRs based on SCM integration.
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 62579ced6: Skip adding entries to the `entities_search` table if their `key` exceeds a length limit.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
+## 0.9.0
+
+### Minor Changes
+
+- 9a207f052: Port `GithubOrgReaderProcessor` to support configuration via
+  [`integrations`](https://backstage.io/docs/integrations/github/locations) in
+  addition to [`catalog.processors.githubOrg.providers`](https://backstage.io/docs/integrations/github/org#configuration).
+  The `integrations` package supports authentication with both personal access
+  tokens and GitHub apps.
+
+  This deprecates the `catalog.processors.githubOrg.providers` configuration.
+  A [`integrations` configuration](https://backstage.io/docs/integrations/github/locations)
+  for the same host takes precedence over the provider configuration.
+  You might need to add additional scopes for the credentials.
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+
+## 0.8.2
+
+### Patch Changes
+
+- b219821a0: Expose `BitbucketRepositoryParser` introduced in [#5295](https://github.com/backstage/backstage/pull/5295)
+- 227439a72: Add support for non-organization accounts in GitHub Discovery
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/backend-common@0.7.0
+  - @backstage/integration@0.5.2
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.8.1
+
+### Patch Changes
+
+- a99e0bc42: Entity lifecycle and owner are now indexed by the `DefaultCatalogCollator`. A `locationTemplate` may now optionally be provided to its constructor to reflect a custom catalog entity path in the Backstage frontend.
+- Updated dependencies [e1e757569]
+  - @backstage/plugin-search-backend-node@0.1.4
+
+## 0.8.0
+
+### Minor Changes
+
+- 5fe62f124: Fix the schema / code mismatch in LDAP `set` config
+
+### Patch Changes
+
+- 09b5fcf2e: GithubDiscoveryProcessor now excludes archived repositories so they won't be added to Backstage.
+- c2306f898: Externalize repository processing for BitbucketDiscoveryProcessor.
+
+  Add an extension point where you can customize how a matched Bitbucket repository should
+  be processed. This can for example be used if you want to generate the catalog-info.yaml
+  automatically based on other files in a repository, while taking advantage of the
+  build-in repository crawling functionality.
+
+  `BitbucketDiscoveryProcessor.fromConfig` now takes an optional parameter `options.parser` where
+  you can customize the logic for each repository found. The default parser has the same
+  behaviour as before, where it emits an optional location for the matched repository
+  and lets the other processors take care of further processing.
+
+  ```typescript
+  const customRepositoryParser: BitbucketRepositoryParser = async function* customRepositoryParser({
+    client,
+    repository,
+  }) {
+    // Custom logic for interpret the matching repository.
+    // See defaultRepositoryParser for an example
+  };
+
+  const processor = BitbucketDiscoveryProcessor.fromConfig(env.config, {
+    parser: customRepositoryParser,
+    logger: env.logger,
+  });
+  ```
+
+- Updated dependencies [94da20976]
+- Updated dependencies [b9b2b4b76]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [99fbef232]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [d367f63b5]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [b42531cfe]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+  - @backstage/core@0.7.6
+  - @backstage/plugin-search-backend-node@0.1.3
+  - @backstage/backend-common@0.6.3
+
+## 0.7.1
+
+### Patch Changes
+
+- 017192ee8: Add support for configure an LDAP query filter on multiple lines.
+- 5d0740563: Implemented missing support for the dependsOn/dependencyOf relationships
+  between `Component` and `Resource` catalog model objects.
+
+  Added support for generating the relevant relationships to the
+  `BuiltinKindsEntityProcessor`, and added simple support for fetching
+  relationships between `Components` and `Resources` for rendering in the
+  system diagram. All catalog-model changes backwards compatible.
+
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/catalog-model@0.7.7
+
+## 0.7.0
+
+### Minor Changes
+
+- 676ede643: DELETE on an entity now just deletes the entity, rather than removing all related entities and the location
+- f1b2c1d2c: Add `readonly` mode to catalog backend
+
+  This change adds a `catalog.readonly` field in `app-config.yaml` that can be used to configure the catalog in readonly mode which effectively disables the possibility of adding new components to the catalog after startup.
+
+  When in `readonly` mode only locations configured in `catalog.locations` are loaded and served.
+  By default `readonly` is disabled which represents the current functionality where locations can be added at run-time.
+
+  This change requires the config API in the router which requires a change to `createRouter`.
+
+  ```diff
+     return await createRouter({
+       entitiesCatalog,
+       locationsCatalog,
+       higherOrderOperation,
+       locationAnalyzer,
+       logger: env.logger,
+  +    config: env.config,
+     });
+  ```
+
+### Patch Changes
+
+- 29e1789e1: Make sure that Group `spec.members` is taken into account when filling out an org hierarchy
+- 8488a1a96: Added support for the "members" field of the Group entity, allowing specification of
+  direct members from the Group side of the relationship. Added support to the
+  `BuiltinKindsEntityProcessor` to generate the appropriate relationships.
+- 6b2d54fd6: Fix mapping between users and groups for Microsoft Active Directories when using the LdapOrgProcessor
+- 44590510d: Add Bitbucket Server discovery processor.
+- Updated dependencies [8488a1a96]
+- Updated dependencies [37e3a69f5]
+  - @backstage/catalog-model@0.7.5
+  - @backstage/backend-common@0.6.1
+
+## 0.6.7
+
+### Patch Changes
+
+- f47e11427: Log how many repositories were actually matching in `GithubDiscoveryProcessor`
+- c862b3f36: Introduce pagination in the /entities catalog endpoint.
+
+  Pagination is requested using query parameters. Currently supported parameters, all optional, are:
+
+  - `limit` - an integer number of entities to return, at most
+  - `offset` - an integer number of entities to skip over at the start
+  - `after` - an opaque string cursor as returned by a previous paginated request
+
+  Example request:
+
+  `GET /entities?limit=100`
+
+  Example response:
+
+  ```
+  200 OK
+  Content-Type: application/json; charset=utf-8
+  Link: </entities?limit=100&after=eyJsaW1pdCI6Miwib2Zmc2V0IjoyfQ%3D%3D>; rel="next"
+  <more headers>
+
+  [{"metadata":{...
+  ```
+
+  Note the Link header. It contains the URL (path and query part, relative to the catalog root) to use for requesting the next page.
+  It uses the `after` cursor to point out the end of the previous page. If the Link header is not present, there is no more data to read.
+
+  The current implementation is naive and encodes offset/limit in the cursor implementation, so it is not robust in the face of overlapping
+  changes to the catalog. This can be improved separately in the future without having to change the calling patterns.
+
+- Updated dependencies [4d248725e]
+  - @backstage/plugin-search-backend-node@0.1.2
+
+## 0.6.6
+
+### Patch Changes
+
+- 010aed784: Add `AnnotateScmSlugEntityProcessor` that automatically adds the
+  `github.com/project-slug` annotation for components coming from GitHub.
+
+  The processor is optional and not automatically registered in the catalog
+  builder. To add it to your instance, add it to your `CatalogBuilder` using
+  `addProcessor()`:
+
+  ```typescript
+  const builder = new CatalogBuilder(env);
+  builder.addProcessor(AnnotateScmSlugEntityProcessor.fromConfig(env.config));
+  ```
+
+- 4bc98a5b9: Refactor CodeOwnersProcessor to use ScmIntegrations
+- d2f4efc5d: Add location to thrown exception when parsing YAML
+- 8686eb38c: Use errors from `@backstage/errors`
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+
+## 0.6.5
+
+### Patch Changes
+
+- 9ef5a126d: Allow CodeOwnersProcessor to set `spec.owner` for `System`, `Resource`, and `Domain` entity kinds.
+- 0b42fff22: Make use of parseLocationReference/stringifyLocationReference
+- 2ef5bc7ea: Implement proper AWS Credentials precedence with assume-role and explicit credentials
+- 761698831: Bump to the latest version of the Knex library.
+- 93c62c755: Move logic for generating URLs for the view, edit and source links of catalog
+  entities from the catalog frontend into the backend. This is done using the
+  existing support for the `backstage.io/view-url`, `backstage.io/edit-url` and
+  `backstage.io/source-location` annotations that are now filled by the
+  `AnnotateLocationEntityProcessor`. If these annotations are missing or empty,
+  the UI disables the related controls.
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [761698831]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+  - @backstage/backend-common@0.5.6
+  - @backstage/catalog-model@0.7.4
+
 ## 0.6.4
 
 ### Patch Changes

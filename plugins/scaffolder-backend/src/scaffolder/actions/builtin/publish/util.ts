@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
+import { join as joinPath, normalize as normalizePath } from 'path';
 
-export const parseRepoUrl = (repoUrl: string) => {
+export const getRepoSourceDirectory = (
+  workspacePath: string,
+  sourcePath: string | undefined,
+) => {
+  if (sourcePath) {
+    const safeSuffix = normalizePath(sourcePath).replace(
+      /^(\.\.(\/|\\|$))+/,
+      '',
+    );
+    return joinPath(workspacePath, safeSuffix);
+  }
+  return workspacePath;
+};
+export type RepoSpec = {
+  repo: string;
+  host: string;
+  owner: string;
+  organization?: string;
+};
+
+export const parseRepoUrl = (repoUrl: string): RepoSpec => {
   let parsed;
   try {
     parsed = new URL(`https://${repoUrl}`);
@@ -40,7 +61,7 @@ export const parseRepoUrl = (repoUrl: string) => {
     );
   }
 
-  const organization = parsed.searchParams.get('organization');
+  const organization = parsed.searchParams.get('organization') ?? undefined;
 
   return { host, owner, repo, organization };
 };

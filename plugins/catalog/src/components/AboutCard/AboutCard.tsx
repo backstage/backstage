@@ -21,11 +21,12 @@ import {
   RELATION_PROVIDES_API,
 } from '@backstage/catalog-model';
 import {
-  configApiRef,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
+  InfoCardVariants,
   useApi,
 } from '@backstage/core';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
 import {
   Card,
@@ -50,7 +51,15 @@ const useStyles = makeStyles({
     height: 'calc(100% - 10px)', // for pages without content header
     marginBottom: '10px',
   },
+  fullHeightCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
   gridItemCardContent: {
+    flex: 1,
+  },
+  fullHeightCardContent: {
     flex: 1,
   },
 });
@@ -58,14 +67,17 @@ const useStyles = makeStyles({
 type AboutCardProps = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 };
 
 export function AboutCard({ variant }: AboutCardProps) {
   const classes = useStyles();
   const { entity } = useEntity();
-  const configApi = useApi(configApiRef);
-  const entitySourceLocation = getEntitySourceLocation(entity, configApi);
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const entitySourceLocation = getEntitySourceLocation(
+    entity,
+    scmIntegrationsApi,
+  );
   const entityMetadataEditUrl = getEntityMetadataEditUrl(entity);
   const providesApiRelations = getEntityRelations(
     entity,
@@ -100,8 +112,22 @@ export function AboutCard({ variant }: AboutCardProps) {
     href: 'api',
   };
 
+  let cardClass = '';
+  if (variant === 'gridItem') {
+    cardClass = classes.gridItemCard;
+  } else if (variant === 'fullHeight') {
+    cardClass = classes.fullHeightCard;
+  }
+
+  let cardContentClass = '';
+  if (variant === 'gridItem') {
+    cardContentClass = classes.gridItemCardContent;
+  } else if (variant === 'fullHeight') {
+    cardContentClass = classes.fullHeightCardContent;
+  }
+
   return (
-    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
+    <Card className={cardClass}>
       <CardHeader
         title="About"
         action={
@@ -121,9 +147,7 @@ export function AboutCard({ variant }: AboutCardProps) {
         }
       />
       <Divider />
-      <CardContent
-        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
-      >
+      <CardContent className={cardContentClass}>
         <AboutContent entity={entity} />
       </CardContent>
     </Card>

@@ -22,8 +22,9 @@ import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { GithubUrlReader } from './GithubUrlReader';
 import { GitlabUrlReader } from './GitlabUrlReader';
-import { ReadTreeResponseFactory } from './tree';
+import { DefaultReadTreeResponseFactory } from './tree';
 import { FetchUrlReader } from './FetchUrlReader';
+import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 
 type CreateOptions = {
   /** Root config object */
@@ -43,7 +44,9 @@ export class UrlReaders {
    */
   static create({ logger, config, factories }: CreateOptions): UrlReader {
     const mux = new UrlReaderPredicateMux();
-    const treeResponseFactory = ReadTreeResponseFactory.create({ config });
+    const treeResponseFactory = DefaultReadTreeResponseFactory.create({
+      config,
+    });
 
     for (const factory of factories ?? []) {
       const tuples = factory({ config, logger: logger, treeResponseFactory });
@@ -70,6 +73,7 @@ export class UrlReaders {
         BitbucketUrlReader.factory,
         GithubUrlReader.factory,
         GitlabUrlReader.factory,
+        GoogleGcsUrlReader.factory,
         FetchUrlReader.factory,
       ]),
     });

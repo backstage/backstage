@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import {
+  Entity,
+  ENTITY_DEFAULT_NAMESPACE,
+  RELATION_OWNED_BY,
+} from '@backstage/catalog-model';
+import {
+  attachComponentData,
   Content,
   Header,
   HeaderLabel,
+  IconComponent,
   Page,
   Progress,
-  TabbedLayout,
+  RoutedTabs,
 } from '@backstage/core';
 import {
   EntityContext,
+  EntityRefLinks,
+  getEntityRelations,
   useEntityCompoundName,
 } from '@backstage/plugin-catalog-react';
-import { Box } from '@material-ui/core';
+import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import {
+  Children,
   default as React,
-  PropsWithChildren,
+  Fragment,
+  isValidElement,
   useContext,
   useState,
 } from 'react';
@@ -39,6 +49,54 @@ import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
 import { UnregisterEntityDialog } from '../UnregisterEntityDialog/UnregisterEntityDialog';
+
+type SubRoute = {
+  path: string;
+  title: string;
+  children: JSX.Element;
+  if?: (entity: Entity) => boolean;
+  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+};
+
+const Route: (props: SubRoute) => null = () => null;
+
+// This causes all mount points that are discovered within this route to use the path of the route itself
+attachComponentData(Route, 'core.gatherMountPoints', true);
+
+function createSubRoutesFromChildren(
+  childrenProps: React.ReactNode,
+  entity: Entity | undefined,
+): SubRoute[] {
+  // Directly comparing child.type with Route will not work with in
+  // combination with react-hot-loader in storybook
+  // https://github.com/gaearon/react-hot-loader/issues/304
+  const routeType = (
+    <Route path="" title="">
+      <div />
+    </Route>
+  ).type;
+
+  return Children.toArray(childrenProps).flatMap(child => {
+    if (!isValidElement(child)) {
+      return [];
+    }
+
+    if (child.type === Fragment) {
+      return createSubRoutesFromChildren(child.props.children, entity);
+    }
+
+    if (child.type !== routeType) {
+      throw new Error('Child of EntityLayout must be an EntityLayout.Route');
+    }
+
+    const { path, title, children, if: condition, tabProps } = child.props;
+    if (condition && entity && !condition(entity)) {
+      return [];
+    }
+
+    return [{ path, title, children, tabProps }];
+  });
+}
 
 const EntityLayoutTitle = ({
   entity,
@@ -69,14 +127,50 @@ const headerProps = (
         : ''
     }`,
     headerType: (() => {
-      let t = kind.toLowerCase();
+      let t = kind.toLocaleLowerCase('en-US');
       if (entity && entity.spec && 'type' in entity.spec) {
         t += ' — ';
-        t += (entity.spec as { type: string }).type.toLowerCase();
+        t += (entity.spec as { type: string }).type.toLocaleLowerCase('en-US');
       }
       return t;
     })(),
   };
+};
+
+const EntityLabels = ({ entity }: { entity: Entity }) => {
+  const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+  return (
+    <>
+      {ownedByRelations.length > 0 && (
+        <HeaderLabel
+          label="Owner"
+          value={
+            <EntityRefLinks
+              entityRefs={ownedByRelations}
+              defaultKind="Group"
+              color="inherit"
+            />
+          }
+        />
+      )}
+      {entity.spec?.lifecycle && (
+        <HeaderLabel label="Lifecycle" value={entity.spec.lifecycle} />
+      )}
+    </>
+  );
+};
+
+// NOTE(freben): Intentionally not exported at this point, since it's part of
+// the unstable extra context menu items concept below
+type ExtraContextMenuItem = {
+  title: string;
+  Icon: IconComponent;
+  onClick: () => void;
+};
+
+type EntityLayoutProps = {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  children?: React.ReactNode;
 };
 
 /**
@@ -94,10 +188,14 @@ const headerProps = (
  * </EntityLayout>
  * ```
  */
-export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
+export const EntityLayout = ({
+  UNSTABLE_extraContextMenuItems,
+  children,
+}: EntityLayoutProps) => {
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
+  const routes = createSubRoutesFromChildren(children, entity);
   const { headerTitle, headerType } = headerProps(
     kind,
     namespace,
@@ -121,25 +219,20 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
         pageTitleOverride={headerTitle}
         type={headerType}
       >
-        {/* TODO: fix after catalog page customization is added */}
-        {entity && kind !== 'user' && (
+        {entity && (
           <>
-            <HeaderLabel
-              label="Owner"
-              value={entity.spec?.owner || 'unknown'}
+            <EntityLabels entity={entity} />
+            <EntityContextMenu
+              UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+              onUnregisterEntity={showRemovalDialog}
             />
-            <HeaderLabel
-              label="Lifecycle"
-              value={entity.spec?.lifecycle || 'unknown'}
-            />
-            <EntityContextMenu onUnregisterEntity={showRemovalDialog} />
           </>
         )}
       </Header>
 
       {loading && <Progress />}
 
-      {entity && <TabbedLayout>{children}</TabbedLayout>}
+      {entity && <RoutedTabs routes={routes} />}
 
       {error && (
         <Content>
@@ -156,4 +249,4 @@ export const EntityLayout = ({ children }: PropsWithChildren<{}>) => {
   );
 };
 
-EntityLayout.Route = TabbedLayout.Route;
+EntityLayout.Route = Route;

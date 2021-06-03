@@ -114,3 +114,43 @@ export const EntityHasSubcomponentsCard = catalogPlugin.provide(
     },
   }),
 );
+
+export const EntityHasResourcesCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/HasResourcesCard').then(m => m.HasResourcesCard),
+    },
+  }),
+);
+
+export const EntityDependsOnComponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DependsOnComponentsCard').then(
+          m => m.DependsOnComponentsCard,
+        ),
+    },
+  }),
+);
+
+export const EntityDependsOnResourcesCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DependsOnResourcesCard').then(
+          m => m.DependsOnResourcesCard,
+        ),
+    },
+  }),
+);
+
+export const EntitySystemDiagramCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SystemDiagramCard').then(m => m.SystemDiagramCard),
+    },
+  }),
+);

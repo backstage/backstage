@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export { CostGrowth } from './CostGrowth';
-export type { CostGrowthProps } from './CostGrowth';
-export { CostGrowthIndicator } from './CostGrowthIndicator';
-export type { CostGrowthIndicatorProps } from './CostGrowthIndicator';
+export * from './CostGrowth';
+export * from './CostGrowthIndicator';

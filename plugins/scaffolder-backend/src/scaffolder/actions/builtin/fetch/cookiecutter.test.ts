@@ -15,16 +15,16 @@
  */
 jest.mock('./helpers');
 
+import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import mock from 'mock-fs';
 import os from 'os';
 import { resolve as resolvePath } from 'path';
-import { createFetchCookiecutterAction } from './cookiecutter';
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { Templaters } from '../../../stages/templater';
 import { PassThrough } from 'stream';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { Templaters } from '../../../stages/templater';
+import { createFetchCookiecutterAction } from './cookiecutter';
 import { fetchContents } from './helpers';
-import mock from 'mock-fs';
 
 describe('fetch:cookiecutter', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -40,7 +40,6 @@ describe('fetch:cookiecutter', () => {
 
   const templaters = new Templaters();
   const cookiecutterTemplater = { run: jest.fn() };
-  const mockDockerClient = {};
   const mockTmpDir = os.tmpdir();
   const mockContext = {
     input: {
@@ -67,7 +66,6 @@ describe('fetch:cookiecutter', () => {
   const action = createFetchCookiecutterAction({
     integrations,
     templaters,
-    dockerClient: mockDockerClient as any,
     reader: mockReader,
   });
 
@@ -102,10 +100,60 @@ describe('fetch:cookiecutter', () => {
 
     expect(cookiecutterTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockTmpDir,
-      dockerClient: mockDockerClient,
       logStream: mockContext.logStream,
       values: mockContext.input.values,
     });
+  });
+
+  it('should execute the cookiecutter templater with optional inputs if they are present and valid', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        copyWithoutRender: ['goreleaser.yml'],
+        extensions: [
+          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
+        ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      },
+    });
+
+    expect(cookiecutterTemplater.run).toHaveBeenCalledWith({
+      workspacePath: mockTmpDir,
+      logStream: mockContext.logStream,
+      values: {
+        ...mockContext.input.values,
+        _copy_without_render: ['goreleaser.yml'],
+        _extensions: [
+          'jinja2_custom_filters_extension.string_filters_extension.StringFilterExtension',
+        ],
+        imageName: 'foo/cookiecutter-image-with-extensions',
+      },
+    });
+  });
+
+  it('should throw if copyWithoutRender is not an Array', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          copyWithoutRender: 'xyz',
+        },
+      }),
+    ).rejects.toThrow(/copyWithoutRender must be an Array/);
+  });
+
+  it('should throw if extensions is not an Array', async () => {
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          extensions: 'xyz',
+        },
+      }),
+    ).rejects.toThrow(/extensions must be an Array/);
   });
 
   it('should throw if there is no cookiecutter templater initialized', async () => {
@@ -114,7 +162,6 @@ describe('fetch:cookiecutter', () => {
     const newAction = createFetchCookiecutterAction({
       integrations,
       templaters: templatersWithoutCookiecutter,
-      dockerClient: mockDockerClient as any,
       reader: mockReader,
     });
 

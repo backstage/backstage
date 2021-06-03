@@ -19,21 +19,17 @@ This plugin provides:
 Install the plugin:
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-pagerduty
 ```
 
-Add it to the app in `plugins.ts`:
-
-```ts
-export { plugin as Pagerduty } from '@backstage/plugin-pagerduty';
-```
-
-Add it to the `EntityPage.ts`:
+Add it to the `EntityPage.tsx`:
 
 ```ts
 import {
   isPluginApplicableToEntity as isPagerDutyAvailable,
-  PagerDutyCard,
+  EntityPagerDutyCard,
 } from '@backstage/plugin-pagerduty';
 // add to code
 {
@@ -60,10 +56,21 @@ pagerduty:
 
 In order for the client to make requests to the [PagerDuty API](https://developer.pagerduty.com/docs/rest-api-v2/rest-api/) it needs an [API Token](https://support.pagerduty.com/docs/generating-api-keys#generating-a-general-access-rest-api-key).
 
+Add the proxy configuration in `app-config.yaml`
+
+```yaml
+proxy:
+  ...
+  '/pagerduty':
+    target: https://api.pagerduty.com
+    headers:
+      Authorization: Token token=${PAGERDUTY_TOKEN}
+```
+
 Then start the backend passing the token as an environment variable:
 
 ```bash
-$ PAGERDUTY_TOKEN='Token token=<TOKEN>' yarn start
+$ PAGERDUTY_TOKEN='<TOKEN>' yarn start
 ```
 
 This will proxy the request by adding `Authorization` header with the provided token.

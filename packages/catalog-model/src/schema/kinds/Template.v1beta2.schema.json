@@ -85,7 +85,7 @@
           "properties": {
             "type": {
               "type": "string",
-              "description": "The type of component. This field is optional but recommended. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value. For example, a website type component may present tooling in the Backstage interface that is specific to just websites.",
+              "description": "The type of component created by the template. The software catalog accepts any type value, but an organization should take great care to establish a proper taxonomy for these. Tools including Backstage itself may read this field and behave differently depending on its value. For example, a website type component may present tooling in the Backstage interface that is specific to just websites.",
               "examples": ["service", "website", "library"],
               "minLength": 1
             },
@@ -125,7 +125,7 @@
                     "type": "string",
                     "description": "The name of the action to execute."
                   },
-                  "parameters": {
+                  "input": {
                     "type": "object",
                     "description": "A templated object describing the inputs to the action."
                   }
@@ -135,9 +135,44 @@
             "output": {
               "type": "object",
               "description": "A templated object describing the outputs of the scaffolding task.",
+              "properties": {
+                "links": {
+                  "type": "array",
+                  "description": "A list of external hyperlinks, typically pointing to resources created or updated by the template",
+                  "items": {
+                    "type": "object",
+                    "required": ["url"],
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "A url in a standard uri format.",
+                        "examples": ["https://github.com/my-org/my-new-repo"],
+                        "minLength": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "A user friendly display name for the link.",
+                        "examples": ["View new repo"],
+                        "minLength": 1
+                      },
+                      "icon": {
+                        "type": "string",
+                        "description": "A key representing a visual icon to be displayed in the UI.",
+                        "examples": ["dashboard"],
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              },
               "additionalProperties": {
                 "type": "string"
               }
+            },
+            "owner": {
+              "type": "string",
+              "description": "The user (or group) owner of the template",
+              "minLength": 1
             }
           }
         }

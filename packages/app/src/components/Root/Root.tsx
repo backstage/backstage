@@ -36,10 +36,11 @@ import {
   SidebarSpace,
 } from '@backstage/core';
 import { NavLink } from 'react-router-dom';
-import { graphiQLRouteRef } from '@backstage/plugin-graphiql';
+import { GraphiQLIcon } from '@backstage/plugin-graphiql';
 import { Settings as SidebarSettings } from '@backstage/plugin-user-settings';
 import { SidebarSearch } from '@backstage/plugin-search';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { Shortcuts } from '@backstage/plugin-shortcuts';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -74,7 +75,7 @@ const SidebarLogo = () => {
   );
 };
 
-const Root = ({ children }: PropsWithChildren<{}>) => (
+export const Root = ({ children }: PropsWithChildren<{}>) => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -96,11 +97,9 @@ const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
       <SidebarItem icon={RuleIcon} to="lighthouse" text="Lighthouse" />
       <SidebarItem icon={MoneyIcon} to="cost-insights" text="Cost Insights" />
-      <SidebarItem
-        icon={graphiQLRouteRef.icon!}
-        to={graphiQLRouteRef.path}
-        text={graphiQLRouteRef.title}
-      />
+      <SidebarItem icon={GraphiQLIcon} to="graphiql" text="GraphiQL" />
+      <SidebarDivider />
+      <Shortcuts />
       <SidebarSpace />
       <SidebarDivider />
       <SidebarSettings />
@@ -108,5 +107,3 @@ const Root = ({ children }: PropsWithChildren<{}>) => (
     {children}
   </SidebarPage>
 );
-
-export default Root;

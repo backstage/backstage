@@ -1,5 +1,430 @@
 # example-app
 
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies [497f4ce18]
+- Updated dependencies [ee4eb5b40]
+- Updated dependencies [84160313e]
+- Updated dependencies [3772de8ba]
+- Updated dependencies [7e7c71417]
+- Updated dependencies [f430b6c6f]
+- Updated dependencies [2a942cc9e]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [90a505a77]
+- Updated dependencies [76f99a1a0]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [1157fa307]
+- Updated dependencies [8e919a6f8]
+- Updated dependencies [2305ab8fc]
+- Updated dependencies [054bcd029]
+- Updated dependencies [aad98c544]
+- Updated dependencies [f46a9e82d]
+  - @backstage/plugin-scaffolder@0.9.7
+  - @backstage/cli@0.6.14
+  - @backstage/plugin-catalog@0.6.1
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-catalog-react@0.2.1
+  - @backstage/plugin-techdocs@0.9.5
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies [41c3ec421]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [1cd0cacd9]
+- Updated dependencies [4ea9df9d3]
+- Updated dependencies [7a7da5146]
+- Updated dependencies [5baf2ff0f]
+- Updated dependencies [bf805b467]
+- Updated dependencies [203ce6f6f]
+- Updated dependencies [7ab5bfe68]
+- Updated dependencies [704875e26]
+- Updated dependencies [3a181cff1]
+  - @backstage/plugin-cost-insights@0.10.1
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog@0.6.0
+  - @backstage/plugin-catalog-react@0.2.0
+  - @backstage/cli@0.6.13
+  - @backstage/plugin-techdocs@0.9.4
+  - @backstage/plugin-jenkins@0.4.4
+  - @backstage/plugin-api-docs@0.4.15
+  - @backstage/plugin-badges@0.2.2
+  - @backstage/plugin-catalog-import@0.5.8
+  - @backstage/plugin-circleci@0.2.15
+  - @backstage/plugin-cloudbuild@0.2.16
+  - @backstage/plugin-code-coverage@0.1.4
+  - @backstage/plugin-explore@0.3.6
+  - @backstage/plugin-github-actions@0.4.8
+  - @backstage/plugin-kafka@0.2.8
+  - @backstage/plugin-kubernetes@0.4.5
+  - @backstage/plugin-lighthouse@0.2.17
+  - @backstage/plugin-org@0.3.14
+  - @backstage/plugin-pagerduty@0.3.5
+  - @backstage/plugin-rollbar@0.3.6
+  - @backstage/plugin-scaffolder@0.9.6
+  - @backstage/plugin-search@0.3.7
+  - @backstage/plugin-sentry@0.3.11
+  - @backstage/plugin-todo@0.1.2
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies [7cbfcae48]
+- Updated dependencies [2bfec55a6]
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+- Updated dependencies [ca6e0ab69]
+- Updated dependencies [5914a76d5]
+- Updated dependencies [81d7b9c6f]
+- Updated dependencies [a62cfe068]
+- Updated dependencies [35e091604]
+- Updated dependencies [a53f3d603]
+- Updated dependencies [b203699e9]
+  - @backstage/plugin-cost-insights@0.10.0
+  - @backstage/cli@0.6.12
+  - @backstage/catalog-model@0.7.10
+  - @backstage/plugin-scaffolder@0.9.5
+  - @backstage/core@0.7.10
+  - @backstage/plugin-api-docs@0.4.14
+  - @backstage/plugin-cloudbuild@0.2.15
+  - @backstage/plugin-github-actions@0.4.7
+  - @backstage/plugin-techdocs@0.9.3
+  - @backstage/plugin-catalog-import@0.5.7
+  - @backstage/plugin-catalog@0.5.8
+
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies [062bbf90f]
+- Updated dependencies [2cd70e164]
+- Updated dependencies [0b033d07b]
+- Updated dependencies [3be844496]
+- Updated dependencies [5542de095]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [81ef1d57b]
+- Updated dependencies [ea21d46f0]
+- Updated dependencies [e3fc89df6]
+- Updated dependencies [f59a945b7]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [16be1d093]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+  - @backstage/integration-react@0.1.2
+  - @backstage/plugin-api-docs@0.4.13
+  - @backstage/plugin-badges@0.2.1
+  - @backstage/plugin-catalog@0.5.7
+  - @backstage/plugin-catalog-import@0.5.6
+  - @backstage/plugin-catalog-react@0.1.6
+  - @backstage/plugin-circleci@0.2.14
+  - @backstage/plugin-cloudbuild@0.2.14
+  - @backstage/plugin-code-coverage@0.1.3
+  - @backstage/plugin-cost-insights@0.9.1
+  - @backstage/plugin-explore@0.3.5
+  - @backstage/plugin-gcp-projects@0.2.6
+  - @backstage/plugin-github-actions@0.4.6
+  - @backstage/plugin-graphiql@0.2.11
+  - @backstage/plugin-jenkins@0.4.3
+  - @backstage/plugin-kafka@0.2.7
+  - @backstage/plugin-kubernetes@0.4.4
+  - @backstage/plugin-lighthouse@0.2.16
+  - @backstage/plugin-newrelic@0.2.7
+  - @backstage/plugin-org@0.3.13
+  - @backstage/plugin-pagerduty@0.3.4
+  - @backstage/plugin-rollbar@0.3.5
+  - @backstage/plugin-scaffolder@0.9.4
+  - @backstage/plugin-search@0.3.6
+  - @backstage/plugin-sentry@0.3.10
+  - @backstage/plugin-shortcuts@0.1.2
+  - @backstage/plugin-tech-radar@0.3.11
+  - @backstage/plugin-techdocs@0.9.2
+  - @backstage/plugin-todo@0.1.1
+  - @backstage/plugin-user-settings@0.2.10
+  - @backstage/cli@0.6.11
+  - @backstage/catalog-model@0.7.9
+
+## 0.2.27
+
+### Patch Changes
+
+- Updated dependencies [6f1b82b14]
+- Updated dependencies [38ca05168]
+- Updated dependencies [f65adcde7]
+- Updated dependencies [81c54d1f2]
+- Updated dependencies [80888659b]
+- Updated dependencies [7b8272fb7]
+- Updated dependencies [8aedbb4af]
+- Updated dependencies [fc79a6dd3]
+- Updated dependencies [f53fba29f]
+- Updated dependencies [b2e2ec753]
+- Updated dependencies [9314a8592]
+- Updated dependencies [2e05277e0]
+- Updated dependencies [4075c6367]
+- Updated dependencies [d8b81fd28]
+  - @backstage/plugin-cost-insights@0.9.0
+  - @backstage/plugin-catalog-import@0.5.5
+  - @backstage/plugin-github-actions@0.4.5
+  - @backstage/cli@0.6.10
+  - @backstage/core@0.7.8
+  - @backstage/plugin-catalog-react@0.1.5
+  - @backstage/theme@0.2.7
+  - @backstage/plugin-kubernetes@0.4.3
+  - @backstage/plugin-tech-radar@0.3.10
+  - @backstage/plugin-scaffolder@0.9.3
+  - @backstage/plugin-techdocs@0.9.1
+  - @backstage/catalog-model@0.7.8
+
+## 0.2.26
+
+### Patch Changes
+
+- Updated dependencies [1ce80ff02]
+- Updated dependencies [b98de52ae]
+- Updated dependencies [4c42ecca2]
+- Updated dependencies [c614ede9a]
+- Updated dependencies [9afcac5af]
+- Updated dependencies [07a7806c3]
+- Updated dependencies [f6efa71ee]
+- Updated dependencies [19a4dd710]
+- Updated dependencies [dcd54c7cd]
+- Updated dependencies [da546ce00]
+- Updated dependencies [e0c9ed759]
+- Updated dependencies [6fbd7beca]
+- Updated dependencies [15cbe6815]
+- Updated dependencies [39bdaa004]
+- Updated dependencies [cb8c848a3]
+- Updated dependencies [21fddf452]
+- Updated dependencies [17915e29b]
+- Updated dependencies [6eaecbd81]
+- Updated dependencies [23769512a]
+- Updated dependencies [1a142ae8a]
+  - @backstage/plugin-api-docs@0.4.12
+  - @backstage/plugin-cost-insights@0.8.5
+  - @backstage/plugin-github-actions@0.4.4
+  - @backstage/plugin-catalog-import@0.5.4
+  - @backstage/plugin-circleci@0.2.13
+  - @backstage/plugin-explore@0.3.4
+  - @backstage/plugin-graphiql@0.2.10
+  - @backstage/plugin-jenkins@0.4.2
+  - @backstage/plugin-lighthouse@0.2.15
+  - @backstage/plugin-pagerduty@0.3.3
+  - @backstage/plugin-rollbar@0.3.4
+  - @backstage/plugin-sentry@0.3.9
+  - @backstage/core@0.7.7
+  - @backstage/plugin-scaffolder@0.9.2
+  - @backstage/plugin-catalog@0.5.6
+  - @backstage/plugin-search@0.3.5
+  - @backstage/plugin-techdocs@0.9.0
+
+## 0.2.25
+
+### Patch Changes
+
+- Updated dependencies [94da20976]
+- Updated dependencies [d8cc7e67a]
+- Updated dependencies [4e5c94249]
+- Updated dependencies [99fbef232]
+- Updated dependencies [cb0206b2b]
+- Updated dependencies [1373f4f12]
+- Updated dependencies [29a7e4be8]
+- Updated dependencies [ab07d77f6]
+- Updated dependencies [96728a2af]
+- Updated dependencies [931b21a12]
+- Updated dependencies [937ed39ce]
+- Updated dependencies [87c4f59de]
+- Updated dependencies [55b2fc0c0]
+- Updated dependencies [9a9e7a42f]
+- Updated dependencies [50ce875a0]
+- Updated dependencies [ac6025f63]
+- Updated dependencies [e292e393f]
+- Updated dependencies [479b29124]
+  - @backstage/core@0.7.6
+  - @backstage/cli@0.6.9
+  - @backstage/plugin-scaffolder@0.9.1
+  - @backstage/plugin-catalog-import@0.5.3
+  - @backstage/plugin-catalog@0.5.5
+  - @backstage/theme@0.2.6
+  - @backstage/plugin-code-coverage@0.1.2
+  - @backstage/plugin-techdocs@0.8.0
+
+## 0.2.24
+
+### Patch Changes
+
+- Updated dependencies [a360f9478]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [d0d1c2f7b]
+- Updated dependencies [5d0740563]
+- Updated dependencies [12390778e]
+- Updated dependencies [fef852ecd]
+- Updated dependencies [18f7345a6]
+- Updated dependencies [5cafcf452]
+- Updated dependencies [86a95ba67]
+- Updated dependencies [e27cb6c45]
+- Updated dependencies [184b02bef]
+- Updated dependencies [60ce64aa2]
+  - @backstage/plugin-scaffolder@0.9.0
+  - @backstage/catalog-model@0.7.7
+  - @backstage/core@0.7.5
+  - @backstage/plugin-catalog@0.5.4
+  - @backstage/plugin-api-docs@0.4.11
+  - @backstage/plugin-techdocs@0.7.2
+  - @backstage/plugin-tech-radar@0.3.9
+  - @backstage/cli@0.6.8
+
+## 0.2.23
+
+### Patch Changes
+
+- Updated dependencies [d0b4ebf22]
+- Updated dependencies [1279a3325]
+- Updated dependencies [4a4681b1b]
+- Updated dependencies [97b60de98]
+- Updated dependencies [3f96a9d5a]
+- Updated dependencies [b051e770c]
+- Updated dependencies [f9c75f7a9]
+- Updated dependencies [98dd5da71]
+- Updated dependencies [97d53f686]
+- Updated dependencies [64d2ce700]
+  - @backstage/plugin-badges@0.2.0
+  - @backstage/core@0.7.4
+  - @backstage/catalog-model@0.7.6
+  - @backstage/plugin-scaffolder@0.8.2
+  - @backstage/plugin-catalog-import@0.5.2
+  - @backstage/plugin-catalog@0.5.3
+  - @backstage/plugin-org@0.3.12
+  - @backstage/plugin-github-deployments@0.1.2
+  - @backstage/cli@0.6.7
+
+## 0.2.21
+
+### Patch Changes
+
+- Updated dependencies [a2a3c7803]
+- Updated dependencies [687f066e1]
+- Updated dependencies [d10ea17c9]
+- Updated dependencies [01ccef4c7]
+- Updated dependencies [4d248725e]
+- Updated dependencies [4d248725e]
+- Updated dependencies [aaeb7ecf3]
+- Updated dependencies [ea9d977e7]
+- Updated dependencies [fcc3ada24]
+- Updated dependencies [687f066e1]
+- Updated dependencies [2aab54319]
+- Updated dependencies [4618774ff]
+- Updated dependencies [3139f83af]
+- Updated dependencies [598f5bcfb]
+- Updated dependencies [4d248725e]
+- Updated dependencies [df59930b3]
+  - @backstage/plugin-kubernetes@0.4.2
+  - @backstage/plugin-badges@0.1.2
+  - @backstage/plugin-cost-insights@0.8.4
+  - @backstage/plugin-catalog-react@0.1.3
+  - @backstage/plugin-github-actions@0.4.2
+  - @backstage/plugin-jenkins@0.4.1
+  - @backstage/plugin-catalog@0.5.1
+  - @backstage/plugin-techdocs@0.7.0
+  - @backstage/core@0.7.3
+  - @backstage/theme@0.2.5
+  - @backstage/cli@0.6.6
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies [633a31fec]
+- Updated dependencies [34e6bb409]
+- Updated dependencies [b56815b40]
+- Updated dependencies [09eb54e01]
+- Updated dependencies [147b4c5b1]
+- Updated dependencies [83bfc98a3]
+- Updated dependencies [7d8c4c97c]
+- Updated dependencies [e7baa0d2e]
+- Updated dependencies [1df417bd3]
+- Updated dependencies [84972540b]
+- Updated dependencies [3385b374b]
+- Updated dependencies [a0dacc184]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [c8b54c370]
+- Updated dependencies [1f98a6ff8]
+- Updated dependencies [e8b2ed9cc]
+  - @backstage/plugin-catalog@0.5.0
+  - @backstage/plugin-tech-radar@0.3.8
+  - @backstage/plugin-graphiql@0.2.9
+  - @backstage/plugin-user-settings@0.2.8
+  - @backstage/plugin-techdocs@0.6.2
+  - @backstage/plugin-catalog-import@0.5.0
+  - @backstage/plugin-kubernetes@0.4.1
+  - @backstage/cli@0.6.5
+  - @backstage/plugin-scaffolder@0.8.0
+  - @backstage/core@0.7.2
+  - @backstage/plugin-api-docs@0.4.9
+  - @backstage/plugin-catalog-react@0.1.2
+  - @backstage/plugin-circleci@0.2.12
+  - @backstage/plugin-cloudbuild@0.2.13
+  - @backstage/plugin-explore@0.3.2
+  - @backstage/plugin-github-actions@0.4.1
+  - @backstage/plugin-jenkins@0.4.0
+  - @backstage/plugin-lighthouse@0.2.14
+  - @backstage/plugin-org@0.3.10
+  - @backstage/plugin-search@0.3.4
+
+## 0.2.19
+
+### Patch Changes
+
+- Updated dependencies [13fb84244]
+- Updated dependencies [4f3d0dce0]
+- Updated dependencies [8f72318fe]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [ff4d666ab]
+- Updated dependencies [aa095e469]
+- Updated dependencies [f98f212e4]
+- Updated dependencies [9f7dc10fb]
+- Updated dependencies [eabe89d38]
+- Updated dependencies [9581ff0b4]
+- Updated dependencies [93c62c755]
+- Updated dependencies [2089de76b]
+- Updated dependencies [c9b5c1eca]
+- Updated dependencies [dc1fc92c8]
+- Updated dependencies [2089de76b]
+- Updated dependencies [868e4cdf2]
+- Updated dependencies [ca4a904f6]
+- Updated dependencies [763926bc1]
+- Updated dependencies [5ab5864f6]
+- Updated dependencies [4202807bb]
+- Updated dependencies [e2c1b3fb6]
+  - @backstage/plugin-github-actions@0.4.0
+  - @backstage/plugin-catalog@0.4.2
+  - @backstage/plugin-kafka@0.2.6
+  - @backstage/catalog-model@0.7.4
+  - @backstage/core@0.7.1
+  - @backstage/plugin-techdocs@0.6.1
+  - @backstage/plugin-scaffolder@0.7.1
+  - @backstage/plugin-kubernetes@0.4.0
+  - @backstage/theme@0.2.4
+  - @backstage/plugin-explore@0.3.1
+  - @backstage/cli@0.6.4
+
 ## 0.2.18
 
 ### Patch Changes

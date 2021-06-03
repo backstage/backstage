@@ -39,6 +39,7 @@ describe('GroupV1alpha1Validator', () => {
         },
         parent: 'group-a',
         children: ['child-a', 'child-b'],
+        members: ['jdoe'],
       },
     };
   });
@@ -170,6 +171,28 @@ describe('GroupV1alpha1Validator', () => {
 
   it('accepts no children', async () => {
     (entity as any).spec.children = [];
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  // members
+
+  it('accepts missing members', async () => {
+    delete (entity as any).spec.members;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty members', async () => {
+    (entity as any).spec.members = [''];
+    await expect(validator.check(entity)).rejects.toThrow(/members/);
+  });
+
+  it('rejects undefined members', async () => {
+    (entity as any).spec.members = [undefined];
+    await expect(validator.check(entity)).rejects.toThrow(/members/);
+  });
+
+  it('accepts no members', async () => {
+    (entity as any).spec.members = [];
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 });

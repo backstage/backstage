@@ -16,7 +16,7 @@
 
 export { OAuthEnvironmentHandler } from './OAuthEnvironmentHandler';
 export { OAuthAdapter } from './OAuthAdapter';
-export { encodeState } from './helpers';
+export { encodeState, verifyNonce, readState } from './helpers';
 export type {
   OAuthHandlers,
   OAuthProviderInfo,

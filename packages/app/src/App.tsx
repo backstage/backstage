@@ -27,7 +27,11 @@ import {
   CatalogIndexPage,
   catalogPlugin,
 } from '@backstage/plugin-catalog';
-import { CatalogImportPage } from '@backstage/plugin-catalog-import';
+
+import {
+  CatalogImportPage,
+  catalogImportPlugin,
+} from '@backstage/plugin-catalog-import';
 import {
   CostInsightsLabelDataflowInstructionsPage,
   CostInsightsPage,
@@ -39,7 +43,7 @@ import { GraphiQLPage } from '@backstage/plugin-graphiql';
 import { LighthousePage } from '@backstage/plugin-lighthouse';
 import { NewRelicPage } from '@backstage/plugin-newrelic';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
-import { SearchPage } from '@backstage/plugin-search';
+import { SearchPage, SearchPageNext } from '@backstage/plugin-search';
 import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import { TechdocsPage } from '@backstage/plugin-techdocs';
 import { UserSettingsPage } from '@backstage/plugin-user-settings';
@@ -48,8 +52,8 @@ import React from 'react';
 import { hot } from 'react-hot-loader/root';
 import { Navigate, Route } from 'react-router';
 import { apis } from './apis';
-import { EntityPage } from './components/catalog/EntityPage';
-import Root from './components/Root';
+import { Root } from './components/Root';
+import { entityPage } from './components/catalog/EntityPage';
 import { providers } from './identityProviders';
 import * as plugins from './plugins';
 import { DfdsCapabilityOverviewPage } from '@backstage/plugin-dfds-capability-overview';
@@ -84,6 +88,9 @@ const app = createApp({
     bind(explorePlugin.externalRoutes, {
       catalogEntity: catalogPlugin.routes.catalogEntity,
     });
+    bind(scaffolderPlugin.externalRoutes, {
+      registerComponent: catalogImportPlugin.routes.importPage,
+    });
   },
 });
 
@@ -98,7 +105,7 @@ const routes = (
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
     >
-      <EntityPage />
+      {entityPage}
     </Route>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
     <Route path="/docs" element={<TechdocsPage />} />
@@ -114,6 +121,10 @@ const routes = (
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
     <Route path="/search" element={<SearchPage />} />
+    <Route
+      path="/search-next"
+      element={<SearchPageNext /* TODO: illustrate customization */ />}
+    />
     <Route path="/cost-insights" element={<CostInsightsPage />} />
     <Route
       path="/cost-insights/investigating-growth"

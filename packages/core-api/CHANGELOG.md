@@ -1,5 +1,131 @@
 # @backstage/core-api
 
+## 0.2.21
+
+### Patch Changes
+
+- 0160678b1: Made the `RouteRef*` types compatible with the ones exported from `@backstage/core-plugin-api`.
+- Updated dependencies [031ccd45f]
+- Updated dependencies [e7c5e4b30]
+  - @backstage/core-plugin-api@0.1.1
+  - @backstage/theme@0.2.8
+
+## 0.2.20
+
+### Patch Changes
+
+- d597a50c6: Add a global type definition for `Symbol.observable`, fix type checking in projects that didn't already have it defined.
+
+## 0.2.19
+
+### Patch Changes
+
+- 61c3f927c: Updated the `Observable` type to provide interoperability with `Symbol.observable`, making it compatible with at least `zen-observable` and `RxJS 7`.
+
+  In cases where this change breaks tests that mocked the `Observable` type, the following addition to the mock should fix the breakage:
+
+  ```ts
+    [Symbol.observable]() {
+      return this;
+    },
+  ```
+
+- 65e6c4541: Remove circular dependencies
+
+## 0.2.18
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+
+## 0.2.17
+
+### Patch Changes
+
+- ab07d77f6: Add support for discovering plugins through the app element tree, removing the need to register them explicitly.
+- 50ce875a0: Fixed a potentially confusing error being thrown about misuse of routable extensions where the error was actually something different.
+- Updated dependencies [931b21a12]
+  - @backstage/theme@0.2.6
+
+## 0.2.16
+
+### Patch Changes
+
+- 1279a3325: Introduce a `load-chunk` step in the `BootErrorPage` to show make chunk loading
+  errors visible to the user.
+- 4a4681b1b: Improved error messaging for routable extension errors, making it easier to identify the component and mount point that caused the error.
+- b051e770c: Fixed a bug with `useRouteRef` where navigating from routes beneath a mount point would often fail.
+
+## 0.2.15
+
+### Patch Changes
+
+- 76deafd31: Changed the signature of `createRoutableExtension` to include null
+- 01ccef4c7: Introduce `useRouteRefParams` to `core-api` to retrieve typed route parameters.
+- Updated dependencies [4618774ff]
+  - @backstage/theme@0.2.5
+
+## 0.2.14
+
+### Patch Changes
+
+- a51dc0006: Export `SubRouteRef` type, and allow `SubRouteRef`s to be assigned to `plugin.routes`.
+- e7f9b9435: Allow elements to be used multiple times in the app element tree.
+- 34ff49b0f: Allow extension components to also return `null` in addition to a `JSX.Element`.
+- d88dd219e: Internal refactor to allow for future package splits. As part of this `ApiRef`s are now identified by their ID rather than their reference.
+- c8b54c370: Added new Docs Icon to Core Icons
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
+## 0.2.13
+
+### Patch Changes
+
+- 13524b80b: Fully deprecate `title` option of `RouteRef`s and introduce `id` instead.
+- e74b07578: Fixed a bug where FlatRoutes didn't handle React Fragments properly.
+- 6fb4258a8: Add `SubRouteRef`s, which can be used to create a route ref with a fixed path relative to an absolute `RouteRef`. They are useful if you for example have a page that is mounted at a sub route of a routable extension component, and you want other plugins to be able to route to that page.
+
+  For example:
+
+  ```tsx
+  // routes.ts
+  const rootRouteRef = createRouteRef({ id: 'root' });
+  const detailsRouteRef = createSubRouteRef({
+    id: 'root-sub',
+    parent: rootRouteRef,
+    path: '/details',
+  });
+
+  // plugin.ts
+  export const myPlugin = createPlugin({
+    routes: {
+      root: rootRouteRef,
+      details: detailsRouteRef,
+    }
+  })
+
+  export const MyPage = plugin.provide(createRoutableExtension({
+    component: () => import('./components/MyPage').then(m => m.MyPage),
+    mountPoint: rootRouteRef,
+  }))
+
+  // components/MyPage.tsx
+  const MyPage = () => (
+    <Routes>
+      {/* myPlugin.routes.root will take the user to this page */}
+      <Route path='/' element={<IndexPage />}>
+
+      {/* myPlugin.routes.details will take the user to this page */}
+      <Route path='/details' element={<DetailsPage />}>
+    </Routes>
+  )
+  ```
+
+- 395885905: Wait for `configApi` to be ready before using `featureFlagsApi`
+- Updated dependencies [2089de76b]
+  - @backstage/theme@0.2.4
+
 ## 0.2.12
 
 ### Patch Changes

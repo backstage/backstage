@@ -35,4 +35,5 @@ export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
   ingresses: ExtensionsV1beta1Ingress[];
+  customResources: any[];
 }

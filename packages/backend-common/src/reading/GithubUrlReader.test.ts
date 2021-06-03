@@ -27,7 +27,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import os from 'os';
 import path from 'path';
-import { NotFoundError, NotModifiedError } from '../errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GhBlobResponse,
   GhBranchResponse,
@@ -35,9 +35,9 @@ import {
   GhTreeResponse,
   GithubUrlReader,
 } from './GithubUrlReader';
-import { ReadTreeResponseFactory } from './tree';
+import { DefaultReadTreeResponseFactory } from './tree';
 
-const treeResponseFactory = ReadTreeResponseFactory.create({
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 

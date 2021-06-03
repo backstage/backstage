@@ -16,13 +16,12 @@
 
 import { CatalogApi } from '@backstage/catalog-client';
 import { EntityName } from '@backstage/catalog-model';
+import { DiscoveryApi, IdentityApi, OAuthApi } from '@backstage/core';
 import {
-  ConfigApi,
-  DiscoveryApi,
-  IdentityApi,
-  OAuthApi,
-} from '@backstage/core';
-import { GitHubIntegrationConfig } from '@backstage/integration';
+  GitHubIntegrationConfig,
+  ScmIntegrationRegistry,
+} from '@backstage/integration';
+import { Base64 } from 'js-base64';
 import { Octokit } from '@octokit/rest';
 import { PartialEntity } from '../types';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
@@ -32,20 +31,20 @@ export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
   private readonly identityApi: IdentityApi;
   private readonly githubAuthApi: OAuthApi;
-  private readonly configApi: ConfigApi;
+  private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
     githubAuthApi: OAuthApi;
     identityApi: IdentityApi;
-    configApi: ConfigApi;
+    scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.githubAuthApi = options.githubAuthApi;
     this.identityApi = options.identityApi;
-    this.configApi = options.configApi;
+    this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
   }
 
@@ -72,33 +71,34 @@ export class CatalogImportClient implements CatalogImportApi {
       };
     }
 
-    const ghConfig = getGithubIntegrationConfig(this.configApi, url);
+    const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
+    if (!ghConfig) {
+      throw new Error(
+        'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+      );
+    }
 
-    if (ghConfig) {
-      // TODO: this could be part of the analyze-location endpoint
-      const locations = await this.checkGitHubForExistingCatalogInfo({
-        ...ghConfig,
-        url,
-      });
+    // TODO: this could be part of the analyze-location endpoint
+    const locations = await this.checkGitHubForExistingCatalogInfo({
+      ...ghConfig,
+      url,
+    });
 
-      if (locations.length > 0) {
-        return {
-          type: 'locations',
-          locations,
-        };
-      }
-
+    if (locations.length > 0) {
       return {
-        type: 'repository',
-        integrationType: 'github',
-        url: url,
-        generatedEntities: await this.generateEntityDefinitions({
-          repo: url,
-        }),
+        type: 'locations',
+        locations,
       };
     }
 
-    throw new Error('Invalid url');
+    return {
+      type: 'repository',
+      integrationType: 'github',
+      url: url,
+      generatedEntities: await this.generateEntityDefinitions({
+        repo: url,
+      }),
+    };
   }
 
   async submitPullRequest({
@@ -112,7 +112,10 @@ export class CatalogImportClient implements CatalogImportApi {
     title: string;
     body: string;
   }): Promise<{ link: string; location: string }> {
-    const ghConfig = getGithubIntegrationConfig(this.configApi, repositoryUrl);
+    const ghConfig = getGithubIntegrationConfig(
+      this.scmIntegrationsApi,
+      repositoryUrl,
+    );
 
     if (ghConfig) {
       return await this.submitGitHubPrToRepo({
@@ -297,8 +300,8 @@ export class CatalogImportClient implements CatalogImportApi {
         owner,
         repo,
         path: fileName,
-        message: `Add ${fileName} config file`,
-        content: btoa(fileContent),
+        message: title,
+        content: Base64.encode(fileContent),
         branch: branchName,
       })
       .catch(e => {

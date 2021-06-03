@@ -15,6 +15,7 @@
  */
 
 import { SvgIconProps } from '@material-ui/core';
+import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
 import MuiBrokenImageIcon from '@material-ui/icons/BrokenImage';
 import MuiChatIcon from '@material-ui/icons/Chat';
 import MuiDashboardIcon from '@material-ui/icons/Dashboard';
@@ -24,12 +25,16 @@ import MuiHelpIcon from '@material-ui/icons/Help';
 import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
+import MuiDocsIcon from '@material-ui/icons/Description';
+
 import React from 'react';
 import { useApp } from '../app/AppContext';
 import { IconComponent, IconComponentMap, SystemIconKey } from './types';
 
 export const defaultSystemIcons: IconComponentMap = {
   brokenImage: MuiBrokenImageIcon,
+  // To be confirmed: see https://github.com/backstage/backstage/issues/4970
+  catalog: MuiMenuBookIcon,
   chat: MuiChatIcon,
   dashboard: MuiDashboardIcon,
   email: MuiEmailIcon,
@@ -38,6 +43,7 @@ export const defaultSystemIcons: IconComponentMap = {
   help: MuiHelpIcon,
   user: MuiPersonIcon,
   warning: MuiWarningIcon,
+  docs: MuiDocsIcon,
 };
 
 const overridableSystemIcon = (key: SystemIconKey): IconComponent => {
@@ -58,3 +64,4 @@ export const GroupIcon = overridableSystemIcon('group');
 export const HelpIcon = overridableSystemIcon('help');
 export const UserIcon = overridableSystemIcon('user');
 export const WarningIcon = overridableSystemIcon('warning');
+export const DocsIcon = overridableSystemIcon('docs');

@@ -97,6 +97,19 @@ describe('Bitbucket Publisher', () => {
   });
 
   describe('publish: createRemoteInBitbucketServer', () => {
+    it('should throw an error if no username present', async () => {
+      await expect(
+        BitbucketPublisher.fromConfig(
+          {
+            host: 'bitbucket.mycompany.com',
+            token: 'fake-token',
+          },
+          { repoVisibility: 'private' },
+        ),
+      ).rejects.toThrow(
+        'Bitbucket server requires the username to be set in your config',
+      );
+    });
     it('should create repo in bitbucket server', async () => {
       server.use(
         rest.post(
@@ -128,6 +141,7 @@ describe('Bitbucket Publisher', () => {
       const publisher = await BitbucketPublisher.fromConfig(
         {
           host: 'bitbucket.mycompany.com',
+          username: 'foo',
           token: 'fake-token',
         },
         { repoVisibility: 'private' },
@@ -151,9 +165,64 @@ describe('Bitbucket Publisher', () => {
       expect(initRepoAndPush).toHaveBeenCalledWith({
         dir: resultPath,
         remoteUrl: 'https://bitbucket.mycompany.com/scm/project/repo',
-        auth: { username: 'x-token-auth', password: 'fake-token' },
+        auth: { username: 'foo', password: 'fake-token' },
         logger: logger,
       });
+    });
+  });
+
+  it('should use apiBaseUrl to create the repository if it is set', async () => {
+    server.use(
+      rest.post(
+        'https://bitbucket.mycompany.com/bitbucket/rest/api/1.0/projects/project/repos',
+        (_, res, ctx) =>
+          res(
+            ctx.status(201),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                self: [
+                  {
+                    href:
+                      'https://bitbucket.mycompany.com/bitbucket/projects/project/repos/repo',
+                  },
+                ],
+                clone: [
+                  {
+                    name: 'http',
+                    href:
+                      'https://bitbucket.mycompany.com/bitbucket/scm/project/repo',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    const publisher = await BitbucketPublisher.fromConfig(
+      {
+        host: 'bitbucket.mycompany.com',
+        username: 'foo',
+        token: 'fake-token',
+        apiBaseUrl: 'https://bitbucket.mycompany.com/bitbucket/rest/api/1.0',
+      },
+      { repoVisibility: 'private' },
+    );
+
+    const result = await publisher.publish({
+      values: {
+        storePath: 'https://bitbucket.mycompany.com/project/repo',
+        owner: 'bob',
+      },
+      workspacePath,
+      logger: logger,
+    });
+
+    expect(result).toEqual({
+      remoteUrl: 'https://bitbucket.mycompany.com/bitbucket/scm/project/repo',
+      catalogInfoUrl:
+        'https://bitbucket.mycompany.com/bitbucket/projects/project/repos/repo/catalog-info.yaml',
     });
   });
 });

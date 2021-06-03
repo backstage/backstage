@@ -203,7 +203,7 @@ async function createApp(
 
     await waitFor(() => stdout.includes('Select database for the backend'));
 
-    if (!isPostgres) {
+    if (isPostgres) {
       // Simulate down arrow press
       child.stdin?.write(`\u001B\u005B\u0042`);
     }
@@ -335,7 +335,7 @@ async function testAppServe(pluginName: string, appDir: string) {
       try {
         const browser = new Browser();
 
-        await waitForPageWithText(browser, '/', 'My Company Service Catalog');
+        await waitForPageWithText(browser, '/', 'My Company Catalog');
         await waitForPageWithText(
           browser,
           `/${pluginName}`,

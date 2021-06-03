@@ -22,33 +22,26 @@ Navigate to your new Backstage application directory. And then to your
 `packages/app` directory, and install the `@backstage/plugin-techdocs` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-techdocs
 ```
 
 Once the package has been installed, you need to import the plugin in your app.
 
-Add the following to `packages/app/src/plugins.ts`:
-
-```typescript
-export { plugin as TechDocs } from '@backstage/plugin-techdocs';
-```
-
-Now let us embed the TechDocs router in our main Backstage frontend router. In
-`packages/app/src/App.tsx`, import the TechDocs router and add the following to
-`AppRoutes`:
+In `packages/app/src/App.tsx`, import `TechDocsPage` and add the following to
+`FlatRoutes`:
 
 ```tsx
-import { Router as DocsRouter } from '@backstage/plugin-techdocs';
+import { TechDocsPage } from '@backstage/plugin-techdocs';
 
 // ...
 
 const AppRoutes = () => {
-  <Routes>
+  <FlatRoutes>
     // ... other plugin routes
-    <Route path="/docs/*" element={<DocsRouter />} />
-  </Routes>;
+    <Route path="/docs" element={<TechdocsPage />} />
+  </FlatRoutes>;
 };
 ```
 
@@ -61,7 +54,7 @@ Navigate to `packages/backend` of your Backstage app, and install the
 `@backstage/plugin-techdocs-backend` package.
 
 ```bash
-cd my-backstage-app/
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-techdocs-backend
 ```
@@ -70,14 +63,15 @@ Create a file called `techdocs.ts` inside `packages/backend/src/plugins/` and
 add the following
 
 ```typescript
+import { DockerContainerRunner } from '@backstage/backend-common';
 import {
   createRouter,
-  Preparers,
   Generators,
+  Preparers,
   Publisher,
 } from '@backstage/plugin-techdocs-backend';
-import { PluginEnvironment } from '../types';
 import Docker from 'dockerode';
+import { PluginEnvironment } from '../types';
 
 export default async function createPlugin({
   logger,
@@ -91,9 +85,14 @@ export default async function createPlugin({
     reader,
   });
 
+  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  const dockerClient = new Docker();
+  const containerRunner = new DockerContainerRunner({ dockerClient });
+
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(config, {
     logger,
+    containerRunner,
   });
 
   // Publisher is used for
@@ -104,14 +103,13 @@ export default async function createPlugin({
     discovery,
   });
 
-  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
+  // checks if the publisher is working and logs the result
+  await publisher.getReadiness();
 
   return await createRouter({
     preparers,
     generators,
     publisher,
-    dockerClient,
     logger,
     config,
     discovery,
@@ -126,8 +124,8 @@ it.
 See [Concepts](concepts.md) and [TechDocs Architecture](architecture.md) to
 learn more about how preparers, generators and publishers work.
 
-Final step is to import the techdocs backend plugin in Backstage app backend.
-Add the following to your `packages/backend/src/index.ts`:
+The final step is to import the techdocs backend plugin in Backstage app
+backend. Add the following to your `packages/backend/src/index.ts`:
 
 ```typescript
 import techdocs from './plugins/techdocs';

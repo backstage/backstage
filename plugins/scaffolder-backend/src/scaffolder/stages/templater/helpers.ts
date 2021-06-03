@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import { spawn } from 'child_process';
 import { PassThrough, Writable } from 'stream';

@@ -20,6 +20,7 @@ import {
   CoreV1Api,
   KubeConfig,
   NetworkingV1beta1Api,
+  CustomObjectsApi,
 } from '@kubernetes/client-node';
 import { ClusterDetails } from '../types/types';
 
@@ -29,8 +30,7 @@ export class KubernetesClientProvider {
     const cluster = {
       name: clusterDetails.name,
       server: clusterDetails.url,
-      // TODO configure this
-      skipTLSVerify: true,
+      skipTLSVerify: clusterDetails.skipTLSVerify,
     };
 
     // TODO configure
@@ -77,5 +77,11 @@ export class KubernetesClientProvider {
     const kc = this.getKubeConfig(clusterDetails);
 
     return kc.makeApiClient(NetworkingV1beta1Api);
+  }
+
+  getCustomObjectsClient(clusterDetails: ClusterDetails) {
+    const kc = this.getKubeConfig(clusterDetails);
+
+    return kc.makeApiClient(CustomObjectsApi);
   }
 }

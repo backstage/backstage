@@ -23,10 +23,11 @@ import { MultiTenantServiceLocator } from '../service-locator/MultiTenantService
 import {
   ClusterDetails,
   KubernetesClustersSupplier,
-  KubernetesRequestBody,
   KubernetesServiceLocator,
   ServiceLocatorMethod,
+  CustomResource,
 } from '../types/types';
+import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesClientProvider } from './KubernetesClientProvider';
 import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
@@ -99,6 +100,21 @@ export async function createRouter(
 
   logger.info('Initializing Kubernetes backend');
 
+  const customResources: CustomResource[] = (
+    options.config.getOptionalConfigArray('kubernetes.customResources') ?? []
+  ).map(
+    c =>
+      ({
+        group: c.getString('group'),
+        apiVersion: c.getString('apiVersion'),
+        plural: c.getString('plural'),
+      } as CustomResource),
+  );
+
+  logger.info(
+    `action=LoadingCustomResources numOfCustomResources=${customResources.length}`,
+  );
+
   const fetcher = new KubernetesClientBasedFetcher({
     kubernetesClientProvider: new KubernetesClientProvider(),
     logger,
@@ -122,6 +138,7 @@ export async function createRouter(
     logger,
     fetcher,
     serviceLocator,
+    customResources,
   );
 
   return makeRouter(logger, kubernetesFanOutHandler, clusterDetails);

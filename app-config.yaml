@@ -2,6 +2,12 @@ app:
   title: DFDS Backstage
   baseUrl: http://localhost:3000
   googleAnalyticsTrackingId: # UA-000000-0
+  #datadogRum:
+  #  clientToken: '123456789'
+  #  applicationId: qwerty
+  #   site: # datadoghq.eu default = datadoghq.com
+  #   env: # optional
+
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
@@ -31,6 +37,8 @@ backend:
         $env: DATABASE_USER
       password: 
         $env: DATABASE_PASSWORD
+  cache:
+    store: memory
   cors:
     origin: 
       $env: BACKEND_CORS_ORIGIN
@@ -49,47 +57,47 @@ proxy:
   '/circleci/api':
     target: https://circleci.com/api/v1.1
     headers:
-      Circle-Token:
-        $env: CIRCLECI_AUTH_TOKEN
+      Circle-Token: ${CIRCLECI_AUTH_TOKEN}
 
   '/jenkins/api':
     target: http://localhost:8080
     headers:
-      Authorization:
-        $env: JENKINS_BASIC_AUTH_HEADER
+      Authorization: ${JENKINS_BASIC_AUTH_HEADER}
 
   '/travisci/api':
     target: https://api.travis-ci.com
     changeOrigin: true
     headers:
-      Authorization:
-        $env: TRAVISCI_AUTH_TOKEN
+      Authorization: ${TRAVISCI_AUTH_TOKEN}
       travis-api-version: '3'
 
   '/newrelic/apm/api':
     target: https://api.newrelic.com/v2
     headers:
-      X-Api-Key:
-        $env: NEW_RELIC_REST_API_KEY
+      X-Api-Key: ${NEW_RELIC_REST_API_KEY}
 
   '/pagerduty':
     target: https://api.pagerduty.com
     headers:
-      Authorization:
-        $env: PAGERDUTY_TOKEN
+      Authorization: ${PAGERDUTY_TOKEN}
 
   '/buildkite/api':
     target: https://api.buildkite.com/v2/
     headers:
-      Authorization:
-        $env: BUILDKITE_TOKEN
+      Authorization: ${BUILDKITE_TOKEN}
 
   '/sentry/api':
     target: https://sentry.io/api/
     allowedMethods: ['GET']
     headers:
-      Authorization:
-        $env: SENTRY_TOKEN
+      Authorization: ${SENTRY_TOKEN}
+
+  '/ilert':
+    target: https://api.ilert.com
+    allowedMethods: ['GET', 'POST', 'PUT']
+    allowedHeaders: ['Authorization']
+    headers:
+      Authorization: ${ILERT_AUTH_HEADER}
 
   '/dfds/developer-automation/capability':
     target: https://api.hellman.oxygen.dfds.cloud/capability/
@@ -160,32 +168,28 @@ kafka:
 integrations:
   github:
     - host: github.com
-      token:
-        $env: GITHUB_TOKEN
+      token: ${GITHUB_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using the API:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
-    #   token:
-    #     $env: GHE_TOKEN
+    #   token: ${GHE_TOKEN}
     ### Example for how to add your GitHub Enterprise instance using raw HTTP fetches (token is optional):
     # - host: ghe.example.net
     #   rawBaseUrl: https://ghe.example.net/raw
-    #   token:
-    #     $env: GHE_TOKEN
+    #   token: ${GHE_TOKEN}
   gitlab:
     - host: gitlab.com
-      token:
-        $env: GITLAB_TOKEN
+      token: ${GITLAB_TOKEN}
   bitbucket:
     - host: bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      appPassword:
-        $env: BITBUCKET_APP_PASSWORD
+      username: ${BITBUCKET_USERNAME}
+      appPassword: ${BITBUCKET_APP_PASSWORD}
   azure:
     - host: dev.azure.com
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
+#  googleGcs:
+#    clientEmail: 'example@example.com'
+#    privateKey: ${GCS_PRIVATE_KEY}
 
 catalog:
   rules:
@@ -204,21 +208,18 @@ catalog:
     githubOrg:
       providers:
         - target: https://github.com
-          token:
-            $env: GITHUB_TOKEN
+          token: ${GITHUB_TOKEN}
         #### Example for how to add your GitHub Enterprise instance using the API:
         # - target: https://ghe.example.net
         #   apiBaseUrl: https://ghe.example.net/api
-        #   token:
-        #     $env: GHE_TOKEN
+        #   token: ${GHE_TOKEN}
     ldapOrg:
       ### Example for how to add your enterprise LDAP server
       # providers:
       #   - target: ldaps://ds.example.net
       #     bind:
       #       dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-      #       secret:
-      #         $env: LDAP_SECRET
+      #       secret: ${LDAP_SECRET}
       #     users:
       #       dn: ou=people,ou=example,dc=example,dc=net
       #       options:
@@ -234,12 +235,9 @@ catalog:
       #providers:
       #  - target: https://graph.microsoft.com/v1.0
       #    authority: https://login.microsoftonline.com
-      #    tenantId:
-      #      $env: MICROSOFT_GRAPH_TENANT_ID
-      #    clientId:
-      #      $env: MICROSOFT_GRAPH_CLIENT_ID
-      #    clientSecret:
-      #      $env: MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN
+      #    tenantId: ${MICROSOFT_GRAPH_TENANT_ID}
+      #    clientId: ${MICROSOFT_GRAPH_CLIENT_ID}
+      #    clientSecret: ${MICROSOFT_GRAPH_CLIENT_SECRET_TOKEN}
       #    userFilter: accountEnabled eq true and userType eq 'member'
       #    groupFilter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
 
@@ -287,27 +285,22 @@ catalog:
 
 scaffolder:
   github:
-    token:
-      $env: GITHUB_TOKEN
+    token: ${GITHUB_TOKEN}
     visibility: public # or 'internal' or 'private'
   gitlab:
     api:
       baseUrl: https://gitlab.com
-      token:
-        $env: GITLAB_TOKEN
+      token: ${GITLAB_TOKEN}
     visibility: public # or 'internal' or 'private'
   azure:
     baseUrl: https://dev.azure.com/{your-organization}
     api:
-      token:
-        $env: AZURE_TOKEN
+      token: ${AZURE_TOKEN}
   bitbucket:
     api:
       host: https://bitbucket.org
-      username:
-        $env: BITBUCKET_USERNAME
-      token:
-        $env: BITBUCKET_TOKEN
+      username: ${BITBUCKET_USERNAME}
+      token: ${BITBUCKET_TOKEN}
     visibility: public # or or 'private'
 
 auth:

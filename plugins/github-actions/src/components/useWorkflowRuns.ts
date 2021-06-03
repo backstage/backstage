@@ -15,9 +15,26 @@
  */
 import { useState } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { WorkflowRun } from './WorkflowRunsTable/WorkflowRunsTable';
 import { githubActionsApiRef } from '../api/GithubActionsApi';
 import { useApi, errorApiRef } from '@backstage/core';
+
+export type WorkflowRun = {
+  workflowName: string;
+  id: string;
+  message: string;
+  url?: string;
+  githubUrl?: string;
+  source: {
+    branchName: string;
+    commit: {
+      hash: string;
+      url?: string;
+    };
+  };
+  status: string;
+  conclusion: string;
+  onReRunClick: () => void;
+};
 
 export function useWorkflowRuns({
   hostname,
@@ -43,53 +60,48 @@ export function useWorkflowRuns({
   const { loading, value: runs, retry, error } = useAsyncRetry<
     WorkflowRun[]
   >(async () => {
-    return (
-      api
-        // GitHub API pagination count starts from 1
-        .listWorkflowRuns({
-          hostname,
-          owner,
-          repo,
-          pageSize,
-          page: page + 1,
-          branch,
-        })
-        .then((workflowRunsData): WorkflowRun[] => {
-          setTotal(workflowRunsData.total_count);
-          // Transformation here
-          return workflowRunsData.workflow_runs.map(run => ({
-            workflowName: run.name,
-            message: run.head_commit.message,
-            id: `${run.id}`,
-            onReRunClick: async () => {
-              try {
-                await api.reRunWorkflow({
-                  hostname,
-                  owner,
-                  repo,
-                  runId: run.id,
-                });
-              } catch (e) {
-                errorApi.post(e);
-              }
-            },
-            source: {
-              branchName: run.head_branch,
-              commit: {
-                hash: run.head_commit.id,
-                url: run.head_repository.branches_url.replace(
-                  '{/branch}',
-                  run.head_branch,
-                ),
-              },
-            },
-            status: run.status,
-            conclusion: run.conclusion,
-            url: run.url,
-            githubUrl: run.html_url,
-          }));
-        })
-    );
+    // GitHub API pagination count starts from 1
+    const workflowRunsData = await api.listWorkflowRuns({
+      hostname,
+      owner,
+      repo,
+      pageSize,
+      page: page + 1,
+      branch,
+    });
+    setTotal(workflowRunsData.total_count);
+    // Transformation here
+    return workflowRunsData.workflow_runs.map(run => ({
+      workflowName: run.name,
+      message: run.head_commit.message,
+      id: `${run.id}`,
+      onReRunClick: async () => {
+        try {
+          await api.reRunWorkflow({
+            hostname,
+            owner,
+            repo,
+            runId: run.id,
+          });
+        } catch (e) {
+          errorApi.post(e);
+        }
+      },
+      source: {
+        branchName: run.head_branch,
+        commit: {
+          hash: run.head_commit.id,
+          url: run.head_repository?.branches_url?.replace(
+            '{/branch}',
+            run.head_branch,
+          ),
+        },
+      },
+      status: run.status,
+      conclusion: run.conclusion,
+      url: run.url,
+      githubUrl: run.html_url,
+    }));
   }, [page, pageSize, repo, owner]);
 
   return [

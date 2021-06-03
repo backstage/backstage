@@ -16,7 +16,8 @@ alongside your `backend` package in `packages/backend`.
 Let's create a simple action that adds a new file and some contents that are
 passed as `input` to the function.
 
-In `packages/backend/src/actions/custom.ts` we can create a new action.
+In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
+new action.
 
 ```ts
 import { createTemplateAction } from '@backstage/plugin-scaffolder-backend';
@@ -56,7 +57,7 @@ export const createNewFileAction = () => {
 So let's break this down. The `createNewFileAction` is a function that returns a
 `createTemplateAction`, and it's a good place to pass in dependencies which
 close over the `TemplateAction`. Take a look at our
-[built-in actions](https://github.com/backstage/backstage/blob/7f5716081f45a41dc8a4246134b50c893e15c5e1/../plugins/scaffolder-backend/src/scaffolder/actions/builtin/publish/github.ts)
+[built-in actions](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/src/scaffolder/actions/builtin)
 for reference.
 
 We set the type generic to `{ contents: string, filename: string}` which is
@@ -105,7 +106,6 @@ return await createRouter({
   publishers,
   logger,
   config,
-  dockerClient,
   database,
   catalogClient,
   reader,
@@ -123,7 +123,6 @@ return await createRouter({
   publishers,
   logger,
   config,
-  dockerClient,
   database,
   catalogClient,
   reader,
@@ -135,11 +134,9 @@ return await createRouter({
 want to have those as well as your new one, you'll need to do the following:
 
 ```ts
-
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend`;
+import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
 
 const builtInActions = createBuiltinActions({
-  dockerClient,
   integrations,
   catalogClient,
   templaters,
@@ -154,7 +151,6 @@ return await createRouter({
   publishers,
   logger,
   config,
-  dockerClient,
   database,
   catalogClient,
   reader,

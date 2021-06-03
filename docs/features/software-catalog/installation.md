@@ -10,33 +10,26 @@ outlined below.
 
 ## Installing @backstage/plugin-catalog
 
-> **Note that if you used `npx @backstage/create-app`, the plugin may already be
-> present**
+> **Note that if you used `npx @backstage/create-app`, the plugin is already
+> installed and you can skip to
+> [adding entries to the catalog](#adding-entries-to-the-catalog)**
 
 The catalog frontend plugin should be installed in your `app` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-catalog
 ```
 
-Make sure the version of `@backstage/plugin-catalog` matches the version of
-other `@backstage` packages. You can update it in `packages/app/package.json` if
-it doesn't.
-
 ### Adding the Plugin to your `packages/app`
 
-Add the following entry to the head of your `packages/app/src/plugins.ts`:
-
-```ts
-export { catalogPlugin } from '@backstage/plugin-catalog';
-```
-
-Next we need to install the two pages that the catalog plugin provides. You can
-choose any name for these routes, but we recommend the following:
+Add the two pages that the catalog plugin provides to your app. You can choose
+any name for these routes, but we recommend the following:
 
 ```tsx
+// packages/app/src/App.tsx
 import {
   catalogPlugin,
   CatalogIndexPage,
@@ -60,6 +53,7 @@ user can create components. In a typical setup the create component route will
 be linked to the Scaffolder plugin's template index page:
 
 ```ts
+// packages/app/src/App.tsx
 import { catalogPlugin } from '@backstage/plugin-catalog';
 import { scaffolderPlugin } from '@backstage/plugin-scaffolder';
 
@@ -76,6 +70,7 @@ const app = createApp({
 You may also want to add a link to the catalog index page to your sidebar:
 
 ```tsx
+// packages/app/src/components/Root.tsx
 import HomeIcon from '@material-ui/icons/Home';
 
 // Somewhere within the <Sidebar>
@@ -88,7 +83,7 @@ This is all that is needed for the frontend part of the Catalog plugin to work!
 
 Since the catalog plugin currently ships with a sentry plugin `InfoCard`
 installed by default, you'll need to set `sentry.organization` in your
-`app-yaml.yaml`. For example:
+`app-config.yaml`. For example:
 
 ```yaml
 sentry:
@@ -101,70 +96,25 @@ as that will conflict with the catalog routes.
 
 ## Installing @backstage/plugin-catalog-backend
 
-> **Note that if you used `npx @backstage/create-app`, the plugin may already be
-> present**
+> **Note that if you used `npx @backstage/create-app`, the plugin is already
+> installed and you can skip to
+> [adding entries to the catalog](#adding-entries-to-the-catalog)**
 
 The catalog backend should be installed in your `backend` package, which is
 created as a part of `@backstage/create-app`. To install the package, run:
 
 ```bash
+# From your Backstage root directory
 cd packages/backend
 yarn add @backstage/plugin-catalog-backend
 ```
 
-Make sure the version of `@backstage/plugin-catalog-backend` matches the version
-of other `@backstage` packages. You can update it in
-`packages/backend/package.json` if it doesn't.
-
 ### Adding the Plugin to your `packages/backend`
 
 You'll need to add the plugin to the `backend`'s router. You can do this by
-creating a file called `packages/backend/src/plugins/catalog.ts` with the
-following contents to get you up and running quickly.
-
-```ts
-import {
-  createRouter,
-  DatabaseEntitiesCatalog,
-  DatabaseLocationsCatalog,
-  DatabaseManager,
-  HigherOrderOperations,
-  LocationReaders,
-  runPeriodically,
-} from '@backstage/plugin-catalog-backend';
-import { PluginEnvironment } from '../types';
-import { useHotCleanup } from '@backstage/backend-common';
-
-export default async function createPlugin({
-  logger,
-  database,
-}: PluginEnvironment) {
-  const locationReader = new LocationReaders(logger);
-
-  const db = await DatabaseManager.createDatabase(database, { logger });
-  const entitiesCatalog = new DatabaseEntitiesCatalog(db);
-  const locationsCatalog = new DatabaseLocationsCatalog(db);
-  const higherOrderOperation = new HigherOrderOperations(
-    entitiesCatalog,
-    locationsCatalog,
-    locationReader,
-    db,
-    logger,
-  );
-
-  useHotCleanup(
-    module,
-    runPeriodically(() => higherOrderOperation.refreshAllLocations(), 10000),
-  );
-
-  return await createRouter({
-    entitiesCatalog,
-    locationsCatalog,
-    higherOrderOperation,
-    logger,
-  });
-}
-```
+creating a file called `packages/backend/src/plugins/catalog.ts` with contents
+matching
+[catalog.ts in the create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/backend/src/plugins/catalog.ts).
 
 Once the `catalog.ts` router setup file is in place, add the router to
 `packages/backend/src/index.ts`:
@@ -174,10 +124,9 @@ import catalog from './plugins/catalog';
 
 const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
 
-const service = createServiceBuilder(module)
-  .loadConfig(configReader)
-  /** several different routers */
-  .addRouter('/catalog', await catalog(catalogEnv));
+const apiRouter = Router();
+/** several different routers */
+apiRouter.use('/catalog', await catalog(catalogEnv));
 ```
 
 ### Adding Entries to the Catalog
@@ -192,33 +141,37 @@ our example templates through static configuration. Add the following to the
 ```yaml
 catalog:
   locations:
-    # Backstage Example Component
+    # Backstage Example Components
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/artist-lookup-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/artist-lookup-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/playback-order-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-order-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/podcast-api-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/podcast-api-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/queue-proxy-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/queue-proxy-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/searcher-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/searcher-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/playback-lib-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/playback-lib-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/www-artist-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/www-artist-component.yaml
     - type: url
-      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/shuffle-api-component.yaml
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/components/shuffle-api-component.yaml
 ```
 
 ### Running the Backend
 
-Finally, start up the backend with the new configuration:
+Finally, start up Backstage with the new configuration:
 
 ```bash
+# Run from the root to start both backend and frontend
+yarn dev
+
+# Alternatively, run only the backend from its own package
 cd packages/backend
 yarn start
 ```
 
-If you've also set up the frontend plugin, so you should be ready to go browse
-the catalog at [localhost:3000](http://localhost:3000) now!
+If you've also set up the frontend plugin, you should be ready to go browse the
+catalog at [localhost:3000](http://localhost:3000) now!

@@ -1,5 +1,35 @@
 # @backstage/theme
 
+## 0.2.8
+
+### Patch Changes
+
+- e7c5e4b30: Update installation instructions in README.
+
+## 0.2.7
+
+### Patch Changes
+
+- 7b8272fb7: Remove extra bottom padding in InfoCard content
+
+## 0.2.6
+
+### Patch Changes
+
+- 931b21a12: Replace the link color in dark theme
+
+## 0.2.5
+
+### Patch Changes
+
+- 4618774ff: Changed color for Add Item, Support & Choose buttons with low contrast/readability in dark mode
+
+## 0.2.4
+
+### Patch Changes
+
+- 2089de76b: Deprecated `ItemCard`. Added `ItemCardGrid` and `ItemCardHeader` instead, that can be used to compose functionality around regular Material-UI `Card` components instead.
+
 ## 0.2.3
 
 ### Patch Changes

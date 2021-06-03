@@ -54,7 +54,7 @@ function sortEntities(entities: Array<EntityName | Entity>) {
 }
 
 function getEntityIcon(entity: { kind: string }): React.ReactElement {
-  switch (entity.kind.toLowerCase()) {
+  switch (entity.kind.toLocaleLowerCase('en-US')) {
     case 'api':
       return <ExtensionIcon />;
 

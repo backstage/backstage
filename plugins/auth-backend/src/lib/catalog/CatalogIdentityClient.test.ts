@@ -24,6 +24,8 @@ describe('CatalogIdentityClient', () => {
     getEntityByName: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
+    removeLocationById: jest.fn(),
+    getOriginLocationByEntity: jest.fn(),
     getLocationByEntity: jest.fn(),
     removeEntityByUid: jest.fn(),
   };

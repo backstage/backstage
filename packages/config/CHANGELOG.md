@@ -1,5 +1,17 @@
 # @backstage/config
 
+## 0.1.5
+
+### Patch Changes
+
+- d8b81fd28: Bump `json-schema` dependency from `0.2.5` to `0.3.0`.
+
+## 0.1.4
+
+### Patch Changes
+
+- 0434853a5: Reformulate the json types to break type recursion
+
 ## 0.1.3
 
 ### Patch Changes

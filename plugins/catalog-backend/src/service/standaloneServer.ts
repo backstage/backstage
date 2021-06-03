@@ -61,6 +61,7 @@ export async function startStandaloneServer(
     locationsCatalog,
     higherOrderOperation,
     logger,
+    config,
   });
   const service = createServiceBuilder(module)
     .enableCors({ origin: 'http://localhost:3000' })

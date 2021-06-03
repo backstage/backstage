@@ -24,6 +24,7 @@
 
 import Router from 'express-promise-router';
 import {
+  CacheManager,
   createServiceBuilder,
   getRootLogger,
   loadBackendConfig,
@@ -37,14 +38,18 @@ import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import auth from './plugins/auth';
 import catalog from './plugins/catalog';
+import codeCoverage from './plugins/codecoverage';
 import kubernetes from './plugins/kubernetes';
 import kafka from './plugins/kafka';
 import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
+import search from './plugins/search';
 import techdocs from './plugins/techdocs';
+import todo from './plugins/todo';
 import graphql from './plugins/graphql';
 import app from './plugins/app';
+import badges from './plugins/badges';
 import { PluginEnvironment } from './types';
 
 function makeCreateEnv(config: Config) {
@@ -55,11 +60,13 @@ function makeCreateEnv(config: Config) {
   root.info(`Created UrlReader ${reader}`);
 
   const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  const cacheManager = CacheManager.fromConfig(config);
 
   return (plugin: string): PluginEnvironment => {
     const logger = root.child({ type: 'plugin', plugin });
     const database = databaseManager.forPlugin(plugin);
-    return { logger, database, config, reader, discovery };
+    const cache = cacheManager.forPlugin(plugin);
+    return { logger, cache, database, config, reader, discovery };
   };
 }
 
@@ -72,26 +79,36 @@ async function main() {
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
+  const codeCoverageEnv = useHotMemoize(module, () =>
+    createEnv('code-coverage'),
+  );
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
   const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
+  const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
+  const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
   const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const graphqlEnv = useHotMemoize(module, () => createEnv('graphql'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
+  const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
+  apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
   apiRouter.use('/auth', await auth(authEnv));
+  apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
+  apiRouter.use('/todo', await todo(todoEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
   apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/graphql', await graphql(graphqlEnv));
+  apiRouter.use('/badges', await badges(badgesEnv));
   apiRouter.use(notFoundHandler());
 
   const service = createServiceBuilder(module)

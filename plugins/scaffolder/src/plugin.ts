@@ -15,15 +15,22 @@
  */
 
 import {
-  createPlugin,
   createApiFactory,
+  createPlugin,
+  createRoutableExtension,
   discoveryApiRef,
   identityApiRef,
-  configApiRef,
-  createRoutableExtension,
 } from '@backstage/core';
-import { rootRouteRef } from './routes';
+import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { scaffolderApiRef, ScaffolderClient } from './api';
+import { EntityPicker } from './components/fields/EntityPicker';
+import { OwnerPicker } from './components/fields/OwnerPicker';
+import {
+  repoPickerValidation,
+  RepoUrlPicker,
+} from './components/fields/RepoUrlPicker';
+import { createScaffolderFieldExtension } from './extensions';
+import { registerComponentRouteRef, rootRouteRef } from './routes';
 
 export const scaffolderPlugin = createPlugin({
   id: 'scaffolder',
@@ -33,16 +40,41 @@ export const scaffolderPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         identityApi: identityApiRef,
-        configApi: configApiRef,
+        scmIntegrationsApi: scmIntegrationsApiRef,
       },
-      factory: ({ discoveryApi, identityApi, configApi }) =>
-        new ScaffolderClient({ discoveryApi, identityApi, configApi }),
+      factory: ({ discoveryApi, identityApi, scmIntegrationsApi }) =>
+        new ScaffolderClient({ discoveryApi, identityApi, scmIntegrationsApi }),
     }),
   ],
   routes: {
     root: rootRouteRef,
   },
+  externalRoutes: {
+    registerComponent: registerComponentRouteRef,
+  },
 });
+
+export const EntityPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: EntityPicker,
+    name: 'EntityPicker',
+  }),
+);
+
+export const RepoUrlPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: RepoUrlPicker,
+    name: 'RepoUrlPicker',
+    validation: repoPickerValidation,
+  }),
+);
+
+export const OwnerPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: OwnerPicker,
+    name: 'OwnerPicker',
+  }),
+);
 
 export const ScaffolderPage = scaffolderPlugin.provide(
   createRoutableExtension({

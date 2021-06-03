@@ -1,5 +1,33 @@
 # @backstage/plugin-user-settings
 
+## 0.2.10
+
+### Patch Changes
+
+- 062bbf90f: chore: bump `@testing-library/user-event` from 12.8.3 to 13.1.8
+- 675a569a9: chore: bump `react-use` dependency in all packages
+- Updated dependencies [062bbf90f]
+- Updated dependencies [889d89b6e]
+- Updated dependencies [3f988cb63]
+- Updated dependencies [675a569a9]
+  - @backstage/core@0.7.9
+
+## 0.2.9
+
+### Patch Changes
+
+- dd7fa21e2: Adds Auth0 to the default Authentication Providers settings page
+
+## 0.2.8
+
+### Patch Changes
+
+- 147b4c5b1: Avoid using `ApiRef` descriptions in the UI.
+- Updated dependencies [8686eb38c]
+- Updated dependencies [9ca0e4009]
+- Updated dependencies [34ff49b0f]
+  - @backstage/core@0.7.2
+
 ## 0.2.7
 
 ### Patch Changes

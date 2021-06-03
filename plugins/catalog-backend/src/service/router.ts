@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-import { errorHandler, NotFoundError } from '@backstage/backend-common';
-import {
-  locationSpecSchema,
-  analyzeLocationSchema,
-} from '@backstage/catalog-model';
+import { errorHandler } from '@backstage/backend-common';
 import type { Entity } from '@backstage/catalog-model';
+import {
+  analyzeLocationSchema,
+  locationSpecSchema,
+} from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import { NotFoundError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import yn from 'yn';
 import { EntitiesCatalog, LocationsCatalog } from '../catalog';
-import { LocationAnalyzer, HigherOrderOperation } from '../ingestion/types';
-import { translateQueryToFieldMapper } from './filterQuery';
-import { EntityFilters } from './EntityFilters';
-import { requireRequestBody, validateRequestBody } from './util';
+import { HigherOrderOperation, LocationAnalyzer } from '../ingestion/types';
+import {
+  basicEntityFilter,
+  parseEntityFilterParams,
+  parseEntityPaginationParams,
+  parseEntityTransformParams,
+} from './request';
+import {
+  disallowReadonlyMode,
+  requireRequestBody,
+  validateRequestBody,
+} from './util';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;
@@ -36,6 +46,7 @@ export interface RouterOptions {
   higherOrderOperation?: HigherOrderOperation;
   locationAnalyzer?: LocationAnalyzer;
   logger: Logger;
+  config: Config;
 }
 
 export async function createRouter(
@@ -46,18 +57,38 @@ export async function createRouter(
     locationsCatalog,
     higherOrderOperation,
     locationAnalyzer,
+    config,
+    logger,
   } = options;
 
   const router = Router();
   router.use(express.json());
 
+  const readonlyEnabled =
+    config.getOptionalBoolean('catalog.readonly') || false;
+  if (readonlyEnabled) {
+    logger.info('Catalog is running in readonly mode');
+  }
+
   if (entitiesCatalog) {
     router
       .get('/entities', async (req, res) => {
-        const filter = EntityFilters.ofQuery(req.query);
-        const fieldMapper = translateQueryToFieldMapper(req.query);
-        const entities = await entitiesCatalog.entities(filter);
-        res.status(200).json(entities.map(fieldMapper));
+        const { entities, pageInfo } = await entitiesCatalog.entities({
+          filter: parseEntityFilterParams(req.query),
+          fields: parseEntityTransformParams(req.query),
+          pagination: parseEntityPaginationParams(req.query),
+        });
+
+        // Add a Link header to the next page
+        if (pageInfo.hasNextPage) {
+          const url = new URL(`http://ignored${req.url}`);
+          url.searchParams.delete('offset');
+          url.searchParams.set('after', pageInfo.endCursor);
+          res.setHeader('link', `<${url.pathname}${url.search}>; rel="next"`);
+        }
+
+        // TODO(freben): encode the pageInfo in the response
+        res.json(entities);
       })
       .post('/entities', async (req, res) => {
         /*
@@ -70,20 +101,22 @@ export async function createRouter(
          * It stays around in the service for the time being, but may be
          * removed or change semantics at any time without prior notice.
          */
+        disallowReadonlyMode(readonlyEnabled);
+
         const body = await requireRequestBody(req);
         const [result] = await entitiesCatalog.batchAddOrUpdateEntities([
           { entity: body as Entity, relations: [] },
         ]);
-        const [entity] = await entitiesCatalog.entities(
-          EntityFilters.ofMatchers({ 'metadata.uid': result.entityId }),
-        );
-        res.status(200).json(entity);
+        const response = await entitiesCatalog.entities({
+          filter: basicEntityFilter({ 'metadata.uid': result.entityId }),
+        });
+        res.status(200).json(response.entities[0]);
       })
       .get('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
-        const entities = await entitiesCatalog.entities(
-          EntityFilters.ofMatchers({ 'metadata.uid': uid }),
-        );
+        const { entities } = await entitiesCatalog.entities({
+          filter: basicEntityFilter({ 'metadata.uid': uid }),
+        });
         if (!entities.length) {
           throw new NotFoundError(`No entity with uid ${uid}`);
         }
@@ -96,16 +129,16 @@ export async function createRouter(
       })
       .get('/entities/by-name/:kind/:namespace/:name', async (req, res) => {
         const { kind, namespace, name } = req.params;
-        const entities = await entitiesCatalog.entities(
-          EntityFilters.ofMatchers({
+        const { entities } = await entitiesCatalog.entities({
+          filter: basicEntityFilter({
             kind: kind,
             'metadata.namespace': namespace,
             'metadata.name': name,
           }),
-        );
+        });
         if (!entities.length) {
           throw new NotFoundError(
-            `No entity with kind ${kind} namespace ${namespace} name ${name}`,
+            `No entity named '${name}' found, with kind '${kind}' in namespace '${namespace}'`,
           );
         }
         res.status(200).json(entities[0]);
@@ -116,6 +149,13 @@ export async function createRouter(
     router.post('/locations', async (req, res) => {
       const input = await validateRequestBody(req, locationSpecSchema);
       const dryRun = yn(req.query.dryRun, { default: false });
+
+      // when in dryRun addLocation is effectively a read operation so we don't
+      // need to disallow readonly
+      if (!dryRun) {
+        disallowReadonlyMode(readonlyEnabled);
+      }
+
       const output = await higherOrderOperation.addLocation(input, { dryRun });
       res.status(201).json(output);
     });
@@ -138,6 +178,8 @@ export async function createRouter(
         res.status(200).json(output);
       })
       .delete('/locations/:id', async (req, res) => {
+        disallowReadonlyMode(readonlyEnabled);
+
         const { id } = req.params;
         await locationsCatalog.removeLocation(id);
         res.status(204).end();

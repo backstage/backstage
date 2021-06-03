@@ -108,8 +108,3 @@ domain would come with some documentation on how to accept payments for a new
 product or use-case, share the same entity types in their APIs, and integrate
 well with each other. Other domains could be “Content Ingestion”, “Ads” or
 “Search”.
-
-## Links
-
-- [Original RFC](https://github.com/backstage/backstage/issues/390)
-- [YAML file format](../../architecture-decisions/adr002-default-catalog-file-format.md)

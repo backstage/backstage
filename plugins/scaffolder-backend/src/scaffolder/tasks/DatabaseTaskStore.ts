@@ -15,11 +15,8 @@
  */
 
 import { JsonObject } from '@backstage/config';
-import {
-  ConflictError,
-  NotFoundError,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-common';
+import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import {
@@ -27,6 +24,7 @@ import {
   DbTaskRow,
   Status,
   TaskEventType,
+  TaskSecrets,
   TaskSpec,
   TaskStore,
   TaskStoreEmitOptions,
@@ -45,6 +43,7 @@ export type RawDbTaskRow = {
   status: Status;
   last_heartbeat_at?: string;
   created_at: string;
+  secrets?: string;
 };
 
 export type RawDbTaskEventRow = {
@@ -74,23 +73,29 @@ export class DatabaseTaskStore implements TaskStore {
     }
     try {
       const spec = JSON.parse(result.spec);
+      const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
       return {
         id: result.id,
         spec,
         status: result.status,
         lastHeartbeatAt: result.last_heartbeat_at,
         createdAt: result.created_at,
+        secrets,
       };
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
     }
   }
 
-  async createTask(spec: TaskSpec): Promise<{ taskId: string }> {
+  async createTask(
+    spec: TaskSpec,
+    secrets?: TaskSecrets,
+  ): Promise<{ taskId: string }> {
     const taskId = uuid();
     await this.db<RawDbTaskRow>('tasks').insert({
       id: taskId,
       spec: JSON.stringify(spec),
+      secrets: secrets ? JSON.stringify(secrets) : undefined,
       status: 'open',
     });
     return { taskId };
@@ -122,12 +127,14 @@ export class DatabaseTaskStore implements TaskStore {
 
       try {
         const spec = JSON.parse(task.spec);
+        const secrets = task.secrets ? JSON.parse(task.secrets) : undefined;
         return {
           id: task.id,
           spec,
           status: 'processing',
           lastHeartbeatAt: task.last_heartbeat_at,
           createdAt: task.created_at,
+          secrets,
         };
       } catch (error) {
         throw new Error(`Failed to parse spec of task '${task.id}', ${error}`);
@@ -212,6 +219,7 @@ export class DatabaseTaskStore implements TaskStore {
         })
         .update({
           status,
+          secrets: null as any,
         });
       if (updateCount !== 1) {
         throw new ConflictError(

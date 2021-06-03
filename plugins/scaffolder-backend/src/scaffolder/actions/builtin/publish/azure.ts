@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { GitRepositoryCreateOptions } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { getPersonalAccessTokenHandler, WebApi } from 'azure-devops-node-api';
-import { parseRepoUrl } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import { createTemplateAction } from '../../createTemplateAction';
 
 export function createPublishAzureAction(options: {
@@ -30,6 +30,7 @@ export function createPublishAzureAction(options: {
   return createTemplateAction<{
     repoUrl: string;
     description?: string;
+    sourcePath?: string;
   }>({
     id: 'publish:azure',
     description:
@@ -45,6 +46,11 @@ export function createPublishAzureAction(options: {
           },
           description: {
             title: 'Repository Description',
+            type: 'string',
+          },
+          sourcePath: {
+            title:
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
             type: 'string',
           },
         },
@@ -112,7 +118,7 @@ export function createPublishAzureAction(options: {
       const repoContentsUrl = remoteUrl;
 
       await initRepoAndPush({
-        dir: ctx.workspacePath,
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth: {
           username: 'notempty',

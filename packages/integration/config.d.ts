@@ -89,9 +89,9 @@ export interface Config {
        */
       apps?: Array<{
         /**
-         * The numeric GitHub App ID
+         * The numeric GitHub App ID, string for environment variables
          */
-        appId: number;
+        appId: number | string;
         /**
          * The private key to use for auth against the app
          * @visibility secret
@@ -149,5 +149,19 @@ export interface Config {
        */
       baseUrl?: string;
     }>;
+
+    /** Integration configuration for Google Cloud Storage */
+    googleGcs?: {
+      /**
+       * Service account email used to authenticate requests.
+       * @visibility backend
+       */
+      clientEmail?: string;
+      /**
+       * Service account private key used to authenticate requests.
+       * @visibility secret
+       */
+      privateKey?: string;
+    };
   };
 }

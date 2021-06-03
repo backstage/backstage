@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { Entity } from '@backstage/catalog-model';
-import { errorApiRef, useApi } from '@backstage/core';
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAsync } from 'react-use';
-import { useEntityCompoundName } from './useEntityCompoundName';
 import { catalogApiRef } from '../api';
+import { useEntityCompoundName } from './useEntityCompoundName';
 
 type EntityLoadingStatus = {
   entity?: Entity;
@@ -55,13 +55,9 @@ export const useEntityFromUrl = (): EntityLoadingStatus => {
 };
 
 /**
- * Grab Entity from the context and its current loading state.
+ * Grab the current entity from the context and its current loading state.
  */
-export const useEntity = () => {
-  const { entity, loading, error } = useContext<{
-    entity: Entity;
-    loading: boolean;
-    error: Error;
-  }>(EntityContext as any);
-  return { entity, loading, error };
-};
+export function useEntity<T extends Entity = Entity>() {
+  const { entity, loading, error } = useContext(EntityContext);
+  return { entity: entity as T, loading, error };
+}

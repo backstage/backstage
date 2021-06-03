@@ -12,6 +12,7 @@ spec:
     - title: Fill in some steps
       required:
         - name
+        - owner
       properties:
         name:
           title: Name
@@ -20,6 +21,24 @@ spec:
           ui:autofocus: true
           ui:options:
             rows: 5
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+        system:
+          title: System
+          type: string
+          description: System of the component
+          ui:field: EntityPicker
+          ui:options:
+            allowedKinds: 
+              - System
+            defaultKind: System
+            
     - title: Choose a location
       required:
         - repoUrl
@@ -40,6 +59,8 @@ spec:
         url: ./template
         values:
           name: '{{ parameters.name }}'
+          owner: '{{ parameters.owner }}'
+          destination: '{{ parseRepoUrl parameters.repoUrl }}'
 
     - id: fetch-docs
       name: Fetch Docs

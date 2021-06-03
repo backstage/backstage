@@ -29,7 +29,7 @@ export const WorkflowRunStatus = ({
   status: string | undefined;
 }) => {
   if (status === undefined) return null;
-  switch (status.toLowerCase()) {
+  switch (status.toLocaleLowerCase('en-US')) {
     case 'queued':
       return (
         <>

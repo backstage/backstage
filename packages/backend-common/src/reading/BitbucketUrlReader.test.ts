@@ -26,11 +26,11 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import os from 'os';
 import path from 'path';
-import { NotModifiedError } from '../errors';
+import { NotModifiedError } from '@backstage/errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
-import { ReadTreeResponseFactory } from './tree';
+import { DefaultReadTreeResponseFactory } from './tree';
 
-const treeResponseFactory = ReadTreeResponseFactory.create({
+const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 

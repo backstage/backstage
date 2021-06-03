@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { InputError, NotFoundError } from '@backstage/backend-common';
+import { InputError, NotFoundError } from '@backstage/errors';
 import {
   Entity,
   EntityRelationSpec,

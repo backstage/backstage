@@ -1,3 +1,4 @@
+{{- if .Values.frontend.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -43,7 +44,9 @@ spec:
         - name: app-config
           configMap:
             name: {{ include "backstage.fullname" . }}-app-config
-{{- if .Values.frontend.enabled }}
+      {{- if .Values.global.nodeSelector }}
+      nodeSelector: {{- toYaml .Values.global.nodeSelector | nindent 8 }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service
@@ -59,5 +62,5 @@ spec:
     app: backstage
     component: frontend
 
-  type: ClusterIP
+  type: {{ .Values.frontend.serviceType }}
 {{- end }}

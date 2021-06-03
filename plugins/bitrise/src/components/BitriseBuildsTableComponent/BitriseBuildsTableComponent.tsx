@@ -162,8 +162,8 @@ export const BitriseBuildsTable = ({
       title: 'Branch',
       customFilterAndSearch: (query, row: any) =>
         `${row.message} ${row.workflow}`
-          .toUpperCase()
-          .includes(query.toUpperCase()),
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US')),
       field: 'message',
       width: 'auto',
       highlight: true,

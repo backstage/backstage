@@ -1,5 +1,171 @@
 # @backstage/plugin-techdocs-backend
 
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [8cefadca0]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/techdocs-common@0.6.3
+  - @backstage/catalog-model@0.8.0
+
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [22fd8ce2a]
+- Updated dependencies [10c008a3a]
+- Updated dependencies [f9fb4a205]
+- Updated dependencies [16be1d093]
+- Updated dependencies [e04f1ccfb]
+  - @backstage/backend-common@0.8.0
+  - @backstage/catalog-model@0.7.9
+  - @backstage/techdocs-common@0.6.1
+
+## 0.8.0
+
+### Minor Changes
+
+- e0bfd3d44: Migrate the plugin to use the `ContainerRunner` interface instead of `runDockerContainer(…)`.
+  It also provides the `ContainerRunner` to the generators instead of to the `createRouter` function.
+
+  To apply this change to an existing backend application, add the following to `src/plugins/techdocs.ts`:
+
+  ```diff
+  + import { DockerContainerRunner } from '@backstage/backend-common';
+
+    // ...
+
+    export default async function createPlugin({
+      logger,
+      config,
+      discovery,
+      reader,
+    }: PluginEnvironment): Promise<Router> {
+      // Preparers are responsible for fetching source files for documentation.
+      const preparers = await Preparers.fromConfig(config, {
+        logger,
+        reader,
+      });
+
+  +   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  +   const dockerClient = new Docker();
+  +   const containerRunner = new DockerContainerRunner({ dockerClient });
+
+      // Generators are used for generating documentation sites.
+      const generators = await Generators.fromConfig(config, {
+        logger,
+  +     containerRunner,
+      });
+
+      // Publisher is used for
+      // 1. Publishing generated files to storage
+      // 2. Fetching files from storage and passing them to TechDocs frontend.
+      const publisher = await Publisher.fromConfig(config, {
+        logger,
+        discovery,
+      });
+
+      // checks if the publisher is working and logs the result
+      await publisher.getReadiness();
+
+  -   // Docker client (conditionally) used by the generators, based on techdocs.generators config.
+  -   const dockerClient = new Docker();
+
+      return await createRouter({
+        preparers,
+        generators,
+        publisher,
+  -     dockerClient,
+        logger,
+        config,
+        discovery,
+      });
+    }
+  ```
+
+### Patch Changes
+
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [38ca05168]
+- Updated dependencies [e0bfd3d44]
+- Updated dependencies [d8b81fd28]
+- Updated dependencies [e9e56b01a]
+  - @backstage/backend-common@0.7.0
+  - @backstage/techdocs-common@0.6.0
+  - @backstage/catalog-model@0.7.8
+  - @backstage/config@0.1.5
+
+## 0.7.1
+
+### Patch Changes
+
+- cba5944fc: Change the response status of metadata endpoints in case a documentation is not
+  available to `404 NOT FOUND`. This also introduces the JSON based error messages
+  used by other backends.
+- Updated dependencies [bc9d62f4f]
+- Updated dependencies [bb5055aee]
+- Updated dependencies [5d0740563]
+  - @backstage/techdocs-common@0.5.0
+  - @backstage/catalog-model@0.7.7
+
+## 0.7.0
+
+### Minor Changes
+
+- aaeb7ecf3: When newer documentation available but not built, show older documentation while async building newer
+  TechDocs backend: /sync endpoint added to support above, returns immediate success if docs don't need a build, returns delayed success after build if needed
+  TechDocs backend: /docs endpoint removed as frontend can directly request to techdocs.storageUrl or /static/docs
+
+## 0.6.5
+
+### Patch Changes
+
+- e7baa0d2e: Separate techdocs-backend and frontend config schema declarations
+- 8686eb38c: Use errors from `@backstage/errors`
+- 424742dc1: Applies only if you use TechDocs local builder instead of building on CI/CD i.e. if `techdocs.builder` in your `app-config.yaml` is set to `'local'`
+
+  Improvements
+
+  1. Do not check for updates in the repository if a check has been made in the last 60 seconds. This is to prevent the annoying check for update on every page switch or load.
+  2. No need to maintain an in-memory etag storage, and use the one stored in `techdocs_metadata.json` file alongside generated docs.
+
+  New feature
+
+  1. You can now use a mix of basic and recommended setup i.e. `techdocs.builder` is `'local'` but using an external cloud storage instead of local storage. Previously, in this setup, the docs would never get updated.
+
+- Updated dependencies [8686eb38c]
+- Updated dependencies [0434853a5]
+- Updated dependencies [8686eb38c]
+- Updated dependencies [424742dc1]
+- Updated dependencies [8686eb38c]
+  - @backstage/backend-common@0.6.0
+  - @backstage/config@0.1.4
+  - @backstage/techdocs-common@0.4.5
+
+## 0.6.4
+
+### Patch Changes
+
+- aa095e469: OpenStack Swift publisher added for tech-docs.
+- 761698831: Bump to the latest version of the Knex library.
+- 02d78290a: Enhanced the example documented-component to better demonstrate TechDocs features
+- a501128db: Refactor log messaging to improve clarity
+- Updated dependencies [d7245b733]
+- Updated dependencies [d7245b733]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [0b42fff22]
+- Updated dependencies [2ef5bc7ea]
+- Updated dependencies [761698831]
+- Updated dependencies [aa095e469]
+- Updated dependencies [bc46435f5]
+- Updated dependencies [a501128db]
+- Updated dependencies [ca4a904f6]
+  - @backstage/backend-common@0.5.6
+  - @backstage/techdocs-common@0.4.4
+  - @backstage/catalog-model@0.7.4
+
 ## 0.6.3
 
 ### Patch Changes

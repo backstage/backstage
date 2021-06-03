@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/backend-common';
+import { InputError } from '@backstage/errors';
 import {
   BitbucketIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { parseRepoUrl } from './util';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch from 'cross-fetch';
 import { createTemplateAction } from '../../createTemplateAction';
 
@@ -165,6 +165,7 @@ export function createPublishBitbucketAction(options: {
     repoUrl: string;
     description: string;
     repoVisibility: 'private' | 'public';
+    sourcePath?: string;
   }>({
     id: 'publish:bitbucket',
     description:
@@ -183,9 +184,14 @@ export function createPublishBitbucketAction(options: {
             type: 'string',
           },
           repoVisibility: {
-            title: 'Repository Visiblity',
+            title: 'Repository Visibility',
             type: 'string',
             enum: ['private', 'public'],
+          },
+          sourcePath: {
+            title:
+              'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.',
+            type: 'string',
           },
         },
       },
@@ -233,7 +239,7 @@ export function createPublishBitbucketAction(options: {
       });
 
       await initRepoAndPush({
-        dir: ctx.workspacePath,
+        dir: getRepoSourceDirectory(ctx.workspacePath, ctx.input.sourcePath),
         remoteUrl,
         auth: {
           username: integrationConfig.config.username

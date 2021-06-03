@@ -39,7 +39,9 @@ import { ImportFlows, ImportState } from '../useImportState';
 export type StepperProviderOpts = {
   pullRequest?: {
     disable?: boolean;
-    preparePullRequest?: (apis: StepperApis) => { title: string; body: string };
+    preparePullRequest?: (
+      apis: StepperApis,
+    ) => { title?: string; body?: string };
   };
 };
 
@@ -71,13 +73,18 @@ export type StepperProvider = {
   ) => StepConfiguration;
 };
 
-function defaultPreparePullRequest(apis: StepperApis) {
+function defaultPreparePullRequest(
+  apis: StepperApis,
+  { title, body }: { title?: string; body?: string } = {},
+) {
   const appTitle = apis.configApi.getOptionalString('app.title') ?? 'Backstage';
   const appBaseUrl = apis.configApi.getString('app.baseUrl');
 
   return {
-    title: 'Add catalog-info.yaml config file',
-    body: `This pull request adds a **Backstage entity metadata file** \
+    title: title ?? 'Add catalog-info.yaml config file',
+    body:
+      body ??
+      `This pull request adds a **Backstage entity metadata file** \
 to this repository so that the component can be added to the \
 [${appTitle} software catalog](${appBaseUrl}).\n\nAfter this pull request is merged, \
 the component will become available.\n\nFor more information, read an \
@@ -160,10 +167,12 @@ export function defaultGenerateStepper(
             return defaults.prepare(state, opts);
           }
 
-          const { title, body } = (
-            opts?.opts?.pullRequest?.preparePullRequest ??
-            defaultPreparePullRequest
-          )(opts.apis);
+          const preparePullRequest =
+            opts?.opts?.pullRequest?.preparePullRequest;
+          const { title, body } = defaultPreparePullRequest(
+            opts.apis,
+            preparePullRequest ? preparePullRequest(opts.apis) : {},
+          );
 
           return {
             stepLabel: <StepLabel>Create Pull Request</StepLabel>,
@@ -266,7 +275,7 @@ export function defaultGenerateStepper(
                       }
                     />
                     <FormHelperText>
-                      WARNING: This may fail is no CODEOWNERS file is found at
+                      WARNING: This may fail if no CODEOWNERS file is found at
                       the target location.
                     </FormHelperText>
                   </>

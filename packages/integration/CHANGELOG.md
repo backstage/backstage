@@ -1,5 +1,45 @@
 # @backstage/integration
 
+## 0.5.5
+
+### Patch Changes
+
+- 49d7ec169: GitHub App ID can be a string too for environment variables otherwise it will fail validation
+
+## 0.5.4
+
+### Patch Changes
+
+- 0fd4ea443: Updates the `GithubCredentialsProvider` to return the token type, it can either be `token` or `app` depending on the authentication method.
+
+  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4 for more info.
+
+  **Removes** deprecated GithubOrgReaderProcessor provider configuration(`catalog.processors.githubOrg`). If you're using the deprecated config section make sure to migrate to [integrations](https://backstage.io/docs/integrations/github/locations) instead.
+
+## 0.5.3
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+
+## 0.5.2
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- Updated dependencies [d8b81fd28]
+  - @backstage/config@0.1.5
+
+## 0.5.1
+
+### Patch Changes
+
+- 277644e09: Include missing fields in GitLab config schema. This sometimes prevented loading config on the frontend specifically, when using self-hosted GitLab.
+- 52f613030: Support GitHub `tree` URLs in `getGitHubFileFetchUrl`.
+- 905cbfc96: Add `resolveEditUrl` to integrations to resolve a URL that can be used to edit
+  a file in the web interfaces of an SCM.
+- d4e77ec5f: Add option to `resolveUrl` that allows for linking to a specific line number when resolving a file URL.
+
 ## 0.5.0
 
 ### Minor Changes

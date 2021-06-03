@@ -15,15 +15,15 @@
  */
 
 import { ComponentType } from 'react';
-import { IconComponent, IconComponentMap, IconKey } from '../icons';
+import { IconComponent, IconComponentMap, IconKey } from '../icons/types';
 import { AnyExternalRoutes, BackstagePlugin } from '../plugin/types';
-import { ExternalRouteRef, RouteRef } from '../routing';
-import { AnyApiFactory } from '../apis';
+import { ExternalRouteRef, RouteRef, SubRouteRef } from '../routing/types';
+import { AnyApiFactory } from '../apis/system';
 import { AppTheme, ProfileInfo } from '../apis/definitions';
 import { AppConfig } from '@backstage/config';
 
 export type BootErrorPageProps = {
-  step: 'load-config';
+  step: 'load-config' | 'load-chunk';
   error: Error;
 };
 
@@ -102,7 +102,7 @@ type TargetRouteMap<ExternalRoutes extends AnyExternalRoutes> = {
     infer Params,
     any
   >
-    ? RouteRef<Params>
+    ? RouteRef<Params> | SubRouteRef<Params>
     : never;
 };
 

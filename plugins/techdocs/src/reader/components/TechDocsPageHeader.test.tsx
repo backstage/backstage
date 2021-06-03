@@ -18,6 +18,7 @@ import { TechDocsPageHeader } from './TechDocsPageHeader';
 import { act } from '@testing-library/react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { rootRouteRef } from '../../routes';
 
 describe('<TechDocsPageHeader />', () => {
   it('should render a techdocs page header', async () => {
@@ -54,6 +55,7 @@ describe('<TechDocsPageHeader />', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
           },
         },
       );
@@ -85,6 +87,7 @@ describe('<TechDocsPageHeader />', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
           },
         },
       );
@@ -118,6 +121,7 @@ describe('<TechDocsPageHeader />', () => {
         {
           mountedRoutes: {
             '/catalog/:namespace/:kind/:name/*': entityRouteRef,
+            '/docs': rootRouteRef,
           },
         },
       );

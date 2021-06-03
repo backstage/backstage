@@ -1,5 +1,247 @@
 # @backstage/backend-common
 
+## 0.8.1
+
+### Patch Changes
+
+- c7dad9218: All cache-related connection errors are now handled and logged by the cache manager. App Integrators may provide an optional error handler when instantiating the cache manager if custom error handling is needed.
+
+  ```typescript
+  // Providing an error handler
+  const cacheManager = CacheManager.fromConfig(config, {
+    onError: e => {
+      if (isSomehowUnrecoverable(e)) {
+        gracefullyShutThingsDown();
+        process.exit(1);
+      }
+    },
+  });
+  ```
+
+- 65e6c4541: Remove circular dependencies
+- 5001de908: Change GitlabUrlReader to SHA timestamp compare using only commits that modify given file path, if file path given
+- Updated dependencies [65e6c4541]
+- Updated dependencies [290405276]
+  - @backstage/integration@0.5.3
+  - @backstage/config-loader@0.6.2
+
+## 0.8.0
+
+### Minor Changes
+
+- 22fd8ce2a: Introducing: a standard API for App Integrators to configure cache stores and Plugin Developers to interact with them.
+
+  Two cache stores are currently supported.
+
+  - `memory`, which is a very simple in-memory key/value store, intended for local development.
+  - `memcache`, which can be used to connect to a memcache host.
+
+  Configuring and working with cache stores is very similar to the process for database connections.
+
+  ```yaml
+  backend:
+    cache:
+      store: memcache
+      connection: user:pass@cache.example.com:11211
+  ```
+
+  ```typescript
+  import { CacheManager } from '@backstage/backend-common';
+
+  // Instantiating a cache client for a plugin.
+  const cacheManager = CacheManager.fromConfig(config);
+  const somePluginCache = cacheManager.forPlugin('somePlugin');
+  const cacheClient = somePluginCache.getClient();
+
+  // Using the cache client:
+  const cachedValue = await cacheClient.get('someKey');
+  if (cachedValue) {
+    return cachedValue;
+  } else {
+    const someValue = await someExpensiveProcess();
+    await cacheClient.set('someKey', someValue);
+  }
+  await cacheClient.delete('someKey');
+  ```
+
+  Cache clients deal with TTLs in milliseconds. A TTL can be provided as a defaultTtl when getting a client, or may be passed when setting specific objects. If no TTL is provided, data will be persisted indefinitely.
+
+  ```typescript
+  // Getting a client with a default TTL
+  const cacheClient = somePluginCache.getClient({
+    defaultTtl: 3600000,
+  });
+
+  // Setting a TTL on a per-object basis.
+  cacheClient.set('someKey', data, { ttl: 3600000 });
+  ```
+
+  Configuring a cache store is optional. Even when no cache store is configured, the cache manager will dutifully pass plugins a manager that resolves a cache client that does not actually write or read any data.
+
+### Patch Changes
+
+- f9fb4a205: Prep work for mysql support in backend-common
+
+## 0.7.0
+
+### Minor Changes
+
+- e0bfd3d44: Refactor the `runDockerContainer(…)` function to an interface-based api.
+  This gives the option to replace the docker runtime in the future.
+
+  Packages and plugins that previously used the `dockerode` as argument should be migrated to use the new `ContainerRunner` interface instead.
+
+  ```diff
+    import {
+  -   runDockerContainer,
+  +   ContainerRunner,
+      PluginEndpointDiscovery,
+    } from '@backstage/backend-common';
+  - import Docker from 'dockerode';
+
+    type RouterOptions = {
+      // ...
+  -   dockerClient: Docker,
+  +   containerRunner: ContainerRunner;
+    };
+
+    export async function createRouter({
+      // ...
+  -   dockerClient,
+  +   containerRunner,
+    }: RouterOptions): Promise<express.Router> {
+      // ...
+
+  +   await containerRunner.runContainer({
+  -   await runDockerContainer({
+        image: 'docker',
+        // ...
+  -     dockerClient,
+      });
+
+      // ...
+    }
+  ```
+
+  To keep the `dockerode` based runtime, use the `DockerContainerRunner` implementation:
+
+  ```diff
+  + import {
+  +   ContainerRunner,
+  +   DockerContainerRunner
+  + } from '@backstage/backend-common';
+  - import { runDockerContainer } from '@backstage/backend-common';
+
+  + const containerRunner: ContainerRunner = new DockerContainerRunner({dockerClient});
+  + await containerRunner.runContainer({
+  - await runDockerContainer({
+      image: 'docker',
+      // ...
+  -   dockerClient,
+    });
+  ```
+
+### Patch Changes
+
+- 38ca05168: The default `@octokit/rest` dependency was bumped to `"^18.5.3"`.
+- Updated dependencies [38ca05168]
+- Updated dependencies [d8b81fd28]
+  - @backstage/integration@0.5.2
+  - @backstage/config-loader@0.6.1
+  - @backstage/config@0.1.5
+
+## 0.6.3
+
+### Patch Changes
+
+- d367f63b5: remove use of deprecated type HelmetOptions
+- b42531cfe: Support configuration of file storage for SQLite databases. Every plugin has its
+  own database file at the specified path.
+
+## 0.6.2
+
+### Patch Changes
+
+- b779b5fee: Add UrlReader for Google Cloud Storage
+- Updated dependencies [82c66b8cd]
+  - @backstage/config-loader@0.6.0
+
+## 0.6.1
+
+### Patch Changes
+
+- 37e3a69f5: Export `ReadTreeResponseFile` and `SearchResponseFile`.
+
+## 0.6.0
+
+### Minor Changes
+
+- 8686eb38c: Encode thrown errors in the backend as a JSON payload. This is technically a breaking change, since the response format even of errors are part of the contract. If you relied on the response being text, you will now have some extra JSON "noise" in it. It should still be readable by end users though.
+
+  Before:
+
+  ```
+  NotFoundError: No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'
+      at eval (webpack-internal:///../../plugins/catalog-backend/src/service/router.ts:117:17)
+  ```
+
+  After:
+
+  ```json
+  {
+    "error": {
+      "name": "NotFoundError",
+      "message": "No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'",
+      "stack": "NotFoundError: No entity named 'tara.macgovern2' found, with kind 'user' in namespace 'default'\n    at eval (webpack-internal:///../../plugins/catalog-backend/src/service/router.ts:117:17)"
+    },
+    "request": {
+      "method": "GET",
+      "url": "/entities/by-name/user/default/tara.macgovern2"
+    },
+    "response": {
+      "statusCode": 404
+    }
+  }
+  ```
+
+- 8686eb38c: Removed the custom error types (e.g. `NotFoundError`). Those are now instead in the new `@backstage/errors` package. This is a breaking change, and you will have to update your imports if you were using these types.
+
+  ```diff
+  -import { NotFoundError } from '@backstage/backend-common';
+  +import { NotFoundError } from '@backstage/errors';
+  ```
+
+### Patch Changes
+
+- Updated dependencies [0434853a5]
+  - @backstage/config@0.1.4
+
+## 0.5.6
+
+### Patch Changes
+
+- d7245b733: Add a utility function runDockerContainer used to run a docker container (currently used by Scaffolder and TechDocs for their 'generate' processes)
+- 761698831: Bump to the latest version of the Knex library.
+
+  You will most likely want to bump your own `packages/backend/package.json` as well:
+
+  ```diff
+  -    "knex": "^0.21.18",
+  +    "knex": "^0.95.1",
+  ```
+
+  Note that the recent versions of the Knex library have some changes that may affect your internal plugins' database migration files. Importantly, they now support `ALTER TABLE` on SQLite, and no longer accidentally remove indices when making some modifications. It now also exports the `Knex` typescript type as a named export.
+
+  ```ts
+  import { Knex } from 'knex';
+  ```
+
+- Updated dependencies [277644e09]
+- Updated dependencies [52f613030]
+- Updated dependencies [905cbfc96]
+- Updated dependencies [d4e77ec5f]
+  - @backstage/integration@0.5.1
+
 ## 0.5.5
 
 ### Patch Changes
