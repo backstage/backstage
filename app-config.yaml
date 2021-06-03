@@ -28,19 +28,19 @@ backend:
     port: 7000
   database:
     client: pg
-    connection: 
-      host: 
+    connection:
+      host:
         $env: DATABASE_HOST
-      port: 
+      port:
         $env: DATABASE_PORT
-      user: 
+      user:
         $env: DATABASE_USER
-      password: 
+      password:
         $env: DATABASE_PASSWORD
   cache:
     store: memory
   cors:
-    origin: 
+    origin:
       $env: BACKEND_CORS_ORIGIN
     methods: [GET, POST, PUT, DELETE]
     credentials: true
@@ -50,6 +50,7 @@ backend:
     allow:
       - host: example.com
       - host: '*.mozilla.org'
+      - host: private-aa6799-zaradardfds.apiary-mock.com
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format
@@ -99,27 +100,6 @@ proxy:
     headers:
       Authorization: ${ILERT_AUTH_HEADER}
 
-  '/dfds/developer-automation/capability':
-    target: https://api.hellman.oxygen.dfds.cloud/capability/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_CAPABILITY_SERVICE_TOKEN
-
-  '/dfds/developer-automation/cost-janitor':
-    target: https://api.hellman.oxygen.dfds.cloud/costjanitor2/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_COST_JANITOR_TOKEN
-
-  '/dfds/developer-automation/azuredevops':
-    target: https://api.hellman.oxygen.dfds.cloud/azuredevops/
-    allowedMethods: ['GET']
-    headers:
-      Authorization:
-        $env: DFDS_COST_JANITOR_TOKEN
-
 organization:
   name: DFDS
 
@@ -150,18 +130,18 @@ kubernetes:
     type: 'multiTenant'
   clusterLocatorMethods:
     - type: 'config'
-      clusters: 
+      clusters:
         - url: https://B182759F93D251942CB146063F57036B.yl4.eu-west-1.eks.amazonaws.com
           name: hellman
           authProvider: 'serviceAccount'
-          serviceAccountToken: 
+          serviceAccountToken:
             $env: HELLMAN_SERVICE_ACCOUNT_TOKEN
 
 kafka:
   clientId: backstage
   clusters:
     - name: cluster
-      brokers: 
+      brokers:
         - $env: kafka:9092
       ssl: false
 
@@ -203,6 +183,7 @@ catalog:
         - System
         - Domain
         - Location
+        - Capability
 
   processors:
     githubOrg:
@@ -282,6 +263,8 @@ catalog:
     # Backstage example groups and users
     - type: file
       target: ../catalog-model/examples/acme-corp.yaml
+    - type: dfds-capability
+      target: 'https://private-aa6799-zaradardfds.apiary-mock.com'
 
 scaffolder:
   github:
@@ -311,11 +294,11 @@ auth:
   providers:
     microsoft:
       development:
-        clientId: 
+        clientId:
           $env: AUTH_MICROSOFT_CLIENT_ID
-        clientSecret: 
+        clientSecret:
           $env: AUTH_MICROSOFT_CLIENT_SECRET
-        tenantId: 
+        tenantId:
           $env: AUTH_MICROSOFT_TENANT_ID
 costInsights:
   engineerCost: 200000

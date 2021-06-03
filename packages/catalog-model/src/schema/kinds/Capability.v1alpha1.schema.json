@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "CapabilityV1alpha1",
+  "description": "",
+  "examples": [
+    {
+      "apiVersion": "build.dfds.cloud/v1alpha1",
+      "kind": "Capability",
+      "metadata": {
+        "name": "LoremService",
+        "description": "Creates Lorems like a pro.",
+        "labels": {
+          "product_name": "Random value Generator"
+        },
+        "annotations": {
+          "docs": "https://github.com/..../tree/develop/doc"
+        }
+      },
+      "spec": {
+        "identifier": "developerautomation-xavgy"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["build.dfds.cloud/v1alpha1", "build.dfds.cloud/v1beta1"]
+        },
+        "kind": {
+          "enum": ["Capability"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["identifier"],
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "description": "The identifier of a capability",
+              "examples": ["developerautomation-xavgy"],
+              "minLength": 20
+            }
+          }
+        }
+      }
+    }
+  ]
+}

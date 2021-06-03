@@ -24,6 +24,7 @@ import {
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
+import { CapabilityProcessor } from '@backstage/plugin-dfds-capability-backend';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -55,6 +56,7 @@ export default async function createPlugin(
   }
 
   const builder = new CatalogBuilder(env);
+  builder.addProcessor(new CapabilityProcessor(env.reader));
   const {
     entitiesCatalog,
     locationsCatalog,

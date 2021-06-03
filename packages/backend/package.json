@@ -36,6 +36,7 @@
     "@backstage/plugin-badges-backend": "^0.1.6",
     "@backstage/plugin-catalog-backend": "^0.10.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.6",
+    "@backstage/plugin-dfds-capability-backend": "^0.1.1",
     "@backstage/plugin-graphql-backend": "^0.1.8",
     "@backstage/plugin-kubernetes-backend": "^0.3.8",
     "@backstage/plugin-kafka-backend": "^0.2.6",
