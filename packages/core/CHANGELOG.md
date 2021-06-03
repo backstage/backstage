@@ -1,5 +1,15 @@
 # @backstage/core
 
+## 0.7.12
+
+### Patch Changes
+
+- 1cf1d351f: Export `CheckboxTree` as we have a storybook for it
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [0160678b1]
+  - @backstage/theme@0.2.8
+  - @backstage/core-api@0.2.21
+
 ## 0.7.11
 
 ### Patch Changes

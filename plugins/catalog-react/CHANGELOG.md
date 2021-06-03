@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-react
 
+## 0.2.1
+
+### Patch Changes
+
+- deaba2e13: Sort `EntityTagPicker` entries.
+- 8e919a6f8: Tweak the `EntityListProvider` to do single-cycle updates
+- Updated dependencies [031ccd45f]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+  - @backstage/core-plugin-api@0.1.1
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+
 ## 0.2.0
 
 ### Minor Changes

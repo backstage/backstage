@@ -1,5 +1,45 @@
 # @backstage/plugin-tech-radar
 
+## 0.4.0
+
+### Minor Changes
+
+- 90a505a77: Migrating the Tech Radar to support using `ApiRefs` to load custom data.
+
+  If you had a `getData` function, you'll now need to encapsulate that logic in a class that can override the `techRadarApiRef`.
+
+  ```ts
+  // app/src/lib/MyClient.ts
+  import {
+    TechRadarApi,
+    TechRadarLoaderResponse,
+  } from '@backstage/plugin-tech-radar';
+
+  class MyOwnClient implements TechRadarApi {
+    async load(): Promise<TechRadarLoaderResponse> {
+      // here's where you would put you logic to load the response that was previously passed into getData
+    }
+  }
+
+  // app/src/apis.ts
+  import { MyOwnClient } from './lib/MyClient';
+  import { techRadarApiRef } from '@backstage/plugin-tech-radar';
+
+  export const apis: AnyApiFactory[] = [
+    /*
+    ...
+    */
+    createApiFactory(techRadarApiRef, new MyOwnClient()),
+  ];
+  ```
+
+### Patch Changes
+
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [1cf1d351f]
+  - @backstage/theme@0.2.8
+  - @backstage/core@0.7.12
+
 ## 0.3.11
 
 ### Patch Changes

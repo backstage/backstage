@@ -1,5 +1,16 @@
 # @backstage/cli
 
+## 0.6.14
+
+### Patch Changes
+
+- ee4eb5b40: Adjust the Webpack `devtool` module filename template to correctly resolve via the source maps to the source files.
+- 84160313e: Mark the `create-github-app` command as ready for use and reveal it in the command list.
+- 7e7c71417: Exclude core packages from package dependency diff.
+- e7c5e4b30: Update installation instructions in README.
+- 2305ab8fc: chore(deps): bump `@spotify/eslint-config-react` from 9.0.0 to 10.0.0
+- 054bcd029: Deprecated the `backend:build-image` command, pointing to the newer `backend:bundle` command.
+
 ## 0.6.13
 
 ### Patch Changes

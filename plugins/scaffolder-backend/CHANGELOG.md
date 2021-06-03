@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.5
+
+### Patch Changes
+
+- 6fe1567a7: This adds a configuration option to the scaffolder plugin router, so we can allow for multiple `TaskWorkers`. Currently with only one `TaskWorker` you are limited to scaffolding one thing at a time. Set the `taskWorkers?: number` option in your scaffolder router to get more than 1 `TaskWorker`
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
 ## 0.11.4
 
 ### Patch Changes
