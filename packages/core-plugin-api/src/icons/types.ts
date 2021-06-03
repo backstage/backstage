@@ -15,6 +15,7 @@
  */
 
 import { ComponentType } from 'react';
+import { SvgIconProps } from '@material-ui/core';
 
 /**
  * IconComponent is the common icon type used throughout Backstage when
@@ -31,3 +32,10 @@ import { ComponentType } from 'react';
 export type IconComponent = ComponentType<{
   fontSize?: 'default' | 'small' | 'large';
 }>;
+
+/**
+ * This exists for backwards compatibility with the old core package.
+ * It's used in some parts of this package in order to smooth out the
+ * migration, but it is not exported.
+ */
+export type OldIconComponent = ComponentType<SvgIconProps>;
