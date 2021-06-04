@@ -62,7 +62,8 @@ const CheckboxFilter = ({
         [name]: defaultValue,
       }));
     }
-  }, [name, defaultValue, setFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -121,7 +122,8 @@ const SelectFilter = ({
         [name]: defaultValue,
       }));
     }
-  }, [name, defaultValue, setFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e: ChangeEvent<{ value: unknown }>) => {
     const {
