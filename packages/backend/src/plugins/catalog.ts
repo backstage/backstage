@@ -35,6 +35,7 @@ export default async function createPlugin(
    */
   if (process.env.EXPERIMENTAL_CATALOG === '1') {
     const builder = new NextCatalogBuilder(env);
+
     const {
       entitiesCatalog,
       locationAnalyzer,

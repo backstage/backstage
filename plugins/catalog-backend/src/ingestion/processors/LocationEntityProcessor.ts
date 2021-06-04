@@ -18,7 +18,11 @@ import { Entity, LocationEntity, LocationSpec } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
 import * as result from './results';
-import { CatalogProcessor, CatalogProcessorEmit } from './types';
+import {
+  CatalogProcessor,
+  CatalogProcessorEmit,
+  CatalogPluginApi,
+} from './types';
 
 export function toAbsoluteUrl(
   integrations: ScmIntegrationRegistry,
@@ -44,6 +48,14 @@ type Options = {
 
 export class LocationEntityProcessor implements CatalogProcessor {
   constructor(private readonly options: Options) {}
+
+  apply(registry: CatalogPluginApi) {
+    registry.processor(processor => {
+      processor.postProcess(async ctx => {
+        await this.postProcessEntity(ctx.entity, ctx.location, ctx.emit);
+      });
+    });
+  }
 
   async postProcessEntity(
     entity: Entity,

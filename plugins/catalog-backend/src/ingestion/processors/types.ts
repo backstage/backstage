@@ -20,7 +20,54 @@ import {
   LocationSpec,
 } from '@backstage/catalog-model';
 
+export type ValidationResult = {
+  errors: string[]; // some good type
+};
+
+export type ValidationRequest = {
+  entity: Entity[];
+};
+export type MutationResult = {
+  entity: Entity[];
+};
+
+export type ReadLocationRequest = {
+  location: LocationSpec;
+};
+export type ReadLocationResponse =
+  | {
+      entities: Entity[];
+      errors?: string[];
+    }
+  | {
+      // I can't handle this location type.
+      unknownFormat: boolean;
+    };
+
+export type ProcessingHooks = {
+  read(ReadLocationRequest): Promise<ReadLocationResponse>;
+  mutate(): Promise<MutationResult>;
+  validate(validationRequest: ValidationRequest): Promise<ValidationResult>;
+  discovery(): void; // emit new tings
+};
+
+export type CatalogHooks = {
+  processing: ProcessingHooks;
+};
+
+interface Processor {}
+
+export interface CatalogPluginApi {
+  processor(): ProcessingHooks;
+}
+
+export interface CatalogProcessorRegistry {
+  register(plugin: CatalogProcessor): void;
+}
+
 export type CatalogProcessor = {
+  apply(registry: CatalogPluginApi): void;
+
   /**
    * Reads the contents of a location.
    *
@@ -30,6 +77,8 @@ export type CatalogProcessor = {
    * @param parser A parser, that is able to take the raw catalog descriptor
    *               data and turn it into the actual result pieces.
    * @returns True if handled by this processor, false otherwise
+   *
+   * @deprecated Move to using apply() instead
    */
   readLocation?(
     location: LocationSpec,
@@ -53,6 +102,8 @@ export type CatalogProcessor = {
    *   While location resolves to the direct parent location, originLocation
    *   tells which location was used to start the ingestion loop.
    * @returns The same entity or a modified version of it
+   *
+   * @deprecated Move to using apply() instead
    */
   preProcessEntity?(
     entity: Entity,
@@ -71,6 +122,8 @@ export type CatalogProcessor = {
    *   if the entity was not of a kind that was known by this processor.
    *   Rejects to an Error describing the problem, if the entity was of a kind
    *   that was known by this processor and was not valid.
+   *
+   * @deprecated Move to using apply() instead
    */
   validateEntityKind?(entity: Entity): Promise<boolean>;
 
@@ -81,6 +134,8 @@ export type CatalogProcessor = {
    * @param location The location that the entity came from
    * @param emit A sink for auxiliary items resulting from the processing
    * @returns The same entity or a modified version of it
+   *
+   * @deprecated Move to using apply() instead
    */
   postProcessEntity?(
     entity: Entity,
@@ -95,6 +150,8 @@ export type CatalogProcessor = {
    * @param location The location where the error occurred
    * @param emit A sink for items resulting from this handling
    * @returns Nothing
+   *
+   * @deprecated Move to using apply() instead
    */
   handleError?(
     error: Error,
