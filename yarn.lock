@@ -1702,7 +1702,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.7.4":
-  version "0.8.0"
+  version "0.8.1"
   dependencies:
     "@backstage/config" "^0.1.5"
     "@backstage/errors" "^0.1.1"
@@ -1716,7 +1716,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.7.9":
-  version "0.8.0"
+  version "0.8.1"
   dependencies:
     "@backstage/config" "^0.1.5"
     "@backstage/errors" "^0.1.1"
@@ -1746,16 +1746,16 @@
     react-use "^17.2.4"
 
 "@backstage/plugin-catalog@^0.5.1":
-  version "0.6.0"
+  version "0.6.1"
   dependencies:
     "@backstage/catalog-client" "^0.3.12"
-    "@backstage/catalog-model" "^0.8.0"
-    "@backstage/core" "^0.7.11"
+    "@backstage/catalog-model" "^0.8.1"
+    "@backstage/core" "^0.7.12"
     "@backstage/errors" "^0.1.1"
-    "@backstage/integration" "^0.5.4"
+    "@backstage/integration" "^0.5.5"
     "@backstage/integration-react" "^0.1.2"
-    "@backstage/plugin-catalog-react" "^0.2.0"
-    "@backstage/theme" "^0.2.7"
+    "@backstage/plugin-catalog-react" "^0.2.1"
+    "@backstage/theme" "^0.2.8"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -4466,9 +4466,9 @@
     "@rollup/pluginutils" "^3.0.8"
 
 "@rollup/plugin-node-resolve@^11.2.0":
-  version "11.2.0"
-  resolved "https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-11.2.0.tgz#a5ab88c35bb7622d115f44984dee305112b6f714"
-  integrity sha512-qHjNIKYt5pCcn+5RUBQxK8krhRvf1HnyVgUCcFFcweDS7fhkOLZeYh0mhHK6Ery8/bb9tvN/ubPzmfF0qjDCTA==
+  version "11.2.1"
+  resolved "https://registry.npmjs.org/@rollup/plugin-node-resolve/-/plugin-node-resolve-11.2.1.tgz#82aa59397a29cd4e13248b106e6a4a1880362a60"
+  integrity sha512-yc2n43jcqVyGE2sqV5/YCmocy9ArjVAP/BeXyTtADTBBX6V0e5UMqwO8CdQ0kzjb6zu5P1qMzsScCMRvE9OlVg==
   dependencies:
     "@rollup/pluginutils" "^3.1.0"
     "@types/resolve" "1.17.1"
