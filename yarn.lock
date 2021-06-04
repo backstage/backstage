@@ -6742,8 +6742,8 @@
 
 "@types/react@16.4.6":
   version "16.4.6"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/@types/react/-/react-16.4.6.tgz#5024957c6bcef4f02823accf5974faba2e54fada"
-  integrity sha1-UCSVfGvO9PAoI6zPWXT6ui5U+to=
+  resolved "https://registry.npmjs.org/@types/react/-/react-16.4.6.tgz#5024957c6bcef4f02823accf5974faba2e54fada"
+  integrity sha512-9LDZdhsuKSc+DjY65SjBkA958oBWcTWSVWAd2cD9XqKBjhGw1KzAkRhWRw2eIsXvaIE/TOTjjKMFVC+JA1iU4g==
   dependencies:
     csstype "^2.2.0"
 
@@ -11051,8 +11051,8 @@ cssstyle@^2.2.0:
 
 csstype@^2.2.0:
   version "2.6.17"
-  resolved "https://artifactory.spotify.net/artifactory/api/npm/virtual-npm/csstype/-/csstype-2.6.17.tgz#4cf30eb87e1d1a005d8b6510f95292413f6a1c0e"
-  integrity sha1-TPMOuH4dGgBdi2UQ+VKSQT9qHA4=
+  resolved "https://registry.npmjs.org/csstype/-/csstype-2.6.17.tgz#4cf30eb87e1d1a005d8b6510f95292413f6a1c0e"
+  integrity sha512-u1wmTI1jJGzCJzWndZo8mk4wnPTZd1eOIYTYvuEyOQGfmDl3TrabCCfKnOC86FZwW/9djqTl933UF/cS425i9A==
 
 csstype@^2.5.2, csstype@^2.5.7, csstype@^2.6.7:
   version "2.6.9"
