@@ -24,22 +24,20 @@ Backstage ecosystem.
 
 ## Project roadmap
 
-| Version                           | Description                                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Backstage Search v0 ✅            | Search Frontend letting you search through the entities of the software catalog. [See v0 Use Cases.](#backstage-search-v0)                                         |
-| [Backstage Search V0.5 ✅ ][v0.5] | Foundations for the architecture.                                                                                                                                  |
-| [Backstage Search v1 ⌛][v1]      | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See v1 Use Cases.](#backstage-search-v1)   |
-| [Backstage Search v2 ⌛][v2]      | Search Backend responsible for the indexing process of entities, and their metadata, registered to the Software Catalog. [See v2 Use Cases.](#backstage-search-v2) |
-| [Backstage Search v3 ⌛][v3]      | Standardized Search API lets you index other plugins data to the search engine of choice. [See v3 Use Cases.](#backstage-search-v3)                                |
+| Version                            | Description                                                                                                                                                            |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backstage Search Pre-Alpha ✅      | Search Frontend letting you search through the entities of the software catalog. [See Pre-Alpha Use Cases.](#backstage-search-pre-alpha)                               |
+| [Backstage Search Alpha ⌛][alpha] | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See Alpha Use Cases](#backstage-search-alpha). |
+| [Backstage Search Beta ⌛][beta]   | At least one production-ready search engine that supports the same use-cases as in the alpha. [See Beta Use Cases](#backstage-search-beta).                            |
+| [Backstage Search GA ⌛][ga]       | A stable Search API for plugin developers to add search to their plugins, and app integrators to expose that to their users. [See GA Use Cases](#backstage-search-ga). |
 
-[v0.5]: https://github.com/backstage/backstage/milestone/25
-[v1]: https://github.com/backstage/backstage/milestone/26
-[v2]: https://github.com/backstage/backstage/milestone/27
-[v3]: https://github.com/backstage/backstage/milestone/28
+[alpha]: https://github.com/backstage/backstage/milestone/26
+[beta]: https://github.com/backstage/backstage/milestone/27
+[ga]: https://github.com/backstage/backstage/milestone/28
 
 ## Use Cases
 
-#### Backstage Search V.0
+#### Backstage Search Pre-Alpha
 
 - As a software engineer I should be able to navigate to a search page and
   search for entities registered in the Software Catalog.
@@ -52,7 +50,7 @@ Backstage ecosystem.
 - As a software engineer I should be able to hide the filters if I don’t need to
   use them.
 
-#### Backstage Search V.1
+#### Backstage Search Alpha
 
 - As a software engineer I should be able to get a match of a search on all
   entity metadata (e.g. owner, name, description, kind).
@@ -60,7 +58,7 @@ Backstage ecosystem.
   use the out of the box in-memory indexing process to index entities and their
   metadata registered in the Software Catalog.
 
-#### Backstage Search V.2
+#### Backstage Search Beta
 
 - As an integrator I should be able to spin up an instance of ElasticSearch.
 - As an integrator I should be able to define a ElasticSearch cluster in my
@@ -68,7 +66,7 @@ Backstage ecosystem.
 
 more to come...
 
-#### Backstage Search V.3
+#### Backstage Search GA
 
 - As a contributor I should be able to integrate plugin data to the indexing
   process of Backstage Search by using the standardized API.
