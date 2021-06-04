@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
@@ -187,10 +188,12 @@ export const Header = ({
   typeLink,
 }: PropsWithChildren<Props>) => {
   const classes = useStyles();
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
-  const titleTemplate = `${documentTitle} | %s | Backstage`;
-  const defaultTitle = `${documentTitle} | Backstage`;
+  const titleTemplate = `${documentTitle} | %s | ${appTitle}`;
+  const defaultTitle = `${documentTitle} | ${appTitle}`;
 
   return (
     <>
