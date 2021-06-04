@@ -17,7 +17,6 @@
 export * from './Filters';
 export * from './SearchFilterNext';
 export * from './SearchBar';
-export * from './SearchBarNext';
 export * from './SearchPage';
 export * from './SearchResult';
 export * from './DefaultResultListItem';

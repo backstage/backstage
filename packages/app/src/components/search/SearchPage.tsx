@@ -20,7 +20,7 @@ import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
 import { Content, Header, Lifecycle, Page } from '@backstage/core';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
-  SearchBarNext as SearchBar,
+  SearchBar,
   SearchFilterNext as SearchFilter,
   SearchResult,
   DefaultResultListItem,

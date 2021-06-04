@@ -71,11 +71,24 @@ export const SearchPageNext = searchPlugin.provide(
   }),
 );
 
+export const SearchBar = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
+    },
+  }),
+);
+
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchBar /> component instead. This component will be removed in an
+ * upcoming release.
+ */
 export const SearchBarNext = searchPlugin.provide(
   createComponentExtension({
     component: {
-      lazy: () =>
-        import('./components/SearchBarNext').then(m => m.SearchBarNext),
+      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
     },
   }),
 );

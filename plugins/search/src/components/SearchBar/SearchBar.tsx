@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,56 +14,54 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Paper } from '@material-ui/core';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
+import React, { ChangeEvent, useState } from 'react';
+import { useDebounce } from 'react-use';
+import { InputBase, InputAdornment, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearButton from '@material-ui/icons/Clear';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-  },
-}));
+import { useSearch } from '../SearchContext';
 
-type SearchBarProps = {
-  searchQuery: string;
-  handleSearch: any;
-  handleClearSearchBar: any;
+type Props = {
+  className?: string;
+  debounceTime?: number;
 };
 
-export const SearchBar = ({
-  searchQuery,
-  handleSearch,
-  handleClearSearchBar,
-}: SearchBarProps) => {
-  const classes = useStyles();
+export const SearchBar = ({ className, debounceTime = 0 }: Props) => {
+  const { term, setTerm } = useSearch();
+  const [value, setValue] = useState<string>(term);
+
+  useDebounce(() => setTerm(value), debounceTime, [value]);
+
+  const handleQuery = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleClear = () => setValue('');
 
   return (
-    <Paper
-      component="form"
-      onSubmit={e => handleSearch(e)}
-      className={classes.root}
-    >
-      <IconButton disabled type="submit" aria-label="search">
-        <SearchIcon />
-      </IconButton>
-      <InputBase
-        className={classes.input}
-        placeholder="Search in Backstage"
-        value={searchQuery}
-        onChange={e => handleSearch(e)}
-        inputProps={{ 'aria-label': 'search backstage' }}
-      />
-      <IconButton aria-label="search" onClick={() => handleClearSearchBar()}>
-        <ClearButton />
-      </IconButton>
-    </Paper>
+    <InputBase
+      className={className}
+      data-testid="search-bar-next"
+      fullWidth
+      placeholder="Search in Backstage"
+      value={value}
+      onChange={handleQuery}
+      inputProps={{ 'aria-label': 'Search term' }}
+      startAdornment={
+        <InputAdornment position="start">
+          <IconButton aria-label="Query term" disabled>
+            <SearchIcon />
+          </IconButton>
+        </InputAdornment>
+      }
+      endAdornment={
+        <InputAdornment position="end">
+          <IconButton aria-label="Clear term" onClick={handleClear}>
+            <ClearButton />
+          </IconButton>
+        </InputAdornment>
+      }
+    />
   );
 };

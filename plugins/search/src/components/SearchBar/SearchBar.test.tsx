@@ -20,14 +20,14 @@ import userEvent from '@testing-library/user-event';
 import { useApi } from '@backstage/core';
 
 import { SearchContextProvider } from '../SearchContext';
-import { SearchBarNext } from './SearchBarNext';
+import { SearchBar } from './SearchBar';
 
 jest.mock('@backstage/core', () => ({
   ...jest.requireActual('@backstage/core'),
   useApi: jest.fn().mockReturnValue({}),
 }));
 
-describe('SearchBarNext', () => {
+describe('SearchBar', () => {
   const initialState = {
     term: '',
     pageCursor: '',
@@ -48,7 +48,7 @@ describe('SearchBarNext', () => {
   it('Renders without exploding', async () => {
     render(
       <SearchContextProvider initialState={initialState}>
-        <SearchBarNext />
+        <SearchBar />
       </SearchContextProvider>,
     );
 
@@ -60,7 +60,7 @@ describe('SearchBarNext', () => {
   it('Renders based on initial search', async () => {
     render(
       <SearchContextProvider initialState={{ ...initialState, term }}>
-        <SearchBarNext />
+        <SearchBar />
       </SearchContextProvider>,
     );
 
@@ -72,7 +72,7 @@ describe('SearchBarNext', () => {
   it('Updates term state when text is entered', async () => {
     render(
       <SearchContextProvider initialState={initialState}>
-        <SearchBarNext />
+        <SearchBar />
       </SearchContextProvider>,
     );
 
@@ -94,7 +94,7 @@ describe('SearchBarNext', () => {
   it('Clear button clears term state', async () => {
     render(
       <SearchContextProvider initialState={{ ...initialState, term }}>
-        <SearchBarNext />
+        <SearchBar />
       </SearchContextProvider>,
     );
 
@@ -120,7 +120,7 @@ describe('SearchBarNext', () => {
 
     render(
       <SearchContextProvider initialState={initialState}>
-        <SearchBarNext debounceTime={debounceTime} />
+        <SearchBar debounceTime={debounceTime} />
       </SearchContextProvider>,
     );
 
