@@ -74,4 +74,21 @@ describe('Scheduler', () => {
       expect(mockTask2).toHaveBeenCalled();
     });
   });
+
+  describe('start', () => {
+    it('should execute tasks on start', () => {
+      const mockTask1 = jest.fn();
+      const mockTask2 = jest.fn();
+
+      // Add tasks and interval to schedule
+      testScheduler.addToSchedule(mockTask1, 2);
+      testScheduler.addToSchedule(mockTask2, 2);
+
+      // Starts scheduling process
+      testScheduler.start();
+
+      expect(mockTask1).toHaveBeenCalled();
+      expect(mockTask2).toHaveBeenCalled();
+    });
+  });
 });
