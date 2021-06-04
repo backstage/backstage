@@ -58,6 +58,8 @@ import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-bac
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
+import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
+import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
 import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsBackend } from '../../../../plugins/techdocs-backend/package.json';
@@ -89,6 +91,8 @@ export const packageVersions = {
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
   '@backstage/plugin-search': pluginSearch,
+  '@backstage/plugin-search-backend': pluginSearchBackend,
+  '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
   '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-backend': pluginTechdocsBackend,
