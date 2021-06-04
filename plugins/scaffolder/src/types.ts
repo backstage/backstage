@@ -66,12 +66,14 @@ export type ListActionsResponse = Array<{
 }>;
 
 type OutputLink = {
-  url: string;
   title?: string;
   icon?: string;
+  url?: string;
+  entityRef?: string;
 };
 
 export type TaskOutput = {
+  /** @deprecated use the `links` property to link out to relevant resources */
   entityRef?: string;
   /** @deprecated use the `links` property to link out to relevant resources */
   remoteUrl?: string;
