@@ -35,7 +35,7 @@ spec:
           description: System of the component
           ui:field: EntityPicker
           ui:options:
-            allowedKinds: 
+            allowedKinds:
               - System
             defaultKind: System
             
@@ -60,6 +60,7 @@ spec:
         values:
           name: '{{ parameters.name }}'
           owner: '{{ parameters.owner }}'
+          system: '{{#if parameters.system }}{{ parameters.system }}{{/if}}'
           destination: '{{ parseRepoUrl parameters.repoUrl }}'
 
     - id: fetch-docs
