@@ -16,17 +16,17 @@
 
 import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
-import { useLocation, Outlet } from 'react-router';
+import { useLocation, useOutlet } from 'react-router';
 
 import { useSearch, SearchContextProvider } from '../SearchContext';
-import { SearchPageNext } from './';
+import { SearchPage } from './';
 
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useLocation: jest.fn().mockReturnValue({
     search: '',
   }),
-  Outlet: jest.fn().mockReturnValue(null),
+  useOutlet: jest.fn().mockReturnValue('Route Children'),
 }));
 
 jest.mock('../SearchContext', () => ({
@@ -68,7 +68,7 @@ describe('SearchPage', () => {
     });
 
     // When we render the page...
-    await renderInTestApp(<SearchPageNext />);
+    await renderInTestApp(<SearchPage />);
 
     // Then search context should be initialized with these values...
     const calls = (SearchContextProvider as jest.Mock).mock.calls[0];
@@ -80,9 +80,16 @@ describe('SearchPage', () => {
   });
 
   it('renders provided router element', async () => {
-    await renderInTestApp(<SearchPageNext />);
+    const { getByText } = await renderInTestApp(<SearchPage />);
 
-    expect(Outlet).toHaveBeenCalled();
+    expect(getByText('Route Children')).toBeInTheDocument();
+  });
+
+  it('renders upgrade error whe no router children are provided', async () => {
+    (useOutlet as jest.Mock).mockReturnValueOnce(null);
+    const { getByText } = await renderInTestApp(<SearchPage />);
+
+    expect(getByText('Error: No Search Layout Found')).toBeInTheDocument();
   });
 
   it('replaces window history with expected query parameters', async () => {
@@ -96,7 +103,7 @@ describe('SearchPage', () => {
       '?query=bieber&types[]=software-catalog&pageCursor=page2-or-something&filters[anyKey]=anyValue',
     );
 
-    await renderInTestApp(<SearchPageNext />);
+    await renderInTestApp(<SearchPage />);
 
     const calls = (window.history.replaceState as jest.Mock).mock.calls[0];
     expect(calls[2]).toContain(expectedLocation);

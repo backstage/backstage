@@ -23,8 +23,6 @@ import {
 } from '@backstage/core';
 import { SearchClient, searchApiRef } from './apis';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { SearchPage as SearchPageComponent } from './components/SearchPage';
-import { SearchPageNext as SearchPageNextComponent } from './components/SearchPageNext';
 
 export const rootRouteRef = createRouteRef({
   path: '/search',
@@ -47,10 +45,6 @@ export const searchPlugin = createPlugin({
       },
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, SearchPageComponent);
-    router.addRoute(rootNextRouteRef, SearchPageNextComponent);
-  },
   routes: {
     root: rootRouteRef,
     nextRoot: rootNextRouteRef,
@@ -64,10 +58,15 @@ export const SearchPage = searchPlugin.provide(
   }),
 );
 
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchPage /> component instead. This component will be removed in an
+ * upcoming release.
+ */
 export const SearchPageNext = searchPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/SearchPageNext').then(m => m.SearchPageNext),
+    component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootNextRouteRef,
   }),
 );
