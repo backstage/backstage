@@ -1702,7 +1702,7 @@
     to-fast-properties "^2.0.0"
 
 "@backstage/catalog-model@^0.7.4":
-  version "0.8.0"
+  version "0.8.1"
   dependencies:
     "@backstage/config" "^0.1.5"
     "@backstage/errors" "^0.1.1"
@@ -1716,7 +1716,7 @@
     yup "^0.29.3"
 
 "@backstage/catalog-model@^0.7.9":
-  version "0.8.0"
+  version "0.8.1"
   dependencies:
     "@backstage/config" "^0.1.5"
     "@backstage/errors" "^0.1.1"
@@ -1746,16 +1746,16 @@
     react-use "^17.2.4"
 
 "@backstage/plugin-catalog@^0.5.1":
-  version "0.6.0"
+  version "0.6.1"
   dependencies:
     "@backstage/catalog-client" "^0.3.12"
-    "@backstage/catalog-model" "^0.8.0"
-    "@backstage/core" "^0.7.11"
+    "@backstage/catalog-model" "^0.8.1"
+    "@backstage/core" "^0.7.12"
     "@backstage/errors" "^0.1.1"
-    "@backstage/integration" "^0.5.4"
+    "@backstage/integration" "^0.5.5"
     "@backstage/integration-react" "^0.1.2"
-    "@backstage/plugin-catalog-react" "^0.2.0"
-    "@backstage/theme" "^0.2.7"
+    "@backstage/plugin-catalog-react" "^0.2.1"
+    "@backstage/theme" "^0.2.8"
     "@material-ui/core" "^4.11.0"
     "@material-ui/icons" "^4.9.1"
     "@material-ui/lab" "4.0.0-alpha.45"
@@ -4599,10 +4599,10 @@
   resolved "https://registry.npmjs.org/@spotify/eslint-config-typescript/-/eslint-config-typescript-9.0.0.tgz#be68cfaf212599f0bfeb6536c7c58ec05d2b6fba"
   integrity sha512-ZsXTwMA68ZCz943U4N8XwprdWcc7ErOO/IW8PewLK5lycCZtLnmRkOvAbae7O5qNJPD8b/l0iUMTLaZuwjXWwg==
 
-"@spotify/prettier-config@^9.0.0":
-  version "9.0.0"
-  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-9.0.0.tgz#7b562d56573c6fc0094446fbc92b22bc318945dc"
-  integrity sha512-In1q0tIiqTYKAGe3KOHDcFDdZRFISyQeSeipeTHGfki23ebHRZcjxvqj5SSdBkw65D4VpSREMi0s9i5iJiMcTw==
+"@spotify/prettier-config@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.npmjs.org/@spotify/prettier-config/-/prettier-config-10.0.0.tgz#fa076d98d2e7e6c53dd3d86a696307a7010bd056"
+  integrity sha512-VYOdo8P7lIScAkl02nB9KpUAuOYMManryBIBuKJkAw5D3aVtLobfmdIKvdV6MqEmGMEQPbn7w/UpnjJYhUH+IA==
 
 "@storybook/addon-actions@^6.1.11":
   version "6.1.17"
