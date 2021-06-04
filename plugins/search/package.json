@@ -30,8 +30,6 @@
   },
   "dependencies": {
     "@backstage/core": "^0.7.11",
-    "@backstage/catalog-model": "^0.8.0",
-    "@backstage/plugin-catalog-react": "^0.2.0",
     "@backstage/search-common": "^0.1.1",
     "@backstage/config": "^0.1.5",
     "@backstage/theme": "^0.2.8",

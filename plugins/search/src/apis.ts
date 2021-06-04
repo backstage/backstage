@@ -15,9 +15,6 @@
  */
 
 import { createApiRef, DiscoveryApi } from '@backstage/core';
-import { Entity, ENTITY_DEFAULT_NAMESPACE } from '@backstage/catalog-model';
-
-import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { SearchQuery, SearchResultSet } from '@backstage/search-common';
 import qs from 'qs';
 
@@ -38,43 +35,17 @@ export type Result = {
 export type SearchResults = Array<Result>;
 
 export interface SearchApi {
-  getSearchResult(): Promise<SearchResults>;
-  _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet>;
+  query(query: SearchQuery): Promise<SearchResultSet>;
 }
 
 export class SearchClient implements SearchApi {
-  private readonly catalogApi: CatalogApi;
   private readonly discoveryApi: DiscoveryApi;
 
-  constructor(options: { catalogApi: CatalogApi; discoveryApi: DiscoveryApi }) {
-    this.catalogApi = options.catalogApi;
+  constructor(options: { discoveryApi: DiscoveryApi }) {
     this.discoveryApi = options.discoveryApi;
   }
 
-  private async entities() {
-    const entities = await this.catalogApi.getEntities();
-    return entities.items.map((entity: Entity) => ({
-      name: entity.metadata.name,
-      description: entity.metadata.description,
-      owner:
-        typeof entity.spec?.owner === 'string' ? entity.spec?.owner : undefined,
-      kind: entity.kind,
-      lifecycle:
-        typeof entity.spec?.lifecycle === 'string'
-          ? entity.spec?.lifecycle
-          : undefined,
-      url: `/catalog/${
-        entity.metadata.namespace?.toLowerCase() || ENTITY_DEFAULT_NAMESPACE
-      }/${entity.kind.toLowerCase()}/${entity.metadata.name}`,
-    }));
-  }
-
-  getSearchResult(): Promise<SearchResults> {
-    return this.entities();
-  }
-
-  // TODO: Productionalize as we implement search milestones.
-  async _alphaPerformSearch(query: SearchQuery): Promise<SearchResultSet> {
+  async query(query: SearchQuery): Promise<SearchResultSet> {
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search/query',

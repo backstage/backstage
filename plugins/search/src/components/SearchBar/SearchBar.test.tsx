@@ -38,8 +38,8 @@ describe('SearchBar', () => {
   const name = 'Search term';
   const term = 'term';
 
-  const _alphaPerformSearch = jest.fn().mockResolvedValue({});
-  (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+  const query = jest.fn().mockResolvedValue({});
+  (useApi as jest.Mock).mockReturnValue({ query });
 
   afterAll(() => {
     jest.resetAllMocks();
@@ -86,7 +86,7 @@ describe('SearchBar', () => {
       expect(textbox).toHaveValue(value);
     });
 
-    expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+    expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
   });
@@ -108,7 +108,7 @@ describe('SearchBar', () => {
       expect(screen.getByRole('textbox', { name })).toHaveValue('');
     });
 
-    expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+    expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: '' }),
     );
   });
@@ -134,7 +134,7 @@ describe('SearchBar', () => {
 
     userEvent.type(textbox, value);
 
-    expect(_alphaPerformSearch).not.toHaveBeenLastCalledWith(
+    expect(query).not.toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
 
@@ -146,7 +146,7 @@ describe('SearchBar', () => {
       expect(textbox).toHaveValue(value);
     });
 
-    expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+    expect(query).toHaveBeenLastCalledWith(
       expect.objectContaining({ term: value }),
     );
   });

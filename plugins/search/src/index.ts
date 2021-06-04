@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// TODO: export searchApiRef from ./apis once interface is stable and settled.
+export { searchApiRef } from './apis';
 export {
   searchPlugin,
   searchPlugin as plugin,

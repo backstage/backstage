@@ -39,8 +39,8 @@ describe('SearchFilter', () => {
   const values = ['value1', 'value2'];
   const filters = { unrelated: 'unrelated' };
 
-  const _alphaPerformSearch = jest.fn().mockResolvedValue({});
-  (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+  const query = jest.fn().mockResolvedValue({});
+  (useApi as jest.Mock).mockReturnValue({ query: query });
 
   afterAll(() => {
     jest.resetAllMocks();
@@ -135,7 +135,7 @@ describe('SearchFilter', () => {
       // Check the box.
       userEvent.click(checkBox);
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: { field: [values[0]] } }),
         );
       });
@@ -143,7 +143,7 @@ describe('SearchFilter', () => {
       // Uncheck the box.
       userEvent.click(checkBox);
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: {} }),
         );
       });
@@ -165,7 +165,7 @@ describe('SearchFilter', () => {
       // Check the box.
       userEvent.click(checkBox);
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, field: [values[0]] },
           }),
@@ -175,7 +175,7 @@ describe('SearchFilter', () => {
       // Uncheck the box.
       userEvent.click(checkBox);
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
         );
       });
@@ -299,7 +299,7 @@ describe('SearchFilter', () => {
       userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { [name]: values[0] },
           }),
@@ -315,7 +315,7 @@ describe('SearchFilter', () => {
       userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: {},
           }),
@@ -350,7 +350,7 @@ describe('SearchFilter', () => {
       userEvent.click(screen.getByRole('option', { name: values[0] }));
 
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({
             filters: { ...filters, [name]: values[0] },
           }),
@@ -366,7 +366,7 @@ describe('SearchFilter', () => {
       userEvent.click(screen.getByRole('option', { name: 'All' }));
 
       await waitFor(() => {
-        expect(_alphaPerformSearch).toHaveBeenLastCalledWith(
+        expect(query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
         );
       });

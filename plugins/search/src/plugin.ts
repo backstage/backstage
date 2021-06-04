@@ -22,7 +22,6 @@ import {
   createComponentExtension,
 } from '@backstage/core';
 import { SearchClient, searchApiRef } from './apis';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 export const rootRouteRef = createRouteRef({
   path: '/search',
@@ -39,9 +38,9 @@ export const searchPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: searchApiRef,
-      deps: { catalogApi: catalogApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ catalogApi, discoveryApi }) => {
-        return new SearchClient({ catalogApi, discoveryApi });
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => {
+        return new SearchClient({ discoveryApi });
       },
     }),
   ],
