@@ -126,7 +126,7 @@ export class BitbucketUrlReader implements UrlReader {
       throw new Error(message);
     }
 
-    return await this.deps.treeResponseFactory.fromZipArchive({
+    return await this.deps.treeResponseFactory.fromTarArchive({
       stream: (archiveBitbucketResponse.body as unknown) as Readable,
       subpath: filepath,
       etag: lastCommitShortHash,

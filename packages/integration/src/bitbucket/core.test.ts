@@ -135,7 +135,7 @@ describe('bitbucket core', () => {
         config,
       );
       expect(result).toEqual(
-        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=main&prefix=backstage-mock&path=docs',
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=main&prefix=backstage-mock&path=docs',
       );
     });
 
@@ -164,7 +164,7 @@ describe('bitbucket core', () => {
       );
 
       expect(result).toEqual(
-        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=main&prefix=backstage-mock',
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=main&prefix=backstage-mock',
       );
     });
 
@@ -178,7 +178,7 @@ describe('bitbucket core', () => {
         config,
       );
       expect(result).toEqual(
-        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=zip&at=some-branch&prefix=backstage-mock&path=docs',
+        'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive?format=tgz&at=some-branch&prefix=backstage-mock&path=docs',
       );
     });
 
@@ -192,7 +192,7 @@ describe('bitbucket core', () => {
         config,
       );
       expect(result).toEqual(
-        'https://bitbucket.org/backstage/mock/get/master.zip',
+        'https://bitbucket.org/backstage/mock/get/master.tgz',
       );
     });
   });
