@@ -21,7 +21,7 @@ export {
   SearchPage,
   SearchPageNext,
   SearchBarNext,
-  SearchResultNext,
+  SearchResult,
   DefaultResultListItem,
 } from './plugin';
 export {
@@ -32,7 +32,6 @@ export {
   useSearch,
   SearchPage as Router,
   SearchFilterNext,
-  SearchResult,
   SidebarSearch,
 } from './components';
 export type { FiltersState } from './components';

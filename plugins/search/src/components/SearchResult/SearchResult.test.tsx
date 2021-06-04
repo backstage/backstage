@@ -17,7 +17,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 
-import { SearchResultNext } from './SearchResultNext';
+import { SearchResult } from './SearchResult';
 import { useSearch } from '../SearchContext';
 
 jest.mock('../SearchContext', () => ({
@@ -27,15 +27,13 @@ jest.mock('../SearchContext', () => ({
   }),
 }));
 
-describe('SearchResultNext', () => {
+describe('SearchResult', () => {
   it('Progress rendered on Loading state', async () => {
     (useSearch as jest.Mock).mockReturnValueOnce({
       result: { loading: true },
     });
 
-    const { getByRole } = render(
-      <SearchResultNext>{() => <></>}</SearchResultNext>,
-    );
+    const { getByRole } = render(<SearchResult>{() => <></>}</SearchResult>);
 
     await waitFor(() => {
       expect(getByRole('progressbar')).toBeInTheDocument();
@@ -48,9 +46,7 @@ describe('SearchResultNext', () => {
       result: { loading: false, error },
     });
 
-    const { getByRole } = render(
-      <SearchResultNext>{() => <></>}</SearchResultNext>,
-    );
+    const { getByRole } = render(<SearchResult>{() => <></>}</SearchResult>);
 
     await waitFor(() => {
       expect(getByRole('alert')).toHaveTextContent(
@@ -64,9 +60,7 @@ describe('SearchResultNext', () => {
       result: { loading: false, error: '', value: undefined },
     });
 
-    const { getByRole } = render(
-      <SearchResultNext>{() => <></>}</SearchResultNext>,
-    );
+    const { getByRole } = render(<SearchResult>{() => <></>}</SearchResult>);
 
     await waitFor(() => {
       expect(
@@ -81,12 +75,12 @@ describe('SearchResultNext', () => {
     });
 
     render(
-      <SearchResultNext>
+      <SearchResult>
         {({ results }) => {
           expect(results).toEqual([]);
           return <></>;
         }}
-      </SearchResultNext>,
+      </SearchResult>,
     );
   });
 });

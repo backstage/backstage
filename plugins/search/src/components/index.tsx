@@ -20,7 +20,6 @@ export * from './SearchBar';
 export * from './SearchBarNext';
 export * from './SearchPage';
 export * from './SearchResult';
-export * from './SearchResultNext';
 export * from './DefaultResultListItem';
 export * from './SidebarSearch';
 export * from './SearchContext';

@@ -22,7 +22,7 @@ import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
   SearchBarNext as SearchBar,
   SearchFilterNext as SearchFilter,
-  SearchResultNext as SearchResult,
+  SearchResult,
   DefaultResultListItem,
 } from '@backstage/plugin-search';
 
