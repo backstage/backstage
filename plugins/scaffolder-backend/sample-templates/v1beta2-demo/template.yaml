@@ -35,7 +35,7 @@ spec:
           description: System of the component
           ui:field: EntityPicker
           ui:options:
-            allowedKinds: 
+            allowedKinds:
               - System
             defaultKind: System
             
@@ -64,7 +64,8 @@ spec:
         url: ./template
         values:
           name: '{{ parameters.name }}'
-          owner: '{{ parameters.owner }}'
+          owner: '{{ parameters.owner }}'         
+          system: '{{ parameters.system }}'
           destination: '{{ parseRepoUrl parameters.repoUrl }}'
 
     - id: fetch-docs
@@ -98,5 +99,5 @@ spec:
         listWorkspace: true
 
   output:
-    remoteUrl: '{{#unless parameters.dryRun}}{{ steps.publish.output.remoteUrl }}{{/unless}}'
-    entityRef: '{{#unless parameters.dryRun}}{{ steps.register.output.entityRef }}{{/unless}}'
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'

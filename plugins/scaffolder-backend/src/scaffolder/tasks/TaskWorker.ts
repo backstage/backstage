@@ -118,7 +118,6 @@ export class TaskWorker {
                   if (typeof value === 'string') {
                     const templated = this.handlebars.compile(value, {
                       noEscape: true,
-                      strict: true,
                       data: false,
                       preventIndent: true,
                     })(templateCtx);
@@ -162,7 +161,6 @@ export class TaskWorker {
               if (typeof value === 'string') {
                 const templated = this.handlebars.compile(value, {
                   noEscape: true,
-                  strict: true,
                   data: false,
                   preventIndent: true,
                 })(templateCtx);
@@ -249,7 +247,6 @@ export class TaskWorker {
           if (typeof value === 'string') {
             return this.handlebars.compile(value, {
               noEscape: true,
-              strict: true,
               data: false,
               preventIndent: true,
             })(templateCtx);
