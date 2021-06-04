@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import { EntityMeta, TemplateEntityV1alpha1 } from '@backstage/catalog-model';
-import { useStarredEntities } from '@backstage/plugin-catalog-react';
-import { Button, Link, makeStyles, Typography } from '@material-ui/core';
-import StarIcon from '@material-ui/icons/Star';
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
-import { registerComponentRouteRef } from '../../routes';
-import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
-import { ScaffolderFilter } from '../ScaffolderFilter';
-import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
-import SearchToolbar from '../SearchToolbar/SearchToolbar';
-import { TemplateCard } from '../TemplateCard';
-
-import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-
+import {
+  Entity,
+  EntityMeta,
+  TemplateEntityV1alpha1,
+} from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
@@ -41,6 +30,20 @@ import {
   SupportButton,
   WarningPanel,
 } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import {
+  EntityKindPicker,
+  EntityListProvider,
+  EntityTypePicker,
+  useEntityListProvider,
+  UserListPicker,
+} from '@backstage/plugin-catalog-react';
+import { Button, Link, makeStyles, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { registerComponentRouteRef } from '../../routes';
+import SearchToolbar from '../SearchToolbar/SearchToolbar';
+import { TemplateCard } from '../TemplateCard';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -53,45 +56,10 @@ const useStyles = makeStyles(theme => ({
 
 export const ScaffolderPageContents = () => {
   const styles = useStyles();
-  const {
-    loading,
-    error,
-    filteredEntities,
-    availableCategories,
-  } = useFilteredEntities();
-  const configApi = useApi(configApiRef);
-  const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
-  const { isStarredEntity } = useStarredEntities();
-  const filterGroups = useMemo<ButtonGroup[]>(
-    () => [
-      {
-        name: orgName,
-        items: [
-          {
-            id: 'all',
-            label: 'All',
-            filterFn: () => true,
-          },
-        ],
-      },
-      {
-        name: 'Personal',
-        items: [
-          {
-            id: 'starred',
-            label: 'Starred',
-            icon: StarIcon,
-            filterFn: isStarredEntity,
-          },
-        ],
-      },
-    ],
-    [isStarredEntity, orgName],
-  );
+  const { loading, error, entities } = useEntityListProvider();
+
   const [search, setSearch] = useState('');
-  const [matchingEntities, setMatchingEntities] = useState(
-    [] as TemplateEntityV1alpha1[],
-  );
+  const [matchingEntities, setMatchingEntities] = useState([] as Entity[]);
 
   const matchesQuery = (metadata: EntityMeta, query: string) =>
     `${metadata.title}`.toLocaleUpperCase('en-US').includes(query) ||
@@ -101,14 +69,14 @@ export const ScaffolderPageContents = () => {
 
   useEffect(() => {
     if (search.length === 0) {
-      return setMatchingEntities(filteredEntities);
+      return setMatchingEntities(entities);
     }
     return setMatchingEntities(
-      filteredEntities.filter(template =>
+      entities.filter(template =>
         matchesQuery(template.metadata, search.toLocaleUpperCase('en-US')),
       ),
     );
-  }, [search, filteredEntities]);
+  }, [search, entities]);
 
   return (
     <Page themeId="home">
@@ -142,14 +110,21 @@ export const ScaffolderPageContents = () => {
 
         <div className={styles.contentWrapper}>
           <div>
+            {/* TODO(mtlewis) extract SearchToolbar as a frontend filter */}
             <SearchToolbar search={search} setSearch={setSearch} />
-            <ScaffolderFilter
-              buttonGroups={filterGroups}
-              initiallySelected="all"
+            <EntityKindPicker initialFilter="template" hidden />
+            <UserListPicker
+              initialFilter="all"
+              availableFilters={['all', 'starred']}
             />
-            <ResultsFilter availableCategories={availableCategories} />
+            {/* TODO(mtlewis) replace with custom checkbox list? maybe multiselect */}
+            {/* TODO(mtlewis) delete removed components since they're no longer used  */}
+            <EntityTypePicker />
+            {/* TODO(mtlewis) consider adding tag picker?  */}
           </div>
           <div>
+            {/* TODO(mtlewis) figure out flash of error state when entities are loading */}
+            {/* TODO(mtlewis) move loading, error handling etc. inside card list */}
             {loading && <Progress />}
 
             {error && (
@@ -177,7 +152,7 @@ export const ScaffolderPageContents = () => {
                 matchingEntities.map((template, i) => (
                   <TemplateCard
                     key={i}
-                    template={template}
+                    template={template as TemplateEntityV1alpha1}
                     deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
                   />
                 ))}
@@ -190,7 +165,7 @@ export const ScaffolderPageContents = () => {
 };
 
 export const ScaffolderPage = () => (
-  <EntityFilterGroupsProvider>
+  <EntityListProvider>
     <ScaffolderPageContents />
-  </EntityFilterGroupsProvider>
+  </EntityListProvider>
 );

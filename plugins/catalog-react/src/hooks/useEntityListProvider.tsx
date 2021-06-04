@@ -113,6 +113,9 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>({
       compact(Object.values(outputState.appliedFilters)),
     );
 
+    // TODO(mtlewis): currently entities will never be requested unless
+    // there's at least one filter, we should allow an initial request
+    // to happen with no filters.
     if (!isEqual(previousBackendFilter, backendFilter)) {
       // TODO(timbonicus): should limit fields here, but would need filter
       // fields + table columns
