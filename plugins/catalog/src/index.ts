@@ -21,6 +21,8 @@ export { EntityPageLayout } from './components/EntityPageLayout';
 export { CatalogTable } from './components/CatalogTable';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
+export * from './components/EntityOrphanWarning';
+export * from './components/AboutCard';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -36,4 +38,4 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
-export * from './components/EntityOrphanWarning';
+export * from './utils';
