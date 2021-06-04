@@ -18,6 +18,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { makeStyles, Tooltip, Typography } from '@material-ui/core';
 import React, { CSSProperties, PropsWithChildren, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
+import { useApi, configApiRef } from '@backstage/core-api';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 
@@ -189,8 +190,12 @@ export const Header = ({
   const classes = useStyles();
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
-  const titleTemplate = `${documentTitle} | %s | Backstage`;
-  const defaultTitle = `${documentTitle} | Backstage`;
+  const configApi = useApi(configApiRef);
+  const appTitle = configApi.has('app.title')
+    ? configApi.getString('app.title')
+    : 'Backstage';
+  const titleTemplate = `${documentTitle} | %s | ${appTitle}`;
+  const defaultTitle = `${documentTitle} | ${appTitle}`;
 
   return (
     <>
