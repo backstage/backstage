@@ -291,7 +291,11 @@ describe('OpenStackSwiftPublish', () => {
       mockFs.restore();
       mockFs({
         [entityRootDir]: {
+          html: {
+            'unsafe.html': '<html></html>',
+          },
           img: {
+            'unsafe.svg': '<svg></svg>',
             'with spaces.png': 'found it',
           },
           'some folder': {
@@ -322,6 +326,29 @@ describe('OpenStackSwiftPublish', () => {
         `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
       );
       expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass text/plain content-type for unsafe types', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const htmlResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/html/unsafe.html`,
+      );
+      expect(htmlResponse.text).toEqual('<html></html>');
+      expect(htmlResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
+
+      const svgResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/unsafe.svg`,
+      );
+      expect(svgResponse.text).toEqual('<svg></svg>');
+      expect(svgResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
     });
   });
 });

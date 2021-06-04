@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { Knex } from 'knex';
-import { DbFinalEntitiesRow } from './Stitcher';
-import { EntitiesCatalog } from '../catalog';
-import { EntitiesRequest, EntitiesResponse } from '../catalog/types';
-import { DbRefreshStateRow } from './database/DefaultProcessingDatabase';
-import {
-  DbEntitiesSearchRow,
-  DbPageInfo,
-  EntityPagination,
-} from '../database/types';
 import { InputError } from '@backstage/errors';
+import { Knex } from 'knex';
+import {
+  EntitiesCatalog,
+  EntitiesRequest,
+  EntitiesResponse,
+} from '../catalog/types';
+import { DbPageInfo, EntityPagination } from '../database/types';
+import {
+  DbFinalEntitiesRow,
+  DbRefreshStateRow,
+  DbSearchRow,
+} from './database/tables';
 
 function parsePagination(
   input?: EntityPagination,
@@ -80,7 +82,7 @@ export class NextEntitiesCatalog implements EntitiesCatalog {
           // NOTE(freben): This used to be a set of OUTER JOIN, which may seem to
           // make a lot of sense. However, it had abysmal performance on sqlite
           // when datasets grew large, so we're using IN instead.
-          const matchQuery = db<DbEntitiesSearchRow>('search')
+          const matchQuery = db<DbSearchRow>('search')
             .select('entity_id')
             .where(function keyFilter() {
               this.andWhere({ key: key.toLowerCase() });

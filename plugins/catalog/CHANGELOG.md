@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog
 
+## 0.6.1
+
+### Patch Changes
+
+- 2a942cc9e: invert logic for when to show type column
+- f46a9e82d: Move dependency to `@microsoft/microsoft-graph-types` from `@backstage/plugin-catalog`
+  to `@backstage/plugin-catalog-backend`.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
 ## 0.6.0
 
 ### Minor Changes

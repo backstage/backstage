@@ -21,13 +21,13 @@ import {
   ParamKeys,
   OptionalParams,
 } from './types';
-import { IconComponent } from '../icons/types';
+import { OldIconComponent } from '../icons/types';
 
 // TODO(Rugvip): Remove this in the next breaking release, it's exported but unused
 export type RouteRefConfig<Params extends AnyParams> = {
   params?: ParamKeys<Params>;
   path?: string;
-  icon?: IconComponent;
+  icon?: OldIconComponent;
   title: string;
 };
 
@@ -40,7 +40,7 @@ export class RouteRefImpl<Params extends AnyParams>
     readonly params: ParamKeys<Params>,
     private readonly config: {
       path?: string;
-      icon?: IconComponent;
+      icon?: OldIconComponent;
       title?: string;
     },
   ) {}
@@ -79,7 +79,7 @@ export function createRouteRef<
   /** @deprecated Route refs no longer decide their own path */
   path?: string;
   /** @deprecated Route refs no longer decide their own icon */
-  icon?: IconComponent;
+  icon?: OldIconComponent;
   /** @deprecated Route refs no longer decide their own title */
   title?: string;
 }): RouteRef<OptionalParams<Params>> {

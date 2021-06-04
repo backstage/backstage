@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  entityEnvelopeSchemaValidator,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { ProcessingDatabase } from './database/types';
-import { Stitcher } from './Stitcher';
+import { CatalogProcessingOrchestrator } from './processing/types';
+import { Stitcher } from './stitching/Stitcher';
 import {
   CatalogProcessingEngine,
-  CatalogProcessingOrchestrator,
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
 } from './types';
 
 class Connection implements EntityProviderConnection {
+  readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+
   constructor(
     private readonly config: {
       processingDatabase: ProcessingDatabase;
@@ -37,7 +43,9 @@ class Connection implements EntityProviderConnection {
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.processingDatabase;
+
     if (mutation.type === 'full') {
+      this.check(mutation.entities);
       await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
@@ -47,6 +55,9 @@ class Connection implements EntityProviderConnection {
       });
       return;
     }
+
+    this.check(mutation.added);
+    this.check(mutation.removed);
     await db.transaction(async tx => {
       await db.replaceUnprocessedEntities(tx, {
         sourceKey: this.config.id,
@@ -55,6 +66,16 @@ class Connection implements EntityProviderConnection {
         removed: mutation.removed,
       });
     });
+  }
+
+  private check(entities: Entity[]) {
+    for (const entity of entities) {
+      try {
+        this.validateEntityEnvelope(entity);
+      } catch (e) {
+        throw new TypeError(`Malformed entity envelope, ${e}`);
+      }
+    }
   }
 }
 
@@ -113,14 +134,18 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
     // TODO: replace Promise.all with something more sophisticated for parallel processing.
     await Promise.all(
       items.map(async item => {
-        const { id, state, unprocessedEntity } = item;
+        const { id, state, unprocessedEntity, entityRef } = item;
         const result = await this.orchestrator.process({
           entity: unprocessedEntity,
           state,
         });
 
         for (const error of result.errors) {
-          this.logger.warn(error.message);
+          // TODO(freben): Try to extract the location out of the unprocessed
+          // entity and add as meta to the log lines
+          this.logger.warn(error.message, {
+            entity: entityRef,
+          });
         }
         const errorsString = JSON.stringify(
           result.errors.map(e => serializeError(e)),

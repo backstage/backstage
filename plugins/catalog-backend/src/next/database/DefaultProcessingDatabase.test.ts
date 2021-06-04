@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 // import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
-import { DatabaseManager } from './DatabaseManager';
+import { getVoidLogger } from '@backstage/backend-common';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { JsonObject } from '@backstage/config';
 import { Knex } from 'knex';
+import * as uuid from 'uuid';
+import { DatabaseManager } from './DatabaseManager';
+import { DefaultProcessingDatabase } from './DefaultProcessingDatabase';
 import {
   DbRefreshStateReferencesRow,
   DbRefreshStateRow,
   DbRelationsRow,
-  DefaultProcessingDatabase,
-} from './DefaultProcessingDatabase';
-
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import * as uuid from 'uuid';
-import { getVoidLogger } from '@backstage/backend-common';
-import { JsonObject } from '@backstage/config';
+} from './tables';
 
 describe('Default Processing Database', () => {
   let db: Knex;

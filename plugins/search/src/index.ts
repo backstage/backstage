@@ -20,12 +20,18 @@ export {
   searchPlugin as plugin,
   SearchPage,
   SearchPageNext,
+  SearchBarNext,
+  SearchResultNext,
+  DefaultResultListItem,
 } from './plugin';
 export {
   Filters,
   FiltersButton,
   SearchBar,
+  SearchContextProvider,
+  useSearch,
   SearchPage as Router,
+  SearchFilterNext,
   SearchResult,
   SidebarSearch,
 } from './components';

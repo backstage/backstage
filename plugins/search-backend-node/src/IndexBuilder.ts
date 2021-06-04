@@ -55,28 +55,25 @@ export class IndexBuilder {
    * given refresh interval.
    */
   addCollator({
-    type,
     collator,
     defaultRefreshIntervalSeconds,
   }: RegisterCollatorParameters): void {
     this.logger.info(
-      `Added ${collator.constructor.name} collator for type ${type}`,
+      `Added ${collator.constructor.name} collator for type ${collator.type}`,
     );
-    this.collators[type] = {
+    this.collators[collator.type] = {
       refreshInterval: defaultRefreshIntervalSeconds,
       collate: collator,
     };
   }
 
   /**
-   * Makes the index builder aware of a decorator. If no types are provided, it
-   * will be applied to documents from all known collators, otherwise it will
-   * only be applied to documents of the given types.
+   * Makes the index builder aware of a decorator. If no types are provided on
+   * the decorator, it will be applied to documents from all known collators,
+   * otherwise it will only be applied to documents of the given types.
    */
-  addDecorator({
-    types = ['*'],
-    decorator,
-  }: RegisterDecoratorParameters): void {
+  addDecorator({ decorator }: RegisterDecoratorParameters): void {
+    const types = decorator.types || ['*'];
     this.logger.info(
       `Added decorator ${decorator.constructor.name} to types ${types.join(
         ', ',

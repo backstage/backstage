@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs
 
+## 0.9.5
+
+### Patch Changes
+
+- aad98c544: Fixes multiple XSS and sanitization bypass vulnerabilities in TechDocs.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
 ## 0.9.4
 
 ### Patch Changes

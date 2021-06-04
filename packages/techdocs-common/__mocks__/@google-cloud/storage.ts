@@ -63,6 +63,9 @@ class GCSFile {
 
     process.nextTick(() => {
       if (fs.existsSync(this.localFilePath)) {
+        if (readable.eventNames().includes('pipe')) {
+          readable.emit('pipe');
+        }
         readable.emit('data', fs.readFileSync(this.localFilePath));
         readable.emit('end');
       } else {

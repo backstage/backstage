@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.5.5
+
+### Patch Changes
+
+- 49d7ec169: GitHub App ID can be a string too for environment variables otherwise it will fail validation
+
 ## 0.5.4
 
 ### Patch Changes
