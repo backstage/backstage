@@ -122,6 +122,11 @@ export class TaskWorker {
                       preventIndent: true,
                     })(templateCtx);
 
+                    // If it's just an empty string, treat it as undefined
+                    if (templated === '') {
+                      return undefined;
+                    }
+
                     try {
                       return JSON.parse(templated);
                     } catch {
@@ -165,8 +170,14 @@ export class TaskWorker {
                   preventIndent: true,
                 })(templateCtx);
 
+                // If it's just an empty string, treat it as undefined
+                if (templated === '') {
+                  return undefined;
+                }
+
                 // If it smells like a JSON object then give it a parse as an object and if it fails return the string
                 if (
+                  (templated.startsWith('"') && templated.endsWith('"')) ||
                   (templated.startsWith('{') && templated.endsWith('}')) ||
                   (templated.startsWith('[') && templated.endsWith(']'))
                 ) {
@@ -245,11 +256,32 @@ export class TaskWorker {
         JSON.stringify(task.spec.output),
         (_key, value) => {
           if (typeof value === 'string') {
-            return this.handlebars.compile(value, {
+            const templated = this.handlebars.compile(value, {
               noEscape: true,
               data: false,
               preventIndent: true,
             })(templateCtx);
+
+            // If it's just an empty string, treat it as undefined
+            if (templated === '') {
+              return undefined;
+            }
+
+            // If it smells like a JSON object then give it a parse as an object and if it fails return the string
+            if (
+              (templated.startsWith('"') && templated.endsWith('"')) ||
+              (templated.startsWith('{') && templated.endsWith('}')) ||
+              (templated.startsWith('[') && templated.endsWith(']'))
+            ) {
+              try {
+                // Don't recursively JSON parse the values of this string.
+                // Shouldn't need to, don't want to encourage the use of returning handlebars from somewhere else
+                return JSON.parse(templated);
+              } catch {
+                return templated;
+              }
+            }
+            return templated;
           }
           return value;
         },

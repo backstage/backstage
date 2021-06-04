@@ -237,7 +237,7 @@ describe('TaskWorker', () => {
 
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
-    expect((event?.body?.output as JsonObject).result).toEqual('');
+    expect((event?.body?.output as JsonObject).result).toBeUndefined();
   });
 
   it('should parse strings as objects if possible', async () => {
