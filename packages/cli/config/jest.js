@@ -77,15 +77,9 @@ async function getConfig() {
       '\\.(css|less|scss|sss|styl)$': require.resolve('jest-css-modules'),
     },
 
-    globals: {
-      'ts-jest': {
-        isolatedModules: true,
-      },
-    },
-
     transform: {
       '\\.esm\\.js$': require.resolve('./jestEsmTransform.js'), // See jestEsmTransform.js
-      '\\.(js|jsx|ts|tsx)$': require.resolve('ts-jest'),
+      '\\.(js|jsx|ts|tsx)$': require.resolve('@sucrase/jest-plugin'),
       '\\.(bmp|gif|jpg|jpeg|png|frag|xml|svg)$': require.resolve(
         './jestFileTransform.js',
       ),
