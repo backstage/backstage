@@ -37,6 +37,8 @@ backend:
     credentials: true
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+    # Other Content-Security-Policy directives can be added according to the Helmet format:
+    # https://helmetjs.github.io/#reference
   reading:
     allow:
       - host: example.com
