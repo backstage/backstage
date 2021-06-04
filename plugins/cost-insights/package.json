@@ -39,7 +39,6 @@
     "@material-ui/styles": "^4.9.6",
     "@types/react": "^16.9",
     "@types/recharts": "^1.8.14",
-    "canvas": "^2.6.1",
     "classnames": "^2.2.6",
     "dayjs": "^1.9.4",
     "history": "^5.0.0",
@@ -67,6 +66,7 @@
     "@types/recharts": "^1.8.14",
     "@types/regression": "^2.0.0",
     "@types/yup": "^0.29.8",
+    "canvas": "^2.6.1",
     "cross-fetch": "^3.0.6",
     "msw": "^0.21.2"
   },
