@@ -21,7 +21,7 @@ import { Content, Header, Lifecycle, Page } from '@backstage/core';
 import { CatalogResultListItem } from '@backstage/plugin-catalog';
 import {
   SearchBar,
-  SearchFilterNext as SearchFilter,
+  SearchFilter,
   SearchResult,
   DefaultResultListItem,
 } from '@backstage/plugin-search';

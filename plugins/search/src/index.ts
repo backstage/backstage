@@ -31,6 +31,7 @@ export {
   SearchContextProvider,
   useSearch,
   SearchPage as Router,
+  SearchFilter,
   SearchFilterNext,
   SidebarSearch,
 } from './components';

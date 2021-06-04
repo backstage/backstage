@@ -19,7 +19,7 @@ import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useApi } from '@backstage/core';
 
-import { SearchFilterNext } from './SearchFilterNext';
+import { SearchFilter } from './SearchFilter';
 import { SearchContextProvider } from '../SearchContext';
 
 jest.mock('@backstage/core', () => ({
@@ -27,7 +27,7 @@ jest.mock('@backstage/core', () => ({
   useApi: jest.fn().mockReturnValue({}),
 }));
 
-describe('SearchFilterNext', () => {
+describe('SearchFilter', () => {
   const initialState = {
     term: '',
     filters: {},
@@ -49,7 +49,7 @@ describe('SearchFilterNext', () => {
   it('Check that element was rendered and received props', async () => {
     const CustomFilter = (props: { name: string }) => <h6>{props.name}</h6>;
 
-    render(<SearchFilterNext name={name} component={CustomFilter} />);
+    render(<SearchFilter name={name} component={CustomFilter} />);
 
     expect(screen.getByRole('heading', { name })).toBeInTheDocument();
   });
@@ -58,7 +58,7 @@ describe('SearchFilterNext', () => {
     it('Renders field name and values when provided as props', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -84,7 +84,7 @@ describe('SearchFilterNext', () => {
             },
           }}
         >
-          <SearchFilterNext.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -101,7 +101,7 @@ describe('SearchFilterNext', () => {
     it('Renders correctly based on defaultValue', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Checkbox
+          <SearchFilter.Checkbox
             name={name}
             values={values}
             defaultValue={[values[0]]}
@@ -122,7 +122,7 @@ describe('SearchFilterNext', () => {
     it('Checking / unchecking a value sets filter state', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -152,7 +152,7 @@ describe('SearchFilterNext', () => {
     it('Checking / unchecking a value maintains unrelated filter state', async () => {
       render(
         <SearchContextProvider initialState={{ ...initialState, filters }}>
-          <SearchFilterNext.Checkbox name={name} values={values} />
+          <SearchFilter.Checkbox name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -186,7 +186,7 @@ describe('SearchFilterNext', () => {
     it('Renders field name and values when provided as props', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Select name={name} values={values} />
+          <SearchFilter.Select name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -218,7 +218,7 @@ describe('SearchFilterNext', () => {
             },
           }}
         >
-          <SearchFilterNext.Select name={name} values={values} />
+          <SearchFilter.Select name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -247,7 +247,7 @@ describe('SearchFilterNext', () => {
     it('Renders correctly based on defaultValue', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Select
+          <SearchFilter.Select
             name={name}
             values={values}
             defaultValue={values[0]}
@@ -280,7 +280,7 @@ describe('SearchFilterNext', () => {
     it('Selecting a value sets filter state', async () => {
       render(
         <SearchContextProvider initialState={initialState}>
-          <SearchFilterNext.Select name={name} values={values} />
+          <SearchFilter.Select name={name} values={values} />
         </SearchContextProvider>,
       );
 
@@ -331,7 +331,7 @@ describe('SearchFilterNext', () => {
             filters,
           }}
         >
-          <SearchFilterNext.Select name={name} values={values} />
+          <SearchFilter.Select name={name} values={values} />
         </SearchContextProvider>,
       );
 
