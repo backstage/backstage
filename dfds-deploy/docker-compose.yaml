@@ -28,7 +28,7 @@ services:
     image: backstage-frontend
     container_name: frontend
     build:
-      dockerfile: ./contrib/docker/multi-stage-frontend/Dockerfile
+      dockerfile: ./contrib/docker/frontend-with-nginx/Dockerfile.dockerbuild
       context: ../
     ports:
       - '3000:80'
