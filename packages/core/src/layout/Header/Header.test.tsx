@@ -33,7 +33,7 @@ describe('<Header/>', () => {
   it('should set document title', async () => {
     const rendered = await renderInTestApp(<Header title="Title1" />);
     rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title1 | Backstage');
+    rendered.getByText('defaultTitle: Title1 | Backstage Example App');
   });
 
   it('should override document title', async () => {
@@ -41,7 +41,7 @@ describe('<Header/>', () => {
       <Header title="Title1" pageTitleOverride="Title2" />,
     );
     rendered.getByText('Title1');
-    rendered.getByText('defaultTitle: Title2 | Backstage');
+    rendered.getByText('defaultTitle: Title2 | Backstage Example App');
   });
 
   it('should have subtitle', async () => {
