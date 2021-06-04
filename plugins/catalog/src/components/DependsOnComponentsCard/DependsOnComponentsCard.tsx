@@ -25,13 +25,17 @@ import {
 
 type Props = {
   variant?: 'gridItem';
+  title?: string;
 };
 
-export const DependsOnComponentsCard = ({ variant = 'gridItem' }: Props) => {
+export const DependsOnComponentsCard = ({
+  variant = 'gridItem',
+  title = 'Components',
+}: Props) => {
   return (
     <RelatedEntitiesCard
       variant={variant}
-      title="Components"
+      title={title}
       entityKind="Component"
       relationType={RELATION_DEPENDS_ON}
       columns={componentEntityColumns}
