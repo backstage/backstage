@@ -48,6 +48,16 @@ import { MoreActions, PopOverProvider } from './MoreActions';
 import { CreateCapability } from './CreateCapability';
 import { CapabilityCard } from './CapabilityCard';
 
+import {
+  EntityKindPicker,
+  EntityListProvider,
+  // EntityTagPicker,
+  EntityTypePicker,
+  useEntityListProvider,
+  // UserListFilterKind,
+  // UserListPicker,
+} from '@backstage/plugin-catalog-react';
+
 const capabilities = [
   {
     name: 'dfdsdotcom',
@@ -147,7 +157,7 @@ const test = {
   updated: 'started less than a minute ago',
 };
 
-export const ExampleComponent = () => {
+const CapabilitiesListBase = () => {
   const [search, setSearch] = React.useState('');
   const [isCondensed, setIsCondensed] = React.useState(false);
   const [showOwned, setShowOwned] = React.useState(false);
@@ -157,6 +167,7 @@ export const ExampleComponent = () => {
     test,
     ...capabilities,
   ]);
+  const { backendEntities } = useEntityListProvider();
   React.useEffect(() => {
     setTimeout(() => {
       setCapabilitiesItems(prevCapabilities => {
@@ -187,6 +198,7 @@ export const ExampleComponent = () => {
 
   return (
     <Page themeId="tool">
+      <div>Capabilities length: {backendEntities.length}</div>
       <Header title="Welcome to Capability Discoverability!">
         <HeaderLabel label="Owner" value="Team X" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
@@ -265,5 +277,15 @@ export const ExampleComponent = () => {
         </Grid>
       </Content>
     </Page>
+  );
+};
+
+export const ExampleComponent = () => {
+  return (
+    <EntityListProvider>
+      <EntityKindPicker initialFilter="capability" hidden />
+      <EntityTypePicker />
+      <CapabilitiesListBase />
+    </EntityListProvider>
   );
 };

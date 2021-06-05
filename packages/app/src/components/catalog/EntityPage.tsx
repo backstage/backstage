@@ -102,11 +102,11 @@ import {
   EntityGithubPullRequestsOverviewCard,
   isGithubPullRequestsAvailable,
 } from '@roadiehq/backstage-plugin-github-pull-requests';
-import {
-  EntityTravisCIContent,
-  EntityTravisCIOverviewCard,
-  isTravisciAvailable,
-} from '@roadiehq/backstage-plugin-travis-ci';
+// import {
+//   EntityTravisCIContent,
+//   EntityTravisCIOverviewCard,
+//   isTravisciAvailable,
+// } from '@roadiehq/backstage-plugin-travis-ci';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
@@ -153,9 +153,9 @@ export const cicdContent = (
       <EntityCloudbuildContent />
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isTravisciAvailable}>
+    {/* <EntitySwitch.Case if={isTravisciAvailable}>
       <EntityTravisCIContent />
-    </EntitySwitch.Case>
+    </EntitySwitch.Case> */}
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <EntityGithubActionsContent />
@@ -188,11 +188,11 @@ const cicdCard = (
       </Grid>
     </EntitySwitch.Case>
 
-    <EntitySwitch.Case if={isTravisciAvailable}>
+    {/* <EntitySwitch.Case if={isTravisciAvailable}>
       <Grid item sm={6}>
         <EntityTravisCIOverviewCard />
       </Grid>
-    </EntitySwitch.Case>
+    </EntitySwitch.Case> */}
 
     <EntitySwitch.Case if={isGithubActionsAvailable}>
       <Grid item sm={6}>

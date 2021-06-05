@@ -51,6 +51,7 @@ import {
   templateEntityV1beta2Validator,
   UserEntity,
   userEntityV1alpha1Validator,
+  capabilityEntityV1alpha1Validator,
 } from '@backstage/catalog-model';
 import * as result from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
@@ -67,6 +68,7 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
     userEntityV1alpha1Validator,
     systemEntityV1alpha1Validator,
     domainEntityV1alpha1Validator,
+    capabilityEntityV1alpha1Validator,
   ];
 
   async validateEntityKind(entity: Entity): Promise<boolean> {

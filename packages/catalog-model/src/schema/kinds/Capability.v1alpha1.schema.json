@@ -43,7 +43,7 @@
               "type": "string",
               "description": "The identifier of a capability",
               "examples": ["developerautomation-xavgy"],
-              "minLength": 20
+              "minLength": 5
             }
           }
         }

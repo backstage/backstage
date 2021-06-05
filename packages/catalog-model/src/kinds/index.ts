@@ -59,6 +59,7 @@ export { templateEntityV1beta2Validator } from './TemplateEntityV1beta2';
 export type { TemplateEntityV1beta2 } from './TemplateEntityV1beta2';
 export type { KindValidator } from './types';
 export { userEntityV1alpha1Validator } from './UserEntityV1alpha1';
+export { capabilityEntityV1alpha1Validator } from './CapabilityEntityV1alpha1';
 export type {
   UserEntityV1alpha1 as UserEntity,
   UserEntityV1alpha1,

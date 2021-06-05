@@ -43,11 +43,18 @@ export class CapabilityProcessor implements CatalogProcessor {
       // your choosing.
       const data = await this.reader.read(location.target);
       const json = JSON.parse(data.toString());
-      const payload = json.items.map((i: any) => ({
-        identifier: i.rootId || i.id,
-      }));
-      console.log(payload);
-      // Repeatedly call emit(results.entity(location, <entity>))
+
+      json.items.forEach((i: any) => {
+        emit(
+          results.entity(location, {
+            apiVersion: 'build.dfds.cloud/v1alpha1',
+            kind: 'Capability',
+            spec: { identifier: i.rootId || i.id },
+            metadata: { name: `bla-bla${i.rootId || i.id}` },
+          }),
+        );
+        console.log('emitting');
+      });
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;
       emit(results.generalError(location, message));

@@ -10,6 +10,8 @@
     "@backstage/integration-react": "^0.1.2",
     "@backstage/plugin-api-docs": "^0.4.15",
     "@backstage/plugin-badges": "^0.2.2",
+    "@backstage/plugin-dfds-capability-overview": "^0.1.1",
+    "@backstage/plugin-dfds-capability-management": "^0.1.1",
     "@backstage/plugin-catalog": "^0.6.1",
     "@backstage/plugin-catalog-import": "^0.5.8",
     "@backstage/plugin-catalog-react": "^0.2.1",

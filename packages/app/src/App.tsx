@@ -22,11 +22,7 @@ import {
   SignInPage,
 } from '@backstage/core';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
-import {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  catalogPlugin,
-} from '@backstage/plugin-catalog';
+import { CatalogEntityPage, catalogPlugin } from '@backstage/plugin-catalog';
 
 import {
   CatalogImportPage,
@@ -100,7 +96,7 @@ const AppRouter = app.getRouter();
 const routes = (
   <FlatRoutes>
     <Navigate key="/" to="/catalog" />
-    <Route path="/catalog" element={<CatalogIndexPage />} />
+    <Route path="/catalog" element={<DfdsCapabilityOverviewPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
