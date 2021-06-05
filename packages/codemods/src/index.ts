@@ -24,13 +24,28 @@ import { version } from '../package.json';
 async function main(argv: string[]) {
   program.name('backstage-codemods').version(version);
 
+  const applyCommand = program
+    .command('apply <codemod> <target-dirs...>')
+    .description('Apply a codemod to target directories');
+
   for (const codemod of codemods) {
-    program
-      .command(`${codemod.name} <target-dir>`)
+    applyCommand
+      .command(`${codemod.name} <target-dirs...>`)
       .description(codemod.description)
       .option('-d, --dry', 'Dry run, no changes written to files')
       .action(createCodemodAction(codemod.name));
   }
+
+  program
+    .command('list')
+    .description('List available codemods')
+    .action(() => {
+      const maxNameLength = Math.max(...codemods.map(m => m.name.length));
+      for (const codemod of codemods) {
+        const paddedName = codemod.name.padEnd(maxNameLength, ' ');
+        console.log(`${paddedName} - ${codemod.description}`);
+      }
+    });
 
   program.on('command:*', () => {
     console.log();
