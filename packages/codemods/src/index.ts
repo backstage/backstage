@@ -25,12 +25,14 @@ async function main(argv: string[]) {
   program.name('backstage-codemods').version(version);
 
   const applyCommand = program
-    .command('apply <codemod> <target-dirs...>')
-    .description('Apply a codemod to target directories');
+    .command('apply <codemod> [<target-dirs...>]')
+    .description(
+      'Apply a codemod to target directories, defaulting to the current directory',
+    );
 
   for (const codemod of codemods) {
     applyCommand
-      .command(`${codemod.name} <target-dirs...>`)
+      .command(`${codemod.name} [<target-dirs...>]`)
       .description(codemod.description)
       .option('-d, --dry', 'Dry run, no changes written to files')
       .action(createCodemodAction(codemod.name));
