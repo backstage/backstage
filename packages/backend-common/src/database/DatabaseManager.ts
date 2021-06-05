@@ -15,7 +15,7 @@
  */
 import { Knex } from 'knex';
 import { omit } from 'lodash';
-import { Config, ConfigReader } from '@backstage/config';
+import { Config, ConfigReader, JsonObject } from '@backstage/config';
 import {
   createDatabaseClient,
   ensureDatabaseExists,
@@ -24,6 +24,9 @@ import {
 } from './connection';
 import { PluginDatabaseManager } from './types';
 
+/**
+ * Provides a config lookup path for a plugin's config block.
+ */
 function pluginPath(pluginId: string): string {
   return `plugin.${pluginId}`;
 }
@@ -56,8 +59,9 @@ export class DatabaseManager {
   /**
    * Generates a PluginDatabaseManager for consumption by plugins.
    *
-   * @param pluginId The plugin that the database manager should be created for. Plugin names should be unique
-   * as they are used to look up database config overrides under `backend.database.plugin`.
+   * @param pluginId The plugin that the database manager should be created for. Plugin names
+   * should be unique as they are used to look up database config overrides under
+   * `backend.database.plugin`.
    */
   forPlugin(pluginId: string): PluginDatabaseManager {
     const _this = this;
@@ -70,7 +74,7 @@ export class DatabaseManager {
   }
 
   /**
-   * Provides the canonical database name for a given pluginId.
+   * Provides the canonical database name for a given plugin.
    *
    * This method provides the effective database name which is determined using global
    * and plugin specific database config. If no explicit database name is configured,
@@ -78,83 +82,132 @@ export class DatabaseManager {
    * 'backstage_plugin_'.
    *
    * @param pluginId Lookup the database name for given plugin
+   * @returns String representing the plugin's database name
    */
   private getDatabaseName(pluginId: string): string {
-    const pluginConfig: Config = this.getConfigForPlugin(pluginId);
+    const connection = this.getConnectionConfig(pluginId);
 
-    // determine root sqlite config to pass through as this is a special case
-    const rootConnection = this.config.get('connection');
-    const rootSqliteName =
-      typeof rootConnection === 'string'
-        ? rootConnection
-        : this.config.getOptionalString('connection.filename') ?? ':memory:';
-
-    const isSqlite = this.config.getString('client') === 'sqlite3';
+    if (this.getClientType(pluginId).client === 'sqlite3') {
+      // sqlite database name should fallback to ':memory:' as a special case
+      return (
+        (connection as Knex.Sqlite3ConnectionConfig)?.filename ?? ':memory:'
+      );
+    }
+    // all other supported databases should fallback to an auto-prefixed name
     return (
-      // attempt to lookup pg and mysql database name
-      pluginConfig.getOptionalString('connection.database') ??
-      // attempt to lookup sqlite3 database file name
-      pluginConfig.getOptionalString('connection.filename') ??
-      // if root is sqlite - attempt to use top level connection, fallback to :memory:
-      (isSqlite ? rootSqliteName : null) ??
-      // generate a database name using prefix and pluginId
+      (connection as Knex.ConnectionConfig)?.database ??
       `${this.prefix}${pluginId}`
     );
   }
 
   /**
-   * Provides a base database connector config by merging different config sources.
+   * Provides the client type which should be used for a given plugin.
    *
-   * This method provides a baseConfig for a database connector without the target
-   * database's name property ('database', 'filename'). The client type is determined
-   * by plugin specific config which uses the default as the fallback.
+   * The client type is determined by plugin specific config if present. Otherwise the base
+   * client is used as the fallback.
    *
-   * If the client type is the same as the plugin or not specified, the global
-   * connection config will be extended with plugin specific config.
-   *
-   * @param pluginId The plugin that the database baseConfig should correspond to
+   * @param pluginId Plugin to get the client type for
+   * @returns Object with client type returned as `client` and boolean representing whether
+   * or not the client was overridden as `overridden`
    */
-  private getConfigForPlugin(pluginId: string): Config {
-    const pluginConfig = this.config.getOptionalConfig(pluginPath(pluginId));
+  private getClientType(
+    pluginId: string,
+  ): {
+    client: string;
+    overridden: boolean;
+  } {
+    const pluginClient = this.config.getOptionalString(
+      `${pluginPath(pluginId)}.client`,
+    );
 
     const baseClient = this.config.getString('client');
-    const client = pluginConfig?.getOptionalString('client') ?? baseClient;
-
-    const baseConnection = normalizeConnection(
-      this.config.get('connection'),
-      baseClient,
-    );
-    const connection = normalizeConnection(
-      pluginConfig?.getOptional('connection') ?? {},
+    const client = pluginClient ?? baseClient;
+    return {
       client,
-    );
-
-    return new ConfigReader({
-      client,
-      connection: {
-        // if same client type, extend original connection config without dbname config
-        ...(client === baseClient
-          ? omit(baseConnection, ['database', 'filename'])
-          : {}),
-        ...connection,
-      },
-    });
+      overridden: client !== baseClient,
+    };
   }
 
+  /**
+   * Provides a Knex connection plugin config by combining base and plugin config.
+   *
+   * This method provides a baseConfig for a plugin database connector. If the client type
+   * has not been overridden, the global connection config will be included with plugin
+   * specific config as the base. Values from the plugin connection take precedence over the
+   * base. Base database name is omitted for all supported databases excluding SQLite.
+   */
+  private getConnectionConfig(
+    pluginId: string,
+  ): Partial<Knex.StaticConnectionConfig> {
+    const { client, overridden } = this.getClientType(pluginId);
+
+    let baseConnection = normalizeConnection(
+      this.config.get('connection'),
+      this.config.getString('client'),
+    );
+    // As databases cannot be shared, the `database` property from the base connection
+    // is omitted. SQLite3's `filename` property is an exception as this is used as a
+    // directory elsewhere so we preserve `filename`.
+    baseConnection = omit(baseConnection, 'database');
+
+    // get and normalize optional plugin specific database connection
+    const connection = normalizeConnection(
+      this.config.getOptional(`${pluginPath(pluginId)}.connection`),
+      client,
+    );
+
+    return {
+      // include base connection if client type has not been overriden
+      ...(overridden ? {} : baseConnection),
+      ...connection,
+    };
+  }
+
+  /**
+   * Provides a Knex database config for a given plugin.
+   *
+   * This method provides a Knex configuration object along with the plugin's client type.
+   *
+   * @param pluginId The plugin that the database config should correspond with
+   */
+  private getConfigForPlugin(pluginId: string): Knex.Config {
+    const { client } = this.getClientType(pluginId);
+
+    return {
+      client,
+      connection: this.getConnectionConfig(pluginId),
+    };
+  }
+
+  /**
+   * Provides a partial Knex.Config database name override for a given plugin.
+   *
+   * @param pluginId Target plugin to get database name override
+   * @returns Partial Knex.Config with database name override
+   */
+  private getDatabaseOverrides(pluginId: string): Knex.Config {
+    return createNameOverride(
+      this.getClientType(pluginId).client,
+      this.getDatabaseName(pluginId),
+    );
+  }
+
+  /**
+   * Provides a scoped Knex client for a plugin as per application config.
+   *
+   *  @param pluginId Plugin to get a Knex client for
+   *  @returns Promise which resolves to a scoped Knex database client for a plugin
+   */
   private async getDatabase(pluginId: string): Promise<Knex> {
-    const pluginConfig = this.getConfigForPlugin(pluginId);
+    const pluginConfig = new ConfigReader(
+      this.getConfigForPlugin(pluginId) as JsonObject,
+    );
 
     await ensureDatabaseExists(pluginConfig, this.getDatabaseName(pluginId));
+
     return createDatabaseClient(
       pluginConfig,
       this.getDatabaseOverrides(pluginId),
-    );
-  }
-
-  private getDatabaseOverrides(pluginId: string): Knex.Config {
-    return createNameOverride(
-      this.getConfigForPlugin(pluginId).get('client'),
-      this.getDatabaseName(pluginId),
     );
   }
 }

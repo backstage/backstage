@@ -75,7 +75,7 @@ export interface CacheClient {
 export class CacheManager {
     forPlugin(pluginId: string): PluginCacheManager;
     static fromConfig(config: Config, options?: CacheManagerOptions): CacheManager;
-}
+    }
 
 // @public (undocumented)
 export const coloredFormat: winston.Logform.Format;
@@ -260,7 +260,7 @@ export class GitlabUrlReader implements UrlReader {
 export function loadBackendConfig(options: Options): Promise<Config>;
 
 // @public
-export function normalizeConnection(connection: Knex.StaticConnectionConfig | JsonObject | string, client: string): Record<string, any>;
+export function normalizeConnection(connection: Knex.StaticConnectionConfig | JsonObject | string | undefined, client: string): Partial<Knex.StaticConnectionConfig>;
 
 // @public
 export function notFoundHandler(): RequestHandler;

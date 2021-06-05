@@ -121,9 +121,9 @@ export function parseConnectionString(
  * Normalizes a connection config or string into an object which can be passed to Knex.
  */
 export function normalizeConnection(
-  connection: Knex.StaticConnectionConfig | JsonObject | string,
+  connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
   client: string,
-): Record<string, any> {
+): Partial<Knex.StaticConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {
     return {};
   }
