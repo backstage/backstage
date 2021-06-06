@@ -22,7 +22,7 @@ import { paths } from '../paths';
 import { makeConfigs } from './config';
 import { BuildOptions } from './types';
 
-function formatErrorMessage(error: any) {
+export function formatErrorMessage(error: any) {
   let msg = '';
 
   if (error.code === 'PLUGIN_ERROR') {
