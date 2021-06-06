@@ -128,6 +128,33 @@ export class GithubActionsClient implements GithubActionsApi {
     });
     return run.data;
   }
+  async listJobsForWorkflowRun({
+    hostname,
+    owner,
+    repo,
+    id,
+    pageSize = 100,
+    page = 0,
+  }: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    id: number;
+    pageSize?: number;
+    page?: number;
+  }): Promise<
+    RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
+  > {
+    const octokit = await this.getOctokit(hostname);
+    const jobs = await octokit.actions.listJobsForWorkflowRun({
+      owner,
+      repo,
+      run_id: id,
+      per_page: pageSize,
+      page,
+    });
+    return jobs.data;
+  }
   async downloadJobLogsForWorkflowRun({
     hostname,
     owner,

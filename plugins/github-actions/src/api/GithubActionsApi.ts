@@ -77,6 +77,23 @@ export type GithubActionsApi = {
     repo: string;
     runId: number;
   }) => Promise<any>;
+  listJobsForWorkflowRun: ({
+    hostname,
+    owner,
+    repo,
+    id,
+    pageSize,
+    page,
+  }: {
+    hostname?: string;
+    owner: string;
+    repo: string;
+    id: number;
+    pageSize?: number;
+    page?: number;
+  }) => Promise<
+    RestEndpointMethodTypes['actions']['listJobsForWorkflowRun']['response']['data']
+  >;
   downloadJobLogsForWorkflowRun: ({
     hostname,
     owner,
