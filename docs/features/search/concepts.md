@@ -26,8 +26,8 @@ Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a Search Engine of your choice. More
 concretely, a `SearchEngine` is an interface whose concrete implementations
 facilitate communication with different search engines (like ElasticSearch,
-Lunr, Solr, etc). This abstraction exists in order to support your organization's
-needs.
+Lunr, Solr, etc). This abstraction exists in order to support your
+organization's needs.
 
 Out of the box, Backstage Search comes pre-packaged with an in-memory search
 engine implementation built on top of Lunr.
@@ -99,7 +99,7 @@ components, which are all wired up using a search context.
 
 Each search experience's context consists of details like a search term,
 filters, types, results, and a page cursor for handling pagination. Different
-components use this context in different ways, for example the `<SearchBar />`
+components use this context in different ways. For example, the `<SearchBar />`
 can set the search term, `<SearchFilter />` components can set filters, and
 search results can be displayed using the `<SearchResult />` component.
 

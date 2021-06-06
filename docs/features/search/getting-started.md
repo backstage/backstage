@@ -253,7 +253,7 @@ an example:
 Backstage Search isn't a search engine itself, rather, it provides an interface
 between your Backstage instance and a
 [Search Engine](./concepts.md#search-engines) of your choice. Currently, we only
-support one, in-memory search Engine called Lunr. It can be instantiated like
+support one, an in-memory search Engine called Lunr. It can be instantiated like
 this:
 
 ```typescript
