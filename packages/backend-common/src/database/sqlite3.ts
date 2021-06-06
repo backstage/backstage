@@ -19,7 +19,7 @@ import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import path from 'path';
 import { mergeDatabaseConfig } from './config';
-import { DatabaseConnector } from './connector';
+import { DatabaseConnector } from './types';
 
 /**
  * Creates a knex sqlite3 database connection

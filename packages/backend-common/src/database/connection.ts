@@ -18,7 +18,7 @@ import { Config, JsonObject } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';
-import { DatabaseConnector } from './connector';
+import { DatabaseConnector } from './types';
 
 import { mysqlConnector } from './mysql';
 import { pgConnector } from './postgres';

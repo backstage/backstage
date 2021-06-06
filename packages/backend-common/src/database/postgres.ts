@@ -17,7 +17,7 @@
 import knexFactory, { Knex } from 'knex';
 import { Config } from '@backstage/config';
 import { mergeDatabaseConfig } from './config';
-import { DatabaseConnector } from './connector';
+import { DatabaseConnector } from './types';
 
 /**
  * Creates a knex postgres database connection
