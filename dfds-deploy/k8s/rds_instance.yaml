@@ -3,6 +3,8 @@ kind: RDSInstance
 metadata:
   name: backstage-rds
   namespace: developerautomation-xavgy
+  annotations:
+    crossplane.io/external-name: backstage-rds
   labels:
     department: cloudengineering
     project: developerautomation

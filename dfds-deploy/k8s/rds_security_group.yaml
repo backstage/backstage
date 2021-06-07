@@ -3,6 +3,8 @@ kind: SecurityGroup
 metadata:
   name: backstage-rds-security-group
   namespace: developerautomation-xavgy
+  annotations:
+    crossplane.io/external-name: sg-0e61d1c2b99d12b08
   labels:
     rdsinstance: backstage-rds
     department: cloudengineering
