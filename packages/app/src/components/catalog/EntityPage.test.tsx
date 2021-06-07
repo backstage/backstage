@@ -44,6 +44,7 @@ describe('EntityPage Test', () => {
     getWorkflow: jest.fn(),
     getWorkflowRun: jest.fn(),
     reRunWorkflow: jest.fn(),
+    listJobsForWorkflowRun: jest.fn(),
     downloadJobLogsForWorkflowRun: jest.fn(),
   } as jest.Mocked<typeof githubActionsApiRef.T>;
 

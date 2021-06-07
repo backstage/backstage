@@ -106,7 +106,7 @@ export const WorkflowRunLogs = ({
   inProgress,
 }: {
   entity: Entity;
-  runId: string;
+  runId: number;
   inProgress: boolean;
 }) => {
   const config = useApi(configApiRef);
