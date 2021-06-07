@@ -25,6 +25,7 @@ export { CodeOwnersProcessor } from './CodeOwnersProcessor';
 export { FileReaderProcessor } from './FileReaderProcessor';
 export { GithubDiscoveryProcessor } from './GithubDiscoveryProcessor';
 export { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+export { GithubMultiOrgReaderProcessor } from './GithubMultiOrgReaderProcessor';
 export { LdapOrgReaderProcessor } from './LdapOrgReaderProcessor';
 export { LocationEntityProcessor } from './LocationEntityProcessor';
 export { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
