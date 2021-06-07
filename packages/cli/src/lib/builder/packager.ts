@@ -27,8 +27,9 @@ export function formatErrorMessage(error: any) {
 
   if (error.code === 'PLUGIN_ERROR') {
     if (error.plugin === 'esbuild') {
-      msg += `${error.message}\n\n`;
-      if (error.errors) {
+      msg += `${error.message}`;
+      if (error.errors?.length) {
+        msg += `\n\n`;
         for (const { text, location } of error.errors) {
           const { line, column } = location;
           const path = relativePath(paths.targetDir, error.id);
