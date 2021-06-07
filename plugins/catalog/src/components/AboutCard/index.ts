@@ -15,3 +15,6 @@
  */
 
 export { AboutCard } from './AboutCard';
+export { AboutContent } from './AboutContent';
+export { AboutField } from './AboutField';
+export { ScmIntegrationIcon } from './ScmIntegrationIcon';
