@@ -11,3 +11,11 @@ backend:
   csp:
 -    upgrade-insecure-requests: false
 ```
+
+But if you want to keep the existing behavior of `upgrade-insecure-requests` Content-Security-Policy being enabled, make the following change in your `app-config.yaml`. You can read more the CSP here https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/upgrade-insecure-requests
+
+```diff
+backend:
++  csp:
++    upgrade-insecure-requests: []
+```
