@@ -116,9 +116,9 @@ Architecturally, plugins can take three forms:
 #### Standalone plugins
 
 Standalone plugins run entirely in the browser.
-[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for
-example, simply renders hard-coded information. It doesn't make any API requests
-to other services.
+[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example,
+simply renders hard-coded information. It doesn't make any API requests to other
+services.
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
