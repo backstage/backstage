@@ -44,22 +44,27 @@ export async function serveBundle(options: ServeOptions) {
 
   const server = new WebpackDevServer(compiler, {
     hot: !process.env.CI,
-    contentBase: paths.targetPublic,
-    contentBasePublicPath: config.output?.publicPath as string,
-    publicPath: config.output?.publicPath as string,
+    devMiddleware: {
+      // contentBase: paths.targetPublic,
+      publicPath: config.output?.publicPath as string,
+    },
+    static: {
+      publicPath: config.output?.publicPath as string,
+      directory: paths.targetPublic,
+    },
     historyApiFallback: {
       // Paths with dots should still use the history fallback.
       // See https://github.com/facebookincubator/create-react-app/issues/387.
       disableDotRule: true,
     },
-    clientLogLevel: 'warning',
-    stats: 'errors-warnings',
+    // clientLogLevel: 'warning',
+    // stats: 'errors-warnings',
     https: url.protocol === 'https:',
     host,
     port,
     proxy: pkg.proxy,
     // When the dev server is behind a proxy, the host and public hostname differ
-    allowedHosts: [url.hostname],
+    // allowedHosts: [url.hostname],
   });
 
   await new Promise<void>((resolve, reject) => {
