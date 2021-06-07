@@ -104,6 +104,14 @@ export function createServiceBuilder(_module: NodeModule): ServiceBuilderImpl;
 // @public (undocumented)
 export function createStatusCheckRouter(options: StatusCheckRouterOptions): Promise<express.Router>;
 
+// @public
+export interface DatabaseConnector {
+    createClient(dbConfig: Config, overrides?: Partial<Knex.Config>): Knex;
+    createNameOverride(name: string): Partial<Knex.Config>;
+    ensureDatabaseExists?(dbConfig: Config, ...databases: Array<string>): Promise<void>;
+    parseConnectionString(connectionString: string, client?: string): Knex.StaticConnectionConfig;
+}
+
 // @public (undocumented)
 export class DatabaseManager {
     forPlugin(pluginId: string): PluginDatabaseManager;

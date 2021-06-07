@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import knexFactory, { Knex } from 'knex';
+import yn from 'yn';
+
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
-import knexFactory, { Knex } from 'knex';
-import { mergeDatabaseConfig } from './config';
-import { DatabaseConnector } from './types';
-import yn from 'yn';
+import { mergeDatabaseConfig } from '../config';
+import { DatabaseConnector } from '../types';
+import defaultNameOverride from './defaultNameOverride';
 
 /**
  * Creates a knex mysql database connection
@@ -161,22 +163,14 @@ export async function ensureMysqlDatabaseExists(
   }
 }
 
-export function createMysqlNameOverride(name: string): Partial<Knex.Config> {
-  return {
-    connection: {
-      database: name,
-    },
-  };
-}
-
 /**
- * MySql database connector.
+ * MySQL database connector.
  *
  * Exposes database connector functionality via an immutable object.
  */
 export const mysqlConnector: DatabaseConnector = Object.freeze({
   createClient: createMysqlDatabaseClient,
   ensureDatabaseExists: ensureMysqlDatabaseExists,
-  createNameOverride: createMysqlNameOverride,
+  createNameOverride: defaultNameOverride,
   parseConnectionString: parseMysqlConnectionString,
 });

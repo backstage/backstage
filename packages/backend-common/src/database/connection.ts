@@ -20,9 +20,7 @@ import knexFactory, { Knex } from 'knex';
 import { mergeDatabaseConfig } from './config';
 import { DatabaseConnector } from './types';
 
-import { mysqlConnector } from './mysql';
-import { pgConnector } from './postgres';
-import { sqlite3Connector } from './sqlite3';
+import { mysqlConnector, pgConnector, sqlite3Connector } from './connectors';
 
 type DatabaseClient = 'pg' | 'sqlite3' | 'mysql' | 'mysql2' | string;
 
