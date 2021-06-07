@@ -145,7 +145,17 @@ describe('templateEntityV1beta2Validator', () => {
   });
 
   it('accepts boolean in if', async () => {
-    (entity as any).spec.if = true;
+    (entity as any).spec.steps[0].if = true;
     await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts emty if', async () => {
+    (entity as any).spec.steps[0].if = '';
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong type if', async () => {
+    (entity as any).spec.steps[0].if = 5;
+    await expect(validator.check(entity)).rejects.toThrow(/if/);
   });
 });
