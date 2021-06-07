@@ -43,13 +43,13 @@ this.
 
 The UI is a thin, client-side wrapper around a set of plugins. It provides some
 core UI components and libraries for shared activities such as config
-management. [[live demo](https://backstage-demo.roadie.io/)]
+management. [[live demo](https://demo.backstage.io/catalog)]
 
 ![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For
 example, the Lighthouse plugin is registered with the UI on `/lighthouse`.
-[[live demo](https://backstage-demo.roadie.io/lighthouse)]
+[[learn more](https://backstage.io/blog/2020/04/06/lighthouse-plugin)]
 
 ![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
 
@@ -116,9 +116,9 @@ Architecturally, plugins can take three forms:
 #### Standalone plugins
 
 Standalone plugins run entirely in the browser.
-[The Tech Radar plugin](https://backstage-demo.roadie.io/tech-radar), for
-example, simply renders hard-coded information. It doesn't make any API requests
-to other services.
+[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example,
+simply renders hard-coded information. It doesn't make any API requests to other
+services.
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
