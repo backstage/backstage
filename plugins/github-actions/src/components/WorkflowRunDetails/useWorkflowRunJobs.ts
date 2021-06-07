@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useAsync } from 'react-use';
-import { useApi, useRouteRefParams } from '@backstage/core-api';
+import { useApi, useRouteRefParams } from '@backstage/core';
 import { githubActionsApiRef } from '../../api';
 import { buildRouteRef } from '../../routes';
 
