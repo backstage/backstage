@@ -70,6 +70,7 @@ export type AppComponents = {
     BootErrorPage: ComponentType<BootErrorPageProps>;
     Progress: ComponentType<{}>;
     Router: ComponentType<{}>;
+    ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
     SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -237,6 +238,13 @@ export type ErrorApi = {
 
 // @public (undocumented)
 export const errorApiRef: ApiRef<ErrorApi>;
+
+// @public (undocumented)
+export type ErrorBoundaryFallbackProps = {
+    plugin?: BackstagePlugin;
+    error: Error;
+    resetError: () => void;
+};
 
 // @public
 export type ErrorContext = {

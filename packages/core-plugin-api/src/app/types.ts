@@ -50,11 +50,18 @@ export type SignInPageProps = {
   onResult(result: SignInResult): void;
 };
 
+export type ErrorBoundaryFallbackProps = {
+  plugin?: BackstagePlugin;
+  error: Error;
+  resetError: () => void;
+};
+
 export type AppComponents = {
   NotFoundErrorPage: ComponentType<{}>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<{}>;
   Router: ComponentType<{}>;
+  ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
 
   /**
    * An optional sign-in page that will be rendered instead of the AppRouter at startup.

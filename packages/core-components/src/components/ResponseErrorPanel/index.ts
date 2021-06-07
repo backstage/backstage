@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ResponseErrorDetails, ResponseErrorPanel } from './ResponseErrorPanel';
+export { ResponseErrorPanel } from './ResponseErrorPanel';

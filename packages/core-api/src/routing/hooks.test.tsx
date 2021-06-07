@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { AppContext } from '../app';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import React, {
@@ -24,7 +23,6 @@ import React, {
   useContext,
 } from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { AppContextProvider } from '../app/AppContext';
 import { createRoutableExtension } from '../extensions';
 import {
   childDiscoverer,
@@ -156,27 +154,23 @@ function withRoutingProvider(
   );
 }
 
-const appContext = ({ getComponents: () => ({}) } as unknown) as AppContext;
-
 describe('discovery', () => {
   it('should handle simple routeRef path creation for routeRefs used in other parts of the app', async () => {
     const root = (
-      <AppContextProvider appContext={appContext}>
-        <MemoryRouter initialEntries={['/foo/bar']}>
-          <Routes>
-            <Extension1 path="/foo">
-              <Extension2 path="/bar" name="inside" routeRef={ref2} />
-              <MockRouteSource name="insideExternal" routeRef={eRefA} />
-            </Extension1>
-            <Extension3 path="/baz" />
-          </Routes>
-          <MockRouteSource name="outside" routeRef={ref2} />
-          <MockRouteSource name="outsideExternal1" routeRef={eRefB} />
-          <MockRouteSource name="outsideExternal2" routeRef={eRefC} />
-          <MockRouteSource name="outsideExternal3" routeRef={eRefD} />
-          <MockRouteSource name="outsideExternal4" routeRef={eRefE} />
-        </MemoryRouter>
-      </AppContextProvider>
+      <MemoryRouter initialEntries={['/foo/bar']}>
+        <Routes>
+          <Extension1 path="/foo">
+            <Extension2 path="/bar" name="inside" routeRef={ref2} />
+            <MockRouteSource name="insideExternal" routeRef={eRefA} />
+          </Extension1>
+          <Extension3 path="/baz" />
+        </Routes>
+        <MockRouteSource name="outside" routeRef={ref2} />
+        <MockRouteSource name="outsideExternal1" routeRef={eRefB} />
+        <MockRouteSource name="outsideExternal2" routeRef={eRefC} />
+        <MockRouteSource name="outsideExternal3" routeRef={eRefD} />
+        <MockRouteSource name="outsideExternal4" routeRef={eRefE} />
+      </MemoryRouter>
     );
 
     const rendered = render(
@@ -211,25 +205,23 @@ describe('discovery', () => {
 
   it('should handle routeRefs with parameters', async () => {
     const root = (
-      <AppContextProvider appContext={appContext}>
-        <MemoryRouter initialEntries={['/foo/bar/wat']}>
-          <Routes>
-            <Extension1 path="/foo">
-              <Extension4
-                path="/bar/:id"
-                name="inside"
-                routeRef={ref4}
-                params={{ id: 'bleb' }}
-              />
-            </Extension1>
-          </Routes>
-          <MockRouteSource
-            name="outside"
-            routeRef={ref4}
-            params={{ id: 'blob' }}
-          />
-        </MemoryRouter>
-      </AppContextProvider>
+      <MemoryRouter initialEntries={['/foo/bar/wat']}>
+        <Routes>
+          <Extension1 path="/foo">
+            <Extension4
+              path="/bar/:id"
+              name="inside"
+              routeRef={ref4}
+              params={{ id: 'bleb' }}
+            />
+          </Extension1>
+        </Routes>
+        <MockRouteSource
+          name="outside"
+          routeRef={ref4}
+          params={{ id: 'blob' }}
+        />
+      </MemoryRouter>
     );
 
     const rendered = render(withRoutingProvider(root));
@@ -244,37 +236,8 @@ describe('discovery', () => {
 
   it('should handle relative routing within parameterized routePaths', async () => {
     const root = (
-      <AppContextProvider appContext={appContext}>
-        <MemoryRouter initialEntries={['/foo/blob/baz']}>
-          <React.Suspense fallback="loller">
-            <Routes>
-              <Extension5 path="/foo/:id">
-                <Extension2 path="/bar" name="inside" routeRef={ref3} />
-                <Extension3 path="/baz" />
-              </Extension5>
-            </Routes>
-            <MockRouteSource name="outsideNoParams" routeRef={ref3} />
-            <MockRouteSource
-              name="outsideWithParams"
-              routeRef={ref3}
-              params={{ id: 'blob' }}
-            />
-          </React.Suspense>
-        </MemoryRouter>
-      </AppContextProvider>
-    );
-
-    const rendered = render(withRoutingProvider(root));
-
-    await expect(
-      rendered.findByText('Path at inside: /foo/blob/baz'),
-    ).resolves.toBeInTheDocument();
-  });
-
-  it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
-    const root = (
-      <AppContextProvider appContext={appContext}>
-        <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter initialEntries={['/foo/blob/baz']}>
+        <React.Suspense fallback="loller">
           <Routes>
             <Extension5 path="/foo/:id">
               <Extension2 path="/bar" name="inside" routeRef={ref3} />
@@ -287,8 +250,33 @@ describe('discovery', () => {
             routeRef={ref3}
             params={{ id: 'blob' }}
           />
-        </MemoryRouter>
-      </AppContextProvider>
+        </React.Suspense>
+      </MemoryRouter>
+    );
+
+    const rendered = render(withRoutingProvider(root));
+
+    await expect(
+      rendered.findByText('Path at inside: /foo/blob/baz'),
+    ).resolves.toBeInTheDocument();
+  });
+
+  it('should throw errors for routing to other routeRefs with unsupported parameters', () => {
+    const root = (
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Extension5 path="/foo/:id">
+            <Extension2 path="/bar" name="inside" routeRef={ref3} />
+            <Extension3 path="/baz" />
+          </Extension5>
+        </Routes>
+        <MockRouteSource name="outsideNoParams" routeRef={ref3} />
+        <MockRouteSource
+          name="outsideWithParams"
+          routeRef={ref3}
+          params={{ id: 'blob' }}
+        />
+      </MemoryRouter>
     );
 
     const rendered = render(withRoutingProvider(root));
@@ -307,15 +295,13 @@ describe('discovery', () => {
 
   it('should handle relative routing of parameterized routePaths with duplicate param names', () => {
     const root = (
-      <AppContextProvider appContext={appContext}>
-        <MemoryRouter>
-          <Routes>
-            <Extension5 path="/foo/:id">
-              <Extension4 path="/bar/:id" name="borked" routeRef={ref4} />
-            </Extension5>
-          </Routes>
-        </MemoryRouter>
-      </AppContextProvider>
+      <MemoryRouter>
+        <Routes>
+          <Extension5 path="/foo/:id">
+            <Extension4 path="/bar/:id" name="borked" routeRef={ref4} />
+          </Extension5>
+        </Routes>
+      </MemoryRouter>
     );
 
     const { routePaths, routeParents } = traverseElementTree({

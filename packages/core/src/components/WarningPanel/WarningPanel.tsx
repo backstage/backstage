@@ -77,7 +77,6 @@ type Props = {
   title?: string;
   severity?: 'warning' | 'error' | 'info';
   message?: React.ReactNode;
-  defaultExpanded?: boolean;
   children?: React.ReactNode;
 };
 
@@ -97,14 +96,14 @@ const capitalize = (s: string) => {
  */
 export const WarningPanel = (props: Props) => {
   const classes = useStyles(props);
-  const { severity, title, message, children, defaultExpanded } = props;
+  const { severity, title, message, children } = props;
 
   // If no severity or title provided, the heading will read simply "Warning"
   const subTitle =
     (severity ? capitalize(severity) : 'Warning') + (title ? `: ${title}` : '');
 
   return (
-    <Accordion defaultExpanded={defaultExpanded} className={classes.panel}>
+    <Accordion className={classes.panel}>
       <AccordionSummary
         expandIcon={<ExpandMoreIconStyled />}
         className={classes.summary}

@@ -15,17 +15,11 @@
  */
 
 import { ResponseError } from '@backstage/errors';
-import {
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import { Divider, ListItem, ListItemText, makeStyles } from '@material-ui/core';
 import React from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { CopyTextButton } from '../CopyTextButton';
-import { WarningPanel } from '../WarningPanel';
+import { ErrorPanel, ErrorPanelProps } from '../ErrorPanel';
 
 const useStyles = makeStyles(theme => ({
   text: {
@@ -39,95 +33,25 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-type ResponseErrorListProps = {
-  error: string;
-  message: string;
-  request?: string;
-  stack?: string;
-  json?: string;
-};
-
-const ResponseErrorList = ({
-  error,
-  request,
-  message,
-  stack,
-  json,
-}: ResponseErrorListProps) => {
-  const classes = useStyles();
-
-  return (
-    <List dense>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          classes={{ secondary: classes.text }}
-          primary="Error"
-          secondary={error}
-        />
-        <CopyTextButton text={error} />
-      </ListItem>
-      <ListItem alignItems="flex-start">
-        <ListItemText
-          classes={{ secondary: classes.text }}
-          primary="Message"
-          secondary={message}
-        />
-        <CopyTextButton text={message} />
-      </ListItem>
-      {request && (
-        <ListItem alignItems="flex-start">
-          <ListItemText
-            classes={{ secondary: classes.text }}
-            primary="Request"
-            secondary={request}
-          />
-          <CopyTextButton text={request} />
-        </ListItem>
-      )}
-      {stack && (
-        <ListItem alignItems="flex-start">
-          <ListItemText
-            classes={{ secondary: classes.text }}
-            primary="Stack Trace"
-            secondary={stack}
-          />
-          <CopyTextButton text={stack} />
-        </ListItem>
-      )}
-      {json && (
-        <>
-          <Divider component="li" className={classes.divider} />
-          <ListItem alignItems="flex-start">
-            <ListItemText
-              classes={{ secondary: classes.text }}
-              primary="Full Error as JSON"
-              secondary={<CodeSnippet language="json" text={json} />}
-            />
-            <CopyTextButton text={json} />
-          </ListItem>
-        </>
-      )}
-    </List>
-  );
-};
-
-type Props = {
-  error: Error;
-};
-
 /**
- * Renders details about a failed server request.
+ * Renders a warning panel as the effect of a failed server request.
  *
  * Has special treatment for ResponseError errors, to display rich
  * server-provided information about what happened.
  */
-export const ResponseErrorDetails = ({ error }: Props) => {
+export const ResponseErrorPanel = ({
+  title,
+  error,
+  defaultExpanded,
+}: ErrorPanelProps) => {
+  const classes = useStyles();
+
   if (error.name !== 'ResponseError') {
     return (
-      <ResponseErrorList
-        error={error.name}
-        message={error.message}
-        stack={error.stack}
+      <ErrorPanel
+        title={title ?? error.message}
+        defaultExpanded={defaultExpanded}
+        error={error}
       />
     );
   }
@@ -142,26 +66,32 @@ export const ResponseErrorDetails = ({ error }: Props) => {
   const jsonString = JSON.stringify(data, undefined, 2);
 
   return (
-    <ResponseErrorList
-      error={errorString}
-      message={messageString}
-      request={requestString}
-      stack={stackString}
-      json={jsonString}
-    />
-  );
-};
-
-/**
- * Renders a warning panel as the effect of a failed server request.
- *
- * Has special treatment for ResponseError errors, to display rich
- * server-provided information about what happened.
- */
-export const ResponseErrorPanel = ({ error }: Props) => {
-  return (
-    <WarningPanel title={error.message}>
-      <ResponseErrorDetails error={error} />
-    </WarningPanel>
+    <ErrorPanel
+      title={title ?? error.message}
+      defaultExpanded={defaultExpanded}
+      error={{ name: errorString, message: messageString, stack: stackString }}
+    >
+      {requestString && (
+        <ListItem alignItems="flex-start">
+          <ListItemText
+            classes={{ secondary: classes.text }}
+            primary="Request"
+            secondary={request}
+          />
+          <CopyTextButton text={requestString} />
+        </ListItem>
+      )}
+      <>
+        <Divider component="li" className={classes.divider} />
+        <ListItem alignItems="flex-start">
+          <ListItemText
+            classes={{ secondary: classes.text }}
+            primary="Full Error as JSON"
+            secondary={<CodeSnippet language="json" text={jsonString} />}
+          />
+          <CopyTextButton text={jsonString} />
+        </ListItem>
+      </>
+    </ErrorPanel>
   );
 };

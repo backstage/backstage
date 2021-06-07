@@ -19,6 +19,7 @@ import { useApp } from '../app';
 import { RouteRef, useRouteRef } from '../routing';
 import { attachComponentData } from './componentData';
 import { Extension, BackstagePlugin } from '../plugin/types';
+import { PluginErrorBoundary } from './PluginErrorBoundary';
 
 type ComponentLoader<T> =
   | {
@@ -123,11 +124,18 @@ export function createReactExtension<
 
   return {
     expose(plugin: BackstagePlugin<any, any>) {
-      const Result: any = (props: any) => (
-        <Suspense fallback="...">
-          <Component {...props} />
-        </Suspense>
-      );
+      const Result: any = (props: any) => {
+        const app = useApp();
+        const { Progress } = app.getComponents();
+
+        return (
+          <Suspense fallback={<Progress />}>
+            <PluginErrorBoundary app={app} plugin={plugin}>
+              <Component {...props} />
+            </PluginErrorBoundary>
+          </Suspense>
+        );
+      };
 
       attachComponentData(Result, 'core.plugin', plugin);
       for (const [key, value] of Object.entries(data)) {

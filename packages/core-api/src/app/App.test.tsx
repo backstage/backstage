@@ -161,7 +161,6 @@ describe('Integration Test', () => {
     BootErrorPage: () => null,
     Progress: () => null,
     Router: BrowserRouter,
-    ErrorBoundaryFallback: () => null,
   };
 
   it('runs happy paths', async () => {

@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
+import { AppConfig, JsonObject } from '@backstage/config';
+import { Button } from '@material-ui/core';
+import { ErrorPage, ErrorPanel, Progress } from '@backstage/core-components';
+import { darkTheme, lightTheme } from '@backstage/theme';
+import DarkIcon from '@material-ui/icons/Brightness2';
+import LightIcon from '@material-ui/icons/WbSunny';
 import React, { PropsWithChildren } from 'react';
-import { AppOptions, BootErrorPageProps, AppConfigLoader } from './types';
-import { defaultAppIcons } from './icons';
 import {
   BrowserRouter,
   MemoryRouter,
   useInRouterContext,
 } from 'react-router-dom';
-import LightIcon from '@material-ui/icons/WbSunny';
-import DarkIcon from '@material-ui/icons/Brightness2';
-import { ErrorPage, Progress } from '@backstage/core-components';
-import { defaultApis } from './defaultApis';
-import { lightTheme, darkTheme } from '@backstage/theme';
-import { AppConfig, JsonObject } from '@backstage/config';
 import { PrivateAppImpl } from './App';
+import { defaultApis } from './defaultApis';
+import { defaultAppIcons } from './icons';
+import {
+  AppConfigLoader,
+  AppOptions,
+  BootErrorPageProps,
+  ErrorBoundaryFallbackProps,
+} from './types';
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -115,6 +121,23 @@ export function createApp(options?: AppOptions) {
       </OptionallyWrapInRouter>
     );
   };
+  const DefaultErrorBoundaryFallback = ({
+    error,
+    resetError,
+    plugin,
+  }: ErrorBoundaryFallbackProps) => {
+    return (
+      <ErrorPanel
+        title={`Error in ${plugin?.getId()}`}
+        defaultExpanded
+        error={error}
+      >
+        <Button variant="outlined" onClick={resetError}>
+          Retry
+        </Button>
+      </ErrorPanel>
+    );
+  };
 
   const apis = options?.apis ?? [];
   const icons = { ...defaultAppIcons, ...options?.icons };
@@ -124,6 +147,7 @@ export function createApp(options?: AppOptions) {
     BootErrorPage: DefaultBootErrorPage,
     Progress: Progress,
     Router: BrowserRouter,
+    ErrorBoundaryFallback: DefaultErrorBoundaryFallback,
     ...options?.components,
   };
   const themes = options?.themes ?? [

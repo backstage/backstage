@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { withLogCollector } from '@backstage/test-utils-core';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';
 import { createRouteRef } from '../routing';
 import { getComponentData } from './componentData';
@@ -23,6 +26,10 @@ import {
   createReactExtension,
   createRoutableExtension,
 } from './extensions';
+
+jest.mock('../app');
+
+const mocked = (f: Function) => f as jest.Mock;
 
 const plugin = createPlugin({
   id: 'my-plugin',
@@ -72,5 +79,32 @@ describe('extensions', () => {
     expect(getComponentData(element1, 'core.plugin')).toBe(plugin);
     expect(getComponentData(element2, 'core.plugin')).toBe(plugin);
     expect(getComponentData(element2, 'core.mountPoint')).toBe(routeRef);
+  });
+
+  it('should wrap extended component with error boundary', async () => {
+    const BrokenComponent = plugin.provide(
+      createComponentExtension({
+        component: {
+          sync: () => {
+            throw new Error('Test error');
+          },
+        },
+      }),
+    );
+
+    mocked(useApp).mockReturnValue({
+      getComponents: () => ({
+        Progress: () => null,
+        ErrorBoundaryFallback: (props: ErrorBoundaryFallbackProps) => (
+          <>Error in {props.plugin?.getId()}</>
+        ),
+      }),
+    });
+
+    const { error: errors } = await withLogCollector(['error'], async () => {
+      render(<BrokenComponent />);
+    });
+    screen.getByText('Error in my-plugin');
+    expect(errors[0]).toMatch('Test error');
   });
 });

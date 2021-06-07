@@ -15,19 +15,15 @@
  */
 
 import React from 'react';
-
-export type ErrorBoundaryFallbackProps = {
-  error: Error;
-  resetError: () => void;
-};
-
-type FallbackRender = React.FunctionComponent<ErrorBoundaryFallbackProps>;
+import { AppContext } from '../app/types';
+import { BackstagePlugin } from '../plugin';
 
 type Props = {
-  fallbackRender: FallbackRender;
+  app: AppContext;
+  plugin: BackstagePlugin;
 };
 
-type State = { error?: Error };
+type State = { error: Error | undefined };
 
 export class PluginErrorBoundary extends React.Component<Props, State> {
   static getDerivedStateFromError(error: Error) {
@@ -36,19 +32,23 @@ export class PluginErrorBoundary extends React.Component<Props, State> {
 
   state: State = { error: undefined };
 
-  resetError = () => {
+  handleErrorReset = () => {
     this.setState({ error: undefined });
   };
 
   render() {
     const { error } = this.state;
-    const { fallbackRender } = this.props;
+    const { app, plugin } = this.props;
+    const { ErrorBoundaryFallback } = app.getComponents();
 
     if (error) {
-      return fallbackRender({
-        error,
-        resetError: this.resetError,
-      });
+      return (
+        <ErrorBoundaryFallback
+          error={error}
+          resetError={this.handleErrorReset}
+          plugin={plugin}
+        />
+      );
     }
 
     return this.props.children;
