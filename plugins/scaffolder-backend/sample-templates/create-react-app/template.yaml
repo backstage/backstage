@@ -1,0 +1,67 @@
+apiVersion: backstage.io/v1alpha1
+kind: Template
+metadata:
+  name: create-react-app-template
+  title: Create React App Template
+  description: Create a new CRA website project
+  tags:
+    - experimental
+    - react
+    - cra
+spec:
+  owner: web@example.com
+  templater: cra
+  type: website
+  path: '.'
+  
+  schema:
+    required: 
+      - component_id
+      - use_typescript
+      - description
+      - collaborators
+    properties:
+      component_id:
+        title: Name
+        type: string
+        pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+        description: Unique name of the component. Lowercase, URL-safe characters only.
+      description:
+        title: Description
+        type: string
+        description: Help others understand what this website is for.
+      use_typescript:
+        title:  Use TypeScript
+        type: boolean
+        description: Include TypeScript
+        default: true
+      use_github_actions:
+        title:  Use Github Actions workflows to build this component
+        type: boolean
+        description: Use Github Actions
+        default: true
+      collaborators:
+        title: Collaborators
+        description: Provide users with permissions
+        type: array
+        ui:options:
+          orderable: false
+        items:
+          type: object
+          required:
+          - username
+          - access
+          properties:
+            access:
+              type: string
+              description: The type of access for the user
+              default: pull
+              enum:
+              - push
+              - pull
+              - admin
+              - maintain
+              - triage
+            username:
+              type: string
+              description: The username or group
