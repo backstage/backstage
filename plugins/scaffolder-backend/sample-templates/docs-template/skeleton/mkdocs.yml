@@ -1,4 +1,4 @@
-site_name: {{cookiecutter.component_id | jsonify}}
+site_name: {{cookiecutter.name | jsonify}}
 site_description: {{cookiecutter.description | jsonify}}
 
 nav:
