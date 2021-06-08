@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Button, ItemCardHeader, useRouteRef } from '@backstage/core';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  TemplateEntityV1alpha1,
+} from '@backstage/catalog-model';
+import { Button, ItemCardHeader, useApi, useRouteRef } from '@backstage/core';
+import {
+  ScmIntegrationIcon,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
+  EntityRefLinks,
+  getEntityRelations,
+  getEntitySourceLocation,
+} from '@backstage/plugin-catalog-react';
 import { BackstageTheme, pageTheme } from '@backstage/theme';
 import {
   Box,
@@ -22,26 +36,18 @@ import {
   CardContent,
   CardMedia,
   Chip,
+  IconButton,
   Link,
   makeStyles,
   Tooltip,
   Typography,
   useTheme,
 } from '@material-ui/core';
-import React from 'react';
 import WarningIcon from '@material-ui/icons/Warning';
+import React from 'react';
 import { generatePath } from 'react-router';
 import { rootRouteRef } from '../../routes';
-import {
-  TemplateEntityV1alpha1,
-  Entity,
-  RELATION_OWNED_BY,
-} from '@backstage/catalog-model';
 import { FavouriteTemplate } from '../FavouriteTemplate/FavouriteTemplate';
-import {
-  getEntityRelations,
-  EntityRefLinks,
-} from '@backstage/plugin-catalog-react';
 
 const useStyles = makeStyles(theme => ({
   cardHeader: {
@@ -66,6 +72,9 @@ const useStyles = makeStyles(theme => ({
     letterSpacing: 0.5,
     lineHeight: 1,
     paddingBottom: '0.2rem',
+  },
+  leftButton: {
+    marginRight: 'auto',
   },
 }));
 
@@ -145,6 +154,9 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
     templateName: templateProps.name,
   });
 
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const sourceLocation = getEntitySourceLocation(template, scmIntegrationsApi);
+
   return (
     <Card>
       <CardMedia className={classes.cardHeader}>
@@ -179,6 +191,14 @@ export const TemplateCard = ({ template, deprecated }: TemplateCardProps) => {
         </Box>
       </CardContent>
       <CardActions>
+        {sourceLocation && (
+          <IconButton
+            className={classes.leftButton}
+            href={sourceLocation.locationTargetUrl}
+          >
+            <ScmIntegrationIcon type={sourceLocation.integrationType} />
+          </IconButton>
+        )}
         <Button
           color="primary"
           to={href}
