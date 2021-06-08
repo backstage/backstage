@@ -84,6 +84,7 @@ const createBitbucketServerRepository = async (opts: {
   description: string;
   repoVisibility: 'private' | 'public';
   authorization: string;
+  apiBaseUrl?: string;
 }) => {
   const {
     host,
@@ -92,6 +93,7 @@ const createBitbucketServerRepository = async (opts: {
     description,
     authorization,
     repoVisibility,
+    apiBaseUrl,
   } = opts;
 
   let response: Response;
@@ -109,10 +111,8 @@ const createBitbucketServerRepository = async (opts: {
   };
 
   try {
-    response = await fetch(
-      `https://${host}/rest/api/1.0/projects/${owner}/repos`,
-      options,
-    );
+    const baseUrl = apiBaseUrl ? apiBaseUrl : `https://${host}/rest/api/1.0`;
+    response = await fetch(`${baseUrl}/projects/${owner}/repos`, options);
   } catch (e) {
     throw new Error(`Unable to create repository, ${e}`);
   }
@@ -223,6 +223,7 @@ export function createPublishBitbucketAction(options: {
       }
 
       const authorization = getAuthorizationHeader(integrationConfig.config);
+      const apiBaseUrl = integrationConfig.config.apiBaseUrl;
 
       const createMethod =
         host === 'bitbucket.org'
@@ -236,6 +237,7 @@ export function createPublishBitbucketAction(options: {
         repo,
         repoVisibility,
         description,
+        apiBaseUrl,
       });
 
       await initRepoAndPush({
