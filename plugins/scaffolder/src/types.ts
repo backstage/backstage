@@ -16,7 +16,7 @@
 import { JSONSchema } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/config';
 
-export type Status = 'open' | 'processing' | 'failed' | 'completed';
+export type Status = 'open' | 'processing' | 'failed' | 'completed' | 'skipped';
 export type JobStatus = 'PENDING' | 'STARTED' | 'COMPLETED' | 'FAILED';
 export type Job = {
   id: string;
@@ -66,12 +66,14 @@ export type ListActionsResponse = Array<{
 }>;
 
 type OutputLink = {
-  url: string;
   title?: string;
   icon?: string;
+  url?: string;
+  entityRef?: string;
 };
 
 export type TaskOutput = {
+  /** @deprecated use the `links` property to link out to relevant resources */
   entityRef?: string;
   /** @deprecated use the `links` property to link out to relevant resources */
   remoteUrl?: string;

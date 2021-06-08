@@ -722,7 +722,7 @@ You can find out more about the `steps` key
 
 ### `spec.owner` [optional]
 
-An [entity reference](#string-references) to the owner of the component, e.g.
+An [entity reference](#string-references) to the owner of the template, e.g.
 `artist-relations-team`. This field is required.
 
 In Backstage, the owner of a Template is the singular entity (commonly a team)

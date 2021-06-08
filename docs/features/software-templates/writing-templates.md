@@ -288,6 +288,7 @@ template. These follow the same standard format:
 ```yaml
 - id: fetch-base # A unique id for the step
   name: Fetch Base # A title displayed in the frontend
+  if: '{{ parameters.name }}' # Optional condition, skip the step if not truthy
   action: fetch:cookiecutter # an action to call
   input: # input that is passed as arguments to the action handler
     url: ./template

@@ -7,6 +7,6 @@ spec:
   type: website
   lifecycle: experimental
   owner: {{cookiecutter.owner | jsonify}}
-{%- if cookiecutter.backstage_system != "" %}
+{%- if 'system' in cookiecutter %}
   system: {{ cookiecutter.system | jsonify }}
 {%- endif %}

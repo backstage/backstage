@@ -54,6 +54,7 @@ describe('templateEntityV1beta2Validator', () => {
             input: {
               url: './template',
             },
+            if: '{{ parameters.owner }}',
           },
         ],
         output: {
@@ -122,16 +123,39 @@ describe('templateEntityV1beta2Validator', () => {
     delete (entity as any).spec.steps[0].action;
     await expect(validator.check(entity)).rejects.toThrow(/action/);
   });
+
   it('accepts missing owner', async () => {
     delete (entity as any).spec.owner;
     await expect(validator.check(entity)).resolves.toBe(true);
   });
+
   it('rejects empty owner', async () => {
     (entity as any).spec.owner = '';
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
   });
+
   it('rejects wrong type owner', async () => {
     (entity as any).spec.owner = 5;
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
+  });
+
+  it('accepts missing if', async () => {
+    delete (entity as any).spec.steps[0].if;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts boolean in if', async () => {
+    (entity as any).spec.steps[0].if = true;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('accepts empty if', async () => {
+    (entity as any).spec.steps[0].if = '';
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects wrong type if', async () => {
+    (entity as any).spec.steps[0].if = 5;
+    await expect(validator.check(entity)).rejects.toThrow(/if/);
   });
 });

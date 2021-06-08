@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { parseEntityName } from '@backstage/catalog-model';
 import { IconComponent, IconKey, useApp, useRouteRef } from '@backstage/core';
-import { IconLink } from './IconLink';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import LanguageIcon from '@material-ui/icons/Language';
+import React from 'react';
 import { TaskOutput } from '../../types';
+import { IconLink } from './IconLink';
 
 type TaskPageLinksProps = {
   output: TaskOutput;
 };
 
 export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
-  const { entityRef, remoteUrl } = output;
+  const { entityRef: entityRefOutput, remoteUrl } = output;
   let { links = [] } = output;
   const app = useApp();
   const entityRoute = useRouteRef(entityRouteRef);
@@ -40,12 +40,10 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
     links = [{ url: remoteUrl, title: 'Repo' }, ...links];
   }
 
-  if (entityRef) {
-    const entityName = parseEntityName(entityRef);
-    const target = entityRoute(entityName);
+  if (entityRefOutput) {
     links = [
       {
-        url: target,
+        entityRef: entityRefOutput,
         title: 'Open in catalog',
         icon: 'catalog',
       },
@@ -55,15 +53,25 @@ export const TaskPageLinks = ({ output }: TaskPageLinksProps) => {
 
   return (
     <Box px={3} pb={3}>
-      {links.map(({ url, title, icon }, i) => (
-        <IconLink
-          key={`output-link-${i}`}
-          href={url}
-          text={title ?? url}
-          Icon={iconResolver(icon)}
-          target="_blank"
-        />
-      ))}
+      {links
+        .filter(({ url, entityRef }) => url || entityRef)
+        .map(({ url, entityRef, title, icon }) => {
+          if (entityRef) {
+            const entityName = parseEntityName(entityRef);
+            const target = entityRoute(entityName);
+            return { title, icon, url: target };
+          }
+          return { title, icon, url: url! };
+        })
+        .map(({ url, title, icon }, i) => (
+          <IconLink
+            key={`output-link-${i}`}
+            href={url}
+            text={title ?? url}
+            Icon={iconResolver(icon)}
+            target="_blank"
+          />
+        ))}
     </Box>
   );
 };

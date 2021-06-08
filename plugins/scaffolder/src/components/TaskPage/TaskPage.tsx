@@ -172,6 +172,8 @@ export const TaskStatusStepper = memo(
             const isCompleted = step.status === 'completed';
             const isFailed = step.status === 'failed';
             const isActive = step.status === 'processing';
+            const isSkipped = step.status === 'skipped';
+
             return (
               <Step key={String(index)} expanded>
                 <StepButton onClick={() => onUserStepChange(step.id)}>
@@ -186,7 +188,11 @@ export const TaskStatusStepper = memo(
                   >
                     <div className={classes.labelWrapper}>
                       <Typography variant="subtitle2">{step.name}</Typography>
-                      <StepTimeTicker step={step} />
+                      {isSkipped ? (
+                        <Typography variant="caption">Skipped</Typography>
+                      ) : (
+                        <StepTimeTicker step={step} />
+                      )}
                     </div>
                   </StepLabel>
                 </StepButton>
