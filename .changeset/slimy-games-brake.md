@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Add `publish:log` action for debugging.
+Add `debug:log` action for debugging.

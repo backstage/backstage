@@ -94,7 +94,7 @@ spec:
 
     - name: Results
       if: '{{ parameters.dryRun }}'
-      action: publish:log
+      action: debug:log
       input:
         listWorkspace: true
 

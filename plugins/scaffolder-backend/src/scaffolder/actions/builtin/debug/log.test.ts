@@ -18,9 +18,10 @@ import { getVoidLogger } from '@backstage/backend-common';
 import mock from 'mock-fs';
 import os from 'os';
 import { Writable } from 'stream';
-import { createPublishLogAction } from './log';
+import { createDebugLogAction } from './log';
+import { join } from 'path';
 
-describe('publish:log', () => {
+describe('debug:log', () => {
   const logStream = ({
     write: jest.fn(),
   } as jest.Mocked<Partial<Writable>>) as jest.Mocked<Writable>;
@@ -36,7 +37,7 @@ describe('publish:log', () => {
     createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
   };
 
-  const action = createPublishLogAction();
+  const action = createDebugLogAction();
 
   beforeEach(() => {
     mock({
@@ -68,10 +69,10 @@ describe('publish:log', () => {
 
     expect(logStream.write).toBeCalledTimes(1);
     expect(logStream.write).toBeCalledWith(
-      expect.stringContaining('./README.md'),
+      expect.stringContaining('README.md'),
     );
     expect(logStream.write).toBeCalledWith(
-      expect.stringContaining('a-directory/index.md'),
+      expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
 

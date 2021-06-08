@@ -19,6 +19,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplaterBuilder } from '../../stages';
 import { createCatalogRegisterAction } from './catalog';
+import { createDebugLogAction } from './debug';
 import { createFetchCookiecutterAction, createFetchPlainAction } from './fetch';
 import {
   createPublishAzureAction,
@@ -26,7 +27,6 @@ import {
   createPublishGithubAction,
   createPublishGithubPullRequestAction,
   createPublishGitlabAction,
-  createPublishLogAction,
 } from './publish';
 
 export const createBuiltinActions = (options: {
@@ -62,7 +62,7 @@ export const createBuiltinActions = (options: {
     createPublishAzureAction({
       integrations,
     }),
-    createPublishLogAction(),
+    createDebugLogAction(),
     createCatalogRegisterAction({ catalogClient, integrations }),
   ];
 };

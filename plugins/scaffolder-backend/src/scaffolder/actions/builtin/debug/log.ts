@@ -22,9 +22,9 @@ import { createTemplateAction } from '../../createTemplateAction';
  * This task is useful for local development and testing of both the scaffolder
  * and scaffolder templates.
  */
-export function createPublishLogAction() {
+export function createDebugLogAction() {
   return createTemplateAction<{ message?: string; listWorkspace?: boolean }>({
-    id: 'publish:log',
+    id: 'debug:log',
     description:
       'Writes a message into the log or list all files in the workspace.',
     schema: {
@@ -43,16 +43,15 @@ export function createPublishLogAction() {
       },
     },
     async handler(ctx) {
-      const files = await recursiveReadDir(ctx.workspacePath);
-
       if (ctx.input?.message) {
         ctx.logStream.write(ctx.input.message);
       }
 
       if (ctx.input?.listWorkspace) {
+        const files = await recursiveReadDir(ctx.workspacePath);
         ctx.logStream.write(
           `Workspace:\n${files
-            .map(f => `  - ./${relative(ctx.workspacePath, f)}`)
+            .map(f => `  - ${relative(ctx.workspacePath, f)}`)
             .join('\n')}`,
         );
       }
