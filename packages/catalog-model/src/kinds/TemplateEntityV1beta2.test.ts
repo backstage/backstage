@@ -140,7 +140,7 @@ describe('templateEntityV1beta2Validator', () => {
   });
 
   it('accepts missing if', async () => {
-    delete (entity as any).spec.if;
+    delete (entity as any).spec.steps[0].if;
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
@@ -149,7 +149,7 @@ describe('templateEntityV1beta2Validator', () => {
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('accepts emty if', async () => {
+  it('accepts empty if', async () => {
     (entity as any).spec.steps[0].if = '';
     await expect(validator.check(entity)).resolves.toBe(true);
   });
