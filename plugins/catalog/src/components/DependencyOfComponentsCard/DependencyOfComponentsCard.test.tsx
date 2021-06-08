@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  RELATION_DEPENDENCY_OF,
-} from '@backstage/catalog-model';
+import { Entity, RELATION_DEPENDENCY_OF } from '@backstage/catalog-model';
 import { ApiProvider, ApiRegistry } from '@backstage/core';
 import {
   CatalogApi,
