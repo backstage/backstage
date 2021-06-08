@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
-import { attachComponentData } from './componentData';
-import {
-  Extension,
-  BackstagePlugin,
-  RouteRef,
-  useRouteRef,
-  useApp,
-} from '@backstage/core-plugin-api';
+import { Extension, RouteRef } from '@backstage/core-plugin-api';
 
 type ComponentLoader<T> =
   | {
@@ -32,114 +24,31 @@ type ComponentLoader<T> =
       sync: T;
     };
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+const ERROR_MESSAGE = 'Import this from @backstage/core-plugin-api';
+
+/** @deprecated Import from @backstage/core-plugin-api instead */
 export function createRoutableExtension<
   T extends (props: any) => JSX.Element | null
->(options: {
+>(_options: {
   component: () => Promise<T>;
   mountPoint: RouteRef;
 }): Extension<T> {
-  const { component, mountPoint } = options;
-  return createReactExtension({
-    component: {
-      lazy: () =>
-        component().then(
-          InnerComponent => {
-            const RoutableExtensionWrapper: any = (props: any) => {
-              // Validate that the routing is wired up correctly in the App.tsx
-              try {
-                useRouteRef(mountPoint);
-              } catch (error) {
-                if (error?.message.startsWith('No path for ')) {
-                  throw new Error(
-                    `Routable extension component with mount point ${mountPoint} was not discovered in the app element tree. ` +
-                      'Routable extension components may not be rendered by other components and must be ' +
-                      'directly available as an element within the App provider component.',
-                  );
-                }
-                throw error;
-              }
-              return <InnerComponent {...props} />;
-            };
-
-            const componentName =
-              (InnerComponent as { displayName?: string }).displayName ||
-              InnerComponent.name ||
-              'LazyComponent';
-
-            RoutableExtensionWrapper.displayName = `RoutableExtension(${componentName})`;
-
-            return RoutableExtensionWrapper as T;
-          },
-          error => {
-            const RoutableExtensionWrapper: any = (_: any) => {
-              const app = useApp();
-              const { BootErrorPage } = app.getComponents();
-
-              return <BootErrorPage step="load-chunk" error={error} />;
-            };
-            return RoutableExtensionWrapper;
-          },
-        ),
-    },
-    data: {
-      'core.mountPoint': mountPoint,
-    },
-  });
+  throw new Error(ERROR_MESSAGE);
 }
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+/** @deprecated Import from @backstage/core-plugin-api instead */
 export function createComponentExtension<
   T extends (props: any) => JSX.Element | null
->(options: { component: ComponentLoader<T> }): Extension<T> {
-  const { component } = options;
-  return createReactExtension({ component });
+>(_options: { component: ComponentLoader<T> }): Extension<T> {
+  throw new Error(ERROR_MESSAGE);
 }
 
-// We do not use ComponentType as the return type, since it doesn't let us convey the children prop.
-// ComponentType inserts children as an optional prop whether the inner component accepts it or not,
-// making it impossible to make the usage of children type safe.
+/** @deprecated Import from @backstage/core-plugin-api instead */
 export function createReactExtension<
   T extends (props: any) => JSX.Element | null
->(options: {
+>(_options: {
   component: ComponentLoader<T>;
   data?: Record<string, unknown>;
 }): Extension<T> {
-  const { data = {} } = options;
-
-  let Component: T;
-  if ('lazy' in options.component) {
-    const lazyLoader = options.component.lazy;
-    Component = (lazy(() =>
-      lazyLoader().then(component => ({ default: component })),
-    ) as unknown) as T;
-  } else {
-    Component = options.component.sync;
-  }
-  const componentName =
-    (Component as { displayName?: string }).displayName ||
-    Component.name ||
-    'Component';
-
-  return {
-    expose(plugin: BackstagePlugin<any, any>) {
-      const Result: any = (props: any) => (
-        <Suspense fallback="...">
-          <Component {...props} />
-        </Suspense>
-      );
-
-      attachComponentData(Result, 'core.plugin', plugin);
-      for (const [key, value] of Object.entries(data)) {
-        attachComponentData(Result, key, value);
-      }
-
-      Result.displayName = `Extension(${componentName})`;
-      return Result;
-    },
-  };
+  throw new Error(ERROR_MESSAGE);
 }

@@ -15,11 +15,12 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
 import {
+  createPlugin,
+  createRouteRef,
   createRoutableExtension,
   createComponentExtension,
-} from '../extensions';
+} from '@backstage/core-plugin-api';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import {
   traverseElementTree,

@@ -20,7 +20,6 @@ import { lightTheme } from '@backstage/theme';
 import { render, screen } from '@testing-library/react';
 import React, { PropsWithChildren } from 'react';
 import { BrowserRouter, Routes } from 'react-router-dom';
-import { createRoutableExtension } from '../extensions';
 import { defaultAppIcons } from './icons';
 import {
   configApiRef,
@@ -31,6 +30,7 @@ import {
   createExternalRouteRef,
   createRouteRef,
   createSubRouteRef,
+  createRoutableExtension,
 } from '@backstage/core-plugin-api';
 import { generateBoundRoutes, PrivateAppImpl } from './App';
 
