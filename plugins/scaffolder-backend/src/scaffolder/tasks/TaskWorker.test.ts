@@ -189,7 +189,7 @@ describe('TaskWorker', () => {
           id: 'conditional',
           name: 'conditional',
           action: 'test-action',
-          if: '"{{ steps.test.output.testOutput }}"',
+          if: '{{ steps.test.output.testOutput }}',
         },
       ],
       output: {
@@ -226,8 +226,7 @@ describe('TaskWorker', () => {
         },
       ],
       output: {
-        result:
-          '{{#if steps.conditional}}{{ steps.conditional.output.testOutput }}{{/if}}',
+        result: '{{ steps.conditional.output.testOutput }}',
       },
       values: {},
     });
