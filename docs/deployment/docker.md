@@ -19,9 +19,9 @@ their state, rather than using SQLite.
 By default, in an app created with `@backstage/create-app`, the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
-configuration into the app. This means you that you only need to build and
-deploy a single container in a minimal setup of Backstage. If you wish to
-separate the serving of the frontend out from the backend, see the
+configuration into the app. This means that you only need to build and deploy a
+single container in a minimal setup of Backstage. If you wish to separate the
+serving of the frontend out from the backend, see the
 [separate frontend](#separate-frontend) topic below.
 
 ## Host Build
