@@ -27,11 +27,12 @@ import {
   routeElementDiscoverer,
 } from '../extensions/traversal';
 import {
+  createRoutableExtension,
   createRouteRef,
   createPlugin,
   RouteRef,
 } from '@backstage/core-plugin-api';
-import { attachComponentData, createRoutableExtension } from '../extensions';
+import { attachComponentData } from '../extensions';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (

@@ -25,7 +25,6 @@ import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { VersionedValue } from '../lib/versionedValues';
 import { getGlobalSingleton } from '../lib/globalObject';
-import { createRoutableExtension } from '../extensions';
 import {
   childDiscoverer,
   routeElementDiscoverer,
@@ -34,6 +33,7 @@ import {
 import {
   createPlugin,
   useRouteRef,
+  createRoutableExtension,
   createRouteRef,
   createExternalRouteRef,
   RouteRef,
