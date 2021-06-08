@@ -23,17 +23,6 @@ export const searchApiRef = createApiRef<SearchApi>({
   description: 'Used to make requests against the search API',
 });
 
-export type Result = {
-  name: string;
-  description: string | undefined;
-  owner: string | undefined;
-  kind: string;
-  lifecycle: string | undefined;
-  url: string;
-};
-
-export type SearchResults = Array<Result>;
-
 export interface SearchApi {
   query(query: SearchQuery): Promise<SearchResultSet>;
 }

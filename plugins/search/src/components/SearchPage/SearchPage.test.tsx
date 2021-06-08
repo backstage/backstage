@@ -42,6 +42,11 @@ jest.mock('../SearchContext', () => ({
   }),
 }));
 
+jest.mock('../LegacySearchPage', () => ({
+  ...jest.requireActual('../SearchContext'),
+  LegacySearchPage: jest.fn().mockReturnValue('LegacySearchPageMock'),
+}));
+
 describe('SearchPage', () => {
   const origReplaceState = window.history.replaceState;
 
@@ -85,11 +90,11 @@ describe('SearchPage', () => {
     expect(getByText('Route Children')).toBeInTheDocument();
   });
 
-  it('renders upgrade error whe no router children are provided', async () => {
+  it('renders legacy search when no router children are provided', async () => {
     (useOutlet as jest.Mock).mockReturnValueOnce(null);
     const { getByText } = await renderInTestApp(<SearchPage />);
 
-    expect(getByText('Error: No Search Layout Found')).toBeInTheDocument();
+    expect(getByText('LegacySearchPageMock')).toBeInTheDocument();
   });
 
   it('replaces window history with expected query parameters', async () => {

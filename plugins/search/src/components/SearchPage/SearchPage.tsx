@@ -19,31 +19,7 @@ import qs from 'qs';
 import { useLocation, useOutlet } from 'react-router';
 import { SearchContextProvider, useSearch } from '../SearchContext';
 import { JsonObject } from '@backstage/config';
-import { Content, Header, Page, Link, WarningPanel } from '@backstage/core';
-
-const UpdateInstructions = () => {
-  return (
-    <Page themeId="home">
-      <Header title="Search" />
-      <Content>
-        <WarningPanel
-          severity="error"
-          title="No Search Layout Found"
-          message={
-            <>
-              As of v0.4.0 of the Backstage Search Plugin, a search layout must
-              be provided by the App. For detailed instructions, check the{' '}
-              <Link to="https://backstage.io/docs/features/search/getting-started">
-                getting started guide
-              </Link>
-              .
-            </>
-          }
-        />
-      </Content>
-    </Page>
-  );
-};
+import { LegacySearchPage } from '../LegacySearchPage';
 
 export const UrlUpdater = () => {
   const { term, types, pageCursor, filters } = useSearch();
@@ -87,7 +63,7 @@ export const SearchPage = () => {
   return (
     <SearchContextProvider initialState={initialState}>
       <UrlUpdater />
-      {outlet || <UpdateInstructions />}
+      {outlet || <LegacySearchPage />}
     </SearchContextProvider>
   );
 };
