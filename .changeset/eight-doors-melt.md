@@ -30,12 +30,14 @@ Error: Cannot find module '/path/to/project/node_modules/@gitbeaker/node/dist/in
 }
 ```
 
-you could also consider pinning the version to an older one in your `package.json`, before the breakage occurred.
+you could also consider pinning the version to an older one in your `package.json` either root or `packages/backend/package.json`, before the breakage occurred.
 
 ```json
 "resolutions": {
-    "@gitbeaker/node": "29.2.4",
-    "@gitbeaker/core": "29.2.4",
-    "@gitbeaker/requester-utils": "29.2.4"
+    "**/@gitbeaker/node": "29.2.4",
+    "**/@gitbeaker/core": "29.2.4",
+    "**/@gitbeaker/requester-utils": "29.2.4"
 }
 ```
+
+Be aware that this is only required short term until we can release our updated versions of `@backstage/plugin-scaffolder-backend`.
