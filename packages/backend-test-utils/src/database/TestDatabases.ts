@@ -56,7 +56,11 @@ export class TestDatabases {
       disableDocker: isDockerDisabledForTests(),
     };
 
-    const { ids, disableDocker } = Object.assign(defaultOptions, options ?? {});
+    const { ids, disableDocker } = Object.assign(
+      {},
+      defaultOptions,
+      options ?? {},
+    );
 
     const supportedIds = ids.filter(id => {
       const properties = allDatabases[id];

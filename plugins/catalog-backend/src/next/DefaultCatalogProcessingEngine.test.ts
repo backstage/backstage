@@ -37,6 +37,7 @@ describe('DefaultCatalogProcessingEngine', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
+
   it('should process stuff', async () => {
     orchestrator.process.mockResolvedValue({
       ok: true,
