@@ -30,6 +30,7 @@ export {
   catalogPlugin as plugin,
   EntityAboutCard,
   EntityDependsOnComponentsCard,
+  EntityDependencyOfComponentsCard,
   EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
   EntityHasResourcesCard,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RELATION_DEPENDS_ON } from '@backstage/catalog-model';
+import { RELATION_DEPENDENCY_OF } from '@backstage/catalog-model';
 import React from 'react';
 import {
   asComponentEntities,
@@ -28,7 +28,7 @@ type Props = {
   title?: string;
 };
 
-export const DependsOnComponentsCard = ({
+export const DependencyOfComponentsCard = ({
   variant = 'gridItem',
   title = 'Components',
 }: Props) => {
@@ -37,9 +37,9 @@ export const DependsOnComponentsCard = ({
       variant={variant}
       title={title}
       entityKind="Component"
-      relationType={RELATION_DEPENDS_ON}
+      relationType={RELATION_DEPENDENCY_OF}
       columns={componentEntityColumns}
-      emptyMessage="No component is a dependency of this component"
+      emptyMessage="No component depends on this component"
       emptyHelpLink={componentEntityHelpLink}
       asRenderableEntities={asComponentEntities}
     />

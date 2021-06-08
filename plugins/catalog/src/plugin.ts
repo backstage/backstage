@@ -135,6 +135,17 @@ export const EntityDependsOnComponentsCard = catalogPlugin.provide(
   }),
 );
 
+export const EntityDependencyOfComponentsCard = catalogPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DependencyOfComponentsCard').then(
+          m => m.DependencyOfComponentsCard,
+        ),
+    },
+  }),
+);
+
 export const EntityDependsOnResourcesCard = catalogPlugin.provide(
   createComponentExtension({
     component: {
