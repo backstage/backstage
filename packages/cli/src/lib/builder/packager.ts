@@ -22,21 +22,24 @@ import { paths } from '../paths';
 import { makeConfigs } from './config';
 import { BuildOptions } from './types';
 
-function formatErrorMessage(error: any) {
+export function formatErrorMessage(error: any) {
   let msg = '';
 
   if (error.code === 'PLUGIN_ERROR') {
     if (error.plugin === 'esbuild') {
-      msg += `${error.message}\n\n`;
-      for (const { text, location } of error.errors) {
-        const { line, column } = location;
-        const path = relativePath(paths.targetDir, error.id);
-        const loc = chalk.cyan(`${path}:${line}:${column}`);
+      msg += `${error.message}`;
+      if (error.errors?.length) {
+        msg += `\n\n`;
+        for (const { text, location } of error.errors) {
+          const { line, column } = location;
+          const path = relativePath(paths.targetDir, error.id);
+          const loc = chalk.cyan(`${path}:${line}:${column}`);
 
-        if (text === 'Unexpected "<"' && error.id.endsWith('.js')) {
-          msg += `${loc}: ${text}, JavaScript files with JSX should use a .jsx extension`;
-        } else {
-          msg += `${loc}: ${text}`;
+          if (text === 'Unexpected "<"' && error.id.endsWith('.js')) {
+            msg += `${loc}: ${text}, JavaScript files with JSX should use a .jsx extension`;
+          } else {
+            msg += `${loc}: ${text}`;
+          }
         }
       }
     } else {
