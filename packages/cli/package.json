@@ -137,7 +137,6 @@
     "@types/rollup-plugin-peer-deps-external": "^2.2.0",
     "@types/rollup-plugin-postcss": "^2.0.0",
     "@types/tar": "^4.0.3",
-    "@types/webpack-dev-server": "^3.11.2",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "del": "^6.0.0",
     "mock-fs": "^4.13.0",
