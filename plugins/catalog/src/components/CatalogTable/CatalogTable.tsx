@@ -23,6 +23,8 @@ import {
 } from '@backstage/core';
 import {
   formatEntityRefTitle,
+  getEntityMetadataEditUrl,
+  getEntityMetadataViewUrl,
   getEntityRelations,
   useEntityListProvider,
   useStarredEntities,
@@ -31,10 +33,6 @@ import Edit from '@material-ui/icons/Edit';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { capitalize } from 'lodash';
 import React from 'react';
-import {
-  getEntityMetadataEditUrl,
-  getEntityMetadataViewUrl,
-} from '../../utils';
 import {
   favouriteEntityIcon,
   favouriteEntityTooltip,
