@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './AboutCard';
-export { AboutContent } from './AboutContent';
-export { AboutField } from './AboutField';
+export * from './ScmIntegrationIcon';

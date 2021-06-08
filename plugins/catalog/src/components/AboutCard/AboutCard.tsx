@@ -26,8 +26,16 @@ import {
   InfoCardVariants,
   useApi,
 } from '@backstage/core';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  ScmIntegrationIcon,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
+  getEntityMetadataEditUrl,
+  getEntityRelations,
+  getEntitySourceLocation,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -40,9 +48,7 @@ import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import React from 'react';
-import { getEntityMetadataEditUrl, getEntitySourceLocation } from '../../utils';
 import { AboutContent } from './AboutContent';
-import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 const useStyles = makeStyles({
   gridItemCard: {

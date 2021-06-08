@@ -9,6 +9,11 @@ import { Config } from '@backstage/config';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 
 // @public (undocumented)
+export const ScmIntegrationIcon: ({ type }: {
+    type?: string | undefined;
+}) => JSX.Element;
+
+// @public (undocumented)
 export class ScmIntegrationsApi {
     // (undocumented)
     static fromConfig(config: Config): ScmIntegrationRegistry;

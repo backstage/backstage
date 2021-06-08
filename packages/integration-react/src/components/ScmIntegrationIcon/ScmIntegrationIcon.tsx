@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useApp } from '@backstage/core';
+import CodeIcon from '@material-ui/icons/Code';
+import React from 'react';
 
-export { AboutCard } from './AboutCard';
-export { AboutContent } from './AboutContent';
-export { AboutField } from './AboutField';
+export const ScmIntegrationIcon = ({ type }: { type?: string }) => {
+  const app = useApp();
+  const DefaultIcon = CodeIcon;
+  const Icon = type ? app.getSystemIcon(type) ?? DefaultIcon : DefaultIcon;
+  return <Icon />;
+};
