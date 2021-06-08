@@ -16,8 +16,8 @@
 
 import {
   Entity,
-  LocationSpec,
   LocationEntityV1alpha1,
+  LocationSpec,
   LOCATION_ANNOTATION,
   ORIGIN_LOCATION_ANNOTATION,
   stringifyEntityRef,
@@ -29,7 +29,6 @@ export function locationSpecToMetadataName(location: LocationSpec) {
   const hash = createHash('sha1')
     .update(`${location.type}:${location.target}`)
     .digest('hex');
-
   return `generated-${hash}`;
 }
 

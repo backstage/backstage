@@ -74,7 +74,7 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
@@ -94,7 +94,7 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
@@ -114,7 +114,7 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
@@ -137,7 +137,7 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(false);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });

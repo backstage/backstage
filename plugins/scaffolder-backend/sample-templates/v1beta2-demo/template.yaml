@@ -29,6 +29,16 @@ spec:
           ui:options:
             allowedKinds: 
               - Group
+        system:
+          title: System
+          type: string
+          description: System of the component
+          ui:field: EntityPicker
+          ui:options:
+            allowedKinds: 
+              - System
+            defaultKind: System
+            
     - title: Choose a location
       required:
         - repoUrl

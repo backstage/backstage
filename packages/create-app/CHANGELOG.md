@@ -1,5 +1,170 @@
 # @backstage/create-app
 
+## 0.3.24
+
+### Patch Changes
+
+- 1ddf551f4: Add CLI output and README how to start app after create-app CLI
+- Updated dependencies [7af9cef07]
+- Updated dependencies [497f4ce18]
+- Updated dependencies [ee4eb5b40]
+- Updated dependencies [84160313e]
+- Updated dependencies [3772de8ba]
+- Updated dependencies [7e7c71417]
+- Updated dependencies [f430b6c6f]
+- Updated dependencies [2a942cc9e]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [90a505a77]
+- Updated dependencies [76f99a1a0]
+- Updated dependencies [1157fa307]
+- Updated dependencies [6fe1567a7]
+- Updated dependencies [e7a5a3474]
+- Updated dependencies [2305ab8fc]
+- Updated dependencies [054bcd029]
+- Updated dependencies [aad98c544]
+- Updated dependencies [63a432e9c]
+- Updated dependencies [f46a9e82d]
+  - @backstage/test-utils@0.1.13
+  - @backstage/plugin-scaffolder@0.9.7
+  - @backstage/cli@0.6.14
+  - @backstage/plugin-catalog@0.6.1
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-scaffolder-backend@0.11.5
+  - @backstage/plugin-catalog-backend@0.10.1
+  - @backstage/plugin-techdocs@0.9.5
+
+## 0.3.23
+
+### Patch Changes
+
+- 6c4bd674c: Cache management has been added to the Backstage backend.
+
+  To apply this change to an existing app, make the following changes:
+
+  ```diff
+  // packages/backend/src/types.ts
+
+  import { Logger } from 'winston';
+  import { Config } from '@backstage/config';
+  import {
+  +  PluginCacheManager,
+    PluginDatabaseManager,
+    PluginEndpointDiscovery,
+    UrlReader,
+  } from '@backstage/backend-common';
+
+  export type PluginEnvironment = {
+    logger: Logger;
+    database: PluginDatabaseManager;
+  +  cache: PluginCacheManager;
+    config: Config;
+    reader: UrlReader
+    discovery: PluginEndpointDiscovery;
+  };
+  ```
+
+  ```diff
+  // packages/backend/src/index.ts
+
+  import Router from 'express-promise-router';
+  import {
+    createServiceBuilder,
+    loadBackendConfig,
+    getRootLogger,
+    useHotMemoize,
+    notFoundHandler,
+  +  CacheManager,
+    SingleConnectionDatabaseManager,
+    SingleHostDiscovery,
+    UrlReaders,
+  } from '@backstage/backend-common';
+  import { Config } from '@backstage/config';
+
+  function makeCreateEnv(config: Config) {
+    const root = getRootLogger();
+    const reader = UrlReaders.default({ logger: root, config });
+    const discovery = SingleHostDiscovery.fromConfig(config);
+
+    root.info(`Created UrlReader ${reader}`);
+
+    const databaseManager = SingleConnectionDatabaseManager.fromConfig(config);
+  +  const cacheManager = CacheManager.fromConfig(config);
+
+    return (plugin: string): PluginEnvironment => {
+      const logger = root.child({ type: 'plugin', plugin });
+      const database = databaseManager.forPlugin(plugin);
+  -    return { logger, database, config, reader, discovery };
+  +    const cache = cacheManager.forPlugin(plugin);
+  +    return { logger, database, cache, config, reader, discovery };
+    };
+  }
+  ```
+
+  To configure a cache store, add a `backend.cache` key to your app-config.yaml.
+
+  ```diff
+  // app-config.yaml
+
+  backend:
+    baseUrl: http://localhost:7000
+    listen:
+      port: 7000
+    database:
+      client: sqlite3
+      connection: ':memory:'
+  +  cache:
+  +    store: memory
+  ```
+
+- f86ab6d49: Added newer entity relationship cards to the default `@backstage/create-app` template:
+
+  - `EntityDependsOnComponentsCard`
+  - `EntityDependsOnResourcesCard`
+  - `EntityHasResourcesCard`
+  - `EntityHasSubcomponentsCard`
+
+  The `EntityLinksCard` was also added to the overview page. To apply these to your Backstage application, compare against the updated [EntityPage.tsx](https://github.com/backstage/backstage/blob/371760ca2493c8f63e9b44ecc57cc8488131ba5b/packages/create-app/templates/default-app/packages/app/src/components/catalog/EntityPage.tsx)
+
+- 260aaa684: Bumped the `@gitbeaker` dependencies to `29.x`.
+
+  To apply this change to an existing app, update all `@gitbeaker/*` dependencies in your `package.json`s to point to `^29.2.0`. Then run `yarn install` at the root of your project.
+
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [1cd0cacd9]
+- Updated dependencies [4ea9df9d3]
+- Updated dependencies [7a7da5146]
+- Updated dependencies [bf805b467]
+- Updated dependencies [203ce6f6f]
+- Updated dependencies [7ab5bfe68]
+- Updated dependencies [260aaa684]
+- Updated dependencies [704875e26]
+- Updated dependencies [3a181cff1]
+  - @backstage/plugin-catalog-backend@0.10.0
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog@0.6.0
+  - @backstage/cli@0.6.13
+  - @backstage/plugin-techdocs@0.9.4
+  - @backstage/plugin-scaffolder-backend@0.11.4
+  - @backstage/plugin-api-docs@0.4.15
+  - @backstage/plugin-auth-backend@0.3.12
+  - @backstage/plugin-catalog-import@0.5.8
+  - @backstage/plugin-explore@0.3.6
+  - @backstage/plugin-github-actions@0.4.8
+  - @backstage/plugin-lighthouse@0.2.17
+  - @backstage/plugin-scaffolder@0.9.6
+  - @backstage/plugin-search@0.3.7
+  - @backstage/plugin-techdocs-backend@0.8.2
+
 ## 0.3.22
 
 ### Patch Changes

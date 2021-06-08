@@ -142,6 +142,12 @@ this:
       "type": "string",
       "title": "Last name"
     },
+    "nicknames":{
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "telephone": {
       "type": "string",
       "title": "Telephone",
@@ -160,6 +166,11 @@ this:
   "lastName": {
     "ui:emptyValue": "",
     "ui:autocomplete": "given-name"
+  },
+  "nicknames": {
+    "ui:options":{
+      "orderable": false
+    }
   },
   "telephone": {
     "ui:options": {
@@ -202,6 +213,12 @@ spec:
           title: Last name
           ui:emptyValue: ''
           ui:autocomplete: given-name
+        nicknames:
+          type: array
+          items:
+            type: string
+          ui:options:
+            orderable: false
         telephone:
           type: string
           title: Telephone
@@ -222,17 +239,17 @@ You can see it in the above full example which is a separate step and it looks a
 little like this:
 
 ```yaml
-   - title: Choose a location
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+- title: Choose a location
+  required:
+    - repoUrl
+  properties:
+    repoUrl:
+      title: Repository Location
+      type: string
+      ui:field: RepoUrlPicker
+      ui:options:
+        allowedHosts:
+          - github.com
 ```
 
 The `allowedHosts` part should be set to where you wish to enable this template
@@ -304,7 +321,10 @@ You might have noticed in the examples that there are `{{ }}`, and these are a
 `yaml` together. All the form inputs from the `parameters` section, when passed
 to the steps will be available by using the template syntax
 `{{ parameters.something }}`. This is great for passing the values from the form
-into different steps and reusing these input variables.
+into different steps and reusing these input variables. To pass arrays or
+objects use the syntax `{{ json paramaters.something }}` where
+`paramaters.something` is of type `object` or `array` in the `jsonSchema`, such
+as the `nicknames` parameter in the previous example.
 
 As you can see above in the `Outputs` section, `actions` and `steps` can also
 output things. So you can grab that output by using

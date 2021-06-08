@@ -35,12 +35,12 @@ import StarIcon from '@material-ui/icons/Star';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { EntityFilterGroupsProvider, useFilteredEntities } from '../../filter';
+import { registerComponentRouteRef } from '../../routes';
 import { ResultsFilter } from '../ResultsFilter/ResultsFilter';
 import { ScaffolderFilter } from '../ScaffolderFilter';
 import { ButtonGroup } from '../ScaffolderFilter/ScaffolderFilter';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
 import { TemplateCard } from '../TemplateCard';
-import { registerComponentRouteRef } from '../../routes';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -174,8 +174,12 @@ export const ScaffolderPageContents = () => {
             <ItemCardGrid>
               {matchingEntities &&
                 matchingEntities?.length > 0 &&
-                matchingEntities.map(template => (
-                  <TemplateCard template={template} />
+                matchingEntities.map((template, i) => (
+                  <TemplateCard
+                    key={i}
+                    template={template}
+                    deprecated={template.apiVersion === 'backstage.io/v1alpha1'}
+                  />
                 ))}
             </ItemCardGrid>
           </div>

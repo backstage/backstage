@@ -40,6 +40,7 @@ nav:
           - Well-known Statuses: 'features/software-catalog/well-known-statuses.md'
           - Extending the model: 'features/software-catalog/extending-the-model.md'
           - External integrations: 'features/software-catalog/external-integrations.md'
+          - Catalog Customization: 'features/software-catalog/catalog-customization.md'
           - API: 'features/software-catalog/api.md'
       - Kubernetes:
           - Overview: 'features/kubernetes/index.md'
@@ -54,6 +55,8 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Templates (Legacy): 'features/software-templates/legacy.md'
+          - Migrating from v1alpha1 to v1beta2 templates: 'features/software-templates/migrating-from-v1alpha1-to-v1beta2.md'
+
       - Backstage Search:
           - Overview: 'features/search/README.md'
           - Search Architecture: 'features/search/architecture.md'
@@ -152,7 +155,6 @@ nav:
           - Backend: 'api/backend.md'
   - Tutorials:
       - Future developer journey: 'tutorials/journey.md'
-      - Monorepo App Setup With Authentication: 'tutorials/quickstart-app-auth.md'
       - Adding Custom Plugin to Existing Monorepo App: 'tutorials/quickstart-app-plugin.md'
       - Switching Backstage from SQLite to PostgreSQL: 'tutorials/switching-sqlite-postgres.md'
   - Architecture Decision Records (ADRs):

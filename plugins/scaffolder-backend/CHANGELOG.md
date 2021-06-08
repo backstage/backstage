@@ -1,5 +1,53 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.11.5
+
+### Patch Changes
+
+- 6fe1567a7: This adds a configuration option to the scaffolder plugin router, so we can allow for multiple `TaskWorkers`. Currently with only one `TaskWorker` you are limited to scaffolding one thing at a time. Set the `taskWorkers?: number` option in your scaffolder router to get more than 1 `TaskWorker`
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
+## 0.11.4
+
+### Patch Changes
+
+- 260aaa684: Bump `@gitbeaker` dependencies to `29.x`.
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
+## 0.11.3
+
+### Patch Changes
+
+- 021eb366a: Instead of failing, warn when you need to pay for GitHub Pro.
+
+## 0.11.2
+
+### Patch Changes
+
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 65e6c4541: Remove circular dependencies
+- 81d7b9c6f: Added deprecation warnings for `v1alpha1` templates
+- 9962faa2b: Add branch protection for default branches of scaffolded GitHub repositories
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
 ## 0.11.1
 
 ### Patch Changes

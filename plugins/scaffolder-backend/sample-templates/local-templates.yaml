@@ -5,9 +5,9 @@ metadata:
   description: A collection of locally available Backstage example templates
 spec:
   targets:
-    - ./create-react-app/template.yaml
     - ./docs-template/template.yaml
     - ./react-ssr-template/template.yaml
+    - ./create-react-app/template.yaml
     - ./springboot-grpc-template/template.yaml
     - ./v1beta2-demo/template.yaml
     - ./pull-request/template.yaml

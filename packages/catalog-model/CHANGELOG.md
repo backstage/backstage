@@ -1,5 +1,40 @@
 # @backstage/catalog-model
 
+## 0.8.1
+
+### Patch Changes
+
+- ebe802bc4: Remove the explicit connection from `EntityEnvelope` and `Entity`.
+
+## 0.8.0
+
+### Minor Changes
+
+- 704875e26: Breaking changes:
+
+  - The long-deprecated `schemaValidator` export is finally removed.
+
+  Additions:
+
+  - The `EntityEnvelope` type, which is a supertype of `Entity`.
+  - The `entityEnvelopeSchemaValidator` function, which returns a validator for an `EntityEnvelope` or its subtypes, based on a JSON schema.
+  - The `entitySchemaValidator` function, which returns a validator for an `Entity` or its subtypes, based on a JSON schema.
+  - The `entityKindSchemaValidator` function, which returns a specialized validator for custom `Entity` kinds, based on a JSON schema.
+
+### Patch Changes
+
+- add62a455: Foundation for standard entity status values
+
+## 0.7.10
+
+### Patch Changes
+
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 68fdbf014: Add the `status` field to the Entity envelope
+
 ## 0.7.9
 
 ### Patch Changes

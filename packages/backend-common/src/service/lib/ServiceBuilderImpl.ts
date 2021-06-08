@@ -55,7 +55,6 @@ const DEFAULT_CSP = {
   'script-src': ["'self'", "'unsafe-eval'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-  'upgrade-insecure-requests': [] as string[],
 };
 
 export class ServiceBuilderImpl implements ServiceBuilder {

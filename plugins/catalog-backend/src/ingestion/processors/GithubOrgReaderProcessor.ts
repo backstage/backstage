@@ -18,16 +18,12 @@ import { LocationSpec } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
+  GithubCredentialType,
   ScmIntegrations,
 } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { Logger } from 'winston';
-import {
-  getOrganizationTeams,
-  getOrganizationUsers,
-  ProviderConfig,
-  readGithubConfig,
-} from './github';
+import { getOrganizationTeams, getOrganizationUsers } from './github';
 import * as results from './results';
 import { CatalogProcessor, CatalogProcessorEmit } from './types';
 import { buildOrgHierarchy } from './util/org';
@@ -38,7 +34,6 @@ type GraphQL = typeof graphql;
  * Extracts teams and users out of a GitHub org.
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
-  private readonly providers: ProviderConfig[];
   private readonly integrations: ScmIntegrations;
   private readonly logger: Logger;
 
@@ -47,17 +42,11 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
     return new GithubOrgReaderProcessor({
       ...options,
-      providers: readGithubConfig(config),
       integrations,
     });
   }
 
-  constructor(options: {
-    providers: ProviderConfig[];
-    integrations: ScmIntegrations;
-    logger: Logger;
-  }) {
-    this.providers = options.providers;
+  constructor(options: { integrations: ScmIntegrations; logger: Logger }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
   }
@@ -71,14 +60,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
       return false;
     }
 
-    const client = await this.createClient(location.target);
+    const { client, tokenType } = await this.createClient(location.target);
     const { org } = parseUrl(location.target);
 
     // Read out all of the raw data
     const startTimestamp = Date.now();
     this.logger.info('Reading GitHub users and groups');
 
-    const { users } = await getOrganizationUsers(client, org);
+    const { users } = await getOrganizationUsers(client, org, tokenType);
     const { groups, groupMemberUsers } = await getOrganizationTeams(
       client,
       org,
@@ -112,65 +101,31 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
     return true;
   }
 
-  private async createClient(orgUrl: string): Promise<GraphQL> {
-    let client = await this.createClientFromIntegrations(orgUrl);
+  private async createClient(
+    orgUrl: string,
+  ): Promise<{ client: GraphQL; tokenType: GithubCredentialType }> {
+    const gitHubConfig = this.integrations.github.byUrl(orgUrl)?.config;
 
-    if (!client) {
-      client = await this.createClientFromProvider(orgUrl);
-    }
-
-    if (!client) {
+    if (!gitHubConfig) {
       throw new Error(
-        `There is no GitHub Org provider that matches ${orgUrl}. Please add a configuration for an integration or add an entry for it under catalog.processors.githubOrg.providers.`,
+        `There is no GitHub Org provider that matches ${orgUrl}. Please add a configuration for an integration.`,
       );
     }
 
-    return client;
-  }
-
-  private async createClientFromProvider(
-    orgUrl: string,
-  ): Promise<GraphQL | undefined> {
-    const provider = this.providers.find(p =>
-      orgUrl.startsWith(`${p.target}/`),
-    );
-
-    if (!provider) {
-      return undefined;
-    }
-
-    this.logger.warn(
-      'GithubOrgReaderProcessor uses provider defined in catalog.processors.githubOrg.providers, migrate to integrations instead. See https://backstage.io/docs/integrations/github/locations',
-    );
-
-    return !provider.token
-      ? graphql
-      : graphql.defaults({
-          baseUrl: provider.apiBaseUrl,
-          headers: {
-            authorization: `token ${provider.token}`,
-          },
-        });
-  }
-
-  private async createClientFromIntegrations(
-    orgUrl: string,
-  ): Promise<GraphQL | undefined> {
-    const gitHubConfig = this.integrations.github.byUrl(orgUrl)?.config;
-    if (!gitHubConfig) {
-      return undefined;
-    }
-
     const credentialsProvider = GithubCredentialsProvider.create(gitHubConfig);
-
-    const { headers } = await credentialsProvider.getCredentials({
+    const {
+      headers,
+      type: tokenType,
+    } = await credentialsProvider.getCredentials({
       url: orgUrl,
     });
 
-    return graphql.defaults({
+    const client = graphql.defaults({
       baseUrl: gitHubConfig.apiBaseUrl,
       headers,
     });
+
+    return { client, tokenType };
   }
 }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Transformer } from './index';
+import type { Transformer } from './transformer';
 
 export const rewriteDocLinks = (): Transformer => {
   return dom => {
@@ -31,12 +31,19 @@ export const rewriteDocLinks = (): Transformer => {
             if (elemAttribute.match(/^https?:\/\//i)) {
               elem.setAttribute('target', '_blank');
             }
-            const normalizedWindowLocation = normalizeUrl(window.location.href);
 
-            elem.setAttribute(
-              attributeName,
-              new URL(elemAttribute, normalizedWindowLocation).toString(),
-            );
+            try {
+              const normalizedWindowLocation = normalizeUrl(
+                window.location.href,
+              );
+              elem.setAttribute(
+                attributeName,
+                new URL(elemAttribute, normalizedWindowLocation).toString(),
+              );
+            } catch (_e) {
+              // Non-parseable links should be re-written as plain text.
+              elem.replaceWith(elem.textContent || elemAttribute);
+            }
           }
         });
     };

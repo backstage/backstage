@@ -14,48 +14,27 @@
  * limitations under the License.
  */
 
-import { ConflictError, NotFoundError } from '@backstage/errors';
-import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
-import { Knex } from 'knex';
-import { Transaction } from '../../database';
-import lodash from 'lodash';
-
-import {
-  ProcessingDatabase,
-  AddUnprocessedEntitiesOptions,
-  UpdateProcessedEntityOptions,
-  GetProcessableEntitiesResult,
-  ReplaceUnprocessedEntitiesOptions,
-  RefreshStateItem,
-} from './types';
-import type { Logger } from 'winston';
-
-import { v4 as uuid } from 'uuid';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { JsonObject } from '@backstage/config';
-
-export type DbRefreshStateRow = {
-  entity_id: string;
-  entity_ref: string;
-  unprocessed_entity: string;
-  processed_entity?: string;
-  cache?: string;
-  next_update_at: string;
-  last_discovery_at: string; // remove?
-  errors?: string;
-};
-
-export type DbRelationsRow = {
-  originating_entity_id: string;
-  source_entity_ref: string;
-  target_entity_ref: string;
-  type: string;
-};
-
-export type DbRefreshStateReferencesRow = {
-  source_key?: string;
-  source_entity_ref?: string;
-  target_entity_ref: string;
-};
+import { ConflictError, NotFoundError } from '@backstage/errors';
+import { Knex } from 'knex';
+import lodash from 'lodash';
+import { v4 as uuid } from 'uuid';
+import type { Logger } from 'winston';
+import { Transaction } from '../../database';
+import {
+  DbRefreshStateReferencesRow,
+  DbRefreshStateRow,
+  DbRelationsRow,
+} from './tables';
+import {
+  AddUnprocessedEntitiesOptions,
+  GetProcessableEntitiesResult,
+  ProcessingDatabase,
+  RefreshStateItem,
+  ReplaceUnprocessedEntitiesOptions,
+  UpdateProcessedEntityOptions,
+} from './types';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -121,6 +100,20 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       this.deduplicateRelations(relationRows),
       BATCH_SIZE,
     );
+  }
+
+  async updateProcessedEntityErrors(
+    txOpaque: Transaction,
+    options: UpdateProcessedEntityOptions,
+  ): Promise<void> {
+    const tx = txOpaque as Knex.Transaction;
+    const { id, errors } = options;
+
+    await tx<DbRefreshStateRow>('refresh_state')
+      .update({
+        errors,
+      })
+      .where('entity_id', id);
   }
 
   private deduplicateRelations(rows: DbRelationsRow[]): DbRelationsRow[] {
@@ -376,8 +369,8 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`10 seconds`]) // TODO: test this in sqlite3
-            : tx.raw(`now() + interval '30 seconds'`),
+            ? tx.raw(`datetime('now', ?)`, [`100 seconds`])
+            : tx.raw(`now() + interval '100 seconds'`),
       });
 
     return {

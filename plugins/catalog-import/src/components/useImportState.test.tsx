@@ -127,7 +127,7 @@ describe('useImportState', () => {
         activeState: 'finish',
         analyzeResult: locationAP,
         prepareResult: locationAP,
-        reviewResult: locationR,
+        reviewResult: locationAP,
       });
 
       act(() => result.current.onReset());
@@ -138,8 +138,8 @@ describe('useImportState', () => {
         analysisUrl: undefined,
         activeState: 'analyze',
         analyzeResult: undefined,
-        prepareResult: undefined,
-        reviewResult: locationR,
+        prepareResult: locationR,
+        reviewResult: undefined,
       });
     });
 

@@ -7,6 +7,7 @@
 import { JsonObject } from '@backstage/config';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/config';
+import { SerializedError } from '@backstage/errors';
 import * as yup from 'yup';
 
 // @public (undocumented)
@@ -17,9 +18,9 @@ export const analyzeLocationSchema: yup.ObjectSchema<{
 // @public (undocumented)
 interface ApiEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND;
+    kind: 'API';
     // (undocumented)
     spec: {
         type: string;
@@ -53,9 +54,9 @@ export function compareEntityToRef(entity: Entity, ref: EntityRef | EntityName, 
 // @public (undocumented)
 interface ComponentEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_2[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_2;
+    kind: 'Component';
     // (undocumented)
     spec: {
         type: string;
@@ -86,9 +87,9 @@ export class DefaultNamespaceEntityPolicy implements EntityPolicy {
 // @public (undocumented)
 interface DomainEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_3[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_3;
+    kind: 'Domain';
     // (undocumented)
     spec: {
         owner: string;
@@ -112,7 +113,7 @@ export type Entity = {
     metadata: EntityMeta;
     spec?: JsonObject;
     relations?: EntityRelation[];
-    status?: Record<string, JsonObject>;
+    status?: UNSTABLE_EntityStatus;
 };
 
 // @public
@@ -122,7 +123,23 @@ export const ENTITY_DEFAULT_NAMESPACE = "default";
 export const ENTITY_META_GENERATED_FIELDS: readonly ["uid", "etag", "generation"];
 
 // @public
+export type EntityEnvelope = {
+    apiVersion: string;
+    kind: string;
+    metadata: {
+        name: string;
+        namespace?: string;
+    };
+};
+
+// @public
+export function entityEnvelopeSchemaValidator<T extends EntityEnvelope = EntityEnvelope>(schema?: unknown): (data: unknown) => T;
+
+// @public
 export function entityHasChanges(previous: Entity, next: Entity): boolean;
+
+// @public
+export function entityKindSchemaValidator<T extends Entity>(schema: unknown): (data: unknown) => T | false;
 
 // @public
 export type EntityLink = {
@@ -184,6 +201,9 @@ export type EntityRelationSpec = {
 };
 
 // @public
+export function entitySchemaValidator<T extends Entity = Entity>(schema?: unknown): (data: unknown) => T;
+
+// @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
     constructor(validators?: Validators);
     // (undocumented)
@@ -211,9 +231,9 @@ export function getEntitySourceLocation(entity: Entity): {
 // @public (undocumented)
 interface GroupEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_4[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_4;
+    kind: 'Group';
     // (undocumented)
     spec: {
         type: string;
@@ -278,9 +298,9 @@ export const LOCATION_ANNOTATION = "backstage.io/managed-by-location";
 // @public (undocumented)
 interface LocationEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_5[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_5;
+    kind: 'Location';
     // (undocumented)
     spec: {
         type?: string;
@@ -404,9 +424,9 @@ export const RELATION_PROVIDES_API = "providesApi";
 // @public (undocumented)
 interface ResourceEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_6[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_6;
+    kind: 'Resource';
     // (undocumented)
     spec: {
         type: string;
@@ -422,9 +442,6 @@ export { ResourceEntityV1alpha1 }
 
 // @public (undocumented)
 export const resourceEntityV1alpha1Validator: KindValidator;
-
-// @public @deprecated (undocumented)
-export function schemaValidator(kind: string, apiVersion: readonly string[], schema: yup.Schema<any>): KindValidator;
 
 // @public
 export class SchemaValidEntityPolicy implements EntityPolicy {
@@ -458,9 +475,9 @@ export function stringifyLocationReference(ref: {
 // @public (undocumented)
 interface SystemEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_7[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_7;
+    kind: 'System';
     // (undocumented)
     spec: {
         owner: string;
@@ -478,15 +495,16 @@ export const systemEntityV1alpha1Validator: KindValidator;
 // @public (undocumented)
 interface TemplateEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_8[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_8;
+    kind: 'Template';
     // (undocumented)
     spec: {
         type: string;
         templater: string;
         path?: string;
         schema: JSONSchema;
+        owner?: string;
     };
 }
 
@@ -500,9 +518,9 @@ export const templateEntityV1alpha1Validator: KindValidator;
 // @public (undocumented)
 export interface TemplateEntityV1beta2 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_9[number];
+    apiVersion: 'backstage.io/v1beta2';
     // (undocumented)
-    kind: typeof KIND_9;
+    kind: 'Template';
     // (undocumented)
     metadata: EntityMeta & {
         title?: string;
@@ -520,18 +538,35 @@ export interface TemplateEntityV1beta2 extends Entity {
         output?: {
             [name: string]: string;
         };
+        owner?: string;
     };
 }
 
 // @public (undocumented)
 export const templateEntityV1beta2Validator: KindValidator;
 
+// @alpha
+export type UNSTABLE_EntityStatus = {
+    items?: UNSTABLE_EntityStatusItem[];
+};
+
+// @alpha
+export type UNSTABLE_EntityStatusItem = {
+    type: string;
+    level: UNSTABLE_EntityStatusLevel;
+    message: string;
+    error?: SerializedError;
+};
+
+// @alpha
+export type UNSTABLE_EntityStatusLevel = 'info' | 'warning' | 'error';
+
 // @public (undocumented)
 interface UserEntityV1alpha1 extends Entity {
     // (undocumented)
-    apiVersion: typeof API_VERSION_10[number];
+    apiVersion: 'backstage.io/v1alpha1' | 'backstage.io/v1beta1';
     // (undocumented)
-    kind: typeof KIND_10;
+    kind: 'User';
     // (undocumented)
     spec: {
         profile?: {

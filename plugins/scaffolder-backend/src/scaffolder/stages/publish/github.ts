@@ -15,7 +15,10 @@
  */
 
 import { PublisherBase, PublisherOptions, PublisherResult } from './types';
-import { initRepoAndPush } from './helpers';
+import {
+  enableBranchProtectionOnDefaultRepoBranch,
+  initRepoAndPush,
+} from './helpers';
 import {
   GitHubIntegrationConfig,
   GithubCredentialsProvider,
@@ -26,6 +29,7 @@ import path from 'path';
 
 export type RepoVisibilityOptions = 'private' | 'internal' | 'public';
 
+/** @deprecated use createPublishGithubAction instead */
 export class GithubPublisher implements PublisherBase {
   static async fromConfig(
     config: GitHubIntegrationConfig,
@@ -99,6 +103,18 @@ export class GithubPublisher implements PublisherBase {
       /\.git$/,
       '/blob/master/catalog-info.yaml',
     );
+
+    try {
+      await enableBranchProtectionOnDefaultRepoBranch({
+        owner,
+        client,
+        repoName: name,
+        logger,
+      });
+    } catch (e) {
+      throw new Error(`Failed to add branch protection to '${name}', ${e}`);
+    }
+
     return { remoteUrl, catalogInfoUrl };
   }
 
@@ -130,7 +146,7 @@ export class GithubPublisher implements PublisherBase {
             description,
           });
 
-    const { data } = await repoCreationPromise;
+    const { data: newRepo } = await repoCreationPromise;
 
     try {
       if (access?.startsWith(`${owner}/`)) {
@@ -156,6 +172,7 @@ export class GithubPublisher implements PublisherBase {
         `Failed to add access to '${access}'. Status ${e.status} ${e.message}`,
       );
     }
-    return data?.clone_url;
+
+    return newRepo.clone_url;
   }
 }

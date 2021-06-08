@@ -43,13 +43,13 @@ this.
 
 The UI is a thin, client-side wrapper around a set of plugins. It provides some
 core UI components and libraries for shared activities such as config
-management. [[live demo](https://backstage-demo.roadie.io/)]
+management. [[live demo](https://demo.backstage.io/catalog)]
 
 ![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
 Each plugin typically makes itself available in the UI on a dedicated URL. For
 example, the Lighthouse plugin is registered with the UI on `/lighthouse`.
-[[live demo](https://backstage-demo.roadie.io/lighthouse)]
+[[learn more](https://backstage.io/blog/2020/04/06/lighthouse-plugin)]
 
 ![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
 
@@ -116,9 +116,9 @@ Architecturally, plugins can take three forms:
 #### Standalone plugins
 
 Standalone plugins run entirely in the browser.
-[The Tech Radar plugin](https://backstage-demo.roadie.io/tech-radar), for
-example, simply renders hard-coded information. It doesn't make any API requests
-to other services.
+[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example,
+simply renders hard-coded information. It doesn't make any API requests to other
+services.
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
@@ -181,6 +181,21 @@ production database. Other databases such as the MySQL variants are reported to
 work but
 [aren't tested as fully](https://github.com/backstage/backstage/issues/2460)
 yet.
+
+## Cache
+
+The Backstage backend and its builtin plugins are also able to leverage cache
+stores as a means of improving performance or reliability. Similar to how
+databases are supported, plugins receive logically separated cache connections,
+which are powered by [Keyv](https://github.com/lukechilds/keyv) under the hood.
+
+At this time of writing, Backstage can be configured to use one of two cache
+stores: memory, which is mainly used for local testing, and memcache, which is a
+cache store better suited for production deployment. The right cache store for
+your Backstage instance will depend on your own run-time constraints and those
+required of the plugins you're running.
+
+Contributions supporting other cache stores are welcome!
 
 ## Containerization
 

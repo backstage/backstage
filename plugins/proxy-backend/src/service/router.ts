@@ -95,8 +95,12 @@ export function buildMiddleware(
       routeWithSlash = routeWithSlash.substring(1);
     }
 
+    // The ? makes the slash optional for the rewrite, so that a base path without an ending slash
+    // will also be matched (e.g. '/sample' and then requesting just '/api/proxy/sample' without an
+    // ending slash). Otherwise the target gets called with the full '/api/proxy/sample' path
+    // appended.
     fullConfig.pathRewrite = {
-      [`^${pathPrefix}${routeWithSlash}`]: '/',
+      [`^${pathPrefix}${routeWithSlash}?`]: '/',
     };
   }
 

@@ -16,22 +16,16 @@
 
 import { Config } from '@backstage/config';
 import express from 'express';
-import { resolve as resolvePath, dirname } from 'path';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
 import {
-  JobProcessor,
   PreparerBuilder,
   TemplaterBuilder,
   TemplaterValues,
   PublisherBuilder,
-  parseLocationAnnotation,
-  joinGitUrlPath,
-  FilePreparer,
 } from '../scaffolder';
 import { CatalogEntityClient } from '../lib/catalog';
-import { validate, ValidatorResult } from 'jsonschema';
-import parseGitUrl from 'git-url-parse';
+import { validate } from 'jsonschema';
 import {
   DatabaseTaskStore,
   StorageTaskBroker,
@@ -64,6 +58,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   catalogClient: CatalogApi;
   actions?: TemplateAction<any>[];
+  taskWorkers?: number;
 }
 
 function isAlpha1Template(
@@ -97,11 +92,11 @@ export async function createRouter(
     database,
     catalogClient,
     actions,
+    taskWorkers,
   } = options;
 
   const logger = parentLogger.child({ plugin: 'scaffolder' });
   const workingDirectory = await getWorkingDirectory(config, logger);
-  const jobProcessor = await JobProcessor.fromConfig({ config, logger });
   const entityClient = new CatalogEntityClient(catalogClient);
   const integrations = ScmIntegrations.fromConfig(config);
 
@@ -110,12 +105,16 @@ export async function createRouter(
   );
   const taskBroker = new StorageTaskBroker(databaseTaskStore, logger);
   const actionRegistry = new TemplateActionRegistry();
-  const worker = new TaskWorker({
-    logger,
-    taskBroker,
-    actionRegistry,
-    workingDirectory,
-  });
+  const workers = [];
+  for (let i = 0; i < (taskWorkers || 1); i++) {
+    const worker = new TaskWorker({
+      logger,
+      taskBroker,
+      actionRegistry,
+      workingDirectory,
+    });
+    workers.push(worker);
+  }
 
   const actionsToRegister = Array.isArray(actions)
     ? actions
@@ -134,137 +133,8 @@ export async function createRouter(
       ];
 
   actionsToRegister.forEach(action => actionRegistry.register(action));
+  workers.forEach(worker => worker.start());
 
-  worker.start();
-
-  router
-    .get('/v1/job/:jobId', ({ params }, res) => {
-      const job = jobProcessor.get(params.jobId);
-
-      if (!job) {
-        res.status(404).json({ error: 'job not found' });
-        return;
-      }
-
-      res.json({
-        id: job.id,
-        metadata: {
-          ...job.context,
-          logger: undefined,
-          logStream: undefined,
-        },
-        status: job.status,
-        stages: job.stages.map(stage => ({
-          ...stage,
-          handler: undefined,
-        })),
-        error: job.error,
-      });
-    })
-    .post('/v1/jobs', async (req, res) => {
-      const templateName: string = req.body.templateName;
-      const values: TemplaterValues = {
-        ...req.body.values,
-        destination: {
-          git: parseGitUrl(req.body.values.storePath),
-        },
-      };
-
-      // Forward authorization from client
-      const template = await entityClient.findTemplate(templateName, {
-        token: getBearerToken(req.headers.authorization),
-      });
-      if (!isAlpha1Template(template)) {
-        throw new InputError(
-          `This endpoint does not support templates with version ${template.apiVersion}`,
-        );
-      }
-
-      const validationResult: ValidatorResult = validate(
-        values,
-        template.spec.schema,
-      );
-
-      if (!validationResult.valid) {
-        res.status(400).json({ errors: validationResult.errors });
-        return;
-      }
-
-      const job = jobProcessor.create({
-        entity: template,
-        values,
-        stages: [
-          {
-            name: 'Prepare the skeleton',
-            async handler(ctx) {
-              const {
-                protocol,
-                location: templateEntityLocation,
-              } = parseLocationAnnotation(ctx.entity);
-
-              if (protocol === 'file') {
-                const preparer = new FilePreparer();
-
-                const path = resolvePath(
-                  dirname(templateEntityLocation),
-                  template.spec.path || '.',
-                );
-
-                await preparer.prepare({
-                  url: `file://${path}`,
-                  logger: ctx.logger,
-                  workspacePath: ctx.workspacePath,
-                });
-                return;
-              }
-
-              const preparer = preparers.get(templateEntityLocation);
-
-              const url = joinGitUrlPath(
-                templateEntityLocation,
-                template.spec.path,
-              );
-
-              await preparer.prepare({
-                url,
-                logger: ctx.logger,
-                workspacePath: ctx.workspacePath,
-              });
-            },
-          },
-          {
-            name: 'Run the templater',
-            async handler(ctx) {
-              const templater = templaters.get(ctx.entity.spec.templater);
-              await templater.run({
-                workspacePath: ctx.workspacePath,
-                logStream: ctx.logStream,
-                values: ctx.values,
-              });
-            },
-          },
-          {
-            name: 'Publish template',
-            handler: async ctx => {
-              const publisher = publishers.get(ctx.values.storePath);
-              ctx.logger.info('Will now store the template');
-              const result = await publisher.publish({
-                values: ctx.values,
-                workspacePath: ctx.workspacePath,
-                logger: ctx.logger,
-              });
-              return result;
-            },
-          },
-        ],
-      });
-
-      jobProcessor.run(job);
-
-      res.status(201).json({ id: job.id });
-    });
-
-  // NOTE: The v2 API is unstable
   router
     .get(
       '/v2/templates/:namespace/:kind/:name/parameter-schema',
@@ -359,8 +229,11 @@ export async function createRouter(
 
       let taskSpec;
       if (isAlpha1Template(template)) {
-        const result = validate(values, template.spec.schema);
+        logger.warn(
+          `[DEPRECATION] - Template: ${template.metadata.name} has version ${template.apiVersion} which is going to be deprecated. Please refer to https://backstage.io/docs/features/software-templates/migrating-from-v1alpha1-to-v1beta2 for help on migrating`,
+        );
 
+        const result = validate(values, template.spec.schema);
         if (!result.valid) {
           res.status(400).json({ errors: result.errors });
           return;

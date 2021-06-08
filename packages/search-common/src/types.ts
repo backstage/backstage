@@ -23,6 +23,7 @@ export interface SearchQuery {
 }
 
 export interface SearchResult {
+  type: string;
   document: IndexableDocument;
 }
 
@@ -57,6 +58,11 @@ export interface IndexableDocument {
  * search.
  */
 export interface DocumentCollator {
+  /**
+   * The type or name of the document set returned by this collator. Used as an
+   * index name by Search Engines.
+   */
+  readonly type: string;
   execute(): Promise<IndexableDocument[]>;
 }
 
@@ -65,5 +71,11 @@ export interface DocumentCollator {
  * additional metadata.
  */
 export interface DocumentDecorator {
+  /**
+   * An optional array of document/index types on which this decorator should
+   * be applied. If no types are provided, this decorator will be applied to
+   * all document/index types.
+   */
+  readonly types?: string[];
   execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
 }

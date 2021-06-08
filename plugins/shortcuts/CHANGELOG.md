@@ -1,5 +1,11 @@
 # @backstage/plugin-shortcuts
 
+## 0.1.3
+
+### Patch Changes
+
+- 15ffc1ac9: Fix horizontal scroll bar appearance issue
+
 ## 0.1.2
 
 ### Patch Changes

@@ -64,7 +64,7 @@ export type GithubDeployment = {
   commit: {
     abbreviatedOid: string;
     commitUrl: string;
-  };
+  } | null;
   statuses: {
     nodes: Node[];
   };

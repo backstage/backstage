@@ -19,6 +19,7 @@ import {
   createRouteRef,
   createRoutableExtension,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core';
 import { SearchClient, searchApiRef } from './apis';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -68,5 +69,34 @@ export const SearchPageNext = searchPlugin.provide(
     component: () =>
       import('./components/SearchPageNext').then(m => m.SearchPageNext),
     mountPoint: rootNextRouteRef,
+  }),
+);
+
+export const SearchBarNext = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SearchBarNext').then(m => m.SearchBarNext),
+    },
+  }),
+);
+
+export const SearchResultNext = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/SearchResultNext').then(m => m.SearchResultNext),
+    },
+  }),
+);
+
+export const DefaultResultListItem = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DefaultResultListItem').then(
+          m => m.DefaultResultListItem,
+        ),
+    },
   }),
 );

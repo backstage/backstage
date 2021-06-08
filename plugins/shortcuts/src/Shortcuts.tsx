@@ -26,7 +26,7 @@ import { shortcutsApiRef } from './api';
 const useStyles = makeStyles({
   root: {
     flex: '1 1 auto',
-    overflow: 'scroll',
+    overflowY: 'scroll',
   },
 });
 

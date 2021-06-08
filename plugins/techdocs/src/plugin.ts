@@ -20,27 +20,16 @@ import {
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
-  createRouteRef,
   discoveryApiRef,
   identityApiRef,
 } from '@backstage/core';
 import { techdocsApiRef, techdocsStorageApiRef } from './api';
 import { TechDocsClient, TechDocsStorageClient } from './client';
-
-export const rootRouteRef = createRouteRef({
-  path: '',
-  title: 'TechDocs Landing Page',
-});
-
-export const rootDocsRouteRef = createRouteRef({
-  path: ':namespace/:kind/:name/*',
-  title: 'Docs',
-});
-
-export const rootCatalogDocsRouteRef = createRouteRef({
-  path: '*',
-  title: 'Docs',
-});
+import {
+  rootDocsRouteRef,
+  rootRouteRef,
+  rootCatalogDocsRouteRef,
+} from './routes';
 
 export const techdocsPlugin = createPlugin({
   id: 'techdocs',

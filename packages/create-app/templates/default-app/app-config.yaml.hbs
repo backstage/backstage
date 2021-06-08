@@ -11,6 +11,8 @@ backend:
     port: 7000
   csp:
     connect-src: ["'self'", 'http:', 'https:']
+    # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
+    # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
     origin: http://localhost:3000
     methods: [GET, POST, PUT, DELETE]
@@ -34,6 +36,8 @@ backend:
         #ca: # if you have a CA file and want to verify it you can uncomment this section
         #  $file: <file-path>/ca/server.crt
   {{/if}}
+  cache:
+    store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
@@ -62,7 +66,7 @@ techdocs:
     type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
 
 auth:
-  # see https://backstage.io/docs/tutorials/quickstart-app-auth to know more about enabling auth providers
+  # see https://backstage.io/docs/auth/ to learn about auth providers
   providers: {}
 
 scaffolder:
@@ -72,7 +76,7 @@ scaffolder:
 
 catalog:
   rules:
-    - allow: [Component, System, API, Group, User, Template, Location]
+    - allow: [Component, System, API, Group, User, Resource, Location]
   locations:
     # Backstage example components
     - type: url
@@ -86,11 +90,13 @@ catalog:
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-apis.yaml
 
+    # Backstage example resources
+    - type: url
+      target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-resources.yaml
+
     # Backstage example organization groups
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme/org.yaml
-      rules:
-        - allow: [Group, User]
 
     # Backstage example templates
     - type: url
@@ -99,10 +105,6 @@ catalog:
         - allow: [Template]
     - type: url
       target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/springboot-grpc-template/template.yaml
-      rules:
-        - allow: [Template]
-    - type: url
-      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
       rules:
         - allow: [Template]
     - type: url

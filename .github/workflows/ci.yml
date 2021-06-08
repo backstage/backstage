@@ -76,6 +76,9 @@ jobs:
       - name: prettier
         run: yarn prettier:check
 
+      - name: lock
+        run: yarn lock:check
+
       - name: validate config
         run: yarn backstage-cli config:check --lax
 

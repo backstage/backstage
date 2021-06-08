@@ -1,5 +1,57 @@
 # @backstage/plugin-techdocs
 
+## 0.9.5
+
+### Patch Changes
+
+- aad98c544: Fixes multiple XSS and sanitization bypass vulnerabilities in TechDocs.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
+## 0.9.4
+
+### Patch Changes
+
+- 4ea9df9d3: Set admonition font size to 1rem in TechDocs to align with the rest of the document's font sizes.
+  Fixes #5448 and #5541.
+- bf805b467: Fixes #5529, a bug that prevented TechDocs from rendering pages containing malformed links.
+- 203ce6f6f: TechDocs now respects the `download` attribute on anchor tags in generated
+  markup, allowing documentation authors to bundle downloadable files with their
+  documentation.
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
+## 0.9.3
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- a62cfe068: Bug fix on sidebar position when Tab-Bar is enabled
+- 35e091604: Handle URLs with a `#hash` correctly when rewriting link URLs.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.9.2
 
 ### Patch Changes

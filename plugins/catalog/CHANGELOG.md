@@ -1,5 +1,83 @@
 # @backstage/plugin-catalog
 
+## 0.6.1
+
+### Patch Changes
+
+- 2a942cc9e: invert logic for when to show type column
+- f46a9e82d: Move dependency to `@microsoft/microsoft-graph-types` from `@backstage/plugin-catalog`
+  to `@backstage/plugin-catalog-backend`.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
+## 0.6.0
+
+### Minor Changes
+
+- 17c497b81: The default `CatalogPage` has been reworked to be more composable and make
+  customization easier. This change only affects those who have replaced the
+  default `CatalogPage` with a custom implementation; others can safely ignore the
+  rest of this changelog.
+
+  If you created a custom `CatalogPage` to **add or remove tabs** from the
+  catalog, a custom page is no longer necessary. The fixed tabs have been replaced
+  with a `spec.type` dropdown that shows all available `Component` types in the
+  catalog.
+
+  For other needs, customizing the `CatalogPage` should now be easier. The new
+  [CatalogPage.tsx](https://github.com/backstage/backstage/blob/9a4baa74509b6452d7dc054d34cf079f9997166d/plugins/catalog/src/components/CatalogPage/CatalogPage.tsx)
+  shows the default implementation. Overriding this with your own, similar
+  `CatalogPage` component in your `App.tsx` routing allows you to adjust the
+  layout, header, and which filters are available.
+
+  See the documentation added on [Catalog
+  Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
+  for instructions.
+
+### Patch Changes
+
+- 7ab5bfe68: Add support for fullHeight variant to the AboutCard
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
+## 0.5.8
+
+### Patch Changes
+
+- a53f3d603: - Added `RelatedEntitesCard` as a base implementation of displaying entities that are related to another entity.
+  - Added `HasResourcesCard` to display resources that are part of a system.
+  - Added `DependsOnComponentsCard` to display components that are dependencies of a component.
+  - Added `DependsOnResourcesCard` to display resources that are dependencies of a component.
+  - Refactored `HasComponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSubcomponentsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Refactored `HasSystemsCard` to use base `RelatedEntitiesCard`. Card remains backwards compatible.
+  - Updated the example app to take advantage of these new components.
+- b203699e9: Display warning when Entity has orphan annotation.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.5.7
 
 ### Patch Changes

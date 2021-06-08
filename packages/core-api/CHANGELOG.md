@@ -1,5 +1,37 @@
 # @backstage/core-api
 
+## 0.2.21
+
+### Patch Changes
+
+- 0160678b1: Made the `RouteRef*` types compatible with the ones exported from `@backstage/core-plugin-api`.
+- Updated dependencies [031ccd45f]
+- Updated dependencies [e7c5e4b30]
+  - @backstage/core-plugin-api@0.1.1
+  - @backstage/theme@0.2.8
+
+## 0.2.20
+
+### Patch Changes
+
+- d597a50c6: Add a global type definition for `Symbol.observable`, fix type checking in projects that didn't already have it defined.
+
+## 0.2.19
+
+### Patch Changes
+
+- 61c3f927c: Updated the `Observable` type to provide interoperability with `Symbol.observable`, making it compatible with at least `zen-observable` and `RxJS 7`.
+
+  In cases where this change breaks tests that mocked the `Observable` type, the following addition to the mock should fix the breakage:
+
+  ```ts
+    [Symbol.observable]() {
+      return this;
+    },
+  ```
+
+- 65e6c4541: Remove circular dependencies
+
 ## 0.2.18
 
 ### Patch Changes
