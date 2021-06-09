@@ -57,6 +57,7 @@ import {
 } from '../extensions/traversal';
 import { pluginCollector } from '../plugins/collectors';
 import {
+  featureFlagCollector,
   routeObjectCollector,
   routeParentCollector,
   routePathCollector,
@@ -224,6 +225,7 @@ export class PrivateAppImpl implements BackstageApp {
             routeParents: routeParentCollector,
             routeObjects: routeObjectCollector,
             collectedPlugins: pluginCollector,
+            featureFlags: featureFlagCollector,
           },
         });
 
@@ -237,7 +239,13 @@ export class PrivateAppImpl implements BackstageApp {
         this.verifyPlugins(this.plugins);
 
         // Initialize APIs once all plugins are available
-        this.getApiHolder();
+        const apiHolder = this.getApiHolder();
+
+        // Register feature flags that have been discovered
+        const featureFlagApi = apiHolder.get(featureFlagsApiRef)!;
+        for (const name of result.featureFlags) {
+          featureFlagApi.registerFlag({ name, pluginId: '<app>' });
+        }
 
         return result;
       }, [children]);

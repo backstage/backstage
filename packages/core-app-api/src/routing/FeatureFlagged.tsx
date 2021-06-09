@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export { FlatRoutes } from './FlatRoutes';
-export { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
+import React from 'react';
+import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+
+export type FeatureFlaggedProps = {
+  flag: string;
+  children: JSX.Element | null;
+};
+
+export const FeatureFlagged = ({ children, flag }: FeatureFlaggedProps) => {
+  const featureFlagApi = useApi(featureFlagsApiRef);
+  const isEnabled = featureFlagApi.isActive(flag);
+  return isEnabled ? children : <div>NAT ENABLED</div>;
+};

@@ -16,7 +16,13 @@
 
 import React, { ReactNode, Children, isValidElement, Fragment } from 'react';
 import { useRoutes } from 'react-router-dom';
-import { useApp } from '@backstage/core-plugin-api';
+import {
+  useApi,
+  useApp,
+  featureFlagsApiRef,
+  FeatureFlagsApi,
+} from '@backstage/core-plugin-api';
+import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
 
 type RouteObject = {
   path: string;
@@ -26,7 +32,10 @@ type RouteObject = {
 
 // Similar to the same function from react-router, this collects routes from the
 // children, but only the first level of routes
-function createRoutesFromChildren(childrenNode: ReactNode): RouteObject[] {
+function createRoutesFromChildren(
+  childrenNode: ReactNode,
+  featureFlagsApi: FeatureFlagsApi,
+): RouteObject[] {
   return Children.toArray(childrenNode).flatMap(child => {
     if (!isValidElement(child)) {
       return [];
@@ -35,7 +44,15 @@ function createRoutesFromChildren(childrenNode: ReactNode): RouteObject[] {
     const { children } = child.props;
 
     if (child.type === Fragment) {
-      return createRoutesFromChildren(children);
+      return createRoutesFromChildren(children, featureFlagsApi);
+    }
+
+    if (child.type === FeatureFlagged) {
+      const { flag } = child.props as FeatureFlaggedProps;
+      if (featureFlagsApi.isActive(flag)) {
+        return createRoutesFromChildren(children, featureFlagsApi);
+      }
+      return [];
     }
 
     let path = child.props.path as string | undefined;
@@ -67,8 +84,9 @@ type FlatRoutesProps = {
 
 export const FlatRoutes = (props: FlatRoutesProps): JSX.Element | null => {
   const app = useApp();
+  const featureFlagsApi = useApi(featureFlagsApiRef);
   const { NotFoundErrorPage } = app.getComponents();
-  const routes = createRoutesFromChildren(props.children)
+  const routes = createRoutesFromChildren(props.children, featureFlagsApi)
     // Routes are sorted to work around a bug where prefixes are unexpectedly matched
     .sort((a, b) => b.path.localeCompare(a.path))
     // We make sure all routes have '/*' appended, except '/'

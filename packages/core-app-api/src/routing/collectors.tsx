@@ -19,6 +19,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { BackstageRouteObject } from './types';
 import { getComponentData } from '../extensions';
 import { createCollector } from '../extensions/traversal';
+import { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
 
 function getMountPoint(node: ReactElement): RouteRef | undefined {
   const element: ReactNode = node.props?.element;
@@ -169,5 +170,15 @@ export const routeObjectCollector = createCollector(
     }
 
     return parentObj;
+  },
+);
+
+export const featureFlagCollector = createCollector(
+  () => new Set<string>(),
+  (acc, node) => {
+    if (node.type === FeatureFlagged) {
+      const { flag } = node.props as FeatureFlaggedProps;
+      acc.add(flag);
+    }
   },
 );

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+import { createApp, FlatRoutes, FeatureFlagged } from '@backstage/core-app-api';
 import {
   AlertDisplay,
-  createApp,
-  FlatRoutes,
   OAuthRequestDialog,
   SignInPage,
-} from '@backstage/core';
+} from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -65,6 +64,7 @@ const app = createApp({
     // Custom icon example
     alert: AlarmIcon,
   },
+
   components: {
     SignInPage: props => {
       return (
@@ -114,8 +114,11 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
-    <Route path="/graphiql" element={<GraphiQLPage />} />
+    <FeatureFlagged flag="show-graphiql-page">
+      <Route path="/graphiql" element={<GraphiQLPage />} />
+    </FeatureFlagged>
     <Route path="/lighthouse" element={<LighthousePage />} />
+
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route path="/gcp-projects" element={<GcpProjectsPage />} />
     <Route path="/newrelic" element={<NewRelicPage />} />
