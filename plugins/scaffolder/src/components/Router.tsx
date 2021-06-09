@@ -18,6 +18,7 @@ import React, { useMemo } from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
+import { ExtensionsPage } from './ExtensionsPage';
 import { TaskPage } from './TaskPage';
 import { ActionsPage } from './ActionsPage';
 
@@ -52,6 +53,10 @@ export const Router = () => {
       />
       <Route path="/tasks/:taskId" element={<TaskPage />} />
       <Route path="/actions" element={<ActionsPage />} />
+      <Route
+        path="/extensions"
+        element={<ExtensionsPage fieldExtensions={fieldExtensions} />}
+      />
     </Routes>
   );
 };
