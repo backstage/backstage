@@ -213,10 +213,10 @@ environment is compatible with techdocs.
 
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
-apt). 
+apt).
 
-
-You can do so by including the following lines in the last step of your `Dockerfile`:
+You can do so by including the following lines in the last step of your
+`Dockerfile`:
 
 ```Dockerfile
 RUN apt-get update && apt-get install -y python3 python3-pip
