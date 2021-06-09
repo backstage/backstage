@@ -141,7 +141,7 @@ export type AppOptions = {
   /**
    * Supply icons to override the default ones.
    */
-  icons?: AppIcons & { [key in string]: IconComponent };
+  icons?: Partial<AppIcons> & { [key in string]: IconComponent };
 
   /**
    * A list of all plugins to include in the app.
