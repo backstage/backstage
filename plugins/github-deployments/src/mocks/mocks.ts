@@ -48,8 +48,14 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
           creator: {
             login: 'robot-user-001',
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
           },
           payload: '{"target":"moon"}',
         },
@@ -61,8 +67,14 @@ export const responseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
           creator: {
-            login: 'robot-user-002',
+            login: 'robot-user-001',
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
           },
           payload: '{"target":"sun"}',
         },
@@ -83,10 +95,16 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/123456789',
             abbreviatedOid: '12345',
           },
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
+          },
           creator: {
             login: 'robot-user-001',
           },
-          payload: '',
+          repository: {
+            nameWithOwner: 'org/owner',
+          },
+          payload: '{"target":"moon"}',
         },
         {
           state: 'failure',
@@ -96,10 +114,16 @@ export const refreshedResponseStub: QueryResponse = {
             commitUrl: 'https://exampleapi.com/543212345',
             abbreviatedOid: '54321',
           },
-          creator: {
-            login: 'robot-user-002',
+          statuses: {
+            nodes: [{ logUrl: 'taskrun/example-run' }],
           },
-          payload: '',
+          creator: {
+            login: 'robot-user-001',
+          },
+          repository: {
+            nameWithOwner: 'org/owner',
+          },
+          payload: '{"target":"sun"}',
         },
       ],
     },
