@@ -35,6 +35,7 @@ import {
   BootErrorPageProps,
   ErrorBoundaryFallbackProps,
 } from './types';
+import { BackstagePlugin } from '@backstage/core-plugin-api';
 
 /**
  * The default config loader, which expects that config is available at compile-time
@@ -171,7 +172,7 @@ export function createApp(options?: AppOptions) {
   return new PrivateAppImpl({
     apis,
     icons,
-    plugins,
+    plugins: plugins as BackstagePlugin<any, any>[],
     components,
     themes,
     configLoader,
