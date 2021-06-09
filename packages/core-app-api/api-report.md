@@ -120,6 +120,7 @@ export type AppComponents = {
     BootErrorPage: ComponentType<BootErrorPageProps>;
     Progress: ComponentType<{}>;
     Router: ComponentType<{}>;
+    ErrorBoundaryFallback: ComponentType<ErrorBoundaryFallbackProps>;
     SignInPage?: ComponentType<SignInPageProps>;
 };
 
@@ -219,6 +220,13 @@ export class ErrorApiForwarder implements ErrorApi {
     // (undocumented)
     post(error: Error, context?: ErrorContext): void;
     }
+
+// @public (undocumented)
+export type ErrorBoundaryFallbackProps = {
+    plugin?: BackstagePlugin;
+    error: Error;
+    resetError: () => void;
+};
 
 // @public (undocumented)
 export const FlatRoutes: (props: FlatRoutesProps) => JSX.Element | null;

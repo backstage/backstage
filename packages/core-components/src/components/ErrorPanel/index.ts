@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { ResponseErrorPanel } from './ResponseErrorPanel';
+export { ErrorPanel } from './ErrorPanel';
+export type { ErrorPanelProps } from './ErrorPanel';
