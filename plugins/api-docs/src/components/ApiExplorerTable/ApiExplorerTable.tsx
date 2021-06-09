@@ -199,7 +199,9 @@ export const ApiExplorerTable = ({
       isLoading={loading}
       columns={columns}
       options={{
-        paging: false,
+        paging: true,
+        pageSize: 20,
+        pageSizeOptions: [20, 50, 100],
         actionsColumnIndex: -1,
         loadingType: 'linear',
         padding: 'dense',
