@@ -36,8 +36,17 @@ export function createCodemodAction(name: string) {
       '--transform',
       transformPath,
       '--ignore-pattern=**/node_modules/**',
-      ...(cmd.args.length ? cmd.args : ['.']),
     ];
+
+    if (cmd.dry) {
+      args.push('--dry');
+    }
+
+    if (cmd.args.length) {
+      args.push(...cmd.args);
+    } else {
+      args.push('.');
+    }
 
     console.log(`Running jscodeshift with these arguments: ${args.join(' ')}`);
 
