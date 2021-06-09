@@ -270,3 +270,11 @@ docker image.
 If you are running Backstage from a Docker container and you want to avoid
 calling a container inside a container, you can set up Cookiecutter in your own
 image, this will use the local installation instead.
+
+You can do so by including the following lines in the last step of your
+`Dockerfile`:
+
+```Dockerfile
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install cookiecutter
+```
