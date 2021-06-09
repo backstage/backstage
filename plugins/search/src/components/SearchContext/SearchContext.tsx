@@ -65,7 +65,7 @@ export const SearchContextProvider = ({
 
   const result = useAsync(
     () =>
-      searchApi._alphaPerformSearch({
+      searchApi.query({
         term,
         filters,
         pageCursor,

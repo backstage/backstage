@@ -164,16 +164,24 @@ const SelectFilter = ({
   );
 };
 
-const SearchFilterNext = ({ component: Element, ...props }: Props) => (
+const SearchFilter = ({ component: Element, ...props }: Props) => (
   <Element {...props} />
 );
 
-SearchFilterNext.Checkbox = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilterNext {...props} component={CheckboxFilter} />
+SearchFilter.Checkbox = (props: Omit<Props, 'component'> & Component) => (
+  <SearchFilter {...props} component={CheckboxFilter} />
 );
 
-SearchFilterNext.Select = (props: Omit<Props, 'component'> & Component) => (
-  <SearchFilterNext {...props} component={SelectFilter} />
+SearchFilter.Select = (props: Omit<Props, 'component'> & Component) => (
+  <SearchFilter {...props} component={SelectFilter} />
 );
 
-export { SearchFilterNext };
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchFilter /> component instead. This component will be removed in an
+ * upcoming release.
+ */
+const SearchFilterNext = SearchFilter;
+
+export { SearchFilter, SearchFilterNext };

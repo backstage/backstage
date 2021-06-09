@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { SearchFilterNext } from './SearchFilterNext';
+export { LegacySearchPage } from './LegacySearchPage';

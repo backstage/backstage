@@ -1,19 +1,20 @@
-/*
- * Copyright 2021 Spotify AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+---
+'@backstage/plugin-search': minor
+---
 
+This release represents a move out of a pre-alpha phase of the Backstage Search
+plugin, into an alpha phase. With this release, you gain more control over the
+layout of your search page on the frontend, as well as the ability to extend
+search on the backend to encompass everything Backstage users may want to find.
+
+If you are updating to this version of `@backstage/plugin-search` from a prior
+release, you will need to make the following modifications to your App:
+
+In your app package, create a new `searchPage` component at, for example,
+`packages/app/src/components/search/SearchPage.tsx` with contents like the
+following:
+
+```tsx
 import React from 'react';
 import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
 
@@ -100,3 +101,18 @@ const SearchPage = () => {
 };
 
 export const searchPage = <SearchPage />;
+```
+
+Then in `App.tsx`, import this new `searchPage` component, and set it as a
+child of the existing `<SearchPage />` route so that it looks like this:
+
+```tsx
+import { searchPage } from './components/search/SearchPage';
+// ...
+<Route path="/search" element={<SearchPage />}>
+  {searchPage}
+</Route>;
+```
+
+You will also need to update your backend. For details, check the changeset for
+`v0.2.0` of `@backstage/plugin-search-backend`.

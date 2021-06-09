@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-// TODO: export searchApiRef from ./apis once interface is stable and settled.
+export { searchApiRef } from './apis';
 export {
   searchPlugin,
   searchPlugin as plugin,
   SearchPage,
   SearchPageNext,
   SearchBarNext,
-  SearchResultNext,
+  SearchResult,
   DefaultResultListItem,
 } from './plugin';
 export {
@@ -31,8 +31,8 @@ export {
   SearchContextProvider,
   useSearch,
   SearchPage as Router,
+  SearchFilter,
   SearchFilterNext,
-  SearchResult,
   SidebarSearch,
 } from './components';
 export type { FiltersState } from './components';

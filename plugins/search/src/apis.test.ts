@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { CatalogApi } from '@backstage/plugin-catalog-react';
-
 import { SearchClient } from './apis';
 
 describe('apis', () => {
@@ -29,7 +27,6 @@ describe('apis', () => {
   const baseUrl = 'https://base-url.com/';
   const getBaseUrl = jest.fn().mockResolvedValue(baseUrl);
   const client = new SearchClient({
-    catalogApi: {} as CatalogApi,
     discoveryApi: { getBaseUrl },
   });
 
@@ -42,7 +39,7 @@ describe('apis', () => {
   });
 
   it('Fetch is called with expected URL (including stringified Q params)', async () => {
-    await client._alphaPerformSearch(query);
+    await client.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search/query');
     expect(fetch).toHaveBeenLastCalledWith(`${baseUrl}?term=&pageCursor=`);
   });
@@ -50,6 +47,6 @@ describe('apis', () => {
   it('Resolves JSON from fetch response', async () => {
     const result = { loading: false, error: '', value: {} };
     json.mockReturnValueOnce(result);
-    expect(await client._alphaPerformSearch(query)).toStrictEqual(result);
+    expect(await client.query(query)).toStrictEqual(result);
   });
 });

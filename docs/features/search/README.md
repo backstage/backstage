@@ -24,22 +24,22 @@ Backstage ecosystem.
 
 ## Project roadmap
 
-| Version                           | Description                                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Backstage Search v0 ✅            | Search Frontend letting you search through the entities of the software catalog. [See v0 Use Cases.](#backstage-search-v0)                                         |
-| [Backstage Search V0.5 ✅ ][v0.5] | Foundations for the architecture.                                                                                                                                  |
-| [Backstage Search v1 ⌛][v1]      | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See v1 Use Cases.](#backstage-search-v1)   |
-| [Backstage Search v2 ⌛][v2]      | Search Backend responsible for the indexing process of entities, and their metadata, registered to the Software Catalog. [See v2 Use Cases.](#backstage-search-v2) |
-| [Backstage Search v3 ⌛][v3]      | Standardized Search API lets you index other plugins data to the search engine of choice. [See v3 Use Cases.](#backstage-search-v3)                                |
+| Version                          | Description                                                                                                                                                            |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backstage Search Pre-Alpha ✅    | Search Frontend letting you search through the entities of the software catalog. [See Pre-Alpha Use Cases.](#backstage-search-pre-alpha)                               |
+| Backstage Search Alpha ✅        | Basic “out-of-the-box” in-memory indexing process of entities, and their metadata, registered to the Software Catalog. [See Alpha Use Cases](#backstage-search-alpha). |
+| [Backstage Search Beta ⌛][beta] | At least one production-ready search engine that supports the same use-cases as in the alpha. [See Beta Use Cases](#backstage-search-beta).                            |
+| [Backstage Search GA ⌛][ga]     | A stable Search API for plugin developers to add search to their plugins, and app integrators to expose that to their users. [See GA Use Cases](#backstage-search-ga). |
 
-[v0.5]: https://github.com/backstage/backstage/milestone/25
-[v1]: https://github.com/backstage/backstage/milestone/26
-[v2]: https://github.com/backstage/backstage/milestone/27
-[v3]: https://github.com/backstage/backstage/milestone/28
+[beta]: https://github.com/backstage/backstage/milestone/27
+[ga]: https://github.com/backstage/backstage/milestone/28
 
 ## Use Cases
 
-#### Backstage Search V.0
+#### Backstage Search Pre-Alpha
+
+The pre-alpha is intended to solve for the following user stories, but will get
+there by means of a front-end only, non-extensible MVP.
 
 - As a software engineer I should be able to navigate to a search page and
   search for entities registered in the Software Catalog.
@@ -52,28 +52,48 @@ Backstage ecosystem.
 - As a software engineer I should be able to hide the filters if I don’t need to
   use them.
 
-#### Backstage Search V.1
+#### Backstage Search Alpha
 
-- As a software engineer I should be able to get a match of a search on all
-  entity metadata (e.g. owner, name, description, kind).
-- As an integrator I should not have to plug in any search engine, instead I can
-  use the out of the box in-memory indexing process to index entities and their
-  metadata registered in the Software Catalog.
+We will consider Backstage Search to be in alpha when the above use-cases are
+met, but built on top of a flexible, extensible platform.
 
-#### Backstage Search V.2
+- As an integrator, I should be able to provide all of the pre-alpha experiences
+  to my users if I choose, but also be able to customize the experience using a
+  composable set of components.
+- As a plugin developer, I should have a standard way to expose my plugin's data
+  to Backstage Search.
+- As an integrator, I should still be able to expose everything in the Software
+  Catalog in search, but it should be possible to customize what is searchable.
+- As an integrator, although I should be able to customize all of the above, it
+  should be possible to have the pre-alpha user experiences covered without
+  having to set up and configure a search engine.
 
-- As an integrator I should be able to spin up an instance of ElasticSearch.
-- As an integrator I should be able to define a ElasticSearch cluster in my
-  app_config.yaml where my data gets indexed to.
+#### Backstage Search Beta
 
-more to come...
+We will consider Backstage Search to be in a beta phase when the above use-cases
+are met, and can be deployed using a production-ready search engine.
 
-#### Backstage Search V.3
+- As an integrator, I should be able to power my Backstage Search experience
+  (including querying and indexing) using a production-ready search engine like
+  ElasticSearch.
+- As an integrator, I should be able to configure the connection to my search
+  engine in `app_config.yaml`.
+- As an integrator, I should be able to tune the queries sent to my chosen
+  search engine according to my organization's needs, but a sensible default
+  query should be in place so that I am not required to do so.
 
-- As a contributor I should be able to integrate plugin data to the indexing
-  process of Backstage Search by using the standardized API.
-- As a software engineer I should be able to search for all content (for
-  example, entities, metadata, documentation) in Backstage search.
+#### Backstage Search GA
+
+We will consider Backstage Search to be generally available (GA) when the above
+use-cases are met, and an ecosystem of search-enabled plugins are available and
+stable.
+
+- As a plugin developer, there should be at least one example of a Backstage
+  plugin that integrates with search that I can use as inspiration for my own
+  plugin's search capabilities (for example, the TechDocs plugin).
+- As an app integrator, there should be plenty of examples and documentation on
+  how to customize and extend search in my Backstage instance to meet my
+  organization's needs.
 
 more to come...
 
@@ -84,11 +104,18 @@ the search engines are used.
 
 | Search Engine | Support Status |
 | ------------- | -------------- |
-| Basic (lunr)  | Not yet ❌     |
+| Basic (lunr)  | ✅             |
 | ElasticSearch | Not yet ❌     |
 
 [Reach out to us](#feedback) if you want to chat about support for more search
 engines.
+
+## Plugins Integrated with Search
+
+| Plugin   | Support Status |
+| -------- | -------------- |
+| Catalog  | ✅             |
+| TechDocs | Not yet ❌     |
 
 ## Tech Stack
 

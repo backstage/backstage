@@ -1,18 +1,28 @@
-/*
- * Copyright 2021 Spotify AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+---
+'@backstage/plugin-search-backend': minor
+'@backstage/plugin-search-backend-node': minor
+---
+
+This release represents a move out of a pre-alpha phase of the Backstage Search
+plugin, into an alpha phase. With this release, you gain more control over the
+layout of your search page on the frontend, as well as the ability to extend
+search on the backend to encompass everything Backstage users may want to find.
+
+If you are updating to version `v0.4.0` of `@backstage/plugin-search` from a
+prior release, you will need to make modifications to your app backend.
+
+First, navigate to your backend package and install the two related search
+backend packages:
+
+```sh
+cd packages/backend
+yarn add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+```
+
+Wire up these new packages into your app backend by first creating a new
+`search.ts` file at `src/plugins/search.ts` with contents like the following:
+
+```typescript
 import { useHotCleanup } from '@backstage/backend-common';
 import { createRouter } from '@backstage/plugin-search-backend';
 import {
@@ -51,3 +61,16 @@ export default async function createPlugin({
     logger,
   });
 }
+```
+
+Then, ensure the search plugin you configured above is initialized by modifying
+your backend's `index.ts` file in the following ways:
+
+```diff
++import search from './plugins/search';
+// ...
++const searchEnv = useHotMemoize(module, () => createEnv('search'));
+// ...
++apiRouter.use('/search', await search(searchEnv));
+// ...
+```

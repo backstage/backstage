@@ -13,55 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Content, Header, Page, useQueryParamState } from '@backstage/core';
-import { Grid } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { useDebounce } from 'react-use';
-import { SearchBar } from '../SearchBar';
-import { SearchResult } from '../SearchResult';
+
+import React from 'react';
+import qs from 'qs';
+import { useLocation, useOutlet } from 'react-router';
+import { SearchContextProvider, useSearch } from '../SearchContext';
+import { JsonObject } from '@backstage/config';
+import { LegacySearchPage } from '../LegacySearchPage';
+
+export const UrlUpdater = () => {
+  const { term, types, pageCursor, filters } = useSearch();
+
+  const newParams = qs.stringify(
+    {
+      query: term,
+      types,
+      pageCursor,
+      filters,
+    },
+    { arrayFormat: 'brackets' },
+  );
+  const newUrl = `${window.location.pathname}?${newParams}`;
+
+  // We directly manipulate window history here in order to not re-render
+  // infinitely (state => location => state => etc). The intention of this
+  // code is just to ensure the right query/filters are loaded when a user
+  // clicks the "back" button after clicking a result.
+  window.history.replaceState(null, document.title, newUrl);
+
+  return null;
+};
 
 export const SearchPage = () => {
-  const [queryString, setQueryString] = useQueryParamState<string>('query');
-  const [searchQuery, setSearchQuery] = useState(queryString ?? '');
+  const location = useLocation();
+  const outlet = useOutlet();
+  const query = qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+  const filters = (query.filters as JsonObject) || {};
+  const queryString = (query.query as string) || '';
+  const pageCursor = (query.pageCursor as string) || '';
+  const types = (query.types as string[]) || [];
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    setSearchQuery(event.target.value);
-  };
-
-  useEffect(() => setSearchQuery(queryString ?? ''), [queryString]);
-
-  useDebounce(
-    () => {
-      setQueryString(searchQuery);
-    },
-    200,
-    [searchQuery],
-  );
-
-  const handleClearSearchBar = () => {
-    setSearchQuery('');
+  const initialState = {
+    term: queryString || '',
+    types,
+    pageCursor,
+    filters,
   };
 
   return (
-    <Page themeId="home">
-      <Header title="Search" />
-      <Content>
-        <Grid container direction="row">
-          <Grid item xs={12}>
-            <SearchBar
-              handleSearch={handleSearch}
-              handleClearSearchBar={handleClearSearchBar}
-              searchQuery={searchQuery}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <SearchResult
-              searchQuery={(queryString ?? '').toLocaleLowerCase('en-US')}
-            />
-          </Grid>
-        </Grid>
-      </Content>
-    </Page>
+    <SearchContextProvider initialState={initialState}>
+      <UrlUpdater />
+      {outlet || <LegacySearchPage />}
+    </SearchContextProvider>
   );
 };

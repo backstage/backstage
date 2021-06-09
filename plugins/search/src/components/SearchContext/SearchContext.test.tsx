@@ -28,7 +28,7 @@ jest.mock('@backstage/core', () => ({
 }));
 
 describe('SearchContext', () => {
-  const _alphaPerformSearch = jest.fn();
+  const query = jest.fn();
 
   const wrapper = ({ children, initialState }: any) => (
     <SearchContextProvider initialState={initialState}>
@@ -44,8 +44,8 @@ describe('SearchContext', () => {
   };
 
   beforeEach(() => {
-    _alphaPerformSearch.mockResolvedValue({});
-    (useApi as jest.Mock).mockReturnValue({ _alphaPerformSearch });
+    query.mockResolvedValue({});
+    (useApi as jest.Mock).mockReturnValue({ query: query });
   });
 
   afterAll(() => {
@@ -138,7 +138,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+      expect(query).toHaveBeenLastCalledWith({
         ...initialState,
         term,
       });
@@ -162,7 +162,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+      expect(query).toHaveBeenLastCalledWith({
         ...initialState,
         filters,
       });
@@ -186,7 +186,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+      expect(query).toHaveBeenLastCalledWith({
         ...initialState,
         pageCursor,
       });
@@ -210,7 +210,7 @@ describe('SearchContext', () => {
 
       await waitForNextUpdate();
 
-      expect(_alphaPerformSearch).toHaveBeenLastCalledWith({
+      expect(query).toHaveBeenLastCalledWith({
         ...initialState,
         types,
       });

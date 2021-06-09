@@ -54,6 +54,8 @@ export class Scheduler {
   start() {
     this.logger.info('Starting all scheduled search tasks.');
     this.schedule.forEach(({ task, interval }) => {
+      // Fire the task immediately, then schedule it.
+      task();
       this.intervalTimeouts.push(
         setInterval(() => {
           task();
