@@ -108,6 +108,7 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
+import { FeatureFlagged } from '@backstage/core-app-api';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -282,9 +283,11 @@ const serviceEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <EntityLayout.Route path="/ci-cd" title="CI/CD">
-      {cicdContent}
-    </EntityLayout.Route>
+    <FeatureFlagged flag="show-graphiql-page">
+      <EntityLayout.Route path="/ci-cd" title="CI/CD">
+        {cicdContent}
+      </EntityLayout.Route>
+    </FeatureFlagged>
 
     <EntityLayout.Route path="/errors" title="Errors">
       {errorsContent}
@@ -303,9 +306,11 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
-        <Grid item md={6}>
-          <EntityDependsOnComponentsCard variant="gridItem" />
-        </Grid>
+        <FeatureFlagged flag="show-graphiql-page">
+          <Grid item md={6}>
+            <EntityDependsOnComponentsCard variant="gridItem" />
+          </Grid>
+        </FeatureFlagged>
         <Grid item md={6}>
           <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>

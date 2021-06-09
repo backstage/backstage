@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  featureFlagsApiRef,
+  useApi,
+  attachComponentData,
+} from '@backstage/core-plugin-api';
 
 export type FeatureFlaggedProps = {
   flag: string;
@@ -25,5 +28,7 @@ export type FeatureFlaggedProps = {
 export const FeatureFlagged = ({ children, flag }: FeatureFlaggedProps) => {
   const featureFlagApi = useApi(featureFlagsApiRef);
   const isEnabled = featureFlagApi.isActive(flag);
-  return isEnabled ? children : <div>NAT ENABLED</div>;
+  return isEnabled ? children : null;
 };
+
+attachComponentData(FeatureFlagged, 'core.featureFlagged', true);

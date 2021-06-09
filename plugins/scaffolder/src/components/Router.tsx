@@ -32,16 +32,28 @@ import { collectComponentData, collectChildren } from '../extensions/helpers';
 export const Router = () => {
   const outlet = useOutlet();
 
-  const fieldExtensions = useMemo(() => {
-    const registeredExtensions = collectComponentData<FieldExtensionOptions>(
-      collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
-      FIELD_EXTENSION_KEY,
-    );
+  const foundExtensions = useElementCollection(outlet)
+    .findByComponentData({
+      key: FIELD_EXTENSION_WRAPPER_KEY,
+    })
+    .findByComponentData({
+      key: FIELD_EXTENSION_KEY,
+    })
+    .listComponentData<FieldExtensionOptions>();
 
-    return registeredExtensions.length
-      ? registeredExtensions
-      : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
-  }, [outlet]);
+  const fieldExtensions = foundExtensions.length
+    ? foundExtensions
+    : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
+  // const fieldExtensions = useMemo(() => {
+  //   const registeredExtensions = collectComponentData<FieldExtensionOptions>(
+  //     collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
+  //     FIELD_EXTENSION_KEY,
+  //   );
+
+  //   return registeredExtensions.length
+  //     ? registeredExtensions
+  //     : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
+  // }, [outlet]);
 
   return (
     <Routes>

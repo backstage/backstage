@@ -244,7 +244,7 @@ export class PrivateAppImpl implements BackstageApp {
         // Register feature flags that have been discovered
         const featureFlagApi = apiHolder.get(featureFlagsApiRef)!;
         for (const name of result.featureFlags) {
-          featureFlagApi.registerFlag({ name, pluginId: '<app>' });
+          featureFlagApi.registerFlag({ name, pluginId: '' });
         }
 
         return result;

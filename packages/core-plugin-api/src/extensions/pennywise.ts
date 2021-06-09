@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { getComponentData } from './componentData';
 
 /**
@@ -84,7 +84,7 @@ export const useCollectChildren = (
   return found;
 };
 
-/**
+/*
  *
  *
  * TODO:
@@ -94,4 +94,17 @@ export const useCollectChildren = (
  *    - FlatRoutes
  *    - Respecting feature flags
  */
-export function useElementCollection(children: ReactNode) {}
+
+class ElementCollection {
+  constructor(private readonly children: ReactNode) {}
+  findByComponentData(query: { key: string; withStrictError?: string }) {
+    const next = applyFilterStuff(this.children);
+    return new ElementCollection(next);
+  }
+  listComponentData<T>(query: { key: string }): T[] {}
+  // listElements
+}
+
+export function useElementCollection(children: ReactNode) {
+  return new ElementCollection(children);
+}
