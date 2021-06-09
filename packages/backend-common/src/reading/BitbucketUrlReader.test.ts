@@ -189,7 +189,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'mkdocs.yml'), 'utf8'),
@@ -234,7 +234,7 @@ describe('BitbucketUrlReader', () => {
         'https://bitbucket.org/backstage/mock/src/master/docs',
       );
 
-      const dir = await response.dir({ targetDir: '/tmp' });
+      const dir = await response.dir({ targetDir: tmpDir });
 
       await expect(
         fs.readFile(path.join(dir, 'index.md'), 'utf8'),
