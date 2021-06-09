@@ -59,6 +59,8 @@ nav:
 
       - Backstage Search:
           - Overview: 'features/search/README.md'
+          - Getting Started: 'features/search/getting-started.md'
+          - Concepts: 'features/search/concepts.md'
           - Search Architecture: 'features/search/architecture.md'
       - TechDocs:
           - Overview: 'features/techdocs/README.md'

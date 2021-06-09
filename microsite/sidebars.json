@@ -76,6 +76,8 @@
         "label": "Backstage Search",
         "ids": [
           "features/search/search-overview",
+          "features/search/getting-started",
+          "features/search/concepts",
           "features/search/architecture"
         ]
       },
