@@ -18,58 +18,64 @@ import {
   Content,
   ContentHeader,
   SupportButton,
-  useApi,
-  useRouteRef,
+  TableColumn,
 } from '@backstage/core';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Button } from '@material-ui/core';
+import {
+  EntityKindPicker,
+  EntityListProvider,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListFilterKind,
+  UserListPicker,
+} from '@backstage/plugin-catalog-react';
+import {
+  CatalogTable,
+  CreateComponentButton,
+  EntityRow,
+} from '@backstage/plugin-catalog';
+import { makeStyles } from '@material-ui/core';
+
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useAsync } from 'react-use';
-import { createComponentRouteRef } from '../../routes';
-import { ApiExplorerTable } from '../ApiExplorerTable';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
-export const ApiExplorerPage = () => {
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-  const catalogApi = useApi(catalogApiRef);
-  const { loading, error, value: catalogResponse } = useAsync(() => {
-    return catalogApi.getEntities({
-      filter: { kind: 'API' },
-      fields: [
-        'apiVersion',
-        'kind',
-        'metadata',
-        'relations',
-        'spec.lifecycle',
-        'spec.owner',
-        'spec.type',
-        'spec.system',
-      ],
-    });
-  }, [catalogApi]);
+const useStyles = makeStyles(theme => ({
+  contentWrapper: {
+    display: 'grid',
+    gridTemplateAreas: "'filters' 'table'",
+    gridTemplateColumns: '250px 1fr',
+    gridColumnGap: theme.spacing(2),
+  },
+}));
+
+export type ApiExplorerPageProps = {
+  initiallySelectedFilter?: UserListFilterKind;
+  columns?: TableColumn<EntityRow>[];
+};
+
+export const ApiExplorerPage = ({
+  initiallySelectedFilter = 'owned',
+  columns,
+}: ApiExplorerPageProps) => {
+  const styles = useStyles();
 
   return (
     <ApiExplorerLayout>
       <Content>
         <ContentHeader title="">
-          {createComponentLink && (
-            <Button
-              variant="contained"
-              color="primary"
-              component={RouterLink}
-              to={createComponentLink()}
-            >
-              Register Existing API
-            </Button>
-          )}
+          <CreateComponentButton buttonLabel="Register Existing API" />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
-        <ApiExplorerTable
-          entities={catalogResponse?.items ?? []}
-          loading={loading}
-          error={error}
-        />
+        <div className={styles.contentWrapper}>
+          <EntityListProvider>
+            <div>
+              <EntityKindPicker initialFilter="api" hidden />
+              <EntityTypePicker />
+              <UserListPicker initialFilter={initiallySelectedFilter} />
+              <EntityTagPicker />
+            </div>
+            <CatalogTable columns={columns} />
+          </EntityListProvider>
+        </div>
       </Content>
     </ApiExplorerLayout>
   );

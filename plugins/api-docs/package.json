@@ -32,6 +32,7 @@
     "@asyncapi/react-component": "^0.23.0",
     "@backstage/catalog-model": "^0.8.2",
     "@backstage/core": "^0.7.11",
+    "@backstage/plugin-catalog": "^0.6.2",
     "@backstage/plugin-catalog-react": "^0.2.2",
     "@backstage/theme": "^0.2.8",
     "@material-icons/font": "^1.0.2",
