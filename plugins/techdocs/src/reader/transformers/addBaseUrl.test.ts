@@ -27,7 +27,7 @@ const techdocsStorageApi: TechDocsStorageApi = {
     Promise.resolve(new URL(o, DOC_STORAGE_URL).toString()),
   ),
   getEntityDocs: () => new Promise(resolve => resolve('yes!')),
-  syncEntityDocs: () => new Promise(resolve => resolve(true)),
+  syncEntityDocs: () => new Promise(resolve => resolve('updated')),
   getApiOrigin: jest.fn(() => new Promise(resolve => resolve(API_ORIGIN_URL))),
   getBuilder: jest.fn(),
   getStorageUrl: jest.fn(),
