@@ -68,7 +68,11 @@ export class DocsBuilder {
     this.config = config;
   }
 
-  public async build(): Promise<void> {
+  /**
+   * Build the docs and return whether they have been newly generated or have been cached
+   * @returns true, if the docs have been built. false, if the cached docs are still up-to-date.
+   */
+  public async build(): Promise<boolean> {
     if (!this.entity.metadata.uid) {
       throw new Error(
         'Trying to build documentation for entity not in service catalog',
@@ -125,7 +129,7 @@ export class DocsBuilder {
             this.entity,
           )} are unmodified. Using cache, skipping generate and prepare`,
         );
-        return;
+        return false;
       }
       throw new Error(err.message);
     }
@@ -205,5 +209,7 @@ export class DocsBuilder {
 
     // Update the last check time for the entity
     new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
+
+    return true;
   }
 }

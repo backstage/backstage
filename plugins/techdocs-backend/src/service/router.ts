@@ -16,7 +16,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError } from '@backstage/errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GeneratorBuilder,
   getLocationForEntity,
@@ -172,10 +172,10 @@ export async function createRouter({
       case 'awsS3':
       case 'azureBlobStorage':
       case 'openStackSwift':
-      case 'googleGcs':
+      case 'googleGcs': {
         // This block should be valid for all storage implementations. So no need to duplicate in future,
         // add the publisher type in the list here.
-        await docsBuilder.build();
+        const updated = await docsBuilder.build();
         // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
         // on the user's page. If not, respond with a message asking them to check back later.
         // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
@@ -194,10 +194,17 @@ export async function createRouter({
             'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
           );
         }
+
+        if (!updated) {
+          throw new NotModifiedError();
+        }
+
         res
           .status(201)
           .json({ message: 'Docs updated or did not need updating' });
         break;
+      }
+
       default:
         throw new NotFoundError(
           `Publisher type ${publisherType} is not supported by techdocs-backend docs builder.`,
