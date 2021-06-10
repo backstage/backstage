@@ -44,7 +44,7 @@
     "@types/react-text-truncate": "^0.14.0",
     "classnames": "^2.2.6",
     "clsx": "^1.1.0",
-    "d3-selection": "^2.0.0",
+    "d3-selection": "^3.0.0",
     "d3-shape": "^2.0.0",
     "d3-zoom": "^2.0.0",
     "dagre": "^0.8.5",
