@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-extension-msgraph': patch
+'@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
 Allow customizations of `MicrosoftGraphOrgReaderProcessor` by passing an

@@ -1,10 +1,10 @@
 ---
 '@backstage/plugin-catalog-backend': patch
-'@backstage/plugin-catalog-backend-extension-msgraph': patch
+'@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
 Move `MicrosoftGraphOrgReaderProcessor` from `@backstage/plugin-catalog-backend`
-to `@backstage/plugin-catalog-backend-extension-msgraph`.
+to `@backstage/plugin-catalog-backend-module-msgraph`.
 
 For now `MicrosoftGraphOrgReaderProcessor` is only deprecated in
 `@backstage/plugin-catalog-backend`, but will be removed in the future. While it

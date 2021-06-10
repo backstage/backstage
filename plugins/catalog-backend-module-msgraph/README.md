@@ -8,13 +8,13 @@ users and groups from Office 365.
 ## Getting Started
 
 1. The processor is not installed by default, therefore you have to add a
-   dependency to `@backstage/plugin-catalog-backend-extension-msgraph` to your
+   dependency to `@backstage/plugin-catalog-backend-module-msgraph` to your
    backend package.
 
 ```bash
 # From your Backstage root directory
 cd packages/backend
-yarn add @backstage/plugin-catalog-backend-extension-msgraph
+yarn add @backstage/plugin-catalog-backend-module-msgraph
 ```
 
 2. The `MicrosoftGraphOrgReaderProcessor` is not registered by default, so you have to register it in the catalog plugin:

@@ -33,7 +33,7 @@ import { CatalogProcessor, CatalogProcessorEmit } from './types';
  * Extracts teams and users out of a the Microsoft Graph API.
  *
  * @deprecated Use the MicrosoftGraphOrgReaderProcessor from package
- * @backstage/plugin-catalog-backend-extension-msgraph instead.
+ * @backstage/plugin-catalog-backend-module-msgraph instead.
  */
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: MicrosoftGraphProviderConfig[];
@@ -65,7 +65,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
     }
 
     this.logger.warn(
-      'MicrosoftGraphOrgReaderProcessor from @backstage/plugin-catalog is deprecated and will be removed in the future. Please migrate to the new one from @backstage/plugin-catalog-backend-extension-msgraph instead.',
+      'MicrosoftGraphOrgReaderProcessor from @backstage/plugin-catalog is deprecated and will be removed in the future. Please migrate to the new one from @backstage/plugin-catalog-backend-module-msgraph instead.',
     );
 
     const provider = this.providers.find(p =>

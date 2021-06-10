@@ -36,7 +36,7 @@
     "@backstage/plugin-auth-backend": "^0.3.12",
     "@backstage/plugin-badges-backend": "^0.1.6",
     "@backstage/plugin-catalog-backend": "^0.10.2",
-    "@backstage/plugin-catalog-backend-extension-msgraph": "^0.1.0",
+    "@backstage/plugin-catalog-backend-module-msgraph": "^0.1.0",
     "@backstage/plugin-code-coverage-backend": "^0.1.6",
     "@backstage/plugin-graphql-backend": "^0.1.8",
     "@backstage/plugin-kubernetes-backend": "^0.3.8",

@@ -1,5 +1,5 @@
 {
-  "name": "@backstage/plugin-catalog-backend-extension-msgraph",
+  "name": "@backstage/plugin-catalog-backend-module-msgraph",
   "version": "0.1.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend-extension-msgraph"
+    "directory": "plugins/catalog-backend-module-msgraph"
   },
   "keywords": [
     "backstage"

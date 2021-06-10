@@ -16,7 +16,7 @@
 
 import {
   CatalogBuilder,
-  createRouter,
+  createRouter
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
