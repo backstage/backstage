@@ -16,8 +16,8 @@
 
 import { serializeEntityRef } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
-import { DiscoveryApi, IdentityApi } from '@backstage/core';
 import { TodoApi, TodoListOptions, TodoListResult } from './types';
+import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
 
 interface Options {
   discoveryApi: DiscoveryApi;

@@ -38,6 +38,8 @@ codeblocks
 Codecov
 codehilite
 Codehilite
+codemod
+codemods
 codeowners
 composability
 composable
