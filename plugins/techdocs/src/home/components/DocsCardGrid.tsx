@@ -18,7 +18,12 @@ import React from 'react';
 import { generatePath } from 'react-router-dom';
 
 import { Entity } from '@backstage/catalog-model';
-import { Button, ItemCardGrid, ItemCardHeader } from '@backstage/core';
+import {
+  Button,
+  EmptyState,
+  ItemCardGrid,
+  ItemCardHeader,
+} from '@backstage/core';
 import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
 
 import { rootDocsRouteRef } from '../../routes';
@@ -30,29 +35,35 @@ export const DocsCardGrid = ({
 }) => {
   if (!entities) return null;
   return (
-    <ItemCardGrid data-testid="docs-explore">
-      {!entities?.length
-        ? null
-        : entities.map((entity, index: number) => (
-            <Card key={index}>
-              <CardMedia>
-                <ItemCardHeader title={entity.metadata.name} />
-              </CardMedia>
-              <CardContent>{entity.metadata.description}</CardContent>
-              <CardActions>
-                <Button
-                  to={generatePath(rootDocsRouteRef.path, {
-                    namespace: entity.metadata.namespace ?? 'default',
-                    kind: entity.kind,
-                    name: entity.metadata.name,
-                  })}
-                  color="primary"
-                >
-                  Read Docs
-                </Button>
-              </CardActions>
-            </Card>
+    <>
+      {!entities?.length ? (
+        <EmptyState missing="data" title="No documents to show" />
+      ) : (
+        <ItemCardGrid data-testid="docs-explore">
+          {entities.map((entity, index: number) => (
+            <ItemCardGrid data-testid="docs-explore">
+              <Card key={index}>
+                <CardMedia>
+                  <ItemCardHeader title={entity.metadata.name} />
+                </CardMedia>
+                <CardContent>{entity.metadata.description}</CardContent>
+                <CardActions>
+                  <Button
+                    to={generatePath(rootDocsRouteRef.path, {
+                      namespace: entity.metadata.namespace ?? 'default',
+                      kind: entity.kind,
+                      name: entity.metadata.name,
+                    })}
+                    color="primary"
+                  >
+                    Read Docs
+                  </Button>
+                </CardActions>
+              </Card>
+            </ItemCardGrid>
           ))}
-    </ItemCardGrid>
+        </ItemCardGrid>
+      )}
+    </>
   );
 };
