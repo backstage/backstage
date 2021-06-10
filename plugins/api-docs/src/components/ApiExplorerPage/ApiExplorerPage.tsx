@@ -22,7 +22,9 @@ import {
 } from '@backstage/core';
 import {
   EntityKindPicker,
+  EntityLifecyclePicker,
   EntityListProvider,
+  EntityOwnerPicker,
   EntityTagPicker,
   EntityTypePicker,
   UserListFilterKind,
@@ -71,6 +73,8 @@ export const ApiExplorerPage = ({
               <EntityKindPicker initialFilter="api" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
+              <EntityOwnerPicker />
+              <EntityLifecyclePicker />
               <EntityTagPicker />
             </div>
             <CatalogTable columns={columns} />

@@ -61,6 +61,22 @@ export class EntityTagFilter implements EntityFilter {
   }
 }
 
+export class EntityOwnerFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v => entity.spec?.owner === v);
+  }
+}
+
+export class EntityLifecycleFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v => entity.spec?.lifecycle === v);
+  }
+}
+
 export type UserListFilterKind = 'owned' | 'starred' | 'all';
 export class UserListFilter implements EntityFilter {
   constructor(
