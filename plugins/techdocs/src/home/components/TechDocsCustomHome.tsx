@@ -18,7 +18,11 @@ import React, { useState } from 'react';
 import { useAsync } from 'react-use';
 import { makeStyles } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/styles';
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  CatalogApi,
+  isOwnerOf,
+} from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
   CodeSnippet,
@@ -36,6 +40,7 @@ import {
 } from '@backstage/core';
 import { DocsTable } from './DocsTable';
 import { DocsCardGrid } from './DocsCardGrid';
+import { useOwnUser } from '../hooks';
 
 const panels = {
   DocsTable: DocsTable,
@@ -49,7 +54,7 @@ export interface PanelConfig {
   description: string;
   panelType: PanelType;
   panelCSS?: CSSProperties;
-  filterPredicate: (entity: Entity) => boolean;
+  filterPredicate: ((entity: Entity) => boolean) | string;
 }
 
 export interface TabConfig {
@@ -75,8 +80,24 @@ const CustomPanel = ({
     },
   });
   const classes = useStyles();
+  const { value: user } = useOwnUser();
+
   const Panel = panels[config.panelType];
-  const shownEntities = entities.filter(config.filterPredicate);
+
+  const shownEntities = entities.filter(entity => {
+    if (config.filterPredicate === 'ownedByUser') {
+      if (!user) {
+        return false;
+      }
+      return isOwnerOf(user, entity);
+    }
+
+    return (
+      typeof config.filterPredicate === 'function' &&
+      config.filterPredicate(entity)
+    );
+  });
+
   return (
     <>
       <ContentHeader title={config.title} description={config.description}>
