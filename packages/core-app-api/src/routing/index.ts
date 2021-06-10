@@ -15,4 +15,5 @@
  */
 
 export { FlatRoutes } from './FlatRoutes';
-export { FeatureFlagged, FeatureFlaggedProps } from './FeatureFlagged';
+export { FeatureFlagged } from './FeatureFlagged';
+export type { FeatureFlaggedProps } from './FeatureFlagged';

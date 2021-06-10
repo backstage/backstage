@@ -20,3 +20,4 @@ export {
   createRoutableExtension,
   createComponentExtension,
 } from './extensions';
+export { useElementCollection } from './pennywise';

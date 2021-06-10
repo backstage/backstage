@@ -27,7 +27,7 @@ import {
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
-import { collectComponentData, collectChildren } from '../extensions/helpers';
+import { useElementCollection } from '@backstage/core-plugin-api';
 
 export const Router = () => {
   const outlet = useOutlet();
@@ -36,24 +36,13 @@ export const Router = () => {
     .findByComponentData({
       key: FIELD_EXTENSION_WRAPPER_KEY,
     })
-    .findByComponentData({
+    .listComponentData<FieldExtensionOptions>({
       key: FIELD_EXTENSION_KEY,
-    })
-    .listComponentData<FieldExtensionOptions>();
+    });
 
   const fieldExtensions = foundExtensions.length
     ? foundExtensions
     : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
-  // const fieldExtensions = useMemo(() => {
-  //   const registeredExtensions = collectComponentData<FieldExtensionOptions>(
-  //     collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
-  //     FIELD_EXTENSION_KEY,
-  //   );
-
-  //   return registeredExtensions.length
-  //     ? registeredExtensions
-  //     : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
-  // }, [outlet]);
 
   return (
     <Routes>

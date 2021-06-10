@@ -13,98 +13,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ReactNode } from 'react';
+import {
+  Children,
+  Fragment,
+  isValidElement,
+  ReactNode,
+  ReactElement,
+} from 'react';
 import { getComponentData } from './componentData';
+import { useApi, FeatureFlagsApi, featureFlagsApiRef } from '../apis';
 
-/**
- * Returns an array of each component data value for a given key of each
- * element in the entire react element tree starting at the provided children.
- *
- * - This was needed to grab the actual component data once we had narrowed down the set of children
- */
-export const useCollectComponentData = <T>(
-  children: React.ReactNode,
-  componentDataKey: string,
-) => {
-  const stack = [children];
-  const found: T[] = [];
+function selectChildren(
+  rootNode: ReactNode,
+  featureFlagsApi: FeatureFlagsApi,
+  selector?: (element: ReactElement<unknown>) => boolean,
+  strictError?: string,
+): Array<ReactElement<unknown>> {
+  return Children.toArray(rootNode).flatMap(node => {
+    if (!isValidElement(node)) {
+      return [];
+    }
 
-  while (stack.length) {
-    const current: React.ReactNode = stack.pop()!;
+    const { children } = node.props;
 
-    React.Children.forEach(current, child => {
-      if (!React.isValidElement(child)) {
-        return;
+    if (node.type === Fragment) {
+      return selectChildren(children, featureFlagsApi, selector, strictError);
+    }
+
+    if (getComponentData(node, 'core.featureFlagged')) {
+      const { flag } = node.props as { flag: string };
+      if (featureFlagsApi.isActive(flag)) {
+        return selectChildren(
+          node.props.children,
+          featureFlagsApi,
+          selector,
+          strictError,
+        );
       }
+      return [];
+    }
 
-      const data = getComponentData<T>(child, componentDataKey);
-      if (data) {
-        found.push(data);
-      }
+    if (selector === undefined || selector(node)) {
+      return [node];
+    }
 
-      if (child.props.children) {
-        stack.push(child.props.children);
-      }
-    });
-  }
+    if (strictError) {
+      throw new Error(strictError);
+    }
 
-  return found;
-};
-
-/**
- * Returns an array of all values of the children prop of each element with the entire
- * react element tree that has component data for the given key.
- *
- * - this was needed to collect the children of ScaffolderFieldExtensions elements
- */
-export const useCollectChildren = (
-  component: React.ReactNode,
-  componentDataKey: string,
-) => {
-  const stack = [component];
-  const found: React.ReactNode[] = [];
-
-  while (stack.length) {
-    const current: React.ReactNode = stack.pop()!;
-
-    React.Children.forEach(current, child => {
-      if (!React.isValidElement(child)) {
-        return;
-      }
-
-      if (child.props.children) {
-        if (getComponentData(child, componentDataKey)) {
-          found.push(child.props.children);
-        }
-        stack.push(child.props.children);
-      }
-    });
-  }
-
-  return found;
-};
-
-/*
- *
- *
- * TODO:
- *  support:
- *    - entity layout route traversal
- *    - scaffolder field extension enumeration
- *    - FlatRoutes
- *    - Respecting feature flags
- */
+    return selectChildren(
+      node.props.children,
+      featureFlagsApi,
+      selector,
+      strictError,
+    );
+  });
+}
 
 class ElementCollection {
-  constructor(private readonly children: ReactNode) {}
+  constructor(
+    private readonly children: ReactNode,
+    private readonly featureFlagsApi: FeatureFlagsApi,
+  ) {}
+
   findByComponentData(query: { key: string; withStrictError?: string }) {
-    const next = applyFilterStuff(this.children);
-    return new ElementCollection(next);
+    const selection = selectChildren(
+      this.children,
+      this.featureFlagsApi,
+      node => Boolean(getComponentData(node, query.key)),
+      query.withStrictError,
+    );
+    return new ElementCollection(selection, this.featureFlagsApi);
   }
-  listComponentData<T>(query: { key: string }): T[] {}
-  // listElements
+
+  listComponentData<T>(query: { key: string }): T[] {
+    const selection = selectChildren(
+      this.children,
+      this.featureFlagsApi,
+      node => Boolean(getComponentData(node, query.key)),
+    );
+    return selection
+      .map(node => getComponentData<T>(node, query.key))
+      .filter((data: T | undefined): data is T => Boolean(data));
+  }
+
+  listElements<Props extends { [name: string]: unknown }>(): Array<
+    ReactElement<Props>
+  > {
+    return selectChildren(this.children, this.featureFlagsApi) as Array<
+      ReactElement<Props>
+    >;
+  }
 }
 
 export function useElementCollection(children: ReactNode) {
-  return new ElementCollection(children);
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+  return new ElementCollection(children, featureFlagsApi);
 }

@@ -28,11 +28,8 @@ import {
   Page,
   Progress,
   RoutedTabs,
-  FeatureFlagsApi,
-  getComponentData,
-  featureFlagsApiRef,
-  useApi,
 } from '@backstage/core';
+import { useElementCollection } from '@backstage/core-plugin-api';
 import {
   EntityContext,
   EntityRefLinks,
@@ -41,14 +38,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Box, TabProps } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import {
-  Children,
-  default as React,
-  Fragment,
-  isValidElement,
-  useContext,
-  useState,
-} from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';
 import { FavouriteEntity } from '../FavouriteEntity/FavouriteEntity';
@@ -172,9 +162,9 @@ export const EntityLayout = ({
       key: dataKey,
       withStrictError: 'Child of EntityLayout must be an EntityLayout.Route',
     })
-    .listElements() // all nodes, element data, maintain structure or not?
+    .listElements<SubRoute>() // all nodes, element data, maintain structure or not?
     .flatMap(({ props }) => {
-      if (props.condition && entity && !props.condition(entity)) {
+      if (props.if && entity && !props.if(entity)) {
         return [];
       }
 
