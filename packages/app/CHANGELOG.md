@@ -1,5 +1,35 @@
 # example-app
 
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies [9cd3c533c]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [9d906c7a1]
+- Updated dependencies [9bdd2cca8]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [9b4010965]
+- Updated dependencies [7f7443308]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [5aff84759]
+- Updated dependencies [21e8ebef5]
+- Updated dependencies [4fbb00707]
+- Updated dependencies [d5ad47bbb]
+  - @backstage/cli@0.7.0
+  - @backstage/plugin-catalog@0.6.2
+  - @backstage/plugin-cost-insights@0.10.2
+  - @backstage/plugin-github-actions@0.4.9
+  - @backstage/catalog-model@0.8.2
+  - @backstage/plugin-scaffolder@0.9.8
+  - @backstage/integration-react@0.1.3
+  - @backstage/plugin-catalog-react@0.2.2
+  - @backstage/plugin-catalog-import@0.5.9
+  - @backstage/plugin-search@0.4.0
+
 ## 0.2.31
 
 ### Patch Changes

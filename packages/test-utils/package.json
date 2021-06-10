@@ -29,7 +29,7 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/core-api": "^0.2.21",
+    "@backstage/core-api": "^0.2.22",
     "@backstage/test-utils-core": "^0.1.1",
     "@backstage/theme": "^0.2.8",
     "@material-ui/core": "^4.11.0",
@@ -45,7 +45,7 @@
     "zen-observable": "^0.8.15"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.14",
+    "@backstage/cli": "^0.7.0",
     "@types/jest": "^26.0.7",
     "@types/node": "^14.14.32"
   },
