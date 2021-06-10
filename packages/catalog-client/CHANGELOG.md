@@ -1,5 +1,13 @@
 # @backstage/catalog-client
 
+## 0.3.13
+
+### Patch Changes
+
+- 70bc30c5b: Display preview result final step.
+- Updated dependencies [27a9b503a]
+  - @backstage/catalog-model@0.8.2
+
 ## 0.3.12
 
 ### Patch Changes

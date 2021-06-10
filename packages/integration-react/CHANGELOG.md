@@ -1,5 +1,15 @@
 # @backstage/integration-react
 
+## 0.1.3
+
+### Patch Changes
+
+- f4e3ac5ce: Move `ScmIntegrationIcon` from `@backstage/plugin-catalog` to
+  `@backstage/integration-react` and make it customizable using
+  `app.getSystemIcon()`.
+- Updated dependencies [eda9dbd5f]
+  - @backstage/integration@0.5.6
+
 ## 0.1.2
 
 ### Patch Changes

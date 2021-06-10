@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-react
 
+## 0.2.2
+
+### Patch Changes
+
+- 7028ee1ca: Expose `getEntitySourceLocation`, `getEntityMetadataViewUrl`, and
+  `getEntityMetadataEditUrl` from `@backstage/plugin-catalog-react`.
+- Updated dependencies [75b8537ce]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [da8cba44f]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/core-plugin-api@0.1.2
+  - @backstage/catalog-model@0.8.2
+  - @backstage/catalog-client@0.3.13
+  - @backstage/integration@0.5.6
+
 ## 0.2.1
 
 ### Patch Changes
