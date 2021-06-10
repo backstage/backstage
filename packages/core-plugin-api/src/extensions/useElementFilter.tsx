@@ -19,6 +19,7 @@ import {
   isValidElement,
   ReactNode,
   ReactElement,
+  useMemo,
 } from 'react';
 import { getComponentData } from './componentData';
 import { useApi, FeatureFlagsApi, featureFlagsApiRef } from '../apis';
@@ -34,10 +35,13 @@ function selectChildren(
       return [];
     }
 
-    const { children } = node.props;
-
     if (node.type === Fragment) {
-      return selectChildren(children, featureFlagsApi, selector, strictError);
+      return selectChildren(
+        node.props.children,
+        featureFlagsApi,
+        selector,
+        strictError,
+      );
     }
 
     if (getComponentData(node, 'core.featureFlagged')) {
@@ -72,13 +76,13 @@ function selectChildren(
 
 class ElementCollection {
   constructor(
-    private readonly children: ReactNode,
+    private readonly node: ReactNode,
     private readonly featureFlagsApi: FeatureFlagsApi,
   ) {}
 
-  findByComponentData(query: { key: string; withStrictError?: string }) {
+  selectByComponentData(query: { key: string; withStrictError?: string }) {
     const selection = selectChildren(
-      this.children,
+      this.node,
       this.featureFlagsApi,
       node => Boolean(getComponentData(node, query.key)),
       query.withStrictError,
@@ -86,27 +90,31 @@ class ElementCollection {
     return new ElementCollection(selection, this.featureFlagsApi);
   }
 
-  listComponentData<T>(query: { key: string }): T[] {
-    const selection = selectChildren(
-      this.children,
-      this.featureFlagsApi,
-      node => Boolean(getComponentData(node, query.key)),
+  findComponentData<T>(query: { key: string }): T[] {
+    const selection = selectChildren(this.node, this.featureFlagsApi, node =>
+      Boolean(getComponentData(node, query.key)),
     );
     return selection
       .map(node => getComponentData<T>(node, query.key))
       .filter((data: T | undefined): data is T => Boolean(data));
   }
 
-  listElements<Props extends { [name: string]: unknown }>(): Array<
+  getElements<Props extends { [name: string]: unknown }>(): Array<
     ReactElement<Props>
   > {
-    return selectChildren(this.children, this.featureFlagsApi) as Array<
+    return selectChildren(this.node, this.featureFlagsApi) as Array<
       ReactElement<Props>
     >;
   }
 }
 
-export function useElementCollection(children: ReactNode) {
+export function useElementFilter<T>(
+  node: ReactNode,
+  filterFn: (arg: ElementCollection) => T,
+  dependencies: any[] = [],
+) {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  return new ElementCollection(children, featureFlagsApi);
+  const elements = new ElementCollection(node, featureFlagsApi);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => filterFn(elements), [node, ...dependencies]);
 }

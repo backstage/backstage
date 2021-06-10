@@ -38,7 +38,7 @@ const MockComponent = ({ children }: PropsWithChildren<{ path?: string }>) => (
 
 const plugin = createPlugin({ id: 'my-plugin' });
 
-/const ref1 = createRouteRef({ path: '/foo1', title: 'Foo' });
+const ref1 = createRouteRef({ path: '/foo1', title: 'Foo' });
 const ref2 = createRouteRef({ path: '/foo2', title: 'Foo' });
 const ref3 = createRouteRef({ path: '/foo3', title: 'Foo' });
 const ref4 = createRouteRef({ path: '/foo4', title: 'Foo' });

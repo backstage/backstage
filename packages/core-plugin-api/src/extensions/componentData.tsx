@@ -50,6 +50,8 @@ export function attachComponentData<P>(
   }
 
   container.map.set(type, data);
+
+  return component;
 }
 
 export function getComponentData<T>(
