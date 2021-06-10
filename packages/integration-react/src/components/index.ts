@@ -13,19 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import CodeIcon from '@material-ui/icons/Code';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import React from 'react';
 
-export const ScmIntegrationIcon = ({ type }: { type?: string }) => {
-  // TODO: In the future we might want to support more types here as a GitLab or
-  // Bitbucket icons were requested here in the past, or even use the icon
-  // customization feature of the app. But material UI react doesn't provide more.
-
-  switch (type) {
-    case 'github':
-      return <GitHubIcon />;
-    default:
-      return <CodeIcon />;
-  }
-};
+export * from './ScmIntegrationIcon';

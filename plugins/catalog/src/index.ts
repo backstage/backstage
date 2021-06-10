@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './components/AboutCard';
+export * from './components/AboutCard';
 export { CatalogResultListItem } from './components/CatalogResultListItem';
-export { EntityLayout } from './components/EntityLayout';
-export { EntityPageLayout } from './components/EntityPageLayout';
 export { CatalogTable } from './components/CatalogTable';
+export { EntityLayout } from './components/EntityLayout';
+export * from './components/EntityOrphanWarning';
+export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
-export * from './components/EntityOrphanWarning';
-export * from './components/AboutCard';
 export {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -39,4 +38,3 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
-export * from './utils';
