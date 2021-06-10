@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons/types';
+import {
+  RouteRef,
+  SubRouteRef,
+  ExternalRouteRef,
+} from '@backstage/core-plugin-api';
 import { getOrCreateGlobalSingleton } from '../lib/globalObject';
-import { RouteRef as NewRouteRef } from '@backstage/core-plugin-api';
+
+export type { RouteRef, SubRouteRef, ExternalRouteRef };
 
 export type AnyParams = { [param in string]: string } | undefined;
 export type ParamKeys<Params extends AnyParams> = keyof Params extends never
@@ -36,48 +41,13 @@ export type RouteFunc<Params extends AnyParams> = (
 ) => string;
 
 type RouteRefType = Exclude<
-  keyof NewRouteRef,
+  keyof RouteRef,
   'params' | 'path' | 'title' | 'icon'
 >;
 export const routeRefType: RouteRefType = getOrCreateGlobalSingleton<any>(
   'route-ref-type',
   () => Symbol('route-ref-type'),
 );
-
-export type RouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'absolute';
-
-  params: ParamKeys<Params>;
-
-  // TODO(Rugvip): Remove all of these once plugins don't rely on the path
-  /** @deprecated paths are no longer accessed directly from RouteRefs, use useRouteRef instead */
-  path: string;
-  /** @deprecated icons are no longer accessed via RouteRefs */
-  icon?: IconComponent;
-  /** @deprecated titles are no longer accessed via RouteRefs */
-  title?: string;
-};
-
-export type SubRouteRef<Params extends AnyParams = any> = {
-  readonly [routeRefType]: 'sub';
-
-  parent: RouteRef;
-
-  path: string;
-
-  params: ParamKeys<Params>;
-};
-
-export type ExternalRouteRef<
-  Params extends AnyParams = any,
-  Optional extends boolean = any
-> = {
-  readonly [routeRefType]: 'external';
-
-  params: ParamKeys<Params>;
-
-  optional?: Optional;
-};
 
 export type AnyRouteRef =
   | RouteRef<any>

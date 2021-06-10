@@ -42,6 +42,7 @@ import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
 import { PendingAuthRequest } from '@backstage/core-plugin-api';
+import { PluginOutput } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
@@ -137,10 +138,10 @@ export type AppContext = {
 // @public (undocumented)
 export type AppOptions = {
     apis?: Iterable<AnyApiFactory>;
-    icons?: AppIcons & {
+    icons?: Partial<AppIcons> & {
         [key in string]: IconComponent;
     };
-    plugins?: BackstagePlugin<any, any>[];
+    plugins?: BackstagePluginWithAnyOutput[];
     components?: Partial<AppComponents>;
     themes?: AppTheme[];
     configLoader?: AppConfigLoader;
@@ -181,6 +182,11 @@ export type BackstageApp = {
     getSystemIcon(key: string): IconComponent | undefined;
     getProvider(): ComponentType<{}>;
     getRouter(): ComponentType<{}>;
+};
+
+// @public (undocumented)
+export type BackstagePluginWithAnyOutput = Omit<BackstagePlugin<any, any>, 'output'> & {
+    output(): (PluginOutput | UnknownPluginOutput)[];
 };
 
 // @public (undocumented)
