@@ -64,6 +64,8 @@
     "@backstage/plugin-rollbar-backend": "*",
     "@backstage/plugin-scaffolder": "*",
     "@backstage/plugin-search": "*",
+    "@backstage/plugin-search-backend": "*",
+    "@backstage/plugin-search-backend-node": "*",
     "@backstage/plugin-scaffolder-backend": "*",
     "@backstage/plugin-tech-radar": "*",
     "@backstage/plugin-techdocs": "*",
