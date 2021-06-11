@@ -263,11 +263,11 @@ export class NextCatalogBuilder {
 
     const db = new CommonDatabase(dbClient, logger);
 
-    const processingDatabase = new DefaultProcessingDatabase(
-      dbClient,
+    const processingDatabase = new DefaultProcessingDatabase({
+      database: dbClient,
       logger,
-      this.refreshIntervalSeconds,
-    );
+      refreshIntervalSeconds: this.refreshIntervalSeconds,
+    });
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,
