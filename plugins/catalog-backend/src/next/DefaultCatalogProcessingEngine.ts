@@ -20,6 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { serializeError } from '@backstage/errors';
+import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { ProcessingDatabase } from './database/types';
 import { CatalogProcessingOrchestrator } from './processing/types';
@@ -131,6 +132,11 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       return;
     }
 
+    // An ID that uniquely identifies this processing run. It can be used in
+    // events, logging, coordination and similar, to distinguish between
+    // different processes.
+    const jobId = `catalog-process-${uuid()}`;
+
     // TODO: replace Promise.all with something more sophisticated for parallel processing.
     await Promise.all(
       items.map(async item => {
@@ -165,9 +171,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
               errors: errorsString,
             });
           });
-          await this.stitcher.stitch(
-            new Set([stringifyEntityRef(unprocessedEntity)]),
-          );
+          await this.stitcher.stitch({
+            jobId,
+            entityRefs: new Set([stringifyEntityRef(unprocessedEntity)]),
+          });
           return;
         }
 
@@ -189,7 +196,10 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
             stringifyEntityRef(relation.source),
           ),
         ]);
-        await this.stitcher.stitch(setOfThingsToStitch);
+        await this.stitcher.stitch({
+          jobId,
+          entityRefs: setOfThingsToStitch,
+        });
       }),
     );
   }

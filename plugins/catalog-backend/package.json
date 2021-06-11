@@ -46,6 +46,7 @@
     "codeowners-utils": "^1.0.2",
     "core-js": "^3.6.5",
     "cross-fetch": "^3.0.6",
+    "emittery": "^0.9.2",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "fast-json-stable-stringify": "^2.1.0",

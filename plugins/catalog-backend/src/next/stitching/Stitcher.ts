@@ -21,6 +21,7 @@ import {
   UNSTABLE_EntityStatusItem,
 } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
+import Emittery from 'emittery';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
@@ -30,7 +31,12 @@ import {
   DbSearchRow,
 } from '../database/tables';
 import { buildEntitySearch } from './buildEntitySearch';
+import { StitchAbortedReason, StitcherEvents } from './StitcherEvents';
 import { BATCH_SIZE, generateStableHash } from './util';
+
+type StitchResult =
+  | { type: 'success' }
+  | { type: 'aborted'; reason: StitchAbortedReason };
 
 /**
  * Performs the act of stitching - to take all of the various outputs from the
@@ -38,42 +44,107 @@ import { BATCH_SIZE, generateStableHash } from './util';
  * shape.
  */
 export class Stitcher {
-  constructor(
-    private readonly database: Knex,
-    private readonly logger: Logger,
-  ) {}
+  readonly events: Emittery<StitcherEvents>;
 
-  async stitch(entityRefs: Set<string>) {
-    for (const entityRef of entityRefs) {
+  constructor(private readonly database: Knex) {
+    this.events = new Emittery();
+  }
+
+  registerDefaultLoggingEvents(logger: Logger) {
+    this.events.on('stitchStarted', ({ entityRef, jobId }) => {
+      logger.debug(`Beginning stitch attempt of ${entityRef}`, {
+        jobId,
+        entityRef,
+      });
+    });
+    this.events.on('stitchCompleted', ({ entityRef, jobId, durationMs }) => {
+      logger.debug(
+        `Completed stitch attempt of ${entityRef} in ${durationMs} ms`,
+        { jobId, entityRef },
+      );
+    });
+    this.events.on('stitchAborted', ({ entityRef, jobId, reason }) => {
+      logger.debug(
+        `Aborted stitch attempt of ${entityRef}, with reason ${reason}`,
+        { jobId, entityRef },
+      );
+    });
+    this.events.on('stitchFailed', ({ entityRef, jobId, error }) => {
+      logger.error(`Failed to stitch ${entityRef}, ${error}`, {
+        jobId,
+        entityRef,
+      });
+    });
+  }
+
+  async stitch(options: { jobId: string; entityRefs: Set<string> }) {
+    for (const entityRef of options.entityRefs) {
+      const jobId = uuid();
+      const startTime = new Date();
+
       try {
-        await this.stitchOne(entityRef);
+        this.events.emit('stitchStarted', {
+          entityRef,
+          jobId,
+        });
+
+        const result = await this.stitchOne(entityRef, jobId);
+
+        if (result.type === 'success') {
+          const durationMs = new Date().getTime() - startTime.getTime();
+          this.events.emit('stitchCompleted', {
+            entityRef,
+            jobId,
+            durationMs,
+          });
+        } else if (result.type === 'aborted') {
+          this.events.emit('stitchAborted', {
+            entityRef,
+            jobId,
+            reason: result.reason,
+          });
+        }
       } catch (error) {
-        this.logger.error(`Failed to stitch ${entityRef}, ${error}`);
+        this.events.emit('stitchFailed', {
+          entityRef,
+          jobId,
+          error,
+        });
       }
     }
   }
 
-  private async stitchOne(entityRef: string) {
+  private async stitchOne(
+    entityRef: string,
+    jobId: string,
+  ): Promise<StitchResult> {
+    // Try to locate the target in the refresh state
     const entityResult = await this.database<DbRefreshStateRow>('refresh_state')
       .where({ entity_ref: entityRef })
       .limit(1)
       .select('entity_id');
     if (!entityResult.length) {
-      // Entity does no exist in refresh state table, no stitching required.
-      return;
+      return {
+        type: 'aborted',
+        reason: 'did-not-exist',
+      };
     }
 
-    // Insert stitching ticket that will be compared before inserting the final entity.
-    const ticket = uuid();
+    // Insert stitching ticket that will be compared before inserting the final
+    // entity. As we do this, we may overwrite the ticket of another in-
+    // progress stitch attempt. As they discover that fact, they will abort
+    // their attempt and let us "win" since we started ours with newer data
+    // than they did.
     await this.database<DbFinalEntitiesRow>('final_entities')
       .insert({
         entity_id: entityResult[0].entity_id,
         hash: '',
-        stitch_ticket: ticket,
+        stitch_ticket: jobId,
       })
       .onConflict('entity_id')
       .merge(['stitch_ticket']);
 
+    // Gather all of the data from the different tables.
     // Selecting from refresh_state and final_entities should yield exactly
     // one row (except in abnormal cases where the stitch was invoked for
     // something that didn't exist at all, in which case it's zero rows).
@@ -122,10 +193,10 @@ export class Stitcher {
     // if we emit a relation to something that hasn't been ingested yet.
     // It's safe to ignore this stitch attempt in that case.
     if (!result.length) {
-      this.logger.error(
-        `Unable to stitch ${entityRef}, item does not exist in refresh state table`,
-      );
-      return;
+      return {
+        type: 'aborted',
+        reason: 'did-not-exist',
+      };
     }
 
     const {
@@ -141,10 +212,10 @@ export class Stitcher {
     // attempt in that case, since another stitch will be triggered when
     // that processing has finished.
     if (!processedEntity) {
-      this.logger.debug(
-        `Unable to stitch ${entityRef}, the entity has not yet been processed`,
-      );
-      return;
+      return {
+        type: 'aborted',
+        reason: 'did-not-exist',
+      };
     }
 
     // Grab the processed entity and stitch all of the relevant data into
@@ -154,7 +225,6 @@ export class Stitcher {
     let statusItems: UNSTABLE_EntityStatusItem[] = [];
 
     if (isOrphan) {
-      this.logger.debug(`${entityRef} is an orphan`);
       entity.metadata.annotations = {
         ...entity.metadata.annotations,
         ['backstage.io/orphan']: 'true',
@@ -190,8 +260,10 @@ export class Stitcher {
     // If the output entity was actually not changed, just abort
     const hash = generateStableHash(entity);
     if (hash === previousHash) {
-      this.logger.debug(`Skipped stitching of ${entityRef}, no changes`);
-      return;
+      return {
+        type: 'aborted',
+        reason: 'had-no-changes',
+      };
     }
 
     entity.metadata.uid = entityId;
@@ -210,15 +282,15 @@ export class Stitcher {
         hash,
       })
       .where('entity_id', entityId)
-      .where('stitch_ticket', ticket)
+      .where('stitch_ticket', jobId)
       .onConflict('entity_id')
       .merge(['final_entity', 'hash']);
 
     if (rowsChanged.length === 0) {
-      this.logger.debug(
-        `Entity ${entityRef} is already processed, skipping write.`,
-      );
-      return;
+      return {
+        type: 'aborted',
+        reason: 'yielded-to-later-stitch-attempt',
+      };
     }
 
     // TODO(freben): Search will probably need a similar safeguard against
@@ -233,5 +305,9 @@ export class Stitcher {
       .where({ entity_id: entityId })
       .delete();
     await this.database.batchInsert('search', searchEntries, BATCH_SIZE);
+
+    return {
+      type: 'success',
+    };
   }
 }

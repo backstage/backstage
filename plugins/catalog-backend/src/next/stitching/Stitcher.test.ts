@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { DatabaseManager } from '../database/DatabaseManager';
@@ -31,15 +30,16 @@ describe('Stitcher', () => {
   const databases = TestDatabases.create({
     ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
   });
-  const logger = getVoidLogger();
 
   it.each(databases.eachSupportedId())(
     'runs the happy path for %p',
     async databaseId => {
       const db = await databases.init(databaseId);
+      const onEvent = jest.fn();
       await DatabaseManager.createDatabase(db);
 
-      const stitcher = new Stitcher(db, logger);
+      const stitcher = new Stitcher(db);
+      stitcher.events.onAny(onEvent);
       let entities: DbFinalEntitiesRow[];
       let entity: Entity;
 
@@ -77,6 +77,16 @@ describe('Stitcher', () => {
       ]);
 
       await stitcher.stitch(new Set(['k:ns/n']));
+      expect(onEvent).toHaveBeenCalledTimes(2);
+      expect(onEvent).toHaveBeenNthCalledWith(1, 'stitchStarted', {
+        entityRef: 'k:ns/n',
+        attemptId: expect.any(String),
+      });
+      expect(onEvent).toHaveBeenNthCalledWith(2, 'stitchCompleted', {
+        entityRef: 'k:ns/n',
+        attemptId: expect.any(String),
+        durationMs: expect.any(Number),
+      });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
 
@@ -125,6 +135,11 @@ describe('Stitcher', () => {
 
       // Re-stitch without any changes
       await stitcher.stitch(new Set(['k:ns/n']));
+      expect(onEvent).toHaveBeenLastCalledWith('stitchAborted', {
+        entityRef: 'k:ns/n',
+        attemptId: expect.any(String),
+        reason: 'had-no-changes',
+      });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
       expect(entities.length).toBe(1);
@@ -143,6 +158,11 @@ describe('Stitcher', () => {
       ]);
 
       await stitcher.stitch(new Set(['k:ns/n']));
+      expect(onEvent).toHaveBeenLastCalledWith('stitchCompleted', {
+        entityRef: 'k:ns/n',
+        attemptId: expect.any(String),
+        durationMs: expect.any(Number),
+      });
 
       entities = await db<DbFinalEntitiesRow>('final_entities');
 
