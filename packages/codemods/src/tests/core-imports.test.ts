@@ -25,7 +25,8 @@ function runTransform(source: string) {
     stats: () => undefined,
     report: () => undefined,
   };
-  return coreImportTransform({ source, file: 'test.ts' }, api);
+  const result = coreImportTransform({ source, file: 'test.ts' }, api);
+  return result?.split('\r\n').join('\n');
 }
 
 describe('core-imports', () => {
