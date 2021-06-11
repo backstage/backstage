@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   TextField,
@@ -57,7 +58,7 @@ export const EntityLifecyclePicker = () => {
   };
 
   return (
-    <>
+    <Box pb={1} pt={1}>
       <Typography variant="button">Lifecycle</Typography>
       <Autocomplete<string>
         multiple
@@ -80,6 +81,6 @@ export const EntityLifecyclePicker = () => {
         popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
         renderInput={params => <TextField {...params} variant="outlined" />}
       />
-    </>
+    </Box>
   );
 };

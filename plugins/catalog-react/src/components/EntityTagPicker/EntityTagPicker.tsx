@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   TextField,
@@ -55,7 +56,7 @@ export const EntityTagPicker = () => {
   };
 
   return (
-    <>
+    <Box pb={1} pt={1}>
       <Typography variant="button">Tags</Typography>
       <Autocomplete<string>
         multiple
@@ -78,6 +79,6 @@ export const EntityTagPicker = () => {
         popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
         renderInput={params => <TextField {...params} variant="outlined" />}
       />
-    </>
+    </Box>
   );
 };

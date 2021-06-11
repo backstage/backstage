@@ -16,6 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   TextField,
@@ -55,7 +56,7 @@ export const EntityOwnerPicker = () => {
   };
 
   return (
-    <>
+    <Box pb={1} pt={1}>
       <Typography variant="button">Owner</Typography>
       <Autocomplete<string>
         multiple
@@ -78,6 +79,6 @@ export const EntityOwnerPicker = () => {
         popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
         renderInput={params => <TextField {...params} variant="outlined" />}
       />
-    </>
+    </Box>
   );
 };

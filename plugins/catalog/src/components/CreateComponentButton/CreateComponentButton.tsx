@@ -21,10 +21,10 @@ import { useRouteRef } from '@backstage/core';
 import { createComponentRouteRef } from '../../routes';
 
 type CreateComponentButtonProps = {
-  buttonLabel?: string;
+  label?: string;
 };
 export const CreateComponentButton = ({
-  buttonLabel,
+  label,
 }: CreateComponentButtonProps) => {
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
@@ -37,7 +37,7 @@ export const CreateComponentButton = ({
       color="primary"
       to={createComponentLink()}
     >
-      {buttonLabel ?? 'Create Component'}
+      {label ?? 'Create Component'}
     </Button>
   );
 };

@@ -55,7 +55,7 @@ export type ApiExplorerPageProps = {
 };
 
 export const ApiExplorerPage = ({
-  initiallySelectedFilter = 'owned',
+  initiallySelectedFilter = 'all',
   columns,
 }: ApiExplorerPageProps) => {
   const styles = useStyles();
@@ -64,15 +64,15 @@ export const ApiExplorerPage = ({
     <ApiExplorerLayout>
       <Content>
         <ContentHeader title="">
-          <CreateComponentButton buttonLabel="Register Existing API" />
+          <CreateComponentButton label="Register Existing API" />
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>
           <EntityListProvider>
             <div>
               <EntityKindPicker initialFilter="api" hidden />
-              <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
+              <EntityTypePicker />
               <EntityOwnerPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
