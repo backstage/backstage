@@ -39,7 +39,7 @@ describe('Default Processing Database', () => {
     await DatabaseManager.createDatabase(knex);
     return {
       knex,
-      db: new DefaultProcessingDatabase(knex, logger),
+      db: new DefaultProcessingDatabase(knex, logger, 100),
     };
   }
 
