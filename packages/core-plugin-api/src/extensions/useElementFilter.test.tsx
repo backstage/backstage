@@ -27,7 +27,7 @@ import {
 const WRAPPING_COMPONENT_KEY = 'core.blob.testing';
 const INNER_COMPONENT_KEY = 'core.blob2.testing';
 
-const WrappingComponent = (props: { children: ReactNode }) => null;
+const WrappingComponent = (_props: { children: ReactNode }) => null;
 attachComponentData(WrappingComponent, WRAPPING_COMPONENT_KEY, {
   message: 'hey! im wrapping component data',
 });
@@ -35,9 +35,9 @@ const InnerComponent = () => null;
 attachComponentData(InnerComponent, INNER_COMPONENT_KEY, {
   message: 'hey! im the inner component',
 });
-const MockComponent = (props: { children: ReactNode }) => null;
+const MockComponent = (_props: { children: ReactNode }) => null;
 
-const FeatureFlagComponent = (props: { children: ReactNode; flag: string }) =>
+const FeatureFlagComponent = (_props: { children: ReactNode; flag: string }) =>
   null;
 attachComponentData(FeatureFlagComponent, 'core.featureFlagged', true);
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
@@ -244,5 +244,47 @@ describe('useElementFilter', () => {
     );
 
     expect(result.error.message).toEqual('Could not find component');
+  });
+
+  it('should support fragments and text node iteration', () => {
+    jest.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
+    const tree = (
+      <>
+        <MockComponent>
+          <>
+            <FeatureFlagComponent flag="testing-flag">
+              <WrappingComponent key="first">
+                <InnerComponent />
+              </WrappingComponent>
+            </FeatureFlagComponent>
+          </>
+          <MockComponent>
+            hello my name
+            <>
+              <WrappingComponent key="second">
+                <InnerComponent />
+              </WrappingComponent>
+            </>
+          </MockComponent>
+          is text
+          <InnerComponent />
+        </MockComponent>
+      </>
+    );
+
+    const { result } = renderHook(
+      props =>
+        useElementFilter(props.tree, elements =>
+          elements
+            .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
+            .getElements(),
+        ),
+      {
+        initialProps: { tree },
+        wrapper: Wrapper,
+      },
+    );
+
+    expect(result.current.length).toBe(2);
   });
 });
