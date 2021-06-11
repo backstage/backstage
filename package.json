@@ -68,7 +68,7 @@
     "prettier": "^2.2.1",
     "recursive-readdir": "^2.2.2",
     "shx": "^0.3.2",
-    "yarn-lock-check": "^1.0.4"
+    "yarn-lock-check": "^1.0.5"
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
