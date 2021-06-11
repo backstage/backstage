@@ -8,6 +8,7 @@ import { BackstageTheme } from '@backstage/theme';
 import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { default as React_2 } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SvgIconProps } from '@material-ui/core';
 
@@ -513,6 +514,9 @@ export function useApiHolder(): ApiHolder;
 
 // @public (undocumented)
 export const useApp: () => AppContext;
+
+// @public (undocumented)
+export function useElementFilter<T>(node: ReactNode, filterFn: (arg: ElementCollection) => T, dependencies?: any[]): T;
 
 // @public (undocumented)
 export type UserFlags = {};
