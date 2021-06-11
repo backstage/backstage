@@ -33,8 +33,8 @@ import {
   parseEntityPaginationParams,
   parseEntityTransformParams,
 } from '../service/request';
-import { LocationService } from './types';
 import { disallowReadonlyMode, validateRequestBody } from '../service/util';
+import { LocationService } from './types';
 
 export interface RouterOptions {
   entitiesCatalog?: EntitiesCatalog;

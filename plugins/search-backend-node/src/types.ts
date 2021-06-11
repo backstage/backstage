@@ -27,11 +27,6 @@ import {
  */
 export interface RegisterCollatorParameters {
   /**
-   * The type of document to be indexed (used to name indices, to configure refresh loop, etc).
-   */
-  type: string;
-
-  /**
    * The default interval (in seconds) that the provided collator will be called (can be overridden in config).
    */
   defaultRefreshIntervalSeconds: number;
@@ -50,12 +45,6 @@ export interface RegisterDecoratorParameters {
    * The decorator class responsible for appending or modifying documents of the given type(s).
    */
   decorator: DocumentDecorator;
-
-  /**
-   * (Optional) An array of document types that the given decorator should apply to. If none are provided,
-   * the decorator will be applied to all types.
-   */
-  types?: string[];
 }
 
 /**
@@ -70,7 +59,18 @@ export type QueryTranslator = (query: SearchQuery) => unknown;
  * concrete, search engine-specific queries.
  */
 export interface SearchEngine {
-  translator: QueryTranslator;
+  /**
+   * Override the default translator provided by the SearchEngine.
+   */
+  setTranslator(translator: QueryTranslator): void;
+
+  /**
+   * Add the given documents to the SearchEngine index of the given type.
+   */
   index(type: string, documents: IndexableDocument[]): void;
+
+  /**
+   * Perform a search query against the SearchEngine.
+   */
   query(query: SearchQuery): Promise<SearchResultSet>;
 }

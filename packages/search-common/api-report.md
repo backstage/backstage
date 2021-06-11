@@ -10,12 +10,14 @@ import { JsonObject } from '@backstage/config';
 export interface DocumentCollator {
     // (undocumented)
     execute(): Promise<IndexableDocument[]>;
+    readonly type: string;
 }
 
 // @public
 export interface DocumentDecorator {
     // (undocumented)
     execute(documents: IndexableDocument[]): Promise<IndexableDocument[]>;
+    readonly types?: string[];
 }
 
 // @public
@@ -41,6 +43,8 @@ export interface SearchQuery {
 export interface SearchResult {
     // (undocumented)
     document: IndexableDocument;
+    // (undocumented)
+    type: string;
 }
 
 // @public (undocumented)

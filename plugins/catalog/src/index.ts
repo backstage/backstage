@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-export { AboutCard } from './components/AboutCard';
-export { EntityLayout } from './components/EntityLayout';
-export { EntityPageLayout } from './components/EntityPageLayout';
+export * from './components/AboutCard';
+export { CatalogResultListItem } from './components/CatalogResultListItem';
 export { CatalogTable } from './components/CatalogTable';
+export { EntityLayout } from './components/EntityLayout';
+export * from './components/EntityOrphanWarning';
+export { EntityPageLayout } from './components/EntityPageLayout';
 export * from './components/EntitySwitch';
 export { Router } from './components/Router';
 export {
@@ -26,7 +28,11 @@ export {
   catalogPlugin,
   catalogPlugin as plugin,
   EntityAboutCard,
+  EntityDependsOnComponentsCard,
+  EntityDependencyOfComponentsCard,
+  EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
+  EntityHasResourcesCard,
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLinksCard,

@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend
 
+## 0.10.2
+
+### Patch Changes
+
+- 9c63be545: Restructure the next catalog types and files a bit
+- Updated dependencies [92963779b]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [5aff84759]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/backend-common@0.8.2
+  - @backstage/catalog-model@0.8.2
+  - @backstage/catalog-client@0.3.13
+  - @backstage/search-common@0.1.2
+  - @backstage/plugin-search-backend-node@0.2.0
+  - @backstage/integration@0.5.6
+
+## 0.10.1
+
+### Patch Changes
+
+- e7a5a3474: Only validate the envelope for emitted entities, and defer full validation to when they get processed later on.
+- 63a432e9c: Skip deletion of bootstrap location when running the new catalog.
+- f46a9e82d: Move dependency to `@microsoft/microsoft-graph-types` from `@backstage/plugin-catalog`
+  to `@backstage/plugin-catalog-backend`.
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
+## 0.10.0
+
+### Minor Changes
+
+- 0fd4ea443: Updates the `GithubCredentialsProvider` to return the token type, it can either be `token` or `app` depending on the authentication method.
+
+  Update the `GithubOrgReaderProcessor` NOT to query for email addresses if GitHub Apps is used for authentication, this is due to inconsistencies in the GitHub API when using server to server communications and installation tokens. https://github.community/t/api-v4-unable-to-retrieve-email-resource-not-accessible-by-integration/13831/4 for more info.
+
+  **Removes** deprecated GithubOrgReaderProcessor provider configuration(`catalog.processors.githubOrg`). If you're using the deprecated config section make sure to migrate to [integrations](https://backstage.io/docs/integrations/github/locations) instead.
+
+### Patch Changes
+
+- add62a455: Foundation for standard entity status values
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
+## 0.9.1
+
+### Patch Changes
+
+- 50a5348b7: Fix error handling in `LdapOrgReaderProcessor`, and support complex paging options
+- 1b8e28aed: Resolve the `target` for glob `file` locations correctly
+- dcd5a93a9: Correctly add `<source>/project-slug` annotation for new catalog-info.yaml PRs based on SCM integration.
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 62579ced6: Skip adding entries to the `entities_search` table if their `key` exceeds a length limit.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
 ## 0.9.0
 
 ### Minor Changes

@@ -23,6 +23,7 @@ we recommend that you name them `catalog-info.yaml`.
 - [Common to All Kinds: The Envelope](#common-to-all-kinds-the-envelope)
 - [Common to All Kinds: The Metadata](#common-to-all-kinds-the-metadata)
 - [Common to All Kinds: Relations](#common-to-all-kinds-relations)
+- [Common to All Kinds: Status](#common-to-all-kinds-status)
 - [Kind: Component](#kind-component)
 - [Kind: Template](#kind-template)
 - [Kind: API](#kind-api)
@@ -396,6 +397,68 @@ with it (such as the default kind being `Group` if not specified).
 See the [well-known relations section](well-known-relations.md) for a list of
 well-known / common relations and their semantics.
 
+## Common to All Kinds: Status
+
+The `status` root object is a read-only set of statuses, pertaining to the
+current state or health of the entity, described in the
+[well-known statuses section](well-known-statuses.md).
+
+Currently, the only defined field is the `items` array. Each of its items
+contains a specific data structure that describes some aspect of the state of
+the entity, as seen from the point of view of some specific system. Different
+systems may contribute to this array, under their own respective `type` keys.
+
+The current main use case for this field is for the ingestion processes of the
+catalog itself to convey information about errors and warnings back to the user.
+
+A status field as part of a single entity that's read out of the API may look as
+follows.
+
+```js
+{
+  // ...
+  "status": {
+    "items": [
+      {
+        "type": "backstage.io/catalog-processing",
+        "level": "error",
+        "message": "NotFoundError: File not found",
+        "error": {
+          "name": "NotFoundError",
+          "message": "File not found",
+          "stack": "..."
+        }
+      }
+    ]
+  },
+  "spec": {
+    // ...
+  }
+}
+```
+
+The fields of a status item are:
+
+| Field     | Type   | Description                                                                                      |
+| --------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `type`    | String | The type of status as a unique key per source. Each type may appear more than once in the array. |
+| `level`   | String | The level / severity of the status item: 'info', 'warning, or 'error'.                           |
+| `message` | String | A brief message describing the status, intended for human consumption.                           |
+| `error`   | Object | An optional serialized error object related to the status.                                       |
+
+The `type` is an arbitrary string, but we recommend that types that are not
+strictly private within the organization be namespaced to avoid collisions.
+Types emitted by Backstage core processes will for example be prefixed with
+`backstage.io/` as in the example above.
+
+Entity descriptor YAML files are not supposed to contain a `status` root key.
+Instead, catalog processors analyze the entity descriptor data and its
+surroundings, and deduce status entries that are then attached onto the entity
+as read from the catalog.
+
+See the [well-known statuses section](well-known-statuses.md) for a list of
+well-known / common status types.
+
 ## Kind: Component
 
 Describes the following entity kind:
@@ -656,6 +719,25 @@ You can find out more about the `parameters` key
 
 You can find out more about the `steps` key
 [here](../software-templates/writing-templates.md)
+
+### `spec.owner` [optional]
+
+An [entity reference](#string-references) to the owner of the template, e.g.
+`artist-relations-team`. This field is required.
+
+In Backstage, the owner of a Template is the singular entity (commonly a team)
+that bears ultimate responsibility for the Template, and has the authority and
+capability to develop and maintain it. They will be the point of contact if
+something goes wrong, or if features are to be requested. The main purpose of
+this field is for display purposes in Backstage, so that people looking at
+catalog items can get an understanding of to whom this Template belongs. It is
+not to be used by automated processes to for example assign authorization in
+runtime systems. There may be others that also develop or otherwise touch the
+Template, but there will always be one ultimate owner.
+
+| [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
+| ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
 
 ## Kind: API
 

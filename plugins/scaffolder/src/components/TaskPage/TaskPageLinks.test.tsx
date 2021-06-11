@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { entityRouteRef } from '@backstage/plugin-catalog-react';
+import { renderInTestApp } from '@backstage/test-utils';
 import React from 'react';
 import { TaskPageLinks } from './TaskPageLinks';
-import { renderInTestApp } from '@backstage/test-utils';
-import { entityRouteRef } from '@backstage/plugin-catalog-react';
 
 describe('TaskPageLinks', () => {
   beforeEach(() => {});
@@ -68,9 +68,11 @@ describe('TaskPageLinks', () => {
       links: [
         { url: 'https://first.url', title: 'Cool link 1' },
         { url: 'https://second.url', title: 'Cool link 2' },
+        { entityRef: 'Component:default/my-app', title: 'Open in catalog' },
+        { title: 'Skipped' },
       ],
     };
-    const { findByText } = await renderInTestApp(
+    const { findByText, queryByText } = await renderInTestApp(
       <TaskPageLinks output={output} />,
       {
         mountedRoutes: {
@@ -88,5 +90,15 @@ describe('TaskPageLinks', () => {
 
     expect(element).toBeInTheDocument();
     expect(element).toHaveAttribute('href', 'https://second.url');
+
+    element = await findByText('Open in catalog');
+
+    expect(element).toBeInTheDocument();
+    expect(element).toHaveAttribute(
+      'href',
+      '/catalog/default/Component/my-app',
+    );
+
+    expect(queryByText('Skipped')).not.toBeInTheDocument();
   });
 });

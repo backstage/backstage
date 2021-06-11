@@ -1,5 +1,47 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.8
+
+### Patch Changes
+
+- ef2f928f4: Add deployment statuses to the GithubDeployments plugin
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/catalog-model@0.8.2
+  - @backstage/integration-react@0.1.3
+  - @backstage/plugin-catalog-react@0.2.2
+  - @backstage/integration@0.5.6
+
+## 0.1.7
+
+### Patch Changes
+
+- 4d38bab75: Handle deployments without a commit
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
+## 0.1.6
+
+### Patch Changes
+
+- fa69982fb: Support GHE by properly parsing enterprise instance hosts
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.1.5
 
 ### Patch Changes

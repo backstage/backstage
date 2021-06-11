@@ -23,7 +23,8 @@ Backstage provides a utility for creating new apps. It guides you through the
 initial setup of selecting the name of the app and a database for the backend.
 The database options are either SQLite or PostgreSQL, where the latter requires
 you to set up a separate database instance. If in doubt, choose SQLite, but
-don't worry about the choice, it's easy to change later!
+don't worry about the choice, it's easy to change later! Here is a
+[tutorial](../tutorials/switching-sqlite-postgres.md) for it.
 
 The easiest way to run the create app package is with `npx`:
 

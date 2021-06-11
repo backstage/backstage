@@ -15,7 +15,7 @@
  */
 
 import { GitlabAuthProvider } from './provider';
-import * as helpers from '../../lib/passport';
+import * as helpers from '../../lib/passport/PassportStrategyHelper';
 import { OAuthResult } from '../../lib/oauth';
 
 const mockFrameHandler = (jest.spyOn(

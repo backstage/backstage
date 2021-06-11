@@ -1,5 +1,58 @@
 # @backstage/backend-common
 
+## 0.8.2
+
+### Patch Changes
+
+- 92963779b: Omits the `upgrade-insecure-requests` Content-Security-Policy directive by default, to prevent automatic HTTPS request upgrading for HTTP-deployed Backstage sites.
+
+  If you previously disabled this using `false` in your `app-config.yaml`, this line is no longer necessary:
+
+  ```diff
+  backend:
+    csp:
+  -    upgrade-insecure-requests: false
+  ```
+
+  To keep the existing behavior of `upgrade-insecure-requests` Content-Security-Policy being _enabled_, add the key with an empty array as the value in your `app-config.yaml`:
+
+  ```diff
+  backend:
+  +  csp:
+  +    upgrade-insecure-requests: []
+  ```
+
+  Read more on [upgrade-insecure-requests here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/upgrade-insecure-requests).
+
+- eda9dbd5f: Download archives as compressed tar files for Bitbucket to keep executable permissions.
+- Updated dependencies [eda9dbd5f]
+  - @backstage/integration@0.5.6
+
+## 0.8.1
+
+### Patch Changes
+
+- c7dad9218: All cache-related connection errors are now handled and logged by the cache manager. App Integrators may provide an optional error handler when instantiating the cache manager if custom error handling is needed.
+
+  ```typescript
+  // Providing an error handler
+  const cacheManager = CacheManager.fromConfig(config, {
+    onError: e => {
+      if (isSomehowUnrecoverable(e)) {
+        gracefullyShutThingsDown();
+        process.exit(1);
+      }
+    },
+  });
+  ```
+
+- 65e6c4541: Remove circular dependencies
+- 5001de908: Change GitlabUrlReader to SHA timestamp compare using only commits that modify given file path, if file path given
+- Updated dependencies [65e6c4541]
+- Updated dependencies [290405276]
+  - @backstage/integration@0.5.3
+  - @backstage/config-loader@0.6.2
+
 ## 0.8.0
 
 ### Minor Changes

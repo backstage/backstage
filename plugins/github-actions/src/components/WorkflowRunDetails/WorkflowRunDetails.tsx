@@ -168,7 +168,7 @@ export const WorkflowRunDetails = ({ entity }: { entity: Entity }) => {
   )[0].host;
   const [owner, repo] = projectName.value ? projectName.value.split('/') : [];
   const details = useWorkflowRunsDetails({ hostname, owner, repo });
-  const jobs = useWorkflowRunJobs(details.value?.jobs_url);
+  const jobs = useWorkflowRunJobs({ hostname, owner, repo });
 
   const error = projectName.error || (projectName.value && details.error);
   const classes = useStyles();

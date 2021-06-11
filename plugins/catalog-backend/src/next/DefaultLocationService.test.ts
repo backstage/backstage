@@ -15,7 +15,8 @@
  */
 
 import { DefaultLocationService } from './DefaultLocationService';
-import { CatalogProcessingOrchestrator, LocationStore } from './types';
+import { CatalogProcessingOrchestrator } from './processing/types';
+import { LocationStore } from './types';
 
 describe('DefaultLocationServiceTest', () => {
   const orchestrator: jest.Mocked<CatalogProcessingOrchestrator> = {
@@ -27,9 +28,12 @@ describe('DefaultLocationServiceTest', () => {
     listLocations: jest.fn(),
     getLocation: jest.fn(),
   };
-
-  beforeEach(() => jest.resetAllMocks());
   const locationService = new DefaultLocationService(store, orchestrator);
+
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('createLocation', () => {
     it('should support dry run', async () => {
       orchestrator.process.mockResolvedValueOnce({
@@ -136,6 +140,7 @@ describe('DefaultLocationServiceTest', () => {
       });
     });
   });
+
   describe('listLocations', () => {
     it('should call locationStore.deleteLocation', async () => {
       await locationService.listLocations();

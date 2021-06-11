@@ -1,5 +1,120 @@
 # @backstage/plugin-scaffolder
 
+## 0.9.8
+
+### Patch Changes
+
+- 27a9b503a: Introduce conditional steps in scaffolder templates.
+
+  A step can now include an `if` property that only executes a step if the
+  condition is truthy. The condition can include handlebar templates.
+
+  ```yaml
+  - id: register
+      if: '{{ not parameters.dryRun }}'
+      name: Register
+      action: catalog:register
+      input:
+      repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+      catalogInfoPath: '/catalog-info.yaml'
+  ```
+
+  Also introduces a `not` helper in handlebar templates that allows to negate
+  boolean expressions.
+
+- 9b4010965: Provide a link to the template source on the `TemplateCard`.
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/catalog-model@0.8.2
+  - @backstage/integration-react@0.1.3
+  - @backstage/plugin-catalog-react@0.2.2
+  - @backstage/catalog-client@0.3.13
+  - @backstage/integration@0.5.6
+
+## 0.9.7
+
+### Patch Changes
+
+- 497f4ce18: Scaffolder Field Extensions are here! This means you'll now the ability to create custom field extensions and have the Scaffolder use the components when collecting information from the user in the wizard. By default we supply the `RepoUrlPicker` and the `OwnerPicker`, but if you want to provide some more extensions or override the built on ones you will have to change how the `ScaffolderPage` is wired up in your `app/src/App.tsx` to pass in the custom fields to the Scaffolder.
+
+  You'll need to move this:
+
+  ```tsx
+  <Route path="/create" element={<ScaffolderPage />} />
+  ```
+
+  To this:
+
+  ```tsx
+  import {
+    ScaffolderFieldExtensions,
+    RepoUrlPickerFieldExtension,
+    OwnerPickerFieldExtension,
+  } from '@backstage/plugin-scaffolder';
+
+  <Route path="/create" element={<ScaffolderPage />}>
+    <ScaffolderFieldExtensions>
+      <RepoUrlPickerFieldExtension />
+      <OwnerPickerFieldExtension />
+
+      {/*Any other extensions you want to provide*/}
+    </ScaffolderFieldExtensions>
+  </Route>;
+  ```
+
+  More documentation on how to write your own `FieldExtensions` to follow.
+
+- 3772de8ba: Remove the trailing space from a the aria-label of the Template "CHOOSE" button.
+- f430b6c6f: Don't merge with previous from state on form changes.
+- 76f99a1a0: Export `createScaffolderFieldExtension` to enable the creation of new field extensions.
+- 1157fa307: Add a `<EntityPicker>` field to the scaffolder to pick arbitrary entity kinds, like systems.
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
+## 0.9.5
+
+### Patch Changes
+
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 81d7b9c6f: Added deprecation warnings for `v1alpha1` templates
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/integration@0.5.3
+
 ## 0.9.4
 
 ### Patch Changes

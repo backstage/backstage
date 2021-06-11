@@ -1,5 +1,32 @@
 # @backstage/plugin-cost-insights
 
+## 0.10.2
+
+### Patch Changes
+
+- 9d906c7a1: Move `canvas` package to `devDependencies`.
+
+## 0.10.1
+
+### Patch Changes
+
+- 41c3ec421: fix for query parameters with null groups
+- Updated dependencies [cc592248b]
+  - @backstage/core@0.7.11
+
+## 0.10.0
+
+### Minor Changes
+
+- 7cbfcae48: support jsx in alert titles
+
+### Patch Changes
+
+- 5914a76d5: Added example client
+- Updated dependencies [65e6c4541]
+- Updated dependencies [5da6a561d]
+  - @backstage/core@0.7.10
+
 ## 0.9.1
 
 ### Patch Changes

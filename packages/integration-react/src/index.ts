@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-export {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-} from './ScmIntegrationsApi';
+export * from './api';
+export * from './components';

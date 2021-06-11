@@ -51,6 +51,7 @@ export type TaskSpec = {
     name: string;
     action: string;
     input?: JsonObject;
+    if?: string | boolean;
   }>;
   output: { [name: string]: string };
 };

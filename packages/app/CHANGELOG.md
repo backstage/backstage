@@ -1,5 +1,141 @@
 # example-app
 
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies [9cd3c533c]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [9d906c7a1]
+- Updated dependencies [9bdd2cca8]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [9b4010965]
+- Updated dependencies [7f7443308]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [5aff84759]
+- Updated dependencies [21e8ebef5]
+- Updated dependencies [4fbb00707]
+- Updated dependencies [d5ad47bbb]
+  - @backstage/cli@0.7.0
+  - @backstage/plugin-catalog@0.6.2
+  - @backstage/plugin-cost-insights@0.10.2
+  - @backstage/plugin-github-actions@0.4.9
+  - @backstage/catalog-model@0.8.2
+  - @backstage/plugin-scaffolder@0.9.8
+  - @backstage/integration-react@0.1.3
+  - @backstage/plugin-catalog-react@0.2.2
+  - @backstage/plugin-catalog-import@0.5.9
+  - @backstage/plugin-search@0.4.0
+
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies [497f4ce18]
+- Updated dependencies [ee4eb5b40]
+- Updated dependencies [84160313e]
+- Updated dependencies [3772de8ba]
+- Updated dependencies [7e7c71417]
+- Updated dependencies [f430b6c6f]
+- Updated dependencies [2a942cc9e]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [90a505a77]
+- Updated dependencies [76f99a1a0]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [1157fa307]
+- Updated dependencies [8e919a6f8]
+- Updated dependencies [2305ab8fc]
+- Updated dependencies [054bcd029]
+- Updated dependencies [aad98c544]
+- Updated dependencies [f46a9e82d]
+  - @backstage/plugin-scaffolder@0.9.7
+  - @backstage/cli@0.6.14
+  - @backstage/plugin-catalog@0.6.1
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-catalog-react@0.2.1
+  - @backstage/plugin-techdocs@0.9.5
+
+## 0.2.30
+
+### Patch Changes
+
+- Updated dependencies [41c3ec421]
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [1cd0cacd9]
+- Updated dependencies [4ea9df9d3]
+- Updated dependencies [7a7da5146]
+- Updated dependencies [5baf2ff0f]
+- Updated dependencies [bf805b467]
+- Updated dependencies [203ce6f6f]
+- Updated dependencies [7ab5bfe68]
+- Updated dependencies [704875e26]
+- Updated dependencies [3a181cff1]
+  - @backstage/plugin-cost-insights@0.10.1
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog@0.6.0
+  - @backstage/plugin-catalog-react@0.2.0
+  - @backstage/cli@0.6.13
+  - @backstage/plugin-techdocs@0.9.4
+  - @backstage/plugin-jenkins@0.4.4
+  - @backstage/plugin-api-docs@0.4.15
+  - @backstage/plugin-badges@0.2.2
+  - @backstage/plugin-catalog-import@0.5.8
+  - @backstage/plugin-circleci@0.2.15
+  - @backstage/plugin-cloudbuild@0.2.16
+  - @backstage/plugin-code-coverage@0.1.4
+  - @backstage/plugin-explore@0.3.6
+  - @backstage/plugin-github-actions@0.4.8
+  - @backstage/plugin-kafka@0.2.8
+  - @backstage/plugin-kubernetes@0.4.5
+  - @backstage/plugin-lighthouse@0.2.17
+  - @backstage/plugin-org@0.3.14
+  - @backstage/plugin-pagerduty@0.3.5
+  - @backstage/plugin-rollbar@0.3.6
+  - @backstage/plugin-scaffolder@0.9.6
+  - @backstage/plugin-search@0.3.7
+  - @backstage/plugin-sentry@0.3.11
+  - @backstage/plugin-todo@0.1.2
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies [7cbfcae48]
+- Updated dependencies [2bfec55a6]
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+- Updated dependencies [ca6e0ab69]
+- Updated dependencies [5914a76d5]
+- Updated dependencies [81d7b9c6f]
+- Updated dependencies [a62cfe068]
+- Updated dependencies [35e091604]
+- Updated dependencies [a53f3d603]
+- Updated dependencies [b203699e9]
+  - @backstage/plugin-cost-insights@0.10.0
+  - @backstage/cli@0.6.12
+  - @backstage/catalog-model@0.7.10
+  - @backstage/plugin-scaffolder@0.9.5
+  - @backstage/core@0.7.10
+  - @backstage/plugin-api-docs@0.4.14
+  - @backstage/plugin-cloudbuild@0.2.15
+  - @backstage/plugin-github-actions@0.4.7
+  - @backstage/plugin-techdocs@0.9.3
+  - @backstage/plugin-catalog-import@0.5.7
+  - @backstage/plugin-catalog@0.5.8
+
 ## 0.2.28
 
 ### Patch Changes

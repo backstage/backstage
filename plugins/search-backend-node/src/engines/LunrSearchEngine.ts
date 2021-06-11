@@ -28,6 +28,13 @@ type ConcreteLunrQuery = {
   documentTypes: string[];
 };
 
+type LunrResultEnvelope = {
+  result: lunr.Index.Result;
+  type: string;
+};
+
+type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
+
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
@@ -38,23 +45,48 @@ export class LunrSearchEngine implements SearchEngine {
     this.docStore = {};
   }
 
-  translator: QueryTranslator = ({
+  protected translator: QueryTranslator = ({
     term,
     filters,
     types,
   }: SearchQuery): ConcreteLunrQuery => {
     let lunrQueryFilters;
+    const lunrTerm = term ? `+${term}` : '';
     if (filters) {
       lunrQueryFilters = Object.entries(filters)
-        .map(([key, value]) => ` +${key}:${value}`)
+        .map(([field, value]) => {
+          // Require that the given field has the given value (with +).
+          if (['string', 'number', 'boolean'].includes(typeof value)) {
+            return ` +${field}:${value}`;
+          }
+
+          // Illustrate how multi-value filters could work.
+          if (Array.isArray(value)) {
+            // But warn that Lurn supports this poorly.
+            this.logger.warn(
+              `Non-scalar filter value used for field ${field}. Consider using a different Search Engine for better results.`,
+            );
+            return ` ${value.map(v => {
+              return `${field}:${v}`;
+            })}`;
+          }
+
+          // Log a warning or something about unknown filter value
+          this.logger.warn(`Unknown filter type used on field ${field}`);
+          return '';
+        })
         .join('');
     }
 
     return {
-      lunrQueryString: `${term}${lunrQueryFilters || ''}`,
+      lunrQueryString: `${lunrTerm}${lunrQueryFilters || ''}`,
       documentTypes: types || ['*'],
     };
   };
+
+  setTranslator(translator: LunrQueryTranslator) {
+    this.translator = translator;
+  }
 
   index(type: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
@@ -83,13 +115,20 @@ export class LunrSearchEngine implements SearchEngine {
       query,
     ) as ConcreteLunrQuery;
 
-    const results: lunr.Index.Result[] = [];
+    const results: LunrResultEnvelope[] = [];
 
     if (documentTypes.length === 1 && documentTypes[0] === '*') {
       // Iterate over all this.lunrIndex values.
-      Object.values(this.lunrIndices).forEach(i => {
+      Object.keys(this.lunrIndices).forEach(type => {
         try {
-          results.push(...i.search(lunrQueryString));
+          results.push(
+            ...this.lunrIndices[type].search(lunrQueryString).map(result => {
+              return {
+                result: result,
+                type: type,
+              };
+            }),
+          );
         } catch (err) {
           // if a field does not exist on a index, we can see that as a no-match
           if (
@@ -102,10 +141,17 @@ export class LunrSearchEngine implements SearchEngine {
     } else {
       // Iterate over the filtered list of this.lunrIndex keys.
       Object.keys(this.lunrIndices)
-        .filter(d => documentTypes.includes(d))
-        .forEach(d => {
+        .filter(type => documentTypes.includes(type))
+        .forEach(type => {
           try {
-            results.push(...this.lunrIndices[d].search(lunrQueryString));
+            results.push(
+              ...this.lunrIndices[type].search(lunrQueryString).map(result => {
+                return {
+                  result: result,
+                  type: type,
+                };
+              }),
+            );
           } catch (err) {
             // if a field does not exist on a index, we can see that as a no-match
             if (
@@ -119,16 +165,16 @@ export class LunrSearchEngine implements SearchEngine {
 
     // Sort results.
     results.sort((doc1, doc2) => {
-      return doc2.score - doc1.score;
+      return doc2.result.score - doc1.result.score;
     });
 
     // Translate results into SearchResultSet
-    const resultSet: SearchResultSet = {
+    const realResultSet: SearchResultSet = {
       results: results.map(d => {
-        return { document: this.docStore[d.ref] };
+        return { type: d.type, document: this.docStore[d.result.ref] };
       }),
     };
 
-    return Promise.resolve(resultSet);
+    return Promise.resolve(realResultSet);
   }
 }

@@ -227,9 +227,9 @@ function reducer(state: ReducerState, action: ReducerActions): ReducerState {
       return {
         ...init(action.initialUrl),
 
-        // we keep the old reviewResult since the form is animated and an
+        // we keep the old prepareResult since the form is animated and an
         // undefined value might crash the last step.
-        reviewResult: state.reviewResult,
+        prepareResult: state.prepareResult,
       };
 
     default:

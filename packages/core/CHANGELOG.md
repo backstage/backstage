@@ -1,5 +1,33 @@
 # @backstage/core
 
+## 0.7.12
+
+### Patch Changes
+
+- 1cf1d351f: Export `CheckboxTree` as we have a storybook for it
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [0160678b1]
+  - @backstage/theme@0.2.8
+  - @backstage/core-api@0.2.21
+
+## 0.7.11
+
+### Patch Changes
+
+- cc592248b: SignInPage: Show login page while pop-up is being displayed when `auto` prop is set.
+- Updated dependencies [d597a50c6]
+  - @backstage/core-api@0.2.20
+
+## 0.7.10
+
+### Patch Changes
+
+- 65e6c4541: Remove circular dependencies
+- 5da6a561d: Fix a bug where users are asked to log-in on every page refresh. This is specific to people with only one sign-in provider in their SignInPage component.
+- Updated dependencies [61c3f927c]
+- Updated dependencies [65e6c4541]
+  - @backstage/core-api@0.2.19
+
 ## 0.7.9
 
 ### Patch Changes

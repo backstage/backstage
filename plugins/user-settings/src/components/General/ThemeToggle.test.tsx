@@ -20,16 +20,17 @@ import {
   appThemeApiRef,
   AppThemeSelector,
 } from '@backstage/core';
+import { AppTheme } from '@backstage/core-plugin-api';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { ThemeToggle } from './ThemeToggle';
 
-const mockTheme = {
-  id: 'light',
+const mockTheme: AppTheme = {
+  id: 'light-theme',
   title: 'Mock Theme',
-  variant: 'light' as 'light', // wut?
+  variant: 'light',
   theme: lightTheme,
 };
 
@@ -53,6 +54,6 @@ describe('<ThemeToggle />', () => {
     const themeButton = rendered.getByTitle('Select Mock Theme');
     expect(themeApi?.getActiveThemeId()).toBe(undefined);
     fireEvent.click(themeButton);
-    expect(themeApi?.getActiveThemeId()).toBe('light');
+    expect(themeApi?.getActiveThemeId()).toBe('light-theme');
   });
 });

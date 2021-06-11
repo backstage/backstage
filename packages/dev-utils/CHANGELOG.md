@@ -1,5 +1,48 @@
 # @backstage/dev-utils
 
+## 0.1.17
+
+### Patch Changes
+
+- e7c5e4b30: Update installation instructions in README.
+- Updated dependencies [7af9cef07]
+- Updated dependencies [e7c5e4b30]
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [1cf1d351f]
+- Updated dependencies [deaba2e13]
+- Updated dependencies [8e919a6f8]
+  - @backstage/test-utils@0.1.13
+  - @backstage/theme@0.2.8
+  - @backstage/catalog-model@0.8.1
+  - @backstage/core@0.7.12
+  - @backstage/plugin-catalog-react@0.2.1
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies [add62a455]
+- Updated dependencies [cc592248b]
+- Updated dependencies [17c497b81]
+- Updated dependencies [704875e26]
+  - @backstage/catalog-model@0.8.0
+  - @backstage/core@0.7.11
+  - @backstage/plugin-catalog-react@0.2.0
+
+## 0.1.15
+
+### Patch Changes
+
+- 5e7b36e74: Fix a bug where an instance of the SCM integrations API wasn't being provided properly to the dev app.
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5da6a561d]
+- Updated dependencies [61c3f927c]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/core@0.7.10
+  - @backstage/test-utils@0.1.12
+
 ## 0.1.14
 
 ### Patch Changes

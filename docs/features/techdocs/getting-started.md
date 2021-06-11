@@ -213,10 +213,19 @@ environment is compatible with techdocs.
 
 You will have to install the `mkdocs` and `mkdocs-techdocs-core` package from
 pip, as well as `graphviz` and `plantuml` from your OS package manager (e.g.
-apt). See our
+apt).
+
+You can do so by including the following lines in the last step of your
+`Dockerfile`:
+
+```Dockerfile
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN pip3 install mkdocs-techdocs-core==0.0.16
+```
+
+Please be aware that the version requirement could change, you need to check our
 [`Dockerfile`](https://github.com/backstage/techdocs-container/blob/main/Dockerfile)
-for the latest requirements. You should be trying to match your `Dockerfile`
-with this one.
+and make sure to match with it.
 
 Note: We recommend Python version 3.7 or higher.
 

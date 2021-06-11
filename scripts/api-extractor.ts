@@ -62,14 +62,16 @@ PackageJsonLookup.prototype.tryGetPackageJsonFilePathFor = function tryGetPackag
 
 const DOCUMENTED_PACKAGES = [
   'packages/backend-common',
+  'packages/backend-test-utils',
   'packages/catalog-client',
   'packages/catalog-model',
   'packages/cli-common',
   'packages/config',
   'packages/config-loader',
+  'packages/core-app-api',
   // TODO(Rugvip): Enable these once `import * as ...` and `import()` PRs have landed, #1796 & #1916.
-  // 'packages/core',
-  // 'packages/core-api',
+  // 'packages/core-components',
+  'packages/core-plugin-api',
   'packages/dev-utils',
   'packages/errors',
   'packages/integration',

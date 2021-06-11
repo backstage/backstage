@@ -24,6 +24,7 @@ import {
   patchMkdocsYmlPreBuild,
   runCommand,
   storeEtagMetadata,
+  validateMkdocsYaml,
 } from './helpers';
 import { GeneratorBase, GeneratorRunOptions } from './types';
 
@@ -79,13 +80,16 @@ export class TechdocsGenerator implements GeneratorBase {
     // TODO: In future mkdocs.yml can be mkdocs.yaml. So, use a config variable here to find out
     // the correct file name.
     // Do some updates to mkdocs.yml before generating docs e.g. adding repo_url
+    const mkdocsYmlPath = path.join(inputDir, 'mkdocs.yml');
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
-        path.join(inputDir, 'mkdocs.yml'),
+        mkdocsYmlPath,
         this.logger,
         parsedLocationAnnotation,
       );
     }
+
+    await validateMkdocsYaml(mkdocsYmlPath);
 
     // Directories to bind on container
     const mountDirs = {

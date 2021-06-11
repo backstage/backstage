@@ -28,25 +28,33 @@ const getBaseUrl = (
   }
 
   const location = parseLocationReference(host);
-  if (location.type !== 'github') {
+  if (location.type !== 'github' && location.type !== 'url') {
     return 'https://api.github.com';
   }
 
-  const config = scmIntegrationsApi.github.byHost(location.target);
+  const config = scmIntegrationsApi.github.byUrl(location.target);
 
   if (!config) {
     throw new InputError(
-      `No matching GitHub integration configuration for host ${host}, please check your integrations config`,
+      `No matching GitHub integration configuration for host ${
+        new URL(location.target).hostname
+      }, please check your integrations config`,
     );
   }
 
   if (!config.config.apiBaseUrl) {
     throw new InputError(
-      `No apiBaseUrl available for host ${host}, please check your integrations config`,
+      `No apiBaseUrl available for host ${
+        new URL(location.target).hostname
+      }, please check your integrations config`,
     );
   }
 
   return config?.config.apiBaseUrl;
+};
+
+type Node = {
+  logUrl?: string;
 };
 
 export type GithubDeployment = {
@@ -56,9 +64,15 @@ export type GithubDeployment = {
   commit: {
     abbreviatedOid: string;
     commitUrl: string;
+  } | null;
+  statuses: {
+    nodes: Node[];
   };
   creator: {
     login: string;
+  };
+  repository: {
+    nameWithOwner: string;
   };
   payload: string;
 };
@@ -68,6 +82,7 @@ type QueryParams = {
   owner: string;
   repo: string;
   last: number;
+  lastStatuses: number;
 };
 
 export interface GithubDeploymentsApi {
@@ -85,7 +100,7 @@ export type Options = {
 };
 
 const deploymentsQuery = `
-query deployments($owner: String!, $repo: String!, $last: Int) {
+query deployments($owner: String!, $repo: String!, $last: Int, $lastStatuses: Int) {
   repository(owner: $owner, name: $repo) {
     deployments(last: $last) {
       nodes {
@@ -96,8 +111,16 @@ query deployments($owner: String!, $repo: String!, $last: Int) {
           abbreviatedOid
           commitUrl
         }
+        statuses(last: $lastStatuses) {
+          nodes {
+            logUrl
+          }
+        }
         creator {
           login
+        }
+        repository {
+          nameWithOwner
         }
         payload
       }

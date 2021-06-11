@@ -67,11 +67,11 @@ import { CatalogProcessingEngine, LocationService } from '../next/types';
 import { ConfigLocationEntityProvider } from './ConfigLocationEntityProvider';
 import { DefaultProcessingDatabase } from './database/DefaultProcessingDatabase';
 import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine';
-import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessingOrchestrator';
 import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultLocationStore } from './DefaultLocationStore';
 import { NextEntitiesCatalog } from './NextEntitiesCatalog';
-import { Stitcher } from './Stitcher';
+import { DefaultCatalogProcessingOrchestrator } from './processing/DefaultCatalogProcessingOrchestrator';
+import { Stitcher } from './stitching/Stitcher';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -275,7 +275,7 @@ export class NextCatalogBuilder {
     );
 
     const locationsCatalog = new DatabaseLocationsCatalog(db);
-    const locationAnalyzer = new RepoLocationAnalyzer(logger);
+    const locationAnalyzer = new RepoLocationAnalyzer(logger, integrations);
     const locationService = new DefaultLocationService(
       locationStore,
       orchestrator,

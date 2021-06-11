@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  entityEnvelopeSchemaValidator,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { serializeError } from '@backstage/errors';
 import { Logger } from 'winston';
 import { ProcessingDatabase } from './database/types';
-import { Stitcher } from './Stitcher';
+import { CatalogProcessingOrchestrator } from './processing/types';
+import { Stitcher } from './stitching/Stitcher';
 import {
   CatalogProcessingEngine,
-  CatalogProcessingOrchestrator,
   EntityProvider,
   EntityProviderConnection,
   EntityProviderMutation,
 } from './types';
 
 class Connection implements EntityProviderConnection {
+  readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+
   constructor(
     private readonly config: {
       processingDatabase: ProcessingDatabase;
@@ -36,7 +43,9 @@ class Connection implements EntityProviderConnection {
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.processingDatabase;
+
     if (mutation.type === 'full') {
+      this.check(mutation.entities);
       await db.transaction(async tx => {
         await db.replaceUnprocessedEntities(tx, {
           sourceKey: this.config.id,
@@ -46,6 +55,9 @@ class Connection implements EntityProviderConnection {
       });
       return;
     }
+
+    this.check(mutation.added);
+    this.check(mutation.removed);
     await db.transaction(async tx => {
       await db.replaceUnprocessedEntities(tx, {
         sourceKey: this.config.id,
@@ -54,6 +66,16 @@ class Connection implements EntityProviderConnection {
         removed: mutation.removed,
       });
     });
+  }
+
+  private check(entities: Entity[]) {
+    for (const entity of entities) {
+      try {
+        this.validateEntityEnvelope(entity);
+      } catch (e) {
+        throw new TypeError(`Malformed entity envelope, ${e}`);
+      }
+    }
   }
 }
 
@@ -109,36 +131,67 @@ export class DefaultCatalogProcessingEngine implements CatalogProcessingEngine {
       return;
     }
 
-    const { id, state, unprocessedEntity } = items[0];
+    // TODO: replace Promise.all with something more sophisticated for parallel processing.
+    await Promise.all(
+      items.map(async item => {
+        const { id, state, unprocessedEntity, entityRef } = item;
+        const result = await this.orchestrator.process({
+          entity: unprocessedEntity,
+          state,
+        });
 
-    const result = await this.orchestrator.process({
-      entity: unprocessedEntity,
-      state,
-    });
-    for (const error of result.errors) {
-      this.logger.warn(error.message);
-    }
-    if (!result.ok) {
-      return;
-    }
+        for (const error of result.errors) {
+          // TODO(freben): Try to extract the location out of the unprocessed
+          // entity and add as meta to the log lines
+          this.logger.warn(error.message, {
+            entity: entityRef,
+          });
+        }
+        const errorsString = JSON.stringify(
+          result.errors.map(e => serializeError(e)),
+        );
 
-    result.completedEntity.metadata.uid = id;
-    await this.processingDatabase.transaction(async tx => {
-      await this.processingDatabase.updateProcessedEntity(tx, {
-        id,
-        processedEntity: result.completedEntity,
-        state: result.state,
-        errors: JSON.stringify(result.errors),
-        relations: result.relations,
-        deferredEntities: result.deferredEntities,
-      });
-    });
+        // If the result was marked as not OK, it signals that some part of the
+        // processing pipeline threw an exception. This can happen both as part of
+        // non-catastrophic things such as due to validation errors, as well as if
+        // something fatal happens inside the processing for other reasons. In any
+        // case, this means we can't trust that anything in the output is okay. So
+        // just store the errors and trigger a stich so that they become visible to
+        // the outside.
+        if (!result.ok) {
+          await this.processingDatabase.transaction(async tx => {
+            await this.processingDatabase.updateProcessedEntityErrors(tx, {
+              id,
+              errors: errorsString,
+            });
+          });
+          await this.stitcher.stitch(
+            new Set([stringifyEntityRef(unprocessedEntity)]),
+          );
+          return;
+        }
 
-    const setOfThingsToStitch = new Set<string>([
-      stringifyEntityRef(result.completedEntity),
-      ...result.relations.map(relation => stringifyEntityRef(relation.source)),
-    ]);
-    await this.stitcher.stitch(setOfThingsToStitch);
+        result.completedEntity.metadata.uid = id;
+        await this.processingDatabase.transaction(async tx => {
+          await this.processingDatabase.updateProcessedEntity(tx, {
+            id,
+            processedEntity: result.completedEntity,
+            state: result.state,
+            errors: errorsString,
+            relations: result.relations,
+            deferredEntities: result.deferredEntities,
+          });
+        });
+
+        const setOfThingsToStitch = new Set<string>([
+          stringifyEntityRef(result.completedEntity),
+          ...result.relations.map(relation =>
+            stringifyEntityRef(relation.source),
+          ),
+        ]);
+        await this.stitcher.stitch(setOfThingsToStitch);
+      }),
+    );
   }
 
   private async wait() {

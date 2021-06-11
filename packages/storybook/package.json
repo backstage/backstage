@@ -1,7 +1,7 @@
 {
   "name": "storybook",
   "version": "0.2.0",
-  "description": "Storybook build for core package",
+  "description": "Storybook build for components package",
   "private": true,
   "scripts": {
     "start": "start-storybook -p 6006",

@@ -1,5 +1,22 @@
 # @backstage/catalog-client
 
+## 0.3.13
+
+### Patch Changes
+
+- 70bc30c5b: Display preview result final step.
+- Updated dependencies [27a9b503a]
+  - @backstage/catalog-model@0.8.2
+
+## 0.3.12
+
+### Patch Changes
+
+- add62a455: Foundation for standard entity status values
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/catalog-model@0.8.0
+
 ## 0.3.11
 
 ### Patch Changes

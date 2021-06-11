@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export { createPublishGithubAction } from './github';
-export { createPublishGithubPullRequestAction } from './githubPullRequest';
 export { createPublishAzureAction } from './azure';
-export { createPublishGitlabAction } from './gitlab';
 export { createPublishBitbucketAction } from './bitbucket';
 export { createPublishFileAction } from './file';
+export { createPublishGithubAction } from './github';
+export { createPublishGithubPullRequestAction } from './githubPullRequest';
+export { createPublishGitlabAction } from './gitlab';

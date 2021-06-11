@@ -24,9 +24,14 @@ import { IndexBuilder } from './IndexBuilder';
 import { LunrSearchEngine, SearchEngine } from './index';
 
 class TestDocumentCollator implements DocumentCollator {
-  async execute() {
+  readonly type: string = 'anything';
+  async execute(): Promise<IndexableDocument[]> {
     return [];
   }
+}
+
+class TypedDocumentCollator extends TestDocumentCollator {
+  readonly type = 'an-expected-type';
 }
 
 class TestDocumentDecorator implements DocumentDecorator {
@@ -35,11 +40,17 @@ class TestDocumentDecorator implements DocumentDecorator {
   }
 }
 
+class TypedDocumentDecorator extends TestDocumentDecorator {
+  readonly types = ['an-expected-type'];
+}
+
+class DifferentlyTypedDocumentDecorator extends TestDocumentDecorator {
+  readonly types = ['not-the-expected-type'];
+}
+
 describe('IndexBuilder', () => {
   let testSearchEngine: SearchEngine;
   let testIndexBuilder: IndexBuilder;
-  let testCollator: DocumentCollator;
-  let testDecorator: DocumentDecorator;
 
   beforeEach(() => {
     const logger = getVoidLogger();
@@ -48,18 +59,16 @@ describe('IndexBuilder', () => {
       logger,
       searchEngine: testSearchEngine,
     });
-    testCollator = new TestDocumentCollator();
-    testDecorator = new TestDocumentDecorator();
   });
 
   describe('addCollator', () => {
     it('adds a collator', async () => {
       jest.useFakeTimers();
+      const testCollator = new TestDocumentCollator();
       const collatorSpy = jest.spyOn(testCollator, 'execute');
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        type: 'anything',
         defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
@@ -75,11 +84,12 @@ describe('IndexBuilder', () => {
   describe('addDecorator', () => {
     it('adds a decorator', async () => {
       jest.useFakeTimers();
+      const testCollator = new TestDocumentCollator();
+      const testDecorator = new TestDocumentDecorator();
       const decoratorSpy = jest.spyOn(testDecorator, 'execute');
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        type: 'anything',
         defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
@@ -100,7 +110,8 @@ describe('IndexBuilder', () => {
 
     it('adds a type-specific decorator', async () => {
       jest.useFakeTimers();
-      const expectedType = 'an-expected-type';
+      const testCollator = new TypedDocumentCollator();
+      const testDecorator = new TypedDocumentDecorator();
       const docFixture = {
         title: 'Test',
         text: 'Test text.',
@@ -113,14 +124,12 @@ describe('IndexBuilder', () => {
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        type: expectedType,
         defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
       // Add a decorator for the same type.
       testIndexBuilder.addDecorator({
-        types: [expectedType],
         decorator: testDecorator,
       });
 
@@ -135,12 +144,13 @@ describe('IndexBuilder', () => {
     });
 
     it('adds a type-specific decorator that should not be called', async () => {
-      const expectedType = 'an-expected-type';
       const docFixture = {
         title: 'Test',
         text: 'Test text.',
         location: '/test/location',
       };
+      const testCollator = new TestDocumentCollator();
+      const testDecorator = new DifferentlyTypedDocumentDecorator();
       const collatorSpy = jest
         .spyOn(testCollator, 'execute')
         .mockImplementation(async () => [docFixture]);
@@ -148,14 +158,12 @@ describe('IndexBuilder', () => {
 
       // Add a collator.
       testIndexBuilder.addCollator({
-        type: expectedType,
         defaultRefreshIntervalSeconds: 6,
         collator: testCollator,
       });
 
       // Add a decorator for a different type.
       testIndexBuilder.addDecorator({
-        types: ['not-the-expected-type'],
         decorator: testDecorator,
       });
 

@@ -31,8 +31,8 @@ import {
   CatalogEntitiesRequest,
   CatalogListResponse,
   CatalogRequestOptions,
-  DiscoveryApi,
-} from './types';
+} from './types/api';
+import { DiscoveryApi } from './types/discovery';
 
 export class CatalogClient implements CatalogApi {
   private readonly discoveryApi: DiscoveryApi;
@@ -134,12 +134,6 @@ export class CatalogClient implements CatalogApi {
       throw new Error(`Location wasn't added: ${target}`);
     }
 
-    // TODO(jhaals): This will throw using the experimental catalog since all discovered entities are deferred.
-    if (entities.length === 0) {
-      throw new Error(
-        `Location was added but has no entities specified yet: ${target}`,
-      );
-    }
     return {
       location,
       entities,

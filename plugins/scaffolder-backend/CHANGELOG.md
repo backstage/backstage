@@ -1,5 +1,103 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.12.0
+
+### Minor Changes
+
+- 66c6bfebd: Scaffolding a repository in Bitbucket will now use the apiBaseUrl if it is provided instead of only the host parameter
+
+### Patch Changes
+
+- 27a9b503a: Introduce conditional steps in scaffolder templates.
+
+  A step can now include an `if` property that only executes a step if the
+  condition is truthy. The condition can include handlebar templates.
+
+  ```yaml
+  - id: register
+      if: '{{ not parameters.dryRun }}'
+      name: Register
+      action: catalog:register
+      input:
+      repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+      catalogInfoPath: '/catalog-info.yaml'
+  ```
+
+  Also introduces a `not` helper in handlebar templates that allows to negate
+  boolean expressions.
+
+- 55a253de2: Migrating old `backstage.io/v1alpha1` templates to `backstage.io/v1beta2`
+
+  Deprecating the `create-react-app` Template. We're planning on removing the `create-react-app` templater, as it's been a little tricky to support and takes 15mins to run in a container. We've currently cached a copy of the output for `create-react-app` and ship that under our sample templates folder. If you want to continue using it, we suggest copying the template out of there and putting it in your own repository as it will be removed in upcoming releases.
+
+  We also recommend removing this entry from your `app-config.yaml` if it exists:
+
+  ```diff
+  -    - type: url
+  -      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+  -      rules:
+  -        - allow: [Template]
+  ```
+
+- f26e6008f: Add `debug:log` action for debugging.
+- 4f8cf50fe: Update gitbeaker past the broken version without a dist folder
+- Updated dependencies [92963779b]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/backend-common@0.8.2
+  - @backstage/catalog-model@0.8.2
+  - @backstage/catalog-client@0.3.13
+  - @backstage/integration@0.5.6
+
+## 0.11.5
+
+### Patch Changes
+
+- 6fe1567a7: This adds a configuration option to the scaffolder plugin router, so we can allow for multiple `TaskWorkers`. Currently with only one `TaskWorker` you are limited to scaffolding one thing at a time. Set the `taskWorkers?: number` option in your scaffolder router to get more than 1 `TaskWorker`
+- Updated dependencies [ebe802bc4]
+- Updated dependencies [49d7ec169]
+  - @backstage/catalog-model@0.8.1
+  - @backstage/integration@0.5.5
+
+## 0.11.4
+
+### Patch Changes
+
+- 260aaa684: Bump `@gitbeaker` dependencies to `29.x`.
+- Updated dependencies [0fd4ea443]
+- Updated dependencies [add62a455]
+- Updated dependencies [704875e26]
+  - @backstage/integration@0.5.4
+  - @backstage/catalog-client@0.3.12
+  - @backstage/catalog-model@0.8.0
+
+## 0.11.3
+
+### Patch Changes
+
+- 021eb366a: Instead of failing, warn when you need to pay for GitHub Pro.
+
+## 0.11.2
+
+### Patch Changes
+
+- f7f7783a3: Add Owner field in template card and new data distribution
+  Add spec.owner as optional field into TemplateV1Alpha and TemplateV1Beta Schema
+  Add relations ownedBy and ownerOf into Template entity
+  Template documentation updated
+- 65e6c4541: Remove circular dependencies
+- 81d7b9c6f: Added deprecation warnings for `v1alpha1` templates
+- 9962faa2b: Add branch protection for default branches of scaffolded GitHub repositories
+- Updated dependencies [f7f7783a3]
+- Updated dependencies [c7dad9218]
+- Updated dependencies [65e6c4541]
+- Updated dependencies [68fdbf014]
+- Updated dependencies [5001de908]
+  - @backstage/catalog-model@0.7.10
+  - @backstage/backend-common@0.8.1
+  - @backstage/integration@0.5.3
+
 ## 0.11.1
 
 ### Patch Changes

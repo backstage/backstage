@@ -80,6 +80,4 @@ backend:
     origin: https://your-public-url.com:3000
 ```
 
-If the protocol is `http`, you will need to set `backend.csp.upgrade-insecure-requests` to `false` as well.
-
 The app port must proxy web socket connections in order to make hot reloading work.

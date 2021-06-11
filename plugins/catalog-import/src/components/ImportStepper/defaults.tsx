@@ -328,7 +328,7 @@ export const defaultStepper: StepperProvider = {
     stepLabel: <StepLabel>Finish</StepLabel>,
     content: (
       <StepFinishImportLocation
-        reviewResult={state.reviewResult}
+        prepareResult={state.prepareResult}
         onReset={state.onReset}
       />
     ),

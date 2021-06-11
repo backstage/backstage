@@ -1,5 +1,18 @@
 # @backstage/config-loader
 
+## 0.6.3
+
+### Patch Changes
+
+- 2cf98d279: Resolve the path to app-config.yaml from the current working directory. This will allow use of `yarn link` or running the CLI in other directories and improve the experience for local backstage development.
+- 438a512eb: Fixed configuration schema parsing when using TypeScript `4.3`.
+
+## 0.6.2
+
+### Patch Changes
+
+- 290405276: Updated dependencies
+
 ## 0.6.1
 
 ### Patch Changes
