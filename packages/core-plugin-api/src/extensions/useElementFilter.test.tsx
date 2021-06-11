@@ -220,7 +220,7 @@ describe('useElementFilter', () => {
     expect(result.current.length).toBe(2);
   });
 
-  it('should reject with', () => {
+  it('should reject when strict mode is enabled with the correct string', () => {
     const tree = (
       <MockComponent>
         <h1>Hello</h1>
@@ -234,7 +234,6 @@ describe('useElementFilter', () => {
             .selectByComponentData({
               key: WRAPPING_COMPONENT_KEY,
               withStrictError: 'Could not find component',
-              // errorIfNotFullMatch?
             })
             .findComponentData({ key: INNER_COMPONENT_KEY }),
         ),

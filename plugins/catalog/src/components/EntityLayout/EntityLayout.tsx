@@ -29,7 +29,7 @@ import {
   Progress,
   RoutedTabs,
 } from '@backstage/core';
-import { useElementCollection } from '@backstage/core-plugin-api';
+import { useElementFilter } from '@backstage/core-plugin-api';
 import {
   EntityContext,
   EntityRefLinks,
@@ -157,26 +157,28 @@ export const EntityLayout = ({
   const { kind, namespace, name } = useEntityCompoundName();
   const { entity, loading, error } = useContext(EntityContext);
 
-  const routes = useElementCollection(children)
-    .findByComponentData({
-      key: dataKey,
-      withStrictError: 'Child of EntityLayout must be an EntityLayout.Route',
-    })
-    .listElements<SubRoute>() // all nodes, element data, maintain structure or not?
-    .flatMap(({ props }) => {
-      if (props.if && entity && !props.if(entity)) {
-        return [];
-      }
+  const routes = useElementFilter(children, elements =>
+    elements
+      .selectByComponentData({
+        key: dataKey,
+        withStrictError: 'Child of EntityLayout must be an EntityLayout.Route',
+      })
+      .getElements<SubRoute>() // all nodes, element data, maintain structure or not?
+      .flatMap(({ props }) => {
+        if (props.if && entity && !props.if(entity)) {
+          return [];
+        }
 
-      return [
-        {
-          path: props.path,
-          title: props.title,
-          children: props.children,
-          tabProps: props.tabProps,
-        },
-      ];
-    });
+        return [
+          {
+            path: props.path,
+            title: props.title,
+            children: props.children,
+            tabProps: props.tabProps,
+          },
+        ];
+      }),
+  );
 
   const { headerTitle, headerType } = headerProps(
     kind,

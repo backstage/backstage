@@ -37,10 +37,7 @@ export const Router = () => {
       .selectByComponentData({
         key: FIELD_EXTENSION_WRAPPER_KEY,
       })
-      .select({
-        key: FIELD_EXTENSION_WRAPPER_KEY,
-      })
-      .getComponentData<FieldExtensionOptions>({
+      .findComponentData<FieldExtensionOptions>({
         key: FIELD_EXTENSION_KEY,
       }),
   );
