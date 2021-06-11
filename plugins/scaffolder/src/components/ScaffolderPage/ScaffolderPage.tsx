@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Entity,
-  EntityMeta,
-  TemplateEntityV1alpha1,
-} from '@backstage/catalog-model';
+import { TemplateEntityV1alpha1 } from '@backstage/catalog-model';
 import {
   Content,
   ContentHeader,
@@ -39,7 +35,7 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { Button, Link, makeStyles, Typography } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { registerComponentRouteRef } from '../../routes';
 import SearchToolbar from '../SearchToolbar/SearchToolbar';
@@ -58,25 +54,7 @@ export const ScaffolderPageContents = () => {
   const styles = useStyles();
   const { loading, error, entities } = useEntityListProvider();
 
-  const [search, setSearch] = useState('');
-  const [matchingEntities, setMatchingEntities] = useState([] as Entity[]);
-
-  const matchesQuery = (metadata: EntityMeta, query: string) =>
-    `${metadata.title}`.toLocaleUpperCase('en-US').includes(query) ||
-    metadata.tags?.join('').toLocaleUpperCase('en-US').indexOf(query) !== -1;
-
   const registerComponentLink = useRouteRef(registerComponentRouteRef);
-
-  useEffect(() => {
-    if (search.length === 0) {
-      return setMatchingEntities(entities);
-    }
-    return setMatchingEntities(
-      entities.filter(template =>
-        matchesQuery(template.metadata, search.toLocaleUpperCase('en-US')),
-      ),
-    );
-  }, [search, entities]);
 
   return (
     <Page themeId="home">
@@ -110,8 +88,7 @@ export const ScaffolderPageContents = () => {
 
         <div className={styles.contentWrapper}>
           <div>
-            {/* TODO(mtlewis) extract SearchToolbar as a frontend filter */}
-            <SearchToolbar search={search} setSearch={setSearch} />
+            <SearchToolbar />
             <EntityKindPicker initialFilter="template" hidden />
             <UserListPicker
               initialFilter="all"
@@ -133,23 +110,20 @@ export const ScaffolderPageContents = () => {
               </WarningPanel>
             )}
 
-            {!error &&
-              !loading &&
-              matchingEntities &&
-              !matchingEntities.length && (
-                <Typography variant="body2">
-                  No templates found that match your filter. Learn more about{' '}
-                  <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
-                    adding templates
-                  </Link>
-                  .
-                </Typography>
-              )}
+            {!error && !loading && entities && !entities.length && (
+              <Typography variant="body2">
+                No templates found that match your filter. Learn more about{' '}
+                <Link href="https://backstage.io/docs/features/software-templates/adding-templates">
+                  adding templates
+                </Link>
+                .
+              </Typography>
+            )}
 
             <ItemCardGrid>
-              {matchingEntities &&
-                matchingEntities?.length > 0 &&
-                matchingEntities.map((template, i) => (
+              {entities &&
+                entities?.length > 0 &&
+                entities.map((template, i) => (
                   <TemplateCard
                     key={i}
                     template={template as TemplateEntityV1alpha1}

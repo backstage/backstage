@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import {
+  EntityTextFilter,
+  useEntityListProvider,
+} from '@backstage/plugin-catalog-react';
 import {
   FormControl,
+  IconButton,
+  Input,
   InputAdornment,
   makeStyles,
   Toolbar,
-  Input,
-  IconButton,
 } from '@material-ui/core';
-import Search from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';
-
-interface Props {
-  search: string;
-  setSearch: Function;
-}
+import Search from '@material-ui/icons/Search';
+import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(_theme => ({
   searchToolbar: {
@@ -37,8 +36,19 @@ const useStyles = makeStyles(_theme => ({
   },
 }));
 
-const SearchToolbar = ({ search, setSearch }: Props) => {
+// TODO(chaseajen): move component to /plugins/catalog-react
+const SearchToolbar = () => {
   const styles = useStyles();
+
+  const { filters, updateFilters } = useEntityListProvider();
+  const [search, setSearch] = useState(filters.text?.value ?? '');
+
+  useEffect(() => {
+    updateFilters({
+      text: search.length ? new EntityTextFilter(search) : undefined,
+    });
+  }, [search, updateFilters]);
+
   return (
     <Toolbar className={styles.searchToolbar}>
       <FormControl>

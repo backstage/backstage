@@ -66,6 +66,25 @@ export class EntityTagFilter implements EntityFilter {
   }
 }
 
+// TODO(chaseajen): add unit test for logic
+export class EntityTextFilter implements EntityFilter {
+  constructor(readonly value: string) {}
+
+  filterEntity(entity: Entity): boolean {
+    const upperCaseValue = this.value.toLocaleUpperCase('en-US');
+
+    return (
+      `${entity.metadata.title}`
+        .toLocaleUpperCase('en-US')
+        .includes(upperCaseValue) ||
+      entity.metadata.tags
+        ?.join('')
+        .toLocaleUpperCase('en-US')
+        .indexOf(upperCaseValue) !== -1
+    );
+  }
+}
+
 export class EntityOwnerFilter implements EntityFilter {
   constructor(readonly values: string[]) {}
 

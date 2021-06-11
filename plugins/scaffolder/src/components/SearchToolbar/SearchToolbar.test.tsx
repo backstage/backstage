@@ -17,17 +17,59 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import SearchToolbar from './SearchToolbar';
+import {
+  DefaultEntityFilters,
+  EntityTextFilter,
+  MockEntityListContextProvider,
+} from '@backstage/plugin-catalog-react';
+import { Entity } from '@backstage/catalog-model';
+
+const entities: Entity[] = [
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'react-app',
+      tags: ['react', 'experimental'],
+    },
+  },
+  {
+    apiVersion: '1',
+    kind: 'Component',
+    metadata: {
+      name: 'gRPC service',
+      tags: ['gRPC', 'java'],
+    },
+  },
+];
 
 describe('SearchToolbar', () => {
   it('should display search value and execute set callback', async () => {
-    const setSearchSpy = jest.fn();
+    const updateFilters = jest.fn();
+
+    const filters: DefaultEntityFilters = {
+      text: new EntityTextFilter('hello'),
+    };
+
     const { getByDisplayValue } = render(
-      <SearchToolbar search="hello" setSearch={setSearchSpy} />,
+      <MockEntityListContextProvider
+        value={{ entities, updateFilters, filters }}
+      >
+        <SearchToolbar />
+      </MockEntityListContextProvider>,
     );
 
     const searchInput = getByDisplayValue('hello');
     expect(searchInput).toBeInTheDocument();
+
     fireEvent.change(searchInput, { target: { value: 'world' } });
-    expect(setSearchSpy).toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenCalledWith({
+      text: new EntityTextFilter('world'),
+    });
+
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(updateFilters).toHaveBeenCalledWith({
+      text: undefined,
+    });
   });
 });
