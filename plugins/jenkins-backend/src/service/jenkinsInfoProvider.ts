@@ -155,8 +155,8 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
       // (jenkins.baseUrl, jenkins.username, jenkins.apiKey) or
       // the entry with default name in jenkins.instances
       const namedInstanceConfig = jenkinsConfig
-        .getConfigArray('instances')
-        .filter(c => c.getString('name') === DEFAULT_JENKINS_NAME)[0];
+        .getOptionalConfigArray('instances')
+        ?.filter(c => c.getString('name') === DEFAULT_JENKINS_NAME)[0];
       if (namedInstanceConfig) {
         return namedInstanceConfig;
       }
