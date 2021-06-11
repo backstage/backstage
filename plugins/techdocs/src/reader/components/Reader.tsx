@@ -90,9 +90,10 @@ export const Reader = ({ entityId, onReady }: Props) => {
   useEffect(() => {
     const updateSidebarPosition = () => {
       if (!!shadowDomRef.current && !!sidebars) {
-        const mdTabs = shadowDomRef.current!.querySelector(
-          '.md-container > .md-tabs',
-        );
+        const shadowDiv: HTMLElement = shadowDomRef.current!;
+        const shadowRoot =
+          shadowDiv.shadowRoot || shadowDiv.attachShadow({ mode: 'open' });
+        const mdTabs = shadowRoot.querySelector('.md-container > .md-tabs');
         sidebars!.forEach(sidebar => {
           const newTop = Math.max(
             shadowDomRef.current!.getBoundingClientRect().top,
