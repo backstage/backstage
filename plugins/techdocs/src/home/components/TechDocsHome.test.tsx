@@ -27,8 +27,8 @@ import { screen } from '@testing-library/react';
 import React from 'react';
 import { TechDocsHome } from './TechDocsHome';
 
-jest.mock('../hooks', () => {
-  const actual = jest.requireActual('../hooks');
+jest.mock('@backstage/plugin-catalog-react', () => {
+  const actual = jest.requireActual('@backstage/plugin-catalog-react');
   return {
     ...actual,
     useOwnUser: () => 'test-user',

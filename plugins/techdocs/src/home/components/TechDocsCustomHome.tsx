@@ -22,6 +22,7 @@ import {
   catalogApiRef,
   CatalogApi,
   isOwnerOf,
+  useOwnUser,
 } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import {
@@ -40,7 +41,6 @@ import {
 } from '@backstage/core';
 import { DocsTable } from './DocsTable';
 import { DocsCardGrid } from './DocsCardGrid';
-import { useOwnUser } from '../hooks';
 
 const panels = {
   DocsTable: DocsTable,
