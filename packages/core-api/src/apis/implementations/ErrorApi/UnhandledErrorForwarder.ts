@@ -1,3 +1,5 @@
+import { ErrorApi } from '../../definitions';
+
 /*
  * Copyright 2020 Spotify AB
  *
@@ -13,7 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { ErrorAlerter } from './ErrorAlerter';
-export { ErrorApiForwarder } from './ErrorApiForwarder';
-export { UnhandledErrorForwarder } from './UnhandledErrorForwarder';
+export class UnhandledErrorForwarder {
+  static forward(errorApi: ErrorApi) {
+    window.addEventListener(
+      'unhandledrejection',
+      (e: PromiseRejectionEvent) => {
+        errorApi.post(
+          {
+            name: `Unhandled Rejection: ${e.reason.message}`,
+            message: e.reason.message,
+            stack: e.reason.stack,
+          },
+          { hidden: true },
+        );
+        // eslint-disable-next-line no-console
+        console.error(e.reason);
+        e.preventDefault();
+      },
+    );
+  }
+}
