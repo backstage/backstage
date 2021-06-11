@@ -1394,7 +1394,6 @@
     "@backstage/catalog-client" "^0.3.13"
     "@backstage/catalog-model" "^0.8.2"
     "@backstage/core" "^0.7.12"
-    "@backstage/core-plugin-api" "^0.1.2"
     "@backstage/errors" "^0.1.1"
     "@backstage/integration" "^0.5.6"
     "@backstage/integration-react" "^0.1.3"
