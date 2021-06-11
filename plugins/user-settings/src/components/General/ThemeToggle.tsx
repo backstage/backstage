@@ -128,7 +128,7 @@ export const ThemeToggle = () => {
               <TooltipToggleButton
                 key={theme.id}
                 title={`Select ${theme.title}`}
-                value={theme.variant}
+                value={theme.id}
               >
                 <>
                   {theme.variant}&nbsp;
