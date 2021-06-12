@@ -177,8 +177,8 @@ export const featureFlagCollector = createCollector(
   () => new Set<string>(),
   (acc, node) => {
     if (node.type === FeatureFlagged) {
-      const { flag } = node.props as FeatureFlaggedProps;
-      acc.add(flag);
+      const props = node.props as FeatureFlaggedProps;
+      acc.add('with' in props ? props.with : props.without);
     }
   },
 );

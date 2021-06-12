@@ -40,6 +40,7 @@ describe('index', () => {
       useApi: expect.any(Function),
       useApiHolder: expect.any(Function),
       useApp: expect.any(Function),
+      useElementFilter: expect.any(Function),
       useRouteRef: expect.any(Function),
       useRouteRefParams: expect.any(Function),
       withApis: expect.any(Function),

@@ -283,7 +283,7 @@ const serviceEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <FeatureFlagged flag="show-graphiql-page">
+    <FeatureFlagged with="show-graphiql-page">
       <EntityLayout.Route path="/ci-cd" title="CI/CD">
         {cicdContent}
       </EntityLayout.Route>
@@ -306,7 +306,7 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
-        <FeatureFlagged flag="show-graphiql-page">
+        <FeatureFlagged with="show-graphiql-page">
           <Grid item md={6}>
             <EntityDependsOnComponentsCard variant="gridItem" />
           </Grid>

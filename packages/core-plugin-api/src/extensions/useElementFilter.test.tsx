@@ -37,8 +37,11 @@ attachComponentData(InnerComponent, INNER_COMPONENT_KEY, {
 });
 const MockComponent = (_props: { children: ReactNode }) => null;
 
-const FeatureFlagComponent = (_props: { children: ReactNode; flag: string }) =>
-  null;
+const FeatureFlagComponent = (_props: {
+  children: ReactNode;
+  with?: string;
+  without?: string;
+}) => null;
 attachComponentData(FeatureFlagComponent, 'core.featureFlagged', true);
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
 const Wrapper = ({ children }: { children?: React.ReactNode }) => (
@@ -151,73 +154,155 @@ describe('useElementFilter', () => {
     });
   });
 
-  it('should not discover deeper than the feature gate if the feature flag is disabled', () => {
-    jest.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => false);
-    const tree = (
-      <MockComponent>
-        <FeatureFlagComponent flag="testing-flag">
-          <WrappingComponent key="first">
+  describe('FeatureFlags', () => {
+    describe('with', () => {
+      it('should not discover deeper than the feature gate if the feature flag is disabled', () => {
+        jest
+          .spyOn(mockFeatureFlagsApi, 'isActive')
+          .mockImplementation(() => false);
+        const tree = (
+          <MockComponent>
+            <FeatureFlagComponent with="testing-flag">
+              <WrappingComponent key="first">
+                <InnerComponent />
+              </WrappingComponent>
+            </FeatureFlagComponent>
+            <MockComponent>
+              <WrappingComponent key="second">
+                <InnerComponent />
+              </WrappingComponent>
+            </MockComponent>
             <InnerComponent />
-          </WrappingComponent>
-        </FeatureFlagComponent>
-        <MockComponent>
-          <WrappingComponent key="second">
+          </MockComponent>
+        );
+
+        const { result } = renderHook(
+          props =>
+            useElementFilter(props.tree, elements =>
+              elements
+                .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
+                .getElements(),
+            ),
+          {
+            initialProps: { tree },
+            wrapper: Wrapper,
+          },
+        );
+
+        expect(result.current.length).toBe(1);
+        expect(result.current[0].key).toContain('second');
+      });
+
+      it('should discover components behind a feature flag if the flag is enabled', () => {
+        jest
+          .spyOn(mockFeatureFlagsApi, 'isActive')
+          .mockImplementation(() => true);
+        const tree = (
+          <MockComponent>
+            <FeatureFlagComponent with="testing-flag">
+              <WrappingComponent key="first">
+                <InnerComponent />
+              </WrappingComponent>
+            </FeatureFlagComponent>
+            <MockComponent>
+              <WrappingComponent key="second">
+                <InnerComponent />
+              </WrappingComponent>
+            </MockComponent>
             <InnerComponent />
-          </WrappingComponent>
-        </MockComponent>
-        <InnerComponent />
-      </MockComponent>
-    );
+          </MockComponent>
+        );
 
-    const { result } = renderHook(
-      props =>
-        useElementFilter(props.tree, elements =>
-          elements
-            .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
-            .getElements(),
-        ),
-      {
-        initialProps: { tree },
-        wrapper: Wrapper,
-      },
-    );
+        const { result } = renderHook(
+          props =>
+            useElementFilter(props.tree, elements =>
+              elements
+                .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
+                .getElements(),
+            ),
+          {
+            initialProps: { tree },
+            wrapper: Wrapper,
+          },
+        );
 
-    expect(result.current.length).toBe(1);
-    expect(result.current[0].key).toContain('second');
-  });
+        expect(result.current.length).toBe(2);
+      });
+    });
 
-  it('should discover components behind a feature flag if the flag is enabled', () => {
-    jest.spyOn(mockFeatureFlagsApi, 'isActive').mockImplementation(() => true);
-    const tree = (
-      <MockComponent>
-        <FeatureFlagComponent flag="testing-flag">
-          <WrappingComponent key="first">
+    describe('without', () => {
+      it('should discover deeper than the feature gate if the feature flag is disabled', () => {
+        jest
+          .spyOn(mockFeatureFlagsApi, 'isActive')
+          .mockImplementation(() => false);
+        const tree = (
+          <MockComponent>
+            <FeatureFlagComponent without="testing-flag">
+              <WrappingComponent key="first">
+                <InnerComponent />
+              </WrappingComponent>
+            </FeatureFlagComponent>
+            <MockComponent>
+              <WrappingComponent key="second">
+                <InnerComponent />
+              </WrappingComponent>
+            </MockComponent>
             <InnerComponent />
-          </WrappingComponent>
-        </FeatureFlagComponent>
-        <MockComponent>
-          <WrappingComponent key="second">
+          </MockComponent>
+        );
+
+        const { result } = renderHook(
+          props =>
+            useElementFilter(props.tree, elements =>
+              elements
+                .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
+                .getElements(),
+            ),
+          {
+            initialProps: { tree },
+            wrapper: Wrapper,
+          },
+        );
+
+        expect(result.current.length).toBe(2);
+      });
+
+      it('should not discover components behind a feature flag if the flag is enabled', () => {
+        jest
+          .spyOn(mockFeatureFlagsApi, 'isActive')
+          .mockImplementation(() => true);
+        const tree = (
+          <MockComponent>
+            <FeatureFlagComponent without="testing-flag">
+              <WrappingComponent key="first">
+                <InnerComponent />
+              </WrappingComponent>
+            </FeatureFlagComponent>
+            <MockComponent>
+              <WrappingComponent key="second">
+                <InnerComponent />
+              </WrappingComponent>
+            </MockComponent>
             <InnerComponent />
-          </WrappingComponent>
-        </MockComponent>
-        <InnerComponent />
-      </MockComponent>
-    );
+          </MockComponent>
+        );
 
-    const { result } = renderHook(
-      props =>
-        useElementFilter(props.tree, elements =>
-          elements
-            .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
-            .getElements(),
-        ),
-      {
-        initialProps: { tree },
-        wrapper: Wrapper,
-      },
-    );
+        const { result } = renderHook(
+          props =>
+            useElementFilter(props.tree, elements =>
+              elements
+                .selectByComponentData({ key: WRAPPING_COMPONENT_KEY })
+                .getElements(),
+            ),
+          {
+            initialProps: { tree },
+            wrapper: Wrapper,
+          },
+        );
 
-    expect(result.current.length).toBe(2);
+        expect(result.current.length).toBe(1);
+      });
+    });
   });
 
   it('should reject when strict mode is enabled with the correct string', () => {
@@ -252,7 +337,7 @@ describe('useElementFilter', () => {
       <>
         <MockComponent>
           <>
-            <FeatureFlagComponent flag="testing-flag">
+            <FeatureFlagComponent with="testing-flag">
               <WrappingComponent key="first">
                 <InnerComponent />
               </WrappingComponent>

@@ -45,8 +45,12 @@ function selectChildren(
     }
 
     if (getComponentData(node, 'core.featureFlagged')) {
-      const { flag } = node.props as { flag: string };
-      if (featureFlagsApi.isActive(flag)) {
+      const props = node.props as { with: string } | { without: string };
+      const isEnabled =
+        'with' in props
+          ? featureFlagsApi.isActive(props.with)
+          : !featureFlagsApi.isActive(props.without);
+      if (isEnabled) {
         return selectChildren(
           node.props.children,
           featureFlagsApi,
