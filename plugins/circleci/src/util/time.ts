@@ -31,5 +31,7 @@ export function durationHumanized(
   startTime: DateTimeObject,
   endTime: DateTimeObject,
 ) {
-  return dayjs.duration(dayjs(startTime).diff(dayjs(endTime))).humanize();
+  return dayjs
+    .duration(dayjs(startTime).diff(dayjs(endTime || new Date())))
+    .humanize();
 }
