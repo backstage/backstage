@@ -355,8 +355,16 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
   ): Promise<GetProcessableEntitiesResult> {
     const tx = txOpaque as Knex.Transaction;
 
-    const items = await tx<DbRefreshStateRow>('refresh_state')
-      .select()
+    let itemsQuery = tx<DbRefreshStateRow>('refresh_state').select();
+
+    // This avoids duplication of work because of race conditions and is
+    // also fast because locked rows are ignored rather than blocking.
+    // It's only available in MySQL and PostgreSQL
+    if (['mysql', 'mysql2', 'pg'].includes(tx.client.config.client)) {
+      itemsQuery = itemsQuery.forUpdate().skipLocked();
+    }
+
+    const items = await itemsQuery
       .where('next_update_at', '<=', tx.fn.now())
       .limit(request.processBatchSize)
       .orderBy('next_update_at', 'asc');
