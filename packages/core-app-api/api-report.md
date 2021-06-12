@@ -235,11 +235,10 @@ export type ErrorBoundaryFallbackProps = {
 };
 
 // @public (undocumented)
-export const FeatureFlagged: ({ children, flag }: FeatureFlaggedProps) => JSX.Element | null;
+export const FeatureFlagged: (props: FeatureFlaggedProps) => JSX.Element | null;
 
 // @public (undocumented)
-export type FeatureFlaggedProps = {
-    flag: string;
+export type FeatureFlaggedProps = FeatureFlaggedSelector & {
     children: JSX.Element | null;
 };
 
