@@ -20,19 +20,10 @@ import {
   attachComponentData,
 } from '@backstage/core-plugin-api';
 
-export type FeatureFlaggedWith = {
-  with: string;
-};
-
-export type FeatureFlaggedWithout = {
-  without: string;
-};
-
-export type FeatureFlaggedSelector = FeatureFlaggedWith | FeatureFlaggedWithout;
-export type FeatureFlaggedProps = FeatureFlaggedSelector & {
-  children: JSX.Element | null;
-};
-
+export type FeatureFlaggedProps = { children: JSX.Element | null } & (
+  | { with: string }
+  | { without: string }
+);
 export const FeatureFlagged = (props: FeatureFlaggedProps) => {
   const { children } = props;
   const featureFlagApi = useApi(featureFlagsApiRef);
