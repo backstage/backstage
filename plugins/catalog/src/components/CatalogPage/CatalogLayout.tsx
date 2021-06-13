@@ -21,7 +21,7 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const CatalogLayout = ({ children }: Props) => {
+export const CatalogLayout = ({ children }: Props) => {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
 
