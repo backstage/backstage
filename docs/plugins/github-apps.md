@@ -84,3 +84,23 @@ integrations:
       apps:
         - $include: example-backstage-app-credentials.yaml
 ```
+
+### Limiting the Github App installations
+
+If you want to limit the Github app installations visible to backstage you
+may optionally include the `allowedInstallationIds` option.
+
+```yaml
+appId: 1
+allowedInstallationIds: [1234]
+clientId: client id
+clientSecret: client secret
+webhookSecret: webhook secret
+privateKey: |
+  -----BEGIN RSA PRIVATE KEY-----
+  ...Key content...
+  -----END RSA PRIVATE KEY-----
+```
+
+This will result in backstage preventing the use of any installation that is not within the
+allow list.

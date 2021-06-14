@@ -68,8 +68,10 @@ class GithubAppManager {
   private readonly baseAuthConfig: { appId: number; privateKey: string };
   private installations?: RestEndpointMethodTypes['apps']['listInstallations']['response'];
   private readonly cache = new Cache();
+  private readonly allowedInstallations: number[] | undefined; // undefined allows all installations
 
   constructor(config: GithubAppConfig, baseUrl?: string) {
+    this.allowedInstallations = config.allowedInstallations;
     this.baseAuthConfig = {
       appId: config.appId,
       privateKey: config.privateKey,
@@ -91,6 +93,17 @@ class GithubAppManager {
       suspended,
       repositorySelection,
     } = await this.getInstallationData(owner);
+    if (this.allowedInstallations) {
+      if (!this.allowedInstallations?.includes(installationId)) {
+        throw new Error(
+          `The GitHub application for ${[owner, repo]
+            .filter(Boolean)
+            .join(
+              '/',
+            )} is not included in the allowed installation list (${installationId}).`,
+        );
+      }
+    }
     if (suspended) {
       throw new Error(
         `The GitHub application for ${[owner, repo]

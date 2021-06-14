@@ -93,6 +93,10 @@ export type GithubAppConfig = {
    * Client secrets can be generated at https://github.com/organizations/$org/settings/apps/$AppName
    */
   clientSecret: string;
+  /**
+   * List of installations allowed to be used by this backstage https://github.com/app/installations/$InstallationId
+   */
+  allowedInstallations?: number[];
 };
 
 /**
@@ -113,6 +117,9 @@ export function readGitHubIntegrationConfig(
     clientSecret: c.getString('clientSecret'),
     webhookSecret: c.getString('webhookSecret'),
     privateKey: c.getString('privateKey'),
+    allowedInstallations: c
+      .getOptionalStringArray('allowedInstallations')
+      ?.map(allowedInstallation => Number(allowedInstallation)),
   }));
 
   if (!isValidHost(host)) {
