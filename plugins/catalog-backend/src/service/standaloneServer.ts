@@ -63,9 +63,12 @@ export async function startStandaloneServer(
     logger,
     config,
   });
-  const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+  let service = createServiceBuilder(module)
+    .setPort(options.port)
     .addRouter('/catalog', router);
+  if (options.enableCors) {
+    service = service.enableCors({ origin: 'http://localhost:3000' });
+  }
   return await service.start().catch(err => {
     logger.error(err);
     process.exit(1);
