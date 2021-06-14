@@ -3,14 +3,13 @@ title: "New Backstage feature: Kubernetes for Service owners"
 author: Matthew Clarke, Spotify
 authorURL: "https://github.com/mclarke47"
 ---
-
 ![Animation of Kubernetes and cloud provider icons becoming the Backstage logo](assets/21-01-12/backstage-k8s-1-hero.gif)
 
 TLDR; We’re rethinking the Kubernetes developer experience with a new feature: a Kubernetes monitoring tool that’s designed around the needs of service owners, not cluster admins. Now developers can easily check the health of their services no matter how or where those services are deployed — whether it’s on a local host for testing or in production on dozens of clusters around the world.
 
 And since Backstage uses the native Kubernetes API, the feature works with whichever cloud provider (AWS, Azure, GCP, etc.) or managed service (OpenShift, IBM Cloud, GKE, etc.) you already use.
 
-<!--truncate-->
+truncate
 
 ## The missing link between K8s and your service
 
@@ -42,10 +41,10 @@ Backstage also shows you how close your service is to its autoscaling limit. Com
 
 Since Backstage communicates directly with the Kubernetes API, it’s cloud agnostic — it doesn’t matter how or where you’re running Kubernetes. You’ll always get the same familiar view of your deployments, whether you’re:
 
-- Deploying to clusters on AWS, Azure, GCP, or another cloud provider
-- Using an unmanaged or managed Kubernetes service (like OpenShift, etc.)
-- Migrating from one cloud provider or service to another
-- Testing on a single local machine or deploying to a dozen clusters in production
+-   Deploying to clusters on AWS, Azure, GCP, or another cloud provider
+-   Using an unmanaged or managed Kubernetes service (like OpenShift, etc.)
+-   Migrating from one cloud provider or service to another
+-   Testing on a single local machine or deploying to a dozen clusters in production
 
 In short: local or global, single or multi-cloud, managed or unmanaged — Backstage always provides a seamless Kubernetes experience for your service owners’ day-to-day development needs.
 
@@ -68,5 +67,7 @@ We made the Kubernetes plugin a core feature of Backstage. Like Software Templat
 To contribute or get more information on Kubernetes in Backstage, [join the discussion on Discord]!
 
 [here]: https://github.com/backstage/backstage/issues?q=is%3Aissue+is%3Aopen+kubernetes+label%3Ak8s-plugin
+
 [read the docs]: https://backstage.io/docs/features/kubernetes/overview
+
 [join the discussion on discord]: https://discord.gg/MUpMjP2

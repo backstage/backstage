@@ -4,14 +4,13 @@ author: "Stefan Ålund, Spotify"
 authorURL: "http://twitter.com/stalund"
 authorImageURL: "https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaace78c3009b28e917-user-full-200-130.generated_400x400.jpg"
 ---
-
 **TL;DR** Thanks to the help from the Backstage community, we’ve made excellent progress and are now moving into Phase 2 of Backstage — building out a Service Catalog and the surrounding systems that will help unify the tools you use to manage your software.
 
 We released the open source version of Backstage a little less than two months ago, and have been thrilled to see so many people jumping in and contributing to the project in its early stages. We’re excited to see what the community can build together as we progress through [each phase of Backstage](https://github.com/backstage/backstage#project-roadmap).
 
 ![img](assets/20-05-20/Service_Catalog_MVP.png)
 
-<!--truncate-->
+truncate
 
 ## Progress so far
 
@@ -21,7 +20,7 @@ Today, we are happy to announce that we are shifting our focus to Phase 2!
 
 ## So what is Phase 2?
 
-> _The core of building Platforms rests in versatile entity management. Entities represent the nouns or the "truths" of our world._
+&gt; _The core of building Platforms rests in versatile entity management. Entities represent the nouns or the "truths" of our world._
 
 Quote from [Platform Nuts & Bolts: Extendable Data Models](https://www.kislayverma.com/post/platform-nuts-bolts-extendable-data-models)
 

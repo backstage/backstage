@@ -4,12 +4,11 @@ author: Jeff Feng, Spotify
 authorURL: "https://github.com/fengypants"
 authorImageURL: "https://avatars2.githubusercontent.com/u/46946747"
 ---
-
 ![fk-covid-screenshot](assets/20-05-14/weaveworks-firekube-covid-19-spotify-backstage.png)
 
 One of the great things about the open source community is once you put your work out there, you really never know where it might end up. That’s certainly the case here.
 
-<!--truncate-->
+truncate
 
 When Weaveworks decided to build an X-ray diagnostics app to help fight COVID-19, they pulled together a lot of different open source resources — from projects big and small, built by both familiar tech partners and some brand new ones, too.
 
@@ -30,4 +29,5 @@ We’re proud to see Backstage adopted as the UX layer for this meaningful cause
 To learn more about what fk-covid does, and how it works, jump on over to [the Weaveworks blog][] to hear it straight from the team that built it. It’s a great example of the possibilities that come from being a part of the open source community.
 
 [fk-covid]: https://github.com/weaveworks/fk-covid
+
 [the weaveworks blog]: https://www.weave.works/blog/firekube-covid-ml

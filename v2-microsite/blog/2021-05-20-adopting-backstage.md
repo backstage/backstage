@@ -3,12 +3,11 @@ title: Where do you start when adopting Backstage?
 author: Austin Lamon, Spotify
 authorURL: "https://www.linkedin.com/in/austinlamon"
 ---
-
 ![Create, Manage, Explore](assets/21-05-20/create-manage-explore.gif)
 
 One of the greatest strengths of Backstage also presents a never-ending challenge: Backstage is highly customizable and allows you to easily build a unique developer portal suited to your organization’s needs. The downside of this flexibility is that it can be hard to know where to start. Backstage can do so many things — integrating every part of your tech infrastructure and developer experience — but if you set off building a developer portal without a plan, it’s easy to get overwhelmed by all the possibilities. To help you form your plan, this post will detail how Spotify came to design our internal portal and recommend potential models for you to use when designing and building your own.
 
-<!--truncate-->
+truncate
 
 ## Infrastructure as tech culture
 
@@ -18,21 +17,21 @@ Rolling back the clock just a few years, [Spotify was challenged](https://engine
 
 Spotify’s developers were facing three big challenges on a daily basis:
 
-- They not only needed to build software quickly, they also needed to pass along knowledge to new joiners about how best to create new components.
-- They needed to somehow maintain a mental model of the systems their squad owned. (Or, if they were lucky, they found a hopefully-up-to-date spreadsheet tracking this information.)
-- They needed to keep an eye on what squads around them might be building to ensure they could reuse systems when they needed to solve similar problems in the future.
+-   They not only needed to build software quickly, they also needed to pass along knowledge to new joiners about how best to create new components.
+-   They needed to somehow maintain a mental model of the systems their squad owned. (Or, if they were lucky, they found a hopefully-up-to-date spreadsheet tracking this information.)
+-   They needed to keep an eye on what squads around them might be building to ensure they could reuse systems when they needed to solve similar problems in the future.
 
 In short, Spotify developers needed to continue building industry leading features at breakneck speed, while simultaneously maintaining a mental model for all the software at Spotify (oh, and help every new joiner develop that mental model as well!).
-<br>
+<br />
 
 ## Three jobs: Create, manage, explore
 
 Around the same time, the [jobs to be done](https://hbr.org/2016/09/know-your-customers-jobs-to-be-done) framework was becoming popular and luckily, a few Spotifiers helped guide the vision for a _sense-making tool for developers_ toward using it. After user research and many failed attempts, we landed on three jobs Spotify developers needed to do consistently:
-<br>
+<br />
 
-- **Create**: Spotify developers want to delight their customers with incredible features. They create new software to do that.
-- **Manage**: Spotify developers are proud of their work and treat their software and data like products. That requires maintaining all the software they own on an ongoing basis.
-- **Explore**: Spotify developers want to solve new, yet unsolved problems. They try to build on existing systems to help them do that.
+-   **Create**: Spotify developers want to delight their customers with incredible features. They create new software to do that.
+-   **Manage**: Spotify developers are proud of their work and treat their software and data like products. That requires maintaining all the software they own on an ongoing basis.
+-   **Explore**: Spotify developers want to solve new, yet unsolved problems. They try to build on existing systems to help them do that.
 
 So: make software, maintain the software you own throughout its lifecycle, and integrate with other people’s software.
 
@@ -73,7 +72,7 @@ Within today’s complex development environments, there are barriers both big a
 After talking with companies who have already adopted Backstage, we’ve seen a few common strategies for getting started. The different strategies are based on the size of your engineering org (which often also corresponds with how fast you’re growing).
 
 ![200 engineers](assets/21-05-20/200-engineers_v.2.png)
-<br>
+<br />
 
 ### My org has ~200 engineers (and is growing fast)
 
@@ -81,17 +80,17 @@ You’re big enough to start feeling the pain, and only getting bigger. Onboardi
 
 **Pain points:**
 
-- This size seems to be the tipping point — where complexity is taking hold, collaboration starts breaking down, and ad hoc solutions stop working.
-- Often this is also when you’re growing so fast (doubling in size every 6–12 months) that there are now more new engineers than old engineers.
-- New engineers can’t find anything, so they ask around, which pulls all your other engineers off-task with interruptions.
-- Logjams form. One company told us how it was taking 3–4 days for pull requests to get merged.
+-   This size seems to be the tipping point — where complexity is taking hold, collaboration starts breaking down, and ad hoc solutions stop working.
+-   Often this is also when you’re growing so fast (doubling in size every 6–12 months) that there are now more new engineers than old engineers.
+-   New engineers can’t find anything, so they ask around, which pulls all your other engineers off-task with interruptions.
+-   Logjams form. One company told us how it was taking 3–4 days for pull requests to get merged.
 
 **Recommendation — Explore, then create:**
 
-- New engineers need an easy way to find out how to do things, so you’re not just adding bodies, you’re adding happy, productive contributors.
-- To streamline onboarding, start with centralizing your documentation and making your tools and software components discoverable in Backstage.
-- At this size, you might not have a dedicated platform/infra team in place yet, but Backstage can provide the framework for centralizing and sharing knowledge — from managing compliance requirements to finding the right API documentation.
-- This allows both new and old engineers to collaborate more efficiently, easily discover best practices, and cuts down on duplicated work (e.g., a new team doesn’t end up rebuilding a database that already exists but nobody can find).
+-   New engineers need an easy way to find out how to do things, so you’re not just adding bodies, you’re adding happy, productive contributors.
+-   To streamline onboarding, start with centralizing your documentation and making your tools and software components discoverable in Backstage.
+-   At this size, you might not have a dedicated platform/infra team in place yet, but Backstage can provide the framework for centralizing and sharing knowledge — from managing compliance requirements to finding the right API documentation.
+-   This allows both new and old engineers to collaborate more efficiently, easily discover best practices, and cuts down on duplicated work (e.g., a new team doesn’t end up rebuilding a database that already exists but nobody can find).
 
 ![1,000 engineers](assets/21-05-20/1000-engineers_v.2.png)
 
@@ -101,16 +100,16 @@ You’re officially big. Lots and lots of teams are managing lots and lots of so
 
 **Pain points:**
 
-- Fragmentation and entropy are real threats to productivity. From security requirements to cluster management to a thousand data endpoints, there’s too much to keep track of, leading to cognitive overload.
-- A death by a thousand cuts: constantly logging into new interfaces — from your cloud provider’s console to some brand new security tool then back to your CI/CD — is bogging your engineers down with too much context-switching and a lot of noise.
-- Every day, it’s getting more and more difficult for one team to manage their own microservices, data, and documentation, let alone share their knowledge with other teams.
+-   Fragmentation and entropy are real threats to productivity. From security requirements to cluster management to a thousand data endpoints, there’s too much to keep track of, leading to cognitive overload.
+-   A death by a thousand cuts: constantly logging into new interfaces — from your cloud provider’s console to some brand new security tool then back to your CI/CD — is bogging your engineers down with too much context-switching and a lot of noise.
+-   Every day, it’s getting more and more difficult for one team to manage their own microservices, data, and documentation, let alone share their knowledge with other teams.
 
 **Recommendation — Manage, then explore, then create:**
 
-- Backstage will allow your teams to get a handle on the software they own, since everything they need to manage it is in one place.
-- From CI/CD status to documentation to deciphering a monorepo, Backstage makes it easy to manage a service (or other software component) on a day-to-day basis.
-- The service catalog also helps your developers visualize your existing software ecosystem, beyond the software they own. And with Backstage Software Templates, every new software component is already added to the catalog.
-- Even at this scale, a small platform team should be all it takes to build and maintain your own version of Backstage. At Spotify, we have a 4-person team responsible for our internal version of Backstage, which is used by all of Spotify’s 1,600+ developers.
+-   Backstage will allow your teams to get a handle on the software they own, since everything they need to manage it is in one place.
+-   From CI/CD status to documentation to deciphering a monorepo, Backstage makes it easy to manage a service (or other software component) on a day-to-day basis.
+-   The service catalog also helps your developers visualize your existing software ecosystem, beyond the software they own. And with Backstage Software Templates, every new software component is already added to the catalog.
+-   Even at this scale, a small platform team should be all it takes to build and maintain your own version of Backstage. At Spotify, we have a 4-person team responsible for our internal version of Backstage, which is used by all of Spotify’s 1,600+ developers.
 
 ![More than 1,000 engineers](assets/21-05-20/1000-plus-engineers_v.2.png)
 
@@ -120,15 +119,15 @@ Integrating infrastructure of this size and complexity can seem overwhelming. It
 
 **Pain points:**
 
-- When you’re this large, you’ve incorporated a lot of technology and processes, as well as a lot of partners, each with their own technologies and processes.
-- You’re focussed on “replacing cruft” and bringing discoverability and order to your vast ecosystem of components and tools.
-- Getting your tools adopted by your engineers while modernizing your tech stack and coordinating with your infra teams to improve your engineering practices across the whole company… it’s a lot.
+-   When you’re this large, you’ve incorporated a lot of technology and processes, as well as a lot of partners, each with their own technologies and processes.
+-   You’re focussed on “replacing cruft” and bringing discoverability and order to your vast ecosystem of components and tools.
+-   Getting your tools adopted by your engineers while modernizing your tech stack and coordinating with your infra teams to improve your engineering practices across the whole company… it’s a lot.
 
 **Recommendation — Create, then manage, then explore:**
 
-- The fastest way to bring change to your ecosystem is to start at the beginning of the chain with Backstage Software Templates.
-- With every new component created with your templates, you’re establishing best practices and rewarding your developers with a streamlined experience focused on their needs — all the while building up your new service catalog.
-- The more the templates ease the process of starting up a project, the more your engineers will adopt them, and the faster the other benefits of Backstage will build up, transforming productivity across your organization. ([That’s how we did it at Spotify](https://open.spotify.com/episode/7iuQ3ew1Wwpuiq6LbBKzCl).)
+-   The fastest way to bring change to your ecosystem is to start at the beginning of the chain with Backstage Software Templates.
+-   With every new component created with your templates, you’re establishing best practices and rewarding your developers with a streamlined experience focused on their needs — all the while building up your new service catalog.
+-   The more the templates ease the process of starting up a project, the more your engineers will adopt them, and the faster the other benefits of Backstage will build up, transforming productivity across your organization. ([That’s how we did it at Spotify](https://open.spotify.com/episode/7iuQ3ew1Wwpuiq6LbBKzCl).)
 
 ## More questions about adopting Backstage?
 

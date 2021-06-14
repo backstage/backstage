@@ -3,14 +3,13 @@ title: Announcing Backstage Software Templates
 author: "Stefan Ålund, Spotify"
 authorURL: "https://twitter.com/stalund"
 ---
-
 **TL;DR** Today we are announcing a new Backstage feature: Software Templates. Simplify setup, standardize tooling, and deploy with the click of a button. Using automated templates, your engineers can spin up a new microservice, website, or other software component with your organization’s best practices built-in, right from the start.
 
-<video width="100%" height="100%" controls>
-  <source src="/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
+<video width="100%" height="100%" controls={true}>
+  <source src="/blog/assets/2020-08-05/feature.mp4" type="video/mp4" />
 </video>
 
-<!--truncate-->
+truncate
 
 ## Balancing autonomy and standardization
 
@@ -24,10 +23,10 @@ Today we are releasing one of the key features that helps balance autonomy and s
 
 Backstage Software Templates automate and standardize the process of creating software components. To show you how they work, we created four sample templates to get you started — just configure them to fit your tooling and off you go:
 
-- **Create React App Template** — create a new CRA website project
-- **Golang Microservice** — create a Golang repo with this template built by members of the Go community
-- **React SSR Template** — create a website powered with Next.js
-- **Spring Boot GRPC** — create a simple microservice using gRPC and Spring Boot Java
+-   **Create React App Template** — create a new CRA website project
+-   **Golang Microservice** — create a Golang repo with this template built by members of the Go community
+-   **React SSR Template** — create a website powered with Next.js
+-   **Spring Boot GRPC** — create a simple microservice using gRPC and Spring Boot Java
 
 ### The getting started guide gets automated
 

@@ -3,12 +3,11 @@ title: "How to design for Backstage (even if you’re not a designer)"
 author: Kat Zhou, Spotify
 authorURL: "http://twitter.com/katherinemzhou"
 ---
-
 ![img](assets/backstage-DS-header.png)
 
 We are excited to launch the Backstage Design System, which includes a [Figma UI kit](https://www.figma.com/community/file/850673348101741100), a rich set of [reusable code components](http://backstage.io/storybook) on Storybook, and [Guidelines](https://backstage.io/docs/dls/design) for designers and developers as they build plugins for Backstage.
 
-<!--truncate-->
+truncate
 
 ## Not just the way it looks
 
@@ -33,11 +32,11 @@ As you begin to [build your own plugins](https://backstage.io/docs/plugins/), we
 
 ![img](assets/backstage-guide-DS.png)
 
-1. **Tabs.** Want to include multiple pages in your plugin? Use our tab component so users can easily navigate through your plugin.
-2. **Title.** Plugin pages should always have a title. Subheads are optional. Typically, the ‘star’ icon is included in the overview tab, which allows the user to favorite the plugin, adding it to the side navigation.
-3. **Cards.** Use the card components to display different kinds of content and functionality. You can follow our 12-column, responsive grid system to arrange the cards.
-4. **Support.** There should always be a support button (tertiary style, with icon). There can also be a primary action button as well as a secondary one.
-5. **Header.** Use the Backstage header to allow for users to easily understand what they’re looking at. You can include an optional subhead as well as other information. The color varies depending on the type of plugin you’ve built (stand-alone tool, service, app, website, etc.).
+1.  **Tabs.** Want to include multiple pages in your plugin? Use our tab component so users can easily navigate through your plugin.
+2.  **Title.** Plugin pages should always have a title. Subheads are optional. Typically, the ‘star’ icon is included in the overview tab, which allows the user to favorite the plugin, adding it to the side navigation.
+3.  **Cards.** Use the card components to display different kinds of content and functionality. You can follow our 12-column, responsive grid system to arrange the cards.
+4.  **Support.** There should always be a support button (tertiary style, with icon). There can also be a primary action button as well as a secondary one.
+5.  **Header.** Use the Backstage header to allow for users to easily understand what they’re looking at. You can include an optional subhead as well as other information. The color varies depending on the type of plugin you’ve built (stand-alone tool, service, app, website, etc.).
 
 Now that we’ve familiarized ourselves with the basic parts of a plugin, let’s take a look at some of the tools and resources that make designing plugins even easier.
 
@@ -82,15 +81,16 @@ All design questions should be directed to the [#design](https://discord.com/cha
 
 There are a lot of exciting things that we’re envisioning for Backstage and open source design at Spotify. These include:
 
-- Expanding our Backstage Design System by building on the UI kit and component library in Figma and Storybook
+-   Expanding our Backstage Design System by building on the UI kit and component library in Figma and Storybook
 
-* Collaborating with more of our amazing contributors to ensure our Backstage Design System works for everyone
 
-* Featuring rad plugins that folks have created, using our design system, in our Figma Community space
+-   Collaborating with more of our amazing contributors to ensure our Backstage Design System works for everyone
 
-* Building up our Guidelines by continuing to creating robust design documentation
+-   Featuring rad plugins that folks have created, using our design system, in our Figma Community space
 
-* Ensuring that we maintain accessible practices throughout our experience
+-   Building up our Guidelines by continuing to creating robust design documentation
+
+-   Ensuring that we maintain accessible practices throughout our experience
 
 ![img](assets/backstage-world-DS.png)
 
@@ -98,10 +98,10 @@ There are a lot of exciting things that we’re envisioning for Backstage and op
 
 Designing in the open needs to be democratic and participatory, which is why we invite you to join in on the fun! There are a couple things you can do to get involved, such as:
 
-- **Build with us!** Are there components/plugins that you’d like to see in Backstage? Feel free to create an example/prototype of what you’re envisioning and create a UX component issue in our GitHub repo.
+-   **Build with us!** Are there components/plugins that you’d like to see in Backstage? Feel free to create an example/prototype of what you’re envisioning and create a UX component issue in our GitHub repo.
 
-- **Chat with us!** If you have questions, ideas, or puppy GIFs, feel free to reach out to us on Discord in the #design channel.
+-   **Chat with us!** If you have questions, ideas, or puppy GIFs, feel free to reach out to us on Discord in the #design channel.
 
-- **Share with us!** One of our priorities is making Backstage more accessible, and we need your help. If you’ve got A11Y insights and ideas on how we can improve our product, please let us know!
+-   **Share with us!** One of our priorities is making Backstage more accessible, and we need your help. If you’ve got A11Y insights and ideas on how we can improve our product, please let us know!
 
-- **Work with us!** We are hiring for product designers to work on Backstage. We strongly stand for breaking traditional pipelines and elevating our caliber by hiring the best folks who are underrepresented minorities in tech today. Keen on joining? Know someone who has a knack for open source design and design systems? Send a direct message to @katz on Discord!
+-   **Work with us!** We are hiring for product designers to work on Backstage. We strongly stand for breaking traditional pipelines and elevating our caliber by hiring the best folks who are underrepresented minorities in tech today. Keen on joining? Know someone who has a knack for open source design and design systems? Send a direct message to @katz on Discord!

@@ -3,13 +3,12 @@ title: "Announcing TechDocs: Spotify’s docs-like-code plugin for Backstage"
 author: Gary Niemen, Spotify
 authorURL: "https://github.com/garyniemen"
 ---
-
 Since we [open sourced Backstage](https://backstage.io/blog/2020/03/16/announcing-backstage), one of the most requested features has been for a technical documentation plugin. Well, good news. The first open source version of TechDocs is here. Now let’s start collaborating and making it better, together.
 
-<iframe width="780" height="440" src="https://www.youtube.com/embed/mOLCgdPw1iA" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen>
+<iframe width={780} height={440} src="https://www.youtube.com/embed/mOLCgdPw1iA" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true}>
 </iframe>
 
-<!--truncate-->
+truncate
 
 Internally, we call it TechDocs. It’s the most used plugin at Spotify by far — accounting for about 20% of our Backstage traffic (even though it is just one of 130+ plugins). Its popularity is evidence of something simple: We made documentation so easy to create, find, and use — people actually use it.
 
@@ -33,11 +32,11 @@ What we have on GitHub so far is a first iteration of TechDocs that you can use 
 
 More specifically, with this first iteration, you can:
 
-- Run TechDocs locally and read documentation.
-- Configure your entity (e.g. service, website) so that Backstage builds your documentation and serves it in TechDocs. Documentation is displayed on the Docs tab in the Service Catalog and on its own page.
-- Get documentation set up for free in your project when you create a new component out of one of the non-experimental templates (labeled with recommended). If you are looking for a standalone documentation project, use the docs-template.
-- Choose your own storage solution for the documentation.
-- Define your own API to interface with your documentation solution.
+-   Run TechDocs locally and read documentation.
+-   Configure your entity (e.g. service, website) so that Backstage builds your documentation and serves it in TechDocs. Documentation is displayed on the Docs tab in the Service Catalog and on its own page.
+-   Get documentation set up for free in your project when you create a new component out of one of the non-experimental templates (labeled with recommended). If you are looking for a standalone documentation project, use the docs-template.
+-   Choose your own storage solution for the documentation.
+-   Define your own API to interface with your documentation solution.
 
 For a full overview, including getting started instructions, check out our [TechDocs Documentation](https://backstage.io/docs/features/techdocs/techdocs-overview).
 
@@ -115,6 +114,6 @@ At Spotify, we have the concept of [Golden Paths](https://engineering.atspotify.
 
 The Golden Path tutorials are Spotify’s most used and important documents and have shown themselves to be the most challenging to manage within a docs-like-code environment. One reason for this is that they are long, divided into many parts, and ownership is typically spread among many different teams. We have had to make use of GitHub codeowners to handle ownership and had to create datasets and data pipelines to be able to attach GitHub Issues to the specific parts or files that a team owns. Another challenge of the Golden Path tutorials is that parts are often dependent on other parts. We are just starting to look into how we can solve these dependency challenges in order to remove friction for engineers writing tutorial documentation.
 
----
+* * *
 
 So that’s it for now. As you can see, we have come a long way AND there is much more to do. We are looking forward to continuing our docs-like-code journey out in the open with new, enthusiastic technical documentation friends.

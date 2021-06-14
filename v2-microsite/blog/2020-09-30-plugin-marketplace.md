@@ -3,7 +3,6 @@ title: The Plugin Marketplace is open
 author: "Stefan Ålund, Spotify"
 authorURL: "https://twitter.com/stalund"
 ---
-
 Backstage has an ambitious goal: to provide engineers with the best possible developer experience.
 
 A great developer experience leads to happy, creative, and productive engineers. Our belief is that engineers should not have to be experts in various infrastructure tools or disciplines (e.g., machine learning or backend) to be productive. Infrastructure should be abstracted away, so that developers can spend more cycles building and testing, quickly and safely. Backstage unifies all your infrastructure tooling, services, and documentation to create a streamlined development environment from end to end.
@@ -12,7 +11,7 @@ Now you may be thinking, “Yeah, sure, that sounds nice and all, but how does B
 
 ![plugins](https://backstage.io/img/cards-plugins.png)
 
-<!--truncate-->
+truncate
 
 Think of plugins as a mini version of an infrastructure tool or service — just the parts you need, made quick and easy. The advantage of using a Backstage plugin instead of a tool’s dedicated UI is that all your infrastructure is packaged into a “single pane of glass” instead of being spread out like independently built “islands”. Once you grow your infrastructure portfolio, the complexity really starts to add up. The Backstage plugin model allows you to add more tools without increasing the cognitive load for your users.
 
@@ -26,7 +25,7 @@ Running services on Kubernetes? There’s a plugin for that. Using Snyk for secu
 
 Like this vision? So do we! But we can’t do it alone. We’ll need your help. For this vision to come true, we need to foster a community where many companies and individual developers build and contribute their plugins. Having been [accepted into the CNCF Sandbox](https://backstage.io/blog/2020/09/23/backstage-cncf-sandbox) provides us with the groundwork and guidance to broaden the community even faster.
 
-This grand vision is actually not that far off. Already today there is a growing ecosystem of Backstage plugins. To highlight all the amazing work that has been done by the community, and make it easier for Backstage adopters to see what plugins are available, we now have a Plugin Marketplace: [https://backstage.io/plugins](https://backstage.io/plugins)
+This grand vision is actually not that far off. Already today there is a growing ecosystem of Backstage plugins. To highlight all the amazing work that has been done by the community, and make it easier for Backstage adopters to see what plugins are available, we now have a Plugin Marketplace: https:
 
 ![marketplace](assets/marketplace.png)
 

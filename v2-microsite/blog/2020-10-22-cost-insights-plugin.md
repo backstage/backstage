@@ -3,14 +3,13 @@ title: "New Cost Insights plugin: The engineer’s solution to taming cloud cost
 author: Janisa Anandamohan, Spotify
 authorURL: "https://twitter.com/janisa_a"
 ---
-
 How did Spotify save millions on cloud costs within a matter of months?? We made cost optimization just another part of the daily development process. Our newly open sourced [Cost Insights plugin](https://github.com/backstage/backstage/tree/master/plugins/cost-insights) makes a team’s cloud costs visible — and actionable — right inside Backstage. So engineers can see the impact of their cloud usage (down to a product and resource level) and make optimizations wherever and whenever it makes sense. By managing cloud costs from the ground up, you can make smarter decisions that let you continue to build and scale quickly, without wasting resources.
 
-<iframe width="780" height="440" src="https://www.youtube.com/embed/YLAd5hdXR_Q" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+<iframe width={780} height={440} src="https://www.youtube.com/embed/YLAd5hdXR_Q" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen={true} />
 
 Are we turning engineers into accountants? Nope, we’re just letting engineers do what they do best, in the place that feels natural to them: inside Backstage.
 
-<!--truncate-->
+truncate
 
 ## Why put a cost management tool in the hands of engineers?
 
@@ -63,12 +62,12 @@ You can begin working with the Cost Insights plugin today on [GitHub](https://gi
 
 The current release of Cost Insights includes:
 
-- Daily cost graph by team or billing account
-- Cost comparisons against configurable business metrics (including an option for Daily Active Users)
-- Insights panels — configurable for the cloud products your company uses
-- Cost alerts and recommendations
-- Selectable time periods for month-over-month or quarter-over-quarter comparisons
-- Conversion of cost growth into “cost of average engineer” to help optimization trade-off decisions
+-   Daily cost graph by team or billing account
+-   Cost comparisons against configurable business metrics (including an option for Daily Active Users)
+-   Insights panels — configurable for the cloud products your company uses
+-   Cost alerts and recommendations
+-   Selectable time periods for month-over-month or quarter-over-quarter comparisons
+-   Conversion of cost growth into “cost of average engineer” to help optimization trade-off decisions
 
 Our hope is to help other companies translate their cloud cost in a relatable way for their engineers to better understand their impact and accurately identify their opportunities for optimizations.
 

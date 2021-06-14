@@ -4,12 +4,11 @@ author: Paul Marbach, Spotify
 authorURL: "http://twitter.com/fastfrwrd"
 authorImageURL: "https://pbs.twimg.com/profile_images/1224058798958088192/JPxS8uzR_400x400.jpg"
 ---
-
 ![image illustrating the Lighthouse plugin for Backstage](assets/3/lead.png)
 
 We’re proud to announce that our first internal plugin at Spotify has been open-sourced as part of Backstage. This plugin works with the newly open-sourced [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service) to run and track Lighthouse audits for your websites.
 
-<!--truncate-->
+truncate
 
 ## What is Lighthouse?
 

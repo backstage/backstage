@@ -3,12 +3,11 @@ title: Announcing the Backstage Stability Index
 author: Patrik Oldsberg, Spotify
 authorURL: "https://github.com/Rugvip"
 ---
-
 **TL;DR** Backstage is heading out of alpha and moving onto the path to stable releases and an eventual version 1.0. As the community and ecosystem continue to grow at an increasing rate, we want to provide a solid foundation for everyone building things in, with, and around Backstage. So, today we’re introducing the [Stability Index](https://backstage.io/docs/overview/stability-index) — a simple way to find out how likely (or unlikely) a specific package or plugin inside Backstage might be updated with major changes. By indicating the reliability of key features and APIs, this quick reference will help contributors and adopters better plan and coordinate their development efforts going forward.
 
 ![Animation cycling between stability index scores](assets/2020-12-22/stability-index-hero.gif)
 
-<!--truncate-->
+truncate
 
 Backstage has a great and growing community of users and contributors. With so much valuable feedback, this inevitably means that sometimes we will go back and revise design decisions that introduce breaking changes. Furthermore, as we continue to ship new features and systems, we’ll continue this cycle of iterating, gathering feedback, and iterating again before reaching a stable API.
 
@@ -20,10 +19,10 @@ In order to tackle the problem of uncertainty, and help align contributors, we h
 
 You can find more details about the scores on the [Stability Index](https://backstage.io/docs/overview/stability-index) page, but the following is a TL;DR of the 0–3 scores:
 
-- **0** — There's a changelog entry.
-- **1** — There's a migration guide.
-- **2** — Two weeks of deprecation.
-- **3** — Three months of deprecation.
+-   **0** — There's a changelog entry.
+-   **1** — There's a migration guide.
+-   **2** — Two weeks of deprecation.
+-   **3** — Three months of deprecation.
 
 The Stability Index has been tailored for the phase that the project is currently in, and we do not intend to keep it in place in its current form forever. It is, for example, likely that we in the future will increase the deprecation time limits.
 
@@ -33,7 +32,7 @@ In addition to the Stability Index, we have also recently adopted a weekly relea
 
 In order to make the update process easier, we’ve added a new command to the Backstage CLI that allows you to easily update your project to use the latest Backstage release. The command is called `version:bump` and is executed in the root of your project using the CLI. You can see what it looks like in action below.
 
-![Output of the `backstage-cli` `version:bump` command](assets/2020-12-22/versions-bump.png)
+![Output of the \`backstage-cli\` \`version:bump\` command](assets/2020-12-22/versions-bump.png)
 
 ## Impact
 

@@ -4,14 +4,13 @@ author: Marcus Eide, Spotify
 authorURL: "https://github.com/marcuseide"
 authorImageURL: "https://secure.gravatar.com/avatar/20223f1e03673c7c1e6282fbebaf6942"
 ---
-
 We wanted to make getting started with Backstage as easy as possible. Even though Backstage is still in the early phases of its development, we believe it is important for our users to get a feel for what Backstage really is.
 
 We want users to be able to create their own version of Backstage quickly and easily, so that they can take advantage of all the infrastructure that we’ve built into it — and start exploring.
 
 In this blog post we’ll look at what a Backstage app is and how to create one using our [CLI](https://www.npmjs.com/package/@backstage/cli).
 
-<!--truncate-->
+truncate
 
 ## What is a Backstage app?
 
@@ -34,7 +33,9 @@ You get to take full advantage of a platform that we at Spotify have been using 
 Just run the backstage-cli:
 
 ```bash
+
 npx @backstage/create-app
+
 ```
 
 Name your app, and we will create everything you need:
@@ -44,8 +45,10 @@ Name your app, and we will create everything you need:
 The only thing you need to do is to start the app:
 
 ```bash
+
 cd my-app
 yarn dev
+
 ```
 
 And you are good to go! 👍
@@ -83,9 +86,11 @@ Take a look at `@backstage/cli/config/tsconfig.json` for more details.
 We include testing, linting, and end-to-end tests for your convenience.
 
 ```bash
+
 yarn lint:all
 yarn test:all
 yarn test:e2e
+
 ```
 
 ## Extend the app with plugins
@@ -101,9 +106,11 @@ We provide a collection of public Backstage plugins (look for packages with the 
 Install in your app’s package folder (`<root>/packages/app`) with:
 
 ```bash
+
 # From your Backstage root directory
 cd packages/app
 yarn add @backstage/plugin-<plugin-name>
+
 ```
 
 After that, you inject the plugin into the application where you want it to be exposed. Please read the documentation for the specific plugin you are installing for more information.
@@ -115,7 +122,9 @@ We also know that each organization has different needs and will create their ow
 In the root of your app directory (`<root>`) run:
 
 ```bash
+
 yarn create-plugin
+
 ```
 
 This command will create a new plugin in `<root>/plugins/` and register it to your app automatically.

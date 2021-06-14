@@ -4,7 +4,6 @@ author: "Stefan Ålund, Spotify"
 authorURL: "http://twitter.com/stalund"
 authorImageURL: "https://pbs.twimg.com/profile_images/121166861/6919c047c0d0edaace78c3009b28e917-user-full-200-130.generated_400x400.jpg"
 ---
-
 ## What is Backstage?
 
 Backstage is Spotify's open source platform for building developer portals.
@@ -13,7 +12,7 @@ It’s the first open source infrastructure platform by Spotify that allows you 
 
 ![img](assets/blog_1.png)
 
-<!--truncate-->
+truncate
 
 ## As simple as writing a plugin.
 
@@ -35,10 +34,10 @@ We created Backstage about 4 years ago, and today, we’ve decided to share the 
 
 We are envisioning three phases of the project and we have already begun work on various aspects of these phases:
 
-- **Phase 1:** Extensible frontend platform (now) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.
+-   **Phase 1:** Extensible frontend platform (now) - You will be able to easily create a single consistent UI layer for your internal infrastructure and tools. A set of reusable UX patterns and components help ensure a consistent experience between tools.
 
-- **Phase 2:** Manage your stuff (next 2-3 months) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
+-   **Phase 2:** Manage your stuff (next 2-3 months) - Manage anything from microservices to software components to infrastructure and your service catalog. Regardless of whether you want to create a new library, view service deployment status in Kubernetes, or check the test coverage for a website -- Backstage will provide all of those tools - and many more - in a single developer portal.
 
-- **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
+-   **Phase 3:** Ecosystem (later) - Everyone's infrastructure stack is different. By fostering a vibrant community of contributors we hope to provide an ecosystem of Open Source plugins/integrations that allows you to pick the tools that match your stack.
 
 Our vision for Backstage is for it to become the trusted standard toolbox (read: UI layer) for the open source infrastructure landscape. Think of it like Kubernetes for developer experience. We realize this is an ambitious goal. We can’t do it alone. If this sounds interesting or you'd like to help us shape our product vision, we'd love to talk. You can email us directly: [backstage-interest@spotify.com](mailto:backstage-interest@spotify.com).
