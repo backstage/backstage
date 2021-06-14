@@ -21,7 +21,7 @@ import path from 'path';
 import { runCommand } from './helpers';
 import { TemplaterBase, TemplaterRunOptions } from './types';
 
-const commandExists = require('command-exists-promise');
+const commandExists = require('command-exists');
 
 export class CookieCutter implements TemplaterBase {
   private readonly containerRunner: ContainerRunner;

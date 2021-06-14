@@ -9802,11 +9802,6 @@ comma-separated-tokens@^1.0.0:
   resolved "https://registry.npmjs.org/comma-separated-tokens/-/comma-separated-tokens-1.0.8.tgz#632b80b6117867a158f1080ad498b2fbe7e3f5ea"
   integrity sha512-GHuDRO12Sypu2cV70d1dkA2EUmXHgntrzbpvOB+Qy+49ypNfGgFQIC2fhhXbnyrJRynDCAARsT7Ou0M6hirpfw==
 
-command-exists-promise@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/command-exists-promise/-/command-exists-promise-2.0.2.tgz#7beecc4b218299f3c61fa69a4047aa0b36a64a99"
-  integrity sha512-T6PB6vdFrwnHXg/I0kivM3DqaCGZLjjYSOe0a5WgFKcz1sOnmOeIjnhQPXVXX3QjVbLyTJ85lJkX6lUpukTzaA==
-
 command-exists@^1.2.9:
   version "1.2.9"
   resolved "https://registry.npmjs.org/command-exists/-/command-exists-1.2.9.tgz#c50725af3808c8ab0260fd60b01fbfa25b954f69"
