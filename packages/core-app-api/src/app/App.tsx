@@ -216,7 +216,12 @@ export class PrivateAppImpl implements BackstageApp {
         [],
       );
 
-      const { routePaths, routeParents, routeObjects } = useMemo(() => {
+      const {
+        routePaths,
+        routeParents,
+        routeObjects,
+        featureFlags,
+      } = useMemo(() => {
         const result = traverseElementTree({
           root: children,
           discoverers: [childDiscoverer, routeElementDiscoverer],
@@ -239,14 +244,7 @@ export class PrivateAppImpl implements BackstageApp {
         this.verifyPlugins(this.plugins);
 
         // Initialize APIs once all plugins are available
-        const apiHolder = this.getApiHolder();
-
-        // Register feature flags that have been discovered
-        const featureFlagApi = apiHolder.get(featureFlagsApiRef)!;
-        for (const name of result.featureFlags) {
-          featureFlagApi.registerFlag({ name, pluginId: '' });
-        }
-
+        this.getApiHolder();
         return result;
       }, [children]);
 
@@ -281,8 +279,14 @@ export class PrivateAppImpl implements BackstageApp {
               }
             }
           }
+
+          // Go through the featureFlags returned from the traversal and
+          // register those now the configApi has been loaded
+          for (const name of featureFlags) {
+            featureFlagsApi.registerFlag({ name, pluginId: '' });
+          }
         }
-      }, [hasConfigApi, loadedConfig]);
+      }, [hasConfigApi, loadedConfig, featureFlags]);
 
       if ('node' in loadedConfig) {
         // Loading or error
