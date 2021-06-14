@@ -1,3 +1,5 @@
+---
+---
 /*
  * Copyright 2020 Spotify AB
  *

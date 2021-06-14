@@ -1,3 +1,5 @@
+---
+---
 # BackstageIdentityApi
 
 The BackstageIdentityApi type is defined at

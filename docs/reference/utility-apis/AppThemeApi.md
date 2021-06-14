@@ -1,3 +1,5 @@
+---
+---
 # AppThemeApi
 
 The AppThemeApi type is defined at

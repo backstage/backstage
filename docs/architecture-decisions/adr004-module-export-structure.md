@@ -1,6 +1,6 @@
 ---
 id: adrs-adr004
-title: ADR004: Module Export Structure
+title: "ADR004: Module Export Structure"
 description: Architecture Decision Record (ADR) log on Module Export Structure
 ---
 

@@ -1,6 +1,6 @@
 ---
 id: adrs-adr010
-title: ADR010: Use the Luxon Date Library
+title: "ADR010: Use the Luxon Date Library"
 description: Architecture Decision Record (ADR) for Luxon Date Library
 ---
 

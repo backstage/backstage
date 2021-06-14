@@ -1,6 +1,6 @@
 ---
 id: adrs-adr000
-title: ADR000: [TITLE]
+title: "ADR000: [TITLE]"
 description: Architecture Decision Record (ADR) for [TITLE] [DESCRIPTION]
 ---
 

@@ -1,3 +1,5 @@
+---
+---
 # OpenIdConnectApi
 
 The OpenIdConnectApi type is defined at

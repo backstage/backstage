@@ -1,3 +1,5 @@
+---
+---
 # ErrorApi
 
 The ErrorApi type is defined at
