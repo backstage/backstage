@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import { useHotCleanup } from '@backstage/backend-common';
 import {
   CatalogBuilder,
   createRouter,
-  NextCatalogBuilder,
-  runPeriodically,
-  createNextRouter,
 } from '@backstage/plugin-catalog-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -28,36 +24,7 @@ import { PluginEnvironment } from '../types';
 export default async function createPlugin(
   env: PluginEnvironment,
 ): Promise<Router> {
-  /*
-   * This environment variable exists as an emergency option during the release
-   * of the new catalog processing engine.
-   * If you experience any issues, make sure to report them as this flag
-   * will be removed in a subsequent release.
-   */
-  if (process.env.LEGACY_CATALOG === '1') {
-    const builder = new CatalogBuilder(env);
-    const {
-      entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
-      locationAnalyzer,
-    } = await builder.build();
-
-    useHotCleanup(
-      module,
-      runPeriodically(() => higherOrderOperation.refreshAllLocations(), 100000),
-    );
-
-    return await createRouter({
-      entitiesCatalog,
-      locationsCatalog,
-      higherOrderOperation,
-      locationAnalyzer,
-      logger: env.logger,
-      config: env.config,
-    });
-  }
-  const builder = new NextCatalogBuilder(env);
+  const builder = await CatalogBuilder.create(env);
   const {
     entitiesCatalog,
     locationAnalyzer,
@@ -65,10 +32,9 @@ export default async function createPlugin(
     locationService,
   } = await builder.build();
 
-  // TODO(jhaals): run and manage in background.
   await processingEngine.start();
 
-  return await createNextRouter({
+  return await createRouter({
     entitiesCatalog,
     locationAnalyzer,
     locationService,
