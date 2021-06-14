@@ -20,30 +20,29 @@ This plugin provides:
 Install the plugin:
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-splunk-on-call
 ```
 
-Add it to the app in `plugins.ts`:
+Add it to your `EntityPage`:
 
 ```ts
-export { plugin as SplunkOnCall } from '@backstage/plugin-splunk-on-call';
-```
-
-Add it to the `EntityPage.tsx`:
-
-```ts
+// packages/app/src/components/catalog/EntityPage.tsx
 import {
-  isPluginApplicableToEntity as isSplunkOnCallAvailable,
-  SplunkOnCallCard,
+  isSplunkOnCallAvailable,
+  EntitySplunkOnCallCard,
 } from '@backstage/plugin-splunk-on-call';
 // ...
-{
-  isSplunkOnCallAvailable(entity) && (
-    <Grid item md={6}>
-      <SplunkOnCallCard entity={entity} />
-    </Grid>
-  );
-}
+const overviewContent = (
+  <Grid container spacing={3} alignItems="stretch">
+    <EntitySwitch>
+      <EntitySwitch.Case if={isSplunkOnCallAvailable}>
+        <Grid item md={6}>
+          <EntitySplunkOnCallCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 ```
 
 ## Client configuration

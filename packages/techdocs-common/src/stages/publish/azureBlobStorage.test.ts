@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
-  ENTITY_DEFAULT_NAMESPACE,
   EntityName,
+  ENTITY_DEFAULT_NAMESPACE,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
+import express from 'express';
+import request from 'supertest';
 import mockFs from 'mock-fs';
 import os from 'os';
 import path from 'path';
@@ -157,7 +160,6 @@ describe('publishing with valid credentials', () => {
     });
 
     it('should fail to publish a directory', async () => {
-      expect.assertions(1);
       const wrongPathToGeneratedDirectory = path.join(
         rootDir,
         'wrong',
@@ -168,22 +170,20 @@ describe('publishing with valid credentials', () => {
 
       const entity = createMockEntity();
 
-      await publisher
-        .publish({
-          entity,
-          directory: wrongPathToGeneratedDirectory,
-        })
-        .catch(error => {
-          // Can not do exact error message match due to mockFs adding unexpected characters in the path when throwing the error
-          // Issue reported https://github.com/tschaub/mock-fs/issues/118
-          expect.stringContaining(
-            `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
-          );
+      const fails = publisher.publish({
+        entity,
+        directory: wrongPathToGeneratedDirectory,
+      });
 
-          expect(error.message).toEqual(
-            expect.stringContaining(wrongPathToGeneratedDirectory),
-          );
-        });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(
+          `Unable to upload file(s) to Azure Blob Storage. Error: Failed to read template directory: ENOENT, no such file or directory`,
+        ),
+      });
+      await expect(fails).rejects.toMatchObject({
+        message: expect.stringContaining(wrongPathToGeneratedDirectory),
+      });
+
       mockFs.restore();
     });
 
@@ -329,6 +329,78 @@ describe('publishing with valid credentials', () => {
           )} does not exist !`,
         ),
       );
+    });
+  });
+
+  describe('docsRouter', () => {
+    let app: express.Express;
+    const entity = createMockEntity();
+    const entityRootDir = getEntityRootDir(entity);
+
+    beforeEach(() => {
+      app = express().use(publisher.docsRouter());
+
+      mockFs.restore();
+      mockFs({
+        [entityRootDir]: {
+          html: {
+            'unsafe.html': '<html></html>',
+          },
+          img: {
+            'with spaces.png': 'found it',
+            'unsafe.svg': '<svg></svg>',
+          },
+          'some folder': {
+            'also with spaces.js': 'found it too',
+          },
+        },
+      });
+    });
+
+    afterEach(() => {
+      mockFs.restore();
+    });
+
+    it('should pass expected object path to bucket', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      // Ensures leading slash is trimmed and encoded path is decoded.
+      const pngResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/with%20spaces.png`,
+      );
+      expect(Buffer.from(pngResponse.body).toString('utf8')).toEqual(
+        'found it',
+      );
+      const jsResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/some%20folder/also%20with%20spaces.js`,
+      );
+      expect(jsResponse.text).toEqual('found it too');
+    });
+
+    it('should pass text/plain content-type for html', async () => {
+      const {
+        kind,
+        metadata: { namespace, name },
+      } = entity;
+
+      const htmlResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/html/unsafe.html`,
+      );
+      expect(htmlResponse.text).toEqual('<html></html>');
+      expect(htmlResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
+
+      const svgResponse = await request(app).get(
+        `/${namespace}/${kind}/${name}/img/unsafe.svg`,
+      );
+      expect(svgResponse.text).toEqual('<svg></svg>');
+      expect(svgResponse.header).toMatchObject({
+        'content-type': 'text/plain; charset=utf-8',
+      });
     });
   });
 });

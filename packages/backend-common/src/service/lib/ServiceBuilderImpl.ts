@@ -18,7 +18,7 @@ import { Config } from '@backstage/config';
 import compression from 'compression';
 import cors from 'cors';
 import express, { Router } from 'express';
-import helmet, { HelmetOptions } from 'helmet';
+import helmet from 'helmet';
 import * as http from 'http';
 import stoppable from 'stoppable';
 import { Logger } from 'winston';
@@ -55,7 +55,6 @@ const DEFAULT_CSP = {
   'script-src': ["'self'", "'unsafe-eval'"],
   'script-src-attr': ["'none'"],
   'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-  'upgrade-insecure-requests': [] as string[],
 };
 
 export class ServiceBuilderImpl implements ServiceBuilder {
@@ -195,14 +194,7 @@ export class ServiceBuilderImpl implements ServiceBuilder {
     });
   }
 
-  private getOptions(): {
-    port: number;
-    host: string;
-    logger: Logger;
-    corsOptions?: cors.CorsOptions;
-    httpsSettings?: HttpsSettings;
-    helmetOptions: HelmetOptions;
-  } {
+  private getOptions() {
     return {
       port: this.port ?? DEFAULT_PORT,
       host: this.host ?? DEFAULT_HOST,

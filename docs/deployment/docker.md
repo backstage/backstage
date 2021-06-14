@@ -19,9 +19,9 @@ their state, rather than using SQLite.
 By default, in an app created with `@backstage/create-app`, the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
-configuration into the app. This means you that you only need to build and
-deploy a single container in a minimal setup of Backstage. If you wish to
-separate the serving of the frontend out from the backend, see the
+configuration into the app. This means that you only need to build and deploy a
+single container in a minimal setup of Backstage. If you wish to separate the
+serving of the frontend out from the backend, see the
 [separate frontend](#separate-frontend) topic below.
 
 ## Host Build
@@ -232,7 +232,7 @@ package, which is done as follows:
 Once the `app-backend` is removed from the backend, you can use your favorite
 static file serving method for serving the frontend. An example of how to set up
 an NGINX image is available in the
-[contrib folder in the main repo](https://github.com/backstage/backstage/blob/master/contrib/docker/frontend-with-nginx/Dockerfile)
+[contrib folder in the main repo](https://github.com/backstage/backstage/blob/master/contrib/docker/frontend-with-nginx)
 
 Note that if you're building a separate docker build of the frontend you
 probably need to adjust `.dockerignore` appropriately. Most likely by making

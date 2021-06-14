@@ -140,7 +140,7 @@ const TypeFragment = ({
 
 const TitleFragment = ({ pageTitle, classes, tooltip }: TitleFragmentProps) => {
   const FinalTitle = (
-    <Typography className={classes.title} variant="h4">
+    <Typography className={classes.title} variant="h1">
       {pageTitle}
     </Typography>
   );
@@ -166,7 +166,11 @@ const SubtitleFragment = ({ classes, subtitle }: SubtitleFragmentProps) => {
   }
 
   return (
-    <Typography className={classes.subtitle} variant="subtitle2">
+    <Typography
+      className={classes.subtitle}
+      variant="subtitle2"
+      component="span"
+    >
       {subtitle}
     </Typography>
   );

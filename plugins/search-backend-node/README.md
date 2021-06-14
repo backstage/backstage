@@ -1,17 +1,19 @@
 # search-backend-node
 
 This plugin is part of a suite of plugins that comprise the Backstage search
-platform, which is still very much under development. This plugin specifically
-is responsible for:
+platform. This particular plugin is responsible for all aspects of the search
+indexing process, including:
 
-- Allowing other backend plugins to register the fact that they have documents
-  that they'd like to be indexed by a search engine (known as `collators`)
-- Allowing other backend plugins to register the fact that they have metadata
-  that they'd like to augment existing documents in the search index with
-  (known as `decorators`)
+- Providing connections to search engines where actual document indices live
+  and queries can be made.
+- Defining a mechanism for plugins to expose documents that they'd like to be
+  indexed (called `collators`).
+- Defining a mechanism for plugins to add extra metadata to documents that the
+  source plugin may not be aware of (known as `decorators`).
 - A scheduler that, at configurable intervals, compiles documents to be indexed
-  and passes them to a search engine for indexing
-- Types for all of the above
+  and passes them to a search engine for indexing.
+- A builder class to wire up all of the above.
+- Naturally, types for all of the above.
 
 Documentation on how to develop and improve the search platform is currently
 centralized in the `search` plugin README.md.

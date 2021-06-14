@@ -19,13 +19,9 @@ This plugin provides:
 Install the plugin:
 
 ```bash
+# From your Backstage root directory
+cd packages/app
 yarn add @backstage/plugin-pagerduty
-```
-
-Add it to the app in `plugins.ts`:
-
-```ts
-export { plugin as Pagerduty } from '@backstage/plugin-pagerduty';
 ```
 
 Add it to the `EntityPage.tsx`:

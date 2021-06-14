@@ -20,56 +20,9 @@ import {
   ExternalRouteRef,
   routeRefType,
   AnyParams,
-  ParamKeys,
-  OptionalParams,
 } from './types';
 
-export class ExternalRouteRefImpl<
-  Params extends AnyParams,
-  Optional extends boolean
-> implements ExternalRouteRef<Params, Optional> {
-  readonly [routeRefType] = 'external';
-
-  constructor(
-    private readonly id: string,
-    readonly params: ParamKeys<Params>,
-    readonly optional: Optional,
-  ) {}
-
-  toString() {
-    return `routeRef{type=external,id=${this.id}}`;
-  }
-}
-
-export function createExternalRouteRef<
-  Params extends { [param in ParamKey]: string },
-  Optional extends boolean = false,
-  ParamKey extends string = never
->(options: {
-  /**
-   * An identifier for this route, used to identify it in error messages
-   */
-  id: string;
-
-  /**
-   * The parameters that will be provided to the external route reference.
-   */
-  params?: ParamKey[];
-
-  /**
-   * Whether or not this route is optional, defaults to false.
-   *
-   * Optional external routes are not required to be bound in the app, and
-   * if they aren't, `useRouteRef` will return `undefined`.
-   */
-  optional?: Optional;
-}): ExternalRouteRef<OptionalParams<Params>, Optional> {
-  return new ExternalRouteRefImpl(
-    options.id,
-    (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
-    Boolean(options.optional) as Optional,
-  );
-}
+export { createExternalRouteRef } from '@backstage/core-plugin-api';
 
 export function isExternalRouteRef<
   Params extends AnyParams,

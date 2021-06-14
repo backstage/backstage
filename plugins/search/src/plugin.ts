@@ -19,11 +19,9 @@ import {
   createRouteRef,
   createRoutableExtension,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core';
 import { SearchClient, searchApiRef } from './apis';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { SearchPage as SearchPageComponent } from './components/SearchPage';
-import { SearchPageNext as SearchPageNextComponent } from './components/SearchPageNext';
 
 export const rootRouteRef = createRouteRef({
   path: '/search',
@@ -40,16 +38,12 @@ export const searchPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: searchApiRef,
-      deps: { catalogApi: catalogApiRef, discoveryApi: discoveryApiRef },
-      factory: ({ catalogApi, discoveryApi }) => {
-        return new SearchClient({ catalogApi, discoveryApi });
+      deps: { discoveryApi: discoveryApiRef },
+      factory: ({ discoveryApi }) => {
+        return new SearchClient({ discoveryApi });
       },
     }),
   ],
-  register({ router }) {
-    router.addRoute(rootRouteRef, SearchPageComponent);
-    router.addRoute(rootNextRouteRef, SearchPageNextComponent);
-  },
   routes: {
     root: rootRouteRef,
     nextRoot: rootNextRouteRef,
@@ -63,10 +57,70 @@ export const SearchPage = searchPlugin.provide(
   }),
 );
 
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchPage /> component instead. This component will be removed in an
+ * upcoming release.
+ */
 export const SearchPageNext = searchPlugin.provide(
   createRoutableExtension({
-    component: () =>
-      import('./components/SearchPageNext').then(m => m.SearchPageNext),
+    component: () => import('./components/SearchPage').then(m => m.SearchPage),
     mountPoint: rootNextRouteRef,
+  }),
+);
+
+export const SearchBar = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
+    },
+  }),
+);
+
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchBar /> component instead. This component will be removed in an
+ * upcoming release.
+ */
+export const SearchBarNext = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/SearchBar').then(m => m.SearchBar),
+    },
+  }),
+);
+
+export const SearchResult = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
+    },
+  }),
+);
+
+/**
+ * @deprecated This component was used for rapid prototyping of the Backstage
+ * Search platform. Now that the API has stabilized, you should use the
+ * <SearchResult /> component instead. This component will be removed in an
+ * upcoming release.
+ */
+export const SearchResultNext = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () => import('./components/SearchResult').then(m => m.SearchResult),
+    },
+  }),
+);
+
+export const DefaultResultListItem = searchPlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DefaultResultListItem').then(
+          m => m.DefaultResultListItem,
+        ),
+    },
   }),
 );

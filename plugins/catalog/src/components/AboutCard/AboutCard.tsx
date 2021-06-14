@@ -23,10 +23,19 @@ import {
 import {
   HeaderIconLinkRow,
   IconLinkVerticalProps,
+  InfoCardVariants,
   useApi,
 } from '@backstage/core';
-import { scmIntegrationsApiRef } from '@backstage/integration-react';
-import { getEntityRelations, useEntity } from '@backstage/plugin-catalog-react';
+import {
+  ScmIntegrationIcon,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
+import {
+  getEntityMetadataEditUrl,
+  getEntityRelations,
+  getEntitySourceLocation,
+  useEntity,
+} from '@backstage/plugin-catalog-react';
 import {
   Card,
   CardContent,
@@ -39,9 +48,7 @@ import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import React from 'react';
-import { getEntityMetadataEditUrl, getEntitySourceLocation } from '../../utils';
 import { AboutContent } from './AboutContent';
-import { ScmIntegrationIcon } from './ScmIntegrationIcon';
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -50,7 +57,15 @@ const useStyles = makeStyles({
     height: 'calc(100% - 10px)', // for pages without content header
     marginBottom: '10px',
   },
+  fullHeightCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
   gridItemCardContent: {
+    flex: 1,
+  },
+  fullHeightCardContent: {
     flex: 1,
   },
 });
@@ -58,7 +73,7 @@ const useStyles = makeStyles({
 type AboutCardProps = {
   /** @deprecated The entity is now grabbed from context instead */
   entity?: Entity;
-  variant?: 'gridItem';
+  variant?: InfoCardVariants;
 };
 
 export function AboutCard({ variant }: AboutCardProps) {
@@ -103,8 +118,22 @@ export function AboutCard({ variant }: AboutCardProps) {
     href: 'api',
   };
 
+  let cardClass = '';
+  if (variant === 'gridItem') {
+    cardClass = classes.gridItemCard;
+  } else if (variant === 'fullHeight') {
+    cardClass = classes.fullHeightCard;
+  }
+
+  let cardContentClass = '';
+  if (variant === 'gridItem') {
+    cardContentClass = classes.gridItemCardContent;
+  } else if (variant === 'fullHeight') {
+    cardContentClass = classes.fullHeightCardContent;
+  }
+
   return (
-    <Card className={variant === 'gridItem' ? classes.gridItemCard : ''}>
+    <Card className={cardClass}>
       <CardHeader
         title="About"
         action={
@@ -124,9 +153,7 @@ export function AboutCard({ variant }: AboutCardProps) {
         }
       />
       <Divider />
-      <CardContent
-        className={variant === 'gridItem' ? classes.gridItemCardContent : ''}
-      >
+      <CardContent className={cardContentClass}>
         <AboutContent entity={entity} />
       </CardContent>
     </Card>

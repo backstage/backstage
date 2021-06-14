@@ -27,7 +27,7 @@ export const useDownloadWorkflowRunLogs = ({
   hostname?: string;
   owner: string;
   repo: string;
-  id: string;
+  id: number;
 }) => {
   const api = useApi(githubActionsApiRef);
   const details = useAsync(async () => {
@@ -36,7 +36,7 @@ export const useDownloadWorkflowRunLogs = ({
           hostname,
           owner,
           repo,
-          runId: parseInt(id, 10),
+          runId: id,
         })
       : Promise.reject('No repo/owner provided');
   }, [repo, owner, id]);

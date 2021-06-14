@@ -119,6 +119,7 @@ techdocs:
 
 Create a dedicated AWS S3 bucket for the storage of TechDocs sites.
 [Refer to the official documentation](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html).
+[Terraform example](https://github.com/backstage/backstage/blob/master/contrib/terraform/techdocs-s3-storage/terraform.tf).
 
 TechDocs will publish documentation to this bucket and will fetch files from
 here to serve documentation in Backstage. Note that the bucket names are
@@ -135,13 +136,29 @@ techdocs:
       bucketName: 'name-of-techdocs-storage-bucket'
 ```
 
-**3a. (Recommended) Setup authentication the AWS way, using environment
+**3. Create minimal AWS IAM policies to manage TechDocs**
+
+To _write_ TechDocs into the S3 bucket the IAM policy needs to have at a minimum
+permissions to:
+
+- `s3:ListBucket` to retrieve bucket metadata
+- `s3:PutObject` to upload files to the bucket
+
+To _read_ TechDocs from the S3 bucket the IAM policy needs to have at a minimum
+permissions to:
+
+- `s3:ListBucket` - To retrieve bucket metadata
+- `s3:GetObject` - To retrieve files from the bucket
+
+**4a. (Recommended) Setup authentication the AWS way, using environment
 variables**
 
 You should follow the
 [AWS security best practices guide for authentication](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html).
 
-TechDocs needs access to read files and metadata of the S3 bucket.
+TechDocs needs access to read files and metadata of the S3 bucket. So if you are
+creating a policy for a user you want to make sure it is granted access to
+ListBucket, GetObject and PutObject.
 
 If the environment variables
 
@@ -166,7 +183,7 @@ more in
 The AWS Region of the bucket is optional since TechDocs uses AWS SDK V2 and not
 V3.
 
-**3b. Authentication using app-config.yaml**
+**4b. Authentication using app-config.yaml**
 
 AWS credentials and region can be provided to the AWS SDK via `app-config.yaml`.
 If the configs below are present, they will be used over existing `AWS_*`
@@ -187,7 +204,7 @@ techdocs:
 Refer to the
 [official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-your-credentials.html).
 
-**3c. Authentication using an assumed role** Users with multiple AWS accounts
+**4c. Authentication using an assumed role** Users with multiple AWS accounts
 may want to use a role for S3 storage that is in a different AWS account. Using
 the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
 to assume a role before accessing S3.
@@ -207,7 +224,7 @@ Note: Assuming a role requires that primary credentials are already configured
 at `AWS.config.credentials`. Read more about
 [assuming roles in AWS](https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html).
 
-**4. That's it!**
+**5. That's it!**
 
 Your Backstage app is now ready to use AWS S3 for TechDocs, to store and read
 the static generated documentation files. When you start the backend of the app,

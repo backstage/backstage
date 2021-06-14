@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useCallback, useEffect } from 'react';
-import { Field } from '@rjsf/core';
+import { FieldProps } from '@rjsf/core';
 import { useApi, Progress } from '@backstage/core';
 import { scaffolderApiRef } from '../../../api';
 import { useAsync } from 'react-use';
@@ -69,12 +69,12 @@ function serializeFormData(data: {
   return `${data.host}?${params.toString()}`;
 }
 
-export const RepoUrlPicker: Field = ({
+export const RepoUrlPicker = ({
   onChange,
   uiSchema,
   rawErrors,
   formData,
-}) => {
+}: FieldProps<string>) => {
   const api = useApi(scaffolderApiRef);
   const allowedHosts = uiSchema['ui:options']?.allowedHosts as string[];
 

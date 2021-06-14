@@ -1,67 +1,77 @@
-apiVersion: backstage.io/v1alpha1
+apiVersion: backstage.io/v1beta2
 kind: Template
 metadata:
   name: create-react-app-template
   title: Create React App Template
   description: Create a new CRA website project
   tags:
-    - experimental
     - react
     - cra
 spec:
   owner: web@example.com
-  templater: cra
   type: website
-  path: '.'
-  
-  schema:
-    required: 
-      - component_id
-      - use_typescript
-      - description
-      - collaborators
-    properties:
-      component_id:
-        title: Name
-        type: string
-        pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
-        description: Unique name of the component. Lowercase, URL-safe characters only.
-      description:
-        title: Description
-        type: string
-        description: Help others understand what this website is for.
-      use_typescript:
-        title:  Use TypeScript
-        type: boolean
-        description: Include TypeScript
-        default: true
-      use_github_actions:
-        title:  Use Github Actions workflows to build this component
-        type: boolean
-        description: Use Github Actions
-        default: true
-      collaborators:
-        title: Collaborators
-        description: Provide users with permissions
-        type: array
-        ui:options:
-          orderable: false
-        items:
-          type: object
-          required:
-          - username
-          - access
-          properties:
-            access:
-              type: string
-              description: The type of access for the user
-              default: pull
-              enum:
-              - push
-              - pull
-              - admin
-              - maintain
-              - triage
-            username:
-              type: string
-              description: The username or group
+  parameters:
+    - title: Provide some simple information
+      required:
+        - component_id
+        - owner
+      properties:
+        component_id:
+          title: Name
+          type: string
+          description: Unique name of the component
+        description:
+          title: Description
+          type: string
+          description: Help others understand what this website is for.
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the component
+          ui:field: OwnerPicker
+          ui:options:
+            allowedKinds: 
+              - Group
+    - title: Choose a location  
+      required:
+        - repoUrl
+      properties: 
+        repoUrl:
+          title: Repository Location
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+  steps:
+    - id: template
+      name: Fetch Skeleton + Template
+      action: fetch:cookiecutter
+      input:
+        url: ./skeleton
+        copyWithoutRender:
+          - .github/workflows/*
+        values:
+          component_id: '{{ parameters.component_id }}'
+          description: '{{ parameters.description }}'
+          destination: '{{ parseRepoUrl parameters.repoUrl }}'
+          owner: '{{ parameters.owner }}'
+
+    - id: publish
+      name: Publish
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: 'This is {{ parameters.component_id }}'
+        repoUrl: '{{ parameters.repoUrl }}'
+
+    - id: register
+      name: Register
+      action: catalog:register
+      input:
+        repoContentsUrl: '{{ steps.publish.output.repoContentsUrl }}'
+        catalogInfoPath: '/catalog-info.yaml'
+
+  output:
+    remoteUrl: '{{ steps.publish.output.remoteUrl }}'
+    entityRef: '{{ steps.register.output.entityRef }}'

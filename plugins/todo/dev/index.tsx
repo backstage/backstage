@@ -15,20 +15,15 @@
  */
 
 import { Entity, LOCATION_ANNOTATION } from '@backstage/catalog-model';
-import {
-  ApiProvider,
-  ApiRegistry,
-  Content,
-  Header,
-  HeaderLabel,
-  Page,
-} from '@backstage/core';
 import { createDevApp } from '@backstage/dev-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import OnlineIcon from '@material-ui/icons/Cloud';
 import OfflineIcon from '@material-ui/icons/Storage';
 import React from 'react';
 import { EntityTodoContent, todoApiRef, todoPlugin } from '../src';
+
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
+import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 
 const entity: Entity = {
   apiVersion: 'backstage.io/v1alpha1',

@@ -15,8 +15,10 @@
  */
 
 export * from './Filters';
+export * from './SearchFilter';
 export * from './SearchBar';
 export * from './SearchPage';
-export * from './SearchPageNext';
 export * from './SearchResult';
+export * from './DefaultResultListItem';
 export * from './SidebarSearch';
+export * from './SearchContext';

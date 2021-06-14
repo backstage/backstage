@@ -15,12 +15,12 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { renderWithEffects } from '@backstage/test-utils';
 import React from 'react';
 import { TodoApi, todoApiRef } from '../../api';
 import { TodoList } from './TodoList';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 
 describe('TodoList', () => {
   it('should render', async () => {

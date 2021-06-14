@@ -58,10 +58,11 @@ async function main() {
     'diff',
     '--name-only',
     parentRef,
-    "'packages/*/package.json'",
-    "'plugins/*/package.json'",
+    "'*/package.json'", // Git treats this as what would usually be **/package.json
   );
-  const packageList = diff.split(/^(.*)$/gm).filter(s => s.trim());
+  const packageList = diff
+    .split('\n')
+    .filter(path => path.match(/^(packages|plugins)\/[^/]+\/package\.json$/));
 
   const packageVersions = await Promise.all(
     packageList.map(async path => {

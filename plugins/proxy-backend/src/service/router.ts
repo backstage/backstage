@@ -17,9 +17,10 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import Router from 'express-promise-router';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
+import {
+  createProxyMiddleware,
+  Options,
+  RequestHandler,
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import http from 'http';
@@ -52,7 +53,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
 }
 
-export interface ProxyConfig extends ProxyMiddlewareConfig {
+export interface ProxyConfig extends Options {
   allowedMethods?: string[];
   allowedHeaders?: string[];
 }
@@ -64,25 +65,46 @@ export function buildMiddleware(
   logger: Logger,
   route: string,
   config: string | ProxyConfig,
-): Proxy {
+): RequestHandler {
   const fullConfig =
     typeof config === 'string' ? { target: config } : { ...config };
 
   // Validate that target is a valid URL.
+  if (typeof fullConfig.target !== 'string') {
+    throw new Error(`Proxy target must be a string`);
+  }
   try {
     // eslint-disable-next-line no-new
-    new URL(fullConfig.target!);
+    new URL(fullConfig.target! as string);
   } catch {
     throw new Error(
       `Proxy target is not a valid URL: ${fullConfig.target ?? ''}`,
     );
   }
+
   // Default is to do a path rewrite that strips out the proxy's path prefix
   // and the rest of the route.
   if (fullConfig.pathRewrite === undefined) {
-    const routeWithSlash = route.endsWith('/') ? route : `${route}/`;
+    let routeWithSlash = route.endsWith('/') ? route : `${route}/`;
+
+    if (!pathPrefix.endsWith('/') && !routeWithSlash.startsWith('/')) {
+      // Need to insert a / between pathPrefix and routeWithSlash
+      routeWithSlash = `/${routeWithSlash}`;
+    } else if (pathPrefix.endsWith('/') && routeWithSlash.startsWith('/')) {
+      // Never expect this to happen at this point in time as
+      // pathPrefix is set using `getExternalBaseUrl` which "Returns the
+      // external HTTP base backend URL for a given plugin,
+      // **without a trailing slash.**". But in case this changes in future, we
+      // need to drop a / on either pathPrefix or routeWithSlash
+      routeWithSlash = routeWithSlash.substring(1);
+    }
+
+    // The ? makes the slash optional for the rewrite, so that a base path without an ending slash
+    // will also be matched (e.g. '/sample' and then requesting just '/api/proxy/sample' without an
+    // ending slash). Otherwise the target gets called with the full '/api/proxy/sample' path
+    // appended.
     fullConfig.pathRewrite = {
-      [`^${pathPrefix}${routeWithSlash}`]: '/',
+      [`^${pathPrefix}${routeWithSlash}?`]: '/',
     };
   }
 
@@ -113,7 +135,7 @@ export function buildMiddleware(
   //  2. Only permit the allowed HTTP methods if configured
   //
   // We are filtering the proxy request headers here rather than in
-  // `onProxyReq` becuase when global-agent is enabled then `onProxyReq`
+  // `onProxyReq` because when global-agent is enabled then `onProxyReq`
   // fires _after_ the agent has already sent the headers to the proxy
   // target, causing a ERR_HTTP_HEADERS_SENT crash
   const filter = (_pathname: string, req: http.IncomingMessage): boolean => {

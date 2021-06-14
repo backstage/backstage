@@ -12,6 +12,41 @@ jobs:
       matrix:
         node-version: [12.x, 14.x]
 
+    services:
+      postgres13:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      postgres9:
+        image: postgres:9
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432/tcp
+      mysql8:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306/tcp
+
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=4096
@@ -76,6 +111,9 @@ jobs:
       - name: prettier
         run: yarn prettier:check
 
+      - name: lock
+        run: yarn lock:check
+
       - name: validate config
         run: yarn backstage-cli config:check --lax
 
@@ -84,6 +122,9 @@ jobs:
 
       - name: type checking and declarations
         run: yarn tsc:full
+
+      - name: check api reports
+        run: yarn build:api-reports:only --ci
 
       - name: build changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
@@ -99,12 +140,20 @@ jobs:
       - name: test changed packages
         if: ${{ steps.yarn-lock.outcome == 'success' }}
         run: yarn lerna -- run test --since origin/master -- --coverage
+        env:
+          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
       - name: test all packages (and upload coverage)
         if: ${{ steps.yarn-lock.outcome == 'failure' }}
         run: |
           yarn lerna -- run test -- --coverage
           bash <(curl -s https://codecov.io/bash) -N $(git rev-parse FETCH_HEAD)
+        env:
+          BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres13.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres9.ports[5432] }}
+          BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
 
       - name: verify plugin template
         run: yarn lerna -- run diff -- --check

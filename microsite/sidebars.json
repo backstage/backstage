@@ -40,8 +40,10 @@
           "features/software-catalog/references",
           "features/software-catalog/well-known-annotations",
           "features/software-catalog/well-known-relations",
+          "features/software-catalog/well-known-statuses",
           "features/software-catalog/extending-the-model",
           "features/software-catalog/external-integrations",
+          "features/software-catalog/catalog-customization",
           "features/software-catalog/software-catalog-api"
         ]
       },
@@ -65,7 +67,8 @@
           "features/software-templates/writing-templates",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
-          "features/software-templates/template-legacy"
+          "features/software-templates/template-legacy",
+          "features/software-templates/migrating-from-v1alpha1-to-v1beta2"
         ]
       },
       {
@@ -73,6 +76,8 @@
         "label": "Backstage Search",
         "ids": [
           "features/search/search-overview",
+          "features/search/getting-started",
+          "features/search/concepts",
           "features/search/architecture"
         ]
       },
@@ -111,6 +116,11 @@
       },
       {
         "type": "subcategory",
+        "label": "Datadog",
+        "ids": ["integrations/datadog-rum/installation"]
+      },
+      {
+        "type": "subcategory",
         "label": "GitHub",
         "ids": [
           "integrations/github/locations",
@@ -130,13 +140,13 @@
       },
       {
         "type": "subcategory",
-        "label": "LDAP",
-        "ids": ["integrations/ldap/org"]
+        "label": "Google GCS",
+        "ids": ["integrations/google-cloud-storage/locations"]
       },
       {
         "type": "subcategory",
-        "label": "Google GCS",
-        "ids": ["integrations/google-cloud-storage/locations"]
+        "label": "LDAP",
+        "ids": ["integrations/ldap/org"]
       }
     ],
     "Plugins": [
@@ -203,6 +213,7 @@
     ],
     "Deployment": [
       "deployment/index",
+      "deployment/docker",
       "deployment/k8s",
       "deployment/helm",
       "deployment/heroku"
@@ -231,7 +242,6 @@
     ],
     "Tutorials": [
       "tutorials/journey",
-      "tutorials/quickstart-app-auth",
       "tutorials/quickstart-app-plugin",
       "tutorials/switching-sqlite-postgres"
     ],

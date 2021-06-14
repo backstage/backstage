@@ -37,6 +37,7 @@ describe('publish:bitbucket', () => {
           {
             host: 'hosted.bitbucket.com',
             token: 'thing',
+            apiBaseUrl: 'https://hosted.bitbucket.com/rest/api/1.0',
           },
           {
             host: 'notoken.bitbucket.com',

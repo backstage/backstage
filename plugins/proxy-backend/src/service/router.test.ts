@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import { buildMiddleware, createRouter } from './router';
 import {
   getVoidLogger,
   loadBackendConfig,
   SingleHostDiscovery,
 } from '@backstage/backend-common';
-import createProxyMiddleware, {
-  Config as ProxyMiddlewareConfig,
-  Proxy,
-} from 'http-proxy-middleware';
+import { Request, Response } from 'express';
 import * as http from 'http';
+import { createProxyMiddleware, Options } from 'http-proxy-middleware';
+import { buildMiddleware, createRouter } from './router';
 
-jest.mock('http-proxy-middleware', () => {
-  return jest.fn().mockImplementation(
-    (): Proxy => {
-      return () => undefined;
-    },
-  );
-});
+jest.mock('http-proxy-middleware', () => ({
+  createProxyMiddleware: jest.fn(() => () => undefined),
+}));
 
 const mockCreateProxyMiddleware = createProxyMiddleware as jest.MockedFunction<
   typeof createProxyMiddleware
@@ -59,14 +53,14 @@ describe('buildMiddleware', () => {
     mockCreateProxyMiddleware.mockClear();
   });
 
-  it('accepts strings', async () => {
-    buildMiddleware('/api/', logger, 'test', 'http://mocked');
+  it('accepts strings prefixed by /', async () => {
+    buildMiddleware('/proxy', logger, '/test', 'http://mocked');
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
     const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
       (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
-      ProxyMiddlewareConfig,
+      Options,
     ];
     expect(filter('', { method: 'GET', headers: {} })).toBe(true);
     expect(filter('', { method: 'POST', headers: {} })).toBe(true);
@@ -74,13 +68,53 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/api/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
+    expect(fullConfig.changeOrigin).toBe(true);
+    expect(fullConfig.logProvider!(logger)).toBe(logger);
+  });
+
+  it('accepts routes not prefixed with / when path is not suffixed with /', async () => {
+    buildMiddleware('/proxy', logger, 'test', 'http://mocked');
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
+      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
+      Options,
+    ];
+    expect(filter('', { method: 'GET', headers: {} })).toBe(true);
+    expect(filter('', { method: 'POST', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PUT', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
+    expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
+
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
+    expect(fullConfig.changeOrigin).toBe(true);
+    expect(fullConfig.logProvider!(logger)).toBe(logger);
+  });
+
+  it('accepts routes prefixed with / when path is suffixed with /', async () => {
+    buildMiddleware('/proxy/', logger, '/test', 'http://mocked');
+
+    expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
+
+    const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
+      (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
+      Options,
+    ];
+    expect(filter('', { method: 'GET', headers: {} })).toBe(true);
+    expect(filter('', { method: 'POST', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PUT', headers: {} })).toBe(true);
+    expect(filter('', { method: 'PATCH', headers: {} })).toBe(true);
+    expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
+
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
 
   it('limits allowedMethods', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedMethods: ['GET', 'DELETE'],
     });
@@ -89,7 +123,7 @@ describe('buildMiddleware', () => {
 
     const [filter, fullConfig] = mockCreateProxyMiddleware.mock.calls[0] as [
       (pathname: string, req: Partial<http.IncomingMessage>) => boolean,
-      ProxyMiddlewareConfig,
+      Options,
     ];
     expect(filter('', { method: 'GET', headers: {} })).toBe(true);
     expect(filter('', { method: 'POST', headers: {} })).toBe(false);
@@ -97,13 +131,13 @@ describe('buildMiddleware', () => {
     expect(filter('', { method: 'PATCH', headers: {} })).toBe(false);
     expect(filter('', { method: 'DELETE', headers: {} })).toBe(true);
 
-    expect(fullConfig.pathRewrite).toEqual({ '^/api/test/': '/' });
+    expect(fullConfig.pathRewrite).toEqual({ '^/proxy/test/?': '/' });
     expect(fullConfig.changeOrigin).toBe(true);
     expect(fullConfig.logProvider!(logger)).toBe(logger);
   });
 
   it('permits default headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
     });
 
@@ -143,7 +177,7 @@ describe('buildMiddleware', () => {
   });
 
   it('permits default and configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       headers: {
         Authorization: 'my-token',
@@ -176,7 +210,7 @@ describe('buildMiddleware', () => {
   });
 
   it('permits configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedHeaders: ['authorization', 'cookie'],
     });
@@ -208,14 +242,13 @@ describe('buildMiddleware', () => {
   });
 
   it('responds default headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
     });
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
-    const config = mockCreateProxyMiddleware.mock
-      .calls[0][1] as ProxyMiddlewareConfig;
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
 
     const testClientResponse = {
       headers: {
@@ -235,8 +268,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyRes!(
       testClientResponse as http.IncomingMessage,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(Object.keys(testClientResponse.headers!)).toEqual([
@@ -251,15 +284,14 @@ describe('buildMiddleware', () => {
   });
 
   it('responds configured headers', async () => {
-    buildMiddleware('/api/', logger, 'test', {
+    buildMiddleware('/proxy', logger, '/test', {
       target: 'http://mocked',
       allowedHeaders: ['set-cookie'],
     });
 
     expect(createProxyMiddleware).toHaveBeenCalledTimes(1);
 
-    const config = mockCreateProxyMiddleware.mock
-      .calls[0][1] as ProxyMiddlewareConfig;
+    const config = mockCreateProxyMiddleware.mock.calls[0][1] as Options;
 
     const testClientResponse = {
       headers: {
@@ -273,8 +305,8 @@ describe('buildMiddleware', () => {
 
     config.onProxyRes!(
       testClientResponse as http.IncomingMessage,
-      {} as http.IncomingMessage,
-      {} as http.ServerResponse,
+      {} as Request,
+      {} as Response,
     );
 
     expect(Object.keys(testClientResponse.headers!)).toEqual(['set-cookie']);
@@ -282,10 +314,10 @@ describe('buildMiddleware', () => {
 
   it('rejects malformed target URLs', async () => {
     expect(() =>
-      buildMiddleware('/api/', logger, 'test', 'backstage.io'),
+      buildMiddleware('/proxy', logger, '/test', 'backstage.io'),
     ).toThrowError(/Proxy target is not a valid URL/);
     expect(() =>
-      buildMiddleware('/api/', logger, 'test', { target: 'backstage.io' }),
+      buildMiddleware('/proxy', logger, '/test', { target: 'backstage.io' }),
     ).toThrowError(/Proxy target is not a valid URL/);
   });
 });

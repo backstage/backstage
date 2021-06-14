@@ -15,6 +15,7 @@
  */
 
 export * from './catalog';
+export { createBuiltinActions } from './createBuiltinActions';
+export * from './debug';
 export * from './fetch';
 export * from './publish';
-export { createBuiltinActions } from './createBuiltinActions';
