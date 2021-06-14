@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Export `EntityRow` type and `CreateComponentButton` components
+Export `EntityRow` type

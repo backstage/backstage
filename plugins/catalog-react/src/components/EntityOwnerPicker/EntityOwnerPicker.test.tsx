@@ -28,9 +28,24 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-1',
     },
-    spec: {
-      owner: 'some-owner',
-    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'some-owner',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'some-owner-2',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
   },
   {
     apiVersion: '1',
@@ -38,9 +53,16 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-2',
     },
-    spec: {
-      owner: 'another-owner',
-    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'another-owner',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
   },
   {
     apiVersion: '1',
@@ -48,9 +70,16 @@ const sampleEntities: Entity[] = [
     metadata: {
       name: 'component-3',
     },
-    spec: {
-      owner: 'some-owner',
-    },
+    relations: [
+      {
+        type: 'ownedBy',
+        target: {
+          name: 'some-owner',
+          namespace: 'default',
+          kind: 'Group',
+        },
+      },
+    ],
   },
 ];
 
@@ -67,7 +96,7 @@ describe('<EntityOwnerPicker/>', () => {
 
     fireEvent.click(rendered.getByTestId('owner-picker-expand'));
     sampleEntities
-      .map(e => e.spec?.owner!)
+      .flatMap(e => e.relations?.map(r => r.target.name))
       .forEach(owner => {
         expect(rendered.getByText(owner as string)).toBeInTheDocument();
       });
@@ -88,6 +117,7 @@ describe('<EntityOwnerPicker/>', () => {
     expect(rendered.getAllByRole('option').map(o => o.textContent)).toEqual([
       'another-owner',
       'some-owner',
+      'some-owner-2',
     ]);
   });
 

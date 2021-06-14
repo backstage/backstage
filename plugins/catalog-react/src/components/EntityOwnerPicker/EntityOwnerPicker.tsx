@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -29,6 +29,8 @@ import { Autocomplete } from '@material-ui/lab';
 import React, { useMemo } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../types';
+import { getEntityRelations } from '../../utils';
+import { formatEntityRefTitle } from '../EntityRefLink';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -40,7 +42,11 @@ export const EntityOwnerPicker = () => {
       [
         ...new Set(
           backendEntities
-            .map((e: Entity) => e.spec?.owner)
+            .flatMap((e: Entity) =>
+              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+                formatEntityRefTitle(o, { defaultKind: 'group' }),
+              ),
+            )
             .filter(Boolean) as string[],
         ),
       ].sort(),
