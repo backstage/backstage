@@ -37,9 +37,9 @@ If the optional flag is not set, a session is guaranteed to be returned, while
 if the optional flag is set, the session may be undefined. See
 @AuthRequestOptions for more details.
 
-<pre>
+```tsx
 getProfile(options?: <a href="#authrequestoptions">AuthRequestOptions</a>): Promise&lt;<a href="#profileinfo">ProfileInfo</a> | undefined&gt;
-</pre>
+```
 
 ## Supporting types
 
@@ -47,7 +47,7 @@ These types are part of the API declaration, but may not be unique to this API.
 
 ### AuthRequestOptions
 
-<pre>
+```tsx
 export type AuthRequestOptions = {
   /**
    * If this is set to true, the user will not be prompted to log in,
@@ -70,7 +70,7 @@ export type AuthRequestOptions = {
    */
   instantPopup?: boolean;
 }
-</pre>
+```
 
 Defined at
 [packages/core-api/src/apis/definitions/auth.ts:40](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L40).
@@ -81,7 +81,7 @@ Referenced by: [getProfile](#getprofile).
 
 Profile information of the user.
 
-<pre>
+```tsx
 export type ProfileInfo = {
   /**
    * Email ID.
@@ -98,7 +98,7 @@ export type ProfileInfo = {
    */
   picture?: string;
 }
-</pre>
+```
 
 Defined at
 [packages/core-api/src/apis/definitions/auth.ts:162](https://github.com/backstage/backstage/blob/a4dbd8353cfa4d4d4334473e2c33afcda64e130d/packages/core-api/src/apis/definitions/auth.ts#L162).

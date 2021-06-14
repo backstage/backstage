@@ -12,7 +12,7 @@ code, template in some variables, and then publish the template to some
 locations like GitHub or GitLab.
 
 <video width="100%" height="100%" controls>
-  <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4">
+  <source src="https://backstage.io/blog/assets/2020-08-05/feature.mp4" type="video/mp4" />
 </video>
 
 ### Getting Started

@@ -15,9 +15,9 @@
       "getting-started/create-an-app",
       "getting-started/running-backstage-locally",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "App configuration",
-        "ids": [
+        "items": [
           "getting-started/configure-app-with-plugins",
           "getting-started/app-custom-theme"
         ]
@@ -29,9 +29,9 @@
     "CLI": ["cli/index", "cli/commands"],
     "Core Features": [
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Software Catalog",
-        "ids": [
+        "items": [
           "features/software-catalog/software-catalog-overview",
           "features/software-catalog/installation",
           "features/software-catalog/configuration",
@@ -48,9 +48,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Kubernetes",
-        "ids": [
+        "items": [
           "features/kubernetes/overview",
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
@@ -58,9 +58,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Software Templates",
-        "ids": [
+        "items": [
           "features/software-templates/software-templates-index",
           "features/software-templates/installation",
           "features/software-templates/adding-templates",
@@ -72,9 +72,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Backstage Search",
-        "ids": [
+        "items": [
           "features/search/search-overview",
           "features/search/getting-started",
           "features/search/concepts",
@@ -82,9 +82,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "TechDocs",
-        "ids": [
+        "items": [
           "features/techdocs/techdocs-overview",
           "features/techdocs/getting-started",
           "features/techdocs/concepts",
@@ -102,51 +102,51 @@
     "Integrations": [
       "integrations/index",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Azure DevOps",
-        "ids": ["integrations/azure/locations"]
+        "items": ["integrations/azure/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Bitbucket",
-        "ids": [
+        "items": [
           "integrations/bitbucket/locations",
           "integrations/bitbucket/discovery"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Datadog",
-        "ids": ["integrations/datadog-rum/installation"]
+        "items": ["integrations/datadog-rum/installation"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "GitHub",
-        "ids": [
+        "items": [
           "integrations/github/locations",
           "integrations/github/discovery",
           "integrations/github/org"
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "GitLab",
-        "ids": ["integrations/gitlab/locations"]
+        "items": ["integrations/gitlab/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Google Analytics",
-        "ids": ["integrations/google-analytics/installation"]
+        "items": ["integrations/google-analytics/installation"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Google GCS",
-        "ids": ["integrations/google-cloud-storage/locations"]
+        "items": ["integrations/google-cloud-storage/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "LDAP",
-        "ids": ["integrations/ldap/org"]
+        "items": ["integrations/ldap/org"]
       }
     ],
     "Plugins": [
@@ -158,9 +158,9 @@
       "plugins/integrating-plugin-into-service-catalog",
       "plugins/composability",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Backends and APIs",
-        "ids": [
+        "items": [
           "plugins/proxying",
           "plugins/backend-plugin",
           "plugins/call-existing-api",
@@ -168,14 +168,14 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Testing",
-        "ids": ["plugins/testing"]
+        "items": ["plugins/testing"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Publishing",
-        "ids": [
+        "items": [
           "plugins/publishing",
           "plugins/publish-private",
           "plugins/add-to-marketplace",
@@ -192,9 +192,9 @@
     "Auth and identity": [
       "auth/index",
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Included providers",
-        "ids": [
+        "items": [
           "auth/auth0/provider",
           "auth/microsoft/provider",
           "auth/github/provider",
@@ -225,9 +225,9 @@
     ],
     "API references": [
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "TypeScript API",
-        "ids": [
+        "items": [
           "api/utility-apis",
           "reference/utility-apis/README",
           "reference/createPlugin",
@@ -235,9 +235,9 @@
         ]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Backend APIs",
-        "ids": ["api/backend"]
+        "items": ["api/backend"]
       }
     ],
     "Tutorials": [

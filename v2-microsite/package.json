@@ -8,7 +8,6 @@
     "start": "docusaurus start",
     "build": "docusaurus build",
     "prettier:check": "prettier --check .",
-    "publish-gh-pages": "docusaurus-publish",
     "write-translations": "docusaurus-write-translations",
     "version": "docusaurus-version",
     "rename-version": "docusaurus-rename-version",
@@ -16,6 +15,8 @@
     "lock:check": "yarn-lock-check",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
     "docusaurus": "docusaurus"
   },
   "devDependencies": {
