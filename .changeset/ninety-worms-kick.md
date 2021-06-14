@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-adds an allow list of github installations
+Adds an allow list of GitHub installations
