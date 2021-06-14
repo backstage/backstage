@@ -66,6 +66,7 @@
   "devDependencies": {
     "@backstage/cli": "^0.7.0",
     "@backstage/test-utils": "^0.1.13",
+    "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/mock-fs": "^4.13.0",
     "@types/supertest": "^2.0.8",
