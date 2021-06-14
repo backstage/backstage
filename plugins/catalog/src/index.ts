@@ -41,3 +41,6 @@ export {
   EntityLinksCard,
   EntitySystemDiagramCard,
 } from './plugin';
+export type { EntityRow } from './components/CatalogTable/types';
+export * from './components/CatalogTable/columns';
+export * from './components/CatalogTable/actions';
