@@ -146,11 +146,15 @@ export const EntityListComponent = ({
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => (
                 <ListItem
-                  component={withLinks ? EntityRefLink : 'div'}
-                  entityRef={withLinks ? entity : undefined}
-                  button={withLinks as any}
                   key={formatEntityRefTitle(entity)}
                   className={classes.nested}
+                  {...(withLinks
+                    ? {
+                        component: EntityRefLink,
+                        entityRef: entity,
+                        button: withLinks as any,
+                      }
+                    : {})}
                 >
                   <ListItemIcon>{getEntityIcon(entity)}</ListItemIcon>
                   <ListItemText primary={formatEntityRefTitle(entity)} />
