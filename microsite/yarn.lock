@@ -6662,7 +6662,7 @@ yargs@^2.3.0:
 
 yarn-lock-check@^1.0.5:
   version "1.0.5"
-  resolved "https://registry.yarnpkg.com/yarn-lock-check/-/yarn-lock-check-1.0.5.tgz#69d9516385f3ff010d0e2b0e87fbbd9bb1ffecaf"
+  resolved "https://registry.npmjs.org/yarn-lock-check/-/yarn-lock-check-1.0.5.tgz#69d9516385f3ff010d0e2b0e87fbbd9bb1ffecaf"
   integrity sha512-dxmV4LpIBrRAPbPg+klyGvqdVo3Y6PgJs6ERJYXf0HSEst7klDmvKKqQUtk+wrIRCoMDIVIzSUTZsuC4zr/tFQ==
   dependencies:
     "@yarnpkg/lockfile" "^1.1.0"
