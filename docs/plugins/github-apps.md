@@ -84,3 +84,12 @@ integrations:
       apps:
         - $include: example-backstage-app-credentials.yaml
 ```
+
+### Permissions for pull requests
+
+These are the minimum permissions required for creating a pull request with
+Backstage software templates:
+
+- Read and Write permissions for `Contents`.
+- Read and write permissions for `Pull Requests` and `Issues`.
+- Read permissions on `Metadata`.
