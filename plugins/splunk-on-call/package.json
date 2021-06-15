@@ -58,7 +58,9 @@
     "msw": "^0.21.2",
     "node-fetch": "^2.6.1"
   },
+  "configSchema": "config.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }
