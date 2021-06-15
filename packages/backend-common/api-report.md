@@ -16,7 +16,6 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GitHubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import * as http from 'http';
-import { JsonObject } from '@backstage/config';
 import { JsonValue } from '@backstage/config';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
@@ -91,9 +90,6 @@ export const createDatabase: typeof createDatabaseClient;
 
 // @public
 export function createDatabaseClient(dbConfig: Config, overrides?: Partial<Knex.Config>): Knex<any, unknown[]>;
-
-// @public
-export function createNameOverride(client: string, name: string): Partial<Knex.Config>;
 
 // @public (undocumented)
 export function createRootLogger(options?: winston.LoggerOptions, env?: NodeJS.ProcessEnv): winston.Logger;
@@ -260,13 +256,7 @@ export class GitlabUrlReader implements UrlReader {
 export function loadBackendConfig(options: Options): Promise<Config>;
 
 // @public
-export function normalizeConnection(connection: Knex.StaticConnectionConfig | JsonObject | string | undefined, client: string): Partial<Knex.StaticConnectionConfig>;
-
-// @public
 export function notFoundHandler(): RequestHandler;
-
-// @public
-export function parseConnectionString(connectionString: string, client?: string): Knex.StaticConnectionConfig;
 
 // @public
 export type PluginCacheManager = {
