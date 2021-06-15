@@ -19,10 +19,10 @@ import {
   BitbucketIntegrationConfig,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { initRepoAndPush } from '../../../stages/publish/helpers';
-import { getRepoSourceDirectory, parseRepoUrl } from './util';
 import fetch from 'cross-fetch';
+import { initRepoAndPush } from '../../../stages/publish/helpers';
 import { createTemplateAction } from '../../createTemplateAction';
+import { getRepoSourceDirectory, parseRepoUrl } from './util';
 
 const createBitbucketCloudRepository = async (opts: {
   owner: string;
@@ -102,7 +102,7 @@ const createBitbucketServerRepository = async (opts: {
     body: JSON.stringify({
       name: repo,
       description: description,
-      is_private: repoVisibility === 'private',
+      public: repoVisibility === 'public',
     }),
     headers: {
       Authorization: authorization,
