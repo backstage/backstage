@@ -59,6 +59,7 @@ export function createPublishGithubAction(options: {
         properties: {
           repoUrl: {
             title: 'Repository Location',
+            description: `Accepts the format 'github.com?repo=reponame&owner=owner' where 'reponame' is the new repository name and 'owner' is an organization or username`,
             type: 'string',
           },
           description: {
@@ -67,6 +68,7 @@ export function createPublishGithubAction(options: {
           },
           access: {
             title: 'Repository Access',
+            description: `Sets an admin collaborator on the repository. Can either be a user reference different from 'owner' in 'repoUrl' or team reference, eg. 'org/team-name'`,
             type: 'string',
           },
           repoVisibility: {
@@ -81,7 +83,7 @@ export function createPublishGithubAction(options: {
           },
           collaborators: {
             title: 'Collaborators',
-            description: 'Provide users with permissions',
+            description: 'Provide additional users with permissions',
             type: 'array',
             items: {
               type: 'object',
