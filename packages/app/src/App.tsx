@@ -114,9 +114,7 @@ const routes = (
       path="/tech-radar"
       element={<TechRadarPage width={1500} height={800} />}
     />
-    <FeatureFlagged with="show-graphiql-page">
-      <Route path="/graphiql" element={<GraphiQLPage />} />
-    </FeatureFlagged>
+    <Route path="/graphiql" element={<GraphiQLPage />} />
     <Route path="/lighthouse" element={<LighthousePage />} />
 
     <Route path="/api-docs" element={<ApiExplorerPage />} />

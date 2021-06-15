@@ -306,11 +306,9 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
-        <FeatureFlagged with="show-graphiql-page">
-          <Grid item md={6}>
-            <EntityDependsOnComponentsCard variant="gridItem" />
-          </Grid>
-        </FeatureFlagged>
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
         <Grid item md={6}>
           <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>

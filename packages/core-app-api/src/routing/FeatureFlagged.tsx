@@ -19,11 +19,13 @@ import {
   useApi,
   attachComponentData,
 } from '@backstage/core-plugin-api';
+import React, { ReactNode } from 'react';
 
-export type FeatureFlaggedProps = { children: JSX.Element | null } & (
+export type FeatureFlaggedProps = { children: ReactNode } & (
   | { with: string }
   | { without: string }
 );
+
 export const FeatureFlagged = (props: FeatureFlaggedProps) => {
   const { children } = props;
   const featureFlagApi = useApi(featureFlagsApiRef);
@@ -31,7 +33,7 @@ export const FeatureFlagged = (props: FeatureFlaggedProps) => {
     'with' in props
       ? featureFlagApi.isActive(props.with)
       : !featureFlagApi.isActive(props.without);
-  return isEnabled ? children : null;
+  return <>{isEnabled ? children : null}</>;
 };
 
 attachComponentData(FeatureFlagged, 'core.featureFlagged', true);
