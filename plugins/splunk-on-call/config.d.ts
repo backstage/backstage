@@ -17,10 +17,10 @@ export interface Config {
   /**
    * Splunk On Call Plugin specific configs
    */
-  splunkOnCall: {
+  splunkOnCall?: {
     /**
      * @visibility frontend
      */
-    eventsRestEndpoint: string;
+    eventsRestEndpoint?: string;
   };
 }
