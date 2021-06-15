@@ -66,6 +66,7 @@ import {
 } from '../ingestion/processors/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../ingestion/processors/util/parse';
 import { LocationAnalyzer } from '../ingestion/types';
+import { NextCatalogBuilder } from '../next';
 
 export type CatalogEnvironment = {
   logger: Logger;
@@ -103,6 +104,10 @@ export class CatalogBuilder {
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
 
+  static async create(env: CatalogEnvironment): Promise<NextCatalogBuilder> {
+    return new NextCatalogBuilder(env);
+  }
+
   constructor(env: CatalogEnvironment) {
     this.env = env;
     this.entityPolicies = [];
@@ -112,6 +117,10 @@ export class CatalogBuilder {
     this.processors = [];
     this.processorsReplace = false;
     this.parser = undefined;
+
+    env.logger.warn(
+      "Creating the catalog with 'new CatalogBuilder(env)' is deprecated! Use CatalogBuilder.create(env) instead",
+    );
   }
 
   /**

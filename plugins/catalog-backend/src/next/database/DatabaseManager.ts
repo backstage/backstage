@@ -36,7 +36,7 @@ export class DatabaseManager {
   ): Promise<Database> {
     const migrationsDir = resolvePackagePath(
       '@backstage/plugin-catalog-backend',
-      'migrationsv2',
+      'migrations',
     );
 
     await knex.migrate.latest({
