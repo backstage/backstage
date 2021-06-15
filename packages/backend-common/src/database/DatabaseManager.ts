@@ -203,7 +203,14 @@ export class DatabaseManager {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    await ensureDatabaseExists(pluginConfig, this.getDatabaseName(pluginId));
+    const databaseName = this.getDatabaseName(pluginId);
+    try {
+      await ensureDatabaseExists(pluginConfig, databaseName);
+    } catch (error) {
+      throw new Error(
+        `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+      );
+    }
 
     return createDatabaseClient(
       pluginConfig,
