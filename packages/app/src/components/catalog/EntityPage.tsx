@@ -108,7 +108,6 @@ import {
   isTravisciAvailable,
 } from '@roadiehq/backstage-plugin-travis-ci';
 import { EntityCodeCoverageContent } from '@backstage/plugin-code-coverage';
-import { FeatureFlagged } from '@backstage/core-app-api';
 
 const EntityLayoutWrapper = (props: { children?: ReactNode }) => {
   const [badgesDialogOpen, setBadgesDialogOpen] = useState(false);
@@ -283,11 +282,9 @@ const serviceEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
-    <FeatureFlagged with="show-graphiql-page">
-      <EntityLayout.Route path="/ci-cd" title="CI/CD">
-        {cicdContent}
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/ci-cd" title="CI/CD">
+      {cicdContent}
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/errors" title="Errors">
       {errorsContent}

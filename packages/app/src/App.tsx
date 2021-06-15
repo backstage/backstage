@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApp, FlatRoutes, FeatureFlagged } from '@backstage/core-app-api';
+import { createApp, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
