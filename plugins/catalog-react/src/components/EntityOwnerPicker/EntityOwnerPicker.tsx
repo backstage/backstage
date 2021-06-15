@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import {
   Box,
   Checkbox,
@@ -28,40 +28,46 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useMemo } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityTagFilter } from '../../types';
+import { EntityOwnerFilter } from '../../types';
+import { getEntityRelations } from '../../utils';
+import { formatEntityRefTitle } from '../EntityRefLink';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const EntityTagPicker = () => {
+export const EntityOwnerPicker = () => {
   const { updateFilters, backendEntities, filters } = useEntityListProvider();
-  const availableTags = useMemo(
+  const availableOwners = useMemo(
     () =>
       [
         ...new Set(
           backendEntities
-            .flatMap((e: Entity) => e.metadata.tags)
+            .flatMap((e: Entity) =>
+              getEntityRelations(e, RELATION_OWNED_BY).map(o =>
+                formatEntityRefTitle(o, { defaultKind: 'group' }),
+              ),
+            )
             .filter(Boolean) as string[],
         ),
       ].sort(),
     [backendEntities],
   );
 
-  if (!availableTags.length) return null;
+  if (!availableOwners.length) return null;
 
-  const onChange = (tags: string[]) => {
+  const onChange = (owners: string[]) => {
     updateFilters({
-      tags: tags.length ? new EntityTagFilter(tags) : undefined,
+      owners: owners.length ? new EntityOwnerFilter(owners) : undefined,
     });
   };
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Tags</Typography>
+      <Typography variant="button">Owner</Typography>
       <Autocomplete<string>
         multiple
-        options={availableTags}
-        value={filters.tags?.values ?? []}
+        options={availableOwners}
+        value={filters.owners?.values ?? []}
         onChange={(_: object, value: string[]) => onChange(value)}
         renderOption={(option, { selected }) => (
           <FormControlLabel
@@ -76,7 +82,7 @@ export const EntityTagPicker = () => {
           />
         )}
         size="small"
-        popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
+        popupIcon={<ExpandMoreIcon data-testid="owner-picker-expand" />}
         renderInput={params => <TextField {...params} variant="outlined" />}
       />
     </Box>

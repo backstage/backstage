@@ -28,40 +28,42 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useMemo } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityTagFilter } from '../../types';
+import { EntityLifecycleFilter } from '../../types';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const EntityTagPicker = () => {
+export const EntityLifecyclePicker = () => {
   const { updateFilters, backendEntities, filters } = useEntityListProvider();
-  const availableTags = useMemo(
+  const availableLifecycles = useMemo(
     () =>
       [
         ...new Set(
           backendEntities
-            .flatMap((e: Entity) => e.metadata.tags)
+            .map((e: Entity) => e.spec?.lifecycle)
             .filter(Boolean) as string[],
         ),
       ].sort(),
     [backendEntities],
   );
 
-  if (!availableTags.length) return null;
+  if (!availableLifecycles.length) return null;
 
-  const onChange = (tags: string[]) => {
+  const onChange = (lifecycles: string[]) => {
     updateFilters({
-      tags: tags.length ? new EntityTagFilter(tags) : undefined,
+      lifecycles: lifecycles.length
+        ? new EntityLifecycleFilter(lifecycles)
+        : undefined,
     });
   };
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Tags</Typography>
+      <Typography variant="button">Lifecycle</Typography>
       <Autocomplete<string>
         multiple
-        options={availableTags}
-        value={filters.tags?.values ?? []}
+        options={availableLifecycles}
+        value={filters.lifecycles?.values ?? []}
         onChange={(_: object, value: string[]) => onChange(value)}
         renderOption={(option, { selected }) => (
           <FormControlLabel
@@ -76,7 +78,7 @@ export const EntityTagPicker = () => {
           />
         )}
         size="small"
-        popupIcon={<ExpandMoreIcon data-testid="tag-picker-expand" />}
+        popupIcon={<ExpandMoreIcon data-testid="lifecycle-picker-expand" />}
         renderInput={params => <TextField {...params} variant="outlined" />}
       />
     </Box>

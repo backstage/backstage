@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import { Entity, UserEntity } from '@backstage/catalog-model';
-import { isOwnerOf } from './utils';
+import {
+  Entity,
+  RELATION_OWNED_BY,
+  UserEntity,
+} from '@backstage/catalog-model';
+import { getEntityRelations, isOwnerOf } from './utils';
+import { formatEntityRefTitle } from './components/EntityRefLink';
 
 export type EntityFilter = {
   /**
@@ -58,6 +63,26 @@ export class EntityTagFilter implements EntityFilter {
 
   filterEntity(entity: Entity): boolean {
     return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
+  }
+}
+
+export class EntityOwnerFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v =>
+      getEntityRelations(entity, RELATION_OWNED_BY).some(
+        o => formatEntityRefTitle(o, { defaultKind: 'group' }) === v,
+      ),
+    );
+  }
+}
+
+export class EntityLifecycleFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    return this.values.some(v => entity.spec?.lifecycle === v);
   }
 }
 
