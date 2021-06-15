@@ -211,10 +211,24 @@
   dependencies:
     tslib "^2.0.0"
 
+"@azure/msal-browser@^2.14.2":
+  version "2.14.2"
+  resolved "https://registry.npmjs.org/@azure/msal-browser/-/msal-browser-2.14.2.tgz#4efa031ad16d5a3a527eddb6222e15dd6e2ea3e8"
+  integrity sha512-JKHE9Rer41CI8tweiyE91M8ZbGvQV9P+jOPB4ZtPxyxCi2f7ED3jNfdzyUJ1eGB+hCRnvO56M1Xc61T1R+JfYg==
+  dependencies:
+    "@azure/msal-common" "^4.3.0"
+
 "@azure/msal-common@^2.1.0":
   version "2.1.0"
   resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-2.1.0.tgz#a4bc17e254d6ec524016f13267947dd4ff4a624d"
   integrity sha512-Y1Id+jG59S3eY2ZQQtUA/lxwbRcgjcWaiib9YX+SwV3zeRauKfEiZT7l3z+lwV+T+Sst20F6l1mJsfQcfE7CEQ==
+  dependencies:
+    debug "^4.1.1"
+
+"@azure/msal-common@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.npmjs.org/@azure/msal-common/-/msal-common-4.3.0.tgz#b540e92748656724088bf77192e59943a93135bc"
+  integrity sha512-jFqUWe83wVb6O8cNGGBFg2QlKvqM1ezUgJTEV7kIsAPX0RXhGFE4B1DLNt6hCnkTXDbw+KGW0zgxOEr4MJQwLw==
   dependencies:
     debug "^4.1.1"
 

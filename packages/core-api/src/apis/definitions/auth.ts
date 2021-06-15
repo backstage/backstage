@@ -298,6 +298,26 @@ export const microsoftAuthApiRef: ApiRef<
 });
 
 /**
+ * Provides authentication towards via Azure-Msal-Browser
+ *
+ * For more info and a full list of supported scopes, see:
+ * - https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent
+ * - https://docs.microsoft.com/en-us/graph/permissions-reference
+ * - https://www.npmjs.com/package/@azure/msal-browser
+ */
+export const azureAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.azure',
+  description:
+    'Provides authentication towards Azure AD via MSAL Browser package',
+});
+
+/**
  * Provides authentication for custom identity providers.
  */
 export const oauth2ApiRef: ApiRef<

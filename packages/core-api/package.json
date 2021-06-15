@@ -40,7 +40,8 @@
     "react": "^16.12.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-use": "^17.2.4",
-    "zen-observable": "^0.8.15"
+    "zen-observable": "^0.8.15",
+    "@azure/msal-browser": "^2.14.2"
   },
   "devDependencies": {
     "@backstage/cli": "^0.6.14",
