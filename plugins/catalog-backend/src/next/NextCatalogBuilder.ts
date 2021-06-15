@@ -108,6 +108,7 @@ export class NextCatalogBuilder {
   private processors: CatalogProcessor[];
   private processorsReplace: boolean;
   private parser: CatalogProcessorParser | undefined;
+  private refreshIntervalSeconds = 100;
 
   constructor(env: CatalogEnvironment) {
     this.env = env;
@@ -133,6 +134,16 @@ export class NextCatalogBuilder {
    */
   addEntityPolicy(...policies: EntityPolicy[]): NextCatalogBuilder {
     this.entityPolicies.push(...policies);
+    return this;
+  }
+
+  /**
+   * Refresh interval determines how often entities should be refreshed.
+   * The default refresh duration is 100, setting this too low will potentially
+   * deplete request quotas to upstream services.
+   */
+  setRefreshIntervalSeconds(seconds: number): NextCatalogBuilder {
+    this.refreshIntervalSeconds = seconds;
     return this;
   }
 
@@ -252,7 +263,11 @@ export class NextCatalogBuilder {
 
     const db = new CommonDatabase(dbClient, logger);
 
-    const processingDatabase = new DefaultProcessingDatabase(dbClient, logger);
+    const processingDatabase = new DefaultProcessingDatabase({
+      database: dbClient,
+      logger,
+      refreshIntervalSeconds: this.refreshIntervalSeconds,
+    });
     const integrations = ScmIntegrations.fromConfig(config);
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors,

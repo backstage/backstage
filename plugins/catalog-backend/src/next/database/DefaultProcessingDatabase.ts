@@ -44,8 +44,11 @@ const BATCH_SIZE = 50;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
   constructor(
-    private readonly database: Knex,
-    private readonly logger: Logger,
+    private readonly options: {
+      database: Knex;
+      logger: Logger;
+      refreshIntervalSeconds: number;
+    },
   ) {}
 
   async updateProcessedEntity(
@@ -272,7 +275,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         .whereIn('target_entity_ref', toRemove)
         .delete();
 
-      this.logger.debug(
+      this.options.logger.debug(
         `removed, ${removedCount} entities: ${JSON.stringify(toRemove)}`,
       );
     }
@@ -377,8 +380,14 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       .update({
         next_update_at:
           tx.client.config.client === 'sqlite3'
-            ? tx.raw(`datetime('now', ?)`, [`100 seconds`])
-            : tx.raw(`now() + interval '100 seconds'`),
+            ? tx.raw(`datetime('now', ?)`, [
+                `${this.options.refreshIntervalSeconds} seconds`,
+              ])
+            : tx.raw(
+                `now() + interval '${Number(
+                  this.options.refreshIntervalSeconds,
+                )} seconds'`,
+              ),
       });
 
     return {
@@ -406,7 +415,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     try {
       let result: T | undefined = undefined;
 
-      await this.database.transaction(
+      await this.options.database.transaction(
         async tx => {
           // We can't return here, as knex swallows the return type in case the transaction is rolled back:
           // https://github.com/knex/knex/blob/e37aeaa31c8ef9c1b07d2e4d3ec6607e557d800d/lib/transaction.js#L136
@@ -420,7 +429,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
 
       return result!;
     } catch (e) {
-      this.logger.debug(`Error during transaction, ${e}`);
+      this.options.logger.debug(`Error during transaction, ${e}`);
 
       if (
         /SQLITE_CONSTRAINT: UNIQUE/.test(e.message) ||
