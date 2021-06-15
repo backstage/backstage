@@ -1,5 +1,288 @@
 # @backstage/create-app
 
+## 0.3.25
+
+### Patch Changes
+
+- 4f8cf50fe: Updated the `@gitbeaker/node` dependency past the broken one without a `dist` folder.
+
+  See [this issue](https://github.com/jdalrymple/gitbeaker/issues/1861) for more details.
+
+  If you get build errors that look like the following in your Backstage instance, you may want to also bump all of your `@gitbeaker/*` dependencies to at least `^30.2.0`.
+
+  ```
+  node:internal/modules/cjs/loader:356
+        throw err;
+        ^
+
+  Error: Cannot find module '/path/to/project/node_modules/@gitbeaker/node/dist/index.js'. Please verify that the package.json has a valid "main" entry
+      at tryPackage (node:internal/modules/cjs/loader:348:19)
+      at Function.Module._findPath (node:internal/modules/cjs/loader:561:18)
+      at Function.Module._resolveFilename (node:internal/modules/cjs/loader:926:27)
+      at Function.Module._load (node:internal/modules/cjs/loader:773:27)
+      at Module.require (node:internal/modules/cjs/loader:1012:19)
+      at require (node:internal/modules/cjs/helpers:93:18)
+      at Object.<anonymous> (/path/to/project/test.js:4:18)
+      at Module._compile (node:internal/modules/cjs/loader:1108:14)
+      at Object.Module._extensions..js (node:internal/modules/cjs/loader:1137:10)
+      at Module.load (node:internal/modules/cjs/loader:988:32) {
+    code: 'MODULE_NOT_FOUND',
+    path: '/path/to/project/node_modules/@gitbeaker/node/package.json',
+    requestPath: '@gitbeaker/node'
+  }
+  ```
+
+  you could also consider pinning the version to an older one in your `package.json` either root or `packages/backend/package.json`, before the breakage occurred.
+
+  ```json
+  "resolutions": {
+      "**/@gitbeaker/node": "29.2.4",
+      "**/@gitbeaker/core": "29.2.4",
+      "**/@gitbeaker/requester-utils": "29.2.4"
+  }
+  ```
+
+  Be aware that this is only required short term until we can release our updated versions of `@backstage/plugin-scaffolder-backend`.
+
+- 55a253de2: Migrating old `backstage.io/v1alpha1` templates to `backstage.io/v1beta2`
+
+  Deprecating the `create-react-app` Template. We're planning on removing the `create-react-app` templater, as it's been a little tricky to support and takes 15mins to run in a container. We've currently cached a copy of the output for `create-react-app` and ship that under our sample templates folder. If you want to continue using it, we suggest copying the template out of there and putting it in your own repository as it will be removed in upcoming releases.
+
+  We also recommend removing this entry from your `app-config.yaml` if it exists:
+
+  ```diff
+  -    - type: url
+  -      target: https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/sample-templates/create-react-app/template.yaml
+  -      rules:
+  -        - allow: [Template]
+  ```
+
+- 509b5638c: Added "out-of-the-box" alpha-milestone search features to scaffolded Backstage apps.
+
+  To apply this change to an existing app, do the following...
+
+  First, navigate to your backend package and install the two new search backend
+  packages:
+
+  ```sh
+  cd packages/backend
+  yarn add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+  ```
+
+  Wire up these new packages into your app backend by first creating a new
+  `search.ts` file at `src/plugins/search.ts` with contents like the following:
+
+  ```typescript
+  import { useHotCleanup } from '@backstage/backend-common';
+  import { createRouter } from '@backstage/plugin-search-backend';
+  import {
+    IndexBuilder,
+    LunrSearchEngine,
+  } from '@backstage/plugin-search-backend-node';
+  import { PluginEnvironment } from '../types';
+  import { DefaultCatalogCollator } from '@backstage/plugin-catalog-backend';
+
+  export default async function createPlugin({
+    logger,
+    discovery,
+  }: PluginEnvironment) {
+    // Initialize a connection to a search engine.
+    const searchEngine = new LunrSearchEngine({ logger });
+    const indexBuilder = new IndexBuilder({ logger, searchEngine });
+
+    // Collators are responsible for gathering documents known to plugins. This
+    // particular collator gathers entities from the software catalog.
+    indexBuilder.addCollator({
+      defaultRefreshIntervalSeconds: 600,
+      collator: new DefaultCatalogCollator({ discovery }),
+    });
+
+    // The scheduler controls when documents are gathered from collators and sent
+    // to the search engine for indexing.
+    const { scheduler } = await indexBuilder.build();
+
+    // A 3 second delay gives the backend server a chance to initialize before
+    // any collators are executed, which may attempt requests against the API.
+    setTimeout(() => scheduler.start(), 3000);
+    useHotCleanup(module, () => scheduler.stop());
+
+    return await createRouter({
+      engine: indexBuilder.getSearchEngine(),
+      logger,
+    });
+  }
+  ```
+
+  Then, ensure the search plugin you configured above is initialized by modifying
+  your backend's `index.ts` file in the following ways:
+
+  ```diff
+  +import search from './plugins/search';
+  // ...
+  +const searchEnv = useHotMemoize(module, () => createEnv('search'));
+  // ...
+  +apiRouter.use('/search', await search(searchEnv));
+  // ...
+  ```
+
+  In your frontend app package, create a new `searchPage` component at, for
+  example, `packages/app/src/components/search/SearchPage.tsx` with contents like
+  the following:
+
+  ```tsx
+  import React from 'react';
+  import { makeStyles, Theme, Grid, List, Paper } from '@material-ui/core';
+
+  import { Content, Header, Lifecycle, Page } from '@backstage/core';
+  import { CatalogResultListItem } from '@backstage/plugin-catalog';
+  import {
+    SearchBar,
+    SearchFilter,
+    SearchResult,
+    DefaultResultListItem,
+  } from '@backstage/plugin-search';
+
+  const useStyles = makeStyles((theme: Theme) => ({
+    bar: {
+      padding: theme.spacing(1, 0),
+    },
+    filters: {
+      padding: theme.spacing(2),
+    },
+    filter: {
+      '& + &': {
+        marginTop: theme.spacing(2.5),
+      },
+    },
+  }));
+
+  const SearchPage = () => {
+    const classes = useStyles();
+
+    return (
+      <Page themeId="home">
+        <Header title="Search" subtitle={<Lifecycle alpha />} />
+        <Content>
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <Paper className={classes.bar}>
+                <SearchBar debounceTime={100} />
+              </Paper>
+            </Grid>
+            <Grid item xs={3}>
+              <Paper className={classes.filters}>
+                <SearchFilter.Select
+                  className={classes.filter}
+                  name="kind"
+                  values={['Component', 'Template']}
+                />
+                <SearchFilter.Checkbox
+                  className={classes.filter}
+                  name="lifecycle"
+                  values={['experimental', 'production']}
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={9}>
+              <SearchResult>
+                {({ results }) => (
+                  <List>
+                    {results.map(({ type, document }) => {
+                      switch (type) {
+                        case 'software-catalog':
+                          return (
+                            <CatalogResultListItem
+                              key={document.location}
+                              result={document}
+                            />
+                          );
+                        default:
+                          return (
+                            <DefaultResultListItem
+                              key={document.location}
+                              result={document}
+                            />
+                          );
+                      }
+                    })}
+                  </List>
+                )}
+              </SearchResult>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    );
+  };
+
+  export const searchPage = <SearchPage />;
+  ```
+
+  Then in `App.tsx`, import this new `searchPage` component, and set it as a
+  child of the existing `<SearchPage />` route so that it looks like this:
+
+  ```diff
+  +import { searchPage } from './components/search/SearchPage';
+  // ...
+  -<Route path="/search" element={<SearchPage />} />
+  +<Route path="/search" element={<SearchPage />}>
+  +  {searchPage}
+  +</Route>;
+  ```
+
+- Updated dependencies [9cd3c533c]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [9c63be545]
+- Updated dependencies [9bdd2cca8]
+- Updated dependencies [92963779b]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [66c6bfebd]
+- Updated dependencies [9b4010965]
+- Updated dependencies [7f7443308]
+- Updated dependencies [55a253de2]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [5aff84759]
+- Updated dependencies [5aff84759]
+- Updated dependencies [f26e6008f]
+- Updated dependencies [21e8ebef5]
+- Updated dependencies [4fbb00707]
+- Updated dependencies [eda9dbd5f]
+- Updated dependencies [4f8cf50fe]
+- Updated dependencies [d5ad47bbb]
+- Updated dependencies [875809a59]
+  - @backstage/cli@0.7.0
+  - @backstage/plugin-catalog@0.6.2
+  - @backstage/plugin-catalog-backend@0.10.2
+  - @backstage/plugin-github-actions@0.4.9
+  - @backstage/backend-common@0.8.2
+  - @backstage/catalog-model@0.8.2
+  - @backstage/plugin-scaffolder@0.9.8
+  - @backstage/plugin-scaffolder-backend@0.12.0
+  - @backstage/integration-react@0.1.3
+  - @backstage/catalog-client@0.3.13
+  - @backstage/plugin-catalog-import@0.5.9
+  - @backstage/plugin-search-backend-node@0.2.0
+  - @backstage/plugin-search@0.4.0
+  - @backstage/plugin-search-backend@0.2.0
+  - @backstage/plugin-proxy-backend@0.2.9
+  - @backstage/core@0.7.12
+  - @backstage/errors@0.1.1
+  - @backstage/test-utils@0.1.13
+  - @backstage/theme@0.2.8
+  - @backstage/plugin-api-docs@0.4.15
+  - @backstage/plugin-app-backend@0.3.13
+  - @backstage/plugin-auth-backend@0.3.12
+  - @backstage/plugin-explore@0.3.6
+  - @backstage/plugin-lighthouse@0.2.17
+  - @backstage/plugin-rollbar-backend@0.1.11
+  - @backstage/plugin-tech-radar@0.4.0
+  - @backstage/plugin-techdocs@0.9.5
+  - @backstage/plugin-techdocs-backend@0.8.2
+  - @backstage/plugin-user-settings@0.2.10
+
 ## 0.3.24
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 0.5.6
+
+### Patch Changes
+
+- eda9dbd5f: Download archives as compressed tar files for Bitbucket to keep executable permissions.
+
 ## 0.5.5
 
 ### Patch Changes

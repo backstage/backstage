@@ -85,9 +85,10 @@ function checkTypes(pkg) {
     resolvePath(pkg.location, 'dist/index.d.ts'),
     'utf8',
   );
-  const deps = (typeDecl.match(/from '.*'/g) || [])
+  const allDeps = (typeDecl.match(/from '.*'/g) || [])
     .map(match => match.replace(/from '(.*)'/, '$1'))
     .filter(n => !n.startsWith('.'));
+  const deps = Array.from(new Set(allDeps));
 
   const errors = [];
   const typeDeps = [];

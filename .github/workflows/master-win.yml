@@ -53,6 +53,10 @@ jobs:
       - name: verify type dependencies
         run: yarn lint:type-deps
 
+      # The core packages need to be built for the codemods tests to work
+      - name: build core packages
+        run: lerna run --scope @backstage/core-* build
+
       - name: test
         run: yarn lerna -- run test
         env:

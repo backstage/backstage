@@ -35,11 +35,11 @@
     "url": "https://github.com/backstage/backstage/issues"
   },
   "dependencies": {
-    "@backstage/catalog-model": "^0.8.0",
+    "@backstage/catalog-model": "^0.8.2",
     "@kubernetes/client-node": "^0.14.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.13"
+    "@backstage/cli": "^0.7.0"
   },
   "jest": {
     "roots": [

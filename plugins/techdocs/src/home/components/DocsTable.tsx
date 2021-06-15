@@ -111,7 +111,6 @@ export const DocsTable = ({
           action={
             <Button
               color="primary"
-              href="#"
               to="https://backstage.io/docs/features/techdocs/getting-started"
               variant="contained"
             >

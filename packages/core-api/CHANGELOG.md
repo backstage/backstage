@@ -1,5 +1,14 @@
 # @backstage/core-api
 
+## 0.2.22
+
+### Patch Changes
+
+- 9bca2a252: Improve forwards compatibility with `@backstage/core-app-api` and `@backstage/core-plugin-api` by re-using route reference types and factory methods from `@backstage/core-plugin-api`.
+- Updated dependencies [75b8537ce]
+- Updated dependencies [da8cba44f]
+  - @backstage/core-plugin-api@0.1.2
+
 ## 0.2.21
 
 ### Patch Changes

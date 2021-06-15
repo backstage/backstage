@@ -21,8 +21,9 @@ import {
   RenderResult,
   waitFor,
   fireEvent,
+  screen,
 } from '@testing-library/react';
-import { wrapInTestApp } from '@backstage/test-utils';
+import { wrapInTestApp, renderInTestApp } from '@backstage/test-utils';
 import { SupportButton } from './SupportButton';
 
 const SUPPORT_BUTTON_ID = 'support-button';
@@ -39,6 +40,12 @@ describe('<SupportButton />', () => {
     await waitFor(() =>
       expect(renderResult.getByTestId(SUPPORT_BUTTON_ID)).toBeInTheDocument(),
     );
+  });
+
+  it('supports passing a title', async () => {
+    await renderInTestApp(<SupportButton title="Custom title" />);
+    fireEvent.click(screen.getByTestId(SUPPORT_BUTTON_ID));
+    expect(screen.getByText('Custom title')).toBeInTheDocument();
   });
 
   it('shows popover on click', async () => {

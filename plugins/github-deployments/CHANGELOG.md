@@ -1,5 +1,19 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.8
+
+### Patch Changes
+
+- ef2f928f4: Add deployment statuses to the GithubDeployments plugin
+- Updated dependencies [27a9b503a]
+- Updated dependencies [f4e3ac5ce]
+- Updated dependencies [7028ee1ca]
+- Updated dependencies [eda9dbd5f]
+  - @backstage/catalog-model@0.8.2
+  - @backstage/integration-react@0.1.3
+  - @backstage/plugin-catalog-react@0.2.2
+  - @backstage/integration@0.5.6
+
 ## 0.1.7
 
 ### Patch Changes

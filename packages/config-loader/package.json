@@ -37,7 +37,7 @@
     "fs-extra": "^9.0.0",
     "json-schema": "^0.3.0",
     "json-schema-merge-allof": "^0.8.1",
-    "typescript-json-schema": "^0.49.0",
+    "typescript-json-schema": "^0.50.1",
     "yaml": "^1.9.2",
     "yup": "^0.29.3"
   },

@@ -1,5 +1,11 @@
 # @backstage/plugin-cost-insights
 
+## 0.10.2
+
+### Patch Changes
+
+- 9d906c7a1: Move `canvas` package to `devDependencies`.
+
 ## 0.10.1
 
 ### Patch Changes

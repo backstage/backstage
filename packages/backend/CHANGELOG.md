@@ -1,5 +1,31 @@
 # example-backend
 
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies [9c63be545]
+- Updated dependencies [92963779b]
+- Updated dependencies [27a9b503a]
+- Updated dependencies [66c6bfebd]
+- Updated dependencies [55a253de2]
+- Updated dependencies [70bc30c5b]
+- Updated dependencies [db1c8f93b]
+- Updated dependencies [5aff84759]
+- Updated dependencies [f26e6008f]
+- Updated dependencies [eda9dbd5f]
+- Updated dependencies [4f8cf50fe]
+- Updated dependencies [875809a59]
+  - @backstage/plugin-catalog-backend@0.10.2
+  - @backstage/backend-common@0.8.2
+  - @backstage/catalog-model@0.8.2
+  - @backstage/plugin-scaffolder-backend@0.12.0
+  - @backstage/catalog-client@0.3.13
+  - @backstage/plugin-search-backend-node@0.2.0
+  - @backstage/plugin-search-backend@0.2.0
+  - @backstage/plugin-proxy-backend@0.2.9
+  - example-app@0.2.32
+
 ## 0.2.30
 
 ### Patch Changes

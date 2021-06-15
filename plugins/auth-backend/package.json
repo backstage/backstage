@@ -29,9 +29,9 @@
     "clean": "backstage-cli clean"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.8.1",
-    "@backstage/catalog-client": "^0.3.12",
-    "@backstage/catalog-model": "^0.8.0",
+    "@backstage/backend-common": "^0.8.2",
+    "@backstage/catalog-client": "^0.3.13",
+    "@backstage/catalog-model": "^0.8.2",
     "@backstage/config": "^0.1.5",
     "@backstage/errors": "^0.1.1",
     "@backstage/test-utils": "^0.1.12",
@@ -68,7 +68,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.6.13",
+    "@backstage/cli": "^0.7.0",
     "@types/body-parser": "^1.19.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express-session": "^1.17.2",
