@@ -40,9 +40,12 @@ export async function startStandaloneServer(
 
   const router = await createRouter({ config, discovery });
 
-  const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+  let service = createServiceBuilder(module)
+    .setPort(options.port)
     .addRouter('/badges', router);
+  if (options.enableCors) {
+    service = service.enableCors({ origin: 'http://localhost:3000' });
+  }
 
   return await service.start().catch(err => {
     logger.error(err);

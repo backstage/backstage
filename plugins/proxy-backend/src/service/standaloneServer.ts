@@ -43,9 +43,12 @@ export async function startStandaloneServer(
     logger,
     discovery,
   });
-  const service = createServiceBuilder(module)
-    .enableCors({ origin: 'http://localhost:3000' })
+  let service = createServiceBuilder(module)
+    .setPort(options.port)
     .addRouter('/proxy', router);
+  if (options.enableCors) {
+    service = service.enableCors({ origin: 'http://localhost:3000' });
+  }
 
   logger.debug('Starting application server...');
 
