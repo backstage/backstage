@@ -19,6 +19,7 @@ import {
   ContentHeader,
   SupportButton,
   TableColumn,
+  useRouteRef,
 } from '@backstage/core';
 import {
   EntityKindPicker,
@@ -30,14 +31,11 @@ import {
   UserListFilterKind,
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
-import {
-  CatalogTable,
-  CreateComponentButton,
-  EntityRow,
-} from '@backstage/plugin-catalog';
-import { makeStyles } from '@material-ui/core';
-
+import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
+import { Button, makeStyles } from '@material-ui/core';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { createComponentRouteRef } from '../../routes';
 import { ApiExplorerLayout } from './ApiExplorerLayout';
 
 const useStyles = makeStyles(theme => ({
@@ -51,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 export type ApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<EntityRow>[];
+  columns?: TableColumn<CatalogTableRow>[];
 };
 
 export const ApiExplorerPage = ({
@@ -59,12 +57,22 @@ export const ApiExplorerPage = ({
   columns,
 }: ApiExplorerPageProps) => {
   const styles = useStyles();
+  const createComponentLink = useRouteRef(createComponentRouteRef);
 
   return (
     <ApiExplorerLayout>
       <Content>
         <ContentHeader title="">
-          <CreateComponentButton label="Register Existing API" />
+          {createComponentLink && (
+            <Button
+              variant="contained"
+              color="primary"
+              component={RouterLink}
+              to={createComponentLink()}
+            >
+              Register Existing API
+            </Button>
+          )}
           <SupportButton>All your APIs</SupportButton>
         </ContentHeader>
         <div className={styles.contentWrapper}>

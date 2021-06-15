@@ -20,12 +20,7 @@ import { Button } from '@material-ui/core';
 import { useRouteRef } from '@backstage/core';
 import { createComponentRouteRef } from '../../routes';
 
-type CreateComponentButtonProps = {
-  label?: string;
-};
-export const CreateComponentButton = ({
-  label,
-}: CreateComponentButtonProps) => {
+export const CreateComponentButton = () => {
   const createComponentLink = useRouteRef(createComponentRouteRef);
 
   if (!createComponentLink) return null;
@@ -37,7 +32,7 @@ export const CreateComponentButton = ({
       color="primary"
       to={createComponentLink()}
     >
-      {label ?? 'Create Component'}
+      Create Component
     </Button>
   );
 };
