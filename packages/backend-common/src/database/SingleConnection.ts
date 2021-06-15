@@ -77,6 +77,12 @@ export class SingleConnectionDatabaseManager {
 
   private async ensureDatabase(database: string) {
     const config = this.config;
-    await ensureDatabaseExists(config, database);
+    try {
+      await ensureDatabaseExists(config, database);
+    } catch (error) {
+      throw new Error(
+        `Failed to connect to the database to make sure that '${database}' exists, ${error}`,
+      );
+    }
   }
 }
