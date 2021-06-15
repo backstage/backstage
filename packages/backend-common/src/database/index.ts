@@ -15,6 +15,7 @@
  */
 
 export * from './connection';
-export * from './types';
 export * from './SingleConnection';
 export * from './DatabaseManager';
+
+export type { PluginDatabaseManager } from './types';

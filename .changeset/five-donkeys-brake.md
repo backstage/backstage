@@ -1,7 +1,7 @@
 ---
-'@backstage/backend-common': minor
-'@backstage/create-app': minor
-'@backstage/backend-test-utils': minor
+'@backstage/backend-common': patch
+'@backstage/create-app': patch
+'@backstage/backend-test-utils': patch
 ---
 
 Deprecates `SingleConnectionDatabaseManager` and provides an API compatible database
