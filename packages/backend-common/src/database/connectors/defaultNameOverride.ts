@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { DatabaseManager } from './DatabaseManager';
+import { Knex } from 'knex';
 
 /**
- * Implements a Database Manager which will automatically create new databases
- * for plugins when requested. All requested databases are created with the
- * credentials provided; if the database already exists no attempt to create
- * the database will be made.
+ * Provides a partial knex config with database name override.
  *
- * @deprecated Use `DatabaseManager` from `@backend-common` instead.
+ * Default override for knex database drivers which accept ConnectionConfig
+ * with `connection.database` as the database name field.
+ *
+ * @param name database name to get config override for
  */
-export const SingleConnectionDatabaseManager = DatabaseManager;
+export default function defaultNameOverride(
+  name: string,
+): Partial<Knex.Config> {
+  return {
+    connection: {
+      database: name,
+    },
+  };
+}

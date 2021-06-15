@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  getVoidLogger,
-  SingleConnectionDatabaseManager,
-} from '@backstage/backend-common';
+import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskAgent } from './StorageTaskBroker';
 import { TaskSecrets, TaskSpec, DbTaskEventRow } from './types';
 
 async function createStore(): Promise<DatabaseTaskStore> {
-  const manager = SingleConnectionDatabaseManager.fromConfig(
+  const manager = DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {
         database: {

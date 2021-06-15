@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import path from 'path';
 
-import { Config } from '@backstage/config';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
-import path from 'path';
-import { mergeDatabaseConfig } from './config';
+
+import { Config } from '@backstage/config';
+import { mergeDatabaseConfig } from '../config';
+import { DatabaseConnector } from '../types';
 
 /**
- * Creates a knex sqlite3 database connection
+ * Creates a knex SQLite3 database connection
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
@@ -54,7 +56,7 @@ export function createSqliteDatabaseClient(
 }
 
 /**
- * Builds a knex sqlite3 connection config
+ * Builds a knex SQLite3 connection config
  *
  * @param dbConfig The database config
  * @param overrides Additional options to merge with the config
@@ -99,3 +101,34 @@ export function buildSqliteDatabaseConfig(
 
   return config;
 }
+
+/**
+ * Provides a partial knex SQLite3 config to override database name.
+ */
+export function createSqliteNameOverride(name: string): Partial<Knex.Config> {
+  return {
+    connection: parseSqliteConnectionString(name),
+  };
+}
+
+/**
+ * Produces a partial knex SQLite3 connection config with database name.
+ */
+export function parseSqliteConnectionString(
+  name: string,
+): Knex.Sqlite3ConnectionConfig {
+  return {
+    filename: name,
+  };
+}
+
+/**
+ * SQLite3 database connector.
+ *
+ * Exposes database connector functionality via an immutable object.
+ */
+export const sqlite3Connector: DatabaseConnector = Object.freeze({
+  createClient: createSqliteDatabaseClient,
+  createNameOverride: createSqliteNameOverride,
+  parseConnectionString: parseSqliteConnectionString,
+});

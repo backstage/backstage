@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export * from './connection';
-export * from './types';
 export * from './SingleConnection';
+export * from './DatabaseManager';
+
+/*
+ * Undocumented API surface from connection is being reduced for future deprecation.
+ * Avoid exporting additional symbols.
+ */
+export {
+  createDatabaseClient,
+  createDatabase,
+  ensureDatabaseExists,
+} from './connection';
+
+export type { PluginDatabaseManager } from './types';
