@@ -186,7 +186,7 @@ const app = createApp({
 In case you already have a dozen of internal ones, you may need to update those too.
 Assuming you follow the common plugin structure, the changes to your front-end may look like:
 
-```typescript
+```diff
 // plugins/internal-plugin/src/api.ts
 -- import {createApiRef} from '@backstage/core';
 ++ import {createApiRef, IdentityApi} from '@backstage/core';
@@ -229,7 +229,7 @@ export class MyApi implements MyInterface {
 
 and
 
-```typescript
+```diff
 // plugins/internal-plugin/src/plugin.ts
 
 import {
