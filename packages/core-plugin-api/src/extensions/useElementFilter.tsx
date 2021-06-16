@@ -78,12 +78,17 @@ function selectChildren(
   });
 }
 
-class ElementCollection {
-  constructor(
-    private readonly node: ReactNode,
-    private readonly featureFlagsApi: FeatureFlagsApi,
-  ) {}
-
+/**
+ * A querying interface tailored to traversing a set of selected React elements
+ * and extracting data.
+ *
+ * Methods prefixed with `selectBy` are used to narrow the set of selected elements.
+ *
+ * Methods prefixed with `find` return concrete data using a deep traversal of the set.
+ *
+ * Methods prefixed with `get` return concrete data using a shallow traversal of the set.
+ */
+export interface ElementCollection {
   /**
    * Narrows the set of selected components by doing a deep traversal and
    * only including those that have defined component data for the given `key`.
@@ -100,6 +105,31 @@ class ElementCollection {
    * there may be no elements that were excluded in the selection. If the selection
    * is not a clean match, an error will be throw with `withStrictError` as the message.
    */
+  selectByComponentData(query: {
+    key: string;
+    withStrictError?: string;
+  }): ElementCollection;
+
+  /**
+   * Finds all elements using the same criteria as `selectByComponentData`, but
+   * returns the actual component data of each of those elements instead.
+   */
+  findComponentData<T>(query: { key: string }): T[];
+
+  /**
+   * Returns all of the elements currently selected by this collection.
+   */
+  getElements<Props extends { [name: string]: unknown }>(): Array<
+    ReactElement<Props>
+  >;
+}
+
+class Collection implements ElementCollection {
+  constructor(
+    private readonly node: ReactNode,
+    private readonly featureFlagsApi: FeatureFlagsApi,
+  ) {}
+
   selectByComponentData(query: { key: string; withStrictError?: string }) {
     const selection = selectChildren(
       this.node,
@@ -107,13 +137,9 @@ class ElementCollection {
       node => getComponentData(node, query.key) !== undefined,
       query.withStrictError,
     );
-    return new ElementCollection(selection, this.featureFlagsApi);
+    return new Collection(selection, this.featureFlagsApi);
   }
 
-  /**
-   * Finds all elements using the same criteria as `selectByComponentData`, but
-   * returns the actual component data of each of those elements instead.
-   */
   findComponentData<T>(query: { key: string }): T[] {
     const selection = selectChildren(
       this.node,
@@ -125,9 +151,6 @@ class ElementCollection {
       .filter((data: T | undefined): data is T => data !== undefined);
   }
 
-  /**
-   * Returns all of the elements currently selected by this collection.
-   */
   getElements<Props extends { [name: string]: unknown }>(): Array<
     ReactElement<Props>
   > {
@@ -159,7 +182,7 @@ export function useElementFilter<T>(
   dependencies: any[] = [],
 ) {
   const featureFlagsApi = useApi(featureFlagsApiRef);
-  const elements = new ElementCollection(node, featureFlagsApi);
+  const elements = new Collection(node, featureFlagsApi);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => filterFn(elements), [node, ...dependencies]);
 }

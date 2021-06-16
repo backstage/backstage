@@ -21,3 +21,4 @@ export {
   createComponentExtension,
 } from './extensions';
 export { useElementFilter } from './useElementFilter';
+export type { ElementCollection } from './useElementFilter';

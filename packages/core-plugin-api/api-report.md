@@ -229,6 +229,20 @@ export type DiscoveryApi = {
 export const discoveryApiRef: ApiRef<DiscoveryApi>;
 
 // @public
+export interface ElementCollection {
+    findComponentData<T>(query: {
+        key: string;
+    }): T[];
+    getElements<Props extends {
+        [name: string]: unknown;
+    }>(): Array<ReactElement<Props>>;
+    selectByComponentData(query: {
+        key: string;
+        withStrictError?: string;
+    }): ElementCollection;
+}
+
+// @public
 export type ErrorApi = {
     post(error: Error_2, context?: ErrorContext): void;
     error$(): Observable<{
@@ -515,7 +529,7 @@ export function useApiHolder(): ApiHolder;
 // @public (undocumented)
 export const useApp: () => AppContext;
 
-// @public (undocumented)
+// @public
 export function useElementFilter<T>(node: ReactNode, filterFn: (arg: ElementCollection) => T, dependencies?: any[]): T;
 
 // @public (undocumented)
