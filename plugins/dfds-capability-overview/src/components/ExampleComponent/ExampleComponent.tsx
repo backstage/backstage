@@ -34,6 +34,8 @@ import {
   Content,
   ContentHeader,
   HeaderLabel,
+  microsoftAuthApiRef,
+  useApi
 } from '@backstage/core';
 
 import DoneIcon from '@material-ui/icons/Done';
@@ -281,6 +283,16 @@ const CapabilitiesListBase = () => {
 };
 
 export const ExampleComponent = () => {
+  var authApi = useApi(microsoftAuthApiRef);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      // let resp = await authApi.getAccessToken();
+      let resp = await authApi.GetAccessTokenClientSide(["api://24420be9-46e5-4584-acd7-64850d2f2a03/access_as_user"]);
+      console.log(resp);
+    };
+    fetchData();
+  }, []);
+
   return (
     <EntityListProvider>
       <EntityKindPicker initialFilter="capability" hidden />

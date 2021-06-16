@@ -16,6 +16,7 @@
 
 import { ApiRef, createApiRef } from '../system';
 import { Observable } from '../../types';
+import { OAuthExtendedApi } from './oauthExtendedApi';
 
 /**
  * This file contains declarations for common interfaces of auth-related APIs.
@@ -288,6 +289,7 @@ export const auth0AuthApiRef: ApiRef<
  */
 export const microsoftAuthApiRef: ApiRef<
   OAuthApi &
+    OAuthExtendedApi &
     OpenIdConnectApi &
     ProfileInfoApi &
     BackstageIdentityApi &
