@@ -41,7 +41,6 @@
     "circleci-api": "^4.0.0",
     "dayjs": "^1.9.4",
     "lodash": "^4.17.15",
-    "moment": "^2.25.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-lazylog": "^4.5.2",
