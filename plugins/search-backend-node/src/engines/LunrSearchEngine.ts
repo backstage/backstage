@@ -90,6 +90,10 @@ export class LunrSearchEngine implements SearchEngine {
 
   index(type: string, documents: IndexableDocument[]): void {
     const lunrBuilder = new lunr.Builder();
+
+    lunrBuilder.pipeline.add(lunr.trimmer, lunr.stopWordFilter, lunr.stemmer);
+    lunrBuilder.searchPipeline.add(lunr.stemmer);
+
     // Make this lunr index aware of all relevant fields.
     Object.keys(documents[0]).forEach(field => {
       lunrBuilder.field(field);
