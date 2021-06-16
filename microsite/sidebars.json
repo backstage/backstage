@@ -103,10 +103,7 @@
       {
         "type": "subcategory",
         "label": "Azure",
-        "ids": [
-          "integrations/azure/locations", 
-          "integrations/azure/org"
-        ]
+        "ids": ["integrations/azure/locations", "integrations/azure/org"]
       },
       {
         "type": "subcategory",
