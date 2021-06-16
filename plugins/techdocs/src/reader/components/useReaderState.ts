@@ -15,7 +15,7 @@
  */
 
 import { useApi } from '@backstage/core';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { useAsync, useAsyncRetry } from 'react-use';
 import { techdocsStorageApiRef } from '../../api';
 
@@ -60,6 +60,11 @@ export function calculateDisplayState({
 >): ContentStateTypes {
   // we have nothing to display yet
   if (contentLoading) {
+    return 'CHECKING';
+  }
+
+  // the build is ready, but it triggered a content reload and the content variable is not trusted
+  if (activeSyncState === 'BUILD_READY_RELOAD') {
     return 'CHECKING';
   }
 
@@ -116,6 +121,12 @@ type SyncStates =
   /** Finished building the documentation */
   | 'BUILD_READY'
 
+  /**
+   * Finished building the documentation and triggered a content reload.
+   * This state is left toward UP_TO_DATE when the content loading has finished.
+   */
+  | 'BUILD_READY_RELOAD'
+
   /** Building the documentation timed out */
   | 'BUILD_TIMED_OUT'
 
@@ -134,9 +145,8 @@ type ReducerActions =
   | {
       type: 'content';
       content?: string;
-      contentLoading: boolean;
+      contentLoading?: true;
       contentError?: Error;
-      contentReload: () => void;
     }
   | { type: 'navigate'; path: string };
 
@@ -159,14 +169,6 @@ type ReducerState = {
    * The content that has been downloaded and should be displayed.
    */
   content?: string;
-  /**
-   * When called, the content is reloaded without refreshing the page.
-   */
-  contentReload?: () => void;
-  /**
-   * If true, the content is considered stale and should be refreshed by the user via a refresh or a navigation.
-   */
-  contentIsStale: boolean;
 
   contentError?: Error;
   syncError?: Error;
@@ -182,27 +184,11 @@ export function reducer(
     case 'sync':
       newState.activeSyncState = action.state;
       newState.syncError = action.syncError;
-
-      // whatever is stored as content, it can be considered as being stale
-      if (newState.activeSyncState === 'BUILD_READY') {
-        newState.contentIsStale = true;
-
-        // reload the content if this was the initial build OR the page was missing in the old version
-        if (!newState.content && newState.contentReload) {
-          newState.contentReload();
-
-          // eagerly mark the content to load to not get synchronization issues since
-          // the async hook behind contentReload() doesn't update the reducer instantly
-          // and might flash the "not found" page
-          newState.contentLoading = true;
-        }
-      }
       break;
 
     case 'content':
       newState.content = action.content;
-      newState.contentLoading = action.contentLoading;
-      newState.contentReload = action.contentReload;
+      newState.contentLoading = action.contentLoading ?? false;
       newState.contentError = action.contentError;
       break;
 
@@ -214,12 +200,11 @@ export function reducer(
       throw new Error();
   }
 
-  // a navigation or a content update removes the staleness and resets the sync state
+  // a navigation or a content update loads fresh content so the build is updated to being up-to-date
   if (
-    newState.contentIsStale &&
+    ['BUILD_READY', 'BUILD_READY_RELOAD'].includes(newState.activeSyncState) &&
     ['content', 'navigate'].includes(action.type)
   ) {
-    newState.contentIsStale = false;
     newState.activeSyncState = 'UP_TO_DATE';
   }
 
@@ -236,7 +221,6 @@ export function useReaderState(
     activeSyncState: 'CHECKING',
     path,
     contentLoading: true,
-    contentIsStale: false,
   });
 
   const techdocsStorageApi = useApi(techdocsStorageApiRef);
@@ -246,35 +230,33 @@ export function useReaderState(
     dispatch({ type: 'navigate', path });
   }, [path]);
 
-  // try to load the content
-  const {
-    value: content,
-    loading: contentLoading,
-    error: contentError,
-    retry: contentReload,
-  } = useAsyncRetry(
-    async () =>
-      techdocsStorageApi.getEntityDocs(
-        {
-          kind,
-          namespace,
-          name,
-        },
-        path,
-      ),
-    [techdocsStorageApi, kind, namespace, name, path],
-  );
+  // try to load the content. the function will fire events and we don't care for the return values
+  const { retry: contentReload } = useAsyncRetry(async () => {
+    dispatch({ type: 'content', contentLoading: true });
 
-  // convert all content changes into actions
-  useEffect(() => {
-    dispatch({
-      type: 'content',
-      content,
-      contentLoading,
-      contentReload,
-      contentError,
-    });
-  }, [dispatch, content, contentLoading, contentReload, contentError]);
+    try {
+      const entityDocs = await techdocsStorageApi.getEntityDocs(
+        { kind, namespace, name },
+        path,
+      );
+
+      dispatch({ type: 'content', content: entityDocs });
+
+      return entityDocs;
+    } catch (e) {
+      dispatch({ type: 'content', contentError: e });
+    }
+
+    return undefined;
+  }, [techdocsStorageApi, kind, namespace, name, path]);
+
+  // create a ref that holds the latest content. This provides a useAsync hook
+  // with the latest content without restarting the useAsync hook.
+  const contentRef = useRef<{ content?: string; reload: () => void }>({
+    content: undefined,
+    reload: () => {},
+  });
+  contentRef.current = { content: state.content, reload: contentReload };
 
   // try to derive the state. the function will fire events and we don't care for the return values
   useAsync(async () => {
@@ -293,7 +275,13 @@ export function useReaderState(
       });
 
       if (result === 'updated') {
-        dispatch({ type: 'sync', state: 'BUILD_READY' });
+        // if there was no content prior to building, retry the loading
+        if (!contentRef.current.content) {
+          contentRef.current.reload();
+          dispatch({ type: 'sync', state: 'BUILD_READY_RELOAD' });
+        } else {
+          dispatch({ type: 'sync', state: 'BUILD_READY' });
+        }
       } else if (result === 'cached') {
         dispatch({ type: 'sync', state: 'UP_TO_DATE' });
       } else {
@@ -305,7 +293,7 @@ export function useReaderState(
       // Cancel the timer that sets the state "BUILDING"
       clearTimeout(buildingTimeout);
     }
-  }, [kind, name, namespace, techdocsStorageApi, dispatch]);
+  }, [kind, name, namespace, techdocsStorageApi, dispatch, contentRef]);
 
   const displayState = useMemo(
     () =>
@@ -329,7 +317,7 @@ export function useReaderState(
 
   return {
     state: displayState,
-    content,
+    content: state.content,
     errorMessage,
   };
 }

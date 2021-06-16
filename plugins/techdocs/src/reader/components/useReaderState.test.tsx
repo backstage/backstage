@@ -49,20 +49,22 @@ describe('useReaderState', () => {
 
   describe('calculateDisplayState', () => {
     it.each`
-      contentLoading | content      | activeSyncState      | expected
-      ${true}        | ${''}        | ${''}                | ${'CHECKING'}
-      ${false}       | ${undefined} | ${'CHECKING'}        | ${'CHECKING'}
-      ${false}       | ${undefined} | ${'BUILDING'}        | ${'INITIAL_BUILD'}
-      ${false}       | ${undefined} | ${'BUILD_READY'}     | ${'CONTENT_NOT_FOUND'}
-      ${false}       | ${undefined} | ${'BUILD_TIMED_OUT'} | ${'CONTENT_NOT_FOUND'}
-      ${false}       | ${undefined} | ${'UP_TO_DATE'}      | ${'CONTENT_NOT_FOUND'}
-      ${false}       | ${undefined} | ${'ERROR'}           | ${'CONTENT_NOT_FOUND'}
-      ${false}       | ${'asdf'}    | ${'CHECKING'}        | ${'CONTENT_FRESH'}
-      ${false}       | ${'asdf'}    | ${'BUILDING'}        | ${'CONTENT_STALE_REFRESHING'}
-      ${false}       | ${'asdf'}    | ${'BUILD_READY'}     | ${'CONTENT_STALE_READY'}
-      ${false}       | ${'asdf'}    | ${'BUILD_TIMED_OUT'} | ${'CONTENT_STALE_TIMEOUT'}
-      ${false}       | ${'asdf'}    | ${'UP_TO_DATE'}      | ${'CONTENT_FRESH'}
-      ${false}       | ${'asdf'}    | ${'ERROR'}           | ${'CONTENT_STALE_ERROR'}
+      contentLoading | content      | activeSyncState         | expected
+      ${true}        | ${''}        | ${''}                   | ${'CHECKING'}
+      ${false}       | ${undefined} | ${'CHECKING'}           | ${'CHECKING'}
+      ${false}       | ${undefined} | ${'BUILDING'}           | ${'INITIAL_BUILD'}
+      ${false}       | ${undefined} | ${'BUILD_READY'}        | ${'CONTENT_NOT_FOUND'}
+      ${false}       | ${undefined} | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
+      ${false}       | ${undefined} | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_NOT_FOUND'}
+      ${false}       | ${undefined} | ${'UP_TO_DATE'}         | ${'CONTENT_NOT_FOUND'}
+      ${false}       | ${undefined} | ${'ERROR'}              | ${'CONTENT_NOT_FOUND'}
+      ${false}       | ${'asdf'}    | ${'CHECKING'}           | ${'CONTENT_FRESH'}
+      ${false}       | ${'asdf'}    | ${'BUILDING'}           | ${'CONTENT_STALE_REFRESHING'}
+      ${false}       | ${'asdf'}    | ${'BUILD_READY'}        | ${'CONTENT_STALE_READY'}
+      ${false}       | ${'asdf'}    | ${'BUILD_READY_RELOAD'} | ${'CHECKING'}
+      ${false}       | ${'asdf'}    | ${'BUILD_TIMED_OUT'}    | ${'CONTENT_STALE_TIMEOUT'}
+      ${false}       | ${'asdf'}    | ${'UP_TO_DATE'}         | ${'CONTENT_FRESH'}
+      ${false}       | ${'asdf'}    | ${'ERROR'}              | ${'CONTENT_STALE_ERROR'}
     `(
       'should, when contentLoading=$contentLoading and content="$content" and activeSyncState=$activeSyncState, resolve to $expected',
       ({ contentLoading, content, activeSyncState, expected }) => {
@@ -78,48 +80,80 @@ describe('useReaderState', () => {
   });
 
   describe('reducer', () => {
-    const contentReloadFn = jest.fn();
     const oldState: Parameters<typeof reducer>[0] = {
       activeSyncState: 'CHECKING',
-      contentIsStale: false,
       contentLoading: false,
       path: '',
-      contentReload: contentReloadFn,
     };
 
     it('should return a copy of the state', () => {
       expect(reducer(oldState, { type: 'navigate', path: '/' })).toEqual({
         activeSyncState: 'CHECKING',
-        contentIsStale: false,
         contentLoading: false,
         path: '/',
-        contentReload: contentReloadFn,
       });
 
       expect(oldState).toEqual({
         activeSyncState: 'CHECKING',
-        contentIsStale: false,
         contentLoading: false,
         path: '',
-        contentReload: contentReloadFn,
       });
     });
 
-    describe('"content" action', () => {
-      it('should work', () => {
+    it.each`
+      type          | oldActiveSyncState      | newActiveSyncState
+      ${'content'}  | ${'BUILD_READY'}        | ${'UP_TO_DATE'}
+      ${'content'}  | ${'BUILD_READY_RELOAD'} | ${'UP_TO_DATE'}
+      ${'navigate'} | ${'BUILD_READY'}        | ${'UP_TO_DATE'}
+      ${'navigate'} | ${'BUILD_READY_RELOAD'} | ${'UP_TO_DATE'}
+      ${'sync'}     | ${'BUILD_READY'}        | ${undefined}
+      ${'sync'}     | ${'BUILD_READY_RELOAD'} | ${undefined}
+    `(
+      'should, when type=$type and activeSyncState=$oldActiveSyncState, set activeSyncState=$newActiveSyncState',
+      ({ type, oldActiveSyncState, newActiveSyncState }) => {
         expect(
           reducer(
             {
               ...oldState,
-              content: undefined,
+              activeSyncState: oldActiveSyncState,
+            },
+            { type },
+          ).activeSyncState,
+        ).toEqual(newActiveSyncState);
+      },
+    );
+
+    describe('"content" action', () => {
+      it('should set loading', () => {
+        expect(
+          reducer(
+            {
+              ...oldState,
+              content: 'some-old-content',
+              contentError: new Error(),
+            },
+            {
+              type: 'content',
               contentLoading: true,
-              contentReload: undefined,
+            },
+          ),
+        ).toEqual({
+          ...oldState,
+          contentLoading: true,
+        });
+      });
+
+      it('should set content', () => {
+        expect(
+          reducer(
+            {
+              ...oldState,
+              contentLoading: true,
+              contentError: new Error(),
             },
             {
               type: 'content',
               content: 'asdf',
-              contentLoading: false,
-              contentReload: contentReloadFn,
             },
           ),
         ).toEqual({
@@ -127,30 +161,25 @@ describe('useReaderState', () => {
           contentLoading: false,
           content: 'asdf',
         });
-
-        expect(contentReloadFn).toBeCalledTimes(0);
       });
 
-      it('should reset staleness', () => {
+      it('should set error', () => {
         expect(
           reducer(
             {
               ...oldState,
-              contentIsStale: true,
-              activeSyncState: 'BUILD_READY',
+              contentLoading: true,
+              content: 'asdf',
             },
             {
               type: 'content',
-              content: 'asdf',
-              contentLoading: false,
-              contentReload: contentReloadFn,
+              contentError: new Error(),
             },
           ),
         ).toEqual({
           ...oldState,
-          content: 'asdf',
-          contentIsStale: false,
-          activeSyncState: 'UP_TO_DATE',
+          contentLoading: false,
+          contentError: new Error(),
         });
       });
     });
@@ -166,28 +195,6 @@ describe('useReaderState', () => {
           ...oldState,
           path: '/',
         });
-
-        expect(contentReloadFn).toBeCalledTimes(0);
-      });
-
-      it('should reset staleness', () => {
-        expect(
-          reducer(
-            {
-              ...oldState,
-              contentIsStale: true,
-              activeSyncState: 'BUILD_READY',
-            },
-            {
-              type: 'navigate',
-              path: '',
-            },
-          ),
-        ).toEqual({
-          ...oldState,
-          contentIsStale: false,
-          activeSyncState: 'UP_TO_DATE',
-        });
       });
     });
 
@@ -200,88 +207,6 @@ describe('useReaderState', () => {
           }),
         ).toEqual({
           ...oldState,
-          activeSyncState: 'BUILDING',
-        });
-
-        expect(contentReloadFn).toBeCalledTimes(0);
-      });
-
-      it('should set content to be stale but not reload', () => {
-        expect(
-          reducer(
-            {
-              ...oldState,
-              contentReload: undefined,
-            },
-            {
-              type: 'sync',
-              state: 'BUILD_READY',
-            },
-          ),
-        ).toEqual({
-          ...oldState,
-          activeSyncState: 'BUILD_READY',
-          contentIsStale: true,
-          contentReload: undefined,
-        });
-
-        expect(contentReloadFn).toBeCalledTimes(0);
-      });
-
-      it('should not reload existing content', () => {
-        expect(
-          reducer(
-            {
-              ...oldState,
-              content: 'any content',
-            },
-            {
-              type: 'sync',
-              state: 'BUILD_READY',
-            },
-          ),
-        ).toEqual({
-          ...oldState,
-          activeSyncState: 'BUILD_READY',
-          contentIsStale: true,
-          content: 'any content',
-        });
-
-        expect(contentReloadFn).toBeCalledTimes(0);
-      });
-
-      it('should trigger a reload', () => {
-        expect(
-          reducer(oldState, {
-            type: 'sync',
-            state: 'BUILD_READY',
-          }),
-        ).toEqual({
-          ...oldState,
-          activeSyncState: 'BUILD_READY',
-          contentIsStale: true,
-          contentLoading: true,
-        });
-
-        expect(contentReloadFn).toBeCalledTimes(1);
-      });
-
-      it('should NOT reset staleness', () => {
-        expect(
-          reducer(
-            {
-              ...oldState,
-              contentIsStale: true,
-              activeSyncState: 'BUILD_READY',
-            },
-            {
-              type: 'sync',
-              state: 'BUILDING',
-            },
-          ),
-        ).toEqual({
-          ...oldState,
-          contentIsStale: true,
           activeSyncState: 'BUILDING',
         });
       });
@@ -319,6 +244,68 @@ describe('useReaderState', () => {
           { kind: 'Component', namespace: 'default', name: 'backstage' },
           '/example',
         );
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
+          kind: 'Component',
+          namespace: 'default',
+          name: 'backstage',
+        });
+      });
+    });
+
+    it('should reload initially missing content', async () => {
+      techdocsStorageApi.getEntityDocs
+        .mockRejectedValueOnce(new NotFoundError('Page Not Found'))
+        .mockImplementationOnce(async () => {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          return 'my content';
+        });
+      techdocsStorageApi.syncEntityDocs.mockImplementation(async () => {
+        await new Promise(resolve => setTimeout(resolve, 1100));
+        return 'updated';
+      });
+
+      await act(async () => {
+        const { result, waitForValueToChange } = await renderHook(
+          () => useReaderState('Component', 'default', 'backstage', '/example'),
+          { wrapper: Wrapper },
+        );
+
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          content: undefined,
+          errorMessage: '',
+        });
+
+        await waitForValueToChange(() => result.current.state);
+
+        expect(result.current).toEqual({
+          state: 'INITIAL_BUILD',
+          content: undefined,
+          errorMessage: ' Load error: NotFoundError: Page Not Found',
+        });
+
+        await waitForValueToChange(() => result.current.state);
+
+        expect(result.current).toEqual({
+          state: 'CHECKING',
+          content: undefined,
+          errorMessage: '',
+        });
+
+        await waitForValueToChange(() => result.current.state);
+
+        expect(result.current).toEqual({
+          state: 'CONTENT_FRESH',
+          content: 'my content',
+          errorMessage: '',
+        });
+
+        expect(techdocsStorageApi.getEntityDocs).toBeCalledTimes(2);
+        expect(techdocsStorageApi.getEntityDocs).toBeCalledWith(
+          { kind: 'Component', namespace: 'default', name: 'backstage' },
+          '/example',
+        );
+        expect(techdocsStorageApi.syncEntityDocs).toBeCalledTimes(1);
         expect(techdocsStorageApi.syncEntityDocs).toBeCalledWith({
           kind: 'Component',
           namespace: 'default',
