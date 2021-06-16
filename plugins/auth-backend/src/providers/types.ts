@@ -219,14 +219,16 @@ export type SignInResolver<AuthResult> = (
   },
 ) => Promise<BackstageIdentity>;
 
+export type AuthHandlerResult = { profile: ProfileInfo };
+
 /**
- * A transformation function called every time the user authenticates using the provider.
+ * The AuthHandler function is called every time the user authenticates using the provider.
  *
- * The transform should return a profile that represents the session for the user in the frontend.
+ * The handler should return a profile that represents the session for the user in the frontend.
  *
  * Throwing an error in the function will cause the authentication to fail, making it
  * possible to use this function as a way to limit access to a certain group of users.
  */
-export type ProfileTransform<AuthResult> = (
+export type AuthHandler<AuthResult> = (
   input: AuthResult,
-) => Promise<ProfileInfo>;
+) => Promise<AuthHandlerResult>;

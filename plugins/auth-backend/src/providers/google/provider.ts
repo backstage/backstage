@@ -40,7 +40,7 @@ import {
 } from '../../lib/passport';
 import {
   AuthProviderFactory,
-  ProfileTransform,
+  AuthHandler,
   RedirectInfo,
   SignInResolver,
 } from '../types';
@@ -52,7 +52,7 @@ type PrivateInfo = {
 
 type Options = OAuthProviderOptions & {
   signInResolver?: SignInResolver<OAuthResult>;
-  profileTransform: ProfileTransform<OAuthResult>;
+  authHandler: AuthHandler<OAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
   logger: Logger;
@@ -61,14 +61,14 @@ type Options = OAuthProviderOptions & {
 export class GoogleAuthProvider implements OAuthHandlers {
   private readonly _strategy: GoogleStrategy;
   private readonly signInResolver?: SignInResolver<OAuthResult>;
-  private readonly profileTransform: ProfileTransform<OAuthResult>;
+  private readonly authHandler: AuthHandler<OAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
   private readonly logger: Logger;
 
   constructor(options: Options) {
     this.signInResolver = options.signInResolver;
-    this.profileTransform = options.profileTransform;
+    this.authHandler = options.authHandler;
     this.tokenIssuer = options.tokenIssuer;
     this.catalogIdentityClient = options.catalogIdentityClient;
     this.logger = options.logger;
@@ -146,7 +146,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 
   private async handleResult(result: OAuthResult) {
-    const profile = await this.profileTransform(result);
+    const { profile } = await this.authHandler(result);
 
     const response: OAuthResponse = {
       providerInfo: {
@@ -235,7 +235,7 @@ export type GoogleProviderOptions = {
    * The profile transformation function used to verify and convert the auth response
    * into the profile that will be presented to the user.
    */
-  profileTransform?: ProfileTransform<OAuthResult>;
+  authHandler?: AuthHandler<OAuthResult>;
 
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
@@ -272,13 +272,11 @@ export const createGoogleProvider = (
         tokenIssuer,
       });
 
-      let profileTransform: ProfileTransform<OAuthResult> = async ({
-        fullProfile,
-        params,
-      }) => makeProfileInfo(fullProfile, params.id_token);
-      if (options?.profileTransform) {
-        profileTransform = options.profileTransform;
-      }
+      const authHandler: AuthHandler<OAuthResult> = options?.authHandler
+        ? options.authHandler
+        : async ({ fullProfile, params }) => ({
+            profile: makeProfileInfo(fullProfile, params.id_token),
+          });
 
       const signInResolverFn =
         options?.signIn?.resolver ?? googleDefaultSignInResolver;
@@ -295,7 +293,7 @@ export const createGoogleProvider = (
         clientSecret,
         callbackUrl,
         signInResolver,
-        profileTransform,
+        authHandler,
         tokenIssuer,
         catalogIdentityClient,
         logger,

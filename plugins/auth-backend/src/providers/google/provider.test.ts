@@ -42,10 +42,12 @@ describe('createGoogleProvider', () => {
       logger: getVoidLogger(),
       catalogIdentityClient: (catalogIdentityClient as unknown) as CatalogIdentityClient,
       tokenIssuer: (tokenIssuer as unknown) as TokenIssuer,
-      profileTransform: async ({ fullProfile }) => ({
-        email: fullProfile.emails![0]!.value,
-        displayName: fullProfile.displayName,
-        picture: 'http://google.com/lols',
+      authHandler: async ({ fullProfile }) => ({
+        profile: {
+          email: fullProfile.emails![0]!.value,
+          displayName: fullProfile.displayName,
+          picture: 'http://google.com/lols',
+        },
       }),
       clientId: 'mock',
       clientSecret: 'mock',
