@@ -36,35 +36,25 @@ export default async function createPlugin({
       google: createGoogleProvider({
         signIn: {
           resolver: async ({ profile: { email } }, ctx) => {
-            if (!email) {
-              throw new Error('No email associated with user account');
-            }
+            // Call a custom validator function that checks that the email is
+            // valid and on our own company's domain, and throws an Error if it
+            // isn't
+            validateEmail(email);
 
-            // Ignore email addresses which do not belong to company's domain name
-            if (email.split('@')[1] !== 'mycompany.com') {
-              throw new Error('Unrecognized domain name of the email ID used to sign in.')
-            }
-
-            // List of entity references that denote the identity and membership of the user
+            // List of entity references that denote the identity and
+            // membership of the user
             const ent = [];
 
-            // Let's use the username in the email ID as the user's default unique identifier inside Backstage
-            const id = email.split('@')[0];
-            // Let's add the unique ID in the list
+            // Let's use the username in the email ID as the user's default
+            // unique identifier inside Backstage
+            const [id] = email.split('@');
+
+            // Add the unique ID in the list
             ent.push(`User:default/${id}`)
 
-            // Let's call the GitHub Enterprise API inside the company and get the teams that the user belongs to
-            const gheUsername = getGheUsername(email);
-            const gheTeams = getGheTeams(gheUsername);
-
-            // Let's add the GHE identities to ent claims inside a new ghe namespace to keep things separate from the
-            // default namespace.
-            ent.push(`User:ghe/${gheUsername}`)
-            gheTeams.forEach(team => ent.push(`Group:ghe/${team}`))
-
             // Let's call the internal LDAP provider to get a list of groups the user belongs to
-            const ldapGroups = getLdapGroups(email);
-            ldapGroups.forEach(ldapGroup => ent.push(`Group:myldap/${ldapGroup}`))
+            const ldapGroups = await getLdapGroups(email);
+            ldapGroups.forEach(ldapGroup => ent.push(`Group:default/${ldapGroup}`))
 
             // Issue the token containing the entity claims
             const token = await ctx.tokenIssuer.issueToken({
@@ -152,7 +142,7 @@ export default async function createPlugin({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,
         }) => {
-          // Custom validation
+          // Custom validation code goes here
           return {
             profile: {
               email,
