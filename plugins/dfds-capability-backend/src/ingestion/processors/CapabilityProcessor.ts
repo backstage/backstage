@@ -21,6 +21,15 @@ import {
   CatalogProcessorEmit,
 } from '@backstage/plugin-catalog-backend';
 
+type CapabilityInterface = {
+  id: string;
+  rootId: string;
+  name: string;
+  description: string;
+  members: [];
+  contexts: [];
+};
+
 // A processor that reads from the fictional System-X
 export class CapabilityProcessor implements CatalogProcessor {
   constructor(private readonly reader: UrlReader) {}
@@ -43,17 +52,24 @@ export class CapabilityProcessor implements CatalogProcessor {
       // your choosing.
       const data = await this.reader.read(location.target);
       const json = JSON.parse(data.toString());
-
-      json.items.forEach((i: any) => {
+      json.items.forEach((item: CapabilityInterface) => {
+        console.log(item.description);
         emit(
           results.entity(location, {
             apiVersion: 'build.dfds.cloud/v1alpha1',
             kind: 'Capability',
-            spec: { identifier: i.rootId || i.id },
-            metadata: { name: `bla-bla${i.rootId || i.id}` },
+            spec: {
+              identifier: item.rootId || item.id,
+              rootId: item.rootId,
+              id: item.id,
+              description: item.description || '',
+              name: item.name,
+              members: item.members,
+              contexts: item.contexts,
+            },
+            metadata: { name: `${item.rootId || item.name}` },
           }),
         );
-        console.log('emitting');
       });
     } catch (error) {
       const message = `Unable to read ${location.type}, ${error}`;

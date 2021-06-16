@@ -31,6 +31,12 @@ describe('CapabilityV1alpha1Validator', () => {
       },
       spec: {
         identifier: 'developerautomation-xavgy',
+        rootId: 'test',
+        id: 'test',
+        name: 'test',
+        description: 'test',
+        members: [],
+        contexts: [],
       },
     };
   });

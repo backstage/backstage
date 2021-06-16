@@ -17,7 +17,9 @@
         }
       },
       "spec": {
-        "identifier": "developerautomation-xavgy"
+        "identifier": "developerautomation-xavgy",
+        "name": "name",
+        "description": "description"
       }
     }
   ],
@@ -43,7 +45,39 @@
               "type": "string",
               "description": "The identifier of a capability",
               "examples": ["developerautomation-xavgy"],
-              "minLength": 5
+              "minLength": 0
+            },
+            "rootId": {
+              "type": "string",
+              "description": "The rootId of a capability",
+              "examples": ["developerautomation-xavgy"],
+              "minLength": 0
+            },
+            "id": {
+              "type": "string",
+              "description": "The id of a capability",
+              "examples": ["developerautomation-xavgy"],
+              "minLength": 0
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of a capability",
+              "examples": ["PassengerShared"],
+              "minLength": 0
+            },
+            "description": {
+              "type": "string",
+              "description": "The description of a capability",
+              "examples": ["A description of some capability"],
+              "minLength": 0
+            },
+            "members": {
+              "type": "array",
+              "description": "The members of a capability"
+            },
+            "contexts": {
+              "type": "array",
+              "description": "The context of a capability"
             }
           }
         }

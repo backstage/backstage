@@ -23,6 +23,12 @@ export interface CapabilityEntityV1alpha1 extends Entity {
   kind: 'Capability';
   spec: {
     identifier: string;
+    rootId: string;
+    id: string;
+    name: string;
+    description: string;
+    members: [];
+    contexts: [];
   };
 }
 

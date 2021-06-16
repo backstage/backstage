@@ -1,6 +1,6 @@
 app:
   title: DFDS Backstage
-  baseUrl: http://localhost:3000
+  baseUrl: http://0.0.0.0:3000
   googleAnalyticsTrackingId: # UA-000000-0
   #datadogRum:
   #  clientToken: '123456789'
@@ -23,7 +23,7 @@ app:
             title: '#backstage'
 
 backend:
-  baseUrl: http://localhost:7000
+  baseUrl: http://172.29.142.24:7000
   listen:
     port: 7000
   database:
@@ -51,6 +51,7 @@ backend:
       - host: example.com
       - host: '*.mozilla.org'
       - host: private-aa6799-zaradardfds.apiary-mock.com
+      - host: 172.31.54.115
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 # See README.md in the proxy-backend plugin for information on the configuration format

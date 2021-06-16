@@ -45,117 +45,118 @@ import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
 import CloseIcon from '@material-ui/icons/Close';
 
 import { MoreActions, PopOverProvider } from './MoreActions';
-import { CreateCapability } from './CreateCapability';
+// import { CreateCapability } from './CreateCapability';
 import { CapabilityCard } from './CapabilityCard';
+// import splitEvery from 'ramda/src/splitEvery';
 
 import {
   EntityKindPicker,
   EntityListProvider,
   // EntityTagPicker,
-  EntityTypePicker,
+  // EntityTypePicker,
   useEntityListProvider,
   // UserListFilterKind,
   // UserListPicker,
 } from '@backstage/plugin-catalog-react';
 
-const capabilities = [
-  {
-    name: 'dfdsdotcom',
-    description: 'DFDS.com based on GatsbyJS',
-    isMember: true,
-    repos: ['https://github.com/dfds-frontend/dotcom'],
-    status: (
-      <>
-        <DoneIcon
-          fontSize="small"
-          style={{ color: green[600], marginRight: 5 }}
-        />
-        <Typography variant="subtitle2" style={{ color: green[600] }}>
-          Available
-        </Typography>
-      </>
-    ),
-    services: [1, 2, 3],
-  },
-  {
-    name: 'dfdsdotcom-legacy',
-    description: 'DFDS.com based on legacy app',
-    isMember: true,
-    repos: [
-      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom',
-      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_old',
-      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_wiki',
-      'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsunified-infrastructure-as-code',
-    ],
-    status: (
-      <>
-        <ReportProblemOutlinedIcon
-          fontSize="small"
-          style={{ color: orange[600], marginRight: 5 }}
-        />
-        <Typography variant="subtitle2" style={{ color: orange[600] }}>
-          Warning: deprecated
-        </Typography>
-      </>
-    ),
-    services: [1, 2],
-    updated: 'updated 638 days ago',
-  },
-  {
-    name: 'dynamic-forms-dxp',
-    description: 'Dynamic forms enabled experience',
-    isMember: false,
-    repos: ['https://github.com/dfds-frontend/dynamic-forms'],
-    status: (
-      <>
-        <DoneIcon
-          fontSize="small"
-          style={{ color: green[600], marginRight: 5 }}
-        />
-        <Typography variant="subtitle2" style={{ color: green[600] }}>
-          Available
-        </Typography>
-      </>
-    ),
-    services: [1, 2, 3, 4],
-  },
-  {
-    name: 'cloud-engineering',
-    description: 'Zaradars lair',
-    isMember: false,
-    repos: ['https://github.com/dfds'],
-    status: (
-      <>
-        <DoneIcon
-          fontSize="small"
-          style={{ color: green[600], marginRight: 5 }}
-        />
-        <Typography variant="subtitle2" style={{ color: green[600] }}>
-          Available
-        </Typography>
-      </>
-    ),
-    services: [1, 2, 3, 4, 5, 6],
-  },
-];
+// const capabilities = [
+//   {
+//     name: 'dfdsdotcom',
+//     description: 'DFDS.com based on GatsbyJS',
+//     isMember: true,
+//     repos: ['https://github.com/dfds-frontend/dotcom'],
+//     status: (
+//       <>
+//         <DoneIcon
+//           fontSize="small"
+//           style={{ color: green[600], marginRight: 5 }}
+//         />
+//         <Typography variant="subtitle2" style={{ color: green[600] }}>
+//           Available
+//         </Typography>
+//       </>
+//     ),
+//     services: [1, 2, 3],
+//   },
+//   {
+//     name: 'dfdsdotcom-legacy',
+//     description: 'DFDS.com based on legacy app',
+//     isMember: true,
+//     repos: [
+//       'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom',
+//       'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_old',
+//       'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsdotcom_wiki',
+//       'https://dfds.visualstudio.com/Unified%20DFDS/_git/dfdsunified-infrastructure-as-code',
+//     ],
+//     status: (
+//       <>
+//         <ReportProblemOutlinedIcon
+//           fontSize="small"
+//           style={{ color: orange[600], marginRight: 5 }}
+//         />
+//         <Typography variant="subtitle2" style={{ color: orange[600] }}>
+//           Warning: deprecated
+//         </Typography>
+//       </>
+//     ),
+//     services: [1, 2],
+//     updated: 'updated 638 days ago',
+//   },
+//   {
+//     name: 'dynamic-forms-dxp',
+//     description: 'Dynamic forms enabled experience',
+//     isMember: false,
+//     repos: ['https://github.com/dfds-frontend/dynamic-forms'],
+//     status: (
+//       <>
+//         <DoneIcon
+//           fontSize="small"
+//           style={{ color: green[600], marginRight: 5 }}
+//         />
+//         <Typography variant="subtitle2" style={{ color: green[600] }}>
+//           Available
+//         </Typography>
+//       </>
+//     ),
+//     services: [1, 2, 3, 4],
+//   },
+//   {
+//     name: 'cloud-engineering',
+//     description: 'Zaradars lair',
+//     isMember: false,
+//     repos: ['https://github.com/dfds'],
+//     status: (
+//       <>
+//         <DoneIcon
+//           fontSize="small"
+//           style={{ color: green[600], marginRight: 5 }}
+//         />
+//         <Typography variant="subtitle2" style={{ color: green[600] }}>
+//           Available
+//         </Typography>
+//       </>
+//     ),
+//     services: [1, 2, 3, 4, 5, 6],
+//   },
+// ];
 
-const test = {
-  name: 'dfds-backstage',
-  description: 'Backstage capability',
-  isMember: false,
-  repos: ['https://github.com/dfds/backstage'],
-  status: (
-    <Box display="flex" alignItems="center">
-      <CircularProgress size={12} style={{ marginRight: 5 }} color="inherit" />
-      <Typography variant="subtitle2" color="inherit">
-        Initializing...
-      </Typography>
-    </Box>
-  ),
-  services: [],
-  loading: true,
-  updated: 'started less than a minute ago',
-};
+// const test = {
+//   name: 'dfds-backstage',
+//   description: 'Backstage capability',
+//   isMember: false,
+//   repos: ['https://github.com/dfds/backstage'],
+//   status: (
+//     <Box display="flex" alignItems="center">
+//       <CircularProgress size={12} style={{ marginRight: 5 }} color="inherit" />
+//       <Typography variant="subtitle2" color="inherit">
+//         Initializing...
+//       </Typography>
+//     </Box>
+//   ),
+//   services: [],
+//   loading: true,
+//   updated: 'started less than a minute ago',
+// };
 
 const CapabilitiesListBase = () => {
   const [search, setSearch] = React.useState('');
@@ -163,51 +164,30 @@ const CapabilitiesListBase = () => {
   const [showOwned, setShowOwned] = React.useState(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [capabilitiesItems, setCapabilitiesItems] = React.useState([
-    test,
-    ...capabilities,
-  ]);
   const { backendEntities } = useEntityListProvider();
-  React.useEffect(() => {
-    setTimeout(() => {
-      setCapabilitiesItems(prevCapabilities => {
-        const [first, ...rest] = prevCapabilities;
-        return [
-          {
-            ...first,
-            services: [1, 2, 3, 4, 5],
-            updated: 'updated 1 minute ago',
-            loading: false,
-            status: (
-              <>
-                <DoneIcon
-                  fontSize="small"
-                  style={{ color: green[600], marginRight: 5 }}
-                />
-                <Typography variant="subtitle2" style={{ color: green[600] }}>
-                  Available
-                </Typography>
-              </>
-            ),
-          },
-          ...rest,
-        ];
-      });
-    }, 10000);
-  }, []);
+  const entities = React.useMemo(
+    () =>
+      backendEntities.filter(
+        capability =>
+          capability?.spec?.name ||
+          capability?.spec?.rootId ||
+          capability?.spec?.id,
+      ),
+    [backendEntities],
+  );
 
   return (
     <Page themeId="tool">
-      <div>Capabilities length: {backendEntities.length}</div>
       <Header title="Welcome to Capability Discoverability!">
         <HeaderLabel label="Owner" value="Team X" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
+      {entities.length}
       <Content>
         <Grid container spacing={3} direction="column">
-          <Container maxWidth="md" style={{ padding: 0 }}>
+          <Container maxWidth="lg" style={{ padding: 0 }}>
             <ContentHeader title="Capabilities">
-              <CreateCapability />
+              {/* <CreateCapability /> */}
               <TextField
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -253,7 +233,22 @@ const CapabilitiesListBase = () => {
                 </MoreActions>
               </PopOverProvider>
             </ContentHeader>
-            {capabilitiesItems.filter(capability =>
+            {entities.length === 0 && <CircularProgress />}
+            {entities.map(capability => {
+              return (
+                capability && (
+                  <CapabilityCard
+                    name={
+                      capability?.spec?.name ||
+                      capability?.spec?.rootId ||
+                      capability?.spec?.id
+                    }
+                    description={capability?.spec?.description}
+                  />
+                )
+              );
+            })}
+            {/* {backendEntities.filter(capability =>
               capability.name.includes(search),
             ).length === 0 && (
               <Box m={5}>
@@ -262,7 +257,7 @@ const CapabilitiesListBase = () => {
                 </Typography>
               </Box>
             )}
-            {capabilitiesItems
+            {backendEntities
               .filter(capability => capability.name.includes(search))
               .filter(capability => {
                 if (showOwned && !capability.isMember) {
@@ -272,7 +267,7 @@ const CapabilitiesListBase = () => {
               })
               .map(capability => (
                 <CapabilityCard {...capability} condensed={!isCondensed} />
-              ))}
+              ))} */}
           </Container>
         </Grid>
       </Content>
@@ -284,7 +279,6 @@ export const ExampleComponent = () => {
   return (
     <EntityListProvider>
       <EntityKindPicker initialFilter="capability" hidden />
-      <EntityTypePicker />
       <CapabilitiesListBase />
     </EntityListProvider>
   );
