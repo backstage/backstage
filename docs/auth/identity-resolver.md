@@ -108,6 +108,8 @@ It can be enabled like this
 ```tsx
 # File: packages/backend/src/plugins/auth.ts
 ...
+import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
+
 export default async function createPlugin({
   ...
 }: PluginEnvironment): Promise<Router> {
@@ -116,21 +118,26 @@ export default async function createPlugin({
     providerFactories: {
       google: createGoogleProvider({
         signIn: {
-          resolver: 'email'
+          resolver: googleEmailSignInResolver
         }
 ...
 ```
 
-## Profile transform
+## AuthHandler
 
-Similar to a custom sign-in resolver, you can also write a custom profile
-transformation function which is used to verify and convert the auth response
-into the profile that will be presented to the user. This is where you can
-customize things like display name and profile picture.
+Similar to a custom sign-in resolver, you can also write a custom auth handler
+function which is used to verify and convert the auth response into the profile
+that will be presented to the user. This is where you can customize things like
+display name and profile picture.
+
+This is also the place where you can do authorization and validation of the user
+and throw errors if the user should not be allowed access in Backstage.
 
 ```tsx
 # File: packages/backend/src/plugins/auth.ts
 ...
+import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
+
 export default async function createPlugin({
   ...
 }: PluginEnvironment): Promise<Router> {
@@ -139,17 +146,19 @@ export default async function createPlugin({
     providerFactories: {
       google: createGoogleProvider({
         signIn: {
-          resolver: 'email'
+          resolver: googleEmailSignInResolver
         },
-        profileTransform: async ({
+        authHandler: async ({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,
-        }): ProfileInfo => {
-          // Do stuff
+        }) => {
+          // Custom validation
           return {
-            email,
-            picture,
-            displayName,
+            profile: {
+              email,
+              picture,
+              displayName,
+            }
           };
         }
       })
