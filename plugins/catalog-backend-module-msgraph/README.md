@@ -3,7 +3,7 @@
 This is an extension module to the `plugin-catalog-backend` plugin, providing a
 `MicrosoftGraphOrgReaderProcessor` that can be used to ingest organization data
 from the Microsoft Graph API. This processor is useful if you want to import
-users and groups from Office 365.
+users and groups from Azure Active Directory or Office 365.
 
 ## Getting Started
 
