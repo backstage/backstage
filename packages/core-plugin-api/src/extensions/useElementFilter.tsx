@@ -88,19 +88,21 @@ class ElementCollection {
     const selection = selectChildren(
       this.node,
       this.featureFlagsApi,
-      node => Boolean(getComponentData(node, query.key)),
+      node => getComponentData(node, query.key) !== undefined,
       query.withStrictError,
     );
     return new ElementCollection(selection, this.featureFlagsApi);
   }
 
   findComponentData<T>(query: { key: string }): T[] {
-    const selection = selectChildren(this.node, this.featureFlagsApi, node =>
-      Boolean(getComponentData(node, query.key)),
+    const selection = selectChildren(
+      this.node,
+      this.featureFlagsApi,
+      node => getComponentData(node, query.key) !== undefined,
     );
     return selection
       .map(node => getComponentData<T>(node, query.key))
-      .filter((data: T | undefined): data is T => Boolean(data));
+      .filter((data: T | undefined): data is T => data !== undefined);
   }
 
   getElements<Props extends { [name: string]: unknown }>(): Array<
