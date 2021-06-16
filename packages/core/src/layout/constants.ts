@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const slackChannel = {
+
+type SlackChannel = {
+  name: string;
+  href?: string;
+};
+
+export const slackChannel: SlackChannel = {
   name: '#backstage',
-  href: 'https://spotify.slack.com/archives/C54P1J36Z',
+  href: 'https://slack.com/channels/your-channel',
 };

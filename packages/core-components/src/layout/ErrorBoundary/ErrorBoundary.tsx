@@ -67,13 +67,17 @@ const Error = ({ slackChannel, error }: EProps) => {
         {slackChannel && (
           <p>
             Please contact{' '}
-            <a
-              href={slackChannel.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <u>{slackChannel.name}</u>
-            </a>{' '}
+            {slackChannel.href ? (
+              <a
+                href={slackChannel.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <u>{slackChannel.name}</u>
+              </a>
+            ) : (
+              slackChannel.name
+            )}{' '}
             for help.
           </p>
         )}
