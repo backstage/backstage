@@ -27,7 +27,7 @@ import Search from '@material-ui/icons/Search';
 import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityTextFilter } from '../../types';
+import { EntityTextFilter } from '../../filters';
 
 const useStyles = makeStyles(_theme => ({
   searchToolbar: {

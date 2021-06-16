@@ -18,7 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-import { EntityLifecycleFilter } from '../../types';
+import { EntityLifecycleFilter } from '../../filters';
 import { EntityLifecyclePicker } from './EntityLifecyclePicker';
 
 const sampleEntities: Entity[] = [

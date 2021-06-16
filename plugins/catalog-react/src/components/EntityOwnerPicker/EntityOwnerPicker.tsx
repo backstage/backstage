@@ -28,7 +28,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useMemo } from 'react';
 import { useEntityListProvider } from '../../hooks/useEntityListProvider';
-import { EntityOwnerFilter } from '../../types';
+import { EntityOwnerFilter } from '../../filters';
 import { getEntityRelations } from '../../utils';
 import { formatEntityRefTitle } from '../EntityRefLink';
 

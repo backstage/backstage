@@ -16,7 +16,8 @@
 
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { compact } from 'lodash';
-import { UserListFilter, UserListFilterKind } from '../../types';
+import { UserListFilterKind } from '../../types';
+import { UserListFilter } from '../../filters';
 import {
   useEntityListProvider,
   useOwnUser,

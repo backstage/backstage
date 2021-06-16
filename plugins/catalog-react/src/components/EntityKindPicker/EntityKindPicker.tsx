@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert } from '@material-ui/lab';
 import { useEntityListProvider } from '../../hooks';
-import { EntityKindFilter } from '../../types';
+import { EntityKindFilter } from '../../filters';
 
 type EntityKindFilterProps = {
   initialFilter?: string;

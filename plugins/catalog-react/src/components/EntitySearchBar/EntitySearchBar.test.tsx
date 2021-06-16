@@ -17,29 +17,9 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
-import { Entity } from '@backstage/catalog-model';
 import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
-import { EntityTextFilter } from '../../types';
+import { EntityTextFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
-
-const entities: Entity[] = [
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'react-app',
-      tags: ['react', 'experimental'],
-    },
-  },
-  {
-    apiVersion: '1',
-    kind: 'Component',
-    metadata: {
-      name: 'gRPC service',
-      tags: ['gRPC', 'java'],
-    },
-  },
-];
 
 describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
@@ -50,9 +30,7 @@ describe('EntitySearchBar', () => {
     };
 
     const { getByDisplayValue } = render(
-      <MockEntityListContextProvider
-        value={{ entities, updateFilters, filters }}
-      >
+      <MockEntityListContextProvider value={{ updateFilters, filters }}>
         <EntitySearchBar />
       </MockEntityListContextProvider>,
     );
