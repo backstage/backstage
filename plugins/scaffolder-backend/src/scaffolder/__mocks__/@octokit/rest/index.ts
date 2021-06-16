@@ -19,6 +19,7 @@ export const mockGithubClient = {
     createInOrg: jest.fn(),
     createForAuthenticatedUser: jest.fn(),
     addCollaborator: jest.fn(),
+    replaceAllTopics: jest.fn(),
   },
   users: {
     getByUsername: jest.fn(),
