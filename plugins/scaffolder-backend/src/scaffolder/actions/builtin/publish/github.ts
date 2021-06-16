@@ -102,7 +102,6 @@ export function createPublishGithubAction(options: {
           },
           topics: {
             title: 'Topics',
-            description: 'Uppercase letters no allowed',
             type: 'array',
             items: {
               type: 'string',
@@ -230,7 +229,7 @@ export function createPublishGithubAction(options: {
           await client.repos.replaceAllTopics({
             owner,
             repo,
-            names: topics,
+            names: topics.map(t => t.toLowerCase()),
           });
         } catch (e) {
           ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
