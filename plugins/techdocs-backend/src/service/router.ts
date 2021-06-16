@@ -164,6 +164,7 @@ export async function createRouter({
       publisher,
       logger,
       entity,
+      config,
     });
     let foundDocs = false;
     switch (publisherType) {
