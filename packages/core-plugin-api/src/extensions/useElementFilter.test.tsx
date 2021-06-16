@@ -59,7 +59,9 @@ describe('useElementFilter', () => {
         </WrappingComponent>
         <MockComponent>
           <WrappingComponent key="second">
-            <InnerComponent />
+            <WrappingComponent key="third">
+              <InnerComponent />
+            </WrappingComponent>
           </WrappingComponent>
         </MockComponent>
       </MockComponent>
