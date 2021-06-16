@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
-import SearchToolbar from './SearchToolbar';
-import {
-  DefaultEntityFilters,
-  EntityTextFilter,
-  MockEntityListContextProvider,
-} from '@backstage/plugin-catalog-react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import { EntitySearchBar } from './EntitySearchBar';
 import { Entity } from '@backstage/catalog-model';
+import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
+import { EntityTextFilter } from '../../types';
+import { MockEntityListContextProvider } from '../../testUtils/providers';
 
 const entities: Entity[] = [
   {
@@ -43,7 +41,7 @@ const entities: Entity[] = [
   },
 ];
 
-describe('SearchToolbar', () => {
+describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
     const updateFilters = jest.fn();
 
@@ -55,7 +53,7 @@ describe('SearchToolbar', () => {
       <MockEntityListContextProvider
         value={{ entities, updateFilters, filters }}
       >
-        <SearchToolbar />
+        <EntitySearchBar />
       </MockEntityListContextProvider>,
     );
 
@@ -63,11 +61,13 @@ describe('SearchToolbar', () => {
     expect(searchInput).toBeInTheDocument();
 
     fireEvent.change(searchInput, { target: { value: 'world' } });
+    await waitFor(() => expect(updateFilters.mock.calls.length).toBe(1));
     expect(updateFilters).toHaveBeenCalledWith({
       text: new EntityTextFilter('world'),
     });
 
     fireEvent.change(searchInput, { target: { value: '' } });
+    await waitFor(() => expect(updateFilters.mock.calls.length).toBe(2));
     expect(updateFilters).toHaveBeenCalledWith({
       text: undefined,
     });

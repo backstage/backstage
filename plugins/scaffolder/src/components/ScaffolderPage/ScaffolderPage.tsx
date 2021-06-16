@@ -30,6 +30,7 @@ import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   EntityKindPicker,
   EntityListProvider,
+  EntitySearchBar,
   EntityTypePicker,
   useEntityListProvider,
   UserListPicker,
@@ -38,7 +39,6 @@ import { Button, Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { registerComponentRouteRef } from '../../routes';
-import SearchToolbar from '../SearchToolbar/SearchToolbar';
 import { TemplateCard } from '../TemplateCard';
 
 const useStyles = makeStyles(theme => ({
@@ -88,7 +88,7 @@ export const ScaffolderPageContents = () => {
 
         <div className={styles.contentWrapper}>
           <div>
-            <SearchToolbar />
+            <EntitySearchBar />
             <EntityKindPicker initialFilter="template" hidden />
             <UserListPicker
               initialFilter="all"

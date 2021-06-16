@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  EntityTextFilter,
-  useEntityListProvider,
-} from '@backstage/plugin-catalog-react';
+
 import {
   FormControl,
   IconButton,
@@ -27,7 +24,10 @@ import {
 } from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useDebounce } from 'react-use';
+import { useEntityListProvider } from '../../hooks/useEntityListProvider';
+import { EntityTextFilter } from '../../types';
 
 const useStyles = makeStyles(_theme => ({
   searchToolbar: {
@@ -36,18 +36,21 @@ const useStyles = makeStyles(_theme => ({
   },
 }));
 
-// TODO(chaseajen): move component to /plugins/catalog-react
-const SearchToolbar = () => {
+export const EntitySearchBar = () => {
   const styles = useStyles();
 
   const { filters, updateFilters } = useEntityListProvider();
   const [search, setSearch] = useState(filters.text?.value ?? '');
 
-  useEffect(() => {
-    updateFilters({
-      text: search.length ? new EntityTextFilter(search) : undefined,
-    });
-  }, [search, updateFilters]);
+  useDebounce(
+    () => {
+      updateFilters({
+        text: search.length ? new EntityTextFilter(search) : undefined,
+      });
+    },
+    250,
+    [search, updateFilters],
+  );
 
   return (
     <Toolbar className={styles.searchToolbar}>
@@ -80,5 +83,3 @@ const SearchToolbar = () => {
     </Toolbar>
   );
 };
-
-export default SearchToolbar;
