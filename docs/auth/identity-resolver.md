@@ -5,7 +5,7 @@ description: Identity resolvers of Backstage users after they sign-in
 ---
 
 This guide explains how the identity of a Backstage user is stored inside their
-Backstage Identity Token and how you can customize the Sign In resolvers to
+Backstage Identity Token and how you can customize the Sign-In resolvers to
 include identity and group membership information of the user from other
 external systems. This ultimately helps with determining the ownership of a
 Backstage entity by a user. The ideas here were originally proposed in the RFC
@@ -46,15 +46,14 @@ export default async function createPlugin({
             const ent = [];
 
             // Let's use the username in the email ID as the user's default
-            // unique identifier inside Backstage
+            // unique identifier inside Backstage.
             const [id] = email.split('@');
-
-            // Add the unique ID in the list
             ent.push(`User:default/${id}`)
 
-            // Let's call the internal LDAP provider to get a list of groups the user belongs to
+            // Let's call the internal LDAP provider to get a list of groups
+            // that the user belongs to, and add those to the list as well
             const ldapGroups = await getLdapGroups(email);
-            ldapGroups.forEach(ldapGroup => ent.push(`Group:default/${ldapGroup}`))
+            ldapGroups.forEach(group => ent.push(`Group:default/${group}`))
 
             // Issue the token containing the entity claims
             const token = await ctx.tokenIssuer.issueToken({
@@ -72,10 +71,10 @@ export default async function createPlugin({
 As you can see, the generated Backstage Token now contains all the claims about
 the identity and membership of the user. Once the sign-in process is complete,
 and we need to find out if a user owns an Entity in the Software Catalog, these
-`ent` claims can be used to determine the ownership. A full algorithm as
-proposed in the RFC is as follows
+`ent` claims can be used to determine the ownership.
 
-The definition of the ownership of an entity E, for a user U, is as follows:
+According to the RFC, the definition of the ownership of an entity E, for a user
+U, is as follows:
 
 - Get all the `ownedBy` relations of E, and call them O
 - Get all the claims of the user U and call them C
@@ -89,15 +88,14 @@ The definition of the ownership of an entity E, for a user U, is as follows:
 
 Of course you don't have to customize the sign-in resolver if you don't need to.
 The Auth backend plugin comes with a set of default sign-in resolvers which you
-can use. For example - the Google provider has a default email-based sign in
+can use. For example - the Google provider has a default email-based sign-in
 resolver, which will search the catalog for a single user entity that has a
 matching `google.com/email` annotation.
 
 It can be enabled like this
 
 ```tsx
-# File: packages/backend/src/plugins/auth.ts
-...
+// File: packages/backend/src/plugins/auth.ts
 import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
 
 export default async function createPlugin({
@@ -124,10 +122,7 @@ This is also the place where you can do authorization and validation of the user
 and throw errors if the user should not be allowed access in Backstage.
 
 ```tsx
-# File: packages/backend/src/plugins/auth.ts
-...
-import { googleEmailSignInResolver } from '@backstage/plugin-auth-backend';
-
+// File: packages/backend/src/plugins/auth.ts
 export default async function createPlugin({
   ...
 }: PluginEnvironment): Promise<Router> {
@@ -135,9 +130,6 @@ export default async function createPlugin({
     ...
     providerFactories: {
       google: createGoogleProvider({
-        signIn: {
-          resolver: googleEmailSignInResolver
-        },
         authHandler: async ({
           fullProfile  // Type: passport.Profile,
           idToken      // Type: (Optional) string,
