@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import {
-  Typography,
+  // Typography,
   Grid,
   Box,
   Container,
@@ -36,12 +36,12 @@ import {
   HeaderLabel,
 } from '@backstage/core';
 
-import DoneIcon from '@material-ui/icons/Done';
+// import DoneIcon from '@material-ui/icons/Done';
 
-import { orange, green } from '@material-ui/core/colors';
+// import { orange, green } from '@material-ui/core/colors';
 
 import SearchIcon from '@material-ui/icons/Search';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
+// import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
 import CloseIcon from '@material-ui/icons/Close';
 
 import { MoreActions, PopOverProvider } from './MoreActions';
