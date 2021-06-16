@@ -215,6 +215,7 @@ export type SignInResolver<AuthResult> = (
   context: {
     tokenIssuer: TokenIssuer;
     catalogIdentityClient: CatalogIdentityClient;
+    logger: Logger;
   },
 ) => Promise<BackstageIdentity>;
 

@@ -44,6 +44,7 @@ import {
   RedirectInfo,
   SignInResolver,
 } from '../types';
+import { Logger } from 'winston';
 
 type PrivateInfo = {
   refreshToken: string;
@@ -54,6 +55,7 @@ type Options = OAuthProviderOptions & {
   profileTransform: ProfileTransform<OAuthResult>;
   tokenIssuer: TokenIssuer;
   catalogIdentityClient: CatalogIdentityClient;
+  logger: Logger;
 };
 
 export class GoogleAuthProvider implements OAuthHandlers {
@@ -62,12 +64,14 @@ export class GoogleAuthProvider implements OAuthHandlers {
   private readonly profileTransform: ProfileTransform<OAuthResult>;
   private readonly tokenIssuer: TokenIssuer;
   private readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly logger: Logger;
 
   constructor(options: Options) {
     this.signInResolver = options.signInResolver;
     this.profileTransform = options.profileTransform;
     this.tokenIssuer = options.tokenIssuer;
     this.catalogIdentityClient = options.catalogIdentityClient;
+    this.logger = options.logger;
     this._strategy = new GoogleStrategy(
       {
         clientID: options.clientId,
@@ -163,6 +167,7 @@ export class GoogleAuthProvider implements OAuthHandlers {
         {
           tokenIssuer: this.tokenIssuer,
           catalogIdentityClient: this.catalogIdentityClient,
+          logger: this.logger,
         },
       );
     }
@@ -171,7 +176,10 @@ export class GoogleAuthProvider implements OAuthHandlers {
   }
 }
 
-const emailSignInResolver: SignInResolver<OAuthResult> = async (info, ctx) => {
+export const googleEmailSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
   const { profile } = info;
 
   if (!profile.email) {
@@ -190,6 +198,38 @@ const emailSignInResolver: SignInResolver<OAuthResult> = async (info, ctx) => {
   return { id: entity.metadata.name, entity, token };
 };
 
+export const googleDefaultSignInResolver: SignInResolver<OAuthResult> = async (
+  info,
+  ctx,
+) => {
+  const { profile } = info;
+
+  if (!profile.email) {
+    throw new Error('Google profile contained no email');
+  }
+
+  let userId: string;
+  try {
+    const entity = await ctx.catalogIdentityClient.findUser({
+      annotations: {
+        'google.com/email': profile.email,
+      },
+    });
+    userId = entity.metadata.name;
+  } catch (error) {
+    ctx.logger.warn(
+      `Failed to look up user, ${error}, falling back to allowing login based on email pattern, this will probably break in the future`,
+    );
+    userId = profile.email.split('@')[0];
+  }
+
+  const token = await ctx.tokenIssuer.issueToken({
+    claims: { sub: userId, ent: [`user:default/${userId}`] },
+  });
+
+  return { id: userId, token };
+};
+
 export type GoogleProviderOptions = {
   /**
    * The profile transformation function used to verify and convert the auth response
@@ -200,21 +240,28 @@ export type GoogleProviderOptions = {
   /**
    * Configure sign-in for this provider, without it the provider can not be used to sign users in.
    */
+  /**
+   * Maps an auth result to a Backstage identity for the user.
+   *
+   * Set to `'email'` to use the default email-based sign in resolver, which will search
+   * the catalog for a single user entity that has a matching `google.com/email` annotation.
+   */
   signIn?: {
-    /**
-     * Maps an auth result to a Backstage identity for the user.
-     *
-     * Set to `'email'` to use the default email-based sign in resolver, which will search
-     * the catalog for a single user entity that has a matching `google.com/email` annotation.
-     */
-    resolver?: 'email' | SignInResolver<OAuthResult>;
+    resolver?: SignInResolver<OAuthResult>;
   };
 };
 
 export const createGoogleProvider = (
   options?: GoogleProviderOptions,
 ): AuthProviderFactory => {
-  return ({ providerId, globalConfig, config, tokenIssuer, catalogApi }) =>
+  return ({
+    providerId,
+    globalConfig,
+    config,
+    tokenIssuer,
+    catalogApi,
+    logger,
+  }) =>
     OAuthEnvironmentHandler.mapConfig(config, envConfig => {
       const clientId = envConfig.getString('clientId');
       const clientSecret = envConfig.getString('clientSecret');
@@ -233,17 +280,15 @@ export const createGoogleProvider = (
         profileTransform = options.profileTransform;
       }
 
-      let signInResolver: SignInResolver<OAuthResult> | undefined = undefined;
-      const resolver = options?.signIn?.resolver;
-      if (resolver === 'email') {
-        signInResolver = emailSignInResolver;
-      } else if (typeof resolver === 'function') {
-        signInResolver = info =>
-          resolver(info, {
-            catalogIdentityClient,
-            tokenIssuer,
-          });
-      }
+      const signInResolverFn =
+        options?.signIn?.resolver ?? googleDefaultSignInResolver;
+
+      const signInResolver: SignInResolver<OAuthResult> = info =>
+        signInResolverFn(info, {
+          catalogIdentityClient,
+          tokenIssuer,
+          logger,
+        });
 
       const provider = new GoogleAuthProvider({
         clientId,
@@ -253,6 +298,7 @@ export const createGoogleProvider = (
         profileTransform,
         tokenIssuer,
         catalogIdentityClient,
+        logger,
       });
 
       return OAuthAdapter.fromConfig(globalConfig, provider, {
