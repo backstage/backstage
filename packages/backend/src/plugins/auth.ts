@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createGoogleProvider,
-  createRouter,
-} from '@backstage/plugin-auth-backend';
+import { createRouter } from '@backstage/plugin-auth-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -27,27 +24,5 @@ export default async function createPlugin({
   config,
   discovery,
 }: PluginEnvironment): Promise<Router> {
-  return await createRouter({
-    logger,
-    config,
-    database,
-    discovery,
-    providerFactories: {
-      google: createGoogleProvider({
-        signIn: {
-          // resolver: 'email',
-          resolver: async ({ profile: { email } }, ctx) => {
-            if (!email) {
-              throw new Error('No email associated with user account');
-            }
-            const id = email.split('@')[0];
-            const token = await ctx.tokenIssuer.issueToken({
-              claims: { sub: id, ent: [`User:default/${id}`] },
-            });
-            return { id, token };
-          },
-        },
-      }),
-    },
-  });
+  return await createRouter({ logger, config, database, discovery });
 }
