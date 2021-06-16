@@ -225,7 +225,7 @@
   dependencies:
     debug "^4.1.1"
 
-"@azure/msal-node@1.0.0-beta.3", "@azure/msal-node@^1.0.0-beta.3":
+"@azure/msal-node@1.0.0-beta.3":
   version "1.0.0-beta.3"
   resolved "https://registry.npmjs.org/@azure/msal-node/-/msal-node-1.0.0-beta.3.tgz#c84c7948028b39e48b901f5fac35bdedcbc8772e"
   integrity sha512-/KfYRfrsOIrZONvo/0Vi5umuqbPBtCWNtmRvkse64uI0C4CP/W4WXwRD42VMws/8LtKvr1I5rYlYgFzt5zDz/A==
