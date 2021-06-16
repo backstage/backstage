@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRootLogger, loadBackendConfig } from '@backstage/backend-common';
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
@@ -33,6 +32,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { Logger } from 'winston';
+import { Config } from '@backstage/config';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 
 type DocsBuilderArguments = {
@@ -41,6 +41,7 @@ type DocsBuilderArguments = {
   publisher: PublisherBase;
   entity: Entity;
   logger: Logger;
+  config: Config;
 };
 
 export class DocsBuilder {
@@ -49,6 +50,7 @@ export class DocsBuilder {
   private publisher: PublisherBase;
   private entity: Entity;
   private logger: Logger;
+  private config: Config;
 
   constructor({
     preparers,
@@ -56,12 +58,14 @@ export class DocsBuilder {
     publisher,
     entity,
     logger,
+    config,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
     this.publisher = publisher;
     this.entity = entity;
     this.logger = logger;
+    this.config = config;
   }
 
   public async build(): Promise<void> {
@@ -142,12 +146,9 @@ export class DocsBuilder {
       )}`,
     );
 
-    // Create a temporary directory to store the generated files in.
-    const config = await loadBackendConfig({
-      argv: process.argv,
-      logger: getRootLogger(),
-    });
-    const workingDir = config.getOptionalString('backend.workingDirectory');
+    const workingDir = this.config.getOptionalString(
+      'backend.workingDirectory',
+    );
     const tmpdirPath = workingDir || os.tmpdir();
     // Fixes a problem with macOS returning a path that is a symlink
     const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
