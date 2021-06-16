@@ -67,7 +67,7 @@ export interface CommonProject {
   displayName: string;
   fullDisplayName: string;
   fullName: string;
-  inQueue: string;
+  inQueue: boolean;
 }
 
 export interface JenkinsProject extends CommonProject {
@@ -75,7 +75,7 @@ export interface JenkinsProject extends CommonProject {
   lastBuild: JenkinsBuild;
 
   // read by us from jenkins but not passed to frontend
-  actions: any;
+  actions: object[];
 }
 
 export interface BackstageProject extends CommonProject {

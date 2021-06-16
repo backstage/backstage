@@ -18,48 +18,8 @@ import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
-import jenkins from 'jenkins';
-import {
-  BackstageBuild,
-  BackstageProject,
-  JenkinsBuild,
-  JenkinsProject,
-  ScmDetails,
-} from '../types';
-import { JenkinsInfo, JenkinsInfoProvider } from './jenkinsInfoProvider';
-
-const lastBuildTreeSpec = `lastBuild[
-                    number,
-                    url,
-                    fullDisplayName,
-                    displayName,
-                    building,
-                    result,
-                    timestamp,
-                    duration,
-                    actions[
-                      *[
-                        *[
-                          *[
-                            *
-                          ]
-                        ]
-                      ]
-                    ]
-                  ],`;
-
-const jobTreeSpec = `actions[*],
-                   ${lastBuildTreeSpec}
-                   jobs{0,1},
-                   name,
-                   fullName,
-                   displayName,
-                   fullDisplayName,
-                   inQueue`;
-
-const jobsTreeSpec = `jobs[
-                   ${jobTreeSpec}
-                 ]{0,50}`;
+import { JenkinsInfoProvider } from './jenkinsInfoProvider';
+import { JenkinsApiImpl } from './jenkinsApi';
 
 export interface RouterOptions {
   logger: Logger;
@@ -71,6 +31,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { jenkinsInfoProvider } = options;
 
+  const jenkinsApi = new JenkinsApiImpl();
+
   const router = Router();
   router.use(express.json());
 
@@ -79,6 +41,21 @@ export async function createRouter(
     async (request, response) => {
       const { namespace, kind, name } = request.params;
       const branch = request.query.branch;
+      let branchStr: string | undefined;
+
+      if (branch === undefined) {
+        branchStr = undefined;
+      } else if (typeof branch === 'string') {
+        branchStr = branch;
+      } else {
+        // this was passed in as something weird -> 400
+        // https://evanhahn.com/gotchas-with-express-query-parsing-and-how-to-avoid-them/
+        response
+          .status(400)
+          .send('Something was unexpected about the branch queryString');
+
+        return;
+      }
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
@@ -87,43 +64,7 @@ export async function createRouter(
           name,
         },
       });
-
-      const client = await getClient(jenkinsInfo);
-      const projects: BackstageProject[] = [];
-
-      if (branch) {
-        // we have been asked to filter to a single branch.
-        // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
-        // TODO: extract a strategy interface for this
-        const job = await client.job.get({
-          name: `${jenkinsInfo.jobName}/${branch}`,
-          tree: jobTreeSpec.replace(/\s/g, ''),
-        });
-        projects.push(augmentProject(job));
-      } else {
-        // We aren't filtering
-        // Assume jenkinsInfo.jobName is a folder which contains one job per branch.
-        const folder = await client.job.get({
-          name: jenkinsInfo.jobName,
-          // Filter only be the information we need, instead of loading all fields.
-          // Limit to only show the latest build for each job and only load 50 jobs
-          // at all.
-          // Whitespaces are only included for readablity here and stripped out
-          // before sending to Jenkins
-          tree: jobsTreeSpec.replace(/\s/g, ''),
-        });
-
-        // TODO: support this being a project itself.
-        for (const jobDetails of folder.jobs) {
-          // for each branch (we assume)
-          if (jobDetails?.jobs) {
-            // skipping folders inside folders for now
-            // TODO: recurse
-          } else {
-            projects.push(augmentProject(jobDetails));
-          }
-        }
-      }
+      const projects = await jenkinsApi.getProjects(jenkinsInfo, branchStr);
 
       response.send({
         projects: projects,
@@ -153,19 +94,14 @@ export async function createRouter(
         jobName,
       });
 
-      const client = await getClient(jenkinsInfo);
-
-      const project = await client.job.get({
-        name: jobName,
-        depth: 1,
-      });
-
-      const build = await client.build.get(jobName, parseInt(buildNumber, 10));
-
-      const jobScmInfo = extractScmDetailsFromJob(project);
+      const build = await jenkinsApi.getBuild(
+        jenkinsInfo,
+        jobName,
+        parseInt(buildNumber, 10),
+      );
 
       response.send({
-        build: augmentBuild(build, jobScmInfo),
+        build: build,
       });
     },
   );
@@ -184,14 +120,7 @@ export async function createRouter(
         jobName,
       });
 
-      const client = await getClient(jenkinsInfo);
-
-      // looks like the current SDK only supports triggering a new build
-      // can't see any support for replay (re-running the specific build with the same SCM info)
-
-      // Note Jenkins itself has concepts of rebuild and replay on a job.
-      // The latter should be possible to trigger with a POST to /replay/rebuild
-      await client.job.build(jobName);
+      await jenkinsApi.buildProject(jenkinsInfo, jobName);
 
       // TODO: return the buildNumber which was started.
       response.send({});
@@ -200,142 +129,4 @@ export async function createRouter(
 
   router.use(errorHandler());
   return router;
-}
-
-function augmentProject(project: JenkinsProject): BackstageProject {
-  const jobScmInfo = extractScmDetailsFromJob(project);
-
-  let status: string;
-  if (project.inQueue) {
-    status = 'queued';
-  } else if (project.lastBuild.building) {
-    status = 'running';
-  } else if (!project.lastBuild.result) {
-    status = 'unknown';
-  } else {
-    status = project.lastBuild.result;
-  }
-
-  return {
-    ...project,
-    lastBuild: augmentBuild(project.lastBuild, jobScmInfo),
-    status,
-    // actions: undefined,
-  };
-}
-
-function augmentBuild(
-  build: JenkinsBuild,
-  jobScmInfo: ScmDetails | undefined,
-): BackstageBuild {
-  const source =
-    build.actions
-      .filter(
-        (action: any) => action._class === 'hudson.plugins.git.util.BuildData',
-      )
-      .map((action: any) => {
-        const [first]: any = Object.values(action.buildsByBranchName);
-        const branch = first.revision.branch[0];
-        return {
-          branchName: branch.name,
-          commit: {
-            hash: branch.SHA1.substring(0, 8),
-          },
-        };
-      })
-      .pop() || {};
-
-  if (jobScmInfo) {
-    source.url = jobScmInfo.url;
-    source.displayName = jobScmInfo.displayName;
-    source.author = jobScmInfo.author;
-  }
-
-  let status: string;
-  if (build.building) {
-    status = 'running';
-  } else if (!build.result) {
-    status = 'unknown';
-  } else {
-    status = build.result;
-  }
-  return {
-    ...build,
-    status,
-    source: source,
-    tests: getTestReport(build),
-  };
-}
-
-function extractScmDetailsFromJob(
-  project: JenkinsProject,
-): ScmDetails | undefined {
-  const scmInfo: ScmDetails | undefined = project.actions
-    .filter(
-      (action: any) =>
-        action._class === 'jenkins.scm.api.metadata.ObjectMetadataAction',
-    )
-    .map((action: any) => {
-      return {
-        url: action?.objectUrl,
-        // https://javadoc.jenkins.io/plugin/scm-api/jenkins/scm/api/metadata/ObjectMetadataAction.html
-        // branch name for regular builds, pull request title on pull requests
-        displayName: action?.objectDisplayName,
-      };
-    })
-    .pop();
-
-  if (!scmInfo) {
-    return undefined;
-  }
-
-  const author = project.actions
-    .filter(
-      (action: any) =>
-        action._class === 'jenkins.scm.api.metadata.ContributorMetadataAction',
-    )
-    .map((action: any) => {
-      return action.contributorDisplayName;
-    })
-    .pop();
-
-  if (author) {
-    scmInfo.author = author;
-  }
-
-  return scmInfo;
-}
-
-function getTestReport(
-  build: JenkinsBuild,
-): {
-  total: number;
-  passed: number;
-  skipped: number;
-  failed: number;
-  testUrl: string;
-} {
-  return build.actions
-    .filter(
-      (action: any) => action._class === 'hudson.tasks.junit.TestResultAction',
-    )
-    .map((action: any) => {
-      return {
-        total: action.totalCount,
-        passed: action.totalCount - action.failCount - action.skipCount,
-        skipped: action.skipCount,
-        failed: action.failCount,
-        testUrl: `${build.url}${action.urlName}/`,
-      };
-    })
-    .pop();
-}
-
-async function getClient(jenkinsInfo: JenkinsInfo) {
-  // The typings for the jenkins library are out of date so just cast to any
-  return jenkins({
-    baseUrl: jenkinsInfo.baseUrl,
-    headers: jenkinsInfo.headers,
-    promisify: true,
-  }) as any;
 }
