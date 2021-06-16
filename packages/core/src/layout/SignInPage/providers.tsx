@@ -30,6 +30,7 @@ import {
 import { commonProvider } from './commonProvider';
 import { guestProvider } from './guestProvider';
 import { customProvider } from './customProvider';
+import { azureClientSideProvider } from './azureClientSideProvider';
 
 const PROVIDER_STORAGE_KEY = '@backstage/core:SignInPage:provider';
 
@@ -45,6 +46,7 @@ const signInProviders: { [key: string]: SignInProvider } = {
   guest: guestProvider,
   custom: customProvider,
   common: commonProvider,
+  azure: azureClientSideProvider
 };
 
 function validateIDs(id: string, providers: SignInProviderType): void {
