@@ -192,7 +192,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
    * Check if docs are on the latest version and trigger rebuild if not
    *
    * @param {EntityName} entityId Object containing entity data like name, namespace, etc.
-   * @returns {boolean} Whether documents are currently synchronized to newest version
+   * @returns {SyncResult} Whether documents are currently synchronized to newest version
    * @throws {Error} Throws error on error from sync endpoint in Techdocs Backend
    */
   async syncEntityDocs(entityId: EntityName): Promise<SyncResult> {

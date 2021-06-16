@@ -176,6 +176,11 @@ export async function createRouter({
         // This block should be valid for all storage implementations. So no need to duplicate in future,
         // add the publisher type in the list here.
         const updated = await docsBuilder.build();
+
+        if (!updated) {
+          throw new NotModifiedError();
+        }
+
         // With a maximum of ~5 seconds wait, check if the files got published and if docs will be fetched
         // on the user's page. If not, respond with a message asking them to check back later.
         // The delay here is to make sure GCS/AWS/etc. registers newly uploaded files which is usually <1 second
@@ -193,10 +198,6 @@ export async function createRouter({
           throw new NotFoundError(
             'Sorry! It took too long for the generated docs to show up in storage. Check back later.',
           );
-        }
-
-        if (!updated) {
-          throw new NotModifiedError();
         }
 
         res
