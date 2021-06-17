@@ -28,12 +28,14 @@ export const techdocsApiRef = createApiRef<TechDocsApi>({
   description: 'Used to make requests towards techdocs API',
 });
 
+export type SyncResult = 'cached' | 'updated' | 'timeout';
+
 export interface TechDocsStorageApi {
   getApiOrigin(): Promise<string>;
   getStorageUrl(): Promise<string>;
   getBuilder(): Promise<string>;
   getEntityDocs(entityId: EntityName, path: string): Promise<string>;
-  syncEntityDocs(entityId: EntityName): Promise<boolean>;
+  syncEntityDocs(entityId: EntityName): Promise<SyncResult>;
   getBaseUrl(
     oldBaseUrl: string,
     entityId: EntityName,
