@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Routes, Route, useOutlet } from 'react-router';
 import { ScaffolderPage } from './ScaffolderPage';
 import { TemplatePage } from './TemplatePage';
@@ -27,21 +27,24 @@ import {
   FIELD_EXTENSION_KEY,
   DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS,
 } from '../extensions';
-import { collectComponentData, collectChildren } from '../extensions/helpers';
+import { useElementFilter } from '@backstage/core-plugin-api';
 
 export const Router = () => {
   const outlet = useOutlet();
 
-  const fieldExtensions = useMemo(() => {
-    const registeredExtensions = collectComponentData<FieldExtensionOptions>(
-      collectChildren(outlet, FIELD_EXTENSION_WRAPPER_KEY).flat(),
-      FIELD_EXTENSION_KEY,
-    );
+  const foundExtensions = useElementFilter(outlet, elements =>
+    elements
+      .selectByComponentData({
+        key: FIELD_EXTENSION_WRAPPER_KEY,
+      })
+      .findComponentData<FieldExtensionOptions>({
+        key: FIELD_EXTENSION_KEY,
+      }),
+  );
 
-    return registeredExtensions.length
-      ? registeredExtensions
-      : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
-  }, [outlet]);
+  const fieldExtensions = foundExtensions.length
+    ? foundExtensions
+    : DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS;
 
   return (
     <Routes>

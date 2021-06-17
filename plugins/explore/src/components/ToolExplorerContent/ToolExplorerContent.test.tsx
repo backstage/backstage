@@ -80,6 +80,18 @@ describe('<ToolExplorerContent />', () => {
     });
   });
 
+  it('renders a custom title', async () => {
+    exploreToolsConfigApi.getTools.mockResolvedValue([]);
+
+    const { getByText } = await renderInTestApp(
+      <Wrapper>
+        <ToolExplorerContent title="Our Tools" />
+      </Wrapper>,
+    );
+
+    await waitFor(() => expect(getByText('Our Tools')).toBeInTheDocument());
+  });
+
   it('renders empty state', async () => {
     exploreToolsConfigApi.getTools.mockResolvedValue([]);
 

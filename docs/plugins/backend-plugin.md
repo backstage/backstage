@@ -99,7 +99,7 @@ import carmen from './plugins/carmen';
 async function main() {
   // ...
   const carmenEnv = useHotMemoize(module, () => createEnv('carmen'));
-  apiRouter.use('/carmen', await carmen(badgesEnv));
+  apiRouter.use('/carmen', await carmen(carmenEnv));
 ```
 
 After you start the backend (e.g. using `yarn start-backend` from the repo

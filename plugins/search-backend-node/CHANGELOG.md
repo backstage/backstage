@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-node
 
+## 0.2.1
+
+### Patch Changes
+
+- 14aad6113: Improved the quality of free text searches in LunrSearchEngine.
+
 ## 0.2.0
 
 ### Minor Changes

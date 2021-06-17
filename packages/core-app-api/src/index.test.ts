@@ -37,6 +37,7 @@ describe('index', () => {
       ConfigReader: expect.any(Function),
       ErrorAlerter: expect.any(Function),
       ErrorApiForwarder: expect.any(Function),
+      FeatureFlagged: expect.any(Function),
       GithubAuth: expect.any(Function),
       GitlabAuth: expect.any(Function),
       GoogleAuth: expect.any(Function),

@@ -13,14 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Content, ContentHeader, SupportButton } from '@backstage/core';
 import React from 'react';
 import { GroupsDiagram } from './GroupsDiagram';
 
-export const GroupsExplorerContent = () => {
+type GroupsExplorerContentProps = {
+  title?: string;
+};
+
+export const GroupsExplorerContent = ({
+  title,
+}: GroupsExplorerContentProps) => {
   return (
     <Content noPadding>
-      <ContentHeader title="Groups">
+      <ContentHeader title={title ?? 'Groups'}>
         <SupportButton>Explore your groups.</SupportButton>
       </ContentHeader>
 
