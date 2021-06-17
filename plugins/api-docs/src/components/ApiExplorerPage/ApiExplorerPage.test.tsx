@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import {
   ApiProvider,
   ApiRegistry,
@@ -55,6 +55,19 @@ describe('ApiCatalogPage', () => {
       }),
     getLocationByEntity: () =>
       Promise.resolve({ id: 'id', type: 'github', target: 'url' }),
+    getEntityByName: async entityName => {
+      return {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'User',
+        metadata: { name: entityName.name },
+        relations: [
+          {
+            type: RELATION_MEMBER_OF,
+            target: { namespace: 'default', kind: 'Group', name: 'tools' },
+          },
+        ],
+      };
+    },
   };
 
   const configApi: ConfigApi = new ConfigReader({

@@ -23,6 +23,22 @@ type AddBaseUrlOptions = {
   path: string;
 };
 
+/**
+ * TechDocs backend serves SVGs with text/plain content-type for security. This
+ * helper determines if an SVG is being loaded from the backend, and thus needs
+ * inlining to be displayed properly.
+ */
+const isSvgNeedingInlining = (
+  attrName: string,
+  attrVal: string,
+  apiOrigin: string,
+) => {
+  const isSrcToSvg = attrName === 'src' && attrVal.endsWith('.svg');
+  const isRelativeUrl = !attrVal.match(/^([a-z]*:)?\/\//i);
+  const pointsToOurBackend = attrVal.startsWith(apiOrigin);
+  return isSrcToSvg && (isRelativeUrl || pointsToOurBackend);
+};
+
 export const addBaseUrl = ({
   techdocsStorageApi,
   entityId,
@@ -45,7 +61,8 @@ export const addBaseUrl = ({
             entityId,
             path,
           );
-          if (attributeName === 'src' && elemAttribute.endsWith('.svg')) {
+          const apiOrigin = await techdocsStorageApi.getApiOrigin();
+          if (isSvgNeedingInlining(attributeName, elemAttribute, apiOrigin)) {
             try {
               const svg = await fetch(newValue);
               const svgContent = await svg.text();

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 export * from './EntityKindPicker';
+export * from './EntityLifecyclePicker';
+export * from './EntityOwnerPicker';
 export * from './EntityProvider';
 export * from './EntityRefLink';
 export * from './EntityTable';

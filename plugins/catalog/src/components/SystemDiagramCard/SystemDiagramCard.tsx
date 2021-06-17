@@ -89,6 +89,11 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const kind = props.node.kind || 'Component';
   const ref = parseEntityRef(props.node.id);
+  const MAX_NAME_LENGTH = 20;
+  const truncatedNodeName =
+    props.node.name.length < MAX_NAME_LENGTH
+      ? props.node.name
+      : `${props.node.name.slice(0, MAX_NAME_LENGTH)}...`;
   let nodeClass = classes.componentNode;
 
   switch (kind) {
@@ -128,7 +133,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
           alignmentBaseline="baseline"
           style={{ fontWeight: 'bold' }}
         >
-          {props.node.name}
+          {truncatedNodeName}
         </text>
       </Link>
 
@@ -157,7 +162,9 @@ export function SystemDiagramCard() {
         kind: ['Component', 'API', 'Resource', 'System', 'Domain'],
         'spec.system': [
           currentSystemName,
-          `${ENTITY_DEFAULT_NAMESPACE}/${currentSystemName}`,
+          `${
+            entity.metadata.namespace || ENTITY_DEFAULT_NAMESPACE
+          }/${currentSystemName}`,
         ],
       },
     });

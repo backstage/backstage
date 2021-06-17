@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-react
 
+## 0.2.3
+
+### Patch Changes
+
+- 172c97324: Add `EntityLifecyclePicker` and `EntityOwnerPicker` UI components to allow filtering by `spec.lifecycle` and `spec.owner` on catalog-related pages.
+- Updated dependencies
+  - @backstage/catalog-model@0.8.3
+  - @backstage/core@0.7.13
+
 ## 0.2.2
 
 ### Patch Changes

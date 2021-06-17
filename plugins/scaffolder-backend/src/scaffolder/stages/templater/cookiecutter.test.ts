@@ -18,7 +18,7 @@ const runCommand = jest.fn();
 const commandExists = jest.fn();
 
 jest.mock('./helpers', () => ({ runCommand }));
-jest.mock('command-exists-promise', () => commandExists);
+jest.mock('command-exists', () => commandExists);
 jest.mock('fs-extra');
 
 import { ContainerRunner } from '@backstage/backend-common';

@@ -140,7 +140,7 @@ describe('publish:bitbucket', () => {
         'https://hosted.bitbucket.com/rest/api/1.0/projects/owner/repos',
         (req, res, ctx) => {
           expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ is_private: true, name: 'repo' });
+          expect(req.body).toEqual({ public: false, name: 'repo' });
           return res(
             ctx.status(201),
             ctx.set('Content-Type', 'application/json'),

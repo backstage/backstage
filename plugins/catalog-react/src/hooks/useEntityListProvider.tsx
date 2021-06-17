@@ -29,6 +29,8 @@ import { catalogApiRef } from '../api';
 import {
   EntityFilter,
   EntityKindFilter,
+  EntityLifecycleFilter,
+  EntityOwnerFilter,
   EntityTagFilter,
   EntityTypeFilter,
   UserListFilter,
@@ -39,6 +41,8 @@ export type DefaultEntityFilters = {
   kind?: EntityKindFilter;
   type?: EntityTypeFilter;
   user?: UserListFilter;
+  owners?: EntityOwnerFilter;
+  lifecycles?: EntityLifecycleFilter;
   tags?: EntityTagFilter;
 };
 

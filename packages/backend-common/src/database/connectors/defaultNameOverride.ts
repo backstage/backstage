@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Spotify AB
+ * Copyright 2021 Spotify AB
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Knex } from 'knex';
 
-export { ApiExplorerTable } from './ApiExplorerTable';
+/**
+ * Provides a partial knex config with database name override.
+ *
+ * Default override for knex database drivers which accept ConnectionConfig
+ * with `connection.database` as the database name field.
+ *
+ * @param name database name to get config override for
+ */
+export default function defaultNameOverride(
+  name: string,
+): Partial<Knex.Config> {
+  return {
+    connection: {
+      database: name,
+    },
+  };
+}

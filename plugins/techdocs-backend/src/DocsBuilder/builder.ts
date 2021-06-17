@@ -16,7 +16,7 @@
 import {
   Entity,
   ENTITY_DEFAULT_NAMESPACE,
-  serializeEntityRef,
+  stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotModifiedError } from '@backstage/errors';
 import {
@@ -32,6 +32,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import { Logger } from 'winston';
+import { Config } from '@backstage/config';
 import { BuildMetadataStorage } from './BuildMetadataStorage';
 
 type DocsBuilderArguments = {
@@ -40,6 +41,7 @@ type DocsBuilderArguments = {
   publisher: PublisherBase;
   entity: Entity;
   logger: Logger;
+  config: Config;
 };
 
 export class DocsBuilder {
@@ -48,6 +50,7 @@ export class DocsBuilder {
   private publisher: PublisherBase;
   private entity: Entity;
   private logger: Logger;
+  private config: Config;
 
   constructor({
     preparers,
@@ -55,12 +58,14 @@ export class DocsBuilder {
     publisher,
     entity,
     logger,
+    config,
   }: DocsBuilderArguments) {
     this.preparer = preparers.get(entity);
     this.generator = generators.get(entity);
     this.publisher = publisher;
     this.entity = entity;
     this.logger = logger;
+    this.config = config;
   }
 
   public async build(): Promise<void> {
@@ -75,7 +80,7 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 1 of 3: Preparing docs for entity ${serializeEntityRef(
+      `Step 1 of 3: Preparing docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );
@@ -116,7 +121,7 @@ export class DocsBuilder {
         // Set last check happened to now
         new BuildMetadataStorage(this.entity.metadata.uid).setLastUpdated();
         this.logger.debug(
-          `Docs for ${serializeEntityRef(
+          `Docs for ${stringifyEntityRef(
             this.entity,
           )} are unmodified. Using cache, skipping generate and prepare`,
         );
@@ -126,7 +131,7 @@ export class DocsBuilder {
     }
 
     this.logger.info(
-      `Prepare step completed for entity ${serializeEntityRef(
+      `Prepare step completed for entity ${stringifyEntityRef(
         this.entity,
       )}, stored at ${preparedDir}`,
     );
@@ -136,13 +141,15 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 2 of 3: Generating docs for entity ${serializeEntityRef(
+      `Step 2 of 3: Generating docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );
 
-    // Create a temporary directory to store the generated files in.
-    const tmpdirPath = os.tmpdir();
+    const workingDir = this.config.getOptionalString(
+      'backend.workingDirectory',
+    );
+    const tmpdirPath = workingDir || os.tmpdir();
     // Fixes a problem with macOS returning a path that is a symlink
     const tmpdirResolvedPath = fs.realpathSync(tmpdirPath);
     const outputDir = await fs.mkdtemp(
@@ -176,7 +183,7 @@ export class DocsBuilder {
      */
 
     this.logger.info(
-      `Step 3 of 3: Publishing docs for entity ${serializeEntityRef(
+      `Step 3 of 3: Publishing docs for entity ${stringifyEntityRef(
         this.entity,
       )}`,
     );

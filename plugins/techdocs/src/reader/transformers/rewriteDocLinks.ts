@@ -58,7 +58,7 @@ export const rewriteDocLinks = (): Transformer => {
 export function normalizeUrl(input: string): string {
   const url = new URL(input);
 
-  if (!url.pathname.endsWith('/')) {
+  if (!url.pathname.endsWith('/') && !url.pathname.endsWith('.html')) {
     url.pathname += '/';
   }
 
