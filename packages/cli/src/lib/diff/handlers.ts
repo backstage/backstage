@@ -172,10 +172,6 @@ class PackageJsonHandler {
       if (this.variant === 'app' && key.startsWith('plugin-')) {
         continue;
       }
-      // Skip checking of the core packages, since we're migrating over
-      if (key.startsWith('@backstage/core')) {
-        continue;
-      }
 
       await this.syncField(key, pkgDeps, targetDeps, fieldName);
     }
