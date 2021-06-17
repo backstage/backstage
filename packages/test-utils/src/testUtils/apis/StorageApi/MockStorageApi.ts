@@ -18,7 +18,7 @@ import {
   Observable,
   StorageApi,
   StorageValueChange,
-} from '@backstage/core-api';
+} from '@backstage/core-plugin-api';
 import ObservableImpl from 'zen-observable';
 
 export type MockStorageBucket = { [key: string]: any };

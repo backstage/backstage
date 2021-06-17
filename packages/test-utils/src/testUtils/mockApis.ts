@@ -18,13 +18,10 @@ import {
   storageApiRef,
   errorApiRef,
   createApiFactory,
-  AlertApiForwarder,
-  alertApiRef,
-} from '@backstage/core-api';
+} from '@backstage/core-plugin-api';
 import { MockErrorApi, MockStorageApi } from './apis';
 
 export const mockApis = [
   createApiFactory(errorApiRef, new MockErrorApi()),
   createApiFactory(storageApiRef, MockStorageApi.create()),
-  createApiFactory(alertApiRef, new AlertApiForwarder()),
 ];

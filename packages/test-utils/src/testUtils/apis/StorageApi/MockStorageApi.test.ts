@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { MockStorageApi } from './MockStorageApi';
-import { StorageApi } from '@backstage/core-api';
+import { StorageApi } from '@backstage/core-plugin-api';
 
 describe('WebStorage Storage API', () => {
   const createMockStorage = (): StorageApi => {
