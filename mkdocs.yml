@@ -132,6 +132,7 @@ nav:
           - OneLogin: 'auth/onelogin/provider.md'
       - Adding authentication providers: 'auth/add-auth-provider.md'
       - Using authentication and identity: 'auth/using-auth.md'
+      - Sign in resolvers: 'auth/identity-resolver.md'
       - Auth backend: 'auth/auth-backend.md'
       - OAuth and OpenID Connect: 'auth/oauth.md'
       - Auth backend classes: 'auth/auth-backend-classes.md'

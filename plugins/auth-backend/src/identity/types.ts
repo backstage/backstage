@@ -28,6 +28,8 @@ export type TokenParams = {
   claims: {
     /** The token subject, i.e. User ID */
     sub: string;
+    /** A list of entity references that the user claims ownership through */
+    ent?: string[];
   };
 };
 
