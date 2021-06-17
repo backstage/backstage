@@ -101,42 +101,6 @@ describe('JenkinsApi', () => {
           status: 'success',
         });
       });
-      it.skip('3-layer nesting', async () => {
-        mockedJenkinsClient.job.get.mockResolvedValueOnce({
-          jobs: [{ jobs: [project] }],
-        });
-
-        const result = await jenkinsApi.getProjects(jenkinsInfo);
-
-        expect(mockedJenkins).toHaveBeenCalledWith({
-          baseUrl: jenkinsInfo.baseUrl,
-          headers: jenkinsInfo.headers,
-          promisify: true,
-        });
-        expect(mockedJenkinsClient.job.get).toBeCalledWith({
-          name: jenkinsInfo.jobName,
-          tree: expect.anything(),
-        });
-        expect(result).toHaveLength(1);
-        expect(result[0].fullName).toEqual('example-jobName/exampleBuild');
-      });
-      it.skip('start at project', async () => {
-        mockedJenkinsClient.job.get.mockResolvedValueOnce(project);
-
-        const result = await jenkinsApi.getProjects(jenkinsInfo);
-
-        expect(mockedJenkins).toHaveBeenCalledWith({
-          baseUrl: jenkinsInfo.baseUrl,
-          headers: jenkinsInfo.headers,
-          promisify: true,
-        });
-        expect(mockedJenkinsClient.job.get).toBeCalledWith({
-          name: jenkinsInfo.jobName,
-          tree: expect.anything(),
-        });
-        expect(result).toHaveLength(1);
-        expect(result[0].fullName).toEqual('example-jobName/exampleBuild');
-      });
     });
     describe('filtered by branch', () => {
       it('standard github layout', async () => {
@@ -417,5 +381,14 @@ describe('JenkinsApi', () => {
     });
     expect(mockedJenkinsClient.build.get).toBeCalledWith(jobName, buildNumber);
   });
-  it('buildProject', () => {});
+  it('buildProject', async () => {
+    await jenkinsApi.buildProject(jenkinsInfo, jobName);
+
+    expect(mockedJenkins).toHaveBeenCalledWith({
+      baseUrl: jenkinsInfo.baseUrl,
+      headers: jenkinsInfo.headers,
+      promisify: true,
+    });
+    expect(mockedJenkinsClient.job.build).toBeCalledWith(jobName);
+  });
 });
