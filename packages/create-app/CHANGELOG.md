@@ -1,5 +1,12 @@
 # @backstage/create-app
 
+## 0.3.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@0.12.2
+
 ## 0.3.26
 
 ### Patch Changes

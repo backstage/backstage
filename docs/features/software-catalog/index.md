@@ -34,9 +34,8 @@ More specifically, the Service Catalog enables two main use-cases:
 ## Getting Started
 
 The Software Catalog is available to browse at `/catalog`. If you've followed
-[Installing in your Backstage App](./installation.md) in your separate App or
-[Getting Started with Backstage](../../getting-started) for this repo, you
-should be able to browse the catalog at `http://localhost:3000`.
+[Getting Started with Backstage](../../getting-started), you should be able to
+browse the catalog at `http://localhost:3000`.
 
 ![](../../assets/software-catalog/service-catalog-home.png)
 

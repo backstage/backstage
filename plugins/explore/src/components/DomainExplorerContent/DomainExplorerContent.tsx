@@ -79,10 +79,16 @@ const Body = () => {
   );
 };
 
-export const DomainExplorerContent = () => {
+type DomainExplorerContentProps = {
+  title?: string;
+};
+
+export const DomainExplorerContent = ({
+  title,
+}: DomainExplorerContentProps) => {
   return (
     <Content noPadding>
-      <ContentHeader title="Domains">
+      <ContentHeader title={title ?? 'Domains'}>
         <SupportButton>Discover the domains in your ecosystem.</SupportButton>
       </ContentHeader>
       <Body />

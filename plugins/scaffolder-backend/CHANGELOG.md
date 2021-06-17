@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 0.12.2
+
+### Patch Changes
+
+- b49222176: Keep the empty string as empty string in `input` rather than replacing with `undefined` to make empty values ok for `cookiecutter`
+
 ## 0.12.1
 
 ### Patch Changes
