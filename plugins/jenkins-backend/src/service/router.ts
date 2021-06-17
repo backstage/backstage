@@ -75,15 +75,7 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobName/:buildNumber',
     async (request, response) => {
-      const {
-        namespace,
-        kind,
-        name,
-        jobName: jobNameEnc,
-        buildNumber,
-      } = request.params;
-
-      const jobName = decodeURIComponent(jobNameEnc);
+      const { namespace, kind, name, jobName, buildNumber } = request.params;
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
