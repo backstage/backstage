@@ -47,7 +47,7 @@ describe('CatalogClient', () => {
         apiVersion: '1',
         kind: 'Component',
         metadata: {
-          name: 'Test1',
+          name: 'Test2',
           namespace: 'test1',
         },
       },
@@ -55,13 +55,13 @@ describe('CatalogClient', () => {
         apiVersion: '1',
         kind: 'Component',
         metadata: {
-          name: 'Test2',
+          name: 'Test1',
           namespace: 'test1',
         },
       },
     ];
     const defaultResponse: CatalogListResponse<Entity> = {
-      items: defaultServiceResponse,
+      items: defaultServiceResponse.reverse(),
     };
 
     beforeEach(() => {
@@ -72,7 +72,7 @@ describe('CatalogClient', () => {
       );
     });
 
-    it('should entities from correct endpoint', async () => {
+    it('should fetch entities from correct endpoint', async () => {
       const response = await client.getEntities({}, { token });
       expect(response).toEqual(defaultResponse);
     });
