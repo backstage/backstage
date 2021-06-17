@@ -20,6 +20,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   createComponentExtension,
+  identityApiRef,
 } from '@backstage/core';
 import { SearchClient, searchApiRef } from './apis';
 
@@ -38,9 +39,9 @@ export const searchPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: searchApiRef,
-      deps: { discoveryApi: discoveryApiRef },
-      factory: ({ discoveryApi }) => {
-        return new SearchClient({ discoveryApi });
+      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
+      factory: ({ discoveryApi, identityApi }) => {
+        return new SearchClient({ discoveryApi, identityApi });
       },
     }),
   ],
