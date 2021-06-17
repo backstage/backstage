@@ -120,6 +120,7 @@ export class GithubCreateAppServer {
       redirect_url: `${baseUrl}/callback`,
       hook_attributes: {
         url: this.webhookUrl,
+        active: false,
       },
     };
     const manifestJson = JSON.stringify(manifest).replace(/\"/g, '&quot;');
