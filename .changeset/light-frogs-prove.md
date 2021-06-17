@@ -5,5 +5,5 @@
 
 ## Extract an entity-oriented Jenkins Backend
 
-Change the Jenkins plugin from talking directly with a single jenkins instance (via the proxy) to having a specific
-backend plugin which talks to the jenkins instances.
+Change the Jenkins plugin from talking directly with a single Jenkins instance (via the proxy) to having a specific
+backend plugin which talks to the Jenkins instances.

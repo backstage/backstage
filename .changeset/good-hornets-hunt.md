@@ -4,10 +4,10 @@
 
 ## Extract an entity-oriented Jenkins Backend
 
-Change the Jenkins plugin from talking directly with a single jenkins instance (via the proxy) to having a specific
-backend plugin which talks to the jenkins instances.
+Change the Jenkins plugin from talking directly with a single Jenkins instance (via the proxy) to having a specific
+backend plugin which talks to the Jenkins instances.
 
-Existing users of the Jenkins plugin will need to configure a jenkins backend instead of a proxy.
+Existing users of the Jenkins plugin will need to configure a Jenkins backend instead of a proxy.
 Typically, this means creating a `src/plugins/jenkins.ts` file, adding a reference to it to `src/index.ts` and changing app-config.yaml
 
 ### jenkins.ts
