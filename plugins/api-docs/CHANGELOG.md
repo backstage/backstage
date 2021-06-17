@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.5.0
+
+### Minor Changes
+
+- 2ebc430c4: Rework `ApiExplorerPage` to utilize `EntityListProvider` to provide a consistent UI with the `CatalogIndexPage` which now exposes support for starring entities, pagination, and customizing columns.
+
+### Patch Changes
+
+- 14ce64b4f: Add pagination to ApiExplorerTable
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.3
+  - @backstage/plugin-catalog@0.6.3
+  - @backstage/catalog-model@0.8.3
+  - @backstage/core@0.7.13
+
 ## 0.4.15
 
 ### Patch Changes

@@ -48,6 +48,7 @@ export function createPublishGithubAction(options: {
     sourcePath?: string;
     repoVisibility: 'private' | 'internal' | 'public';
     collaborators: Collaborator[];
+    topics?: string[];
   }>({
     id: 'publish:github',
     description:
@@ -101,6 +102,13 @@ export function createPublishGithubAction(options: {
               },
             },
           },
+          topics: {
+            title: 'Topics',
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
       output: {
@@ -124,6 +132,7 @@ export function createPublishGithubAction(options: {
         access,
         repoVisibility = 'private',
         collaborators,
+        topics,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl);
@@ -214,6 +223,18 @@ export function createPublishGithubAction(options: {
               `Skipping ${permission} access for ${team_slug}, ${e.message}`,
             );
           }
+        }
+      }
+
+      if (topics) {
+        try {
+          await client.repos.replaceAllTopics({
+            owner,
+            repo,
+            names: topics.map(t => t.toLowerCase()),
+          });
+        } catch (e) {
+          ctx.logger.warn(`Skipping topics ${topics.join(' ')}, ${e.message}`);
         }
       }
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { ExploreLayout } from './components';
 export * from './extensions';
-export { explorePlugin } from './plugin';
+export { explorePlugin, explorePlugin as plugin } from './plugin';
 export * from './routes';

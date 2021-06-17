@@ -170,11 +170,6 @@ export class TaskWorker {
                   preventIndent: true,
                 })(templateCtx);
 
-                // If it's just an empty string, treat it as undefined
-                if (templated === '') {
-                  return undefined;
-                }
-
                 // If it smells like a JSON object then give it a parse as an object and if it fails return the string
                 if (
                   (templated.startsWith('"') && templated.endsWith('"')) ||
@@ -212,6 +207,10 @@ export class TaskWorker {
 
           // Keep track of all tmp dirs that are created by the action so we can remove them after
           const tmpDirs = new Array<string>();
+
+          this.options.logger.debug(`Running ${action.id} with input`, {
+            input: JSON.stringify(input, null, 2),
+          });
 
           await action.handler({
             baseUrl: task.spec.baseUrl,

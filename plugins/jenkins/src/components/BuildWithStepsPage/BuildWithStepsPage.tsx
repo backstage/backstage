@@ -50,7 +50,9 @@ const BuildWithStepsView = () => {
   const projectName = useProjectSlugFromEntity();
   const { branch, buildNumber } = useRouteRefParams(buildRouteRef);
   const classes = useStyles();
-  const buildPath = `${projectName}/${branch}/${buildNumber}`;
+  const buildPath = `${projectName}/${encodeURIComponent(
+    branch,
+  )}/${buildNumber}`;
   const [{ value }] = useBuildWithSteps(buildPath);
 
   return (

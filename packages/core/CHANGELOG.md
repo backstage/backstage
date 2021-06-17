@@ -1,5 +1,11 @@
 # @backstage/core
 
+## 0.7.13
+
+### Patch Changes
+
+- d4644f592: Use the Backstage `Link` component in the `Button`
+
 ## 0.7.12
 
 ### Patch Changes

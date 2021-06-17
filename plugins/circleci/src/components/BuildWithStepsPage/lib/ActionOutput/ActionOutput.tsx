@@ -24,11 +24,10 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { BuildStepAction } from 'circleci-api';
-import moment from 'moment';
 import React, { Suspense, useEffect, useState } from 'react';
+import { durationHumanized } from '../../../../util';
 
 const LazyLog = React.lazy(() => import('react-lazylog/build/LazyLog'));
-moment.relativeTimeThreshold('ss', 0);
 const useStyles = makeStyles({
   accordionDetails: {
     padding: 0,
@@ -66,11 +65,8 @@ export const ActionOutput = ({
       });
   }, [url]);
 
-  const timeElapsed = moment
-    .duration(
-      moment(action.end_time || moment()).diff(moment(action.start_time)),
-    )
-    .humanize();
+  const timeElapsed = durationHumanized(action.start_time, action.end_time);
+
   return (
     <Accordion TransitionProps={{ unmountOnExit: true }} className={className}>
       <AccordionSummary

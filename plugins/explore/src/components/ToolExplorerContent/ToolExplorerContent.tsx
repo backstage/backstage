@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   Content,
   ContentHeader,
@@ -61,9 +62,13 @@ const Body = () => {
   );
 };
 
-export const ToolExplorerContent = () => (
+type ToolExplorerContentProps = {
+  title?: string;
+};
+
+export const ToolExplorerContent = ({ title }: ToolExplorerContentProps) => (
   <Content noPadding>
-    <ContentHeader title="Tools">
+    <ContentHeader title={title ?? 'Tools'}>
       <SupportButton>Discover the tools in your ecosystem.</SupportButton>
     </ContentHeader>
     <Body />
