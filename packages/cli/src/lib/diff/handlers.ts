@@ -168,6 +168,10 @@ class PackageJsonHandler {
       return;
     }
 
+    // Hardcoded removal of these during migration
+    await this.syncField('@backstage/core', {}, targetDeps, fieldName);
+    await this.syncField('@backstage/core-api', {}, targetDeps, fieldName);
+
     for (const key of Object.keys(pkgDeps)) {
       if (this.variant === 'app' && key.startsWith('plugin-')) {
         continue;
