@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { waitFor } from '@testing-library/react';
 import { createTestShadowDom } from '../../test-utils';
 import { addBaseUrl } from '../transformers';
 import { TechDocsStorageApi } from '../../api';
@@ -120,12 +121,9 @@ describe('addBaseUrl', () => {
       postTransformers: [],
     });
 
-    await new Promise<void>(done => {
-      process.nextTick(() => {
-        const actualSrc = root.getElementById('x')?.getAttribute('src');
-        expect(expectedSrc).toEqual(actualSrc);
-        done();
-      });
+    await waitFor(() => {
+      const actualSrc = root.getElementById('x')?.getAttribute('src');
+      expect(expectedSrc).toEqual(actualSrc);
     });
   });
 
@@ -153,12 +151,9 @@ describe('addBaseUrl', () => {
       },
     );
 
-    await new Promise<void>(done => {
-      process.nextTick(() => {
-        const actualSrc = root.getElementById('x')?.getAttribute('src');
-        expect(expectedSrc).toEqual(actualSrc);
-        done();
-      });
+    await waitFor(() => {
+      const actualSrc = root.getElementById('x')?.getAttribute('src');
+      expect(expectedSrc).toEqual(actualSrc);
     });
   });
 
