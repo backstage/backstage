@@ -37,7 +37,7 @@
     "json-schema": "^0.3.0",
     "lodash": "^4.17.15",
     "uuid": "^8.0.0",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@backstage/cli": "^0.7.1",
