@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createRoutableExtension } from '@backstage/core';
+import {
+  createComponentExtension,
+  createRoutableExtension,
+} from '@backstage/core';
 import { explorePlugin } from './plugin';
 import { exploreRouteRef } from './routes';
 
@@ -23,5 +26,38 @@ export const ExplorePage = explorePlugin.provide(
     component: () =>
       import('./components/ExplorePage').then(m => m.ExplorePage),
     mountPoint: exploreRouteRef,
+  }),
+);
+
+export const DomainExplorerContent = explorePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/DomainExplorerContent').then(
+          m => m.DomainExplorerContent,
+        ),
+    },
+  }),
+);
+
+export const GroupsExplorerContent = explorePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/GroupsExplorerContent').then(
+          m => m.GroupsExplorerContent,
+        ),
+    },
+  }),
+);
+
+export const ToolExplorerContent = explorePlugin.provide(
+  createComponentExtension({
+    component: {
+      lazy: () =>
+        import('./components/ToolExplorerContent').then(
+          m => m.ToolExplorerContent,
+        ),
+    },
   }),
 );

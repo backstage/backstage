@@ -1,40 +1,13 @@
-# explore
+---
+'@backstage/plugin-explore': patch
+---
 
-Welcome to the explore plugin!
-This plugin helps to visualize the domains and tools in your ecosystem.
+Refactors the explore plugin to be more customizable. This includes the following non-breaking changes:
 
-## Getting started
-
-To install the plugin, add and bind the route in `App.tsx`:
-
-```typescript
-import { ExplorePage, explorePlugin } from '@backstage/plugin-explore';
-
-...
-
-bindRoutes({ bind }) {
-  ...
-  bind(explorePlugin.externalRoutes, {
-    catalogEntity: catalogPlugin.routes.catalogEntity,
-  });
-},
-
-...
-
-<Route path="/explore" element={<ExplorePage />} />
-```
-
-And add a link to the sidebar in `Root.tsx`:
-
-```typescript
-import LayersIcon from '@material-ui/icons/Layers';
-
-...
-
-<SidebarItem icon={LayersIcon} to="explore" text="Explore" />
-```
-
-## Customization
+- Introduce new `ExploreLayout` page which can be used to create a custom `ExplorePage`
+- Refactor `ExplorePage` to use a new `ExploreLayout` component
+- Exports existing `DomainExplorerContent`, `GroupsExplorerContent`, & `ToolExplorerContent` components
+- Allows `title` props to be customized
 
 Create a custom explore page in `packages/app/src/components/explore/ExplorePage.tsx`.
 
