@@ -16,9 +16,9 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core';
-import ExampleFetchComponent from '../ExampleFetchComponent';
+import { ExampleFetchComponent } from '../ExampleFetchComponent';
 
-const ExampleComponent = () => {
+export const ExampleComponent = () => {
   const identityApi = useApi(identityApiRef);
   const userId = identityApi.getUserId();
   const profile = identityApi.getProfile();
@@ -52,6 +52,4 @@ const ExampleComponent = () => {
     </Page>
   );
 };
-
-export default ExampleComponent;
 ```
