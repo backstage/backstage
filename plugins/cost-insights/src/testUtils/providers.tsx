@@ -28,6 +28,8 @@ import {
 import { ScrollContext, ScrollContextProps } from '../hooks/useScroll';
 import { Group, Duration } from '../types';
 
+// TODO(Rugvip): Could be good to have a clear place to put test utils that is linted accordingly
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import { IdentityApi, identityApiRef } from '@backstage/core-plugin-api';
 

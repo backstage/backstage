@@ -15,7 +15,7 @@
  */
 
 import { GroupEntity } from '@backstage/catalog-model';
-import { ApiProvider, ApiRegistry } from '@backstage/core-api';
+import { ApiProvider, ApiRegistry } from '@backstage/core-app-api';
 import {
   CatalogApi,
   catalogApiRef,
