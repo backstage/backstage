@@ -7656,20 +7656,7 @@ archiver-utils@^2.1.0:
     normalize-path "^3.0.0"
     readable-stream "^2.0.0"
 
-archiver@^5.0.2:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/archiver/-/archiver-5.2.0.tgz#25aa1b3d9febf7aec5b0f296e77e69960c26db94"
-  integrity sha512-QEAKlgQuAtUxKeZB9w5/ggKXh21bZS+dzzuQ0RPBC20qtDCbTyzqmisoeJP46MP39fg4B4IcyvR+yeyEBdblsQ==
-  dependencies:
-    archiver-utils "^2.1.0"
-    async "^3.2.0"
-    buffer-crc32 "^0.2.1"
-    readable-stream "^3.6.0"
-    readdir-glob "^1.0.0"
-    tar-stream "^2.1.4"
-    zip-stream "^4.0.4"
-
-archiver@^5.3.0:
+archiver@^5.0.2, archiver@^5.3.0:
   version "5.3.0"
   resolved "https://registry.npmjs.org/archiver/-/archiver-5.3.0.tgz#dd3e097624481741df626267564f7dd8640a45ba"
   integrity sha512-iUw+oDwK0fgNpvveEsdQ0Ase6IIKztBJU2U0E9MzszMfmVVUyv1QJhS2ITW9ZCqx8dktAxVAjWWkKehuZE8OPg==
@@ -9866,16 +9853,6 @@ component-emitter@^1.2.0, component-emitter@^1.2.1, component-emitter@^1.3.0:
   resolved "https://registry.npmjs.org/component-emitter/-/component-emitter-1.3.0.tgz#16e4070fba8ae29b679f2215853ee181ab2eabc0"
   integrity sha512-Rd3se6QB+sO1TwqZjscQrurpEPIfO0/yYnSin6Q/rD3mOutHvUrCAhJub3r90uNb+SESBuE0QYoB90YdfatsRg==
 
-compress-commons@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.npmjs.org/compress-commons/-/compress-commons-4.0.2.tgz#d6896be386e52f37610cef9e6fa5defc58c31bd7"
-  integrity sha512-qhd32a9xgzmpfoga1VQEiLEwdKZ6Plnpx5UCgIsf89FSolyJ7WnifY4Gtjgv5WR6hWAyRaHxC5MiEhU/38U70A==
-  dependencies:
-    buffer-crc32 "^0.2.13"
-    crc32-stream "^4.0.1"
-    normalize-path "^3.0.0"
-    readable-stream "^3.6.0"
-
 compress-commons@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/compress-commons/-/compress-commons-4.1.0.tgz#25ec7a4528852ccd1d441a7d4353cd0ece11371b"
@@ -11464,10 +11441,10 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
-docker-compose@^0.23.8:
-  version "0.23.10"
-  resolved "https://registry.npmjs.org/docker-compose/-/docker-compose-0.23.10.tgz#369fd2c6429754fb4134d3d29174a8c9569690e8"
-  integrity sha512-IzR6LzHrQyUvVwPNZY6F0oszAQLqHKOMNTN43Yu5aE6IBbhN9D/MpHbVUqHXTwzqIWiJM+ImYFjY5RdWWDGgfQ==
+docker-compose@^0.23.10:
+  version "0.23.12"
+  resolved "https://registry.npmjs.org/docker-compose/-/docker-compose-0.23.12.tgz#fa883b98be08f6926143d06bf9e522ef7ed3210c"
+  integrity sha512-KFbSMqQBuHjTGZGmYDOCO0L4SaML3BsWTId5oSUyaBa22vALuFHNv+UdDWs3HcMylHWKsxCbLB7hnM/nCosWZw==
   dependencies:
     yaml "^1.10.2"
 
@@ -25082,16 +25059,16 @@ test-exclude@^6.0.0:
     minimatch "^3.0.4"
 
 testcontainers@^7.10.0:
-  version "7.11.0"
-  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-7.11.0.tgz#47291a7e693b6d8f7a4f03cd0fb2a6a741c53458"
-  integrity sha512-wnTS/foBu3lFjLHRCQLv+nSBnzgp20tWRJVCRXFzU6ivDnFwNbyLMZiHhHZr6hpXtCNAToOlBenlueDA5z1L7g==
+  version "7.11.1"
+  resolved "https://registry.npmjs.org/testcontainers/-/testcontainers-7.11.1.tgz#b3810badf79433ba02f210683eec1a1c488c107d"
+  integrity sha512-lfZeys5bLkADjOaoXfQy0V0+G8sGKr8ESANz7MhSVBwC+OTTxkP3+FVwP48bW4mwRcQ4Hojwbfw10OYT80QZmQ==
   dependencies:
     "@types/archiver" "^5.1.0"
     "@types/dockerode" "^3.2.1"
     archiver "^5.3.0"
     byline "^5.0.0"
     debug "^4.3.1"
-    docker-compose "^0.23.8"
+    docker-compose "^0.23.10"
     dockerode "^3.2.1"
     get-port "^5.1.1"
     glob "^7.1.7"
@@ -27197,15 +27174,6 @@ zenscroll@^4.0.2:
   version "4.0.2"
   resolved "https://registry.npmjs.org/zenscroll/-/zenscroll-4.0.2.tgz#e8d5774d1c0738a47bcfa8729f3712e2deddeb25"
   integrity sha1-6NV3TRwHOKR7z6hynzcS4t7d6yU=
-
-zip-stream@^4.0.4:
-  version "4.0.4"
-  resolved "https://registry.npmjs.org/zip-stream/-/zip-stream-4.0.4.tgz#3a8f100b73afaa7d1ae9338d910b321dec77ff3a"
-  integrity sha512-a65wQ3h5gcQ/nQGWV1mSZCEzCML6EK/vyVPcrPNynySP1j3VBbQKh3nhC8CbORb+jfl2vXvh56Ul5odP1bAHqw==
-  dependencies:
-    archiver-utils "^2.1.0"
-    compress-commons "^4.0.2"
-    readable-stream "^3.6.0"
 
 zip-stream@^4.1.0:
   version "4.1.0"
