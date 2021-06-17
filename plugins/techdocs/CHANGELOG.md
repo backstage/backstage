@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs
 
+## 0.9.6
+
+### Patch Changes
+
+- 938aee2fb: Fix the link to the documentation page when no owned documents are displayed
+- 2e1fbe203: Do not add trailing slash for .html pages during doc links rewriting
+- 9b57fda8b: Fixes a bug that could prevent some externally hosted images (like icons or
+  build badges) from rendering within TechDocs documentation.
+- 667656c8b: Adding support for user owned document filter for TechDocs custom Homepage
+- Updated dependencies
+  - @backstage/plugin-catalog-react@0.2.3
+  - @backstage/catalog-model@0.8.3
+  - @backstage/core@0.7.13
+
 ## 0.9.5
 
 ### Patch Changes

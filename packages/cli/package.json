@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -32,7 +32,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.4.4",
     "@backstage/cli-common": "^0.1.1",
     "@backstage/config": "^0.1.5",
-    "@backstage/config-loader": "^0.6.3",
+    "@backstage/config-loader": "^0.6.4",
     "@hot-loader/react-dom": "^16.13.0",
     "@lerna/package-graph": "^4.0.0",
     "@lerna/project": "^4.0.0",
@@ -118,9 +118,9 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
-    "@backstage/backend-common": "^0.8.2",
+    "@backstage/backend-common": "^0.8.3",
     "@backstage/config": "^0.1.5",
-    "@backstage/core": "^0.7.12",
+    "@backstage/core": "^0.7.13",
     "@backstage/dev-utils": "^0.1.17",
     "@backstage/test-utils": "^0.1.13",
     "@backstage/theme": "^0.2.8",
