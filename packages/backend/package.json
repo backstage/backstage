@@ -31,7 +31,6 @@
     "@backstage/catalog-client": "^0.3.13",
     "@backstage/catalog-model": "^0.8.2",
     "@backstage/config": "^0.1.5",
-    "@backstage/integration": "^0.5.6",
     "@backstage/plugin-app-backend": "^0.3.13",
     "@backstage/plugin-auth-backend": "^0.3.12",
     "@backstage/plugin-badges-backend": "^0.1.6",

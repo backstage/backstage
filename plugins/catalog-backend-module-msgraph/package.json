@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^1.1.0",
-    "@backstage/catalog-model": "^0.8.2",
+    "@backstage/catalog-model": "^0.8.3",
     "@backstage/config": "^0.1.5",
     "@backstage/plugin-catalog-backend": "^0.10.2",
     "@microsoft/microsoft-graph-types": "^1.25.0",
@@ -40,7 +40,7 @@
     "qs": "^6.9.4"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.7.0",
+    "@backstage/cli": "^0.7.1",
     "@backstage/test-utils": "^0.1.13",
     "@types/lodash": "^4.14.151",
     "msw": "^0.21.2"
